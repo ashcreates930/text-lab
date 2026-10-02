@@ -1,0 +1,20 @@
+{
+  "id": "wife-of-his-youth",
+  "title": "The Wife of His Youth",
+  "author": "Charles W. Chesnutt",
+  "year": 1898,
+  "genre": "short story",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 10,
+    "max": 12
+  },
+  "courses": [
+    "best_ela",
+    "ap_lit"
+  ],
+  "estimated_minutes": 35,
+  "hook": "The night of his grand ball, a woman from his past knocks on the door.",
+  "content_notes": "slavery; colorism",
+  "teacher_preview_required": true
+}

@@ -1,0 +1,21 @@
+{
+  "id": "yellow-wallpaper",
+  "title": "The Yellow Wallpaper",
+  "author": "Charlotte Perkins Gilman",
+  "year": 1892,
+  "genre": "short story",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 11,
+    "max": 12
+  },
+  "courses": [
+    "best_ela",
+    "ap_lit",
+    "aice_lit"
+  ],
+  "estimated_minutes": 35,
+  "hook": "A room, a pattern, and a woman no one believes.",
+  "content_notes": "mental health; confinement",
+  "teacher_preview_required": true
+}

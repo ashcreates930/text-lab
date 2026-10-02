@@ -1,0 +1,19 @@
+{
+  "id": "most-dangerous-game",
+  "title": "The Most Dangerous Game",
+  "author": "Richard Connell",
+  "year": 1924,
+  "genre": "short story",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 8,
+    "max": 10
+  },
+  "courses": [
+    "best_ela"
+  ],
+  "estimated_minutes": 40,
+  "hook": "Shipwrecked on an island where the hunter becomes the hunted.",
+  "content_notes": "hunting of humans; violence",
+  "teacher_preview_required": true
+}

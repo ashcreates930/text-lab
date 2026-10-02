@@ -1,0 +1,20 @@
+{
+  "id": "open-window",
+  "title": "The Open Window",
+  "author": "Saki (H. H. Munro)",
+  "year": 1914,
+  "genre": "short story",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 7,
+    "max": 9
+  },
+  "courses": [
+    "best_ela",
+    "igcse_lit"
+  ],
+  "estimated_minutes": 25,
+  "hook": "A visitor, a story, and a window left open for three years.",
+  "content_notes": "",
+  "teacher_preview_required": false
+}

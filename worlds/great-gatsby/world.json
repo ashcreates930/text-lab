@@ -1,0 +1,21 @@
+{
+  "id": "great-gatsby",
+  "title": "The Great Gatsby",
+  "author": "F. Scott Fitzgerald",
+  "year": 1925,
+  "genre": "novel",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 11,
+    "max": 11
+  },
+  "courses": [
+    "best_ela",
+    "ap_lit",
+    "aice_lit"
+  ],
+  "estimated_minutes": 0,
+  "hook": "A green light, a yellow car, and a man who built his life around one dream.",
+  "content_notes": "death; infidelity; alcohol",
+  "teacher_preview_required": true
+}

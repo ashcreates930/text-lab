@@ -1,0 +1,22 @@
+{
+  "id": "jekyll-and-hyde",
+  "title": "Strange Case of Dr Jekyll and Mr Hyde",
+  "author": "Robert Louis Stevenson",
+  "year": 1886,
+  "genre": "novella",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 9,
+    "max": 11
+  },
+  "courses": [
+    "best_ela",
+    "ap_lit",
+    "aice_lit",
+    "igcse_lit"
+  ],
+  "estimated_minutes": 0,
+  "hook": "A respected doctor. A violent stranger. One locked door.",
+  "content_notes": "violence; murder",
+  "teacher_preview_required": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "christmas-carol",
+  "title": "A Christmas Carol",
+  "author": "Charles Dickens",
+  "year": 1843,
+  "genre": "novella",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 6,
+    "max": 8
+  },
+  "courses": [
+    "best_ela"
+  ],
+  "estimated_minutes": 50,
+  "hook": "Three spirits. One night. Can a person really change?",
+  "content_notes": "death; poverty",
+  "teacher_preview_required": false
+}

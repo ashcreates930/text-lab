@@ -1,0 +1,7 @@
+import {NextResponse} from "next/server";
+import {z} from "zod";
+import {getServiceSupabase} from "@/lib/supabase";
+const Input=z.object({name:z.string().trim().min(1).max(120),email:z.string().trim().email().max(254),role:z.enum(["teacher","instructional coach","administrator","district leader","homeschool parent","microschool leader","EdTech","other"]),organization:z.string().trim().min(1).max(200)});
+export async function POST(request:Request){const data=Input.safeParse(await request.json().catch(()=>null));if(!data.success)return NextResponse.json({error:"Check the form fields and try again."},{status:400});const db=getServiceSupabase();if(!db)return NextResponse.json({error:"Waitlist storage is not configured."},{status:503});const entry={...data.data,email:data.data.email.toLowerCase()};let {error}=await db.from("waitlist").insert(entry);
+// Until migration 202610030001 is applied, the database rejects the two new roles (check violation 23514). Keep the sign-up by saving it as "other" with the role noted.
+if(error?.code==="23514"&&["homeschool parent","microschool leader"].includes(entry.role))({error}=await db.from("waitlist").insert({...entry,role:"other",organization:`[${entry.role}] ${entry.organization}`.slice(0,200)}));if(error?.code==="23505")return NextResponse.json({error:"That email is already on the waitlist."},{status:409});if(error)return NextResponse.json({error:"Could not save your entry."},{status:500});return NextResponse.json({ok:true},{status:201})}

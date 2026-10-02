@@ -1,0 +1,19 @@
+{
+  "id": "lady-or-the-tiger",
+  "title": "The Lady, or the Tiger?",
+  "author": "Frank R. Stockton",
+  "year": 1882,
+  "genre": "short story",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 6,
+    "max": 8
+  },
+  "courses": [
+    "best_ela"
+  ],
+  "estimated_minutes": 30,
+  "hook": "Two doors. One choice. What would the princess do?",
+  "content_notes": "",
+  "teacher_preview_required": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "monkeys-paw",
+  "title": "The Monkey's Paw",
+  "author": "W. W. Jacobs",
+  "year": 1902,
+  "genre": "short story",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 7,
+    "max": 9
+  },
+  "courses": [
+    "best_ela"
+  ],
+  "estimated_minutes": 35,
+  "hook": "Three wishes. A warning. A knock at the door.",
+  "content_notes": "death of a family member; horror",
+  "teacher_preview_required": false
+}

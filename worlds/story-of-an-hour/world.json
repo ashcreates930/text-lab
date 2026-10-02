@@ -1,0 +1,22 @@
+{
+  "id": "story-of-an-hour",
+  "title": "The Story of an Hour",
+  "author": "Kate Chopin",
+  "year": 1894,
+  "genre": "short story",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 10,
+    "max": 12
+  },
+  "courses": [
+    "best_ela",
+    "ap_lit",
+    "aice_lit",
+    "igcse_lit"
+  ],
+  "estimated_minutes": 0,
+  "hook": "Bad news arrives gently. What she feels next surprises everyone, even her.",
+  "content_notes": "death of a spouse",
+  "teacher_preview_required": false
+}

@@ -1,0 +1,1 @@
+export function isOwnerEmailAllowed(userEmail:string|undefined|null,ownerEmail:string|undefined|null){return Boolean(userEmail&&ownerEmail&&userEmail.trim().toLowerCase()===ownerEmail.trim().toLowerCase())}

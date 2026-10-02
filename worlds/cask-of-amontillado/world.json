@@ -1,0 +1,20 @@
+{
+  "id": "cask-of-amontillado",
+  "title": "The Cask of Amontillado",
+  "author": "Edgar Allan Poe",
+  "year": 1846,
+  "genre": "short story",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 8,
+    "max": 10
+  },
+  "courses": [
+    "best_ela",
+    "ap_lit"
+  ],
+  "estimated_minutes": 30,
+  "hook": "Carnival night. A rare wine. A cellar with no way out.",
+  "content_notes": "murder",
+  "teacher_preview_required": false
+}

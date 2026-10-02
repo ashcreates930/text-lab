@@ -1,0 +1,19 @@
+{
+  "id": "ransom-of-red-chief",
+  "title": "The Ransom of Red Chief",
+  "author": "O. Henry",
+  "year": 1907,
+  "genre": "short story",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 6,
+    "max": 8
+  },
+  "courses": [
+    "best_ela"
+  ],
+  "estimated_minutes": 0,
+  "hook": "Two kidnappers. One boy. Who is really the hostage?",
+  "content_notes": "kidnapping played for comedy; dated stereotypes in the boy's game",
+  "teacher_preview_required": true
+}

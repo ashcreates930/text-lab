@@ -1,0 +1,21 @@
+{
+  "id": "owl-creek-bridge",
+  "title": "An Occurrence at Owl Creek Bridge",
+  "author": "Ambrose Bierce",
+  "year": 1890,
+  "genre": "short story",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 10,
+    "max": 12
+  },
+  "courses": [
+    "best_ela",
+    "ap_lit",
+    "aice_lit"
+  ],
+  "estimated_minutes": 30,
+  "hook": "A man, a rope, a bridge. What is real?",
+  "content_notes": "execution; Civil War",
+  "teacher_preview_required": true
+}

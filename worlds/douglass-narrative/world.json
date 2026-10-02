@@ -1,0 +1,21 @@
+{
+  "id": "douglass-narrative",
+  "title": "Narrative of the Life of Frederick Douglass",
+  "author": "Frederick Douglass",
+  "year": 1845,
+  "genre": "autobiography",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 10,
+    "max": 12
+  },
+  "courses": [
+    "best_ela",
+    "ap_lang",
+    "aice_lang"
+  ],
+  "estimated_minutes": 0,
+  "hook": "A man teaches himself to read, and reading changes everything.",
+  "content_notes": "slavery; violence; racism",
+  "teacher_preview_required": true
+}

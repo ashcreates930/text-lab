@@ -1,0 +1,4 @@
+import {NextResponse} from "next/server";
+import {getServiceSupabase} from "@/lib/supabase";
+import {isOwnerEmailAllowed} from "@/lib/owner-auth";
+export async function GET(request:Request){const db=getServiceSupabase();const owner=process.env.OWNER_EMAIL;const token=request.headers.get("authorization")?.replace(/^Bearer\s+/i,"");if(!db||!owner||!token)return NextResponse.json({error:"Unauthorized"},{status:401});const {data:{user},error:authError}=await db.auth.getUser(token);if(authError||!isOwnerEmailAllowed(user?.email,owner))return NextResponse.json({error:"Unauthorized"},{status:403});const {data,error}=await db.from("waitlist").select("id,name,email,role,organization,created_at").order("created_at",{ascending:false});if(error)return NextResponse.json({error:"Could not load waitlist."},{status:500});return NextResponse.json({entries:data})}

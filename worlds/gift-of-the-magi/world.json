@@ -1,0 +1,19 @@
+{
+  "id": "gift-of-the-magi",
+  "title": "The Gift of the Magi",
+  "author": "O. Henry",
+  "year": 1905,
+  "genre": "short story",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 6,
+    "max": 8
+  },
+  "courses": [
+    "best_ela"
+  ],
+  "estimated_minutes": 30,
+  "hook": "One dollar and eighty-seven cents. Two gifts. One twist.",
+  "content_notes": "",
+  "teacher_preview_required": false
+}

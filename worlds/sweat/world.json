@@ -1,0 +1,21 @@
+{
+  "id": "sweat",
+  "title": "Sweat",
+  "author": "Zora Neale Hurston",
+  "year": 1926,
+  "genre": "short story",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 11,
+    "max": 12
+  },
+  "courses": [
+    "best_ela",
+    "ap_lit",
+    "aice_lit"
+  ],
+  "estimated_minutes": 35,
+  "hook": "Fifteen years of work. One snake. One choice.",
+  "content_notes": "domestic abuse; death",
+  "teacher_preview_required": true
+}

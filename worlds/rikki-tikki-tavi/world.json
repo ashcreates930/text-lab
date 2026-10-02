@@ -1,0 +1,19 @@
+{
+  "id": "rikki-tikki-tavi",
+  "title": "Rikki-Tikki-Tavi",
+  "author": "Rudyard Kipling",
+  "year": 1894,
+  "genre": "short story",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 6,
+    "max": 6
+  },
+  "courses": [
+    "best_ela"
+  ],
+  "estimated_minutes": 35,
+  "hook": "A garden, a family, and a mongoose who won't back down.",
+  "content_notes": "colonial-era setting; animal violence",
+  "teacher_preview_required": false
+}

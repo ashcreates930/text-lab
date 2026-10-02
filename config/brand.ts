@@ -1,0 +1,1 @@
+export const brand = { name: "Inside the Text", organization: "AmplifiED", tagline: "Where Culture Meets Intelligence", principle: "AI as Resource, Not the Source", safetyNote: "You're talking to an AI version of a character. It can be wrong. The text is the authority." } as const;

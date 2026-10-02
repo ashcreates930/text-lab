@@ -1,0 +1,22 @@
+{
+  "id": "macbeth",
+  "title": "Macbeth",
+  "author": "William Shakespeare",
+  "year": 1623,
+  "genre": "drama",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 10,
+    "max": 12
+  },
+  "courses": [
+    "best_ela",
+    "ap_lit",
+    "aice_lit",
+    "igcse_lit"
+  ],
+  "estimated_minutes": 0,
+  "hook": "Three witches. One prophecy. How far will ambition go?",
+  "content_notes": "murder; violence; supernatural",
+  "teacher_preview_required": true
+}

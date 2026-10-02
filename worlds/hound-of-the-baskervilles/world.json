@@ -1,0 +1,19 @@
+{
+  "id": "hound-of-the-baskervilles",
+  "title": "The Hound of the Baskervilles",
+  "author": "Arthur Conan Doyle",
+  "year": 1902,
+  "genre": "novel",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 8,
+    "max": 10
+  },
+  "courses": [
+    "best_ela"
+  ],
+  "estimated_minutes": 0,
+  "hook": "A family curse, a missing boot, and something on the moor.",
+  "content_notes": "animal attack; death",
+  "teacher_preview_required": false
+}

@@ -1,0 +1,21 @@
+{
+  "id": "importance-of-being-earnest",
+  "title": "The Importance of Being Earnest",
+  "author": "Oscar Wilde",
+  "year": 1895,
+  "genre": "drama",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 10,
+    "max": 12
+  },
+  "courses": [
+    "best_ela",
+    "ap_lit",
+    "aice_lit"
+  ],
+  "estimated_minutes": 0,
+  "hook": "Two friends, two fake identities, one very important name.",
+  "content_notes": "",
+  "teacher_preview_required": false
+}

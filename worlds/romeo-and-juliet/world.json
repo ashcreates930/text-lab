@@ -1,0 +1,20 @@
+{
+  "id": "romeo-and-juliet",
+  "title": "Romeo and Juliet",
+  "author": "William Shakespeare",
+  "year": 1597,
+  "genre": "play",
+  "status": "coming_soon",
+  "grade_band": {
+    "min": 9,
+    "max": 9
+  },
+  "courses": [
+    "best_ela",
+    "igcse_lit"
+  ],
+  "estimated_minutes": 0,
+  "hook": "Two families, one tragedy. Who is to blame?",
+  "content_notes": "suicide; violence",
+  "teacher_preview_required": true
+}

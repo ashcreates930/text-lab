@@ -1,0 +1,16 @@
+# Secrets: Vercel reads environment variables from the dashboard, never from uploaded files.
+.env*
+
+# Repository metadata and local working folders
+.git
+.gitmeta
+.git-old
+outputs
+work
+
+# Local build output, caches, and dev-server logs (Vercel installs and builds fresh)
+node_modules
+.next
+.devserver.*.log
+.claude
+*.tsbuildinfo

@@ -1,0 +1,39 @@
+{
+  "name": "inside-the-text",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "predev": "npm run sync:worlds",
+    "dev": "next dev",
+    "prebuild": "npm run sync:worlds",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "test": "node --experimental-strip-types --test tests/core.test.ts",
+    "validate:worlds": "node --experimental-strip-types scripts/validate-worlds.ts",
+    "assets": "node --experimental-strip-types scripts/generate-assets.ts",
+    "sync:worlds": "node --experimental-strip-types scripts/generate-assets.ts --sync-only"
+  },
+  "dependencies": {
+    "@scure/bip39": "^2.4.0",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.57.0",
+    "lucide-react": "^0.468.0",
+    "next": "^15.5.4",
+    "openai": "^5.20.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.13",
+    "@types/node": "^22.18.6",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "eslint": "^9.36.0",
+    "eslint-config-next": "^15.5.4",
+    "tailwindcss": "^4.1.13",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.2"
+  }
+}
