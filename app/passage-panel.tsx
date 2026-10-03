@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { BookmarkPlus, BookOpen, Check } from "lucide-react";
+import { ArrowRight, BookmarkPlus, BookOpen, Check, LockKeyhole } from "lucide-react";
 import type { WorldPack } from "@/lib/world-schema";
-import { parseSourcePassages } from "@/lib/source-passages";
+import { parseSourcePassages, splitIntoPortions, type SourcePassage } from "@/lib/source-passages";
 import type { Demo } from "./page";
 import {GlossaryText} from "./glossary-word";
 
@@ -54,8 +54,37 @@ export function PassagePanel({ world, scene, demo, setDemo, onGlossary, grade=10
         </div>
         {selection && <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3"><span className="max-w-xl text-xs text-white/55">Selected from ¶ {selectedParagraph.slice(1)}: “{selection.slice(0, 160)}{selection.length > 160 ? "…" : ""}”</span><button type="button" onClick={saveSelection} className="gold-button flex items-center gap-2 px-3 py-2 text-[10px]"><BookmarkPlus size={13}/> SAVE TO CASE FILE · TEXT EVIDENCE</button></div>}
         {!!demo.savedTextEvidence.length && <div className="mt-4 border-t border-white/10 pt-3"><p className="eyebrow">SAVED TEXT EVIDENCE</p><div className="mt-2 grid gap-2">{demo.savedTextEvidence.map((quote) => <div key={quote.id} draggable onDragStart={(event) => { event.dataTransfer.setData("text/plain", `“${quote.text}” (¶ ${quote.paragraphId.slice(1)})`); event.dataTransfer.setData("application/x-itt-source", "inserted"); }} className="border border-white/10 p-2 text-xs text-white/60"><Check size={11} className="mr-1 inline text-[#dfb675]"/>“{quote.text}” <span className="text-[#dfb675]">¶ {quote.paragraphId.slice(1)} · TEXT EVIDENCE</span></div>)}</div></div>}
-        <details className="mt-4 border-t border-white/10 pt-3"><summary className="cursor-pointer text-xs text-[#dfb675]">Read the full story</summary><article className="mt-3 max-h-[60vh] space-y-4 overflow-y-auto pr-2">{allPassages.map((passage) => <p key={passage.id} className="relative pl-12 text-sm leading-7 text-white/65"><span className="absolute left-0 top-1 font-mono text-[10px] text-[#dfb675]/70">¶ {passage.id.slice(1)}</span><GlossaryText text={passage.text} glossary={world.glossary} grade={grade} onOpen={()=>wordOpened("")} onSave={saveWord}/></p>)}</article></details>
+        <ReadingPortions world={world} scene={scene} demo={demo} setDemo={setDemo} passages={allPassages} grade={grade} onWord={()=>wordOpened("")} onSave={saveWord}/>
       </div>
     </details>
+  </section>;
+}
+
+
+// The story in reading order, revealed one portion at a time. A new portion opens each time the student finishes
+// the analysis questions (NOTICE, INTERPRET, CRAFT) on every clue in the current scene.
+function ReadingPortions({world,scene,demo,setDemo,passages,grade,onWord,onSave}:{world:WorldPack;scene:WorldPack["scenes"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];grade:number;onWord:()=>void;onSave:(term:string)=>void}){
+  const count=Math.max(2,world.scenes.length);
+  const portions=useMemo(()=>splitIntoPortions(passages,count),[passages,count]);
+  if(!portions.length)return null;
+  const unlocks=demo.portionUnlocks??[];
+  const unlocked=Math.min(portions.length,1+unlocks.length);
+  const isDone=(id:string)=>{const x=demo.artifactAnswers[id];return !!(x?.notice.trim()&&x?.interpret.trim()&&x?.craft.trim()&&x?.technique)};
+  const finished=scene.artifacts.filter(a=>isDone(a.id)).length,total=scene.artifacts.length;
+  const sceneDone=finished===total;
+  const usedThisScene=unlocks.includes(scene.id);
+  const canOpen=sceneDone&&!usedThisScene&&unlocked<portions.length;
+  function openNext(){setDemo(d=>({...d,portionUnlocks:[...(d.portionUnlocks??[]),scene.id],events:[...new Set([...d.events,"portion_unlocked"])]}));requestAnimationFrame(()=>document.getElementById("current-portion")?.scrollIntoView({behavior:"smooth",block:"start"}))}
+  const paragraph=(p:SourcePassage)=><p key={p.id} className="relative pl-12 text-sm leading-7 text-white/75"><span className="absolute left-0 top-1 font-mono text-[10px] text-[#dfb675]/70">¶ {p.id.slice(1)}</span><GlossaryText text={p.text} glossary={world.glossary} grade={grade} onOpen={onWord} onSave={onSave}/></p>;
+  const range=(list:SourcePassage[])=>`¶ ${Number(list[0].id.slice(1))} to ${Number(list[list.length-1].id.slice(1))}`;
+  return <section className="mt-5 border-t border-white/10 pt-4" aria-label="The story in order">
+    <div className="flex flex-wrap items-baseline justify-between gap-2"><p className="eyebrow">THE STORY IN ORDER · PORTION {unlocked} OF {portions.length}</p><p className="text-xs text-white/60">{range(portions[unlocked-1])}</p></div>
+    <p className="mt-1 text-sm leading-6 text-white/70">Read the story one portion at a time. Each time you finish the analysis questions on a scene’s clues, the next portion opens.</p>
+    {unlocked>1&&<details className="mt-3 border border-white/10 px-3 py-2"><summary className="cursor-pointer text-sm text-[#dfb675]">{unlocked===2?"Reread portion 1":`Reread portions 1 to ${unlocked-1}`}</summary><div className="mt-3 max-h-[50vh] space-y-4 overflow-y-auto pr-2">{portions.slice(0,unlocked-1).flat().map(paragraph)}</div></details>}
+    <article id="current-portion" tabIndex={-1} className="mt-3 scroll-mt-24 max-h-[60vh] space-y-4 overflow-y-auto pr-2" aria-label={`Portion ${unlocked}`}>{portions[unlocked-1].map(paragraph)}</article>
+    {unlocked<portions.length&&(canOpen
+      ?<button type="button" onClick={openNext} className="gold-button mt-4 flex min-h-12 w-full items-center justify-center gap-2 px-5 py-3 text-sm">Read the next portion of the text <ArrowRight size={16}/></button>
+      :<div className="mt-4 flex flex-wrap items-center justify-between gap-3 border border-dashed border-[#dfb675]/40 p-4"><p className="text-sm leading-6 text-white/80"><LockKeyhole size={14} className="mr-2 inline text-[#dfb675]"/><b>Next portion of the text</b> · {usedThisScene?"You opened this scene’s portion. Move on to the next scene; finishing its clues opens the next one.":`Finish the analysis questions on this scene’s clues to open it. ${finished} of ${total} clues finished.`}</p>{!usedThisScene&&<button type="button" onClick={()=>document.getElementById("case-file")?.scrollIntoView({behavior:"smooth",block:"start"})} className="soft-button min-h-11 px-4 py-2 text-sm">Go to my clues</button>}</div>)}
+    {unlocked>=portions.length&&<p className="mt-4 text-sm text-[#c4d0a6]"><Check size={14} className="mr-1 inline"/>You have opened the whole story.</p>}
   </section>;
 }

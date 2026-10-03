@@ -129,3 +129,13 @@ test("mini lessons are complete, have one correct answer per question, and story
     for(const lessonId of pack.mini_lessons??[]){const l=lessonById(lessonId);assert.ok(l,`${id}: ${lessonId}`);assert.ok(l!.grades.min<=pack.grade_band.max&&l!.grades.max>=pack.grade_band.min)}
   }
 });
+
+test("stories split into ordered reading portions with no paragraph lost",async()=>{
+  const {parseSourcePassages,splitIntoPortions}=await import("../lib/source-passages.ts");
+  const passages=parseSourcePassages(await readFile(new URL("../worlds/tell-tale-heart/source.md",import.meta.url),"utf8"));
+  const portions=splitIntoPortions(passages,4);
+  assert.equal(portions.length,4);
+  assert.deepEqual(portions.flat().map(p=>p.id),passages.map(p=>p.id));
+  assert.ok(portions.every(p=>p.length>0));
+  assert.equal(splitIntoPortions(passages.slice(0,2),5).length,2);
+});
