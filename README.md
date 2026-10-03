@@ -33,6 +33,15 @@ Each `world.json` may list `courses`: `best_ela`, `ap_lit`, `ap_lang`, `aice_lit
 
 Apply `supabase/migrations/202610030001_waitlist_homeschool_roles.sql` to accept the homeschool parent and microschool leader waitlist roles. Until it runs, those sign-ups are saved as `other` with the role noted in the organization field.
 
+## Classes, assigned mini lessons, and live class analysis
+
+Teachers sign in from **Teacher sign in** on the landing page (Supabase email magic link, redirect `/?teacher=1`) and open **My classes**.
+
+- **Classes:** a teacher creates a class (name, story, grade) and gets a six-character class code. Students join with the code and a nickname only; the join route returns a signed class token (`CLASS_TOKEN_SECRET`, falling back to the service role key) that the browser keeps for the session. Stories with content notes stay closed until the teacher enables them after previewing.
+- **Assigned mini lessons:** teachers assign lessons to the whole class with an optional due date. Students see them on their class page; finishing one records first-try accuracy, and the teacher sees who finished.
+- **Live class analysis:** the teacher picks a scene, a role lens, which questions (Notice, Interpret, Craft), and Stop and Chat timing. The projected presenter shows one question at a time with the passage, a live count of answers, then the answers without names (names are a teacher toggle; responses that trip the safety screen are held for private review). Stop and Chat shows the prompt, a talk timer, talk moves, and the story's real-world connection, followed by a one-sentence takeaway from every student. Students answer on their own devices; other students' answers are never sent to student devices. Teacher and student screens poll every 2 seconds.
+- **Setup:** apply `supabase/migrations/202610040001_classroom.sql`, and add `https://<your-domain>/?teacher=1` to Supabase Auth's allowed redirect URLs. Optional `TEACHER_EMAILS` or `TEACHER_EMAIL_DOMAINS` limit who can create classes. For local development without Supabase, run `CLASSROOM_DEV_STORE=memory npm run dev` and open `/?teacher=1&devTeacher=you@example.org`; this in-memory store is disabled in production and on Vercel.
+
 ## Supabase setup
 
 The schema migration is in `supabase/migrations/202609300001_initial.sql`. Apply it only to the Supabase project created for Inside the Text. It deliberately revokes direct browser grants; trusted server routes use the service role after authorization. Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`. Teacher and owner access must use email magic-link authentication. Configure `OWNER_EMAIL` to the one owner email. The local demo preset store is separate from classroom data.
@@ -74,7 +83,7 @@ Waitlist writes use the server-side service role and normalize email for duplica
 
 ## Current boundaries
 
-The committed migration has RLS enabled and no direct browser table grants. Classroom progress writes, teacher authentication/session creation, and production-scale safety monitoring still need configuration and completion. Student joining and hashed-phrase resume lookup are implemented server-side, but the playable flow is currently a demo sandbox; do not use it as a live classroom system yet. Demo data is per-tab session storage and expires after 24 hours.
+The committed migration has RLS enabled and no direct browser table grants. Classroom progress writes, teacher authentication/session creation, and production-scale safety monitoring still need configuration and completion. Classes, assigned lessons, and live class analysis are stored in Supabase. Story progress inside a class session still lives in the browser, and AI characters stay off in class sessions until they have their own usage limits. Demo data is per-tab session storage and expires after 24 hours.
 
 ## Assumptions
 

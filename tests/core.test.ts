@@ -139,3 +139,30 @@ test("stories split into ordered reading portions with no paragraph lost",async(
   assert.ok(portions.every(p=>p.length>0));
   assert.equal(splitIntoPortions(passages.slice(0,2),5).length,2);
 });
+
+test("live class analysis plans come from a scene's clues, include Stop and Chat, and advance in order",async()=>{
+  const {buildPlan,advanceState,expectedResponse,secondsLeft}=await import("../lib/classroom/plan.ts");
+  const pack=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/tell-tale-heart/world.json",import.meta.url),"utf8")));
+  const plan=buildPlan(pack,{sceneId:"arrival",roleId:pack.roles[0].id,grade:9,stages:["notice","interpret"],chatAfterEachClue:true,chatSeconds:90});
+  const clues=pack.scenes[0].artifacts.length;
+  assert.equal(plan.steps.filter(s=>s.kind==="question").length,clues*2);
+  assert.equal(plan.steps.filter(s=>s.kind==="chat").length,clues);
+  const lastChat=plan.steps.at(-1)!;assert.equal(lastChat.kind,"chat");assert.ok(lastChat.kind==="chat"&&lastChat.realWorld);
+  let s={step:0,phase:"answer" as const,chatStartedAt:null,status:"active" as const} as Parameters<typeof advanceState>[1];
+  assert.equal(expectedResponse(plan,s),"answer");
+  s=advanceState(plan,s,"reveal");assert.equal(s.phase,"reveal");assert.equal(expectedResponse(plan,s),null);
+  s=advanceState(plan,s,"next");s=advanceState(plan,s,"next");assert.equal(plan.steps[s.step].kind,"chat");assert.equal(s.phase,"chat");
+  s=advanceState(plan,s,"start_timer",new Date("2026-10-04T12:00:00Z"));assert.equal(secondsLeft(plan.steps[s.step],s.chatStartedAt,Date.parse("2026-10-04T12:00:30Z")),60);
+  s=advanceState(plan,s,"takeaway");assert.equal(expectedResponse(plan,s),"takeaway");
+  const minimal=buildPlan(pack,{sceneId:"arrival",roleId:"x",grade:11,stages:["craft"],chatAfterEachClue:false,chatSeconds:9999});
+  assert.equal(minimal.steps.filter(x=>x.kind==="chat").length,1);assert.ok(minimal.steps.every(x=>x.kind==="chat"?x.seconds===300:x.stage==="craft"));
+  let end={step:minimal.steps.length-1,phase:"chat" as const,chatStartedAt:null,status:"active" as const} as Parameters<typeof advanceState>[1];
+  assert.equal(advanceState(minimal,end,"next").status,"ended");
+});
+
+test("student class tokens verify and resist tampering",async()=>{
+  process.env.CLASS_TOKEN_SECRET="test-secret";
+  const {createStudentToken,verifyStudentToken}=await import("../lib/classroom/auth.ts");
+  const token=createStudentToken("abc-123");assert.equal(verifyStudentToken(token),"abc-123");
+  assert.equal(verifyStudentToken(token.replace("abc","abd")),null);assert.equal(verifyStudentToken("nope"),null);assert.equal(verifyStudentToken(null),null);
+});
