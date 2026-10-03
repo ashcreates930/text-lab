@@ -8,6 +8,7 @@ import { createDemoSandboxId, isDemoSandboxExpired } from "@/lib/demo-sandbox";
 import type { AnalysisReport, SavedTextEvidence } from "@/lib/analysis-report";
 import type { AuthorshipRange } from "@/lib/authorship";
 import { AccessGate } from "./access-gate";
+import { Approach } from "./approach";
 import { FeedbackBanner } from "./feedback-banner";
 import { DisplaySettings } from "./display-settings";
 import { Classroom } from "./classroom";
@@ -16,10 +17,10 @@ import { ClassHome, ClassLive, type ClassAuth } from "./class-student";
 import { LessonPlayer, MiniLessonLibrary, type LessonRecord } from "./mini-lessons";
 import { Landing, Join, Owner, Pricing, Student, Teacher, Waitlist, PickStory, ChooseLevel } from "./ui";
 
-type View = "landing" | "story" | "level" | "play" | "teacher" | "waitlist" | "pricing" | "owner" | "join" | "lessons" | "classroom" | "classhome" | "classlive";
+type View = "landing" | "story" | "level" | "play" | "teacher" | "waitlist" | "pricing" | "owner" | "join" | "lessons" | "classroom" | "classhome" | "classlive" | "approach";
 // Pricing and waitlist stay public; the owner screen has its own magic-link check.
 // Class sessions sit outside the demo gate: the class code is their gate, so class students never receive the demo cookie or its device ID.
-const ungatedViews: View[] = ["pricing", "waitlist", "owner", "join", "classroom"];
+const ungatedViews: View[] = ["approach", "pricing", "waitlist", "owner", "join", "classroom"];
 const classViews: View[] = ["play", "classhome", "classlive"];
 const demoViews: View[] = ["story", "level", "play", "teacher", "lessons"];
 export type Demo = {
@@ -203,7 +204,7 @@ export default function Home() {
     else fallback();
   }
 
-  if (gated) return <main className="min-h-screen bg-[#171918] text-[#eee9df]"><DisplaySettings/>{access === "locked" && <AccessGate brand={brand} onGranted={url => { setAccess("granted"); setFeedbackUrl(url); }} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onJoinClass={() => setView("join")} />}</main>;
+  if (gated) return <main className="min-h-screen bg-[#171918] text-[#eee9df]"><DisplaySettings/>{access === "locked" && <AccessGate brand={brand} onGranted={url => { setAccess("granted"); setFeedbackUrl(url); }} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onJoinClass={() => setView("join")} onApproach={() => setView("approach")} />}</main>;
 
   return <main className="min-h-screen bg-[#171918] text-[#eee9df]">
     {view !== "landing" && <header className="sticky top-0 z-30 flex min-h-[58px] items-center justify-between border-b border-white/10 bg-[#171918]/95 px-5 md:px-10">
@@ -216,7 +217,7 @@ export default function Home() {
       </div>}</div>
     </header>}
     {demoViews.includes(view) && !classSession && <FeedbackBanner url={feedbackUrl} />}
-    {view === "landing" && <Landing brand={brand} onStart={() => start("student_first_visit")} onPreset={start} onJoin={() => setView("join")} onWaitlist={() => setView("waitlist")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} onPricing={() => setView("pricing")} onOwner={() => setView("owner")} onClassroom={() => setView("classroom")} />}
+    {view === "landing" && <Landing brand={brand} onStart={() => start("student_first_visit")} onPreset={start} onJoin={() => setView("join")} onWaitlist={() => setView("waitlist")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} onPricing={() => setView("pricing")} onOwner={() => setView("owner")} onClassroom={() => setView("classroom")} onApproach={() => setView("approach")} />}
     {view === "lessons" && <section className="mx-auto max-w-7xl px-5 py-10 md:px-10 md:py-14">{activeLesson ? <LessonPlayer lessonId={activeLesson} grade={demo.grade} onClose={() => { setActiveLesson(""); window.scrollTo(0, 0); }} onFinish={(id, record) => setDemo(d => ({ ...d, lessonsDone: { ...(d.lessonsDone ?? {}), [id]: record } }))} /> : <><button onClick={() => backToPreviousScreen(() => setView("landing"))} className="mb-8 inline-flex items-center gap-2 text-xs text-white/55 hover:text-white">← Back</button><h1 className="sr-only">Mini lessons</h1><MiniLessonLibrary grade={demo.grade} done={demo.lessonsDone ?? {}} onOpen={id => { setActiveLesson(id); window.scrollTo(0, 0); }} /><button onClick={() => setView("story")} className="gold-button mt-10 px-6 py-4 text-sm">Ready? Pick a story →</button></>}</section>}
     {view === "story" && <PickStory onLessons={() => { setActiveLesson(""); setView("lessons"); }} onBack={()=>backToPreviousScreen(()=>setView("landing"))} onPick={chooseStory} initialCourse={demo.course??"all"} />}
     {view === "level" && <ChooseLevel worldId={demo.worldId} course={demo.course??"all"} onBack={()=>backToPreviousScreen(()=>setView("story"))} onChoose={chooseGrade} />}
@@ -226,7 +227,8 @@ export default function Home() {
     {view === "classhome" && demo.classAuth && <ClassHome auth={demo.classAuth} onStory={() => setView("play")} onLive={() => setView("classlive")} />}
     {view === "classlive" && demo.classAuth && <ClassLive auth={demo.classAuth} onBack={() => setView("classhome")} />}
     {view === "waitlist" && <Waitlist />}
-    {view === "pricing" && <Pricing onWaitlist={() => setView("waitlist")} />}
+    {view === "pricing" && <Pricing onWaitlist={() => setView("waitlist")} onApproach={() => setView("approach")} />}
+    {view === "approach" && <Approach onDemo={() => start("student_first_visit")} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} />}
     {view === "join" && <Join onJoined={joinClass} />}
     {view === "owner" && <Owner data={ownerData} status={ownerStatus} setStatus={setOwnerStatus} />}
     {view === "landing" && <DisplaySettings/>}
