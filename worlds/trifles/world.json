@@ -225,6 +225,7 @@
     {
       "id": "kitchen",
       "narration": "The sheriff’s party enters the cold Wright farmhouse kitchen. Unwashed pans, a loaf left out, and a dish towel mark unfinished work. Mr. Hale tells the men about the morning he found Mrs. Wright in her rocking chair. While the men discuss the case, Mrs. Hale and Mrs. Peters notice frozen preserves, an uneven quilt, and a birdcage with a broken hinge. The kitchen holds ordinary things, but the women begin to see how they fit together.",
+      "summary": "The sheriff, the county attorney, and Mr. Hale search the Wright farmhouse kitchen after Mr. Wright was found dead. Mr. Hale tells how he found Mrs. Wright sitting calmly in her rocking chair. While the men look for big clues, Mrs. Hale and Mrs. Peters notice small things in the kitchen that may explain what happened.",
       "background_image": "/worlds/trifles/kitchen.png",
       "ambient_audio": null,
       "narration_audio": "/worlds/trifles/kitchen.mp3",

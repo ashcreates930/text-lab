@@ -277,6 +277,7 @@
     {
       "id": "arrival",
       "narration": "Before dawn, you arrive at the house with officers. A neighbor heard a shriek in the night. The narrator says the old man is away in the country, yet invites you to search.",
+      "summary": "It is four o'clock in the morning. Police officers knock at the narrator's door because a neighbor heard a scream in the night. The narrator smiles, says the scream was his own bad dream, and invites the officers to search the house.",
       "background_image": "/worlds/tell-tale-heart/arrival.png",
       "ambient_audio": null,
       "available_characters": [
@@ -491,6 +492,7 @@
     {
       "id": "search",
       "narration": "The officers search the house. The narrator brings chairs into the old man's chamber and sits above the floorboards. He is at ease, but soon grows pale.",
+      "summary": "The narrator explains how his plan began: he could not stand the old man's pale, clouded eye. He describes creeping into the room for eight nights, killing the old man, and hiding the body under the floorboards. He believes no one could ever find it.",
       "background_image": "/worlds/tell-tale-heart/search.png",
       "ambient_audio": null,
       "available_characters": [
@@ -710,6 +712,7 @@
     {
       "id": "room",
       "narration": "The officers remain in the room. The narrator talks more freely, grows pale, and paces. He says a low, quick sound grows louder, though the officers continue chatting.",
+      "summary": "The narrator remembers watching the old man every night with a lantern and hearing his heart beat. Now he brings chairs into that same room and sits right above the hidden body. He feels proud and calm, but he begins to hear a sound.",
       "background_image": "/worlds/tell-tale-heart/room.png",
       "ambient_audio": null,
       "available_characters": [
@@ -1463,6 +1466,7 @@
     {
       "id": "confession",
       "narration": "The narrator can bear the officers' smiles no longer. He cries out, admits the deed, and demands that they tear up the planks.",
+      "summary": "The sound grows louder and louder. The narrator believes the officers hear it too and are only pretending not to. He cannot stand it, so he screams that he did it and tells them to tear up the floorboards.",
       "background_image": "/worlds/tell-tale-heart/confession.png",
       "ambient_audio": null,
       "available_characters": [

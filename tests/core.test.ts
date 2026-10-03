@@ -166,3 +166,19 @@ test("student class tokens verify and resist tampering",async()=>{
   const token=createStudentToken("abc-123");assert.equal(verifyStudentToken(token),"abc-123");
   assert.equal(verifyStudentToken(token.replace("abc","abd")),null);assert.equal(verifyStudentToken("nope"),null);assert.equal(verifyStudentToken(null),null);
 });
+
+test("bilingual supports: every playable story has a complete translation file for each home language",async()=>{
+  const {homeLanguages,textKey,translatableStrings,translator}=await import("../lib/bilingual.ts");
+  assert.equal(textKey(" Hello "),textKey("Hello"));assert.notEqual(textKey("Hello"),textKey("Hello."));
+  for(const id of ["tell-tale-heart","sleepy-hollow","trifles"]){
+    const pack=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    const lines=translatableStrings(pack);
+    for(const lang of homeLanguages){
+      const file=JSON.parse(await readFile(new URL(`../worlds/${id}/translations/${lang}.json`,import.meta.url),"utf8"));
+      assert.equal(file.language,lang);
+      const tr=translator(file);
+      const missing=lines.filter(l=>!tr(l));
+      assert.equal(missing.length,0,`${id} ${lang} is missing: ${missing.slice(0,2).join(" | ")}`);
+    }
+  }
+});

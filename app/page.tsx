@@ -11,6 +11,7 @@ import { AccessGate } from "./access-gate";
 import { FeedbackBanner } from "./feedback-banner";
 import { DisplaySettings } from "./display-settings";
 import { Classroom } from "./classroom";
+import type { HomeLanguage } from "@/lib/bilingual";
 import { ClassHome, ClassLive, type ClassAuth } from "./class-student";
 import { LessonPlayer, MiniLessonLibrary, type LessonRecord } from "./mini-lessons";
 import { Landing, Join, Owner, Pricing, Student, Teacher, Waitlist, PickStory, ChooseLevel } from "./ui";
@@ -30,7 +31,7 @@ export type Demo = {
   artifactAnswers:Record<string,{notice:string;interpret:string;craft:string;technique:string;revisions:string[];history?:{stage:"notice"|"interpret"|"craft";text:string;submitted_at:string}[]}>;
   openedArtifacts:string[]; activeArtifact:string; artifactStage:number; artifactDialogOpen:boolean;
   briefingComplete:boolean; savedTextEvidence:SavedTextEvidence[]; authorshipRanges:AuthorshipRange[]; analysisReport?:AnalysisReport;
-  previewComplete?:boolean; course?:"all"|"best"|"ap"|"aice"; lessonsDone?:Record<string,LessonRecord>; portionUnlocks?:string[]; classAuth?:ClassAuth;
+  previewComplete?:boolean; course?:"all"|"best"|"ap"|"aice"; lessonsDone?:Record<string,LessonRecord>; portionUnlocks?:string[]; classAuth?:ClassAuth; homeLanguage?:HomeLanguage|null;
 };
 type ScreenSnapshot = { insideTheTextScreen: true; sequence: number; view: View; demo: Demo };
 let pendingHeadingObserver: MutationObserver | null = null;

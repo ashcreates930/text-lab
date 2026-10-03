@@ -41,6 +41,7 @@ for(const folder of await readdir(root,{withFileTypes:true})){
   }
   for(const scene of pack.scenes){try{await readFile(join(out,`${scene.id}.png`));scene.background_image=`/worlds/${pack.id}/${scene.id}.png`}catch{}}
   await writeFile(join(out,"source.md"),await readFile(join(dir,"source.md"),"utf8"));
+  try{const tdir=join(dir,"translations");const files=(await readdir(tdir)).filter(f=>/^([a-z]{2}|source)\.json$/.test(f));if(files.length){await mkdir(join(out,"translations"),{recursive:true});for(const f of files)await writeFile(join(out,"translations",f),await readFile(join(tdir,f),"utf8"))}}catch{}
   for(const [i,scene] of pack.scenes.entries()){
     if(syncOnly)continue;
     if(selectedScene&&scene.id!==selectedScene)continue;

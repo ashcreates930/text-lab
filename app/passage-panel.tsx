@@ -5,6 +5,7 @@ import type { WorldPack } from "@/lib/world-schema";
 import { parseSourcePassages, splitIntoPortions, type SourcePassage } from "@/lib/source-passages";
 import type { Demo } from "./page";
 import {GlossaryText} from "./glossary-word";
+import {HomeUi} from "./bilingual";
 
 type Props = { world: WorldPack; scene: WorldPack["scenes"][number]; demo: Demo; setDemo: React.Dispatch<React.SetStateAction<Demo>>; onGlossary: (term: string) => void; grade?:number };
 
@@ -103,9 +104,9 @@ export function NextPortionGate({world,scene,demo,setDemo}:{world:WorldPack;scen
   if(usedThisScene)return <div className="mt-8 border border-[#a5ae8a]/50 p-4 text-sm leading-6 text-[#dfe6c9]"><Check size={14} className="mr-2 inline"/>You opened the next portion of the text. Read it in “From the text” above, then choose where to go next.</div>;
   return <section className="mt-8 border border-dashed border-[#dfb675]/50 bg-[#dfb675]/[.04] p-5" aria-label="Next portion of the text">
     <p className="eyebrow">WHEN YOUR ANALYSIS IS DONE</p>
-    <h2 className="serif mt-2 text-2xl">Next portion of the text</h2>
+    <h2 className="serif mt-2 text-2xl">Next portion of the text<HomeUi k="nextPortion" className="font-sans text-base"/></h2>
     {canOpen
-      ?<><p className="mt-2 text-sm leading-6 text-white/80">You finished every clue in this scene. Keep reading to see what happens next.</p><button type="button" onClick={openNext} className="gold-button mt-4 flex min-h-12 w-full items-center justify-center gap-2 px-5 py-3 text-sm">Read the next portion of the text <ArrowRight size={16}/></button></>
-      :<><p className="mt-2 text-sm leading-6 text-white/80"><LockKeyhole size={14} className="mr-2 inline text-[#dfb675]"/>Finish the analysis questions on this scene’s clues to open it. <b>{finished} of {total} clues finished.</b></p><div className="mt-3 h-2 bg-white/10" aria-hidden="true"><div className="h-full bg-[#dfb675]" style={{width:`${total?finished/total*100:100}%`}}/></div><button type="button" onClick={()=>document.getElementById("case-file")?.scrollIntoView({behavior:"smooth",block:"start"})} className="soft-button mt-4 min-h-12 px-5 py-3 text-sm">Go to my clues</button></>}
+      ?<><p className="mt-2 text-sm leading-6 text-white/80">You finished every clue in this scene. Keep reading to see what happens next.</p><button type="button" onClick={openNext} className="gold-button mt-4 flex min-h-12 w-full items-center justify-center gap-2 px-5 py-3 text-sm"><span>Read the next portion of the text<HomeUi k="readNext" className="border-0 pl-0 text-[#1b1b18]/80"/></span> <ArrowRight size={16}/></button></>
+      :<><p className="mt-2 text-sm leading-6 text-white/80"><LockKeyhole size={14} className="mr-2 inline text-[#dfb675]"/>Finish the analysis questions on this scene’s clues to open it. <b>{finished} of {total} clues finished.</b><HomeUi k="nextPortionLocked"/></p><div className="mt-3 h-2 bg-white/10" aria-hidden="true"><div className="h-full bg-[#dfb675]" style={{width:`${total?finished/total*100:100}%`}}/></div><button type="button" onClick={()=>document.getElementById("case-file")?.scrollIntoView({behavior:"smooth",block:"start"})} className="soft-button mt-4 min-h-12 px-5 py-3 text-sm">Go to my clues<HomeUi k="goToClues" className="border-0 pl-0"/></button></>}
   </section>;
 }
