@@ -10,6 +10,22 @@ export const courseLabels: Record<Course, { short: string; long: string }> = {
   aice_lang: { short: "AICE Lang", long: "Cambridge International AS & A Level English Language (9093)" },
   igcse_lit: { short: "Pre-AICE Lit", long: "Cambridge IGCSE Literature in English (0475)" },
 };
+// Grades each course is normally taught in. A story appears under a course only when its grade band overlaps these.
+export const courseGrades: Record<Course, { min: number; max: number }> = {
+  best_ela: { min: 6, max: 12 }, ap_lit: { min: 11, max: 12 }, ap_lang: { min: 11, max: 12 },
+  aice_lit: { min: 11, max: 12 }, aice_lang: { min: 11, max: 12 }, igcse_lit: { min: 9, max: 10 },
+};
+export function courseFitsBand(course: Course, band: { min: number; max: number }) {
+  const g = courseGrades[course];
+  return band.min <= g.max && band.max >= g.min;
+}
+// The grades a student can choose for a story inside one course filter.
+export function gradesFor(band: { min: number; max: number }, courses: Course[]) {
+  const all = Array.from({ length: band.max - band.min + 1 }, (_, i) => band.min + i);
+  if (!courses.length) return all;
+  const allowed = all.filter((g) => courses.some((c) => g >= courseGrades[c].min && g <= courseGrades[c].max));
+  return allowed.length ? allowed : all;
+}
 export const courseFilters: { id: "all" | "best" | "ap" | "aice"; label: string; courses: Course[] }[] = [
   { id: "all", label: "All courses", courses: [] },
   { id: "best", label: "B.E.S.T. ELA", courses: ["best_ela"] },

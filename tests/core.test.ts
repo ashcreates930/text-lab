@@ -101,3 +101,14 @@ test("B.E.S.T. benchmark families resolve to official grade-level codes, and bui
     for(const b of pack.benchmarks)assert.doesNotMatch(b.description,/PENDING/);
   }
 });
+
+test("every course tag fits the story's grade band, so course filters only show usable stories",async()=>{
+  const {courseFitsBand,gradesFor}=await import("../lib/standards.ts");
+  const {readdir}=await import("node:fs/promises");
+  for(const dir of await readdir(new URL("../worlds/",import.meta.url))){
+    const w=JSON.parse(await readFile(new URL(`../worlds/${dir}/world.json`,import.meta.url),"utf8"));
+    for(const c of w.courses??[])assert.ok(courseFitsBand(c,w.grade_band),`${dir} is tagged ${c} but is grades ${w.grade_band.min}-${w.grade_band.max}`);
+  }
+  assert.deepEqual(gradesFor({min:8,max:12},["ap_lit","ap_lang"]),[11,12]);
+  assert.deepEqual(gradesFor({min:8,max:12},[]),[8,9,10,11,12]);
+});

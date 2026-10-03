@@ -26,7 +26,7 @@ export type Demo = {
   artifactAnswers:Record<string,{notice:string;interpret:string;craft:string;technique:string;revisions:string[];history?:{stage:"notice"|"interpret"|"craft";text:string;submitted_at:string}[]}>;
   openedArtifacts:string[]; activeArtifact:string; artifactStage:number; artifactDialogOpen:boolean;
   briefingComplete:boolean; savedTextEvidence:SavedTextEvidence[]; authorshipRanges:AuthorshipRange[]; analysisReport?:AnalysisReport;
-  previewComplete?:boolean;
+  previewComplete?:boolean; course?:"all"|"best"|"ap"|"aice";
 };
 type ScreenSnapshot = { insideTheTextScreen: true; sequence: number; view: View; demo: Demo };
 let pendingHeadingObserver: MutationObserver | null = null;
@@ -183,7 +183,7 @@ export default function Home() {
     }
     setDemo(next); setView(preset.startsWith("teacher") ? "teacher" : preset==="student_first_visit" ? "story" : "play");
   }
-  function chooseStory(worldId:string){setDemo(d=>({...d,worldId,grade:null,role:"",think:false,previewComplete:false,scene:0}));setView("level")}
+  function chooseStory(worldId:string,course:"all"|"best"|"ap"|"aice"="all"){setDemo(d=>({...d,worldId,course,grade:null,role:"",think:false,previewComplete:false,scene:0}));setView("level")}
   function chooseGrade(grade:number){setDemo(d=>({...d,grade,role:"",think:false,previewComplete:false,scene:0}));setView("play")}
   function tryAnotherStory(){setDemo(d=>({...d,role:"",briefingComplete:false,think:false,previewComplete:false,scene:0}));setView("story")}
   function joinClass(session:{world_id:string;grade:number}){start("class_student",session.world_id,session.grade)}
@@ -207,8 +207,8 @@ export default function Home() {
     </header>}
     {demoViews.includes(view) && !classSession && <FeedbackBanner url={feedbackUrl} />}
     {view === "landing" && <Landing brand={brand} onStart={() => start("student_first_visit")} onPreset={start} onJoin={() => setView("join")} onWaitlist={() => setView("waitlist")} onPricing={() => setView("pricing")} onOwner={() => setView("owner")} />}
-    {view === "story" && <PickStory onBack={()=>backToPreviousScreen(()=>setView("landing"))} onPick={chooseStory} />}
-    {view === "level" && <ChooseLevel worldId={demo.worldId} onBack={()=>backToPreviousScreen(()=>setView("story"))} onChoose={chooseGrade} />}
+    {view === "story" && <PickStory onBack={()=>backToPreviousScreen(()=>setView("landing"))} onPick={chooseStory} initialCourse={demo.course??"all"} />}
+    {view === "level" && <ChooseLevel worldId={demo.worldId} course={demo.course??"all"} onBack={()=>backToPreviousScreen(()=>setView("story"))} onChoose={chooseGrade} />}
     {view === "play" && <Student demo={demo} setDemo={setDemo} onTeacher={() => setView("teacher")} onBackScreen={()=>backToPreviousScreen(()=>setView("level"))} onBackToLevel={()=>backToPreviousScreen(()=>demo.preset==="class_student"?setView("join"):setView("level"))} onWaitlist={()=>setView("waitlist")} onTryAnotherStory={tryAnotherStory} feedbackUrl={feedbackUrl} />}
     {view === "teacher" && <Teacher demo={demo} setDemo={setDemo} onStudent={() => setView("play")} onPreset={start} />}
     {view === "waitlist" && <Waitlist />}
