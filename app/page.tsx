@@ -10,13 +10,14 @@ import type { AuthorshipRange } from "@/lib/authorship";
 import { AccessGate } from "./access-gate";
 import { FeedbackBanner } from "./feedback-banner";
 import { DisplaySettings } from "./display-settings";
+import { LessonPlayer, MiniLessonLibrary, type LessonRecord } from "./mini-lessons";
 import { Landing, Join, Owner, Pricing, Student, Teacher, Waitlist, PickStory, ChooseLevel } from "./ui";
 
-type View = "landing" | "story" | "level" | "play" | "teacher" | "waitlist" | "pricing" | "owner" | "join";
+type View = "landing" | "story" | "level" | "play" | "teacher" | "waitlist" | "pricing" | "owner" | "join" | "lessons";
 // Pricing and waitlist stay public; the owner screen has its own magic-link check.
 // Class sessions sit outside the demo gate: the class code is their gate, so class students never receive the demo cookie or its device ID.
 const ungatedViews: View[] = ["pricing", "waitlist", "owner", "join"];
-const demoViews: View[] = ["story", "level", "play", "teacher"];
+const demoViews: View[] = ["story", "level", "play", "teacher", "lessons"];
 export type Demo = {
   id:string;created: number; preset: string; worldId:string; grade:number|null; role: string; scene: number; events: string[];
   flags: string[]; messages: { q: string; a: string }[]; narrative: string;
@@ -26,7 +27,7 @@ export type Demo = {
   artifactAnswers:Record<string,{notice:string;interpret:string;craft:string;technique:string;revisions:string[];history?:{stage:"notice"|"interpret"|"craft";text:string;submitted_at:string}[]}>;
   openedArtifacts:string[]; activeArtifact:string; artifactStage:number; artifactDialogOpen:boolean;
   briefingComplete:boolean; savedTextEvidence:SavedTextEvidence[]; authorshipRanges:AuthorshipRange[]; analysisReport?:AnalysisReport;
-  previewComplete?:boolean; course?:"all"|"best"|"ap"|"aice";
+  previewComplete?:boolean; course?:"all"|"best"|"ap"|"aice"; lessonsDone?:Record<string,LessonRecord>;
 };
 type ScreenSnapshot = { insideTheTextScreen: true; sequence: number; view: View; demo: Demo };
 let pendingHeadingObserver: MutationObserver | null = null;
@@ -73,6 +74,7 @@ export default function Home() {
   const [ownerStatus, setOwnerStatus] = useState("");
   const [access, setAccess] = useState<"checking" | "granted" | "locked">("checking");
   const [feedbackUrl, setFeedbackUrl] = useState<string | null>(null);
+  const [activeLesson, setActiveLesson] = useState("");
   const classSession = demo.preset === "class_student";
   const gated = access !== "granted" && !ungatedViews.includes(view) && !(view === "play" && classSession);
   const focusedScreenKey = useRef<string | null>(null);
@@ -145,8 +147,8 @@ export default function Home() {
       const saved = id?sessionStorage.getItem(`itt-sandbox-${id}`):null;
       if (saved) {
         const parsed = JSON.parse(saved) as Demo;
-        parsed.artifactAnswers??={};parsed.openedArtifacts??=[];parsed.activeArtifact??="";parsed.artifactStage??=0;parsed.artifactDialogOpen??=false;parsed.savedTextEvidence??=[];parsed.authorshipRanges??=(parsed.narrative?[{start:0,end:parsed.narrative.length,source:"typed"}]:[]);parsed.briefingComplete??=!!parsed.role;parsed.thinkAnswers??={};parsed.myWords??=[];parsed.glossaryOpens??=0;parsed.suggestedArtifactType??="observed";parsed.readAloudOn??=false;parsed.hintFrequency??="on_request";parsed.sentenceStartersOn??=false;
-        if (!isDemoSandboxExpired(parsed.created)) { setDemo(parsed); const savedView=sessionStorage.getItem(`itt-sandbox-view-${id}`) as View|null; if(savedView&&["story","level","play","teacher"].includes(savedView))setView(savedView); }
+        parsed.artifactAnswers??={};parsed.lessonsDone??={};parsed.openedArtifacts??=[];parsed.activeArtifact??="";parsed.artifactStage??=0;parsed.artifactDialogOpen??=false;parsed.savedTextEvidence??=[];parsed.authorshipRanges??=(parsed.narrative?[{start:0,end:parsed.narrative.length,source:"typed"}]:[]);parsed.briefingComplete??=!!parsed.role;parsed.thinkAnswers??={};parsed.myWords??=[];parsed.glossaryOpens??=0;parsed.suggestedArtifactType??="observed";parsed.readAloudOn??=false;parsed.hintFrequency??="on_request";parsed.sentenceStartersOn??=false;
+        if (!isDemoSandboxExpired(parsed.created)) { setDemo(parsed); const savedView=sessionStorage.getItem(`itt-sandbox-view-${id}`) as View|null; if(savedView&&["story","level","play","teacher","lessons"].includes(savedView))setView(savedView); }
         else {sessionStorage.removeItem(`itt-sandbox-${id}`);sessionStorage.removeItem("itt-active-sandbox-id");}
       }
     } catch { sessionStorage.removeItem("itt-active-sandbox-id"); }
@@ -162,7 +164,7 @@ export default function Home() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
-    if (["story","level","play","teacher"].includes(view)) {sessionStorage.setItem("itt-active-sandbox-id",demo.id);sessionStorage.setItem(`itt-sandbox-${demo.id}`,JSON.stringify(demo));sessionStorage.setItem(`itt-sandbox-view-${demo.id}`,view);if(demo.resumePhrase)localStorage.setItem(`itt-resume-${demo.resumePhrase}`,JSON.stringify(demo));}
+    if (["story","level","play","teacher","lessons"].includes(view)) {sessionStorage.setItem("itt-active-sandbox-id",demo.id);sessionStorage.setItem(`itt-sandbox-${demo.id}`,JSON.stringify(demo));sessionStorage.setItem(`itt-sandbox-view-${demo.id}`,view);if(demo.resumePhrase)localStorage.setItem(`itt-resume-${demo.resumePhrase}`,JSON.stringify(demo));}
     else if(view==="landing")sessionStorage.removeItem(`itt-sandbox-view-${demo.id}`);
     const remaining=demo.created+86_400_000-Date.now();
     if(remaining<=0){sessionStorage.removeItem(`itt-sandbox-${demo.id}`);return}
@@ -206,8 +208,9 @@ export default function Home() {
       </div></div>
     </header>}
     {demoViews.includes(view) && !classSession && <FeedbackBanner url={feedbackUrl} />}
-    {view === "landing" && <Landing brand={brand} onStart={() => start("student_first_visit")} onPreset={start} onJoin={() => setView("join")} onWaitlist={() => setView("waitlist")} onPricing={() => setView("pricing")} onOwner={() => setView("owner")} />}
-    {view === "story" && <PickStory onBack={()=>backToPreviousScreen(()=>setView("landing"))} onPick={chooseStory} initialCourse={demo.course??"all"} />}
+    {view === "landing" && <Landing brand={brand} onStart={() => start("student_first_visit")} onPreset={start} onJoin={() => setView("join")} onWaitlist={() => setView("waitlist")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} onPricing={() => setView("pricing")} onOwner={() => setView("owner")} />}
+    {view === "lessons" && <section className="mx-auto max-w-7xl px-5 py-10 md:px-10 md:py-14">{activeLesson ? <LessonPlayer lessonId={activeLesson} grade={demo.grade} onClose={() => { setActiveLesson(""); window.scrollTo(0, 0); }} onFinish={(id, record) => setDemo(d => ({ ...d, lessonsDone: { ...(d.lessonsDone ?? {}), [id]: record } }))} /> : <><button onClick={() => backToPreviousScreen(() => setView("landing"))} className="mb-8 inline-flex items-center gap-2 text-xs text-white/55 hover:text-white">← Back</button><h1 className="sr-only">Mini lessons</h1><MiniLessonLibrary grade={demo.grade} done={demo.lessonsDone ?? {}} onOpen={id => { setActiveLesson(id); window.scrollTo(0, 0); }} /><button onClick={() => setView("story")} className="gold-button mt-10 px-6 py-4 text-sm">Ready? Pick a story →</button></>}</section>}
+    {view === "story" && <PickStory onLessons={() => { setActiveLesson(""); setView("lessons"); }} onBack={()=>backToPreviousScreen(()=>setView("landing"))} onPick={chooseStory} initialCourse={demo.course??"all"} />}
     {view === "level" && <ChooseLevel worldId={demo.worldId} course={demo.course??"all"} onBack={()=>backToPreviousScreen(()=>setView("story"))} onChoose={chooseGrade} />}
     {view === "play" && <Student demo={demo} setDemo={setDemo} onTeacher={() => setView("teacher")} onBackScreen={()=>backToPreviousScreen(()=>setView("level"))} onBackToLevel={()=>backToPreviousScreen(()=>demo.preset==="class_student"?setView("join"):setView("level"))} onWaitlist={()=>setView("waitlist")} onTryAnotherStory={tryAnotherStory} feedbackUrl={feedbackUrl} />}
     {view === "teacher" && <Teacher demo={demo} setDemo={setDemo} onStudent={() => setView("play")} onPreset={start} />}

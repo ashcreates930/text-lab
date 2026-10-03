@@ -14,6 +14,11 @@
   "courses": [
     "best_ela"
   ],
+  "mini_lessons": [
+    "setting-mood",
+    "inference",
+    "characterization"
+  ],
   "estimated_minutes": 40,
   "public_domain_note": "Public domain. Source: Project Gutenberg eBook #41 (complete story).",
   "adaptations": [

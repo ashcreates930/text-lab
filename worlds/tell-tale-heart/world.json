@@ -13,6 +13,11 @@
     "ap_lit",
     "igcse_lit"
   ],
+  "mini_lessons": [
+    "point-of-view",
+    "irony",
+    "citing-evidence"
+  ],
   "estimated_minutes": 35,
   "public_domain_note": "Poe's 1843 story is in the public domain. Text follows the 1843 Pioneer printing with minor typographic normalization.",
   "adaptations": [

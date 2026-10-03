@@ -17,6 +17,11 @@
     "aice_lit",
     "igcse_lit"
   ],
+  "mini_lessons": [
+    "inference",
+    "symbolism",
+    "characterization"
+  ],
   "estimated_minutes": 35,
   "public_domain_note": "Public domain. Source: Project Gutenberg eBook #59432, Plays (complete one-act play).",
   "adaptations": [

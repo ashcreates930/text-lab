@@ -7,7 +7,7 @@ const scene = z.object({id:z.string(),narration:z.string(),background_image:z.st
 const roleSkill=z.object({name:z.string(),description:z.string()});
 const role=z.object({id:z.string(),name:z.string(),description:z.string(),goal:z.string(),dok_focus:z.string(),briefing:z.string().min(1),what_you_will_do:z.array(z.string()).length(3),skills:z.array(roleSkill).min(3).max(4),final_task:z.string().min(1)});
 export const WorldPackSchema = z.object({
-  id:z.string(), title:z.string(), author:z.string(), hook:z.string().min(1), status:z.enum(["playable","preview","coming_soon"]).optional(), teacher_preview_required:z.boolean().optional(), content_notes:z.string().optional(), pack_type:z.literal("literature"), grade_band:z.object({min:z.number(),max:z.number()}), courses:z.array(z.enum(["best_ela","ap_lit","ap_lang","aice_lit","aice_lang","igcse_lit"])).optional(), estimated_minutes:z.number(), public_domain_note:z.string(),
+  id:z.string(), title:z.string(), author:z.string(), hook:z.string().min(1), status:z.enum(["playable","preview","coming_soon"]).optional(), teacher_preview_required:z.boolean().optional(), content_notes:z.string().optional(), pack_type:z.literal("literature"), grade_band:z.object({min:z.number(),max:z.number()}), courses:z.array(z.enum(["best_ela","ap_lit","ap_lang","aice_lit","aice_lang","igcse_lit"])).optional(), mini_lessons:z.array(z.string()).optional(), estimated_minutes:z.number(), public_domain_note:z.string(),
   adaptations:z.array(z.object({grade:z.number(),glossary:z.enum(["open","on_request"]),hints:z.boolean(),sentence_starters:z.boolean(),description:z.string()})).min(1),
   benchmarks:z.array(z.object({code:z.string(),description:z.string()})),
   roles:z.array(role),

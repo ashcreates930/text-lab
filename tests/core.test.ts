@@ -112,3 +112,20 @@ test("every course tag fits the story's grade band, so course filters only show 
   assert.deepEqual(gradesFor({min:8,max:12},["ap_lit","ap_lang"]),[11,12]);
   assert.deepEqual(gradesFor({min:8,max:12},[]),[8,9,10,11,12]);
 });
+
+test("mini lessons are complete, have one correct answer per question, and story recommendations exist",async()=>{
+  const {miniLessons,lessonById}=await import("../lib/mini-lessons.ts");
+  const {resolveBenchmark}=await import("../lib/standards.ts");
+  const ids=new Set<string>();
+  for(const l of miniLessons){
+    assert.ok(!ids.has(l.id),`duplicate ${l.id}`);ids.add(l.id);
+    assert.ok(l.cards.length>=2&&l.model.steps.length>=2&&l.checks.length>=2,`${l.id} is incomplete`);
+    for(const c of l.checks)assert.equal(c.options.filter(o=>o.correct).length,1,`${l.id}: "${c.question}" needs exactly one correct answer`);
+    for(const b of l.benchmarks)assert.ok(resolveBenchmark(b,8),`${l.id}: ${b}`);
+    assert.ok(l.grades.min>=6&&l.grades.max<=12);
+  }
+  for(const id of ["tell-tale-heart","sleepy-hollow","trifles"]){
+    const pack=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    for(const lessonId of pack.mini_lessons??[]){const l=lessonById(lessonId);assert.ok(l,`${id}: ${lessonId}`);assert.ok(l!.grades.min<=pack.grade_band.max&&l!.grades.max>=pack.grade_band.min)}
+  }
+});
