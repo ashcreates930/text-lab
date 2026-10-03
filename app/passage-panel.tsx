@@ -82,9 +82,30 @@ function ReadingPortions({world,scene,demo,setDemo,passages,grade,onWord,onSave}
     <p className="mt-1 text-sm leading-6 text-white/70">Read the story one portion at a time. Each time you finish the analysis questions on a scene’s clues, the next portion opens.</p>
     {unlocked>1&&<details className="mt-3 border border-white/10 px-3 py-2"><summary className="cursor-pointer text-sm text-[#dfb675]">{unlocked===2?"Reread portion 1":`Reread portions 1 to ${unlocked-1}`}</summary><div className="mt-3 max-h-[50vh] space-y-4 overflow-y-auto pr-2">{portions.slice(0,unlocked-1).flat().map(paragraph)}</div></details>}
     <article id="current-portion" tabIndex={-1} className="mt-3 scroll-mt-24 max-h-[60vh] space-y-4 overflow-y-auto pr-2" aria-label={`Portion ${unlocked}`}>{portions[unlocked-1].map(paragraph)}</article>
-    {unlocked<portions.length&&(canOpen
-      ?<button type="button" onClick={openNext} className="gold-button mt-4 flex min-h-12 w-full items-center justify-center gap-2 px-5 py-3 text-sm">Read the next portion of the text <ArrowRight size={16}/></button>
-      :<div className="mt-4 flex flex-wrap items-center justify-between gap-3 border border-dashed border-[#dfb675]/40 p-4"><p className="text-sm leading-6 text-white/80"><LockKeyhole size={14} className="mr-2 inline text-[#dfb675]"/><b>Next portion of the text</b> · {usedThisScene?"You opened this scene’s portion. Move on to the next scene; finishing its clues opens the next one.":`Finish the analysis questions on this scene’s clues to open it. ${finished} of ${total} clues finished.`}</p>{!usedThisScene&&<button type="button" onClick={()=>document.getElementById("case-file")?.scrollIntoView({behavior:"smooth",block:"start"})} className="soft-button min-h-11 px-4 py-2 text-sm">Go to my clues</button>}</div>)}
+    {unlocked<portions.length&&<p className="mt-4 border-t border-white/10 pt-3 text-sm text-white/70"><LockKeyhole size={14} className="mr-2 inline text-[#dfb675]"/>The next portion of the text opens at the bottom of this page after you finish this scene’s clues.</p>}
     {unlocked>=portions.length&&<p className="mt-4 text-sm text-[#c4d0a6]"><Check size={14} className="mr-1 inline"/>You have opened the whole story.</p>}
+  </section>;
+}
+
+
+// The gate at the end of the scene: after the student finishes the analysis questions on every clue in this scene,
+// this opens the next portion of the story. It sits at the bottom of the page so it is the natural next step.
+export function NextPortionGate({world,scene,demo,setDemo}:{world:WorldPack;scene:WorldPack["scenes"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>}){
+  const count=Math.max(2,world.scenes.length);
+  const unlocks=demo.portionUnlocks??[];
+  const unlocked=Math.min(count,1+unlocks.length);
+  if(unlocked>=count)return null;
+  const isDone=(id:string)=>{const x=demo.artifactAnswers[id];return !!(x?.notice.trim()&&x?.interpret.trim()&&x?.craft.trim()&&x?.technique)};
+  const finished=scene.artifacts.filter(a=>isDone(a.id)).length,total=scene.artifacts.length;
+  const usedThisScene=unlocks.includes(scene.id);
+  const canOpen=finished===total&&!usedThisScene;
+  function openNext(){setDemo(d=>({...d,portionUnlocks:[...(d.portionUnlocks??[]),scene.id],events:[...new Set([...d.events,"portion_unlocked"])]}));setTimeout(()=>{const el=document.getElementById("current-portion");const panel=el?.closest("details");if(panel&&!panel.open)panel.open=true;el?.scrollIntoView({behavior:"smooth",block:"start"});el?.focus({preventScroll:true})},50)}
+  if(usedThisScene)return <div className="mt-8 border border-[#a5ae8a]/50 p-4 text-sm leading-6 text-[#dfe6c9]"><Check size={14} className="mr-2 inline"/>You opened the next portion of the text. Read it in “From the text” above, then choose where to go next.</div>;
+  return <section className="mt-8 border border-dashed border-[#dfb675]/50 bg-[#dfb675]/[.04] p-5" aria-label="Next portion of the text">
+    <p className="eyebrow">WHEN YOUR ANALYSIS IS DONE</p>
+    <h2 className="serif mt-2 text-2xl">Next portion of the text</h2>
+    {canOpen
+      ?<><p className="mt-2 text-sm leading-6 text-white/80">You finished every clue in this scene. Keep reading to see what happens next.</p><button type="button" onClick={openNext} className="gold-button mt-4 flex min-h-12 w-full items-center justify-center gap-2 px-5 py-3 text-sm">Read the next portion of the text <ArrowRight size={16}/></button></>
+      :<><p className="mt-2 text-sm leading-6 text-white/80"><LockKeyhole size={14} className="mr-2 inline text-[#dfb675]"/>Finish the analysis questions on this scene’s clues to open it. <b>{finished} of {total} clues finished.</b></p><div className="mt-3 h-2 bg-white/10" aria-hidden="true"><div className="h-full bg-[#dfb675]" style={{width:`${total?finished/total*100:100}%`}}/></div><button type="button" onClick={()=>document.getElementById("case-file")?.scrollIntoView({behavior:"smooth",block:"start"})} className="soft-button mt-4 min-h-12 px-5 py-3 text-sm">Go to my clues</button></>}
   </section>;
 }
