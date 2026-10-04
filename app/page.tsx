@@ -9,6 +9,7 @@ import type { AnalysisReport, SavedTextEvidence } from "@/lib/analysis-report";
 import type { AuthorshipRange } from "@/lib/authorship";
 import { AccessGate } from "./access-gate";
 import { Approach } from "./approach";
+import { HeaderLanguage, saveHomeLanguage, savedHomeLanguage } from "./bilingual";
 import { FeedbackBanner } from "./feedback-banner";
 import { DisplaySettings } from "./display-settings";
 import { Classroom } from "./classroom";
@@ -70,6 +71,7 @@ const newDemo = (preset: string,worldId="tell-tale-heart"): Demo => ({
   myWords:[],glossaryOpens:0,suggestedArtifactType:"observed",readAloudOn:false,hintFrequency:"on_request",sentenceStartersOn:false,
   evidence: 0, connection: "", resumePhrase: "", submitted: false,
   artifactAnswers:{},openedArtifacts:[],activeArtifact:"",artifactStage:0,artifactDialogOpen:false,briefingComplete:false,savedTextEvidence:[],authorshipRanges:[],
+  homeLanguage:savedHomeLanguage(),
 });
 
 export default function Home() {
@@ -81,6 +83,8 @@ export default function Home() {
   const [feedbackUrl, setFeedbackUrl] = useState<string | null>(null);
   const [activeLesson, setActiveLesson] = useState("");
   const classSession = demo.preset === "class_student";
+  // Remember the home language in this browser; a restored session from before this feature picks up the saved choice.
+  useEffect(()=>{if(demo.homeLanguage===undefined){const saved=savedHomeLanguage();if(saved)setDemo(d=>({...d,homeLanguage:saved}));return}saveHomeLanguage(demo.homeLanguage)},[demo.homeLanguage]);
   const gated = access !== "granted" && !ungatedViews.includes(view) && !(classViews.includes(view) && classSession);
   const focusedScreenKey = useRef<string | null>(null);
   const historyScreenKey = useRef<string | null>(null);
@@ -207,10 +211,10 @@ export default function Home() {
   if (gated) return <main className="min-h-screen bg-[#171918] text-[#eee9df]"><DisplaySettings/>{access === "locked" && <AccessGate brand={brand} onGranted={url => { setAccess("granted"); setFeedbackUrl(url); }} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onJoinClass={() => setView("join")} onApproach={() => setView("approach")} />}</main>;
 
   return <main className="min-h-screen bg-[#171918] text-[#eee9df]">
-    {view !== "landing" && <header className="sticky top-0 z-30 flex min-h-[58px] items-center justify-between border-b border-white/10 bg-[#171918]/95 px-5 md:px-10">
+    {view !== "landing" && <header className="sticky top-0 z-30 flex min-h-[58px] flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-white/10 bg-[#171918]/95 px-5 py-2 md:px-10">
       <button onClick={() => setView("landing")} className="flex items-center gap-2"><span className="serif text-xl">{brand.name}</span><span className="hidden text-xs text-white/45 sm:block">by {brand.organization}</span></button>
       {(view==="story"||view==="level"||view==="play")&&demo.preset!=="class_student"?<nav aria-label="Demo steps" className="flex items-center gap-2 text-[10px] tracking-wide sm:gap-3">{["Story","Level","Role"].map((step,i)=><span key={step} aria-current={(view==="story"&&i===0)||(view==="level"&&i===1)||(view==="play"&&i===2)?"step":undefined} className={(view==="story"&&i===0)||(view==="level"&&i===1)||(view==="play"&&i===2)?"text-[#dfb675]":"text-white/40"}>{i>0&&<span className="mr-2 text-white/25">·</span>}{step}</span>)}</nav>:<span className="hidden items-center gap-2 text-xs text-white/45 md:flex"><span>{brand.organization}</span><span aria-hidden="true">·</span><span className="eyebrow">FIELD EXPERIENCE</span></span>}
-      <div className="flex items-center gap-2"><DisplaySettings placement="header"/>
+      <div className="ml-auto flex flex-wrap items-center justify-end gap-2">{(["story","level","play","classhome","classlive"] as View[]).includes(view)&&<HeaderLanguage value={demo.homeLanguage??null} onChange={lang=>setDemo(d=>({...d,homeLanguage:lang}))}/>}<DisplaySettings placement="header"/>
       {classSession && demo.classAuth ? <button onClick={() => setView("classhome")} className={`rounded-full border px-4 py-2 text-xs ${view === "classhome" ? "border-[#dfb675] bg-[#dfb675] text-black" : "border-white/25 text-white/80"}`}>My class</button> : view === "classroom" ? null : <div className="flex gap-1 rounded-full border border-white/15 p-1 text-[11px]">
         <button onClick={() => setView("play")} className={`rounded-full px-3 py-1.5 ${view === "play" ? "bg-[#dfb675] text-black" : "text-white/65"}`}>Student</button>
         <button onClick={() => setView("teacher")} className={`rounded-full px-3 py-1.5 ${view === "teacher" ? "bg-[#dfb675] text-black" : "text-white/65"}`}>Teacher</button>

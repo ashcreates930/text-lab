@@ -41,3 +41,19 @@ export function HomeUi({k,className=""}:{k:UiKey;className?:string}){
  if(!lang)return null;
  return <span lang={lang} className={`${homeStyle} ${className}`}>{ui[k][lang]}</span>;
 }
+
+// The home language is remembered in this browser so students choose it once, not on every visit.
+const languageStorageKey="itt-home-language";
+export function savedHomeLanguage():HomeLanguage|null{try{if(typeof window==="undefined")return null;const v=window.localStorage.getItem(languageStorageKey);return homeLanguages.includes(v as HomeLanguage)?v as HomeLanguage:null}catch{return null}}
+export function saveHomeLanguage(lang:HomeLanguage|null){try{if(lang)window.localStorage.setItem(languageStorageKey,lang);else window.localStorage.removeItem(languageStorageKey)}catch{}}
+
+// Top-bar language button, available on every student screen.
+export function HeaderLanguage({value,onChange}:{value:HomeLanguage|null;onChange:(lang:HomeLanguage|null)=>void}){
+ return <label className={`flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-xs ${value?"border-[#8fb3cf] bg-[#8fb3cf]/15 text-[#e3eef7]":"border-white/20 text-white/75"}`} title="Language help">
+  <Languages size={14} aria-hidden="true"/><span className="sr-only">Language help</span>
+  <select value={value??""} onChange={e=>onChange((e.target.value||null) as HomeLanguage|null)} className="max-w-[9.5rem] cursor-pointer bg-transparent py-2 pr-1 text-xs outline-none">
+   <option value="" className="bg-[#171918] text-white">English only</option>
+   {homeLanguages.map(l=><option key={l} value={l} lang={l} className="bg-[#171918] text-white">{languageNames[l].native}</option>)}
+  </select>
+ </label>;
+}
