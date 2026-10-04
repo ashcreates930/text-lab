@@ -63,11 +63,11 @@ const sources=[
 export function Approach({onDemo,onPricing,onWaitlist,onLessons}:{onDemo:()=>void;onPricing:()=>void;onWaitlist:()=>void;onLessons:()=>void}){
  return <article className="pb-6">
   <section className="relative overflow-hidden border-b border-white/10 px-5 py-16 md:px-14 md:py-24">
-   <div aria-hidden="true" className="absolute inset-0 opacity-40" style={{backgroundImage:"radial-gradient(ellipse at 80% 30%, #2c6b62 0%, transparent 40%),linear-gradient(115deg,#151a1a 20%,#1b2223 60%,#151a1a 100%)"}}/>
+   <div aria-hidden="true" className="absolute inset-0 opacity-40" style={{backgroundImage:"radial-gradient(ellipse at 80% 30%, #C9D6BF 0%, transparent 40%),linear-gradient(115deg,#F6F0E3 20%,#EFE8D8 60%,#F6F0E3 100%)"}}/>
    <div className="relative mx-auto max-w-5xl">
     <p className="eyebrow">OUR APPROACH · WHY WE BUILT THIS</p>
-    <h1 className="serif mt-5 max-w-4xl text-4xl leading-[1.1] tracking-[-.02em] md:text-6xl">Students don’t need AI to read for them. <span className="italic text-[#5cc0aa]">They need a reason to read closer.</span></h1>
-    <p className="mt-6 max-w-2xl text-base leading-7 text-[#c4c1b8]">{brand.name} puts students inside the stories they study. They investigate, question the characters, test every claim against the text, and write what they can prove. AI is part of the experience, and the text is always the authority.</p>
+    <h1 className="serif mt-5 max-w-4xl text-4xl leading-[1.1] tracking-[-.02em] md:text-6xl">Students don’t need AI to read for them. <span className="italic text-[#4A6741]">They need a reason to read closer.</span></h1>
+    <p className="mt-6 max-w-2xl text-base leading-7 text-[#4A4438]">{brand.name} puts students inside the stories they study. They investigate, question the characters, test every claim against the text, and write what they can prove. AI is part of the experience, and the text is always the authority.</p>
     <div className="mt-8 flex flex-wrap gap-3"><button onClick={onDemo} className="gold-button rounded-sm px-6 py-4 text-xs tracking-wider">TRY THE DEMO <ArrowRight className="ml-2 inline" size={14}/></button><button onClick={onPricing} className="soft-button rounded-sm px-6 py-4 text-xs tracking-wider">SEE PLANS</button></div>
    </div>
   </section>
@@ -76,15 +76,15 @@ export function Approach({onDemo,onPricing,onWaitlist,onLessons}:{onDemo:()=>voi
    <p className="eyebrow">THE PROBLEM</p>
    <h2 id="why-heading" className="serif mt-4 text-3xl md:text-4xl">Reading is slipping, and AI arrived anyway.</h2>
    <p className="mt-4 max-w-3xl text-sm leading-7 text-white/65">Students are reading less closely than at any point in a generation, and the same students now carry a tool that will summarize, interpret, and write for them in seconds. Banning that tool has not worked. Ignoring it leaves students without the judgment to use it well.</p>
-   <div className="mt-10 grid gap-4 md:grid-cols-3">{stats.map(s=><div key={s.figure} className="panel p-6"><p className="serif text-4xl text-[#5cc0aa]">{s.figure}</p><p className="mt-3 text-sm leading-6 text-white/70">{s.label}<sup className="ml-0.5 text-[10px] text-white/45">{s.source}</sup></p></div>)}</div>
+   <div className="mt-10 grid gap-4 md:grid-cols-3">{stats.map(s=><div key={s.figure} className="panel p-6"><p className="serif text-4xl text-[#4A6741]">{s.figure}</p><p className="mt-3 text-sm leading-6 text-white/70">{s.label}<sup className="ml-0.5 text-[10px] text-white/45">{s.source}</sup></p></div>)}</div>
   </section>
 
-  <section className="border-y border-white/10 bg-[#1a2122] px-5 py-16 md:px-10" aria-labelledby="founder-heading">
+  <section className="border-y border-white/10 bg-[#FFFDF8] px-5 py-16 md:px-10" aria-labelledby="founder-heading">
    <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-[.9fr_1.1fr]">
     <div><p className="eyebrow">FROM THE FOUNDER</p><h2 id="founder-heading" className="serif mt-4 text-3xl md:text-4xl">Built by a teacher, for the room it serves.</h2></div>
     <div className="space-y-4 text-sm leading-7 text-white/70">
      <p>I teach high school English. Every year I watch students who can decode every word on a page still miss what the page is saying, and now I watch them reach for AI to fill that gap.</p>
-     <p>I didn’t want to fight the tool. I wanted to teach students to question it. {brand.name} grew from one belief I teach by: <span className="text-[#5cc0aa]">{brand.principle}.</span> Students use AI the way a good investigator uses a witness, as a voice worth hearing and never the final word.</p>
+     <p>I didn’t want to fight the tool. I wanted to teach students to question it. {brand.name} grew from one belief I teach by: <span className="text-[#4A6741]">{brand.principle}.</span> Students use AI the way a good investigator uses a witness, as a voice worth hearing and never the final word.</p>
      <p>Every feature here started as a problem in my own classroom: the intensive reader who needs evidence of growth, the multilingual learner who understands more than they can yet say in English, the quiet student who has a strong idea and needs a structured moment to share it.</p>
      <p className="pt-2 text-white/85">Ashley Hodges<span className="block text-xs text-white/45">Founder, {brand.organization} · English Teacher and Instructional Lead</span></p>
     </div>
@@ -95,34 +95,34 @@ export function Approach({onDemo,onPricing,onWaitlist,onLessons}:{onDemo:()=>voi
    <p className="eyebrow">HOW IT WORKS</p>
    <h2 id="how-heading" className="serif mt-4 text-3xl md:text-4xl">One lesson, five moves.</h2>
    <ol className="mt-10 grid gap-4 md:grid-cols-5">{journey.map(([n,t,b])=><li key={n} className="panel p-5"><p className="eyebrow">{n}</p><h3 className="serif mt-3 text-xl">{t}</h3><p className="mt-3 text-xs leading-5 text-white/60">{b}</p></li>)}</ol>
-   <button onClick={onLessons} className="mt-6 text-xs text-[#5cc0aa] underline-offset-4 hover:underline">Browse the mini lessons <ArrowRight className="inline" size={12}/></button>
+   <button onClick={onLessons} className="mt-6 text-xs text-[#4A6741] underline-offset-4 hover:underline">Browse the mini lessons <ArrowRight className="inline" size={12}/></button>
   </section>
 
   <section className="mx-auto max-w-5xl px-5 pb-16 md:px-10" aria-labelledby="ds-heading">
    <div className="panel grid gap-8 p-6 md:grid-cols-[1fr_1.4fr] md:p-10">
     <div><p className="eyebrow">AI LITERACY, BUILT IN</p><h2 id="ds-heading" className="serif mt-4 text-3xl">The Four D’s</h2><p className="mt-4 text-sm leading-6 text-white/60">Every story practices four habits students will need long after English class. The app tracks each one as students earn it, so teachers can see AI literacy grow alongside reading.</p></div>
-    <dl className="grid gap-4 sm:grid-cols-2">{fourDs.map(([d,t])=><div key={d} className="border-l border-[#5cc0aa] pl-4"><dt className="serif text-xl">{d}</dt><dd className="mt-1 text-xs leading-5 text-white/60">{t}</dd></div>)}</dl>
+    <dl className="grid gap-4 sm:grid-cols-2">{fourDs.map(([d,t])=><div key={d} className="border-l border-[#4A6741] pl-4"><dt className="serif text-xl">{d}</dt><dd className="mt-1 text-xs leading-5 text-white/60">{t}</dd></div>)}</dl>
    </div>
   </section>
 
-  <section className="border-y border-white/10 bg-[#1a2122] px-5 py-16 md:px-10" aria-labelledby="goal-heading">
+  <section className="border-y border-white/10 bg-[#FFFDF8] px-5 py-16 md:px-10" aria-labelledby="goal-heading">
    <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-2">
     <div><p className="eyebrow">THE GOAL FOR LEARNERS</p><h2 id="goal-heading" className="serif mt-4 text-3xl md:text-4xl">Readers who think for themselves, in a world full of answers.</h2><p className="mt-4 text-sm leading-7 text-white/65">We measure success by what students can do without us. Every learner who finishes a story should be able to:</p></div>
-    <ul className="space-y-3 self-center">{outcomes.map(o=><li key={o} className="flex gap-3 text-sm leading-6 text-white/80"><Check className="mt-1 shrink-0 text-[#5cc0aa]" size={15}/>{o}</li>)}</ul>
+    <ul className="space-y-3 self-center">{outcomes.map(o=><li key={o} className="flex gap-3 text-sm leading-6 text-white/80"><Check className="mt-1 shrink-0 text-[#4A6741]" size={15}/>{o}</li>)}</ul>
    </div>
-   <div className="mx-auto mt-12 grid max-w-5xl gap-4 md:grid-cols-3">{access.map(a=><div key={a.title} className="panel p-6"><a.icon className="text-[#5cc0aa]" size={20}/><h3 className="serif mt-4 text-xl">{a.title}</h3><p className="mt-2 text-xs leading-5 text-white/60">{a.body}</p></div>)}</div>
+   <div className="mx-auto mt-12 grid max-w-5xl gap-4 md:grid-cols-3">{access.map(a=><div key={a.title} className="panel p-6"><a.icon className="text-[#4A6741]" size={20}/><h3 className="serif mt-4 text-xl">{a.title}</h3><p className="mt-2 text-xs leading-5 text-white/60">{a.body}</p></div>)}</div>
   </section>
 
   <section className="mx-auto max-w-5xl px-5 py-16 md:px-10" aria-labelledby="who-heading">
    <p className="eyebrow">WHO IT SERVES</p>
    <h2 id="who-heading" className="serif mt-4 text-3xl md:text-4xl">Wherever reading is taught.</h2>
-   <div className="mt-10 grid gap-4 md:grid-cols-3">{audiences.map(a=><div key={a.title} className="panel p-6"><a.icon className="text-[#5cc0aa]" size={20}/><h3 className="serif mt-4 text-xl">{a.title}</h3><p className="mt-2 text-sm leading-6 text-white/65">{a.body}</p></div>)}</div>
+   <div className="mt-10 grid gap-4 md:grid-cols-3">{audiences.map(a=><div key={a.title} className="panel p-6"><a.icon className="text-[#4A6741]" size={20}/><h3 className="serif mt-4 text-xl">{a.title}</h3><p className="mt-2 text-sm leading-6 text-white/65">{a.body}</p></div>)}</div>
   </section>
 
   <section className="mx-auto max-w-5xl px-5 pb-16 md:px-10" aria-labelledby="durable-heading">
    <p className="eyebrow">FOR PARTNERS AND INVESTORS</p>
    <h2 id="durable-heading" className="serif mt-4 text-3xl md:text-4xl">Built to last beyond a single classroom.</h2>
-   <div className="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-2">{durable.map(([t,b])=><div key={t} className="flex gap-4"><ShieldCheck className="mt-1 shrink-0 text-[#5cc0aa]" size={18}/><div><h3 className="text-sm font-semibold text-white/90">{t}</h3><p className="mt-1 text-sm leading-6 text-white/60">{b}</p></div></div>)}</div>
+   <div className="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-2">{durable.map(([t,b])=><div key={t} className="flex gap-4"><ShieldCheck className="mt-1 shrink-0 text-[#4A6741]" size={18}/><div><h3 className="text-sm font-semibold text-white/90">{t}</h3><p className="mt-1 text-sm leading-6 text-white/60">{b}</p></div></div>)}</div>
   </section>
 
   <section className="border-t border-white/10 px-5 py-16 md:px-10" aria-labelledby="cta-heading">

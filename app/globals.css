@@ -1,19 +1,28 @@
 @import "tailwindcss";
-:root{--paper:#eee9df;--ink:#151a1a;--muted:#a8a59d;--line:#ffffff24;--accent:#5cc0aa;--amber:#5cc0aa;--green:#a5ae8a}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#151a1a;color:var(--paper);font-family:Arial,Helvetica,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}.serif{font-family:Georgia,"Times New Roman",serif}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.eyebrow{font-size:10px;letter-spacing:.19em;text-transform:uppercase;color:#8fc4b8}.scene-bg{background-size:cover;background-position:center;position:relative}.scene-bg:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#141718eF 0%,#141718c9 48%,#14171826 100%),linear-gradient(0deg,#141718cc,transparent 38%)}.panel{background:#1d2425e8;border:1px solid var(--line);backdrop-filter:blur(12px)}.soft-button{border:1px solid #ffffff42;background:#ffffff0a;transition:.2s}.soft-button:hover{background:#ffffff18;border-color:#5cc0aa88}.gold-button{background:#5cc0aa;color:#0f1b19;font-weight:700;transition:.2s}.gold-button:hover{background:#7fd3c1}.story-copy{font-family:Georgia,serif;line-height:1.85;color:#e3ddd1}.fade-in{animation:fade .4s ease-out}@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+:root{--paper:#2A2620;--ink:#F6F0E3;--muted:#6B6457;--line:#2a262024;--accent:#4A6741;--amber:#4A6741;--green:#4F6B2E;--color-white:#2A2620}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#F6F0E3;color:var(--paper);font-family:Arial,Helvetica,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}select option{background:#FFFDF8;color:#2A2620}.serif{font-family:Georgia,"Times New Roman",serif}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.eyebrow{font-size:10px;letter-spacing:.19em;text-transform:uppercase;color:#4A6741}.scene-bg{background-size:cover;background-position:center;position:relative}.scene-bg:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#141718eF 0%,#141718c9 48%,#14171826 100%),linear-gradient(0deg,#141718cc,transparent 38%)}.panel{background:#FFFDF8;border:1px solid var(--line)}.soft-button{border:1px solid #2a262038;background:#FFFDF8;transition:.2s}.soft-button:hover{background:#efe8d8;border-color:#4A674188}.gold-button{background:#4A6741;color:#FFFDF8;font-weight:700;transition:.2s}.gold-button:hover{background:#5E7F52}.story-copy{font-family:Georgia,serif;line-height:1.85;color:#3a342b}.fade-in{animation:fade .4s ease-out}@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* Cream theme: Tailwind's white utilities draw in ink. Story scenes and the home page artwork stay dark, so white means white there again. */
+.scene-bg,.dark-zone{--color-white:#ffffff;color:#eee9df}
+.scene-bg .eyebrow,.dark-zone .eyebrow{color:#C9D9B8}
+.scene-bg [class*="text-[#4A6741]"],.scene-bg [class*="text-[#3E5A36]"],.dark-zone [class*="text-[#4A6741]"]{color:#C9D9B8!important}
+.scene-bg [class*="border-[#4A6741]"]{border-color:#C9D9B8!important}
+[class*="bg-[#b5482f]"],[class*="bg-[#d08a6a]"]{--color-white:#ffffff}
+.scene-bg .soft-button,.dark-zone .soft-button{background:#ffffff14;border-color:#ffffff55}
+.scene-bg .soft-button:hover{background:#ffffff26}
 
 /* Display settings (app/display-settings.tsx). Zoom scales every fixed pixel size in the app, including small labels. */
 html[data-text-size="large"] body{zoom:1.15}
 html[data-text-size="xl"] body{zoom:1.3}
-:focus-visible{outline:3px solid #5cc0aa;outline-offset:2px}
+:focus-visible{outline:3px solid #4A6741;outline-offset:2px}
 html[data-motion="reduced"] *,html[data-motion="reduced"] *:before,html[data-motion="reduced"] *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 @media (prefers-reduced-motion:reduce){.fade-in{animation:none}}
-/* High contrast: lift muted text and hairline borders to readable levels. */
-html[data-contrast="high"]{--muted:#e6e2d8;--line:#ffffff66}
-html[data-contrast="high"] .eyebrow{color:#b9e6dc;font-weight:700}
-html[data-contrast="high"] [class*="text-white\/"]{color:#f4f1ea!important}
-html[data-contrast="high"] [class*="border-white\/"]{border-color:#ffffff8c!important}
-html[data-contrast="high"] .story-copy{color:#fbf8f2}
-html[data-contrast="high"] .panel{background:#141615;border-color:#ffffff73}
+/* High contrast: darker text and firmer borders on the cream page. */
+html[data-contrast="high"]{--muted:#1d1a15;--line:#2a262088}
+html[data-contrast="high"] .eyebrow{color:#2F4428;font-weight:700}
+html[data-contrast="high"] [class*="text-white\/"]{color:#15120e!important}
+html[data-contrast="high"] [class*="border-white\/"]{border-color:#2a262099!important}
+html[data-contrast="high"] .story-copy{color:#000}
+html[data-contrast="high"] .panel{background:#fff;border-color:#2a2620aa}
+html[data-contrast="high"] .scene-bg [class*="text-white\/"],html[data-contrast="high"] .dark-zone [class*="text-white\/"]{color:#fbf8f2!important}
 html[data-contrast="high"] .scene-bg:before{background:linear-gradient(90deg,#0d0f10f7 0%,#0d0f10e6 55%,#0d0f1066 100%),linear-gradient(0deg,#0d0f10ee,transparent 40%)}
-html[data-contrast="high"] .soft-button{border-color:#ffffffb3;background:#ffffff14}
+html[data-contrast="high"] .soft-button{border-color:#2a2620b3;background:#fff}
 @media print{html,body{background:#fff!important;color:#000!important}.panel{background:#fff!important;border-color:#999!important;backdrop-filter:none}header,.display-settings{display:none!important}[class*="text-white"]{color:#222!important}}
