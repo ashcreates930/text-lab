@@ -40,3 +40,24 @@ html[data-contrast="high"] .scene-bg:before{filter:brightness(1.15) contrast(1.0
 html[data-contrast="high"] .scene-bg h1,html[data-contrast="high"] .scene-bg p{text-shadow:0 1px 4px #000,0 0 16px #000}
 html[data-contrast="high"] .soft-button{border-color:#2a2620b3;background:#fff}
 @media print{html,body{background:#fff!important;color:#000!important}.panel{background:#fff!important;border-color:#999!important;backdrop-filter:none}header,.display-settings{display:none!important}[class*="text-white"]{color:#222!important}}
+/* Case flow game layer: living scene, stamp, ambient motion */
+@keyframes case-drift{from{transform:scale(1) translate(0,0)}to{transform:scale(1.08) translate(-1.5%,-1%)}}
+.case-alive{animation:case-drift 16s ease-in-out infinite alternate;transform-origin:60% 50%}
+@keyframes case-stamp-in{0%{opacity:0;transform:translate(-50%,-50%) scale(2.4) rotate(-16deg)}60%{opacity:1;transform:translate(-50%,-50%) scale(.94) rotate(-8deg)}100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-8deg)}}
+.case-stamp{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%) rotate(-8deg);animation:case-stamp-in .55s cubic-bezier(.2,.9,.3,1.2) both;border:5px double #A0472C;color:#A0472C;background:rgba(255,253,248,.92);padding:.3em .8em;border-radius:12px;font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-weight:800;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;font-size:clamp(24px,4.4vw,48px);box-shadow:0 12px 36px -12px rgba(42,38,32,.55)}
+.case-stamp-static{left:auto;right:16px;top:16px;transform:rotate(-8deg);animation:none;font-size:15px;border-width:3px;padding:.25em .7em}
+.case-stamp-page{position:relative;left:auto;top:auto;display:inline-block;font-size:clamp(20px,2.6vw,30px);transform:rotate(-6deg);animation:case-stamp-page .55s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes case-stamp-page{0%{opacity:0;transform:scale(2.2) rotate(-14deg)}60%{opacity:1;transform:scale(.95) rotate(-6deg)}100%{opacity:1;transform:scale(1) rotate(-6deg)}}
+@keyframes case-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.case-rise{animation:case-rise .4s ease-out .5s both}
+.amb-snow,.amb-dust{background-repeat:repeat}
+.amb-snow{background-image:radial-gradient(2px 2px at 20px 30px,#fff 60%,transparent),radial-gradient(3px 3px at 90px 140px,#fff 60%,transparent),radial-gradient(2px 2px at 160px 60px,#fff 60%,transparent),radial-gradient(2.5px 2.5px at 60px 180px,#fff 60%,transparent);background-size:200px 200px;opacity:.85;animation:amb-fall 14s linear infinite}
+@keyframes amb-fall{from{background-position:0 0,0 0,0 0,0 0}to{background-position:40px 200px,-30px 200px,20px 200px,-10px 200px}}
+.amb-dust{background-image:radial-gradient(1.5px 1.5px at 30px 40px,rgba(255,230,190,.9) 50%,transparent),radial-gradient(2px 2px at 140px 110px,rgba(255,230,190,.7) 50%,transparent),radial-gradient(1.5px 1.5px at 90px 170px,rgba(255,230,190,.8) 50%,transparent);background-size:220px 220px;animation:amb-float 22s linear infinite}
+@keyframes amb-float{from{background-position:0 0,0 0,0 0}to{background-position:-60px -220px,40px -220px,-20px -220px}}
+.amb-candle{background:radial-gradient(ellipse at 50% 62%,rgba(255,176,92,.32),transparent 58%);mix-blend-mode:screen;animation:amb-flicker 2.8s ease-in-out infinite}
+@keyframes amb-flicker{0%,100%{opacity:.75}20%{opacity:1}35%{opacity:.6}55%{opacity:.95}70%{opacity:.7}85%{opacity:.9}}
+.amb-fog{background:linear-gradient(90deg,transparent,rgba(255,255,255,.22) 30%,transparent 55%,rgba(255,255,255,.16) 80%,transparent);background-size:200% 100%;animation:amb-fog 18s linear infinite}
+@keyframes amb-fog{from{background-position:0 0}to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.case-alive,.amb,.case-stamp,.case-stamp-page,.case-rise,.case-pulse{animation:none!important}}
+@media print{.case-stamp-page{animation:none}}
