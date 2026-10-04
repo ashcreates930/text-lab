@@ -17,8 +17,8 @@ export function AccessGate({brand,onGranted,onPricing,onWaitlist,onJoinClass,onA
    {error&&<p id="demo-access-error" role="alert" className="mt-3 text-sm text-[#A33B20]">{error}</p>}
    <button type="submit" disabled={busy||!code.trim()} className="gold-button mt-5 inline-flex w-full items-center justify-center gap-2 rounded-sm px-6 py-4 text-xs tracking-wider disabled:opacity-60">{busy?"CHECKING…":"ENTER THE PREVIEW"}<ArrowRight size={13}/></button>
   </form>
-  <p className="mt-6 text-xs text-white/50">Joining your class? <button type="button" onClick={onJoinClass} className="text-[#4A6741] underline-offset-4 hover:underline">Enter your class code</button>.</p>
-  <p className="mt-2 text-xs text-white/50">No code? <button type="button" onClick={onWaitlist} className="text-[#4A6741] underline-offset-4 hover:underline">Join the waitlist</button> or <button type="button" onClick={onPricing} className="text-[#4A6741] underline-offset-4 hover:underline">see pricing</button>.</p>
-  {onApproach&&<p className="mt-2 text-xs text-white/50">New here? <button type="button" onClick={onApproach} className="text-[#4A6741] underline-offset-4 hover:underline">Read why we built {brand.name}</button>.</p>}
+  <p className="mt-6 text-xs text-white/50">Joining your class? <button type="button" onClick={onJoinClass} className="text-[#A0472C] underline-offset-4 hover:underline">Enter your class code</button>.</p>
+  <p className="mt-2 text-xs text-white/50">No code? <button type="button" onClick={onWaitlist} className="text-[#A0472C] underline-offset-4 hover:underline">Join the waitlist</button> or <button type="button" onClick={onPricing} className="text-[#A0472C] underline-offset-4 hover:underline">see pricing</button>.</p>
+  {onApproach&&<p className="mt-2 text-xs text-white/50">New here? <button type="button" onClick={onApproach} className="text-[#A0472C] underline-offset-4 hover:underline">Read why we built {brand.name}</button>.</p>}
  </section>;
 }
