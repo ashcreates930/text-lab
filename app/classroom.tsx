@@ -63,6 +63,13 @@ function ClassList({email,classes,onOpen,onCreated,onSignOut}:{email:string;clas
 
 type Detail={class:{id:string;name:string|null;class_code:string;grade:number;preview_enabled:boolean};students:{id:string;nickname:string}[];assignments:{lesson_id:string;due_date:string|null}[];completions:{student_id:string;lesson_id:string;first_try_correct:number;total:number}[];activeAnalysisId:string|null;world:{title:string;teacherPreviewRequired:boolean;scenes:{id:string;clues:number}[];roles:{id:string;name:string}[]}|null};
 
+// QR code for the class link, drawn as SVG in the browser. Projected on the board, students scan it to join.
+function JoinQr({url}:{url:string}){
+ const [svg,setSvg]=useState("");
+ useEffect(()=>{let live=true;if(!url)return;import("qrcode").then(m=>((m as unknown as {default?:{toString:typeof m.toString}}).default??m).toString(url,{type:"svg",margin:1,color:{dark:"#2A2620",light:"#FFFDF8"}})).then(out=>{if(live)setSvg(out)}).catch(()=>{});return()=>{live=false}},[url]);
+ return svg?<div role="img" aria-label={`QR code for ${url}`} className="h-36 w-36 shrink-0 overflow-hidden rounded-xl bg-[#FFFDF8] p-1 [&_svg]:h-full [&_svg]:w-full" dangerouslySetInnerHTML={{__html:svg}}/>:null;
+}
+
 function ClassDetail({classId,onPresent}:{classId:string;onPresent:()=>void}){
  const [data,setData]=useState<Detail|null>(null),[tab,setTab]=useState<"students"|"lessons"|"live">("live"),[error,setError]=useState(""),[copied,setCopied]=useState(false);
  const load=useCallback(async()=>{const r=await teacherFetch(`/api/teacher/classes/${classId}`);if(r.ok)setData(r.body);else setError(r.body.error||"Could not load this class.")},[classId]);
@@ -70,9 +77,9 @@ function ClassDetail({classId,onPresent}:{classId:string;onPresent:()=>void}){
  if(error)return <p className="mt-6 text-base text-[#A33B20]">{error}</p>;
  if(!data)return <p className="mt-6 text-base text-white/70">Loading class…</p>;
  const c=data.class;
- const joinUrl=typeof window!=="undefined"?window.location.host:"";
+ const joinUrl=typeof window!=="undefined"?`${window.location.origin}/c/${c.class_code}`:"";
  return <div className="mt-6 space-y-5">
-  <div className="panel flex flex-wrap items-center justify-between gap-5 p-6"><div><p className="eyebrow">CLASS</p><h1 className="serif mt-2 text-4xl">{c.name||"Untitled class"}</h1><p className="mt-1 text-base text-white/75">{data.world?.title} · Grade {c.grade} · {data.students.length} students joined</p></div><div className="text-right"><p className="text-sm text-white/70">Students go to <b>{joinUrl}</b>, tap “Enter your class code,” and type:</p><p className="mt-1 font-mono text-5xl tracking-[.3em] text-[#8A3B23]">{c.class_code}</p><button onClick={()=>{navigator.clipboard?.writeText(c.class_code);setCopied(true);setTimeout(()=>setCopied(false),1500)}} className="mt-2 text-sm text-white/70 underline underline-offset-4"><Copy size={13} className="mr-1 inline"/>{copied?"Copied":"Copy code"}</button></div></div>
+  <div className="panel flex flex-wrap items-center justify-between gap-5 p-6"><div><p className="eyebrow">CLASS</p><h1 className="serif mt-2 text-4xl">{c.name||"Untitled class"}</h1><p className="mt-1 text-base text-white/75">{data.world?.title} · Grade {c.grade} · {data.students.length} students joined</p></div><div className="flex flex-wrap items-center gap-5"><JoinQr url={joinUrl}/><div className="text-right"><p className="text-sm text-white/70">Students scan the code or open this link, then type a nickname:</p><p className="mt-1 break-all font-mono text-lg font-bold text-[#8A3B23]">{joinUrl.replace(/^https?:\/\//,"")}</p><button onClick={()=>{navigator.clipboard?.writeText(joinUrl);setCopied(true);setTimeout(()=>setCopied(false),1500)}} className="mt-2 text-sm text-white/70 underline underline-offset-4"><Copy size={13} className="mr-1 inline"/>{copied?"Copied":"Copy class link"}</button><p className="mt-2 text-xs text-white/60">Without the link: class code <span className="font-mono font-bold tracking-widest">{c.class_code}</span></p></div></div></div>
   {data.world?.teacherPreviewRequired&&<div className="panel flex flex-wrap items-center justify-between gap-3 p-5"><p className="text-base text-white/85">This story has content notes, so students cannot join until you enable it after previewing.</p><button onClick={async()=>{await teacherFetch(`/api/teacher/classes/${classId}`,{method:"PATCH",body:JSON.stringify({previewEnabled:!c.preview_enabled})});load()}} className={`${c.preview_enabled?"soft-button":"gold-button"} ${big}`}>{c.preview_enabled?"Enabled · turn off":"I previewed it · enable for students"}</button></div>}
   <div role="tablist" className="flex flex-wrap gap-2">{([["live","Live class analysis"],["lessons","Assign mini lessons"],["students","Students"]] as const).map(([id,label])=><button key={id} role="tab" aria-selected={tab===id} onClick={()=>setTab(id)} className={`border ${big} ${tab===id?"border-[#A0472C] bg-[#A0472C]/15 text-[#8A3B23]":"border-white/25 text-white/80"}`}>{label}</button>)}</div>
   {tab==="live"&&<LivePlanner classId={classId} detail={data} onStarted={onPresent}/>}

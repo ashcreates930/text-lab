@@ -16,7 +16,7 @@ import { FeedbackBanner } from "./feedback-banner";
 import { DisplaySettings } from "./display-settings";
 import { Classroom } from "./classroom";
 import type { HomeLanguage } from "@/lib/bilingual";
-import { ClassHome, ClassLive, type ClassAuth } from "./class-student";
+import { ClassBar, ClassHome, ClassLive, type ClassAuth } from "./class-student";
 import { LessonPlayer, MiniLessonLibrary, type LessonRecord } from "./mini-lessons";
 import { Landing, Join, Owner, Pricing, Student, Teacher, Waitlist, PickStory, ChooseLevel } from "./ui";
 
@@ -45,6 +45,9 @@ function focusScreenTop() {
   root.style.scrollBehavior = "auto";
   window.scrollTo(0, 0);
   root.style.scrollBehavior = previousScrollBehavior;
+  // A screen can name the field to start in (the join screen starts in the nickname box).
+  const autofocus = document.querySelector<HTMLElement>("main [data-autofocus]");
+  if (autofocus) { pendingHeadingObserver?.disconnect(); pendingHeadingObserver = null; autofocus.focus({ preventScroll: true }); return; }
   const heading = document.querySelector<HTMLElement>("main h1");
   if (heading) {
     pendingHeadingObserver?.disconnect();
@@ -78,6 +81,7 @@ const newDemo = (preset: string,worldId="tell-tale-heart"): Demo => ({
 
 export default function Home() {
   const [view, setView] = useState<View>("landing");
+  const [joinCode, setJoinCode] = useState("");
   const [demo, setDemo] = useState<Demo>(() => newDemo("student_first_visit"));
   const [ownerData, setOwnerData] = useState<any[]>([]);
   const [ownerStatus, setOwnerStatus] = useState("");
@@ -164,7 +168,9 @@ export default function Home() {
       }
     } catch { sessionStorage.removeItem("itt-active-sandbox-id"); }
     const params = new URLSearchParams(window.location.search);
-    if (params.get("teacher") === "1") {
+    const join=params.get("join");
+    if (join) { setJoinCode(join.toUpperCase()); setView("join"); window.history.replaceState({}, "", "/"); }
+    else if (params.get("teacher") === "1") {
       setView("classroom");
       const code = params.get("code");
       if (code) getBrowserSupabase()?.auth.exchangeCodeForSession(code).finally(() => window.history.replaceState({}, "", "/"));
@@ -203,7 +209,7 @@ export default function Home() {
   function chooseStory(worldId:string,course:"all"|"best"|"ap"|"aice"="all"){setDemo(d=>({...d,worldId,course,grade:null,role:"",think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:0}));setView("play")}
   function chooseGrade(grade:number){setDemo(d=>({...d,grade,role:"",think:false,previewComplete:false,scene:0}));setView("play")}
   function tryAnotherStory(){setDemo(d=>({...d,role:"",briefingComplete:false,think:false,previewComplete:false,scene:0}));setView("story")}
-  function joinClass(session:{world_id:string;grade:number},auth:ClassAuth){const next=newDemo("class_student",session.world_id);next.grade=session.grade;next.scene=0;next.classAuth=auth;setDemo(next);setView("classhome")}
+  function joinClass(session:{world_id:string;grade:number},auth:ClassAuth){const next=newDemo("class_student",session.world_id);next.grade=session.grade;next.scene=0;next.classAuth=auth;setDemo(next);setView("play")}
   function backToPreviousScreen(fallback:()=>void) {
     const current = window.history.state as ScreenSnapshot | null;
     if (current?.insideTheTextScreen && current.sequence > 0) window.history.back();
@@ -227,6 +233,7 @@ export default function Home() {
     {view === "lessons" && <section className="mx-auto max-w-7xl px-5 py-10 md:px-10 md:py-14">{activeLesson ? <LessonPlayer lessonId={activeLesson} grade={demo.grade} onClose={() => { setActiveLesson(""); window.scrollTo(0, 0); }} onFinish={(id, record) => setDemo(d => ({ ...d, lessonsDone: { ...(d.lessonsDone ?? {}), [id]: record } }))} /> : <><button onClick={() => backToPreviousScreen(() => setView("landing"))} className="mb-8 inline-flex items-center gap-2 text-xs text-white/55 hover:text-white">← Back</button><h1 className="sr-only">Mini lessons</h1><MiniLessonLibrary grade={demo.grade} done={demo.lessonsDone ?? {}} onOpen={id => { setActiveLesson(id); window.scrollTo(0, 0); }} /><button onClick={() => setView("story")} className="gold-button mt-10 px-6 py-4 text-sm">Ready? Pick a story →</button></>}</section>}
     {view === "story" && <PickStory onLessons={() => { setActiveLesson(""); setView("lessons"); }} onBack={()=>backToPreviousScreen(()=>setView("landing"))} onPick={chooseStory} initialCourse={demo.course??"all"} />}
     {view === "level" && <ChooseLevel worldId={demo.worldId} course={demo.course??"all"} onBack={()=>backToPreviousScreen(()=>setView("story"))} onChoose={chooseGrade} />}
+    {view === "play" && classSession && demo.classAuth && <ClassBar auth={demo.classAuth} onLive={() => setView("classlive")} onLessons={() => setView("classhome")} onDismissPhrase={() => setDemo(d => ({ ...d, classAuth: d.classAuth && { ...d.classAuth, resumePhrase: null } }))} />}
     {view === "play" && <CaseFlow demo={demo} setDemo={setDemo} onExit={()=>classSession?setView("classhome"):setView("story")} onAnotherStory={()=>{setDemo(d=>({...d,submitted:false,scene:0}));setView(classSession?"classhome":"story")}} />}
     {view === "teacher" && <Teacher demo={demo} setDemo={setDemo} onStudent={() => setView("play")} onPreset={start} onClassroom={() => setView("classroom")} />}
     {view === "classroom" && <Classroom onBack={() => backToPreviousScreen(() => setView("landing"))} />}
@@ -235,7 +242,7 @@ export default function Home() {
     {view === "waitlist" && <Waitlist />}
     {view === "pricing" && <Pricing onWaitlist={() => setView("waitlist")} onApproach={() => setView("approach")} />}
     {view === "approach" && <Approach onDemo={() => start("student_first_visit")} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} />}
-    {view === "join" && <Join onJoined={joinClass} />}
+    {view === "join" && <Join initialCode={joinCode} onJoined={joinClass} />}
     {view === "owner" && <Owner data={ownerData} status={ownerStatus} setStatus={setOwnerStatus} />}
     {view === "landing" && <DisplaySettings/>}
   </main>;

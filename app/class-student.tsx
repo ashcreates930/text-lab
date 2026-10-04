@@ -6,7 +6,7 @@ import type {LiveStep,Phase} from "@/lib/classroom/plan";
 import {LessonPlayer} from "./mini-lessons";
 
 const big="min-h-12 px-5 py-3 text-sm md:text-base";
-export type ClassAuth={token:string;nickname:string;className:string|null};
+export type ClassAuth={token:string;nickname:string;className:string|null;resumePhrase?:string|null};
 
 async function studentFetch(auth:ClassAuth,path:string,init:RequestInit={}){
  const headers=new Headers(init.headers);headers.set("Content-Type","application/json");headers.set("x-class-token",auth.token);
@@ -15,6 +15,21 @@ async function studentFetch(auth:ClassAuth,path:string,init:RequestInit={}){
 }
 
 type ClassInfo={nickname:string;className:string|null;worldTitle:string;grade:number;assignments:{lessonId:string;dueDate:string|null;done:{first_try_correct:number;total:number}|null}[];liveActive:boolean};
+
+// Thin bar above the story for class students: a live-discussion banner, a one-time resume phrase note, and assigned lessons.
+// It replaces the old "My class" lobby as a required stop; it shows nothing when there is nothing to act on.
+export function ClassBar({auth,onLive,onLessons,onDismissPhrase}:{auth:ClassAuth;onLive:()=>void;onLessons:()=>void;onDismissPhrase:()=>void}){
+ const [info,setInfo]=useState<ClassInfo|null>(null);
+ const load=useCallback(async()=>{const r=await studentFetch(auth,"/api/student/class");if(r.ok)setInfo(r.body)},[auth]);
+ useEffect(()=>{load();const t=window.setInterval(load,8000);return()=>window.clearInterval(t)},[load]);
+ const open=info?info.assignments.filter(a=>!a.done).length:0;
+ if(!info?.liveActive&&!open&&!auth.resumePhrase)return null;
+ return <div className="case-ui mx-auto max-w-6xl space-y-2 px-4 pt-4 md:px-8">
+  {info?.liveActive&&<button onClick={onLive} className="flex w-full items-center justify-between gap-4 rounded-2xl bg-[#A0472C] px-5 py-4 text-left text-white transition hover:bg-[#8A3B23]"><span className="flex items-center gap-2 text-[17px] font-bold"><MessagesSquare size={20}/> Your class discussion is live. Tap to join.</span><ArrowRight size={20}/></button>}
+  {auth.resumePhrase&&<div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-[#FFFDF8] px-5 py-3 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="text-[15px] leading-6">Welcome, {auth.nickname}. If you switch devices, your resume phrase is <b className="font-mono text-[#8A3B23]">{auth.resumePhrase}</b>. Write it down.</p><button onClick={onDismissPhrase} className="rounded-full bg-[#EFE8D8] px-4 py-1.5 text-[15px] font-semibold">Got it</button></div>}
+  {open>0&&<button onClick={onLessons} className="inline-flex items-center gap-2 rounded-full bg-[#EFE8D8] px-4 py-2 text-[15px] font-semibold text-[#2A2620] hover:bg-[#E4DCCB]"><BookOpen size={16} className="text-[#A0472C]"/>{open} mini lesson{open===1?"":"s"} assigned <ArrowRight size={15}/></button>}
+ </div>;
+}
 
 // A class student's home: the live discussion when it is running, assigned lessons, and the story.
 export function ClassHome({auth,onStory,onLive}:{auth:ClassAuth;onStory:()=>void;onLive:()=>void}){
