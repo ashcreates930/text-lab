@@ -1,4 +1,4 @@
-// Florida B.E.S.T. ELA benchmarks used by Inside the Text, with official wording by grade, plus the AP and Cambridge
+// Florida B.E.S.T. ELA benchmarks used by Text Lab, with official wording by grade, plus the AP and Cambridge
 // (AICE) frameworks that the same tasks support. Spot-check wording against CPALMS (cpalms.org) after any FLDOE revision.
 
 export type Course = "best_ela" | "ap_lit" | "ap_lang" | "aice_lit" | "aice_lang" | "igcse_lit";

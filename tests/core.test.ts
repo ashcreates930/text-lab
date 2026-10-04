@@ -182,3 +182,14 @@ test("bilingual supports: every playable story has a complete translation file f
     }
   }
 });
+
+test("scene reading ranges give each scene its own portion, in the order listed",async()=>{
+  const {readFileSync}=await import("node:fs");
+  const {parseSourcePassages,readingPortions,describePortion}=await import("../lib/source-passages.ts");
+  const world=JSON.parse(readFileSync("worlds/sleepy-hollow/world.json","utf8"));
+  const portions=readingPortions(parseSourcePassages(readFileSync("worlds/sleepy-hollow/source.md","utf8")),world.scenes);
+  assert.equal(portions.length,world.scenes.length);
+  assert.equal(portions[0][0].id,"p068");
+  assert.equal(describePortion(portions[0]),"¶ 68 to 70, then ¶ 1 to 20");
+  assert.equal(portions[1][0].id,"p021");
+});

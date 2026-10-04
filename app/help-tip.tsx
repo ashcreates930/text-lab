@@ -7,7 +7,7 @@ import {CircleHelp} from "lucide-react";
 export function HelpTip({label,children}:{label:string;children:React.ReactNode}){
  const [open,setOpen]=useState(false),id=useId();
  return <span className="inline">
-  <button type="button" aria-expanded={open} aria-controls={id} onClick={()=>setOpen(o=>!o)} className="help-tip-button ml-1 inline-flex items-center gap-1 rounded-full border border-[#dfb675]/50 px-2 py-0.5 align-middle text-xs text-[#f0d9b2] hover:bg-[#dfb675]/15"><CircleHelp size={13} aria-hidden="true"/>{label}</button>
-  {open&&<span id={id} role="note" className="mt-2 block border-l-2 border-[#dfb675] bg-[#dfb675]/[.08] px-3 py-2 text-sm leading-6 text-[#eee9df]">{children}</span>}
+  <button type="button" aria-expanded={open} aria-controls={id} onClick={()=>setOpen(o=>!o)} className="help-tip-button ml-1 inline-flex items-center gap-1 rounded-full border border-[#5cc0aa]/50 px-2 py-0.5 align-middle text-xs text-[#bfe6dc] hover:bg-[#5cc0aa]/15"><CircleHelp size={13} aria-hidden="true"/>{label}</button>
+  {open&&<span id={id} role="note" className="mt-2 block border-l-2 border-[#5cc0aa] bg-[#5cc0aa]/[.08] px-3 py-2 text-sm leading-6 text-[#eee9df]">{children}</span>}
  </span>;
 }

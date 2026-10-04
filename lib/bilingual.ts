@@ -31,7 +31,7 @@ export function translatableStrings(world: WorldPack): string[] {
   const add = (t: string | undefined | null) => { if (t && t.trim()) out.push(t.trim()); };
   for (const r of world.roles) { add(r.name); add(r.description); add(r.goal); add(r.briefing); add(r.final_task); r.what_you_will_do.forEach(add); r.skills.forEach((s) => { add(s.name); add(s.description); }); }
   for (const s of world.scenes) {
-    add(s.summary); add(s.narration); add(s.dok_task); add(s.choice_point?.prompt); s.choice_point?.options.forEach((o) => add(o.label));
+    add(s.summary); add(s.reading_note); add(s.narration); add(s.dok_task); add(s.choice_point?.prompt); s.choice_point?.options.forEach((o) => add(o.label));
     for (const a of s.artifacts) {
       add(a.name);
       for (const q of a.questions) for (const r of world.roles) add(q.prompt_by_role_plain?.[r.id] ?? q.prompt_by_role[r.id]);

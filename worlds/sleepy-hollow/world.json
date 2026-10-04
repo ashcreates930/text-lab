@@ -677,7 +677,18 @@
       }
      ]
     }
-   ]
+   ],
+   "reading": [
+    {
+     "start": "p068",
+     "end": "p070"
+    },
+    {
+     "start": "p001",
+     "end": "p020"
+    }
+   ],
+   "reading_note": "This case begins at the end. Read what the town found the morning after, then go back to the beginning to meet Ichabod and the legend he believed."
   },
   {
    "id": "van-tassel-party",
@@ -1095,6 +1106,12 @@
        ]
       }
      ]
+    }
+   ],
+   "reading": [
+    {
+     "start": "p021",
+     "end": "p057"
     }
    ]
   },
@@ -1519,6 +1536,12 @@
       }
      ]
     }
+   ],
+   "reading": [
+    {
+     "start": "p058",
+     "end": "p067"
+    }
    ]
   },
   {
@@ -1918,6 +1941,12 @@
        ]
       }
      ]
+    }
+   ],
+   "reading": [
+    {
+     "start": "p071",
+     "end": "p082"
     }
    ]
   }

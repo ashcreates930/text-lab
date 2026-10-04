@@ -1,4 +1,4 @@
-# Inside the Text
+# Text Lab
 
 AmplifiED's immersive literature experience: AI characters are a way into the text; the text is the authority; the student's writing is the product.
 
@@ -50,7 +50,7 @@ Translations are prebuilt files in `worlds/<id>/translations/<lang>.json`, keyed
 
 ## Supabase setup
 
-The schema migration is in `supabase/migrations/202609300001_initial.sql`. Apply it only to the Supabase project created for Inside the Text. It deliberately revokes direct browser grants; trusted server routes use the service role after authorization. Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`. Teacher and owner access must use email magic-link authentication. Configure `OWNER_EMAIL` to the one owner email. The local demo preset store is separate from classroom data.
+The schema migration is in `supabase/migrations/202609300001_initial.sql`. Apply it only to the Supabase project created for Text Lab. It deliberately revokes direct browser grants; trusted server routes use the service role after authorization. Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`. Teacher and owner access must use email magic-link authentication. Configure `OWNER_EMAIL` to the one owner email. The local demo preset store is separate from classroom data.
 
 ## Environment variables
 

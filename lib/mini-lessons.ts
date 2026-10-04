@@ -1,5 +1,5 @@
 // Mini lessons: short, skill-first lessons students take before (or while) reading a story.
-// Every passage below is original writing by AmplifiED for Inside the Text, so lessons carry no copyright risk.
+// Every passage below is original writing by AmplifiED for Text Lab, so lessons carry no copyright risk.
 // Benchmark codes are grade-free families that resolveBenchmark() (lib/standards.ts) turns into the student's grade.
 
 export type LessonCheck = { question: string; options: { text: string; correct?: boolean; why: string }[] };
@@ -17,7 +17,7 @@ export type MiniLesson = {
   model: { passage: string; steps: string[] };
   checks: LessonCheck[];
   goingFurther: string; // extension for grades 9 to 12
-  useInStory: string; // what to do with the skill inside Inside the Text
+  useInStory: string; // what to do with the skill inside Text Lab
   aiTip: string; // AI as a resource, not the source
 };
 
@@ -25,7 +25,7 @@ export const miniLessons: MiniLesson[] = [
   {
     id: "what-is-analysis", title: "What Is Text Analysis?", group: "Reading closely", minutes: 7, grades: { min: 6, max: 12 },
     goal: "I can make a claim about a text and support it with evidence and reasoning.",
-    why: "Summary tells what happened. Analysis explains how and why. Every task in Inside the Text asks you to analyze.",
+    why: "Summary tells what happened. Analysis explains how and why. Every task in Text Lab asks you to analyze.",
     benchmarks: ["ELA.K12.EE.1.1", "ELA.K12.EE.3.1"],
     courseLink: "AP: Literary Argumentation, Claims and Evidence. Cambridge: AO1 knowledge and understanding, AO3 personal response.",
     cards: [
@@ -180,7 +180,7 @@ export const miniLessons: MiniLesson[] = [
   {
     id: "setting-mood", title: "Setting, Mood, and Tone", group: "Story elements", minutes: 7, grades: { min: 6, max: 12 },
     goal: "I can explain how setting creates mood and how word choice reveals tone.",
-    why: "Every story world in Inside the Text was built from its setting. Reading the setting tells you how to feel and what to watch for.",
+    why: "Every story world in Text Lab was built from its setting. Reading the setting tells you how to feel and what to watch for.",
     benchmarks: ["ELA.R.1.1", "ELA.K12.EE.3.1"],
     courseLink: "AP: Setting skill category. Cambridge: AO2, language and atmosphere.",
     cards: [
@@ -304,7 +304,7 @@ export const miniLessons: MiniLesson[] = [
   {
     id: "irony", title: "Irony", group: "Author's craft", minutes: 6, grades: { min: 7, max: 12 },
     goal: "I can identify verbal, situational, and dramatic irony and explain why the author uses it.",
-    why: "Several stories in Inside the Text turn on irony. If you miss it, you miss the point.",
+    why: "Several stories in Text Lab turn on irony. If you miss it, you miss the point.",
     benchmarks: ["ELA.R.1.3", "ELA.R.1.1"],
     courseLink: "AP: Narration and Literary Argumentation. Cambridge: AO2, effects of narrative technique.",
     cards: [

@@ -25,7 +25,7 @@ function wrap(value: string, limit = 86) {
 function escapePdf(text: string) { return text.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)"); }
 
 export function downloadStudentPacket(packet: StudentPacket) {
-  const lines = ["Inside the Text - Student Submission Packet", packet.name, packet.role, "", "Narrative", ...wrap(packet.narrative || "No narrative submitted.")];
+  const lines = ["Text Lab - Student Submission Packet", packet.name, packet.role, "", "Narrative", ...wrap(packet.narrative || "No narrative submitted.")];
   for (const section of packet.sections) lines.push("", section.title, ...wrap(section.body || "None recorded."));
   const pages: string[][] = [];
   for (let index = 0; index < lines.length; index += 48) pages.push(lines.slice(index, index + 48));

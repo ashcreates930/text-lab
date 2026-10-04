@@ -1,4 +1,4 @@
-// Original passages written for Inside the Text fluency checks (AmplifiED). Each runs about 250 words so that
+// Original passages written for Text Lab fluency checks (AmplifiED). Each runs about 250 words so that
 // strong readers do not finish before one minute. Levels are Flesch-Kincaid estimates computed in tests;
 // they guide passage choice and are not equivalent-form probes from a published assessment.
 export type FluencyPassage = { id: string; title: string; band: string; targetGrade: number; text: string };
