@@ -10,6 +10,18 @@
 .scene-bg .soft-button,.dark-zone .soft-button{background:#ffffff14;border-color:#ffffff55}
 .scene-bg .soft-button:hover{background:#ffffff26}
 
+/* Student case flow (app/case.tsx): one typeface, generous spacing, soft cards, one primary button style. */
+.case-ui{font-family:"Plus Jakarta Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#2A2620;--color-white:#ffffff}
+.case-ui .font-serif{font-family:Georgia,"Times New Roman",serif}
+.case-art{background-size:cover;background-position:center;filter:brightness(1.6) contrast(1.06) saturate(1.08)}
+.case-primary{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:52px;border-radius:16px;background:#A0472C;color:#fff;padding:0 22px;font-size:17px;font-weight:700;transition:background .15s,transform .15s}
+.case-primary:hover:not(:disabled){background:#8A3B23;transform:translateY(-1px)}
+.case-secondary{display:inline-flex;align-items:center;gap:.6rem;min-height:52px;border-radius:16px;background:#FFFDF8;color:#2A2620;padding:0 18px;font-size:16px;font-weight:600;box-shadow:0 2px 10px -4px rgba(42,38,32,.25);transition:background .15s}
+.case-secondary:hover{background:#F4E1D6}
+@keyframes case-pulse{0%,100%{box-shadow:0 0 0 0 rgba(160,71,44,.55)}50%{box-shadow:0 0 0 10px rgba(160,71,44,0)}}
+.case-pulse{animation:case-pulse 2.2s ease-in-out infinite}
+@media print{.case-ui{color:#000}}
+
 /* Display settings (app/display-settings.tsx). Zoom scales every fixed pixel size in the app, including small labels. */
 html[data-text-size="large"] body{zoom:1.15}
 html[data-text-size="xl"] body{zoom:1.3}

@@ -9,6 +9,7 @@ import type { AnalysisReport, SavedTextEvidence } from "@/lib/analysis-report";
 import type { AuthorshipRange } from "@/lib/authorship";
 import { AccessGate } from "./access-gate";
 import { Approach } from "./approach";
+import { CaseFlow } from "./case";
 import { Wordmark } from "./wordmark";
 import { HeaderLanguage, saveHomeLanguage, savedHomeLanguage } from "./bilingual";
 import { FeedbackBanner } from "./feedback-banner";
@@ -199,7 +200,7 @@ export default function Home() {
     }
     setDemo(next); setView(preset.startsWith("teacher") ? "teacher" : preset==="student_first_visit" ? "story" : "play");
   }
-  function chooseStory(worldId:string,course:"all"|"best"|"ap"|"aice"="all"){setDemo(d=>({...d,worldId,course,grade:null,role:"",think:false,previewComplete:false,scene:0}));setView("level")}
+  function chooseStory(worldId:string,course:"all"|"best"|"ap"|"aice"="all"){setDemo(d=>({...d,worldId,course,grade:null,role:"",think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:0}));setView("play")}
   function chooseGrade(grade:number){setDemo(d=>({...d,grade,role:"",think:false,previewComplete:false,scene:0}));setView("play")}
   function tryAnotherStory(){setDemo(d=>({...d,role:"",briefingComplete:false,think:false,previewComplete:false,scene:0}));setView("story")}
   function joinClass(session:{world_id:string;grade:number},auth:ClassAuth){const next=newDemo("class_student",session.world_id);next.grade=session.grade;next.scene=0;next.classAuth=auth;setDemo(next);setView("classhome")}
@@ -214,7 +215,7 @@ export default function Home() {
   return <main className="min-h-screen bg-[#F6F0E3] text-[#2A2620]">
     {view !== "landing" && <header className="sticky top-0 z-30 flex min-h-[58px] flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-white/10 bg-[#F6F0E3]/95 px-5 py-2 md:px-10">
       <button onClick={() => setView("landing")} className="flex items-center gap-2"><Wordmark className="text-xl"/><span className="hidden text-xs text-white/45 sm:block">by {brand.organization}</span></button>
-      {(view==="story"||view==="level"||view==="play")&&demo.preset!=="class_student"?<nav aria-label="Demo steps" className="flex items-center gap-2 text-[10px] tracking-wide sm:gap-3">{["Story","Level","Role"].map((step,i)=><span key={step} aria-current={(view==="story"&&i===0)||(view==="level"&&i===1)||(view==="play"&&i===2)?"step":undefined} className={(view==="story"&&i===0)||(view==="level"&&i===1)||(view==="play"&&i===2)?"text-[#A0472C]":"text-white/40"}>{i>0&&<span className="mr-2 text-white/25">·</span>}{step}</span>)}</nav>:<span className="hidden items-center gap-2 text-xs text-white/45 md:flex"><span>{brand.organization}</span><span aria-hidden="true">·</span><span className="eyebrow">FIELD EXPERIENCE</span></span>}
+      {null}
       <div className="ml-auto flex flex-wrap items-center justify-end gap-2">{(["story","level","play","classhome","classlive"] as View[]).includes(view)&&<HeaderLanguage value={demo.homeLanguage??null} onChange={lang=>setDemo(d=>({...d,homeLanguage:lang}))}/>}<DisplaySettings placement="header"/>
       {classSession && demo.classAuth ? <button onClick={() => setView("classhome")} className={`rounded-full border px-4 py-2 text-xs ${view === "classhome" ? "border-[#A0472C] bg-[#A0472C] text-[#FFFDF8]" : "border-white/25 text-white/80"}`}>My class</button> : view === "classroom" ? null : <div className="flex gap-1 rounded-full border border-white/15 p-1 text-[11px]">
         <button onClick={() => setView("play")} className={`rounded-full px-3 py-1.5 ${view === "play" ? "bg-[#A0472C] text-[#FFFDF8]" : "text-white/65"}`}>Student</button>
@@ -226,7 +227,7 @@ export default function Home() {
     {view === "lessons" && <section className="mx-auto max-w-7xl px-5 py-10 md:px-10 md:py-14">{activeLesson ? <LessonPlayer lessonId={activeLesson} grade={demo.grade} onClose={() => { setActiveLesson(""); window.scrollTo(0, 0); }} onFinish={(id, record) => setDemo(d => ({ ...d, lessonsDone: { ...(d.lessonsDone ?? {}), [id]: record } }))} /> : <><button onClick={() => backToPreviousScreen(() => setView("landing"))} className="mb-8 inline-flex items-center gap-2 text-xs text-white/55 hover:text-white">← Back</button><h1 className="sr-only">Mini lessons</h1><MiniLessonLibrary grade={demo.grade} done={demo.lessonsDone ?? {}} onOpen={id => { setActiveLesson(id); window.scrollTo(0, 0); }} /><button onClick={() => setView("story")} className="gold-button mt-10 px-6 py-4 text-sm">Ready? Pick a story →</button></>}</section>}
     {view === "story" && <PickStory onLessons={() => { setActiveLesson(""); setView("lessons"); }} onBack={()=>backToPreviousScreen(()=>setView("landing"))} onPick={chooseStory} initialCourse={demo.course??"all"} />}
     {view === "level" && <ChooseLevel worldId={demo.worldId} course={demo.course??"all"} onBack={()=>backToPreviousScreen(()=>setView("story"))} onChoose={chooseGrade} />}
-    {view === "play" && <Student demo={demo} setDemo={setDemo} onTeacher={() => setView("teacher")} onBackScreen={()=>backToPreviousScreen(()=>setView("level"))} onBackToLevel={()=>backToPreviousScreen(()=>demo.preset==="class_student"?setView("join"):setView("level"))} onWaitlist={()=>setView("waitlist")} onTryAnotherStory={tryAnotherStory} feedbackUrl={feedbackUrl} />}
+    {view === "play" && <CaseFlow demo={demo} setDemo={setDemo} onExit={()=>classSession?setView("classhome"):setView("story")} onAnotherStory={()=>{setDemo(d=>({...d,submitted:false,scene:0}));setView(classSession?"classhome":"story")}} />}
     {view === "teacher" && <Teacher demo={demo} setDemo={setDemo} onStudent={() => setView("play")} onPreset={start} onClassroom={() => setView("classroom")} />}
     {view === "classroom" && <Classroom onBack={() => backToPreviousScreen(() => setView("landing"))} />}
     {view === "classhome" && demo.classAuth && <ClassHome auth={demo.classAuth} onStory={() => setView("play")} onLive={() => setView("classlive")} />}
