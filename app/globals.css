@@ -61,3 +61,11 @@ html[data-contrast="high"] .soft-button{border-color:#2a2620b3;background:#fff}
 @keyframes amb-fog{from{background-position:0 0}to{background-position:-200% 0}}
 @media (prefers-reduced-motion:reduce){.case-alive,.amb,.case-stamp,.case-stamp-page,.case-rise,.case-pulse{animation:none!important}}
 @media print{.case-stamp-page{animation:none}}
+@keyframes case-pop{0%{transform:scale(1)}35%{transform:scale(1.06)}100%{transform:scale(1)}}
+.case-pop{animation:case-pop .6s ease-out .15s both}
+@keyframes case-mini-stamp{0%{opacity:0;transform:scale(2) rotate(-14deg)}70%{opacity:1;transform:scale(.95) rotate(-8deg)}100%{opacity:1;transform:scale(1) rotate(-8deg)}}
+.case-mini-stamp{display:inline-block;transform:rotate(-8deg);border:2px solid #A0472C;color:#A0472C;border-radius:6px;padding:1px 7px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#FFFDF8}
+.case-mini-stamp.fresh{animation:case-mini-stamp .45s cubic-bezier(.2,.9,.3,1.2) .2s both}
+@media (prefers-reduced-motion:reduce){.case-pop,.case-mini-stamp.fresh{animation:none!important}}
+/* Headings receive focus on each new screen for screen readers; no visible ring is needed for that programmatic focus. */
+h1[tabindex="-1"]:focus{outline:none}

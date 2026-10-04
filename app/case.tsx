@@ -7,7 +7,7 @@ import {WorldPackSchema,type WorldPack} from "@/lib/world-schema";
 import {parseSourcePassages,type SourcePassage} from "@/lib/source-passages";
 import type {Demo} from "./page";
 import {BilingualProvider,HomeText} from "./bilingual";
-import {Ambient,FactCheckerBadge,RankChip,playStamp,recordFactCheck,recordScene,useProgress} from "./case-game";
+import {Ambient,FactCheckerBadge,RankChip,RankLadder,playStamp,recordFactCheck,recordScene,useProgress} from "./case-game";
 
 type Scene=WorldPack["scenes"][number];
 type Clue=Scene["artifacts"][number];
@@ -25,7 +25,7 @@ export function CaseFlow(props:{demo:Demo;setDemo:React.Dispatch<React.SetStateA
 
 function CaseInner({demo,setDemo,onExit,onAnotherStory}:{demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void}){
  const [world,setWorld]=useState<WorldPack|null>(null),[passages,setPassages]=useState<SourcePassage[]>([]),[error,setError]=useState("");
- const [openClue,setOpenClue]=useState<string>(""),[toast,setToast]=useState(""),[celebrate,setCelebrate]=useState<{sceneId:string;rankUp:string|null}|null>(null);
+ const [openClue,setOpenClue]=useState<string>(""),[toast,setToast]=useState(""),[celebrate,setCelebrate]=useState<{sceneId:string;rankUp:string|null}|null>(null),[justProven,setJustProven]=useState("");
  useEffect(()=>{setWorld(null);fetch(`/worlds/${demo.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setError("We couldn't open this story. Refresh the page to try again."));fetch(`/worlds/${demo.worldId}/source.md`).then(r=>r.ok?r.text():"").then(t=>setPassages(parseSourcePassages(t))).catch(()=>setPassages([]))},[demo.worldId]);
  // Students skip role and level screens: the first role is used unless an adult chose one.
  useEffect(()=>{if(world&&!world.roles.some(r=>r.id===demo.role))setDemo(d=>({...d,role:world.roles[0].id,briefingComplete:true,think:true}))},[world,demo.role,setDemo]);
@@ -36,14 +36,14 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory}:{demo:Demo;setDemo:React
  const finished=demo.submitted;
  if(finished)return <CaseSummary world={world} demo={demo} onAnotherStory={onAnotherStory}/>;
  const clue=scene.artifacts.find(a=>a.id===openClue);
- if(clue)return <ClueView world={world} scene={scene} clue={clue} roleId={role.id} demo={demo} setDemo={setDemo} passages={passages} onClose={(saved,info)=>{setOpenClue("");if(!saved)return;window.scrollTo({top:0});
+ if(clue)return <ClueView world={world} scene={scene} clue={clue} roleId={role.id} demo={demo} setDemo={setDemo} passages={passages} onClose={(saved,info)=>{setOpenClue("");if(!saved)return;window.scrollTo({top:0});setJustProven(clue.id);
   const badge=info?.factCheck?recordFactCheck(`${world.id}:${clue.id}`):false;
   setToast(badge?"Badge earned: Fact Checker. You used the story to prove a character wrong.":"Clue proven and saved to your case file.");
   if(info?.solves){setCelebrate({sceneId:scene.id,rankUp:recordScene(`${world.id}:${scene.id}`)});playStamp()}}}/>;
- return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} role={role} demo={demo} setDemo={setDemo} passages={passages} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null}/>;
+ return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} role={role} demo={demo} setDemo={setDemo} passages={passages} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven}/>;
 }
 
-function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue,onExit,toast,celebrating,rankUp}:{world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null}){
+function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue,onExit,toast,celebrating,rankUp,justProven}:{world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string}){
  const [reading,setReading]=useState(false);
  const done=scene.artifacts.filter(a=>isDone(demo,a.id)).length,total=scene.artifacts.length,allDone=done===total;
  const locked=(a:Clue)=>!!a.unlock_condition?.startsWith("artifact:")&&!isDone(demo,a.unlock_condition.slice(9));
@@ -61,7 +61,7 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue
   <div className="relative mt-4 overflow-hidden rounded-3xl shadow-[0_10px_40px_-12px_rgba(42,38,32,.35)]">
    <div className={`case-art aspect-[4/3] w-full sm:aspect-[3/2] md:aspect-[16/8] ${allDone?"case-alive":""}`} style={{backgroundImage:`url('${scene.background_image}')`}} role="img" aria-label={`Scene: ${scene.id.replaceAll("-"," ")}`}/>
    {allDone&&<Ambient worldId={world.id}/>}
-   {scene.artifacts.map((a,i)=>{const lk=locked(a),dn=isDone(demo,a.id);return <button key={a.id} disabled={lk} onClick={()=>onOpenClue(a.id)} aria-label={`Clue ${i+1}: ${a.name}${dn?", done":lk?", locked":""}`} className={`absolute grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full text-[15px] font-bold shadow-lg ring-4 transition hover:scale-110 ${dn?"bg-[#FFFDF8] text-[#A0472C] ring-[#FFFDF8]/40":lk?"bg-[#2A2620]/70 text-white/70 ring-white/20":"case-pulse bg-[#A0472C] text-white ring-[#A0472C]/30"}`} style={{left:`${a.position.x+a.position.width/2}%`,top:`${a.position.y+a.position.height/2}%`}}>{dn?<Check size={18}/>:lk?<Lock size={15}/>:i+1}</button>})}
+   {scene.artifacts.map((a,i)=>{const lk=locked(a),dn=isDone(demo,a.id);return <button key={a.id} disabled={lk} onClick={()=>onOpenClue(a.id)} aria-label={`Clue ${i+1}: ${a.name}${dn?", done":lk?", locked":""}`} className={`absolute grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full text-[15px] font-bold shadow-lg ring-4 transition hover:scale-110 ${a.id===justProven?"case-pop ":""}${dn?"bg-[#FFFDF8] text-[#A0472C] ring-[#FFFDF8]/40":lk?"bg-[#2A2620]/70 text-white/70 ring-white/20":"case-pulse bg-[#A0472C] text-white ring-[#A0472C]/30"}`} style={{left:`${a.position.x+a.position.width/2}%`,top:`${a.position.y+a.position.height/2}%`}}>{dn?<Check size={18}/>:lk?<Lock size={15}/>:i+1}</button>})}
    {allDone&&<div aria-hidden className={`case-stamp pointer-events-none z-10 ${celebrating?"":"case-stamp-static"}`}>Scene solved</div>}
    <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent p-5 pt-16 md:p-8 md:pt-24">
     <p className="text-[13px] font-semibold uppercase tracking-wide text-[#F3C9B2]">You are the {role.name}</p>
@@ -73,11 +73,12 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue
   {toast&&<p className="mt-4 rounded-2xl bg-[#2A2620] px-5 py-3 text-[15px] text-white"><Check size={16} className="mr-2 inline"/>{toast}</p>}</div>
   <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_340px]">
    <section aria-labelledby="clues-h">
+    <div className="mb-6 flex flex-wrap items-center justify-between gap-5 rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)] md:p-6"><div><p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Your mission</p><p className="mt-1 text-[19px] font-bold leading-snug">{allDone?"Scene solved. Every clue is proven.":`Prove all ${total} clues to solve this scene.`}</p><p className="mt-1 text-[14px] text-[#6B6457]">Open a clue, ask a character, then tap the line in the story that proves it.</p></div><RankLadder/></div>
     <div className="flex items-end justify-between gap-4"><h2 id="clues-h" className="text-[21px] font-bold sm:text-[24px]">Examine the clues</h2><p className="whitespace-nowrap text-[15px] font-semibold text-[#2A2620]">{done} of {total} clues proven</p></div>
     <div className="mt-2 flex gap-1.5" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label="Clues proven">{scene.artifacts.map(a=><span key={a.id} className={`h-2.5 flex-1 rounded-full transition-colors duration-500 ${isDone(demo,a.id)?"bg-[#A0472C]":"bg-[#E4DCCB]"}`}/>)}</div>
-    <ul className="mt-5 grid gap-3 sm:grid-cols-2">{scene.artifacts.map((a,i)=>{const lk=locked(a),dn=isDone(demo,a.id),isNext=next?.id===a.id;return <li key={a.id}><button disabled={lk} onClick={()=>onOpenClue(a.id)} className={`flex w-full items-center gap-4 rounded-2xl p-4 text-left transition ${lk?"cursor-not-allowed bg-[#EFE8D8]/60 text-[#9A9182]":"bg-[#FFFDF8] shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-10px_rgba(42,38,32,.35)]"} ${isNext?"ring-2 ring-[#A0472C]":""}`}>
+    <ul className="mt-5 grid gap-3 sm:grid-cols-2">{scene.artifacts.map((a,i)=>{const lk=locked(a),dn=isDone(demo,a.id),isNext=next?.id===a.id;return <li key={a.id}><button disabled={lk} onClick={()=>onOpenClue(a.id)} className={`flex w-full items-center gap-4 rounded-2xl p-4 text-left transition ${a.id===justProven?"case-pop ":""}${lk?"cursor-not-allowed bg-[#EFE8D8]/60 text-[#9A9182]":"bg-[#FFFDF8] shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-10px_rgba(42,38,32,.35)]"} ${isNext?"ring-2 ring-[#A0472C]":""}`}>
      <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-[16px] font-bold ${dn?"bg-[#F4E1D6] text-[#A0472C]":lk?"bg-[#E4DCCB] text-[#9A9182]":"bg-[#A0472C] text-white"}`}>{dn?<Check size={20}/>:lk?<Lock size={16}/>:i+1}</span>
-     <span className="min-w-0 flex-1"><span className="block text-[17px] font-semibold leading-snug">{a.name}</span><HomeText text={a.name} className="text-[14px]"/><span className="mt-1 block text-[14px] text-[#6B6457]">{lk?"Opens after an earlier clue":dn?"Proven · tap to review":evidenceLabel[a.evidence_type]}</span></span>
+     <span className="min-w-0 flex-1"><span className="block text-[17px] font-semibold leading-snug">{a.name}</span><HomeText text={a.name} className="text-[14px]"/><span className="mt-1 block text-[14px] text-[#6B6457]">{lk?"Opens after an earlier clue":dn?<span className={`case-mini-stamp ${a.id===justProven?"fresh":""}`}>Proven</span>:evidenceLabel[a.evidence_type]}</span></span>
      {!lk&&<ArrowRight size={18} className="shrink-0 text-[#A0472C]"/>}
     </button></li>})}</ul>
     {allDone&&<div className="mt-8 rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]">
@@ -133,7 +134,7 @@ function ClueView({world,scene,clue,roleId,demo,setDemo,passages,onClose}:{world
    </section>
    <section className="order-1 lg:order-2" aria-live="polite">
     <div className="rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)] md:p-7">
-     <p className="text-[14px] font-semibold text-[#8A3B23]">Clue · {evidenceLabel[clue.evidence_type]}</p>
+     <p className="text-[14px] font-semibold text-[#8A3B23]">Clue {scene.artifacts.findIndex(a=>a.id===clue.id)+1} of {scene.artifacts.length} · {evidenceLabel[clue.evidence_type]}</p>
      <h1 className="mt-1 text-[28px] font-bold leading-tight">{clue.name}</h1><HomeText text={clue.name}/>
      {step==="ask"&&char&&<div className="mt-6">
       <h2 className="text-[20px] font-bold">Ask {chars.length>1?"a character":char.name}</h2>

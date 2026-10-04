@@ -51,3 +51,12 @@ export function playStamp(delay=330){
 /** Ambient motion layered over a solved scene. Chosen per story; any story without an entry gets drifting dust. */
 const AMBIENT:Record<string,"dust"|"snow"|"candle"|"fog">={"sleepy-hollow":"fog","trifles":"snow","tell-tale-heart":"candle"};
 export function Ambient({worldId}:{worldId:string}){return <div aria-hidden className={`pointer-events-none absolute inset-0 amb amb-${AMBIENT[worldId]??"dust"}`}/>}
+
+/** Rank ladder shown on every scene, so the game is visible before the first clue is proven. */
+export function RankLadder(){
+ const p=useProgress(),solved=p.scenes.length,rank=rankFor(solved),next=nextRank(solved);
+ return <div>
+  <ol className="flex items-center gap-1.5" aria-label={`Detective rank: ${rank}`}>{RANKS.map((r,i)=>{const reached=solved>=r.min,current=r.name===rank;return <li key={r.name} className="flex items-center gap-1.5">{i>0&&<span aria-hidden className={`h-0.5 w-4 rounded-full sm:w-6 ${reached?"bg-[#A0472C]":"bg-[#E4DCCB]"}`}/>}<span title={r.name} className={`grid h-8 w-8 place-items-center rounded-full ${current?"bg-[#A0472C] text-white ring-4 ring-[#A0472C]/20":reached?"bg-[#F4E1D6] text-[#A0472C]":"bg-[#EFE8D8] text-[#B5AC9C]"}`}><Award size={15}/><span className="sr-only">{r.name}{current?" (your rank)":""}</span></span></li>})}</ol>
+  <p className="mt-2 text-[14px] text-[#6B6457]"><b className="text-[#2A2620]">{rank}</b>{next?` · solve ${next.min-solved} more scene${next.min-solved===1?"":"s"} to become ${next.name}`:" · top rank"}</p>
+ </div>;
+}
