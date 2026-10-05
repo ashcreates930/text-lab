@@ -2,7 +2,7 @@
 // The simplified student flow: land in the scene, open a clue, ask a character, prove it with a line from the story.
 // Adults (teacher or parent) choose the story, grade and language; students never see those settings.
 import {useEffect,useMemo,useRef,useState} from "react";
-import {ArrowLeft,ArrowRight,BookOpen,Check,ChevronDown,Lock,MessageCircle,Printer,Quote,Search,Volume2} from "lucide-react";
+import {PlayCircle,ArrowLeft,ArrowRight,BookOpen,Check,ChevronDown,Lock,MessageCircle,Printer,Quote,Search,Volume2} from "lucide-react";
 import {WorldPackSchema,type WorldPack} from "@/lib/world-schema";
 import {parseSourcePassages,type SourcePassage} from "@/lib/source-passages";
 import type {Demo} from "./page";
@@ -19,11 +19,11 @@ function sentences(text:string){return (text.match(/[^.!?]+[.!?]+["”’)]*\s*|
 function plain(q:Clue["questions"][number]|undefined,role:string){if(!q)return "";return q.prompt_by_role_plain?.[role]??q.prompt_by_role[role]??Object.values(q.prompt_by_role)[0]??""}
 function isDone(demo:Demo,id:string){const a=demo.artifactAnswers[id];return !!(a?.notice?.trim()&&a?.interpret?.trim())}
 
-export function CaseFlow(props:{demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void}){
+export function CaseFlow(props:{demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void;onTutorial?:()=>void}){
  return <BilingualProvider worldId={props.demo.worldId} lang={props.demo.homeLanguage??null}><CaseInner {...props}/></BilingualProvider>;
 }
 
-function CaseInner({demo,setDemo,onExit,onAnotherStory}:{demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void}){
+function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial}:{demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void;onTutorial?:()=>void}){
  const [world,setWorld]=useState<WorldPack|null>(null),[passages,setPassages]=useState<SourcePassage[]>([]),[error,setError]=useState("");
  const [openClue,setOpenClue]=useState<string>(""),[toast,setToast]=useState(""),[celebrate,setCelebrate]=useState<{sceneId:string;rankUp:string|null}|null>(null),[justProven,setJustProven]=useState("");
  useEffect(()=>{setWorld(null);fetch(`/worlds/${demo.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setError("We couldn't open this story. Refresh the page to try again."));fetch(`/worlds/${demo.worldId}/source.md`).then(r=>r.ok?r.text():"").then(t=>setPassages(parseSourcePassages(t))).catch(()=>setPassages([]))},[demo.worldId]);
@@ -40,10 +40,10 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory}:{demo:Demo;setDemo:React
   const badge=info?.factCheck?recordFactCheck(`${world.id}:${clue.id}`):false;
   setToast(badge?"Badge earned: Fact Checker. You used the story to prove a character wrong.":"Clue proven and saved to your case file.");
   if(info?.solves){setCelebrate({sceneId:scene.id,rankUp:recordScene(`${world.id}:${scene.id}`)});playStamp()}}}/>;
- return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} role={role} demo={demo} setDemo={setDemo} passages={passages} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven}/>;
+ return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} role={role} demo={demo} setDemo={setDemo} passages={passages} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
 }
 
-function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue,onExit,toast,celebrating,rankUp,justProven}:{world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string}){
+function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue,onExit,toast,celebrating,rankUp,justProven,onTutorial}:{world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string;onTutorial?:()=>void}){
  const [reading,setReading]=useState(false);
  const done=scene.artifacts.filter(a=>isDone(demo,a.id)).length,total=scene.artifacts.length,allDone=done===total;
  const locked=(a:Clue)=>!!a.unlock_condition?.startsWith("artifact:")&&!isDone(demo,a.unlock_condition.slice(9));
@@ -55,7 +55,7 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue
  function listen(){if(scene.narration_audio){new Audio(scene.narration_audio).play().catch(()=>{});return}const u=new SpeechSynthesisUtterance(scene.narration);u.rate=.92;speechSynthesis.cancel();speechSynthesis.speak(u)}
  return <div className="case-ui mx-auto max-w-6xl px-4 pb-24 pt-6 md:px-8">
   <div className="flex items-center justify-between gap-4">
-   <button onClick={onExit} className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]"><ArrowLeft size={18}/> Stories</button>
+   <button onClick={onExit} className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]"><ArrowLeft size={18}/> Stories</button>{onTutorial&&<button onClick={onTutorial} className="mr-auto inline-flex items-center gap-2 rounded-full px-3 py-2 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]"><PlayCircle size={18}/> <span className="hidden sm:inline">How it works</span><span className="sm:hidden">Tutorial</span></button>}
    <div className="flex items-center gap-3 text-[15px] text-[#6B6457]"><span className="hidden sm:inline">{world.title}</span><span className="whitespace-nowrap rounded-full bg-[#EFE8D8] px-3 py-1 font-semibold text-[#2A2620]">Scene {sceneIndex+1} of {world.scenes.length}</span><RankChip/></div>
   </div>
   <div className="relative mt-4 overflow-hidden rounded-3xl shadow-[0_10px_40px_-12px_rgba(42,38,32,.35)]">
