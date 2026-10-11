@@ -193,3 +193,27 @@ test("scene reading ranges give each scene its own portion, in the order listed"
   assert.equal(describePortion(portions[0]),"¶ 68 to 70, then ¶ 1 to 20");
   assert.equal(portions[1][0].id,"p021");
 });
+
+test("storybook quote check is forgiving but only accepts words from the page", async()=>{
+  const {quoteInText}=await import("../lib/storybook.ts");
+  const page="I undid the lantern cautiously — oh, so cautiously (for the hinges creaked) — I undid it just so much that a single thin ray fell upon the vulture eye. It wasn't the old man.";
+  assert.equal(quoteInText("“A SINGLE thin RAY fell upon the vulture eye”",page),true);
+  assert.equal(quoteInText("single   thin ray  fell upon the vulture eye",page),true);
+  assert.equal(quoteInText("for the hinges creaked",page),true);
+  assert.equal(quoteInText("it wasn’t the old man",page),true);
+  assert.equal(quoteInText("the old man was snoring",page),false);
+  assert.equal(quoteInText("thin ray",page),false);
+  assert.equal(quoteInText("ray fell upon the vulture eyes",page),false);
+});
+
+test("every Tell-Tale Heart clue lands on the storybook page that holds its last cited paragraph", async()=>{
+  const {cluesByPage}=await import("../lib/storybook.ts");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/tell-tale-heart/world.json",import.meta.url),"utf8")));
+  const byPage=cluesByPage(world);
+  assert.equal(byPage.flat().length,world.scenes.reduce((n,s)=>n+s.artifacts.length,0));
+  const pages=world.storybook!.pages;
+  for(const [i,items] of byPage.entries())for(const {clue} of items){
+    const lastCited=Math.max(...clue.source_anchor.map(id=>Number(id.slice(1))));
+    assert.ok(Number(pages[i].start.slice(1))<=lastCited&&lastCited<=Number(pages[i].end.slice(1)),clue.id);
+  }
+});

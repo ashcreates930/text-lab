@@ -37,6 +37,9 @@ export type Demo = {
   openedArtifacts:string[]; activeArtifact:string; artifactStage:number; artifactDialogOpen:boolean;
   briefingComplete:boolean; savedTextEvidence:SavedTextEvidence[]; authorshipRanges:AuthorshipRange[]; analysisReport?:AnalysisReport;
   previewComplete?:boolean; course?:"all"|"best"|"ap"|"aice"; lessonsDone?:Record<string,LessonRecord>; portionUnlocks?:string[]; classAuth?:ClassAuth; homeLanguage?:HomeLanguage|null;
+  // Storybook reader: current page, furthest page reached, briefing seen, sections solved, and the student's own picture frames.
+  readerPage?:number; readerFurthest?:number; readerBriefed?:boolean; readerSections?:string[];
+  storyFrames?:Record<string,{kind:"add_detail"|"student";description:string;quote:string;saved_at:string;image?:string;check?:{ok:boolean;notes:string[]}}>;
 };
 type ScreenSnapshot = { insideTheTextScreen: true; sequence: number; view: View; demo: Demo };
 let pendingHeadingObserver: MutationObserver | null = null;

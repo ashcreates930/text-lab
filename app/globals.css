@@ -69,3 +69,17 @@ html[data-contrast="high"] .soft-button{border-color:#2a2620b3;background:#fff}
 @media (prefers-reduced-motion:reduce){.case-pop,.case-mini-stamp.fresh{animation:none!important}}
 /* Headings receive focus on each new screen for screen readers; no visible ring is needed for that programmatic focus. */
 h1[tabindex="-1"]:focus{outline:none}
+
+/* Storybook reader */
+.sb-drawer{animation:sb-slide .28s cubic-bezier(.2,.8,.3,1) both}
+.sb-scrim{animation:sb-fade .2s ease-out both}
+@keyframes sb-slide{from{transform:translateX(100%)}to{transform:none}}
+@keyframes sb-fade{from{opacity:0}to{opacity:1}}
+.sb-word{display:inline;padding:0;border:0;background:none;font:inherit;color:inherit;text-decoration:underline;text-decoration-color:#A0472C;text-decoration-thickness:2px;text-underline-offset:.2em;cursor:pointer}
+.sb-word:hover,.sb-word:focus-visible{background:#F4E1D6;border-radius:4px}
+.sb-say{padding:0 .1em;border:0;background:none;font:inherit;color:inherit;cursor:pointer;box-shadow:inset 0 -2px 0 #A0472C55}
+.sb-say:hover,.sb-say:focus-visible{background:#F4E1D6}
+.sb-placeholder{background:radial-gradient(120% 90% at 30% 20%,#FBF3E6 0%,#EFE2CC 45%,#E2C9AE 100%);}
+.sb-placeholder:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 22px,rgba(160,71,44,.05) 22px 23px)}
+.sb-frame{border:3px dashed #A0472C;background:rgba(255,253,248,.85);box-shadow:0 10px 30px -14px rgba(42,38,32,.4)}
+@media (prefers-reduced-motion:reduce){.sb-drawer,.sb-scrim{animation:none!important}}

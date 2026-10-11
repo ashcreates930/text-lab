@@ -1736,5 +1736,955 @@
       "Use evidence from the source.",
       "Explain how perspective changes reader understanding."
     ]
+  },
+  "storybook": {
+    "review_status": "draft",
+    "spanish_status": "draft",
+    "sections": [
+      {
+        "id": "the-plan",
+        "title": "The plan"
+      },
+      {
+        "id": "the-eighth-night",
+        "title": "The eighth night"
+      },
+      {
+        "id": "the-deed",
+        "title": "The deed"
+      },
+      {
+        "id": "the-visitors",
+        "title": "The visitors"
+      }
+    ],
+    "pages": [
+      {
+        "id": "page-01",
+        "section": "the-plan",
+        "start": "p001",
+        "end": "p001",
+        "mode": "illustrated",
+        "illustration": {
+          "alt": "A shadowed figure in the dark, head tilted, listening.",
+          "scene_description": "Darkness, with a single shadowed figure seen from behind and slightly to the side, sitting very still with head tilted as if listening hard. Faint sound-like ripples of light in the dark around them suggest hearing that is very sharp. No room details: the page names none.",
+          "status": "planned"
+        },
+        "characters_met": [
+          {
+            "id": "narrator",
+            "name": "The narrator",
+            "description": "The person telling the story, who insists they are not mad."
+          }
+        ],
+        "restatements": {
+          "36e56902351d864c": "It's true!",
+          "b7cbfd1484c2427f": "I have been very, very nervous, and I still am. But why do you think I'm crazy?",
+          "5e2ca40930256ae3": "The illness made my senses sharper, not weaker.",
+          "d4329503657cb3c8": "My sense of hearing was especially sharp.",
+          "8ff08c0dda75b4d8": "I heard everything in the sky and on the earth.",
+          "a28e59e233c02614": "I heard many things in hell.",
+          "4342f2b6e46d7dda": "So, how am I crazy?",
+          "b0056402a60eaa05": "Listen!",
+          "f3a2126ebcd18e78": "Watch how healthily and calmly I can tell you the whole story."
+        }
+      },
+      {
+        "id": "page-02",
+        "section": "the-plan",
+        "start": "p002",
+        "end": "p002",
+        "mode": "illustrated",
+        "illustration": {
+          "alt": "An old man's face in soft shadow, one pale blue eye clouded by a film.",
+          "scene_description": "A close, quiet view of the old man resting, his face soft and mostly in shadow. One pale blue eye with a cloudy film over it catches the light. At the edge of the frame, the narrator's dark silhouette watches. No gold, no weapon, nothing threatening on screen.",
+          "status": "planned"
+        },
+        "characters_met": [
+          {
+            "id": "old-man",
+            "name": "The old man",
+            "description": "An old man with a pale blue \"vulture\" eye covered by a film. The narrator says they loved him."
+          }
+        ],
+        "restatements": {
+          "86591b354777963a": "I can't say how the idea came to me, but once it did, it stayed with me all the time.",
+          "45b3635fce69cd75": "There was no reason for it.",
+          "4cecc0186eb0e1b1": "There was no strong feeling behind it.",
+          "cd89273b92084694": "I cared about the old man.",
+          "09b11293af15ecc1": "He never did anything bad to me.",
+          "f9ab463ece863919": "He never insulted me.",
+          "3a1ad4c5fd774cf3": "I didn't want his money.",
+          "b2a866d33a52a868": "I think it was his eye!",
+          "5ecd68496a6940e7": "Yes, that was it!",
+          "e9d426363955e1ec": "He had an eye like a vulture's, pale blue with a film over it.",
+          "b1d7dd5bb2f946c4": "When he looked at me, I felt scared, so I slowly decided to kill him to be free of the eye."
+        }
+      },
+      {
+        "id": "page-03",
+        "section": "the-plan",
+        "start": "p003",
+        "end": "p004",
+        "mode": "illustrated",
+        "illustration": {
+          "alt": "At midnight, a bedroom door opened a crack; a closed lantern and a shadowed head push through while the old man sleeps.",
+          "scene_description": "Midnight in the old man's bedroom, almost completely dark. The door is open only a few inches; a closed tin dark lantern, giving no light, has been pushed through the gap, and the narrator's head, in silhouette, is slowly coming through after it. The old man sleeps in his bed in the darkness.",
+          "status": "planned"
+        },
+        "characters_met": [],
+        "restatements": {
+          "0c5c83ea133cee3c": "Here's the important part.",
+          "f46c7c10d6b0bb13": "You think I'm crazy.",
+          "6da8c222e0a19c3f": "Crazy people don't know anything.",
+          "e65a4cb9d258c623": "But you should have seen what I did.",
+          "e08861bd4f79edc0": "You should have seen how smart I was, how careful and sneaky I acted!",
+          "5ac2f37f8f14ae80": "I was never nicer to the old man than the week before I killed him.",
+          "8a0972d490598af5": "Every night around midnight, I gently opened his door.",
+          "308c5dcda7adc5c0": "I made a small opening, put in a closed lantern, and then my head.",
+          "fd7ef9698c6249c3": "You would have laughed at how sneakily I did it!",
+          "e59f1e24f3075b08": "I moved very slowly so I wouldn't wake him up."
+        }
+      },
+      {
+        "id": "page-04",
+        "section": "the-plan",
+        "start": "p005",
+        "end": "p006",
+        "mode": "add_detail",
+        "illustration": {
+          "alt": "The old man asleep in the dark, eyes closed; a shadowed head and closed lantern in the doorway.",
+          "scene_description": "The same dark bedroom. The old man sleeps in bed with his eyes closed. In the doorway, the narrator's shadowed head is all the way inside the room, holding the tin lantern, its shutter slightly open. LEFT OUT ON PURPOSE: the single thin ray of light falling on the vulture eye.",
+          "missing_detail": "The single thin ray of lantern light falling on the old man's eye (\"a single thin ray fell upon the vulture eye\").",
+          "status": "planned"
+        },
+        "characters_met": [],
+        "restatements": {
+          "1e22a073dc09d2e0": "It took me an hour to slowly put my head through the door until I could see the old man in bed.",
+          "4960e519cda81d19": "Ha!",
+          "9bfe90a1efeb67e4": "Would a crazy person be this smart?",
+          "06fd30cc5d39baf0": "Once my head was inside, I carefully opened the lantern just enough for a tiny light to shine on the eye.",
+          "1483d3c7a2005574": "I did this for seven nights, always at midnight, but the eye was always closed, so I could not do it. It was not the old man who bothered me. It was his Evil Eye.",
+          "605de6a5afff7f80": "Every morning, I went into his room and talked to him cheerfully, asking how he slept."
+        }
+      },
+      {
+        "id": "page-05",
+        "section": "the-eighth-night",
+        "start": "p007",
+        "end": "p008",
+        "mode": "add_detail",
+        "illustration": {
+          "alt": "The old man in bed, moving suddenly as if startled, in a dark room.",
+          "scene_description": "The dark bedroom on the eighth night. The old man has moved suddenly in his bed, as if startled, half turned toward the room. LEFT OUT ON PURPOSE: the door being opened little by little, and the narrator behind it.",
+          "missing_detail": "The door opening a little at a time, with the narrator behind it (\"opening the door, little by little\").",
+          "status": "planned"
+        },
+        "characters_met": [],
+        "restatements": {
+          "9738553b7c0f67ff": "He would have to be very wise to know I watched him every night at midnight.",
+          "f89b9c19065b1cbb": "On the eighth night, I was extra careful when I opened the door.",
+          "2ba4363b8204cbab": "I moved slower than the minute hand on a watch.",
+          "81924b78c52f634a": "Before that night, I never realized how clever I was.",
+          "442fc88104a0a032": "I was so excited that I could hardly keep it in.",
+          "95a8585c2b1dc580": "I was slowly opening the door, and the old man had no idea what I was doing.",
+          "f8b41b5822debc3f": "I quietly laughed to myself about it.",
+          "a98ffb813b3dfc88": "Maybe the old man heard me because he suddenly moved in bed, like he was surprised."
+        }
+      },
+      {
+        "id": "page-06",
+        "section": "the-eighth-night",
+        "start": "p009",
+        "end": "p011",
+        "mode": "add_detail",
+        "illustration": {
+          "alt": "The old man sitting up in bed in pitch darkness, listening; a shadowed head at the door.",
+          "scene_description": "Pitch-black bedroom. The old man sits up in bed, listening, as if he has just called out. The narrator's shadowed head is in the doorway with the closed tin lantern, perfectly still. The window area is dark. LEFT OUT ON PURPOSE: the shutters, closed and fastened tight.",
+          "missing_detail": "The shutters over the window, closed and fastened (\"the shutters were close fastened, through fear of robbers\").",
+          "status": "planned"
+        },
+        "characters_met": [],
+        "restatements": {
+          "a43a4b6e74113654": "You might think I stopped, but I didn't.",
+          "3c794f7fad45faa9": "The room was very dark because the shutters were closed to keep out robbers, so I knew he couldn't see the door opening. I kept pushing it open slowly.",
+          "9b81f8bd8595c460": "I got my head inside and was about to open the lantern when my thumb slipped, and the old man jumped up in bed, asking, 'Who's there?'",
+          "9f8e9670e287da5f": "I stayed completely still and didn't say anything.",
+          "0fa7368d8641e49d": "For another hour, I didn't move at all, and I didn't hear the old man lie back down.",
+          "73958ce041d13978": "He was still sitting up in bed, listening, just as I have done night after night, listening to the ticking death-watch beetles in the wall."
+        }
+      },
+      {
+        "id": "page-07",
+        "section": "the-eighth-night",
+        "start": "p012",
+        "end": "p013",
+        "mode": "student",
+        "characters_met": [],
+        "restatements": {
+          "9cb1410a7f1a32b5": "Then I heard a small groan, and I knew it was a groan of deadly fear.",
+          "543670fd8866ad2d": "It wasn't a groan from pain or sadness.",
+          "e39cf525ef36850e": "It was a quiet sound from deep inside, caused by being very scared.",
+          "2202d928a8e29aa7": "I knew that sound very well.",
+          "a9075e1de9dda7a6": "Many nights at midnight, while everyone slept, that same sound rose up from my own chest and made my own fears worse.",
+          "3621aaee0aeb7c38": "I really knew that sound well.",
+          "1b31fd41c4480e3b": "I understood how the old man felt and felt sorry for him, but I also laughed inside.",
+          "90752cde014e1bdb": "I knew he had been awake since he first heard the noise and moved in bed.",
+          "91dedce2003c15c0": "His fear had been growing since then.",
+          "a8f262f7f460d375": "He tried to tell himself there was nothing to fear, but he couldn't."
+        }
+      },
+      {
+        "id": "page-08",
+        "section": "the-eighth-night",
+        "start": "p014",
+        "end": "p015",
+        "mode": "student",
+        "characters_met": [],
+        "restatements": {
+          "4475dc31e96ea867": "He kept telling himself it was just the wind, a mouse, or a cricket making noise.",
+          "1597d1452f3c5521": "He tried to make himself feel better with these ideas, but it didn't work.",
+          "8c6deaaf6476260a": "It didn't work because death was coming for him, and its shadow had covered him.",
+          "03c9dc8cc5cc4904": "The sad feeling from the shadow made him sense my head in the room, even though he couldn't see or hear me."
+        }
+      },
+      {
+        "id": "page-09",
+        "section": "the-eighth-night",
+        "start": "p016",
+        "end": "p017",
+        "mode": "student",
+        "characters_met": [],
+        "restatements": {
+          "fda241566dcde0de": "I waited a long time without hearing the old man lie down, so I decided to open a tiny crack in the lantern.",
+          "5424444e913dc6c9": "I opened it very quietly until a small, dim beam of light shone on the vulture eye.",
+          "e462c0a7414b32c6": "The eye was wide open, and looking at it made me very angry.",
+          "1c36a06c2796cef1": "I saw the eye clearly. It was dull blue with a creepy film over it, but I couldn't see the rest of the old man's face because I aimed the light right at the eye."
+        }
+      },
+      {
+        "id": "page-10",
+        "section": "the-eighth-night",
+        "start": "p018",
+        "end": "p019",
+        "mode": "student",
+        "characters_met": [],
+        "restatements": {
+          "8ad79f82931a0a12": "Now, haven't I told you that what you think is madness is really sharp senses?",
+          "c91839d15d6cfbe0": "I heard a low, dull, quick sound, like a watch wrapped in cotton.",
+          "4c72787f81c6a1e7": "I knew that sound very well.",
+          "6e920861019889df": "It was the old man's heart beating.",
+          "7b1055d705b15631": "It made me angrier, like a drum makes a soldier brave.",
+          "9cd74d86b10f2126": "But I still held back and stayed quiet.",
+          "4481b97a6852353d": "I barely breathed.",
+          "8d30160fc2971b7f": "I kept the lantern still.",
+          "72526ffcac065bf5": "I tried to keep the light steady on the eye.",
+          "2f8b2f2549274598": "Meanwhile, the terrible heartbeat got louder.",
+          "bb046b5874e6b211": "It got faster and louder every moment.",
+          "5aab7bf60109b717": "The old man must have been very scared!",
+          "a1cf0162b3cfa2dc": "It got louder, I tell you, louder every moment. Do you understand?",
+          "2cdb48c837c60841": "I have told you I am nervous, and I am."
+        }
+      },
+      {
+        "id": "page-11",
+        "section": "the-deed",
+        "start": "p020",
+        "end": "p020",
+        "mode": "student",
+        "no_generation": true,
+        "no_generation_reason": "This page describes violence. Students describe their picture in writing; no image is generated.",
+        "characters_met": [
+          {
+            "id": "neighbor",
+            "name": "A neighbor",
+            "description": "Someone who lives nearby. The narrator worries the neighbor will hear the sound."
+          }
+        ],
+        "restatements": {
+          "b8b64baf5295156e": "In the middle of the night, the strange noise made me very angry.",
+          "7bdb08700faa4976": "But I stayed still for a few more minutes.",
+          "096f385a4ead9ce7": "The beating got louder and louder!",
+          "2603e5eedccbae08": "I thought the heart would explode!",
+          "026d42522c2708ae": "I got worried that a neighbor might hear the sound!",
+          "92a6459f7c783335": "It was time for the old man to die!",
+          "6b1f9a4a0f78773a": "I yelled loudly, opened the lantern, and jumped into the room.",
+          "fa548794c41d284b": "He screamed once, just once."
+        }
+      },
+      {
+        "id": "page-12",
+        "section": "the-deed",
+        "start": "p021",
+        "end": "p022",
+        "mode": "student",
+        "no_generation": true,
+        "no_generation_reason": "This page describes violence. Students describe their picture in writing; no image is generated.",
+        "characters_met": [],
+        "restatements": {
+          "4c44ba681a23281d": "I quickly pulled him to the floor and put the heavy bed on top of him.",
+          "6867b6789c515e18": "I sat on the bed and smiled happily because I had done it.",
+          "e3b945bf36b58ad6": "But for many minutes, his heart kept beating with a quiet sound.",
+          "b30f68df93f5a6f4": "This didn't bother me; it couldn't be heard through the walls.",
+          "4e0c67797d2fc80c": "Finally, it stopped.",
+          "f4e2c60bfd27f628": "The old man was dead.",
+          "926e7411ee49c147": "I moved the bed and checked his body.",
+          "03b0530e26ef5470": "Yes, he was completely dead.",
+          "fe2cd40ea0dbb63e": "I put my hand on his heart and kept it there for many minutes.",
+          "07c17715cb340436": "There was no heartbeat.",
+          "e3863e32af40532d": "The old man was completely dead.",
+          "ef416c57e9ef8bb8": "His eye would not bother me anymore."
+        }
+      },
+      {
+        "id": "page-13",
+        "section": "the-deed",
+        "start": "p023",
+        "end": "p024",
+        "mode": "student",
+        "no_generation": true,
+        "no_generation_reason": "This page describes violence. Students describe their picture in writing; no image is generated.",
+        "characters_met": [],
+        "restatements": {
+          "15c114a71f874dad": "If you still think I'm crazy, you won't after I tell you how carefully I hid the body.",
+          "7cdc1698147d5998": "The night passed, and I worked quickly but quietly.",
+          "56df1260b8219070": "First, I cut the body into pieces.",
+          "34c612e4171d7c26": "I cut off the head, arms, and legs.",
+          "1c52ee2e93be66bf": "I lifted three floorboards and put all the pieces underneath.",
+          "5318e95162946a69": "I put the boards back so well that no one could tell anything was wrong.",
+          "8dc49bc6f2d237a8": "There was nothing to clean up—no stains or blood.",
+          "986ac801865204e6": "I was too careful for that.",
+          "96c1b52e00f8a0a3": "A tub caught everything—ha!",
+          "335845192fefea39": "Ha!"
+        }
+      },
+      {
+        "id": "page-14",
+        "section": "the-visitors",
+        "start": "p025",
+        "end": "p026",
+        "mode": "student",
+        "characters_met": [
+          {
+            "id": "officer",
+            "name": "Police officers",
+            "description": "Three men who came to search the house after a neighbor reported a scream."
+          }
+        ],
+        "restatements": {
+          "2c3c4bb7142da801": "When I finished my work, it was four o'clock, still as dark as midnight.",
+          "7d3ac5651e38d536": "As the clock struck the hour, someone knocked at the street door.",
+          "a88900d7e76c8206": "I went to open it happily, because I had nothing to fear now.",
+          "3cb3864fca2ad4e4": "Three men came in and politely said they were police officers.",
+          "7695c2d0c24c0156": "A neighbor heard a scream during the night, suspected something bad, and told the police, who came to search the house."
+        }
+      },
+      {
+        "id": "page-15",
+        "section": "the-visitors",
+        "start": "p027",
+        "end": "p028",
+        "mode": "student",
+        "characters_met": [],
+        "restatements": {
+          "cc6bee7fbc75c351": "I smiled because I had nothing to worry about.",
+          "50f20a2b509a47e0": "I welcomed the men inside.",
+          "c0da9c0f6262c788": "I told them the scream was mine from a dream.",
+          "f9258a2ebe36481d": "I said the old man was away in the country.",
+          "8b895bd4f357f998": "I showed the visitors around the whole house.",
+          "09acf9d0c6aee862": "I told them to search carefully.",
+          "c9c053354848de4b": "I eventually took them to the old man's room.",
+          "28431a2f6069fd46": "I showed them his valuable things, all safe and untouched.",
+          "a5b36c9ee93c0cad": "Confidently, I brought chairs and asked them to rest. I sat right above where the body was hidden."
+        }
+      },
+      {
+        "id": "page-16",
+        "section": "the-visitors",
+        "start": "p029",
+        "end": "p030",
+        "mode": "student",
+        "characters_met": [],
+        "restatements": {
+          "4e7bd981bf85af7e": "The police officers were satisfied.",
+          "df54aca50a2f259e": "They believed me because of how I acted.",
+          "332e59b5e3267f66": "I felt very calm.",
+          "b9b10ec5bc8e7fb8": "They sat down, and while I answered happily, they talked about everyday things.",
+          "af27e3440fdfacb2": "But soon, I started feeling pale and wanted them to leave.",
+          "d4d30115e4a8b092": "My head hurt, and I thought I heard a ringing sound, but they kept sitting and talking.",
+          "50ab14c2bd8d2354": "The ringing got clearer. I talked more to ignore it, but it kept getting clearer until I realized it wasn't just in my ears."
+        }
+      },
+      {
+        "id": "page-17",
+        "section": "the-visitors",
+        "start": "p031",
+        "end": "p031",
+        "mode": "student",
+        "characters_met": [],
+        "restatements": {
+          "9312c40b3518635d": "I probably turned very pale, but I kept talking more smoothly and louder.",
+          "a2d0448f8469043e": "But the sound got louder, and I didn't know what to do.",
+          "c2374f59b92b6810": "It was a quiet, dull, quick sound, like a watch wrapped in cotton.",
+          "aa27b0904313f236": "I struggled to breathe, but the officers didn't hear it.",
+          "e5703162ba54bf58": "I talked faster and more forcefully, but the noise kept getting louder.",
+          "d1331e314875721c": "I stood up and talked about unimportant things loudly and waved my arms, but the noise kept getting louder."
+        }
+      },
+      {
+        "id": "page-18",
+        "section": "the-visitors",
+        "start": "p032",
+        "end": "p032",
+        "mode": "student",
+        "characters_met": [],
+        "restatements": {
+          "d77bcb20ffb4767c": "Why wouldn't they leave?",
+          "ab62a7ff85a246db": "I paced back and forth with heavy steps, acting as if what the men said had made me furious, but the noise kept getting louder.",
+          "546f5aefc5ecec43": "Oh God!",
+          "cc6ef78aceae6c03": "What could I do?",
+          "f31581912a09ed25": "I was furious, shouting and cursing!",
+          "fd0f2496403fab7b": "I swung the chair I had been sitting on and scraped it across the floorboards, but the noise rose above everything and kept growing.",
+          "87cc04276da09405": "It got louder and louder!",
+          "1eaba2832a0bb886": "And the men kept talking happily and smiling."
+        }
+      },
+      {
+        "id": "page-19",
+        "section": "the-visitors",
+        "start": "p033",
+        "end": "p034",
+        "mode": "student",
+        "characters_met": [],
+        "restatements": {
+          "4337da6c2744715e": "Could it be that they didn't hear it?",
+          "48543c6555635247": "Oh my God!",
+          "7cbbb15dbd483240": "No, no!",
+          "aabe2dc333aaa78e": "They heard it!",
+          "e74468920dc04af6": "They suspected something!",
+          "de1dc8365dd72503": "They knew what I did!",
+          "def4bbebca0ce004": "They were making fun of my fear!",
+          "b4c499109ef203b3": "That's what I thought then, and I still think it now.",
+          "c7b737bca2c256e1": "Anything was better than this pain!",
+          "65608186b7bdd380": "Anything was better than their teasing!",
+          "b76f52053186d833": "I couldn't stand their fake smiles anymore!",
+          "72ed3e1d10e666f9": "I felt like I had to scream or I would die!",
+          "368c8f279785d65d": "And now, again!",
+          "19543cb2e2446f9c": "Listen!",
+          "35e79b77d942fbcd": "Louder!",
+          "c1dfbaea0fc630d1": "Villains!",
+          "16c9aff079106992": "I screamed, \"Stop pretending!",
+          "b60dcc7f8b4fb477": "I admit what I did!",
+          "46d4fc6ee99087bd": "Tear up the floorboards!",
+          "c0c15b438cbe1b3c": "Here, here!",
+          "e48330656141cc13": "It's the sound of his awful heart!\""
+        }
+      }
+    ],
+    "vocabulary": [
+      {
+        "term": "acute",
+        "forms": [
+          "acute"
+        ],
+        "part_of_speech": "adjective",
+        "definition": "very sharp or intense",
+        "es_term": "agudo",
+        "es_definition": "muy agudo o intenso"
+      },
+      {
+        "term": "conceive",
+        "forms": [
+          "conceived"
+        ],
+        "part_of_speech": "verb",
+        "definition": "to form an idea in the mind",
+        "es_term": "concebir",
+        "es_definition": "formar una idea en la mente"
+      },
+      {
+        "term": "haunt",
+        "forms": [
+          "haunted"
+        ],
+        "part_of_speech": "verb",
+        "definition": "to keep coming to mind",
+        "es_term": "atormentar",
+        "es_definition": "seguir viniendo a la mente"
+      },
+      {
+        "term": "vulture",
+        "forms": [
+          "vulture"
+        ],
+        "part_of_speech": "noun",
+        "definition": "a large bird that eats dead animals",
+        "es_term": "buitre",
+        "es_definition": "un ave grande que come animales muertos"
+      },
+      {
+        "term": "foresight",
+        "forms": [
+          "foresight"
+        ],
+        "part_of_speech": "noun",
+        "definition": "the ability to plan for the future",
+        "es_term": "previsión",
+        "es_definition": "la capacidad de planificar para el futuro"
+      },
+      {
+        "term": "dissimulation",
+        "forms": [
+          "dissimulation"
+        ],
+        "part_of_speech": "noun",
+        "definition": "hiding your true feelings or intentions",
+        "es_term": "disimulación",
+        "es_definition": "ocultar tus verdaderos sentimientos o intenciones"
+      },
+      {
+        "term": "latch",
+        "forms": [
+          "latch"
+        ],
+        "part_of_speech": "noun",
+        "definition": "a device for keeping a door closed",
+        "es_term": "pestillo",
+        "es_definition": "un dispositivo para mantener una puerta cerrada"
+      },
+      {
+        "term": "undo",
+        "forms": [
+          "undid"
+        ],
+        "part_of_speech": "verb",
+        "definition": "to open or unfasten something",
+        "es_term": "deshacer",
+        "es_definition": "abrir o desabrochar algo"
+      },
+      {
+        "term": "vex",
+        "forms": [
+          "vexed"
+        ],
+        "part_of_speech": "verb",
+        "definition": "to annoy or bother someone",
+        "es_term": "molestar",
+        "es_definition": "molestar o irritar a alguien"
+      },
+      {
+        "term": "profound",
+        "forms": [
+          "profound"
+        ],
+        "part_of_speech": "adjective",
+        "definition": "showing great knowledge or insight",
+        "es_term": "profundo",
+        "es_definition": "que muestra gran conocimiento o perspicacia"
+      },
+      {
+        "term": "sagacity",
+        "forms": [
+          "sagacity"
+        ],
+        "part_of_speech": "noun",
+        "definition": "the quality of being wise or having good judgment",
+        "es_term": "sagacidad",
+        "es_definition": "la cualidad de ser sabio o tener buen juicio"
+      },
+      {
+        "term": "triumph",
+        "forms": [
+          "triumph"
+        ],
+        "part_of_speech": "noun",
+        "definition": "a great victory or achievement",
+        "es_term": "triunfo",
+        "es_definition": "una gran victoria o logro"
+      },
+      {
+        "term": "fasten",
+        "forms": [
+          "fastened"
+        ],
+        "part_of_speech": "verb",
+        "definition": "to close something tightly so it stays shut",
+        "es_term": "cerrar bien",
+        "es_definition": "cerrar algo con firmeza para que no se abra"
+      },
+      {
+        "term": "pitch",
+        "forms": [
+          "pitch"
+        ],
+        "part_of_speech": "noun",
+        "definition": "a thick, sticky black substance like tar; \"black as pitch\" means completely dark",
+        "es_term": "brea",
+        "es_definition": "una sustancia negra y pegajosa como el alquitrán; \"negro como la brea\" significa totalmente oscuro"
+      },
+      {
+        "term": "hearken",
+        "forms": [
+          "Harken",
+          "hearkening"
+        ],
+        "part_of_speech": "verb",
+        "definition": "to listen carefully",
+        "es_term": "escuchar",
+        "es_definition": "escuchar con atención"
+      },
+      {
+        "term": "mortal",
+        "forms": [
+          "mortal"
+        ],
+        "part_of_speech": "adjective",
+        "definition": "causing or related to death or extreme fear",
+        "es_term": "mortal",
+        "es_definition": "causando o relacionado con la muerte o el miedo extremo"
+      },
+      {
+        "term": "stifle",
+        "forms": [
+          "stifled"
+        ],
+        "part_of_speech": "verb",
+        "definition": "to hold back a sound so it comes out quiet and muffled",
+        "es_term": "ahogar",
+        "es_definition": "contener un sonido para que salga bajo y apagado"
+      },
+      {
+        "term": "awe",
+        "forms": [
+          "awe"
+        ],
+        "part_of_speech": "noun",
+        "definition": "a feeling of fear mixed with wonder",
+        "es_term": "asombro",
+        "es_definition": "una sensación de miedo mezclado con asombro"
+      },
+      {
+        "term": "supposition",
+        "forms": [
+          "suppositions"
+        ],
+        "part_of_speech": "noun",
+        "definition": "an idea that is assumed to be true",
+        "es_term": "suposición",
+        "es_definition": "una idea que se supone que es verdadera"
+      },
+      {
+        "term": "envelop",
+        "forms": [
+          "enveloped"
+        ],
+        "part_of_speech": "verb",
+        "definition": "to completely cover or surround",
+        "es_term": "envolver",
+        "es_definition": "cubrir o rodear completamente"
+      },
+      {
+        "term": "mournful",
+        "forms": [
+          "mournful"
+        ],
+        "part_of_speech": "adjective",
+        "definition": "feeling or expressing sadness",
+        "es_term": "triste",
+        "es_definition": "sentir o expresar tristeza"
+      },
+      {
+        "term": "crevice",
+        "forms": [
+          "crevice"
+        ],
+        "part_of_speech": "noun",
+        "definition": "a small, narrow opening or crack",
+        "es_term": "grieta",
+        "es_definition": "una abertura o grieta pequeña y estrecha"
+      },
+      {
+        "term": "distinct",
+        "forms": [
+          "distinctness",
+          "distinct"
+        ],
+        "part_of_speech": "adjective",
+        "definition": "clear and easy to see or hear",
+        "es_term": "nítido",
+        "es_definition": "claro y fácil de ver u oír"
+      },
+      {
+        "term": "tattoo",
+        "forms": [
+          "tattoo"
+        ],
+        "part_of_speech": "noun",
+        "definition": "a rhythmic tapping or drumming sound",
+        "es_term": "tamborileo",
+        "es_definition": "un sonido rítmico de golpeteo o tamborileo"
+      },
+      {
+        "term": "extreme",
+        "forms": [
+          "extreme"
+        ],
+        "part_of_speech": "adjective",
+        "definition": "very great or intense",
+        "es_term": "extremo",
+        "es_definition": "muy grande o intenso"
+      },
+      {
+        "term": "wrath",
+        "forms": [
+          "wrath"
+        ],
+        "part_of_speech": "noun",
+        "definition": "intense anger",
+        "es_term": "ira",
+        "es_definition": "enojo intenso"
+      },
+      {
+        "term": "anxiety",
+        "forms": [
+          "anxiety"
+        ],
+        "part_of_speech": "noun",
+        "definition": "a feeling of worry",
+        "es_term": "ansiedad",
+        "es_definition": "una sensación de preocupación"
+      },
+      {
+        "term": "seize",
+        "forms": [
+          "seized"
+        ],
+        "part_of_speech": "verb",
+        "definition": "to take hold suddenly",
+        "es_term": "apoderarse",
+        "es_definition": "tomar de repente"
+      },
+      {
+        "term": "pulsation",
+        "forms": [
+          "pulsation"
+        ],
+        "part_of_speech": "noun",
+        "definition": "a beat or throb, like a heartbeat",
+        "es_term": "pulsación",
+        "es_definition": "un latido o pulso, como un latido del corazón"
+      },
+      {
+        "term": "corpse",
+        "forms": [
+          "corpse"
+        ],
+        "part_of_speech": "noun",
+        "definition": "a dead body",
+        "es_term": "cadáver",
+        "es_definition": "un cuerpo muerto"
+      },
+      {
+        "term": "dismember",
+        "forms": [
+          "dismembered"
+        ],
+        "part_of_speech": "verb",
+        "definition": "cut a body into pieces",
+        "es_term": "desmembrar",
+        "es_definition": "cortar un cuerpo en pedazos"
+      },
+      {
+        "term": "scantlings",
+        "forms": [
+          "scantlings"
+        ],
+        "part_of_speech": "noun",
+        "definition": "small beams or pieces of wood",
+        "es_term": "listones",
+        "es_definition": "pequeñas vigas o piezas de madera"
+      },
+      {
+        "term": "wary",
+        "forms": [
+          "wary"
+        ],
+        "part_of_speech": "adjective",
+        "definition": "careful and cautious",
+        "es_term": "cauteloso",
+        "es_definition": "cuidadoso y cauteloso"
+      },
+      {
+        "term": "suavity",
+        "forms": [
+          "suavity"
+        ],
+        "part_of_speech": "noun",
+        "definition": "smooth and polite manner",
+        "es_term": "suavidad",
+        "es_definition": "manera suave y educada"
+      },
+      {
+        "term": "depute",
+        "forms": [
+          "deputed"
+        ],
+        "part_of_speech": "verb",
+        "definition": "assigned to a task",
+        "es_term": "designar",
+        "es_definition": "asignar a alguien una tarea"
+      },
+      {
+        "term": "enthusiasm",
+        "forms": [
+          "enthusiasm"
+        ],
+        "part_of_speech": "noun",
+        "definition": "strong excitement or interest",
+        "es_term": "entusiasmo",
+        "es_definition": "fuerte emoción o interés"
+      },
+      {
+        "term": "audacity",
+        "forms": [
+          "audacity"
+        ],
+        "part_of_speech": "noun",
+        "definition": "boldness or daring",
+        "es_term": "audacia",
+        "es_definition": "valentía o atrevimiento"
+      },
+      {
+        "term": "fatigue",
+        "forms": [
+          "fatigues"
+        ],
+        "part_of_speech": "noun",
+        "definition": "tiredness from work or effort",
+        "es_term": "fatiga",
+        "es_definition": "cansancio por trabajo o esfuerzo"
+      },
+      {
+        "term": "definiteness",
+        "forms": [
+          "definiteness"
+        ],
+        "part_of_speech": "noun",
+        "definition": "the quality of being clear and certain",
+        "es_term": "nitidez",
+        "es_definition": "la cualidad de ser claro y seguro"
+      },
+      {
+        "term": "fancy",
+        "forms": [
+          "fancied"
+        ],
+        "part_of_speech": "verb",
+        "definition": "to imagine or think something, often wrongly",
+        "es_term": "imaginar",
+        "es_definition": "imaginar o creer algo, a menudo sin razón"
+      },
+      {
+        "term": "vehemently",
+        "forms": [
+          "vehemently"
+        ],
+        "part_of_speech": "adverb",
+        "definition": "in a forceful or intense way",
+        "es_term": "vehementemente",
+        "es_definition": "de manera intensa o enérgica"
+      },
+      {
+        "term": "gesticulation",
+        "forms": [
+          "gesticulations"
+        ],
+        "part_of_speech": "noun",
+        "definition": "energetic hand or arm movements",
+        "es_term": "gesticulaciones",
+        "es_definition": "movimientos enérgicos de manos o brazos"
+      },
+      {
+        "term": "foam",
+        "forms": [
+          "foamed"
+        ],
+        "part_of_speech": "verb",
+        "definition": "to be very angry, almost frothing at the mouth",
+        "es_term": "espumar",
+        "es_definition": "estar muy enojado, casi echando espuma por la boca"
+      },
+      {
+        "term": "rave",
+        "forms": [
+          "raved"
+        ],
+        "part_of_speech": "verb",
+        "definition": "to talk wildly or angrily",
+        "es_term": "delirar",
+        "es_definition": "hablar de manera salvaje o enojada"
+      },
+      {
+        "term": "grate",
+        "forms": [
+          "grated"
+        ],
+        "part_of_speech": "verb",
+        "definition": "to make a harsh noise by scraping",
+        "es_term": "raspar",
+        "es_definition": "hacer un ruido áspero al raspar"
+      },
+      {
+        "term": "mockery",
+        "forms": [
+          "mockery"
+        ],
+        "part_of_speech": "noun",
+        "definition": "teasing or making fun of someone",
+        "es_term": "burla",
+        "es_definition": "burlarse o hacer burla de alguien"
+      },
+      {
+        "term": "derision",
+        "forms": [
+          "derision"
+        ],
+        "part_of_speech": "noun",
+        "definition": "ridicule or scorn",
+        "es_term": "burla",
+        "es_definition": "ridículo o desprecio"
+      },
+      {
+        "term": "hypocritical",
+        "forms": [
+          "hypocritical"
+        ],
+        "part_of_speech": "adjective",
+        "definition": "pretending to have beliefs or feelings one doesn't have",
+        "es_term": "hipócrita",
+        "es_definition": "pretender tener creencias o sentimientos que uno no tiene"
+      },
+      {
+        "term": "stealthily",
+        "forms": [
+          "stealthily"
+        ],
+        "part_of_speech": "adverb",
+        "definition": "in a quiet, secret way so no one notices",
+        "es_term": "sigilosamente",
+        "es_definition": "de manera callada y secreta para que nadie lo note"
+      },
+      {
+        "term": "death-watch",
+        "forms": [
+          "death-watches"
+        ],
+        "part_of_speech": "noun",
+        "definition": "a small beetle that makes a ticking sound inside walls; people once believed the sound meant someone would die",
+        "es_term": "carcoma del reloj de la muerte",
+        "es_definition": "un escarabajo pequeño que hace un tictac dentro de las paredes; antes se creía que ese sonido anunciaba una muerte"
+      }
+    ],
+    "art_style": "One style for every page: a painterly storybook illustration in muted gouache on warm cream paper, with soft edges, visible brush texture, and deep shadow.\nPalette: charcoal, sepia, and warm cream, with terracotta and dim lantern amber as the only warm accents. Night scenes stay dark but readable.\nSetting: the bedroom (\"chamber\") of an old house at night: a bed, a door with a latch, closed shutters, plank floorboards. Nothing the text does not name.\nThe narrator: never show a face. Show only a shadowed silhouette, the back or side of a head, a hand, or a sleeve in plain dark clothing. The text never describes how the narrator looks.\nThe old man: elderly, thin, in plain nightclothes, features kept soft and mostly in shadow, except his \"pale blue eye, with a film over it\" when the page shows it.\nThe lantern: a small closed tin \"dark lantern\" with a hinged shutter that lets out a thin beam.\nNever: words, letters, or numbers in the image; blood, wounds, weapons, or the body; detailed or frightening faces; anything a later page reveals."
   }
 }
