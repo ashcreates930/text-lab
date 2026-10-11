@@ -4,6 +4,7 @@ import { randomInt } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getServiceSupabase } from "../supabase.ts";
 import type { LivePlan, LiveState } from "./plan.ts";
+import type { StudentProgress } from "./progress.ts";
 
 export type ClassRow = { id: string; teacher_id: string; name: string | null; class_code: string; world_id: string; grade: number; status: string; preview_enabled: boolean; created_at: string };
 export type StudentRow = { id: string; session_id: string; nickname: string; created_at: string };
@@ -24,6 +25,9 @@ export interface ClassroomStore {
   getStudent(studentId: string): Promise<StudentRow | null>;
   createStudent(classId: string, nickname: string, resumeHash: string): Promise<StudentRow | "taken">;
   findStudentByResume(classId: string, nickname: string, resumeHash: string): Promise<StudentRow | null>;
+  // Reading progress lives in students.progress (see progress.ts); null when the student has not read yet.
+  getProgress(studentId: string): Promise<StudentProgress | null>;
+  saveProgress(studentId: string, progress: StudentProgress): Promise<void>;
   listAssignments(classId: string): Promise<AssignmentRow[]>;
   upsertAssignment(classId: string, lessonId: string, dueDate: string | null): Promise<void>;
   deleteAssignment(classId: string, lessonId: string): Promise<void>;
@@ -71,6 +75,8 @@ function supabaseStore(db: SupabaseClient): ClassroomStore {
       return data as StudentRow;
     },
     async findStudentByResume(classId, nickname, resumeHash) { return must(await db.from("students").select("id,session_id,nickname,created_at").eq("session_id", classId).eq("nickname", nickname).eq("resume_phrase_hash", resumeHash).maybeSingle()) as StudentRow | null; },
+    async getProgress(studentId) { const row = must(await db.from("students").select("progress").eq("id", studentId).maybeSingle()) as { progress: Record<string, unknown> | null } | null; const p = row?.progress; return p && typeof p === "object" && (p as { v?: number }).v === 1 ? (p as StudentProgress) : null; },
+    async saveProgress(studentId, progress) { must(await db.from("students").update({ progress }).eq("id", studentId)); },
     async listAssignments(classId) { return must(await db.from("lesson_assignments").select("*").eq("session_id", classId).order("created_at")) as AssignmentRow[]; },
     async upsertAssignment(classId, lessonId, dueDate) { must(await db.from("lesson_assignments").upsert({ session_id: classId, lesson_id: lessonId, due_date: dueDate }, { onConflict: "session_id,lesson_id" })); },
     async deleteAssignment(classId, lessonId) { must(await db.from("lesson_assignments").delete().eq("session_id", classId).eq("lesson_id", lessonId)); },
@@ -87,7 +93,7 @@ function supabaseStore(db: SupabaseClient): ClassroomStore {
   };
 }
 
-type Memory = { teachers: { id: string; auth: string }[]; classes: ClassRow[]; students: (StudentRow & { hash: string })[]; assignments: AssignmentRow[]; completions: CompletionRow[]; analyses: AnalysisRow[]; responses: ResponseRow[] };
+type Memory = { teachers: { id: string; auth: string }[]; classes: ClassRow[]; students: (StudentRow & { hash: string })[]; progress?: Record<string, StudentProgress>; assignments: AssignmentRow[]; completions: CompletionRow[]; analyses: AnalysisRow[]; responses: ResponseRow[] };
 const g = globalThis as unknown as { __ittMemory?: Memory };
 function memoryStore(): ClassroomStore {
   const m = (g.__ittMemory ??= { teachers: [], classes: [], students: [], assignments: [], completions: [], analyses: [], responses: [] });
@@ -105,6 +111,8 @@ function memoryStore(): ClassroomStore {
     async getStudent(studentId) { const s = m.students.find((x) => x.id === studentId); return s ? strip(s) : null; },
     async createStudent(classId, nickname, hash) { if (m.students.some((s) => s.session_id === classId && s.nickname === nickname)) return "taken"; const s = { id: id(), session_id: classId, nickname, created_at: now(), hash }; m.students.push(s); return strip(s); },
     async findStudentByResume(classId, nickname, hash) { const s = m.students.find((x) => x.session_id === classId && x.nickname === nickname && x.hash === hash); return s ? strip(s) : null; },
+    async getProgress(studentId) { return m.progress?.[studentId] ?? null; },
+    async saveProgress(studentId, progress) { (m.progress ??= {})[studentId] = progress; },
     async listAssignments(classId) { return m.assignments.filter((a) => a.session_id === classId); },
     async upsertAssignment(classId, lessonId, dueDate) { const a = m.assignments.find((x) => x.session_id === classId && x.lesson_id === lessonId); if (a) a.due_date = dueDate; else m.assignments.push({ id: id(), session_id: classId, lesson_id: lessonId, due_date: dueDate, created_at: now() }); },
     async deleteAssignment(classId, lessonId) { m.assignments = m.assignments.filter((a) => !(a.session_id === classId && a.lesson_id === lessonId)); },

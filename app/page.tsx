@@ -18,6 +18,7 @@ import { Classroom } from "./classroom";
 import type { HomeLanguage } from "@/lib/bilingual";
 import { Tutorial, type TutorialHandle } from "./tutorial";
 import { Shelf } from "./shelf";
+import { applyProgress, loadClassProgress, useClassProgressSync } from "./class-progress";
 import { TeacherDemo } from "./teacher-demo";
 import { ClassBar, ClassHome, ClassLive, type ClassAuth } from "./class-student";
 import { LessonPlayer, MiniLessonLibrary, type LessonRecord } from "./mini-lessons";
@@ -40,7 +41,7 @@ export type Demo = {
   briefingComplete:boolean; savedTextEvidence:SavedTextEvidence[]; authorshipRanges:AuthorshipRange[]; analysisReport?:AnalysisReport;
   previewComplete?:boolean; course?:"all"|"best"|"ap"|"aice"; lessonsDone?:Record<string,LessonRecord>; portionUnlocks?:string[]; classAuth?:ClassAuth; homeLanguage?:HomeLanguage|null;
   // Storybook reader: current page, furthest page reached, briefing seen, sections solved, and the student's own picture frames.
-  readerProgress?:Record<string,import("./storybook/reader").ReaderProgress>;
+  readerProgress?:Record<string,import("./storybook/reader").ReaderProgress>; classProgressLoaded?:boolean;
   storyFrames?:Record<string,{kind:"add_detail"|"student";description:string;quote:string;saved_at:string;image?:string;check?:{ok:boolean;notes:string[]}}>;
 };
 type ScreenSnapshot = { insideTheTextScreen: true; sequence: number; view: View; demo: Demo };
@@ -99,6 +100,7 @@ export default function Home() {
   useEffect(()=>{if(demo.homeLanguage===undefined){const saved=savedHomeLanguage();if(saved)setDemo(d=>({...d,homeLanguage:saved}));return}saveHomeLanguage(demo.homeLanguage)},[demo.homeLanguage]);
   const gated = access !== "granted" && !ungatedViews.includes(view) && !(classViews.includes(view) && classSession);
   const tutorial = useRef<TutorialHandle>(null);
+  useClassProgressSync(demo, demo.preset === "class_student" && !!demo.classProgressLoaded);
   const focusedScreenKey = useRef<string | null>(null);
   const historyScreenKey = useRef<string | null>(null);
   const historyReady = useRef(false);
@@ -230,7 +232,9 @@ export default function Home() {
   // Role cards: the demo with that role preselected, starting at the case briefing.
   function startRole(roleId:string){const base=demo.preset==="student_first_visit"&&!demo.classAuth?demo:newDemo("student_first_visit");const prog=base.readerProgress?.["tell-tale-heart"]??{};setDemo({...base,worldId:"tell-tale-heart",role:roleId,think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:0,readerProgress:{...(base.readerProgress??{}),"tell-tale-heart":{...prog,briefed:false}}});setView("play")}
   function tryAnotherStory(){setDemo(d=>({...d,role:"",briefingComplete:false,think:false,previewComplete:false,scene:0}));setView("shelf")}
-  function joinClass(session:{world_id:string;grade:number},auth:ClassAuth){const next=newDemo("class_student",session.world_id);next.grade=session.grade;next.scene=0;next.classAuth=auth;setDemo(next);setView("shelf")}
+  // Joining or rejoining a class loads the student's saved reading progress from their class record.
+  function joinClass(session:{world_id:string;grade:number},auth:ClassAuth){const next=newDemo("class_student",session.world_id);next.grade=session.grade;next.scene=0;next.classAuth=auth;setDemo(next);setView("shelf");// Saving starts only after the load finishes, so an empty record can never overwrite saved work.
+    const load=(tries:number)=>loadClassProgress(auth,session.world_id).then(({ok,progress})=>{if(ok)setDemo(d=>d.id===next.id?{...(progress?applyProgress(d,progress):d),classProgressLoaded:true}:d);else if(tries>0)window.setTimeout(()=>load(tries-1),3000)});load(3)}
   function backToPreviousScreen(fallback:()=>void) {
     const current = window.history.state as ScreenSnapshot | null;
     if (current?.insideTheTextScreen && current.sequence > 0) window.history.back();

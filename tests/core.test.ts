@@ -229,3 +229,14 @@ test("teacher demo sample data quotes the story exactly and tags real benchmarks
   assert.equal(sampleStudents.length,12);
   for(const s of sampleStudents)assert.match(s.name,/^[A-Z][a-z]+$/);
 });
+
+test("class reading progress accepts the student's reading work and rejects anything else", async()=>{
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
+  const good={v:1,worldId:"tell-tale-heart",scene:0,submitted:false,role:"investigator",readerProgress:{"tell-tale-heart":{page:2,part:1,furthest:3,briefed:true,sections:[],skippedFrames:["page-05"]}},artifactAnswers:{"search-motive":{notice:"Object there was none.",interpret:"He names the eye.",craft:"",technique:"",revisions:[]}},savedTextEvidence:[{id:"e1",paragraphId:"p002",text:"Object there was none.",artifactId:"search-motive"}],storyFrames:{"page-04":{kind:"add_detail",description:"A thin beam",quote:"a single thin ray",saved_at:"2026-10-11T00:00:00Z"}},updatedAt:"2026-10-11T00:00:00Z"};
+  assert.equal(StudentProgressSchema.safeParse(good).success,true);
+  assert.equal(StudentProgressSchema.safeParse({...good,v:2}).success,false);
+  assert.equal(StudentProgressSchema.safeParse({...good,worldId:"../etc"}).success,false);
+  assert.equal(StudentProgressSchema.safeParse({...good,deviceId:"abc"}).success,true,"unknown keys are dropped, not stored");
+  assert.equal("deviceId" in StudentProgressSchema.parse({...good,deviceId:"abc"}),false);
+  assert.equal(StudentProgressSchema.safeParse({...good,artifactAnswers:{x:{...good.artifactAnswers["search-motive"],interpret:"x".repeat(3001)}}}).success,false);
+});

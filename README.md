@@ -83,6 +83,8 @@ The app never stores a raw IP address, and it never collects a device ID or IP-d
 
 **Class sessions** (students who join with a teacher's class code) collect neither. Class joining sits outside the demo gate, so class students never receive the demo cookie or a device ID, and the class-code check never records an IP address or anything derived from one. Because demo AI is metered per device, class sessions do not call the AI character, voice, or analysis services yet; they will need their own metering, keyed to the class session rather than the device, before AI is enabled there.
 
+**Class reading progress** is the student's own work, saved in their class record (`students.progress`) so it resumes on any day or device: the page and screen they reached, clue answers and the lines they quoted, and picture-frame descriptions. It is saved through `/api/student/progress` with the student's signed class token, checked against a fixed schema (`lib/classroom/progress.ts`), and only for the class's own story. It resumes when they rejoin with the class code and nickname on the same device, or with their returning-student phrase on any device. It contains no device ID or IP-derived value. Demo visitors' progress stays in their browser tab and expires after 24 hours.
+
 ## Waitlist and deployment
 
 Waitlist writes use the server-side service role and normalize email for duplicate prevention. The owner export route is restricted to the configured owner email after magic-link login. Before deployment, configure the environment values in Vercel and Supabase Auth's allowed redirect URLs, apply the migration to the dedicated project, then run `npm run build` and deploy through the linked Vercel project.
