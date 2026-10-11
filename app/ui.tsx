@@ -22,7 +22,7 @@ function ClassCodeField({onJoinCode,className=""}:{onJoinCode:(code:string)=>voi
   const [code,setCode]=useState("");
   return <form onSubmit={e=>{e.preventDefault();if(code.trim())onJoinCode(code.trim().toUpperCase())}} className={`items-center gap-2 ${className}`} aria-label="Join your class">
     <label htmlFor={`class-code-${className}`} className="sr-only">Have a class code?</label>
-    <input id={`class-code-${className}`} value={code} onChange={e=>setCode(e.target.value)} placeholder="Have a class code?" autoCapitalize="characters" autoComplete="off" maxLength={24} className="h-11 w-full min-w-0 rounded-full border border-[#E4DCCB] bg-white px-4 text-[15px] uppercase placeholder:normal-case placeholder:text-[#6B6457] outline-none focus:border-[#A0472C] md:w-48"/>
+    <input id={`class-code-${className}`} value={code} onChange={e=>setCode(e.target.value)} placeholder="Class code" autoCapitalize="characters" autoComplete="off" maxLength={24} className="h-11 w-full min-w-0 rounded-full border border-[#E4DCCB] bg-white px-4 text-[15px] uppercase placeholder:normal-case placeholder:text-[#6B6457] outline-none focus:border-[#A0472C] md:w-48"/>
     <button type="submit" disabled={!code.trim()} className="h-11 shrink-0 rounded-full bg-[#2A2620] px-4 text-[15px] font-semibold text-white disabled:opacity-40">Join</button>
   </form>;
 }
