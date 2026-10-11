@@ -10,6 +10,7 @@ import {CLASS_AI_OFF,evidenceLabel,isDone,useClueSteps,type Clue,type Scene} fro
 import {recordFactCheck} from "../case-game";
 import type {Demo} from "../page";
 import {lineSpacings,textSizes,type ReaderPrefs} from "./prefs";
+import {HomeText} from "../bilingual";
 
 export function Drawer({title,onClose,children,wide=false}:{title:string;onClose:()=>void;children:React.ReactNode;wide?:boolean}){
  const headingId=useId(),heading=useRef<HTMLHeadingElement>(null);
@@ -49,13 +50,15 @@ export function WhoCard({characters}:{characters:{id:string;name:string;descript
  return <ul className="space-y-3">{characters.map(c=><li key={c.id} className="rounded-2xl bg-[#EFE8D8] p-4"><p className="text-[18px] font-bold">{c.name}</p><p className="mt-1 text-[16px] leading-6 text-[#4A4438]">{c.description}</p></li>)}</ul>;
 }
 
-export function ReadingMenu({prefs,update}:{prefs:ReaderPrefs;update:(p:Partial<ReaderPrefs>)=>void}){
+// spanish/onSpanish is the home-language setting (Spanish help in the briefing and question cards); the word card always shows Spanish.
+export function ReadingMenu({prefs,update,spanish,onSpanish,showView=true}:{prefs:ReaderPrefs;update:(p:Partial<ReaderPrefs>)=>void;spanish?:boolean;onSpanish?:(on:boolean)=>void;showView?:boolean}){
  const group=(label:string,options:[string,boolean,()=>void][])=><fieldset className="mt-5 first:mt-0"><legend className="text-[15px] font-semibold">{label}</legend><div className="mt-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">{options.map(([text,on,act])=><button key={text} type="button" aria-pressed={on} onClick={act} className={`min-h-12 rounded-2xl px-4 text-[16px] font-semibold ${on?"bg-[#2A2620] text-white":"bg-[#EFE8D8] text-[#2A2620] hover:bg-[#E4DCCB]"}`}>{text}</button>)}</div></fieldset>;
  return <div>
-  {group("View",[["Picture + text",prefs.view==="art",()=>update({view:"art"})],["Text only",prefs.view==="text",()=>update({view:"text"})]])}
+  {showView&&group("View",[["Picture + text",prefs.view==="art",()=>update({view:"art"})],["Text only",prefs.view==="text",()=>update({view:"text"})]])}
   {group("Text size",textSizes.map((px,i)=>[["Small","Medium","Large","Extra large"][i],prefs.size===i,()=>update({size:i as ReaderPrefs["size"]})] as [string,boolean,()=>void]))}
   {group("Line spacing",lineSpacings.map((_,i)=>[["Snug","Normal","Roomy"][i],prefs.spacing===i,()=>update({spacing:i as ReaderPrefs["spacing"]})] as [string,boolean,()=>void]))}
   {group("Font",[["Standard",prefs.font==="standard",()=>update({font:"standard"})],["Dyslexia-friendly",prefs.font==="dyslexia",()=>update({font:"dyslexia"})]])}
+  {onSpanish&&group("Spanish support",[["Off",!spanish,()=>onSpanish(false)],["Español",!!spanish,()=>onSpanish(true)]])}
   <p className="mt-6 text-[14px] leading-6 text-[#6B6457]">Your choices last until you close this browser tab. Animations follow your device's reduce-motion setting.</p>
  </div>;
 }
@@ -91,13 +94,13 @@ function ClueSteps({world,scene,clue,roleId,demo,setDemo,passages,reading,onBack
   </div>:<p className="mt-4">{CLASS_AI_OFF}</p>)}
   {s.step==="prove"&&<div className="mt-4">
    <p className="text-[17px] font-semibold">{s.asked?"Prove it or disprove it":"Find your proof"}</p>
-   <p className="text-[16px] leading-7 text-[#4A4438]">{s.asked?`Tap the line that shows whether ${s.char?.name??"the character"} was right.`:s.notice}</p>
+   <p className="text-[16px] leading-7 text-[#4A4438]">{s.asked?`Tap the line that shows whether ${s.char?.name??"the character"} was right.`:s.notice}</p>{!s.asked&&<HomeText text={s.notice}/>}
    <div className="mt-3 space-y-3 rounded-2xl bg-[#F6F0E3] p-4 font-serif text-[17px] leading-8">{s.source.map(p=><p key={p.id}>{splitSentences(p.text).map((line,i)=>{const picked=s.proof?.text===line;return <button type="button" key={i} onClick={()=>s.setProof({text:line,pid:p.id})} aria-pressed={picked} className={`mr-1 inline rounded-md px-0.5 text-left ${picked?"bg-[#A0472C] text-white":"hover:bg-[#F4E1D6]"}`}>{line}</button>})}</p>)}</div>
    {s.asked&&s.proof&&<div className="mt-3"><p className="text-[15px] font-semibold">This line…</p><div className="mt-2 grid grid-cols-2 gap-2">{[["supports","Backs them up"],["contradicts","Proves them wrong"]].map(([v,l])=><button type="button" key={v} aria-pressed={s.stance===v} onClick={()=>s.setStance(v)} className={`min-h-12 rounded-2xl px-3 text-[16px] font-semibold ${s.stance===v?"bg-[#2A2620] text-white":"bg-[#EFE8D8]"}`}>{l}</button>)}</div></div>}
    <div className="mt-4 flex justify-end"><button type="button" disabled={!s.proof||(!!s.asked&&!s.stance)} onClick={()=>{s.setStep("explain");setTimeout(()=>box.current?.focus(),50)}} className="case-primary disabled:opacity-40">Use this line <ArrowRight size={18}/></button></div>
   </div>}
   {s.step==="explain"&&<div className="mt-4">
-   <p className="text-[17px] font-semibold">What does it show?</p><p className="text-[16px] leading-7 text-[#4A4438]">{s.interpret}</p>
+   <p className="text-[17px] font-semibold">What does it show?</p><p className="text-[16px] leading-7 text-[#4A4438]">{s.interpret}</p><HomeText text={s.interpret}/>
    {s.proof&&<blockquote className="mt-3 rounded-2xl border-l-4 border-[#A0472C] bg-[#F4E1D6]/60 px-4 py-3 font-serif text-[16px] leading-7">{s.proof.text}</blockquote>}
    <div className="mt-3 flex flex-wrap gap-2">{["This line shows…","I think this means… because…","This proves… was wrong because…"].map(t=><button type="button" key={t} onClick={()=>{s.setExplain(v=>v?v+" "+t:t);box.current?.focus()}} className="min-h-10 rounded-full bg-[#EFE8D8] px-3 text-[14px] hover:bg-[#E4DCCB]">{t}</button>)}</div>
    <label htmlFor="sb-explain" className="sr-only">Your answer</label>

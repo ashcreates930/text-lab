@@ -1,5 +1,5 @@
 "use client";
-import {ArrowRight, BookOpen, Check, Languages, LineChart, MessagesSquare, ScrollText, ShieldCheck, Users} from "lucide-react";
+import {ArrowRight, BookOpen, PlayCircle, Check, Languages, LineChart, MessagesSquare, ScrollText, ShieldCheck, Users} from "lucide-react";
 import {brand} from "@/config/brand";
 
 // "Our Approach" page. Public (no access code), so families, school leaders, and investors can read it before they try the demo.
@@ -60,7 +60,7 @@ const sources=[
  ["Pew Research Center, “How Teens Use and View AI” (February 2026)","https://www.pewresearch.org/internet/2026/02/24/how-teens-use-and-view-ai/"],
 ] as const;
 
-export function Approach({onDemo,onPricing,onWaitlist,onLessons}:{onDemo:()=>void;onPricing:()=>void;onWaitlist:()=>void;onLessons:()=>void}){
+export function Approach({onDemo,onPricing,onWaitlist,onLessons,onVideo}:{onDemo:()=>void;onPricing:()=>void;onWaitlist:()=>void;onLessons:()=>void;onVideo?:()=>void}){
  return <article className="pb-6">
   <section className="relative overflow-hidden border-b border-white/10 px-5 py-16 md:px-14 md:py-24">
    <div aria-hidden="true" className="absolute inset-0 opacity-40" style={{backgroundImage:"radial-gradient(ellipse at 80% 30%, #EAD3C4 0%, transparent 40%),linear-gradient(115deg,#F6F0E3 20%,#EFE8D8 60%,#F6F0E3 100%)"}}/>
@@ -68,7 +68,7 @@ export function Approach({onDemo,onPricing,onWaitlist,onLessons}:{onDemo:()=>voi
     <p className="eyebrow">OUR APPROACH · WHY WE BUILT THIS</p>
     <h1 className="serif mt-5 max-w-4xl text-4xl leading-[1.1] tracking-[-.02em] md:text-6xl">Students don’t need AI to read for them. <span className="italic text-[#A0472C]">They need a reason to read closer.</span></h1>
     <p className="mt-6 max-w-2xl text-base leading-7 text-[#4A4438]">{brand.name} puts students inside the stories they study. They investigate, question the characters, test every claim against the text, and write what they can prove. AI is part of the experience, and the text is always the authority.</p>
-    <div className="mt-8 flex flex-wrap gap-3"><button onClick={onDemo} className="gold-button rounded-sm px-6 py-4 text-xs tracking-wider">TRY THE DEMO <ArrowRight className="ml-2 inline" size={14}/></button><button onClick={onPricing} className="soft-button rounded-sm px-6 py-4 text-xs tracking-wider">SEE PLANS</button></div>
+    <div className="mt-8 flex flex-wrap gap-3">{onVideo&&<button onClick={onVideo} className="case-secondary"><PlayCircle size={18}/> Watch the 1-minute video</button>}<button onClick={onDemo} className="gold-button rounded-sm px-6 py-4 text-xs tracking-wider">TRY THE DEMO <ArrowRight className="ml-2 inline" size={14}/></button><button onClick={onPricing} className="soft-button rounded-sm px-6 py-4 text-xs tracking-wider">SEE PLANS</button></div>
    </div>
   </section>
 

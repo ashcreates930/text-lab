@@ -17,16 +17,18 @@ import { DisplaySettings } from "./display-settings";
 import { Classroom } from "./classroom";
 import type { HomeLanguage } from "@/lib/bilingual";
 import { Tutorial, type TutorialHandle } from "./tutorial";
+import { Shelf } from "./shelf";
+import { TeacherDemo } from "./teacher-demo";
 import { ClassBar, ClassHome, ClassLive, type ClassAuth } from "./class-student";
 import { LessonPlayer, MiniLessonLibrary, type LessonRecord } from "./mini-lessons";
 import { Landing, Join, Owner, Pricing, Student, Teacher, Waitlist, PickStory, ChooseLevel } from "./ui";
 
-type View = "landing" | "story" | "level" | "play" | "teacher" | "waitlist" | "pricing" | "owner" | "join" | "lessons" | "classroom" | "classhome" | "classlive" | "approach" | "tutorial";
+type View = "landing" | "story" | "level" | "play" | "teacher" | "waitlist" | "pricing" | "owner" | "join" | "lessons" | "classroom" | "classhome" | "classlive" | "approach" | "tutorial" | "shelf" | "teacherdemo";
 // Pricing and waitlist stay public; the owner screen has its own magic-link check.
 // Class sessions sit outside the demo gate: the class code is their gate, so class students never receive the demo cookie or its device ID.
-const ungatedViews: View[] = ["tutorial", "approach", "pricing", "waitlist", "owner", "join", "classroom"];
-const classViews: View[] = ["play", "classhome", "classlive"];
-const demoViews: View[] = ["story", "level", "play", "teacher", "lessons"];
+const ungatedViews: View[] = ["teacherdemo", "tutorial", "approach", "pricing", "waitlist", "owner", "join", "classroom"];
+const classViews: View[] = ["shelf", "play", "classhome", "classlive"];
+const demoViews: View[] = ["shelf", "story", "level", "play", "teacher", "teacherdemo", "lessons"];
 export type Demo = {
   id:string;created: number; preset: string; worldId:string; grade:number|null; role: string; scene: number; events: string[];
   flags: string[]; messages: { q: string; a: string }[]; narrative: string;
@@ -38,7 +40,7 @@ export type Demo = {
   briefingComplete:boolean; savedTextEvidence:SavedTextEvidence[]; authorshipRanges:AuthorshipRange[]; analysisReport?:AnalysisReport;
   previewComplete?:boolean; course?:"all"|"best"|"ap"|"aice"; lessonsDone?:Record<string,LessonRecord>; portionUnlocks?:string[]; classAuth?:ClassAuth; homeLanguage?:HomeLanguage|null;
   // Storybook reader: current page, furthest page reached, briefing seen, sections solved, and the student's own picture frames.
-  readerPage?:number; readerFurthest?:number; readerBriefed?:boolean; readerSections?:string[]; readerSkippedFrames?:string[];
+  readerProgress?:Record<string,import("./storybook/reader").ReaderProgress>;
   storyFrames?:Record<string,{kind:"add_detail"|"student";description:string;quote:string;saved_at:string;image?:string;check?:{ok:boolean;notes:string[]}}>;
 };
 type ScreenSnapshot = { insideTheTextScreen: true; sequence: number; view: View; demo: Demo };
@@ -168,7 +170,7 @@ export default function Home() {
       if (saved) {
         const parsed = JSON.parse(saved) as Demo;
         parsed.artifactAnswers??={};parsed.lessonsDone??={};parsed.openedArtifacts??=[];parsed.activeArtifact??="";parsed.artifactStage??=0;parsed.artifactDialogOpen??=false;parsed.savedTextEvidence??=[];parsed.authorshipRanges??=(parsed.narrative?[{start:0,end:parsed.narrative.length,source:"typed"}]:[]);parsed.briefingComplete??=!!parsed.role;parsed.thinkAnswers??={};parsed.myWords??=[];parsed.glossaryOpens??=0;parsed.suggestedArtifactType??="observed";parsed.readAloudOn??=false;parsed.hintFrequency??="on_request";parsed.sentenceStartersOn??=false;
-        if (!isDemoSandboxExpired(parsed.created)) { setDemo(parsed); const savedView=sessionStorage.getItem(`itt-sandbox-view-${id}`) as View|null; if(savedView&&["story","level","play","teacher","lessons","classhome","classlive"].includes(savedView))setView(savedView); }
+        if (!isDemoSandboxExpired(parsed.created)) { setDemo(parsed); const savedView=sessionStorage.getItem(`itt-sandbox-view-${id}`) as View|null; if(savedView&&["shelf","story","level","play","teacher","lessons","classhome","classlive"].includes(savedView))setView(savedView); }
         else {sessionStorage.removeItem(`itt-sandbox-${id}`);sessionStorage.removeItem("itt-active-sandbox-id");}
       }
     } catch { sessionStorage.removeItem("itt-active-sandbox-id"); }
@@ -190,7 +192,7 @@ export default function Home() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
-    if (["story","level","play","teacher","lessons","classhome","classlive"].includes(view)) {sessionStorage.setItem("itt-active-sandbox-id",demo.id);sessionStorage.setItem(`itt-sandbox-${demo.id}`,JSON.stringify(demo));sessionStorage.setItem(`itt-sandbox-view-${demo.id}`,view);if(demo.resumePhrase)localStorage.setItem(`itt-resume-${demo.resumePhrase}`,JSON.stringify(demo));}
+    if (["shelf","story","level","play","teacher","lessons","classhome","classlive"].includes(view)) {sessionStorage.setItem("itt-active-sandbox-id",demo.id);sessionStorage.setItem(`itt-sandbox-${demo.id}`,JSON.stringify(demo));sessionStorage.setItem(`itt-sandbox-view-${demo.id}`,view);if(demo.resumePhrase)localStorage.setItem(`itt-resume-${demo.resumePhrase}`,JSON.stringify(demo));}
     else if(view==="landing")sessionStorage.removeItem(`itt-sandbox-view-${demo.id}`);
     const remaining=demo.created+86_400_000-Date.now();
     if(remaining<=0){sessionStorage.removeItem(`itt-sandbox-${demo.id}`);return}
@@ -209,16 +211,26 @@ export default function Home() {
       next.evidence = preset === "teacher_end_unit" ? 37 : 19;
       next.narrative = preset === "teacher_end_unit" ? "The narrator called himself calm, yet his account says that he paced, grew pale, and spoke louder as the sound grew. Those details make his version difficult to trust." : "";
     }
-    setDemo(next); setView(preset.startsWith("teacher") ? "teacher" : preset==="student_first_visit" ? "story" : "play");
+    setDemo(next); setView(preset.startsWith("teacher") ? "teacher" : preset==="student_first_visit" ? "shelf" : "play");
   }
   function chooseStory(worldId:string,course:"all"|"best"|"ap"|"aice"="all"){setDemo(d=>({...d,worldId,course,grade:null,role:"",think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:0}));setView("play")}
   function chooseGrade(grade:number){setDemo(d=>({...d,grade,role:"",think:false,previewComplete:false,scene:0}));setView("play")}
   // Try the Demo opens the first story directly (one click). The Stories button in the scene leads to the full story list.
   // Starts the tutorial video inside the click itself (required for sound on iPhone and iPad), then shows it.
-  function showTutorial(){tutorial.current?.start();setView("tutorial")}
-  function tryDemo(){showTutorial();start("student_first_visit");chooseStory("sleepy-hollow");setView("tutorial")}
-  function tryAnotherStory(){setDemo(d=>({...d,role:"",briefingComplete:false,think:false,previewComplete:false,scene:0}));setView("story")}
-  function joinClass(session:{world_id:string;grade:number},auth:ClassAuth){const next=newDemo("class_student",session.world_id);next.grade=session.grade;next.scene=0;next.classAuth=auth;setDemo(next);setView("play")}
+  // The video lives on Our Approach and behind the case screen's "How it works"; it returns to where it was opened.
+  const tutorialReturn = useRef<View>("play");
+  function showTutorial(returnTo:View="play"){tutorialReturn.current=returnTo;tutorial.current?.start();setView("tutorial")}
+  // Student front door: "Try the demo" and "I'm a student" land on the shelf, keeping any demo already in progress.
+  function openShelf(){if(demo.preset==="student_first_visit"&&!demo.classAuth)setView("shelf");else start("student_first_visit")}
+  const tryDemo=openShelf;
+  // Opening a book keeps that story's progress; switching books starts the case flow at its first scene.
+  function openStory(worldId:string){setDemo(d=>d.worldId===worldId?{...d,previewComplete:false}:{...d,worldId,course:"all",grade:null,think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:0});setView("play")}
+  // Hero "Keep reading": the full demo straight onto page 1 of the hero story (the hero already showed the opening).
+  function keepReading(){const base=demo.preset==="student_first_visit"&&!demo.classAuth?demo:newDemo("student_first_visit");const prog=base.readerProgress?.["tell-tale-heart"]??{};setDemo({...base,worldId:"tell-tale-heart",think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:0,readerProgress:{...(base.readerProgress??{}),"tell-tale-heart":{...prog,page:0,part:0,briefed:true}}});setView("play")}
+  // Role cards: the demo with that role preselected, starting at the case briefing.
+  function startRole(roleId:string){const base=demo.preset==="student_first_visit"&&!demo.classAuth?demo:newDemo("student_first_visit");const prog=base.readerProgress?.["tell-tale-heart"]??{};setDemo({...base,worldId:"tell-tale-heart",role:roleId,think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:0,readerProgress:{...(base.readerProgress??{}),"tell-tale-heart":{...prog,briefed:false}}});setView("play")}
+  function tryAnotherStory(){setDemo(d=>({...d,role:"",briefingComplete:false,think:false,previewComplete:false,scene:0}));setView("shelf")}
+  function joinClass(session:{world_id:string;grade:number},auth:ClassAuth){const next=newDemo("class_student",session.world_id);next.grade=session.grade;next.scene=0;next.classAuth=auth;setDemo(next);setView("shelf")}
   function backToPreviousScreen(fallback:()=>void) {
     const current = window.history.state as ScreenSnapshot | null;
     if (current?.insideTheTextScreen && current.sequence > 0) window.history.back();
@@ -233,27 +245,27 @@ export default function Home() {
       {null}
       <div className="ml-auto flex flex-wrap items-center justify-end gap-2">{(["story","level","play","classhome","classlive"] as View[]).includes(view)&&<HeaderLanguage value={demo.homeLanguage??null} onChange={lang=>setDemo(d=>({...d,homeLanguage:lang}))}/>}<DisplaySettings placement="header"/>
       {classSession && demo.classAuth ? <button onClick={() => setView("classhome")} className={`rounded-full border px-4 py-2 text-xs ${view === "classhome" ? "border-[#A0472C] bg-[#A0472C] text-[#FFFDF8]" : "border-white/25 text-white/80"}`}>My class</button> : view === "classroom" ? null : <div className="flex gap-1 rounded-full border border-white/15 p-1 text-[11px]">
-        <button onClick={() => setView("play")} className={`rounded-full px-3 py-1.5 ${view === "play" ? "bg-[#A0472C] text-[#FFFDF8]" : "text-white/65"}`}>Student</button>
-        <button onClick={() => setView("teacher")} className={`rounded-full px-3 py-1.5 ${view === "teacher" ? "bg-[#A0472C] text-[#FFFDF8]" : "text-white/65"}`}>Teacher</button>
+        {view === "teacherdemo" ? <button onClick={openShelf} className="rounded-full px-4 py-1.5 font-semibold text-[#8A3B23]">Switch to student view</button> : <button onClick={() => setView("teacherdemo")} className="rounded-full px-4 py-1.5 font-semibold text-[#8A3B23]">Switch to teacher view</button>}
       </div>}</div>
     </header>}
     {demoViews.includes(view) && !classSession && <FeedbackBanner url={feedbackUrl} />}
-    {view === "landing" && <Landing brand={brand} onStart={tryDemo} onPreset={start} onJoin={() => setView("join")} onWaitlist={() => setView("waitlist")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} onPricing={() => setView("pricing")} onOwner={() => setView("owner")} onClassroom={() => setView("classroom")} onApproach={() => setView("approach")} />}
+    {view === "landing" && <Landing brand={brand} onStart={tryDemo} onKeepReading={keepReading} onTeacher={() => setView("teacherdemo")} onRole={startRole} onJoinCode={(code:string) => { setJoinCode(code); setView("join"); }} onPreset={start} onJoin={() => setView("join")} onWaitlist={() => setView("waitlist")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} onPricing={() => setView("pricing")} onOwner={() => setView("owner")} onClassroom={() => setView("classroom")} onApproach={() => setView("approach")} />}
     {view === "lessons" && <section className="mx-auto max-w-7xl px-5 py-10 md:px-10 md:py-14">{activeLesson ? <LessonPlayer lessonId={activeLesson} grade={demo.grade} onClose={() => { setActiveLesson(""); window.scrollTo(0, 0); }} onFinish={(id, record) => setDemo(d => ({ ...d, lessonsDone: { ...(d.lessonsDone ?? {}), [id]: record } }))} /> : <><button onClick={() => backToPreviousScreen(() => setView("landing"))} className="mb-8 inline-flex items-center gap-2 text-xs text-white/55 hover:text-white">← Back</button><h1 className="sr-only">Mini lessons</h1><MiniLessonLibrary grade={demo.grade} done={demo.lessonsDone ?? {}} onOpen={id => { setActiveLesson(id); window.scrollTo(0, 0); }} /><button onClick={() => setView("story")} className="gold-button mt-10 px-6 py-4 text-sm">Ready? Pick a story →</button></>}</section>}
     {view === "story" && <PickStory onLessons={() => { setActiveLesson(""); setView("lessons"); }} onBack={()=>backToPreviousScreen(()=>setView("landing"))} onPick={chooseStory} initialCourse={demo.course??"all"} />}
     {view === "level" && <ChooseLevel worldId={demo.worldId} course={demo.course??"all"} onBack={()=>backToPreviousScreen(()=>setView("story"))} onChoose={chooseGrade} />}
     {view === "play" && classSession && demo.classAuth && <ClassBar auth={demo.classAuth} onLive={() => setView("classlive")} onLessons={() => setView("classhome")} onDismissPhrase={() => setDemo(d => ({ ...d, classAuth: d.classAuth && { ...d.classAuth, resumePhrase: null } }))} />}
-    {view === "play" && <CaseFlow demo={demo} setDemo={setDemo} feedbackUrl={classSession ? null : feedbackUrl} onTutorial={showTutorial} onExit={()=>classSession?setView("classhome"):setView("story")} onAnotherStory={()=>{setDemo(d=>({...d,submitted:false,scene:0}));setView(classSession?"classhome":"story")}} />}
+    {view === "play" && <CaseFlow demo={demo} setDemo={setDemo} feedbackUrl={classSession ? null : feedbackUrl} onTutorial={() => showTutorial("play")} onExit={()=>setView("shelf")} onAnotherStory={()=>{setDemo(d=>({...d,submitted:false,scene:0}));setView("shelf")}} />}
+    {view === "shelf" && <Shelf demo={demo} setDemo={setDemo} onOpen={openStory} onlyWorld={classSession ? demo.worldId : undefined} heading={classSession ? "Your class shelf" : "Your shelf"} />}
+    {view === "teacherdemo" && <TeacherDemo onSignIn={() => setView("classroom")} />}
     {view === "teacher" && <Teacher demo={demo} setDemo={setDemo} onStudent={() => setView("play")} onPreset={start} onClassroom={() => setView("classroom")} />}
     {view === "classroom" && <Classroom onBack={() => backToPreviousScreen(() => setView("landing"))} />}
     {view === "classhome" && demo.classAuth && <ClassHome auth={demo.classAuth} onStory={() => setView("play")} onLive={() => setView("classlive")} />}
     {view === "classlive" && demo.classAuth && <ClassLive auth={demo.classAuth} onBack={() => setView("classhome")} />}
     {view === "waitlist" && <Waitlist />}
     {view === "pricing" && <Pricing onWaitlist={() => setView("waitlist")} onApproach={() => setView("approach")} />}
-    {view === "approach" && <Approach onDemo={tryDemo} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} />}
+    {view === "approach" && <Approach onVideo={() => showTutorial("approach")} onDemo={tryDemo} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} />}
     {view === "join" && <Join initialCode={joinCode} onJoined={joinClass} />}
     {view === "owner" && <Owner data={ownerData} status={ownerStatus} setStatus={setOwnerStatus} />}
-    {view === "landing" && <DisplaySettings/>}
-    <Tutorial ref={tutorial} visible={view === "tutorial"} onDone={() => setView("play")} />
+    <Tutorial ref={tutorial} visible={view === "tutorial"} onDone={() => setView(tutorialReturn.current)} />
   </main>;
 }

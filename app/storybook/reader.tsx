@@ -10,6 +10,7 @@ import type {SourcePassage} from "@/lib/source-passages";
 import {cluesByPage,pagePassages,sentenceKey,splitSentences,type StoryPage} from "@/lib/storybook";
 import {isDone} from "../clue-steps";
 import {RankChip,playStamp,recordScene} from "../case-game";
+import {HomeText,saveHomeLanguage} from "../bilingual";
 import type {Demo} from "../page";
 import {Drawer,FrameCard,LockedHint,QuestionCard,ReadingMenu,SayCard,WhoCard,WordCard} from "./cards";
 import {fontStacks,lineSpacings,textSizes,useReaderPrefs} from "./prefs";
@@ -17,17 +18,18 @@ import {fontStacks,lineSpacings,textSizes,useReaderPrefs} from "./prefs";
 // A piece is a whole sentence, or part of one too long to fit a screen by itself; full keeps the whole sentence for cards.
 type Piece={text:string;full:string};
 type Para={id:string;items:Piece[]};
-type Card=null|{type:"questions"}|{type:"menu"}|{type:"who"}|{type:"frame"}|{type:"say";sentence:string}|{type:"word";term:string;word:string;sentence:string};
+type Card=null|{type:"keep"}|{type:"questions"}|{type:"menu"}|{type:"who"}|{type:"frame"}|{type:"say";sentence:string}|{type:"word";term:string;word:string;sentence:string};
 type Layout="spread"|"side"|"bottom";
 const PARA_CLASS="mb-[0.7em] last:mb-0";
 const escapeRe=(s:string)=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
 
-function useLayout():Layout{
- const read=()=>typeof window==="undefined"?"bottom":window.innerWidth>=900&&window.innerWidth>window.innerHeight?"spread":window.innerWidth>window.innerHeight?"side":"bottom";
+// Layout follows the reader's own box, so the same reader works full screen and embedded in the home page hero.
+function useLayout(root:React.RefObject<HTMLElement|null>):Layout{
  const [layout,setLayout]=useState<Layout>("bottom");
- useEffect(()=>{const on=()=>setLayout(read());on();window.addEventListener("resize",on);return()=>window.removeEventListener("resize",on)},[]);
+ useEffect(()=>{const el=root.current;if(!el)return;const on=()=>{const w=el.clientWidth,h=el.clientHeight;setLayout(w>=900&&w>h?"spread":w>h?"side":"bottom")};on();const ro=new ResizeObserver(on);ro.observe(el);return()=>ro.disconnect()},[root]);
  return layout;
 }
+export type ReaderProgress={page?:number;part?:number;furthest?:number;briefed?:boolean;sections?:string[];skippedFrames?:string[]};
 
 // Greedy split of a page's sentences into screens that fit the text box, measured with an invisible copy of the text.
 // A sentence too tall for an empty screen (very large text on a small phone) is split between words.
@@ -43,46 +45,56 @@ function paginate(paras:Para[],box:HTMLElement,measurer:HTMLElement):Para[][]{
  return parts.length?parts:[paras];
 }
 
-export function StorybookReader({world,role,passages,demo,setDemo,onExit,feedbackUrl}:{world:WorldPack;role:WorldPack["roles"][number];passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;feedbackUrl:string|null}){
- const book=world.storybook!;const pages=book.pages;const last=pages.length-1;
+// mode "preview" is the home page hero: the first few pages only, no AI, no clue gate, no saved progress.
+export function StorybookReader({world,role,passages,demo,setDemo,onExit,feedbackUrl,mode="full",previewPages=2,onKeepReading}:{world:WorldPack;role:WorldPack["roles"][number];passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;feedbackUrl:string|null;mode?:"full"|"preview";previewPages?:number;onKeepReading?:()=>void}){
+ const preview=mode==="preview";
+ const rootRef=useRef<HTMLDivElement>(null);
+ // Progress is kept per story so the shelf's Continue card can return to the exact page and screen.
+ const prog:ReaderProgress=demo.readerProgress?.[world.id]??{};
+ const setProg=useCallback((patch:ReaderProgress|((p:ReaderProgress)=>ReaderProgress))=>setDemo(d=>{const cur=d.readerProgress?.[world.id]??{};const next=typeof patch==="function"?patch(cur):{...cur,...patch};return {...d,readerProgress:{...(d.readerProgress??{}),[world.id]:next}}}),[setDemo,world.id]);
+ const book=world.storybook!;const pages=preview?book.pages.slice(0,previewPages):book.pages;const last=pages.length-1;
  const gates=useMemo(()=>cluesByPage(world),[world]);
- const [prefs,update]=useReaderPrefs();const layout=useLayout();
+ const [prefs,update]=useReaderPrefs();const layout=useLayout(rootRef);
  const [card,setCard]=useState<Card>(null),[sayMode,setSayMode]=useState(false),[celebrate,setCelebrate]=useState<{title:string;rankUp:string|null}|null>(null);
- const index=Math.min(Math.max(demo.readerPage??0,0),last);const page=pages[index];
+ const index=Math.min(Math.max(prog.page??0,0),last);const page=pages[index];
  const pageDone=useCallback((i:number)=>gates[i].every(({clue})=>isDone(demo,clue.id)),[gates,demo]);
- const furthest=Math.max(demo.readerFurthest??0,index);
+ const furthest=Math.max(prog.furthest??0,index);
  const paras=useMemo<Para[]>(()=>pagePassages(passages,page).map(p=>({id:p.id,items:splitSentences(p.text).map(t=>({text:t,full:t}))})),[passages,page]);
  const pageText=useMemo(()=>paras.map(p=>p.items.map(i=>i.text).join(" ")).join(" "),[paras]);
  const section=book.sections.find(s=>s.id===page.section);
  const open=gates[index].filter(({clue})=>!isDone(demo,clue.id)).length;
  // A required picture frame is part of the page's gate; optional frames never block and can be skipped.
  const frameNeeded=!!page.frame_required&&!demo.storyFrames?.[page.id];
- const frameSkipped=(demo.readerSkippedFrames??[]).includes(page.id);
+ const frameSkipped=(prog.skippedFrames??[]).includes(page.id);
 
  // Pagination: re-measure whenever the page, text settings, layout, panel size, or fonts change.
  const box=useRef<HTMLDivElement>(null),measurer=useRef<HTMLDivElement>(null);
- const [parts,setParts]=useState<Para[][]>([paras]),[part,setPart]=useState(0),[tick,setTick]=useState(0);
+ const [parts,setParts]=useState<Para[][]>([paras]),[part,setPartState]=useState(prog.part??0),[tick,setTick]=useState(0);
+ // The current screen is mirrored in a ref so saving it to progress happens outside React's state updater.
+ const partRef=useRef(prog.part??0);
+ const setPart=useCallback((n:number|((p:number)=>number))=>{const v=typeof n==="function"?n(partRef.current):n;partRef.current=v;setPartState(v);if(!preview)setProg({part:v})},[preview,setProg]);
  const wantLastPart=useRef(false);
- useLayoutEffect(()=>{if(!box.current||!measurer.current)return;const next=paginate(paras,box.current,measurer.current);setParts(next);setPart(p=>wantLastPart.current?next.length-1:Math.min(p,next.length-1));wantLastPart.current=false},[paras,prefs,layout,tick,demo.readerBriefed]);
- useEffect(()=>{const el=box.current;if(!el)return;const ro=new ResizeObserver(()=>setTick(t=>t+1));ro.observe(el);document.fonts?.ready.then(()=>setTick(t=>t+1));return()=>ro.disconnect()},[prefs.view,layout,demo.readerBriefed]);
+ useLayoutEffect(()=>{if(!box.current||!measurer.current)return;const next=paginate(paras,box.current,measurer.current);setParts(next);setPart(p=>wantLastPart.current?next.length-1:Math.min(p,next.length-1));wantLastPart.current=false},[paras,prefs,layout,tick,prog.briefed]);
+ useEffect(()=>{const el=box.current;if(!el)return;const ro=new ResizeObserver(()=>setTick(t=>t+1));ro.observe(el);document.fonts?.ready.then(()=>setTick(t=>t+1));return()=>ro.disconnect()},[prefs.view,layout,prog.briefed]);
  // The reading screen never scrolls.
- useEffect(()=>{const root=document.documentElement,prev=root.style.overflow;root.style.overflow="hidden";return()=>{root.style.overflow=prev}},[]);
+ useEffect(()=>{if(preview)return;const root=document.documentElement,prev=root.style.overflow;root.style.overflow="hidden";return()=>{root.style.overflow=prev}},[preview]);
 
- const goTo=useCallback((i:number,toLastPart=false)=>{wantLastPart.current=toLastPart;setPart(0);setSayMode(false);setDemo(d=>({...d,readerPage:i,readerFurthest:Math.max(d.readerFurthest??0,i)}))},[setDemo]);
- const finishSection=useCallback((id:string)=>{if((demo.readerSections??[]).includes(id))return;const title=book.sections.find(s=>s.id===id)?.title??"";const rankUp=recordScene(`${world.id}:${id}`);playStamp();setCelebrate({title,rankUp});setDemo(d=>({...d,readerSections:[...(d.readerSections??[]),id],events:[...d.events,"scene_complete"]}))},[demo.readerSections,book.sections,world.id,setDemo]);
+ const goTo=useCallback((i:number,toLastPart=false)=>{wantLastPart.current=toLastPart;partRef.current=0;setPartState(0);setSayMode(false);setProg(p=>({...p,page:i,part:0,furthest:Math.max(p.furthest??0,i)}))},[setProg]);
+ const finishSection=useCallback((id:string)=>{if((prog.sections??[]).includes(id))return;const title=book.sections.find(s=>s.id===id)?.title??"";const rankUp=recordScene(`${world.id}:${id}`);playStamp();setCelebrate({title,rankUp});setProg(p=>({...p,sections:[...(p.sections??[]),id]}));setDemo(d=>({...d,events:[...d.events,"scene_complete"]}))},[prog.sections,book.sections,world.id,setProg,setDemo]);
  // advance() turns forward; next() is the same but ignores input while a card or celebration is open.
  const advance=useCallback(()=>{
   if(part<parts.length-1){setPart(part+1);return}
+  if(preview&&(index===last||!pageDone(index))){setCard({type:"keep"});return}
   if(!pageDone(index)){setCard({type:"questions"});return}
   if(frameNeeded){setCard({type:"frame"});return}
   if(index===last){finishSection(page.section);setDemo(d=>({...d,submitted:true,events:[...d.events,"case_closed"]}));return}
   if(pages[index+1].section!==page.section)finishSection(page.section);
   goTo(index+1);
- },[part,parts.length,pageDone,frameNeeded,index,last,page.section,pages,finishSection,goTo,setDemo]);
+ },[preview,part,parts.length,pageDone,frameNeeded,index,last,page.section,pages,finishSection,goTo,setDemo,setPart]);
  const next=useCallback(()=>{if(!card&&!celebrate)advance()},[card,celebrate,advance]);
- const prev=useCallback(()=>{if(card||celebrate)return;if(part>0){setPart(part-1);return}if(index>0)goTo(index-1,true)},[card,celebrate,part,index,goTo]);
+ const prev=useCallback(()=>{if(card||celebrate)return;if(part>0){setPart(part-1);return}if(index>0)goTo(index-1,true)},[card,celebrate,part,index,goTo,setPart]);
 
- useEffect(()=>{const key=(e:KeyboardEvent)=>{const t=e.target;if(t instanceof Element&&t.closest("input,textarea,select,[contenteditable]"))return;if(e.key==="ArrowRight"){e.preventDefault();next()}else if(e.key==="ArrowLeft"){e.preventDefault();prev()}};window.addEventListener("keydown",key);return()=>window.removeEventListener("keydown",key)},[next,prev]);
+ useEffect(()=>{const key=(e:KeyboardEvent)=>{const t=e.target;if(t instanceof Element&&t.closest("input,textarea,select,[contenteditable]"))return;if(preview&&!(t instanceof Node&&rootRef.current?.contains(t)))return;if(e.key==="ArrowRight"){e.preventDefault();next()}else if(e.key==="ArrowLeft"){e.preventDefault();prev()}};window.addEventListener("keydown",key);return()=>window.removeEventListener("keydown",key)},[next,prev,preview]);
  const swipe=useRef<{x:number;y:number}|null>(null);
  const onPointerDown=(e:React.PointerEvent)=>{if(card||e.pointerType==="mouse")return;swipe.current={x:e.clientX,y:e.clientY}};
  const onPointerUp=(e:React.PointerEvent)=>{const s=swipe.current;swipe.current=null;if(!s)return;const dx=e.clientX-s.x,dy=e.clientY-s.y;if(Math.abs(dx)>60&&Math.abs(dx)>1.5*Math.abs(dy)){if(dx<0)next();else prev()}};
@@ -103,7 +115,7 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,feedbac
  const studentImage=frame?.image;
  const art=page.illustration?.src||studentImage;
 
- if(!demo.readerBriefed)return <Shell title={world.title}><Briefing world={world} role={role} onStart={()=>setDemo(d=>({...d,readerBriefed:true,readerPage:d.readerPage??0}))} onExit={onExit}/></Shell>;
+ if(!preview&&!prog.briefed)return <Shell rootRef={rootRef} title={world.title}><Briefing world={world} role={role} onStart={()=>setProg(p=>({...p,briefed:true,page:p.page??0}))} onExit={onExit}/></Shell>;
 
  const textPanel=(extra="")=><div className={`flex min-h-0 flex-col ${extra}`}>
   <p className="mb-2 shrink-0 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">{section?.title}{parts.length>1&&` · part ${part+1} of ${parts.length}`}</p>
@@ -114,27 +126,28 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,feedbac
   {sayMode&&<p className="mt-2 shrink-0 text-[14px] font-semibold text-[#8A3B23]">Tap a sentence to say it again.</p>}
  </div>;
 
- const picture=<Picture page={page} src={art} isStudent={!!studentImage&&!page.illustration?.src} layout={layout} onFrame={()=>setCard({type:"frame"})} framed={!!frame} skipped={frameSkipped&&!frame} onSkip={()=>setDemo(d=>({...d,readerSkippedFrames:[...new Set([...(d.readerSkippedFrames??[]),page.id])]}))}/>;
+ const picture=<Picture page={page} src={art} isStudent={!!studentImage&&!page.illustration?.src} layout={layout} onFrame={()=>setCard({type:"frame"})} framed={!!frame} skipped={frameSkipped&&!frame} onSkip={()=>setProg(p=>({...p,skippedFrames:[...new Set([...(p.skippedFrames??[]),page.id])]}))}/>;
  const textOnly=prefs.view==="text";
 
- return <Shell title={world.title} onExit={onExit} tools={<>
+ return <Shell rootRef={rootRef} preview={preview} title={world.title} onExit={preview?undefined:onExit} tools={<>
    <ToolButton label="Who's who" onClick={()=>setCard({type:"who"})}><Users size={20}/></ToolButton>
    <ToolButton label={sayMode?"Stop Say it again":"Say it again"} pressed={sayMode} onClick={()=>setSayMode(v=>!v)}><MessageSquareQuote size={20}/></ToolButton>
-   {page.mode!=="illustrated"&&<ToolButton label={page.mode==="add_detail"?"Add a detail":"Illustrate this page"} onClick={()=>setCard({type:"frame"})}><PenLine size={20}/></ToolButton>}
+   {!preview&&page.mode!=="illustrated"&&<ToolButton label={page.mode==="add_detail"?"Add a detail":"Illustrate this page"} onClick={()=>setCard({type:"frame"})}><PenLine size={20}/></ToolButton>}
    <ToolButton label="Reading settings" onClick={()=>setCard({type:"menu"})}><Type size={20}/></ToolButton>
-   {feedbackUrl&&<a href={feedbackUrl} target="_blank" rel="noopener noreferrer" className="ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-full bg-[#F4E1D6] px-3 text-[14px] font-semibold text-[#8A3B23] hover:bg-[#EDD3C4]"><MessageCircleHeart size={18}/><span className="hidden md:inline">Give feedback</span><span className="md:hidden">Feedback</span></a>}
+   {!preview&&feedbackUrl&&<a href={feedbackUrl} target="_blank" rel="noopener noreferrer" className="ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-full bg-[#F4E1D6] px-3 text-[14px] font-semibold text-[#8A3B23] hover:bg-[#EDD3C4]"><MessageCircleHeart size={18}/><span className="hidden md:inline">Give feedback</span><span className="md:hidden">Feedback</span></a>}
   </>}>
   <div className="relative min-h-0 flex-1" style={{touchAction:"pan-y pinch-zoom"}} onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={()=>{swipe.current=null}}>
    {textOnly?<div className="mx-auto flex h-full max-w-[760px] flex-col px-4 py-3 md:px-8 md:py-6"><div className="flex min-h-0 flex-1 flex-col rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_18px_-8px_rgba(42,38,32,.3)] md:p-8">{textPanel("flex-1")}</div></div>
    :layout==="spread"?<div className="grid h-full grid-cols-2 gap-4 p-4"><div className="relative overflow-hidden rounded-3xl bg-[#EFE8D8] shadow-[0_10px_40px_-14px_rgba(42,38,32,.35)]">{picture}</div><div className="flex min-h-0 flex-col rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_10px_40px_-14px_rgba(42,38,32,.3)] lg:p-8">{textPanel("flex-1")}</div></div>
    :<div className="absolute inset-0">{picture}<div className={`absolute flex flex-col rounded-3xl bg-[#FFFDF8]/90 p-4 shadow-[0_10px_40px_-14px_rgba(42,38,32,.45)] backdrop-blur-md sm:p-5 ${layout==="side"?"bottom-3 right-3 top-3 w-[56%]":"inset-x-3 bottom-3 h-[58%]"}`}>{textPanel("flex-1")}</div></div>}
    {card&&<Drawer title={cardTitle(card,page)} wide={card.type==="questions"} onClose={()=>setCard(null)}>
-    {card.type==="questions"&&<QuestionCard world={world} roleId={role.id} items={gates[index]} demo={demo} setDemo={setDemo} passages={passages} lastPage={index===last} reading={{throughParagraph:pages[furthest].end,characters:characters.map(c=>c.id)}} onAllDone={()=>{setCard(null);advance()}}/>}
-    {card.type==="menu"&&<ReadingMenu prefs={prefs} update={update}/>}
+    {card.type==="questions"&&!preview&&<QuestionCard world={world} roleId={role.id} items={gates[index]} demo={demo} setDemo={setDemo} passages={passages} lastPage={index===last} reading={{throughParagraph:pages[furthest].end,characters:characters.map(c=>c.id)}} onAllDone={()=>{setCard(null);advance()}}/>}
+    {card.type==="menu"&&<ReadingMenu prefs={prefs} update={update} spanish={demo.homeLanguage==="es"} onSpanish={preview?undefined:on=>{setDemo(d=>({...d,homeLanguage:on?"es":null}));saveHomeLanguage(on?"es":null)}}/>}
     {card.type==="who"&&<WhoCard characters={characters}/>}
     {card.type==="say"&&<SayCard sentence={card.sentence} restatement={page.restatements[sentenceKey(card.sentence)]}/>}
     {card.type==="word"&&(()=>{const v=vocab.find(x=>x.term===card.term);return v?<WordCard entry={v} word={card.word} sentence={card.sentence}/>:null})()}
-    {card.type==="frame"&&<FrameCard page={page} pageText={pageText} demo={demo} setDemo={setDemo} onSkip={()=>{setDemo(d=>({...d,readerSkippedFrames:[...new Set([...(d.readerSkippedFrames??[]),page.id])]}));setCard(null)}} onContinue={()=>{setCard(null);advance()}} lastPage={index===last&&pageDone(index)}/>}
+    {card.type==="keep"&&<div className="space-y-4"><p className="text-[17px] leading-7">{open?"In the full demo, you prove this clue with a line from the story before the page turns. Characters can help, but they can be wrong.":"That's the end of the preview."}</p><p className="text-[16px] leading-7 text-[#4A4438]">Keep reading to open the whole case: 19 pages, every clue, and your case file.</p>{onKeepReading&&<button type="button" onClick={onKeepReading} className="case-primary w-full">Keep reading <ArrowRight size={18}/></button>}</div>}
+    {card.type==="frame"&&<FrameCard page={page} pageText={pageText} demo={demo} setDemo={setDemo} onSkip={()=>{setProg(p=>({...p,skippedFrames:[...new Set([...(p.skippedFrames??[]),page.id])]}));setCard(null)}} onContinue={()=>{setCard(null);advance()}} lastPage={index===last&&pageDone(index)}/>}
    </Drawer>}
    {celebrate&&<div className="absolute inset-0 z-40 grid place-items-center bg-[#2A2620]/45 p-6"><div role="dialog" aria-modal="true" aria-label="Section solved" className="case-rise relative w-full max-w-md rounded-3xl bg-[#FFFDF8] p-7 text-center shadow-2xl">
     <div aria-hidden className="case-stamp case-stamp-page">Section solved</div>
@@ -151,7 +164,7 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,feedbac
     <div className="mx-auto mt-1.5 h-1.5 w-full max-w-[240px] overflow-hidden rounded-full bg-[#E4DCCB]" aria-hidden><div className="h-full rounded-full bg-[#A0472C] transition-[width]" style={{width:`${((index+(part+1)/parts.length)/pages.length)*100}%`}}/></div>
    </div>
    {part<parts.length-1?<NavNext label="Next" onClick={next}/>
-   :open?<button type="button" onClick={()=>setCard({type:"questions"})} className="case-primary min-h-14 px-4 text-[15px]"><span className="hidden sm:inline"><LockedHint count={open}/></span><span className="sm:hidden">Prove {open===1?"clue":`${open} clues`}</span></button>
+   :open?<button type="button" onClick={()=>setCard({type:preview?"keep":"questions"})} className="case-primary min-h-14 px-4 text-[15px]"><span className="hidden sm:inline"><LockedHint count={open}/></span><span className="sm:hidden">Prove {open===1?"clue":`${open} clues`}</span></button>
    :frameNeeded?<button type="button" onClick={()=>setCard({type:"frame"})} className="case-primary min-h-14 px-4 text-[15px]"><PenLine size={18}/><span className="hidden sm:inline">Finish your picture to turn the page</span><span className="sm:hidden">Finish picture</span></button>
    :index===last?<button type="button" onClick={next} className="case-primary min-h-14">Close the case <ArrowRight size={18}/></button>
    :<NavNext label="Next page" onClick={next}/>}
@@ -160,10 +173,11 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,feedbac
 }
 function NavNext({label,onClick}:{label:string;onClick:()=>void}){return <button type="button" onClick={onClick} aria-label={label} className="grid h-14 w-14 place-items-center rounded-full bg-[#A0472C] text-white shadow-[0_6px_18px_-6px_rgba(160,71,44,.6)]"><ChevronRight size={28}/></button>}
 function ToolButton({label,onClick,pressed,children}:{label:string;onClick:()=>void;pressed?:boolean;children:React.ReactNode}){return <button type="button" onClick={onClick} aria-label={label} title={label} aria-pressed={pressed} className={`grid h-11 w-11 place-items-center rounded-full ${pressed?"bg-[#A0472C] text-white":"text-[#2A2620] hover:bg-[#EFE8D8]"}`}>{children}</button>}
-function cardTitle(card:NonNullable<Card>,page:StoryPage){return card.type==="questions"?"Before you turn the page":card.type==="menu"?"Reading settings":card.type==="who"?"Who's who":card.type==="say"?"Say it again":card.type==="word"?"Word":page.mode==="add_detail"?"Add a missing detail":"You illustrate this page"}
+function cardTitle(card:NonNullable<Card>,page:StoryPage){return card.type==="keep"?"Keep reading":card.type==="questions"?"Before you turn the page":card.type==="menu"?"Reading settings":card.type==="who"?"Who's who":card.type==="say"?"Say it again":card.type==="word"?"Word":page.mode==="add_detail"?"Add a missing detail":"You illustrate this page"}
 
-function Shell({title,onExit,tools,children}:{title:string;onExit?:()=>void;tools?:React.ReactNode;children:React.ReactNode}){
- return <div className="case-ui fixed inset-0 z-40 flex h-[100dvh] flex-col overflow-hidden bg-[#F6F0E3]">
+function Shell({title,onExit,tools,children,rootRef,preview=false}:{title:string;onExit?:()=>void;tools?:React.ReactNode;children:React.ReactNode;rootRef:React.RefObject<HTMLDivElement|null>;preview?:boolean}){
+ // Full screen in the reader; a bordered box on the home page hero. The full reader opens with a short book-opening motion.
+ return <div ref={rootRef} className={preview?"case-ui relative flex h-full flex-col overflow-hidden rounded-3xl border border-[#E4DCCB] bg-[#F6F0E3] shadow-[0_24px_60px_-24px_rgba(42,38,32,.45)]":"sb-open case-ui fixed inset-0 z-40 flex h-[100dvh] flex-col overflow-hidden bg-[#F6F0E3]"}>
   <header className="flex h-14 shrink-0 items-center gap-1 border-b border-[#E4DCCB] px-2 md:px-4">
    {onExit&&<button type="button" onClick={onExit} className="inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]"><ArrowLeft size={18}/><span className="hidden sm:inline">Stories</span></button>}
    <h1 className="min-w-0 flex-1 truncate px-1 text-[17px] font-bold">{title}</h1>
@@ -203,8 +217,8 @@ function Briefing({world,role,onStart,onExit}:{world:WorldPack;role:WorldPack["r
     <div className="min-h-0 overflow-y-auto">
      <p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Case briefing · {world.title}</p>
      <h2 className="mt-1 text-[28px] font-bold leading-tight">You are the {role.name}</h2>
-     <p className="mt-4 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Why you're here</p><p className="mt-1 text-[17px] leading-7">{role.briefing}</p>
-     <p className="mt-4 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">What to look for</p><p className="mt-1 text-[17px] leading-7">{role.goal}</p>
+     <p className="mt-4 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Why you're here</p><p className="mt-1 text-[17px] leading-7">{role.briefing}</p><HomeText text={role.briefing}/>
+     <p className="mt-4 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">What to look for</p><p className="mt-1 text-[17px] leading-7">{role.goal}</p><HomeText text={role.goal}/>
      <ul className="mt-4 space-y-1.5 text-[15px] leading-6 text-[#4A4438]"><li>• Read one page at a time. Swipe, use the arrow keys, or tap the arrows.</li><li>• When a page has a clue, prove it with a line from the story to turn the page.</li><li>• Tap an underlined word for help. Use Say it again or Who's who any time.</li></ul>
     </div>
     <div className="mt-6 flex shrink-0 flex-wrap items-center justify-between gap-3"><button type="button" onClick={onExit} className="min-h-11 text-[15px] text-[#6B6457] underline-offset-4 hover:underline">Choose another story</button><button type="button" autoFocus onClick={onStart} className="case-primary">Start reading <ArrowRight size={18}/></button></div>

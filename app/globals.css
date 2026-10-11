@@ -83,3 +83,20 @@ h1[tabindex="-1"]:focus{outline:none}
 .sb-placeholder:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 22px,rgba(160,71,44,.05) 22px 23px)}
 .sb-frame{border:3px dashed #A0472C;background:rgba(255,253,248,.85);box-shadow:0 10px 30px -14px rgba(42,38,32,.4)}
 @media (prefers-reduced-motion:reduce){.sb-drawer,.sb-scrim{animation:none!important}}
+.sb-open{animation:sb-open .35s cubic-bezier(.2,.8,.3,1) both;transform-origin:30% 50%}
+@keyframes sb-open{from{opacity:0;transform:perspective(1200px) rotateY(-8deg) scale(.97)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.sb-open{animation:none!important}}
+/* Student shelf */
+.shelf-row{position:relative}
+.shelf-row>li{position:relative;padding-bottom:4px}
+.shelf-row>li:after{content:"";position:absolute;left:-10px;right:-10px;bottom:-14px;height:10px;border-radius:3px;background:linear-gradient(#C9A27F,#A97F5C);box-shadow:0 6px 10px -6px rgba(42,38,32,.6)}
+.shelf-pan{animation:shelf-pan 18s ease-in-out infinite alternate;transform-origin:50% 40%}
+@keyframes shelf-pan{from{transform:scale(1.08) translateX(-3%)}to{transform:scale(1.08) translateX(3%)}}
+@media (prefers-reduced-motion:reduce){.shelf-pan{animation:none!important;transform:none}}
+/* Home: role flip cards and tour */
+.role-card-inner{transition:transform .5s cubic-bezier(.2,.8,.3,1);transform-style:preserve-3d}
+.role-face,.role-back{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.role-back{transform:rotateY(180deg)}
+.role-card:hover .role-card-inner,.role-card:focus-visible .role-card-inner{transform:rotateY(180deg)}
+.tour-ring{box-shadow:0 0 0 3px #A0472C,0 0 0 9999px rgba(42,38,32,.28);transition:all .25s ease}
+@media (prefers-reduced-motion:reduce){.role-card-inner,.tour-ring{transition:none!important}.role-card:hover .role-card-inner,.role-card:focus-visible .role-card-inner{transform:none}.role-card:hover .role-face,.role-card:focus-visible .role-face{opacity:0}.role-back{transform:none;opacity:0}.role-card:hover .role-back,.role-card:focus-visible .role-back{opacity:1}}

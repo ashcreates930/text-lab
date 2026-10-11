@@ -217,3 +217,15 @@ test("every Tell-Tale Heart clue lands on the storybook page that holds its last
     assert.ok(Number(pages[i].start.slice(1))<=lastCited&&lastCited<=Number(pages[i].end.slice(1)),clue.id);
   }
 });
+
+test("teacher demo sample data quotes the story exactly and tags real benchmarks", async()=>{
+  const {sampleCaseFile,sampleFrames,sampleStudents}=await import("../lib/sample-classroom.ts");
+  const {quoteInText}=await import("../lib/storybook.ts");
+  const source=await readFile(new URL("../worlds/tell-tale-heart/source.md",import.meta.url),"utf8");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/tell-tale-heart/world.json",import.meta.url),"utf8")));
+  const codes=new Set(world.benchmarks.map(b=>b.code)),clues=new Set(world.scenes.flatMap(s=>s.artifacts.map(a=>a.id)));
+  for(const e of sampleCaseFile.entries){assert.ok(quoteInText(e.quote,source),e.quote);assert.ok(clues.has(e.clueId),e.clueId);for(const t of e.tags)assert.ok(codes.has(t),t)}
+  for(const f of sampleFrames)assert.ok(quoteInText(f.quote,source),f.quote);
+  assert.equal(sampleStudents.length,12);
+  for(const s of sampleStudents)assert.match(s.name,/^[A-Z][a-z]+$/);
+});
