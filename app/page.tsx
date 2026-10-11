@@ -16,7 +16,7 @@ import { FeedbackBanner } from "./feedback-banner";
 import { DisplaySettings } from "./display-settings";
 import { Classroom } from "./classroom";
 import type { HomeLanguage } from "@/lib/bilingual";
-import { Tutorial, tutorialSeen } from "./tutorial";
+import { Tutorial, type TutorialHandle } from "./tutorial";
 import { ClassBar, ClassHome, ClassLive, type ClassAuth } from "./class-student";
 import { LessonPlayer, MiniLessonLibrary, type LessonRecord } from "./mini-lessons";
 import { Landing, Join, Owner, Pricing, Student, Teacher, Waitlist, PickStory, ChooseLevel } from "./ui";
@@ -93,6 +93,7 @@ export default function Home() {
   // Remember the home language in this browser; a restored session from before this feature picks up the saved choice.
   useEffect(()=>{if(demo.homeLanguage===undefined){const saved=savedHomeLanguage();if(saved)setDemo(d=>({...d,homeLanguage:saved}));return}saveHomeLanguage(demo.homeLanguage)},[demo.homeLanguage]);
   const gated = access !== "granted" && !ungatedViews.includes(view) && !(classViews.includes(view) && classSession);
+  const tutorial = useRef<TutorialHandle>(null);
   const focusedScreenKey = useRef<string | null>(null);
   const historyScreenKey = useRef<string | null>(null);
   const historyReady = useRef(false);
@@ -210,7 +211,9 @@ export default function Home() {
   function chooseStory(worldId:string,course:"all"|"best"|"ap"|"aice"="all"){setDemo(d=>({...d,worldId,course,grade:null,role:"",think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:0}));setView("play")}
   function chooseGrade(grade:number){setDemo(d=>({...d,grade,role:"",think:false,previewComplete:false,scene:0}));setView("play")}
   // Try the Demo opens the first story directly (one click). The Stories button in the scene leads to the full story list.
-  function tryDemo(){start("student_first_visit");chooseStory("sleepy-hollow");if(!tutorialSeen())setView("tutorial")}
+  // Starts the tutorial video inside the click itself (required for sound on iPhone and iPad), then shows it.
+  function showTutorial(){tutorial.current?.start();setView("tutorial")}
+  function tryDemo(){showTutorial();start("student_first_visit");chooseStory("sleepy-hollow");setView("tutorial")}
   function tryAnotherStory(){setDemo(d=>({...d,role:"",briefingComplete:false,think:false,previewComplete:false,scene:0}));setView("story")}
   function joinClass(session:{world_id:string;grade:number},auth:ClassAuth){const next=newDemo("class_student",session.world_id);next.grade=session.grade;next.scene=0;next.classAuth=auth;setDemo(next);setView("play")}
   function backToPreviousScreen(fallback:()=>void) {
@@ -237,8 +240,7 @@ export default function Home() {
     {view === "story" && <PickStory onLessons={() => { setActiveLesson(""); setView("lessons"); }} onBack={()=>backToPreviousScreen(()=>setView("landing"))} onPick={chooseStory} initialCourse={demo.course??"all"} />}
     {view === "level" && <ChooseLevel worldId={demo.worldId} course={demo.course??"all"} onBack={()=>backToPreviousScreen(()=>setView("story"))} onChoose={chooseGrade} />}
     {view === "play" && classSession && demo.classAuth && <ClassBar auth={demo.classAuth} onLive={() => setView("classlive")} onLessons={() => setView("classhome")} onDismissPhrase={() => setDemo(d => ({ ...d, classAuth: d.classAuth && { ...d.classAuth, resumePhrase: null } }))} />}
-    {view === "tutorial" && <Tutorial onDone={() => setView("play")} />}
-    {view === "play" && <CaseFlow demo={demo} setDemo={setDemo} onTutorial={() => setView("tutorial")} onExit={()=>classSession?setView("classhome"):setView("story")} onAnotherStory={()=>{setDemo(d=>({...d,submitted:false,scene:0}));setView(classSession?"classhome":"story")}} />}
+    {view === "play" && <CaseFlow demo={demo} setDemo={setDemo} onTutorial={showTutorial} onExit={()=>classSession?setView("classhome"):setView("story")} onAnotherStory={()=>{setDemo(d=>({...d,submitted:false,scene:0}));setView(classSession?"classhome":"story")}} />}
     {view === "teacher" && <Teacher demo={demo} setDemo={setDemo} onStudent={() => setView("play")} onPreset={start} onClassroom={() => setView("classroom")} />}
     {view === "classroom" && <Classroom onBack={() => backToPreviousScreen(() => setView("landing"))} />}
     {view === "classhome" && demo.classAuth && <ClassHome auth={demo.classAuth} onStory={() => setView("play")} onLive={() => setView("classlive")} />}
@@ -249,5 +251,6 @@ export default function Home() {
     {view === "join" && <Join initialCode={joinCode} onJoined={joinClass} />}
     {view === "owner" && <Owner data={ownerData} status={ownerStatus} setStatus={setOwnerStatus} />}
     {view === "landing" && <DisplaySettings/>}
+    <Tutorial ref={tutorial} visible={view === "tutorial"} onDone={() => setView("play")} />
   </main>;
 }
