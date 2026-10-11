@@ -38,7 +38,7 @@ export type Demo = {
   briefingComplete:boolean; savedTextEvidence:SavedTextEvidence[]; authorshipRanges:AuthorshipRange[]; analysisReport?:AnalysisReport;
   previewComplete?:boolean; course?:"all"|"best"|"ap"|"aice"; lessonsDone?:Record<string,LessonRecord>; portionUnlocks?:string[]; classAuth?:ClassAuth; homeLanguage?:HomeLanguage|null;
   // Storybook reader: current page, furthest page reached, briefing seen, sections solved, and the student's own picture frames.
-  readerPage?:number; readerFurthest?:number; readerBriefed?:boolean; readerSections?:string[];
+  readerPage?:number; readerFurthest?:number; readerBriefed?:boolean; readerSections?:string[]; readerSkippedFrames?:string[];
   storyFrames?:Record<string,{kind:"add_detail"|"student";description:string;quote:string;saved_at:string;image?:string;check?:{ok:boolean;notes:string[]}}>;
 };
 type ScreenSnapshot = { insideTheTextScreen: true; sequence: number; view: View; demo: Demo };
@@ -243,7 +243,7 @@ export default function Home() {
     {view === "story" && <PickStory onLessons={() => { setActiveLesson(""); setView("lessons"); }} onBack={()=>backToPreviousScreen(()=>setView("landing"))} onPick={chooseStory} initialCourse={demo.course??"all"} />}
     {view === "level" && <ChooseLevel worldId={demo.worldId} course={demo.course??"all"} onBack={()=>backToPreviousScreen(()=>setView("story"))} onChoose={chooseGrade} />}
     {view === "play" && classSession && demo.classAuth && <ClassBar auth={demo.classAuth} onLive={() => setView("classlive")} onLessons={() => setView("classhome")} onDismissPhrase={() => setDemo(d => ({ ...d, classAuth: d.classAuth && { ...d.classAuth, resumePhrase: null } }))} />}
-    {view === "play" && <CaseFlow demo={demo} setDemo={setDemo} onTutorial={showTutorial} onExit={()=>classSession?setView("classhome"):setView("story")} onAnotherStory={()=>{setDemo(d=>({...d,submitted:false,scene:0}));setView(classSession?"classhome":"story")}} />}
+    {view === "play" && <CaseFlow demo={demo} setDemo={setDemo} feedbackUrl={classSession ? null : feedbackUrl} onTutorial={showTutorial} onExit={()=>classSession?setView("classhome"):setView("story")} onAnotherStory={()=>{setDemo(d=>({...d,submitted:false,scene:0}));setView(classSession?"classhome":"story")}} />}
     {view === "teacher" && <Teacher demo={demo} setDemo={setDemo} onStudent={() => setView("play")} onPreset={start} onClassroom={() => setView("classroom")} />}
     {view === "classroom" && <Classroom onBack={() => backToPreviousScreen(() => setView("landing"))} />}
     {view === "classhome" && demo.classAuth && <ClassHome auth={demo.classAuth} onStory={() => setView("play")} onLive={() => setView("classlive")} />}

@@ -4,7 +4,7 @@
 // on the current page are proven. Cards (questions, words, Say it again, Who's who, reading menu, picture frames) slide
 // in over the page.
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
-import {ArrowLeft,ArrowRight,ChevronLeft,ChevronRight,ImageIcon,MessageSquareQuote,PenLine,Type,Users} from "lucide-react";
+import {ArrowLeft,ArrowRight,ChevronLeft,ChevronRight,ImageIcon,MessageCircleHeart,MessageSquareQuote,PenLine,Type,Users} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
 import {cluesByPage,pagePassages,sentenceKey,splitSentences,type StoryPage} from "@/lib/storybook";
@@ -43,7 +43,7 @@ function paginate(paras:Para[],box:HTMLElement,measurer:HTMLElement):Para[][]{
  return parts.length?parts:[paras];
 }
 
-export function StorybookReader({world,role,passages,demo,setDemo,onExit}:{world:WorldPack;role:WorldPack["roles"][number];passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void}){
+export function StorybookReader({world,role,passages,demo,setDemo,onExit,feedbackUrl}:{world:WorldPack;role:WorldPack["roles"][number];passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;feedbackUrl:string|null}){
  const book=world.storybook!;const pages=book.pages;const last=pages.length-1;
  const gates=useMemo(()=>cluesByPage(world),[world]);
  const [prefs,update]=useReaderPrefs();const layout=useLayout();
@@ -55,6 +55,9 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit}:{world
  const pageText=useMemo(()=>paras.map(p=>p.items.map(i=>i.text).join(" ")).join(" "),[paras]);
  const section=book.sections.find(s=>s.id===page.section);
  const open=gates[index].filter(({clue})=>!isDone(demo,clue.id)).length;
+ // A required picture frame is part of the page's gate; optional frames never block and can be skipped.
+ const frameNeeded=!!page.frame_required&&!demo.storyFrames?.[page.id];
+ const frameSkipped=(demo.readerSkippedFrames??[]).includes(page.id);
 
  // Pagination: re-measure whenever the page, text settings, layout, panel size, or fonts change.
  const box=useRef<HTMLDivElement>(null),measurer=useRef<HTMLDivElement>(null);
@@ -71,10 +74,11 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit}:{world
  const advance=useCallback(()=>{
   if(part<parts.length-1){setPart(part+1);return}
   if(!pageDone(index)){setCard({type:"questions"});return}
+  if(frameNeeded){setCard({type:"frame"});return}
   if(index===last){finishSection(page.section);setDemo(d=>({...d,submitted:true,events:[...d.events,"case_closed"]}));return}
   if(pages[index+1].section!==page.section)finishSection(page.section);
   goTo(index+1);
- },[part,parts.length,pageDone,index,last,page.section,pages,finishSection,goTo,setDemo]);
+ },[part,parts.length,pageDone,frameNeeded,index,last,page.section,pages,finishSection,goTo,setDemo]);
  const next=useCallback(()=>{if(!card&&!celebrate)advance()},[card,celebrate,advance]);
  const prev=useCallback(()=>{if(card||celebrate)return;if(part>0){setPart(part-1);return}if(index>0)goTo(index-1,true)},[card,celebrate,part,index,goTo]);
 
@@ -110,7 +114,7 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit}:{world
   {sayMode&&<p className="mt-2 shrink-0 text-[14px] font-semibold text-[#8A3B23]">Tap a sentence to say it again.</p>}
  </div>;
 
- const picture=<Picture page={page} src={art} isStudent={!!studentImage&&!page.illustration?.src} layout={layout} onFrame={()=>setCard({type:"frame"})} framed={!!frame}/>;
+ const picture=<Picture page={page} src={art} isStudent={!!studentImage&&!page.illustration?.src} layout={layout} onFrame={()=>setCard({type:"frame"})} framed={!!frame} skipped={frameSkipped&&!frame} onSkip={()=>setDemo(d=>({...d,readerSkippedFrames:[...new Set([...(d.readerSkippedFrames??[]),page.id])]}))}/>;
  const textOnly=prefs.view==="text";
 
  return <Shell title={world.title} onExit={onExit} tools={<>
@@ -118,6 +122,7 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit}:{world
    <ToolButton label={sayMode?"Stop Say it again":"Say it again"} pressed={sayMode} onClick={()=>setSayMode(v=>!v)}><MessageSquareQuote size={20}/></ToolButton>
    {page.mode!=="illustrated"&&<ToolButton label={page.mode==="add_detail"?"Add a detail":"Illustrate this page"} onClick={()=>setCard({type:"frame"})}><PenLine size={20}/></ToolButton>}
    <ToolButton label="Reading settings" onClick={()=>setCard({type:"menu"})}><Type size={20}/></ToolButton>
+   {feedbackUrl&&<a href={feedbackUrl} target="_blank" rel="noopener noreferrer" className="ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-full bg-[#F4E1D6] px-3 text-[14px] font-semibold text-[#8A3B23] hover:bg-[#EDD3C4]"><MessageCircleHeart size={18}/><span className="hidden md:inline">Give feedback</span><span className="md:hidden">Feedback</span></a>}
   </>}>
   <div className="relative min-h-0 flex-1" style={{touchAction:"pan-y pinch-zoom"}} onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={()=>{swipe.current=null}}>
    {textOnly?<div className="mx-auto flex h-full max-w-[760px] flex-col px-4 py-3 md:px-8 md:py-6"><div className="flex min-h-0 flex-1 flex-col rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_18px_-8px_rgba(42,38,32,.3)] md:p-8">{textPanel("flex-1")}</div></div>
@@ -129,7 +134,7 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit}:{world
     {card.type==="who"&&<WhoCard characters={characters}/>}
     {card.type==="say"&&<SayCard sentence={card.sentence} restatement={page.restatements[sentenceKey(card.sentence)]}/>}
     {card.type==="word"&&(()=>{const v=vocab.find(x=>x.term===card.term);return v?<WordCard entry={v} word={card.word} sentence={card.sentence}/>:null})()}
-    {card.type==="frame"&&<FrameCard page={page} pageText={pageText} demo={demo} setDemo={setDemo}/>}
+    {card.type==="frame"&&<FrameCard page={page} pageText={pageText} demo={demo} setDemo={setDemo} onSkip={()=>{setDemo(d=>({...d,readerSkippedFrames:[...new Set([...(d.readerSkippedFrames??[]),page.id])]}));setCard(null)}} onContinue={()=>{setCard(null);advance()}} lastPage={index===last&&pageDone(index)}/>}
    </Drawer>}
    {celebrate&&<div className="absolute inset-0 z-40 grid place-items-center bg-[#2A2620]/45 p-6"><div role="dialog" aria-modal="true" aria-label="Section solved" className="case-rise relative w-full max-w-md rounded-3xl bg-[#FFFDF8] p-7 text-center shadow-2xl">
     <div aria-hidden className="case-stamp case-stamp-page">Section solved</div>
@@ -147,6 +152,7 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit}:{world
    </div>
    {part<parts.length-1?<NavNext label="Next" onClick={next}/>
    :open?<button type="button" onClick={()=>setCard({type:"questions"})} className="case-primary min-h-14 px-4 text-[15px]"><span className="hidden sm:inline"><LockedHint count={open}/></span><span className="sm:hidden">Prove {open===1?"clue":`${open} clues`}</span></button>
+   :frameNeeded?<button type="button" onClick={()=>setCard({type:"frame"})} className="case-primary min-h-14 px-4 text-[15px]"><PenLine size={18}/><span className="hidden sm:inline">Finish your picture to turn the page</span><span className="sm:hidden">Finish picture</span></button>
    :index===last?<button type="button" onClick={next} className="case-primary min-h-14">Close the case <ArrowRight size={18}/></button>
    :<NavNext label="Next page" onClick={next}/>}
   </nav>
@@ -168,7 +174,8 @@ function Shell({title,onExit,tools,children}:{title:string;onExit?:()=>void;tool
 }
 
 // The picture side of a page: the curated illustration, the student's own picture, or a styled placeholder.
-function Picture({page,src,isStudent,layout,onFrame,framed}:{page:StoryPage;src?:string;isStudent:boolean;layout:Layout;onFrame:()=>void;framed:boolean}){
+function Picture({page,src,isStudent,layout,onFrame,framed,skipped,onSkip}:{page:StoryPage;src?:string;isStudent:boolean;layout:Layout;onFrame:()=>void;framed:boolean;skipped:boolean;onSkip:()=>void}){
+ const optional=!page.frame_required;
  const [broken,setBroken]=useState(false);
  useEffect(()=>setBroken(false),[src]);
  const show=src&&!broken;
@@ -178,12 +185,14 @@ function Picture({page,src,isStudent,layout,onFrame,framed}:{page:StoryPage;src?
   {show?<img src={src} alt={isStudent?"Your illustration of this page":page.illustration?.alt??""} onError={()=>setBroken(true)} className="absolute inset-0 h-full w-full object-cover"/>
   :<div className="sb-placeholder absolute inset-0" role="img" aria-label="No picture yet"/>}
   <div className={`${zone} grid place-items-center p-4`}>
-   {!show&&page.mode==="illustrated"&&<p className="max-w-[18rem] rounded-2xl bg-[#FFFDF8]/80 px-4 py-3 text-center text-[15px] leading-6 text-[#4A4438]"><ImageIcon size={18} className="mb-1 inline text-[#A0472C]"/><br/>The picture for this page is coming. Picture it in your mind as you read.</p>}
-   {page.mode==="add_detail"&&<button type="button" onClick={onFrame} className="rounded-2xl bg-[#FFFDF8]/90 px-5 py-3 text-center text-[16px] font-semibold text-[#2A2620] shadow-lg"><PenLine size={18} className="mr-2 inline text-[#A0472C]"/>{framed?"Your detail is saved":"Something's missing. Add a detail"}</button>}
-   {page.mode==="student"&&!show&&<button type="button" onClick={onFrame} className="sb-frame rounded-3xl px-6 py-5 text-center"><span className="block text-[20px] font-bold text-[#2A2620]">You illustrate this page</span><span className="mt-1 block text-[15px] text-[#4A4438]">{framed?"Your description is saved. Tap to change it.":"Describe the picture you see in your mind."}</span></button>}
+   {!show&&(page.mode==="illustrated"||skipped)&&<p className="max-w-[18rem] rounded-2xl bg-[#FFFDF8]/80 px-4 py-3 text-center text-[15px] leading-6 text-[#4A4438]"><ImageIcon size={18} className="mb-1 inline text-[#A0472C]"/><br/>The picture for this page is coming. Picture it in your mind as you read.</p>}
+   {page.mode==="add_detail"&&!skipped&&<div className="flex flex-col items-center gap-2"><button type="button" onClick={onFrame} className="rounded-2xl bg-[#FFFDF8]/90 px-5 py-3 text-center text-[16px] font-semibold text-[#2A2620] shadow-lg"><PenLine size={18} className="mr-2 inline text-[#A0472C]"/>{framed?"Your detail is saved":optional?"Something's missing. Add a detail (optional)":"Something's missing. Add a detail"}</button>{optional&&!framed&&<SkipButton onSkip={onSkip}/>}</div>}
+   {page.mode==="student"&&!show&&!skipped&&<div className="flex flex-col items-center gap-2"><button type="button" onClick={onFrame} className="sb-frame rounded-3xl px-6 py-5 text-center"><span className="block text-[20px] font-bold text-[#2A2620]">You illustrate this page{optional&&!framed?" (optional)":""}</span><span className="mt-1 block text-[15px] text-[#4A4438]">{framed?"Your description is saved. Tap to change it.":"Describe the picture you see in your mind."}</span></button>{optional&&!framed&&<SkipButton onSkip={onSkip}/>}</div>}
   </div>
  </div>;
 }
+
+function SkipButton({onSkip}:{onSkip:()=>void}){return <button type="button" onClick={onSkip} className="min-h-11 rounded-full bg-[#FFFDF8]/90 px-5 text-[15px] font-semibold text-[#6B6457] shadow">Skip</button>}
 
 // One-screen case briefing before page 1: the student's role, why they're here, and what to look for.
 function Briefing({world,role,onStart,onExit}:{world:WorldPack;role:WorldPack["roles"][number];onStart:()=>void;onExit:()=>void}){

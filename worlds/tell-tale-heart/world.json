@@ -1866,7 +1866,8 @@
           "06fd30cc5d39baf0": "Once my head was inside, I carefully opened the lantern just enough for a tiny light to shine on the eye.",
           "1483d3c7a2005574": "I did this for seven nights, always at midnight, but the eye was always closed, so I could not do it. It was not the old man who bothered me. It was his Evil Eye.",
           "605de6a5afff7f80": "Every morning, I went into his room and talked to him cheerfully, asking how he slept."
-        }
+        },
+        "frame_required": true
       },
       {
         "id": "page-05",
@@ -1984,7 +1985,8 @@
           "5aab7bf60109b717": "The old man must have been very scared!",
           "a1cf0162b3cfa2dc": "It got louder, I tell you, louder every moment. Do you understand?",
           "2cdb48c837c60841": "I have told you I am nervous, and I am."
-        }
+        },
+        "frame_required": true
       },
       {
         "id": "page-11",
@@ -1993,7 +1995,7 @@
         "end": "p020",
         "mode": "student",
         "no_generation": true,
-        "no_generation_reason": "This page describes violence. Students describe their picture in writing; no image is generated.",
+        "no_generation_reason": "On this page you describe your picture in writing only. No image is created.",
         "characters_met": [
           {
             "id": "neighbor",
@@ -2010,7 +2012,8 @@
           "92a6459f7c783335": "It was time for the old man to die!",
           "6b1f9a4a0f78773a": "I yelled loudly, opened the lantern, and jumped into the room.",
           "fa548794c41d284b": "He screamed once, just once."
-        }
+        },
+        "frame_prompt": "Picture the mood and the setting of this page, not the violence: the dark room, the lantern and its light, the bed, the floorboards. Describe the light, the shadows, and the stillness."
       },
       {
         "id": "page-12",
@@ -2019,7 +2022,7 @@
         "end": "p022",
         "mode": "student",
         "no_generation": true,
-        "no_generation_reason": "This page describes violence. Students describe their picture in writing; no image is generated.",
+        "no_generation_reason": "On this page you describe your picture in writing only. No image is created.",
         "characters_met": [],
         "restatements": {
           "4c44ba681a23281d": "I quickly pulled him to the floor and put the heavy bed on top of him.",
@@ -2034,7 +2037,8 @@
           "07c17715cb340436": "There was no heartbeat.",
           "e3863e32af40532d": "The old man was completely dead.",
           "ef416c57e9ef8bb8": "His eye would not bother me anymore."
-        }
+        },
+        "frame_prompt": "Picture the mood and the setting of this page, not the violence: the dark room, the lantern and its light, the bed, the floorboards. Describe the light, the shadows, and the stillness."
       },
       {
         "id": "page-13",
@@ -2043,7 +2047,7 @@
         "end": "p024",
         "mode": "student",
         "no_generation": true,
-        "no_generation_reason": "This page describes violence. Students describe their picture in writing; no image is generated.",
+        "no_generation_reason": "On this page you describe your picture in writing only. No image is created.",
         "characters_met": [],
         "restatements": {
           "15c114a71f874dad": "If you still think I'm crazy, you won't after I tell you how carefully I hid the body.",
@@ -2056,7 +2060,9 @@
           "986ac801865204e6": "I was too careful for that.",
           "96c1b52e00f8a0a3": "A tub caught everything—ha!",
           "335845192fefea39": "Ha!"
-        }
+        },
+        "frame_required": true,
+        "frame_prompt": "Picture the mood and the setting of this page, not the violence: the dark room, the lantern and its light, the bed, the floorboards. Describe the light, the shadows, and the stillness."
       },
       {
         "id": "page-14",
@@ -2178,7 +2184,8 @@
           "46d4fc6ee99087bd": "Tear up the floorboards!",
           "c0c15b438cbe1b3c": "Here, here!",
           "e48330656141cc13": "It's the sound of his awful heart!\""
-        }
+        },
+        "frame_required": true
       }
     ],
     "vocabulary": [

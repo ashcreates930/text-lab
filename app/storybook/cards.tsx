@@ -109,7 +109,7 @@ function ClueSteps({world,scene,clue,roleId,demo,setDemo,passages,reading,onBack
 
 // Picture frames. Pages with a planned picture ask for one missing detail; later pages ask the student to describe the
 // whole picture. Both need a supporting quote from this page. AI checking and image creation arrive in the next build.
-export function FrameCard({page,pageText,demo,setDemo}:{page:StoryPage;pageText:string;demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>}){
+export function FrameCard({page,pageText,demo,setDemo,onSkip,onContinue,lastPage}:{page:StoryPage;pageText:string;demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onSkip:()=>void;onContinue:()=>void;lastPage:boolean}){
  const kind=page.mode==="add_detail"?"add_detail":"student";
  const saved=demo.storyFrames?.[page.id];
  const [description,setDescription]=useState(saved?.description??""),[quote,setQuote]=useState(saved?.quote??""),[status,setStatus]=useState("");
@@ -117,13 +117,16 @@ export function FrameCard({page,pageText,demo,setDemo}:{page:StoryPage;pageText:
  const ready=description.trim().length>=8&&quoteOk===true;
  function save(){if(!ready)return;setDemo(d=>({...d,storyFrames:{...(d.storyFrames??{}),[page.id]:{...(d.storyFrames?.[page.id]??{}),kind,description:description.trim(),quote:quote.trim(),saved_at:new Date().toISOString()}}}));setStatus("Saved. You can change it any time.")}
  return <div className="space-y-4">
-  <p className="text-[17px] leading-7">{kind==="add_detail"?"Something the story describes is missing from this picture. Add one detail, then copy the words from the page that show it.":"Picture this page in your mind. Describe what you see: who is there, where they are, what is happening, the light and the colors. Then copy the words from the page that support it."}</p>
+  <p className={`w-fit rounded-full px-3 py-1 text-[13px] font-semibold uppercase tracking-wide ${page.frame_required?"bg-[#A0472C] text-white":"bg-[#EFE8D8] text-[#6B6457]"}`}>{page.frame_required?"Needed to turn the page":"Optional"}</p>
+  <p className="text-[17px] leading-7">{kind==="add_detail"?"Something the story describes is missing from this picture. Add one detail, then copy the words from the page that show it.":`${page.frame_prompt??"Picture this page in your mind. Describe what you see: who is there, where they are, what is happening, the light and the colors."} Then copy the words from the page that support it.`}</p>
   {page.no_generation&&<p className="rounded-2xl bg-[#EFE8D8] px-4 py-3 text-[15px] leading-6">{page.no_generation_reason}</p>}
   <div><label htmlFor="sb-desc" className="text-[15px] font-semibold">{kind==="add_detail"?"The detail I would add":"My picture"}</label><textarea id="sb-desc" value={description} onChange={e=>{setDescription(e.target.value);setStatus("")}} rows={kind==="add_detail"?2:4} maxLength={kind==="add_detail"?300:600} className="mt-1 w-full rounded-2xl border border-[#E4DCCB] bg-white px-4 py-3 text-[17px] leading-7 outline-none focus:border-[#A0472C]"/></div>
   <div><label htmlFor="sb-quote" className="text-[15px] font-semibold">The words from the page that show it</label><textarea id="sb-quote" value={quote} onChange={e=>{setQuote(e.target.value);setStatus("")}} rows={2} maxLength={400} aria-describedby="sb-quote-status" className="mt-1 w-full rounded-2xl border border-[#E4DCCB] bg-white px-4 py-3 font-serif text-[17px] leading-7 outline-none focus:border-[#A0472C]"/>
    <p id="sb-quote-status" className={`mt-1 text-[14px] ${quoteOk?"text-[#3F6B3A]":quoteOk===false?"text-[#8A3B23]":"text-[#6B6457]"}`}>{quoteOk?<><Check size={14} className="mr-1 inline"/>Found on this page.</>:quoteOk===false?"We can't find those words on this page yet. Copy at least three words in a row; capitals and punctuation don't matter.":"Copy at least three words in a row from this page."}</p></div>
   <button type="button" disabled={!ready} onClick={save} className="case-primary w-full disabled:opacity-40"><Check size={18}/> Save my {kind==="add_detail"?"detail":"picture description"}</button>
   {status&&<p role="status" className="text-[15px] text-[#3F6B3A]">{status}</p>}
+  {saved&&page.frame_required&&<button type="button" onClick={onContinue} className="case-secondary w-full justify-center">{lastPage?"Close the case":"Turn the page"} <ArrowRight size={18}/></button>}
+  {!page.frame_required&&!saved&&<button type="button" onClick={onSkip} className="min-h-11 w-full rounded-2xl text-[16px] font-semibold text-[#6B6457] hover:bg-[#EFE8D8]">Skip this picture</button>}
   {saved&&!status&&<p className="text-[14px] text-[#6B6457]">Saved {new Date(saved.saved_at).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}.</p>}
  </div>;
 }

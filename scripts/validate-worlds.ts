@@ -12,6 +12,7 @@ function storybookProblems(world:WorldPack,source:string):string[]{
     const a=Number(page.start.slice(1)),b=Number(page.end.slice(1));
     if(a!==expected)problems.push(`${page.id} starts at ${page.start}; expected p${String(expected).padStart(3,"0")}`);
     if(b<a)problems.push(`${page.id} ends before it starts`);
+    if(page.frame_required&&page.mode==="illustrated")problems.push(`${page.id} requires a picture frame but is a fully illustrated page`);
     if(!sectionIds.has(page.section))problems.push(`${page.id} uses unknown section ${page.section}`);
     const keys=new Set(pagePassages(passages,page).flatMap(p=>splitSentences(p.text)).map(sentenceKey));
     for(const key of Object.keys(page.restatements))if(!keys.has(key))problems.push(`${page.id} has a restatement for a sentence that is not on the page`);
