@@ -10,8 +10,10 @@ export type ClassAuth={token:string;nickname:string;className:string|null;resume
 
 async function studentFetch(auth:ClassAuth,path:string,init:RequestInit={}){
  const headers=new Headers(init.headers);headers.set("Content-Type","application/json");headers.set("x-class-token",auth.token);
- const response=await fetch(path,{...init,headers});
- return {ok:response.ok,status:response.status,body:await response.json().catch(()=>({}))};
+ // A dropped connection reads as "not ok" so the class bar's regular check-in tries again instead of throwing.
+ try{const response=await fetch(path,{...init,headers});
+  return {ok:response.ok,status:response.status,body:await response.json().catch(()=>({}))}}
+ catch{return {ok:false,status:0,body:{error:"We couldn't reach Text Lab. Check your connection."}}}
 }
 
 type ClassInfo={nickname:string;className:string|null;worldTitle:string;grade:number;assignments:{lessonId:string;dueDate:string|null;done:{first_try_correct:number;total:number}|null}[];liveActive:boolean};
