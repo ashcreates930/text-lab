@@ -18,6 +18,10 @@ import { Classroom } from "./classroom";
 import type { HomeLanguage } from "@/lib/bilingual";
 import { Tutorial, type TutorialHandle } from "./tutorial";
 import { Shelf } from "./shelf";
+import { FeedbackForm, rememberRef, type FormOpen } from "./feedback-form";
+import { OwnerDashboard } from "./owner-dashboard";
+import { WaitlistPage } from "./waitlist-page";
+import type { PlanId } from "@/config/pricing";
 import { applyProgress, loadClassProgress, useClassProgressSync } from "./class-progress";
 import { TeacherDemo } from "./teacher-demo";
 import { ClassBar, ClassHome, ClassLive, type ClassAuth } from "./class-student";
@@ -93,7 +97,10 @@ export default function Home() {
   const [ownerData, setOwnerData] = useState<any[]>([]);
   const [ownerStatus, setOwnerStatus] = useState("");
   const [access, setAccess] = useState<"checking" | "granted" | "locked">("checking");
-  const [feedbackUrl, setFeedbackUrl] = useState<string | null>(null);
+  // The feedback and waitlist form, opened from the banner, the reader, the pricing page, and the waitlist page.
+  const [form, setForm] = useState<FormOpen>(null);
+  // A ?ref= value in the link (for example ?ref=fellows) is kept for the whole visit and saved with every entry.
+  useEffect(() => { rememberRef(); }, []);
   const [activeLesson, setActiveLesson] = useState("");
   const classSession = demo.preset === "class_student";
   // Remember the home language in this browser; a restored session from before this feature picks up the saved choice.
@@ -153,7 +160,7 @@ export default function Home() {
   }, [demo, screenKey, view]);
 
   useEffect(() => {
-    fetch("/api/access").then(r => r.json()).then(body => { setAccess(body.granted ? "granted" : "locked"); setFeedbackUrl(body.feedbackUrl ?? null); }).catch(() => setAccess("locked"));
+    fetch("/api/access").then(r => r.json()).then(body => setAccess(body.granted ? "granted" : "locked")).catch(() => setAccess("locked"));
   }, []);
 
   async function loadOwnerWaitlist() {
@@ -241,7 +248,7 @@ export default function Home() {
     else fallback();
   }
 
-  if (gated) return <main className="min-h-screen bg-[#F6F0E3] text-[#2A2620]"><DisplaySettings/>{access === "locked" && <AccessGate brand={brand} onGranted={url => { setAccess("granted"); setFeedbackUrl(url); }} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onJoinClass={() => setView("join")} onApproach={() => setView("approach")} />}</main>;
+  if (gated) return <main className="min-h-screen bg-[#F6F0E3] text-[#2A2620]"><DisplaySettings/>{access === "locked" && <AccessGate brand={brand} onGranted={() => setAccess("granted")} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onJoinClass={() => setView("join")} onApproach={() => setView("approach")} />}</main>;
 
   return <main className="min-h-screen bg-[#F6F0E3] text-[#2A2620]">
     {view !== "landing" && <header className="sticky top-0 z-30 flex min-h-[58px] flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-white/10 bg-[#F6F0E3]/95 px-5 py-2 md:px-10">
@@ -252,24 +259,25 @@ export default function Home() {
         {view === "teacherdemo" ? <button onClick={openShelf} className="rounded-full px-4 py-1.5 font-semibold text-[#8A3B23]">Switch to student view</button> : <button onClick={() => setView("teacherdemo")} className="rounded-full px-4 py-1.5 font-semibold text-[#8A3B23]">Switch to teacher view</button>}
       </div>}</div>
     </header>}
-    {demoViews.includes(view) && !classSession && <FeedbackBanner url={feedbackUrl} />}
+    {demoViews.includes(view) && !classSession && <FeedbackBanner onOpen={() => setForm({ step: 1, join: false })} />}
     {view === "landing" && <Landing brand={brand} onStart={tryDemo} onKeepReading={keepReading} onTeacher={() => setView("teacherdemo")} onRole={startRole} onJoinCode={(code:string) => { setJoinCode(code); setView("join"); }} onPreset={start} onJoin={() => setView("join")} onWaitlist={() => setView("waitlist")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} onPricing={() => setView("pricing")} onOwner={() => setView("owner")} onClassroom={() => setView("classroom")} onApproach={() => setView("approach")} />}
     {view === "lessons" && <section className="mx-auto max-w-7xl px-5 py-10 md:px-10 md:py-14">{activeLesson ? <LessonPlayer lessonId={activeLesson} grade={demo.grade} onClose={() => { setActiveLesson(""); window.scrollTo(0, 0); }} onFinish={(id, record) => setDemo(d => ({ ...d, lessonsDone: { ...(d.lessonsDone ?? {}), [id]: record } }))} /> : <><button onClick={() => backToPreviousScreen(() => setView("landing"))} className="mb-8 inline-flex items-center gap-2 text-xs text-white/55 hover:text-white">← Back</button><h1 className="sr-only">Mini lessons</h1><MiniLessonLibrary grade={demo.grade} done={demo.lessonsDone ?? {}} onOpen={id => { setActiveLesson(id); window.scrollTo(0, 0); }} /><button onClick={() => setView("story")} className="gold-button mt-10 px-6 py-4 text-sm">Ready? Pick a story →</button></>}</section>}
     {view === "story" && <PickStory onLessons={() => { setActiveLesson(""); setView("lessons"); }} onBack={()=>backToPreviousScreen(()=>setView("landing"))} onPick={chooseStory} initialCourse={demo.course??"all"} />}
     {view === "level" && <ChooseLevel worldId={demo.worldId} course={demo.course??"all"} onBack={()=>backToPreviousScreen(()=>setView("story"))} onChoose={chooseGrade} />}
     {view === "play" && classSession && demo.classAuth && <ClassBar auth={demo.classAuth} onLive={() => setView("classlive")} onLessons={() => setView("classhome")} onDismissPhrase={() => setDemo(d => ({ ...d, classAuth: d.classAuth && { ...d.classAuth, resumePhrase: null } }))} />}
-    {view === "play" && <CaseFlow demo={demo} setDemo={setDemo} feedbackUrl={classSession ? null : feedbackUrl} onTutorial={() => showTutorial("play")} onExit={()=>setView("shelf")} onAnotherStory={()=>{setDemo(d=>({...d,submitted:false,scene:0}));setView("shelf")}} />}
+    {view === "play" && <CaseFlow demo={demo} setDemo={setDemo} onFeedback={classSession ? undefined : () => setForm({ step: 1, join: false })} onTutorial={() => showTutorial("play")} onExit={()=>setView("shelf")} onAnotherStory={()=>{setDemo(d=>({...d,submitted:false,scene:0}));setView("shelf")}} />}
     {view === "shelf" && <Shelf demo={demo} setDemo={setDemo} onOpen={openStory} onlyWorld={classSession ? demo.worldId : undefined} heading={classSession ? "Your class shelf" : "Your shelf"} />}
     {view === "teacherdemo" && <TeacherDemo onSignIn={() => setView("classroom")} />}
     {view === "teacher" && <Teacher demo={demo} setDemo={setDemo} onStudent={() => setView("play")} onPreset={start} onClassroom={() => setView("classroom")} />}
     {view === "classroom" && <Classroom onBack={() => backToPreviousScreen(() => setView("landing"))} />}
     {view === "classhome" && demo.classAuth && <ClassHome auth={demo.classAuth} onStory={() => setView("play")} onLive={() => setView("classlive")} />}
     {view === "classlive" && demo.classAuth && <ClassLive auth={demo.classAuth} onBack={() => setView("classhome")} />}
-    {view === "waitlist" && <Waitlist />}
-    {view === "pricing" && <Pricing onWaitlist={() => setView("waitlist")} onApproach={() => setView("approach")} />}
+    {view === "waitlist" && <WaitlistPage onOpen={() => setForm({ step: 2, join: true })} onPricing={() => setView("pricing")} />}
+    {view === "pricing" && <Pricing onJoin={(plan: PlanId) => setForm({ step: 2, plan, join: true })} onApproach={() => setView("approach")} />}
     {view === "approach" && <Approach onVideo={() => showTutorial("approach")} onDemo={tryDemo} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} />}
     {view === "join" && <Join initialCode={joinCode} onJoined={joinClass} />}
-    {view === "owner" && <Owner data={ownerData} status={ownerStatus} setStatus={setOwnerStatus} />}
+    {view === "owner" && <OwnerDashboard />}
+    {form && <FeedbackForm open={form} onClose={() => setForm(null)} />}
     <Tutorial ref={tutorial} visible={view === "tutorial"} onDone={() => setView(tutorialReturn.current)} />
   </main>;
 }

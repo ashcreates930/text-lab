@@ -46,7 +46,7 @@ function paginate(paras:Para[],box:HTMLElement,measurer:HTMLElement):Para[][]{
 }
 
 // mode "preview" is the home page hero: the first few pages only, no AI, no clue gate, no saved progress.
-export function StorybookReader({world,role,passages,demo,setDemo,onExit,feedbackUrl,mode="full",previewPages=2,onKeepReading}:{world:WorldPack;role:WorldPack["roles"][number];passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;feedbackUrl:string|null;mode?:"full"|"preview";previewPages?:number;onKeepReading?:()=>void}){
+export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedback,mode="full",previewPages=2,onKeepReading}:{world:WorldPack;role:WorldPack["roles"][number];passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onFeedback?:()=>void;mode?:"full"|"preview";previewPages?:number;onKeepReading?:()=>void}){
  const preview=mode==="preview";
  const rootRef=useRef<HTMLDivElement>(null);
  // Progress is kept per story so the shelf's Continue card can return to the exact page and screen.
@@ -134,7 +134,7 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,feedbac
    <ToolButton label={sayMode?"Stop Say it again":"Say it again"} pressed={sayMode} onClick={()=>setSayMode(v=>!v)}><MessageSquareQuote size={20}/></ToolButton>
    {!preview&&page.mode!=="illustrated"&&<ToolButton label={page.mode==="add_detail"?"Add a detail":"Illustrate this page"} onClick={()=>setCard({type:"frame"})}><PenLine size={20}/></ToolButton>}
    <ToolButton label="Reading settings" onClick={()=>setCard({type:"menu"})}><Type size={20}/></ToolButton>
-   {!preview&&feedbackUrl&&<a href={feedbackUrl} target="_blank" rel="noopener noreferrer" className="ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-full bg-[#F4E1D6] px-3 text-[14px] font-semibold text-[#8A3B23] hover:bg-[#EDD3C4]"><MessageCircleHeart size={18}/><span className="hidden md:inline">Give feedback</span><span className="md:hidden">Feedback</span></a>}
+   {!preview&&onFeedback&&<button type="button" onClick={onFeedback} className="ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-full bg-[#F4E1D6] px-3 text-[14px] font-semibold text-[#8A3B23] hover:bg-[#EDD3C4]"><MessageCircleHeart size={18}/><span className="hidden md:inline">Give feedback</span><span className="md:hidden">Feedback</span></button>}
   </>}>
   <div className="relative min-h-0 flex-1" style={{touchAction:"pan-y pinch-zoom"}} onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={()=>{swipe.current=null}}>
    {textOnly?<div className="mx-auto flex h-full max-w-[760px] flex-col px-4 py-3 md:px-8 md:py-6"><div className="flex min-h-0 flex-1 flex-col rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_18px_-8px_rgba(42,38,32,.3)] md:p-8">{textPanel("flex-1")}</div></div>

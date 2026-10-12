@@ -3,7 +3,7 @@ import { HomeTop } from "./home";
 import { DisplaySettings } from "./display-settings";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, BookOpen, Check, ChevronDown, Download, Headphones, Info, Lightbulb, ShieldAlert, Waypoints } from "lucide-react";
-import { pricing } from "@/config/pricing";
+import { planById, planCards, type PlanId } from "@/config/pricing";
 import { getBrowserSupabase } from "@/lib/supabase-browser";
 import {brand} from "@/config/brand";
 import type { Demo } from "./page";
@@ -175,7 +175,28 @@ export function Join({initialCode="",onJoined}:{initialCode?:string;onJoined:(se
   </section>;
 }
 
-export function Pricing({onWaitlist,onApproach}:{onWaitlist:()=>void;onApproach?:()=>void}) { return <section className="mx-auto max-w-6xl px-5 py-14"><p className="eyebrow text-center">SIMPLE PLANS · NO CHECKOUT</p><h1 className="serif mt-4 text-center text-5xl">Room to grow.</h1>{onApproach&&<p className="mt-3 text-center text-xs text-white/50">Wondering why we built this? <button onClick={onApproach} className="text-[#A0472C] underline-offset-4 hover:underline">Read our approach</button>.</p>}<div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">{pricing.map((p,i)=><div key={p.name} className="panel flex min-h-[335px] flex-col p-6"><p className="eyebrow">{p.name.toUpperCase()}</p><p className="serif mt-5 text-3xl">{p.price}</p><p className="mt-1 text-xs text-white/45">{p.cadence}</p><p className="mt-4 text-sm">{p.detail}</p><ul className="mt-5 flex-1 space-y-3 border-t border-white/10 pt-5">{p.features.map(f=><li key={f} className="text-xs text-white/65"><Check className="mr-2 inline text-[#A0472C]" size={13}/>{f}</li>)}</ul><button onClick={onWaitlist} className={`mt-6 w-full py-3 text-xs ${i===1?"gold-button":"soft-button"}`}>JOIN THE WAITLIST</button></div>)}</div></section>; }
+// Pricing: five plans plus the founding pilot and professional development. Every button opens the waitlist form
+// with that plan selected. There is no checkout.
+export function Pricing({onJoin,onApproach}:{onJoin:(plan:PlanId)=>void;onApproach?:()=>void}) {
+  const pilot=planById("pilot")!,pd=planById("pd")!;
+  return <section className="case-ui mx-auto max-w-7xl px-4 py-14 md:px-8">
+    <p className="text-center text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">CLEAR PLANS · NO CHECKOUT</p>
+    <h1 className="serif mt-4 text-center text-[42px] leading-tight md:text-5xl">Room to grow.</h1>
+    {onApproach&&<p className="mt-3 text-center text-[15px] text-[#6B6457]">Wondering why we built this? <button onClick={onApproach} className="font-semibold text-[#A0472C] underline-offset-4 hover:underline">Read our approach</button>.</p>}
+    <ul className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">{planCards.map(p=><li key={p.id} className={`flex flex-col rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)] ${p.highlight?"ring-2 ring-[#A0472C]":""}`}>
+      {p.highlight&&<p className="mb-2 w-fit rounded-full bg-[#A0472C] px-3 py-1 text-[12px] font-bold uppercase tracking-wide text-white">Most popular</p>}
+      <h2 className="text-[14px] font-bold uppercase tracking-wide text-[#8A3B23]">{p.name}</h2>
+      <p className="mt-3 text-[34px] font-bold leading-none">{p.price}</p><p className="mt-1 min-h-[20px] text-[14px] text-[#6B6457]">{p.cadence}</p>
+      <p className="mt-3 text-[16px] font-semibold">{p.detail}</p>
+      <ul className="mt-4 flex-1 space-y-2 border-t border-[#E4DCCB] pt-4">{p.features.map(f=><li key={f} className="flex gap-2 text-[15px] leading-6"><Check className="mt-1 shrink-0 text-[#A0472C]" size={15}/>{f}</li>)}</ul>
+      <button onClick={()=>onJoin(p.id)} className={`mt-6 w-full ${p.highlight?"case-primary":"case-secondary justify-center"}`}>Join the waitlist</button>
+    </li>)}</ul>
+    <div className="mt-6 grid gap-4">
+      <div className="flex flex-col items-start justify-between gap-4 rounded-3xl bg-[#2A2620] p-6 text-white md:flex-row md:items-center md:p-8"><div><p className="text-[14px] font-bold uppercase tracking-wide text-[#F3C9B2]">{pilot.name}</p><p className="mt-2 text-[18px] leading-7">{pilot.price} for the 2026-27 school year. Limited to 5 schools. Includes onboarding and a feedback session.</p></div><button onClick={()=>onJoin("pilot")} className="case-primary shrink-0">Apply for the pilot</button></div>
+      <div className="flex flex-col items-start justify-between gap-4 rounded-3xl bg-[#F4E1D6] p-6 md:flex-row md:items-center md:p-8"><div><p className="text-[14px] font-bold uppercase tracking-wide text-[#8A3B23]">{pd.name} by AmplifiED</p><p className="mt-2 text-[18px] leading-7">Bring TextLab to your staff with training led by a classroom teacher. Virtual half day: $1,500 · On-site full day: from $3,500.</p></div><button onClick={()=>onJoin("pd")} className="case-secondary shrink-0">Ask about training</button></div>
+    </div>
+  </section>;
+}
 
 export function Owner({data,status,setStatus}:{data:any[];status:string;setStatus:(s:string)=>void}) {
   const [message,setMessage]=useState("");

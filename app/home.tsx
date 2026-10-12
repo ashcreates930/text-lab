@@ -30,7 +30,7 @@ export function HomeTop({onKeepReading,onStudent,onTeacher,onRole}:{onKeepReadin
    <h1 className="serif mt-2 text-[34px] leading-[1.08] tracking-[-.02em] md:text-[48px]">Step into the story. <span className="italic text-[#A0472C]">Decide what to believe.</span></h1>
    <p className="mt-2 max-w-2xl text-[17px] leading-7 text-[#4A4438]">This is page 1 of <i>The Tell-Tale Heart</i>. Turn the page, tap an underlined word, or tap Say it again.</p>
    <div ref={box} className="relative mt-5 h-[min(640px,76svh)] min-h-[500px]">
-    {world&&role&&passages.length?<StorybookReader mode="preview" previewPages={2} world={world} role={role} passages={passages} demo={demo} setDemo={setDemo} onExit={()=>{}} feedbackUrl={null} onKeepReading={onKeepReading}/>
+    {world&&role&&passages.length?<StorybookReader mode="preview" previewPages={2} world={world} role={role} passages={passages} demo={demo} setDemo={setDemo} onExit={()=>{}} onKeepReading={onKeepReading}/>
     :<div className="sb-placeholder grid h-full place-items-center rounded-3xl"><p className="rounded-2xl bg-[#FFFDF8]/85 px-4 py-2 text-[16px] text-[#6B6457]">Opening the story…</p></div>}
     {tour>=0&&<Tour root={box} step={tour} onNext={()=>tour>=2?endTour():setTour(tour+1)} onSkip={endTour}/>}
    </div>

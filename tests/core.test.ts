@@ -240,3 +240,45 @@ test("class reading progress accepts the student's reading work and rejects anyt
   assert.equal("deviceId" in StudentProgressSchema.parse({...good,deviceId:"abc"}),false);
   assert.equal(StudentProgressSchema.safeParse({...good,artifactAnswers:{x:{...good.artifactAnswers["search-motive"],interpret:"x".repeat(3001)}}}).success,false);
 });
+
+test("Pitch tab math matches a hand calculation", async()=>{
+  const {computePitch}=await import("../lib/pitch.ts");
+  const row=(o:Record<string,unknown>)=>({id:String(Math.random()),created_at:"2026-10-11T00:00:00Z",name:"T",email:"t@example.test",role:null,organization:null,state:null,plan:null,intent:null,price_named:null,price_period:null,students:null,lock_founding_price:false,loi:null,pilot_commit:null,source:null,...o}) as never;
+  const p=computePitch([
+    row({name:"Ana",plan:"individual",intent:"buy_now",students:120,source:"fellows"}),        // buy now  $79
+    row({name:"Ben",plan:"individual",intent:"likely",students:90,source:"mentor"}),           // likely   $79
+    row({name:"Cy",plan:"family",intent:"likely",students:4,source:"homeschool"}),             // likely   $49
+    row({name:"Dee",plan:"school",intent:"buy_now",students:300,organization:"Lake HS",lock_founding_price:true,loi:"yes",role:"school administrator"}), // buy now $1,500
+    row({name:"Eli",plan:"district",intent:"likely",students:2000,organization:"Lake County SD"}), // likely 2,000 x $5 = $10,000
+    row({name:"Fay",plan:"pilot",intent:"buy_now",students:250,organization:"Hill MS",pilot_commit:"yes",loi:"maybe"}), // buy now $500
+    row({name:"Gus",plan:"individual",intent:"lower_price",price_named:5,price_period:"month",students:60}),   // $60 / year
+    row({name:"Hal",plan:"individual",intent:"lower_price",price_named:"50",price_period:"year",students:30}), // $50 / year
+    row({name:"Ivy",plan:"explorer",intent:"exploring"}),
+    row({name:"Jo",plan:"pd",intent:"likely",organization:"Lake HS"}),                          // training, not in total
+  ]);
+  assert.equal(p.total,10);
+  assert.deepEqual(p.revenue,{buyNow:79+1500+500,likely:79+49+10000,total:2079+10128});
+  assert.equal(p.revenue.total,12207);
+  assert.equal(p.students,120+90+4+300+2000+250+60+30);
+  assert.deepEqual(p.locks,["Dee (Lake HS)"]);
+  assert.deepEqual(p.lettersOfIntent,["Dee (Lake HS)"]);
+  assert.deepEqual(p.pilotCommitments,["Fay (Hill MS)"]);
+  assert.equal(p.schoolsAndDistricts,3);
+  assert.equal(p.trainingInterest,1);
+  assert.deepEqual(p.lowerPrice,[{plan:"individual",name:"Individual Teacher",count:2,median:55,min:50,max:60}]);
+  assert.equal(p.intentByPlan.individual.buy_now,1);assert.equal(p.intentByPlan.individual.lower_price,2);
+  assert.equal(p.bySource.fellows,1);assert.equal(p.bySource.direct,7);
+});
+
+test("feedback form validation: feedback alone needs no email; the waitlist needs a valid email and student count", async()=>{
+  const {SubmissionSchema}=await import("../lib/feedback.ts");
+  assert.equal(SubmissionSchema.safeParse({feedback:{ease:4,change:"More stories"}}).success,true);
+  assert.equal(SubmissionSchema.safeParse({feedback:{}}).success,false,"empty feedback alone is rejected");
+  const w={plan:"school",intent:"likely",lockFoundingPrice:false,wantsUpdates:false,name:"Pat Lee",email:"pat@example.test",students:300};
+  assert.equal(SubmissionSchema.safeParse({waitlist:w,source:"fellows"}).success,true);
+  assert.equal(SubmissionSchema.safeParse({waitlist:{...w,email:"pat@"}}).success,false,"invalid email");
+  assert.equal(SubmissionSchema.safeParse({waitlist:{...w,students:undefined}}).success,false,"school needs a student count");
+  assert.equal(SubmissionSchema.safeParse({waitlist:{...w,plan:"explorer",students:undefined}}).success,true,"explorer does not");
+  assert.equal(SubmissionSchema.safeParse({waitlist:{...w,intent:undefined}}).success,false,"intent is required");
+  assert.equal(SubmissionSchema.safeParse({waitlist:w,source:"Bad Ref!"}).success,false,"ref values are slugs only");
+});
