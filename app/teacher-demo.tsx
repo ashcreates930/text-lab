@@ -10,13 +10,15 @@ import {STUCK_MINUTES,sampleCaseFile,sampleClass,sampleFrames,sampleStopAndTalk,
 type Tab="overview"|"casefile"|"frames"|"live"|"code";
 const tabs:[Tab,string][]=[["overview","Class overview"],["casefile","Case file"],["frames","Picture frames"],["live","Live lesson"],["code","Class code"]];
 
-export function TeacherDemo({onSignIn}:{onSignIn:()=>void}){
+// embedded: shown inside the teacher and parent hub, under its own page heading, so the class name is an h2.
+export function TeacherDemo({onSignIn,embedded=false}:{onSignIn:()=>void;embedded?:boolean}){
+ const Heading=embedded?"h2":"h1";
  const [world,setWorld]=useState<WorldPack|null>(null),[tab,setTab]=useState<Tab>("overview");
  useEffect(()=>{fetch(`/worlds/${sampleClass.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setWorld(null))},[]);
  return <div className="case-ui mx-auto max-w-6xl px-4 pb-20 pt-6 md:px-8">
   <div role="note" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-dashed border-[#A0472C]/60 bg-[#F4E1D6]/60 px-5 py-3"><p className="text-[16px] font-semibold text-[#8A3B23]">Sample classroom. Sign in to create your own class.</p><button type="button" onClick={onSignIn} className="case-secondary !min-h-11">Teacher sign in <ArrowRight size={16}/></button></div>
   <p className="mt-6 text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Teacher view · sample data</p>
-  <h1 className="mt-1 text-[32px] font-bold leading-tight md:text-[38px]">{sampleClass.name}</h1>
+  <Heading className="mt-1 text-[32px] font-bold leading-tight md:text-[38px]">{sampleClass.name}</Heading>
   <p className="mt-1 text-[16px] text-[#6B6457]">{world?.title??"The Tell-Tale Heart"} · {sampleStudents.length} students · fictional names</p>
   <div role="tablist" aria-label="Sample classroom" className="mt-6 flex gap-2 overflow-x-auto pb-1">{tabs.map(([id,label])=><button key={id} role="tab" type="button" aria-selected={tab===id} onClick={()=>setTab(id)} className={`min-h-11 shrink-0 rounded-full px-4 text-[15px] font-semibold ${tab===id?"bg-[#2A2620] text-white":"bg-[#EFE8D8] text-[#2A2620] hover:bg-[#E4DCCB]"}`}>{label}</button>)}</div>
   <div role="tabpanel" className="mt-6">{!world?<p className="text-[16px] text-[#6B6457]">Opening the sample class…</p>

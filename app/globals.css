@@ -25,6 +25,9 @@
 /* Display settings (app/display-settings.tsx). Zoom scales every fixed pixel size in the app, including small labels. */
 html[data-text-size="large"] body{zoom:1.15}
 html[data-text-size="xl"] body{zoom:1.3}
+/* Full-screen views divide viewport units by the page zoom, or a zoomed 100dvh is taller than the screen. */
+html[data-text-size="large"]{--page-zoom:1.15}
+html[data-text-size="xl"]{--page-zoom:1.3}
 :focus-visible{outline:3px solid #A0472C;outline-offset:2px}
 html[data-motion="reduced"] *,html[data-motion="reduced"] *:before,html[data-motion="reduced"] *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 @media (prefers-reduced-motion:reduce){.fade-in{animation:none}}
@@ -100,3 +103,23 @@ h1[tabindex="-1"]:focus{outline:none}
 .role-card:hover .role-card-inner,.role-card:focus-visible .role-card-inner{transform:rotateY(180deg)}
 .tour-ring{box-shadow:0 0 0 3px #A0472C,0 0 0 9999px rgba(42,38,32,.28);transition:all .25s ease}
 @media (prefers-reduced-motion:reduce){.role-card-inner,.tour-ring{transition:none!important}.role-card:hover .role-card-inner,.role-card:focus-visible .role-card-inner{transform:none}.role-card:hover .role-face,.role-card:focus-visible .role-face{opacity:0}.role-back{transform:none;opacity:0}.role-card:hover .role-back,.role-card:focus-visible .role-back{opacity:1}}
+/* Home book. The cover keeps a 3:4 book shape inside whatever room the screen gives it. */
+.book-stage{container-type:size}
+.book-cover{width:min(100cqw,75cqh,480px);aspect-ratio:3/4;background:linear-gradient(100deg,#7E3520 0,#A0472C 9%,#A84D31 60%,#9A4329 100%);box-shadow:inset 0 0 0 10px rgba(255,246,238,.06),0 30px 60px -28px rgba(42,38,32,.65),6px 8px 0 -2px #E9DFCC,10px 12px 0 -4px #DCCFB6;transform-origin:left center;transition:transform .7s cubic-bezier(.45,.05,.3,1),opacity .7s ease}
+.book-cover:before{content:"";position:absolute;inset:5%;border:1.5px solid rgba(255,246,238,.45);border-radius:6px;pointer-events:none}
+.book-spine{position:absolute;left:0;top:0;bottom:0;width:7%;background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,0));border-radius:6px 0 0 6px}
+.book-stage{perspective:1600px}
+.book-cover-swing{transform:rotateY(-100deg);opacity:.15}
+.book-cover-fade{opacity:0;transition:opacity .2s ease}
+.book-page{background:#FFFDF8;box-shadow:0 18px 40px -26px rgba(42,38,32,.5);border-radius:18px}
+@media (min-width:768px){
+ .book-open{filter:drop-shadow(0 26px 36px rgba(42,38,32,.28))}
+ .book-page{box-shadow:none}
+ .book-page-student{border-radius:18px 4px 4px 18px;background:linear-gradient(90deg,#FFFDF8 85%,#F1E8D8)}
+ .book-page-teacher{border-radius:4px 18px 18px 4px;background:linear-gradient(270deg,#FFFDF8 85%,#F1E8D8)}
+}
+.book-appear{animation:book-appear .45s ease both}
+@keyframes book-appear{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.book-cover{transition:opacity .2s ease}.book-cover-swing{transform:none;opacity:0}.book-appear{animation:none}}
+/* Short phones (iPhone SE and smaller): tighter spacing so the open book still fits without scrolling. */
+@media (max-height:600px){.book-spread{padding-top:6px;padding-bottom:6px}.book-spread .book-page{padding-top:12px;padding-bottom:12px}.book-spread .book-page .case-primary{margin-top:10px;min-height:44px}.book-spread .book-page form{margin-top:10px}.book-spread .book-page p{margin-top:2px;line-height:1.45}.book-spread .book-page h2{font-size:25px}.book-spread .book-page label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.book-spread .book-page form>div{margin-top:0}}
