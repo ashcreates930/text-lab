@@ -218,6 +218,60 @@ test("every Tell-Tale Heart clue lands on the storybook page that holds its last
   }
 });
 
+test("sentences never break after titles or initials, and Tell-Tale Heart's sentences are unchanged", async()=>{
+  const {splitSentences}=await import("../lib/storybook.ts");
+  assert.deepEqual(splitSentences("Now, Mr. Hale, explain to Mr. Henderson. Then go."),["Now, Mr. Hale, explain to Mr. Henderson.","Then go."]);
+  assert.deepEqual(splitSentences("the protection of St. Nicholas when they crossed. D. K."),["the protection of St. Nicholas when they crossed.","D. K."]);
+  // The rule the case flow has always used, for a story with no titles or initials.
+  const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  const old=(t:string)=>(t.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g)??[t]).map(x=>x.trim()).filter(Boolean);
+  for(const p of parseSourcePassages(await readFile(new URL("../worlds/tell-tale-heart/source.md",import.meta.url),"utf8")))assert.deepEqual(splitSentences(p.text),old(p.text),p.id);
+});
+
+test("play scripts: speakers join their lines, stage directions are italic pieces, and spoken emphasis stays in the sentence", async()=>{
+  const {pageUnits,scriptPieces}=await import("../lib/storybook.ts");
+  const pieces=scriptPieces("[_With rising voice._] We don’t know who killed him. We don’t _know_.");
+  assert.deepEqual(pieces.map(p=>[p.text,!!p.stage]),[["[With rising voice.]",true],["We don’t know who killed him.",false],["We don’t _know_.",false]]);
+  assert.equal(pieces[2].full,"We don’t know.");
+  // Some stage-only paragraphs in this edition lack the closing bracket.
+  assert.deepEqual(scriptPieces("[_They all look at the rocker._").map(p=>[p.text,!!p.stage]),[["[They all look at the rocker.]",true]]);
+  // The long unbracketed SCENE description is a stage direction, not speech.
+  assert.equal(scriptPieces("SCENE: _The kitchen in the now abandoned farmhouse of JOHN WRIGHT, a gloomy kitchen._")[1].stage,true);
+  const passages=[{id:"p001",text:"MRS. PETERS"},{id:"p002",text:"[_After taking a step forward._] I’m not--cold."}];
+  const units=pageUnits(passages,{id:"x",section:"s",start:"p001",end:"p002",mode:"student",characters_met:[],restatements:{}},"script");
+  assert.equal(units.length,1);assert.equal(units[0].speaker,"MRS. PETERS");assert.equal(units[0].items[1].text,"I’m not--cold.");
+});
+
+test("bridge pages are named between story pages, and the shelf Peek skips headings", async()=>{
+  const {storyPageNames,openingLines}=await import("../lib/storybook.ts");
+  const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  const page=(id:string,bridge=false)=>({id,section:"s",start:"p001",end:"p001",mode:"illustrated" as const,characters_met:[],restatements:{},...(bridge?{bridge:{summary:"x"}}:{})});
+  assert.deepEqual(storyPageNames([page("a"),page("b",true),page("c")]),["page 1","the summary between pages 1 and 2","page 2"]);
+  for(const [id,start] of [["tell-tale-heart","TRUE!"],["trifles","The kitchen in the now abandoned farmhouse"],["sleepy-hollow","A pleasing land of drowsy head"]]){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    const opening=openingLines(world,parseSourcePassages(await readFile(new URL(`../worlds/${id}/source.md`,import.meta.url),"utf8")));
+    assert.ok(opening.startsWith(start),`${id}: ${opening.slice(0,60)}`);assert.ok(!/[_\[\]]/.test(opening),id);
+  }
+});
+
+test("storybook AI characters are met on a page before they can be asked, and bridges hold no clues", async()=>{
+  const {cluesByPage}=await import("../lib/storybook.ts");
+  for(const id of ["tell-tale-heart","sleepy-hollow","trifles"]){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    const pages=world.storybook!.pages,gates=cluesByPage(world);
+    const metOn=new Map(pages.flatMap((p,i)=>p.characters_met.map(c=>[c.id,i] as const)));
+    for(const c of world.characters)assert.ok(metOn.has(c.id),`${id}: ${c.id} is never met, so it could never be asked`);
+    for(const [i,p] of pages.entries())if(p.bridge)assert.equal(gates[i].length,0,`${id} ${p.id}`);
+    // The reader offers a scene's characters only once met (app/clue-steps.ts), so a page's chat list is this:
+    const askable=(i:number,scene:typeof world.scenes[number])=>scene.available_characters.filter(c=>(metOn.get(c)??Infinity)<=i);
+    for(const [i] of pages.entries())for(const {scene} of gates[i])for(const c of askable(i,scene))assert.ok(metOn.get(c)!<=i);
+  }
+  // Brom Bones is first met on Sleepy Hollow's page with ¶28, so no earlier clue page can offer him.
+  const sh=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  const bromAt=sh.storybook!.pages.findIndex(p=>p.characters_met.some(c=>c.id==="brom-bones"));
+  assert.equal(sh.storybook!.pages[bromAt].start,"p028");
+});
+
 test("teacher demo sample data quotes the story exactly and tags real benchmarks", async()=>{
   const {sampleCaseFile,sampleFrames,sampleStudents}=await import("../lib/sample-classroom.ts");
   const {quoteInText}=await import("../lib/storybook.ts");

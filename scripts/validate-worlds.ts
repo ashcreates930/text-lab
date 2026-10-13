@@ -1,25 +1,37 @@
 import { readFile, readdir } from "node:fs/promises";
 import { WorldPackSchema, type WorldPack } from "../lib/world-schema.ts";
 import { parseSourcePassages } from "../lib/source-passages.ts";
-import { cluesByPage, splitSentences, sentenceKey, pagePassages } from "../lib/storybook.ts";
+import { cluesByPage, sentenceKey, pagePassages, pageUnits, isSpeakerLine } from "../lib/storybook.ts";
 // Every playable and preview world must pass; coming-soon folders hold metadata only.
-// Storybook pages must cover the whole story in order with no gaps, and every clue must land on a page.
+// Storybook pages (and bridge summaries) must cover the whole story in order with no gaps, every clue must land on a
+// real page, and only characters the student has met can be asked questions.
 function storybookProblems(world:WorldPack,source:string):string[]{
   const book=world.storybook;if(!book)return[];
   const problems:string[]=[];const passages=parseSourcePassages(source);const sectionIds=new Set(book.sections.map(s=>s.id));
-  let expected=1;
-  for(const page of book.pages){
+  let expected=1;const gates=cluesByPage(world);const met=new Set<string>();const speaking=new Set(world.characters.map(c=>c.id));
+  const lastReal=new Map<string,string>();for(const page of book.pages)if(!page.bridge)lastReal.set(page.section,page.id);
+  for(const [i,page] of book.pages.entries()){
     const a=Number(page.start.slice(1)),b=Number(page.end.slice(1));
     if(a!==expected)problems.push(`${page.id} starts at ${page.start}; expected p${String(expected).padStart(3,"0")}`);
     if(b<a)problems.push(`${page.id} ends before it starts`);
     if(page.frame_required&&page.mode==="illustrated")problems.push(`${page.id} requires a picture frame but is a fully illustrated page`);
     if(!sectionIds.has(page.section))problems.push(`${page.id} uses unknown section ${page.section}`);
-    const keys=new Set(pagePassages(passages,page).flatMap(p=>splitSentences(p.text)).map(sentenceKey));
+    const keys=new Set(pageUnits(passages,page,book.format).flatMap(u=>u.items).map(item=>sentenceKey(item.full)));
     for(const key of Object.keys(page.restatements))if(!keys.has(key))problems.push(`${page.id} has a restatement for a sentence that is not on the page`);
+    // A speaker's name must never be the last line of a page: it belongs with the speech after it.
+    const last=pagePassages(passages,page).at(-1);if(book.format==="script"&&last&&isSpeakerLine(last.text))problems.push(`${page.id} ends on a speaker's name (${last.id})`);
+    if(page.bridge){
+      if(gates[i].length)problems.push(`${page.id} is a bridge but holds ${gates[i].length} clue(s); clues must be on pages with the author's words`);
+      if(page.frame_required||page.mode!=="illustrated"||page.illustration)problems.push(`${page.id} is a bridge and must not have a picture frame or illustration`);
+      if(Object.keys(page.restatements).length)problems.push(`${page.id} is a bridge and must not have restatements`);
+    }else if(page.frame_required&&lastReal.get(page.section)!==page.id)problems.push(`${page.id} requires a frame but is not the last page of its section`);
+    if(page.no_generation&&!page.frame_prompt)problems.push(`${page.id} is writing-only but has no mood-and-setting prompt`);
+    for(const c of page.characters_met){if(met.has(c.id))problems.push(`${page.id} lists ${c.id} again; Who's who adds each person once`);met.add(c.id)}
     expected=b+1;
   }
   if(expected-1!==passages.length)problems.push(`pages end at p${String(expected-1).padStart(3,"0")} but the story has ${passages.length} paragraphs`);
-  const placed=cluesByPage(world).flat().length,total=world.scenes.reduce((n,s)=>n+s.artifacts.length,0);
+  for(const id of speaking)if(!met.has(id))problems.push(`AI character ${id} never appears in Who's who, so the student can never ask them`);
+  const placed=gates.flat().length,total=world.scenes.reduce((n,s)=>n+s.artifacts.length,0);
   if(placed!==total)problems.push(`${total-placed} clue(s) cite paragraphs outside every page`);
   return problems;
 }

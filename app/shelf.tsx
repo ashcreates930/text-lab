@@ -5,7 +5,7 @@ import {useEffect,useRef,useState} from "react";
 import {ArrowRight,Bookmark,Eye,Lock,Type} from "lucide-react";
 import {WorldPackSchema,type WorldPack} from "@/lib/world-schema";
 import {parseSourcePassages} from "@/lib/source-passages";
-import {splitSentences} from "@/lib/storybook";
+import {openingLines,storyPageNames} from "@/lib/storybook";
 import type {Demo} from "./page";
 import {saveHomeLanguage} from "./bilingual";
 import {Drawer,ReadingMenu} from "./storybook/cards";
@@ -14,13 +14,13 @@ import {useReaderPrefs} from "./storybook/prefs";
 type Entry={id:string;title:string;author:string;hook:string;status:string;grade_band:{min:number;max:number};estimated_minutes:number;cover_image?:string};
 
 export function Shelf({demo,setDemo,onOpen,onlyWorld,heading="Your shelf"}:{demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onOpen:(worldId:string)=>void;onlyWorld?:string;heading?:string}){
- const [entries,setEntries]=useState<Entry[]>([]),[covers,setCovers]=useState<Record<string,string|null>>({}),[peek,setPeek]=useState<string>(""),[settings,setSettings]=useState(false);
+ const [entries,setEntries]=useState<Entry[]>([]),[covers,setCovers]=useState<Record<string,string|null>>({}),[pageNames,setPageNames]=useState<Record<string,string[]>>({}),[peek,setPeek]=useState<string>(""),[settings,setSettings]=useState(false);
  const [prefs,update]=useReaderPrefs();
  useEffect(()=>{fetch("/worlds/index.json").then(r=>r.json()).then((list:Entry[])=>setEntries(onlyWorld?list.filter(e=>e.id===onlyWorld):list)).catch(()=>setEntries([]))},[onlyWorld]);
  // Storybook covers use page 1's illustration once it exists; until then the same placeholder art the reader shows.
- useEffect(()=>{for(const e of entries.filter(x=>x.status!=="coming_soon"))fetch(`/worlds/${e.id}/world.json`).then(r=>r.json()).then(d=>{const w=WorldPackSchema.safeParse(d);if(!w.success||!w.data.storybook)return;setCovers(c=>({...c,[e.id]:w.data.storybook!.pages[0].illustration?.src??null}))}).catch(()=>{})},[entries]);
+ useEffect(()=>{for(const e of entries.filter(x=>x.status!=="coming_soon"))fetch(`/worlds/${e.id}/world.json`).then(r=>r.json()).then(d=>{const w=WorldPackSchema.safeParse(d);if(!w.success||!w.data.storybook)return;setCovers(c=>({...c,[e.id]:w.data.storybook!.pages[0].illustration?.src??null}));setPageNames(n=>({...n,[e.id]:storyPageNames(w.data.storybook!.pages)}))}).catch(()=>{})},[entries]);
  const open=entries.filter(e=>e.status!=="coming_soon"),sealed=entries.filter(e=>e.status==="coming_soon");
- const cont=continueFor(demo,entries);
+ const cont=continueFor(demo,entries,pageNames);
  return <section className="case-ui mx-auto max-w-6xl px-4 pb-20 pt-6 md:px-8" aria-labelledby="shelf-h">
   <div className="flex flex-wrap items-end justify-between gap-4">
    <div><p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Pick a book</p><h1 id="shelf-h" className="mt-1 text-[32px] font-bold leading-tight md:text-[38px]">{heading}</h1></div>
@@ -38,12 +38,13 @@ export function Shelf({demo,setDemo,onOpen,onlyWorld,heading="Your shelf"}:{demo
 }
 
 // The newest story with progress: a storybook page (with its screen) or a case-flow scene.
-function continueFor(demo:Demo,entries:Entry[]){
+function continueFor(demo:Demo,entries:Entry[],pageNames:Record<string,string[]>){
  const title=(id:string)=>entries.find(e=>e.id===id)?.title;
+ const where=(id:string,page=0)=>pageNames[id]?.[page]??`page ${page+1}`;
  const prog=demo.readerProgress?.[demo.worldId];
- if(prog&&(prog.page||prog.part||prog.briefed)&&title(demo.worldId)&&!demo.submitted)return {worldId:demo.worldId,label:`Pick up on page ${(prog.page??0)+1} of ${title(demo.worldId)}`};
+ if(prog&&(prog.page||prog.part||prog.briefed)&&title(demo.worldId)&&!demo.submitted)return {worldId:demo.worldId,label:`Pick up on ${where(demo.worldId,prog.page)} of ${title(demo.worldId)}`};
  if(!demo.readerProgress?.[demo.worldId]&&demo.scene>0&&title(demo.worldId)&&!demo.submitted)return {worldId:demo.worldId,label:`Pick up at scene ${demo.scene+1} of ${title(demo.worldId)}`};
- for(const [id,p] of Object.entries(demo.readerProgress??{}))if((p.page||p.part)&&title(id))return {worldId:id,label:`Pick up on page ${(p.page??0)+1} of ${title(id)}`};
+ for(const [id,p] of Object.entries(demo.readerProgress??{}))if((p.page||p.part)&&title(id))return {worldId:id,label:`Pick up on ${where(id,p.page)} of ${title(id)}`};
  return null;
 }
 
@@ -94,7 +95,7 @@ function SealedBook({entry}:{entry:Entry}){
 
 function PeekCard({worldId,roleId,onOpen}:{worldId:string;roleId:string;onOpen:()=>void}){
  const [data,setData]=useState<{world:WorldPack;opening:string}|null>(null);
- useEffect(()=>{Promise.all([fetch(`/worlds/${worldId}/world.json`).then(r=>r.json()),fetch(`/worlds/${worldId}/source.md`).then(r=>r.ok?r.text():"")]).then(([w,md])=>{const world=WorldPackSchema.parse(w);const first=parseSourcePassages(md).find(p=>!/^(author|edition)\b/i.test(p.text));setData({world,opening:first?splitSentences(first.text).slice(0,3).join(" "):""})}).catch(()=>{})},[worldId]);
+ useEffect(()=>{Promise.all([fetch(`/worlds/${worldId}/world.json`).then(r=>r.json()),fetch(`/worlds/${worldId}/source.md`).then(r=>r.ok?r.text():"")]).then(([w,md])=>{const world=WorldPackSchema.parse(w);setData({world,opening:openingLines(world,parseSourcePassages(md))})}).catch(()=>{})},[worldId]);
  if(!data)return <p className="text-[16px] text-[#6B6457]">Opening the book…</p>;
  const role=data.world.roles.find(r=>r.id===roleId)??data.world.roles[0];
  return <div className="space-y-5">

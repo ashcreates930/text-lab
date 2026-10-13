@@ -4,42 +4,54 @@
 // on the current page are proven. Cards (questions, words, Say it again, Who's who, reading menu, picture frames) slide
 // in over the page.
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
-import {ArrowLeft,ArrowRight,ChevronLeft,ChevronRight,ImageIcon,MessageCircleHeart,MessageSquareQuote,PenLine,Type,Users} from "lucide-react";
+import {ArrowLeft,ArrowRight,BookOpen,ChevronLeft,ChevronRight,ImageIcon,MessageCircleHeart,MessageSquareQuote,PenLine,Type,Users} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
-import {cluesByPage,pagePassages,sentenceKey,splitSentences,type StoryPage} from "@/lib/storybook";
+import {cluesByPage,pagePassages,pageUnits,plain,sentenceKey,splitSentences,unitText,type Piece,type StoryPage,type Unit} from "@/lib/storybook";
 import {isDone} from "../clue-steps";
 import {RankChip,playStamp,recordScene} from "../case-game";
 import {HomeText,saveHomeLanguage} from "../bilingual";
 import type {Demo} from "../page";
-import {Drawer,FrameCard,LockedHint,QuestionCard,ReadingMenu,SayCard,WhoCard,WordCard} from "./cards";
+import {Drawer,Emph,FrameCard,FullTextCard,LockedHint,QuestionCard,ReadingMenu,SayCard,WhoCard,WordCard} from "./cards";
 import {fontStacks,lineSpacings,textSizes,useReaderPrefs} from "./prefs";
 
-// A piece is a whole sentence, or part of one too long to fit a screen by itself; full keeps the whole sentence for cards.
-type Piece={text:string;full:string};
-type Para={id:string;items:Piece[]};
-type Card=null|{type:"keep"}|{type:"questions"}|{type:"menu"}|{type:"who"}|{type:"frame"}|{type:"say";sentence:string}|{type:"word";term:string;word:string;sentence:string};
+// A screen holds units (a paragraph, with its speaker in a play). A piece is a whole sentence or stage direction, or part
+// of one too long to fit a screen by itself; full keeps the whole sentence for cards.
+type Para=Unit;
+type Card=null|{type:"keep"}|{type:"questions"}|{type:"menu"}|{type:"who"}|{type:"frame"}|{type:"full"}|{type:"say";sentence:string;speaker?:string}|{type:"word";term:string;word:string;sentence:string};
 type Layout="spread"|"side"|"bottom";
 const PARA_CLASS="mb-[0.7em] last:mb-0";
+const SAY_CLASS="sb-say mr-[0.25em] inline rounded-md text-left";
+const SPEAKER_CLASS="sb-speaker mr-[0.4em]";
+// Verse keeps its line breaks; each sentence of a poem starts on its own line.
+// A bridge (our summary, not the author's words) sits behind a dashed rule so it never looks like the story text.
+const BRIDGE_CLASS="border-l-4 border-dashed border-[#C9B9A0] pl-3";
+const VERSE_CLASS="whitespace-pre-line pl-[1.2em]";
+const speakerName=(s:string)=>s.trim().replace(/\.$/,"");
 const escapeRe=(s:string)=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
 
 // Layout follows the reader's own box, so the same reader works full screen and embedded in the home page hero.
-function useLayout(root:React.RefObject<HTMLElement|null>):Layout{
- const [layout,setLayout]=useState<Layout>("bottom");
- useEffect(()=>{const el=root.current;if(!el)return;const on=()=>{const w=el.clientWidth,h=el.clientHeight;setLayout(w>=900&&w>h?"spread":w>h?"side":"bottom")};on();const ro=new ResizeObserver(on);ro.observe(el);return()=>ro.disconnect()},[root]);
- return layout;
+function useLayout(root:React.RefObject<HTMLElement|null>):[Layout,number]{
+ const [size,setSize]=useState<[Layout,number]>(["bottom",0]);
+ useEffect(()=>{const el=root.current;if(!el)return;const on=()=>{const w=el.clientWidth,h=el.clientHeight;const next:Layout=w>=900&&w>h?"spread":w>h?"side":"bottom";setSize(s=>s[0]===next&&s[1]===h?s:[next,h])};on();const ro=new ResizeObserver(on);ro.observe(el);return()=>ro.disconnect()},[root]);
+ return size;
 }
 export type ReaderProgress={page?:number;part?:number;furthest?:number;briefed?:boolean;sections?:string[];skippedFrames?:string[]};
 
 // Greedy split of a page's sentences into screens that fit the text box, measured with an invisible copy of the text.
 // A sentence too tall for an empty screen (very large text on a small phone) is split between words.
-function paginate(paras:Para[],box:HTMLElement,measurer:HTMLElement):Para[][]{
+// The measurer builds the same elements the page shows: a button per sentence in Say it again mode (buttons wrap as
+// blocks), and otherwise italic emphasis and underlined vocabulary buttons (which never break at a hyphen).
+function paginate(paras:Para[],box:HTMLElement,measurer:HTMLElement,sayMode=false,vocabRe:RegExp|null=null):Para[][]{
  const max=box.clientHeight-2;if(max<40)return[paras];
- const render=(list:Para[])=>{measurer.replaceChildren(...list.map(p=>{const el=document.createElement("p");el.className=PARA_CLASS;el.textContent=p.items.map(i=>i.text).join(" ");return el}));return measurer.offsetHeight};
- const add=(list:Para[],id:string,item:Piece)=>{const last=list[list.length-1];return last?.id===id?[...list.slice(0,-1),{id,items:[...last.items,item]}]:[...list,{id,items:[item]}]};
- const fitPieces=(id:string,item:Piece):Piece[]=>{if(render([{id,items:[item]}])<=max)return[item];const words=item.text.split(" "),out:Piece[]=[];let chunk:string[]=[];for(const word of words){const next=[...chunk,word];if(chunk.length&&render([{id,items:[{text:next.join(" "),full:item.full}]}])>max){out.push({text:chunk.join(" "),full:item.full});chunk=[word]}else chunk=next}if(chunk.length)out.push({text:chunk.join(" "),full:item.full});return out};
+ const node=(tag:string,className:string,text:string)=>{const n=document.createElement(tag);if(className)n.className=className;n.textContent=text;return n};
+ const words=(seg:string)=>(vocabRe?seg.split(vocabRe):[seg]).map((b,i)=>i%2?node("button","sb-word",b):node("span","",b));
+ const render=(list:Para[])=>{measurer.replaceChildren(...list.map(p=>{const el=document.createElement("p");el.className=p.verse?`${PARA_CLASS} ${VERSE_CLASS}`:PARA_CLASS;if(p.speaker)el.append(node("span",SPEAKER_CLASS,speakerName(p.speaker)));for(const i of p.items){const span=document.createElement(i.stage?"em":"span");if(sayMode)span.append(node("button",SAY_CLASS,plain(i.text)));else i.text.split(/_([^_]+)_/).forEach((seg,n)=>{if(n%2){const em=document.createElement("em");em.append(...words(seg));span.append(em)}else span.append(...words(seg))});span.append(p.verse?"\n":" ");el.append(span)}return el}));return measurer.offsetHeight};
+ // A unit continued on the next screen keeps its speaker so the reader always knows who is talking.
+ const add=(list:Para[],u:Para,item:Piece)=>{const last=list[list.length-1];return last?.id===u.id?[...list.slice(0,-1),{...last,items:[...last.items,item]}]:[...list,{id:u.id,speaker:u.speaker,verse:u.verse,items:[item]}]};
+ const fitPieces=(u:Para,item:Piece):Piece[]=>{const one=(text:string)=>[{id:u.id,speaker:u.speaker,verse:u.verse,items:[{...item,text}]}];if(render(one(item.text))<=max)return[item];const words=item.text.split(" "),out:Piece[]=[];let chunk:string[]=[];for(const word of words){const next=[...chunk,word];if(chunk.length&&render(one(next.join(" ")))>max){out.push({...item,text:chunk.join(" ")});chunk=[word]}else chunk=next}if(chunk.length)out.push({...item,text:chunk.join(" ")});return out};
  const parts:Para[][]=[];let cur:Para[]=[];
- for(const para of paras)for(const whole of para.items)for(const item of fitPieces(para.id,whole)){const trial=add(cur,para.id,item);if(cur.length&&render(trial)>max){parts.push(cur);cur=add([],para.id,item)}else cur=trial}
+ for(const para of paras)for(const whole of para.items)for(const item of fitPieces(para,whole)){const trial=add(cur,para,item);if(cur.length&&render(trial)>max){parts.push(cur);cur=add([],para,item)}else cur=trial}
  if(cur.length)parts.push(cur);
  measurer.replaceChildren();
  return parts.length?parts:[paras];
@@ -54,13 +66,18 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
  const setProg=useCallback((patch:ReaderProgress|((p:ReaderProgress)=>ReaderProgress))=>setDemo(d=>{const cur=d.readerProgress?.[world.id]??{};const next=typeof patch==="function"?patch(cur):{...cur,...patch};return {...d,readerProgress:{...(d.readerProgress??{}),[world.id]:next}}}),[setDemo,world.id]);
  const book=world.storybook!;const pages=preview?book.pages.slice(0,previewPages):book.pages;const last=pages.length-1;
  const gates=useMemo(()=>cluesByPage(world),[world]);
- const [prefs,update]=useReaderPrefs();const layout=useLayout(rootRef);
+ const [prefs,update]=useReaderPrefs();const [layout,readerHeight]=useLayout(rootRef);
  const [card,setCard]=useState<Card>(null),[sayMode,setSayMode]=useState(false),[celebrate,setCelebrate]=useState<{title:string;rankUp:string|null}|null>(null);
  const index=Math.min(Math.max(prog.page??0,0),last);const page=pages[index];
  const pageDone=useCallback((i:number)=>gates[i].every(({clue})=>isDone(demo,clue.id)),[gates,demo]);
  const furthest=Math.max(prog.furthest??0,index);
- const paras=useMemo<Para[]>(()=>pagePassages(passages,page).map(p=>({id:p.id,items:splitSentences(p.text).map(t=>({text:t,full:t}))})),[passages,page]);
- const pageText=useMemo(()=>paras.map(p=>p.items.map(i=>i.text).join(" ")).join(" "),[paras]);
+ // A bridge page shows our labeled summary of skipped paragraphs; the author's words are one tap away.
+ const bridge=page.bridge;
+ const paras=useMemo<Para[]>(()=>bridge?[{id:`${page.id}-summary`,items:splitSentences(bridge.summary).map(t=>({text:t,full:t}))}]:pageUnits(passages,page,book.format),[passages,page,bridge,book.format]);
+ const pageText=useMemo(()=>unitText(paras),[paras]);
+ // Page numbers count story pages only; a bridge sits between two of them.
+ const realPages=useMemo(()=>pages.map((_,i)=>pages.slice(0,i+1).filter(x=>!x.bridge).length),[pages]);
+ const realCount=book.pages.filter(p=>!p.bridge).length;
  const section=book.sections.find(s=>s.id===page.section);
  const open=gates[index].filter(({clue})=>!isDone(demo,clue.id)).length;
  // A required picture frame is part of the page's gate; optional frames never block and can be skipped.
@@ -74,8 +91,14 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
  const partRef=useRef(prog.part??0);
  const setPart=useCallback((n:number|((p:number)=>number))=>{const v=typeof n==="function"?n(partRef.current):n;partRef.current=v;setPartState(v);if(!preview)setProg({part:v})},[preview,setProg]);
  const wantLastPart=useRef(false);
- useLayoutEffect(()=>{if(!box.current||!measurer.current)return;const next=paginate(paras,box.current,measurer.current);setParts(next);setPart(p=>wantLastPart.current?next.length-1:Math.min(p,next.length-1));wantLastPart.current=false},[paras,prefs,layout,tick,prog.briefed]);
- useEffect(()=>{const el=box.current;if(!el)return;const ro=new ResizeObserver(()=>setTick(t=>t+1));ro.observe(el);document.fonts?.ready.then(()=>setTick(t=>t+1));return()=>ro.disconnect()},[prefs.view,layout,prog.briefed]);
+ const vocab=book.vocabulary;
+ const vocabRe=useMemo(()=>{const forms=vocab.flatMap(v=>[v.term,...v.forms]).filter(Boolean).sort((a,b)=>b.length-a.length);return forms.length?new RegExp(`\\b(${forms.map(escapeRe).join("|")})\\b`,"gi"):null},[vocab]);
+ // On a phone, very large text leaves the text panel over the picture room for only a line or two; below about five
+ // lines the page switches to the text-only view (frames stay on the toolbar and the page-turn button).
+ const lineHeight=textSizes[prefs.size]*lineSpacings[prefs.spacing];
+ const cramped=!preview&&layout==="bottom"&&readerHeight>0&&(readerHeight-128)*0.58-64<lineHeight*5;
+ useLayoutEffect(()=>{if(!box.current||!measurer.current)return;const next=paginate(paras,box.current,measurer.current,sayMode,vocabRe);setParts(next);setPart(p=>wantLastPart.current?next.length-1:Math.min(p,next.length-1));wantLastPart.current=false},[paras,prefs,layout,tick,prog.briefed,sayMode,vocabRe,cramped]);
+ useEffect(()=>{const el=box.current;if(!el)return;const ro=new ResizeObserver(()=>setTick(t=>t+1));ro.observe(el);document.fonts?.ready.then(()=>setTick(t=>t+1));return()=>ro.disconnect()},[prefs.view,layout,prog.briefed,cramped]);
  // The reading screen never scrolls.
  useEffect(()=>{if(preview)return;const root=document.documentElement,prev=root.style.overflow;root.style.overflow="hidden";return()=>{root.style.overflow=prev}},[preview]);
 
@@ -100,14 +123,16 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
  const onPointerUp=(e:React.PointerEvent)=>{const s=swipe.current;swipe.current=null;if(!s)return;const dx=e.clientX-s.x,dy=e.clientY-s.y;if(Math.abs(dx)>60&&Math.abs(dx)>1.5*Math.abs(dy)){if(dx<0)next();else prev()}};
 
  // Vocabulary words are underlined buttons that open the word card.
- const vocab=book.vocabulary;
- const vocabRe=useMemo(()=>{const forms=vocab.flatMap(v=>[v.term,...v.forms]).filter(Boolean).sort((a,b)=>b.length-a.length);return forms.length?new RegExp(`\\b(${forms.map(escapeRe).join("|")})\\b`,"gi"):null},[vocab]);
  const findVocab=(word:string)=>vocab.find(v=>[v.term,...v.forms].some(f=>f.toLowerCase()===word.toLowerCase()));
  const textStyle={fontSize:textSizes[prefs.size],lineHeight:lineSpacings[prefs.spacing],fontFamily:fontStacks[prefs.font]};
- function renderSentence({text,full}:Piece,key:string){
-  if(sayMode)return <button type="button" key={key} onClick={()=>setCard({type:"say",sentence:full})} className="sb-say mr-[0.25em] inline rounded-md text-left">{text}</button>;
-  const bits=vocabRe?text.split(vocabRe):[text];
-  return <span key={key}>{bits.map((b,i)=>{const v=i%2===1?findVocab(b):undefined;return v?<button type="button" key={i} onClick={()=>setCard({type:"word",term:v.term,word:b,sentence:full})} className="sb-word">{b}</button>:<span key={i}>{b}</span>})} </span>;
+ function renderSentence({text,full,stage}:Piece,key:string,speaker?:string,verse=false){
+  const sep=verse?"\n":" ";
+  // Stage directions stay italic; .sb-say inherits its font from the <em> around it.
+  const Tag=stage?"em":"span";
+  if(sayMode)return <Tag key={key}><button type="button" onClick={()=>setCard({type:"say",sentence:full,speaker:!stage&&speaker?speakerName(speaker):undefined})} className={SAY_CLASS}><Emph text={text}/></button>{verse&&sep}</Tag>;
+  // Spoken emphasis (_know_) is italic; vocabulary words inside it are still tappable.
+  const words=(seg:string,k:string)=>(vocabRe?seg.split(vocabRe):[seg]).map((b,i)=>{const v=i%2===1?findVocab(b):undefined;return v?<button type="button" key={`${k}-${i}`} onClick={()=>setCard({type:"word",term:v.term,word:b,sentence:full})} className="sb-word">{b}</button>:<span key={`${k}-${i}`}>{b}</span>});
+  return <Tag key={key}>{text.split(/_([^_]+)_/).map((seg,n)=>n%2?<em key={n}>{words(seg,String(n))}</em>:words(seg,String(n)))}{sep}</Tag>;
  }
 
  const characters=pages.slice(0,furthest+1).flatMap(p=>p.characters_met);
@@ -118,21 +143,27 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
  if(!preview&&!prog.briefed)return <Shell rootRef={rootRef} title={world.title}><Briefing world={world} role={role} onStart={()=>setProg(p=>({...p,briefed:true,page:p.page??0}))} onExit={onExit}/></Shell>;
 
  const textPanel=(extra="")=><div className={`flex min-h-0 flex-col ${extra}`}>
-  <p className="mb-2 shrink-0 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">{section?.title}{parts.length>1&&` · part ${part+1} of ${parts.length}`}</p>
+  {/* The part counter sits in a fixed-width slot, always reserved, so the title wraps the same way on every screen of a
+      page and the text box keeps the height it was measured with. */}
+  <div className="mb-2 flex shrink-0 items-start justify-between gap-3 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">
+   <p className="min-w-0">{bridge?`Between the pages: a summary, not ${world.author.split(" ").pop()}'s words`:section?.title}</p>
+   <p className={`shrink-0 whitespace-nowrap text-right tabular-nums ${parts.length>1?"":"invisible"}`} aria-hidden={parts.length<2}><span className="sr-only">Part </span><span className="inline-block min-w-[7ch]">{part+1} of {parts.length}</span></p>
+  </div>
   <div ref={box} className="relative min-h-0 flex-1 overflow-hidden text-[#2A2620]" style={textStyle}>
-   <div ref={measurer} aria-hidden className="pointer-events-none invisible absolute inset-x-0 top-0"/>
-   <div>{(parts[part]??paras).map((p,i)=><p key={`${p.id}-${i}`} className={PARA_CLASS}>{p.items.map((s,j)=>renderSentence(s,`${p.id}-${j}`))}</p>)}</div>
+   <div ref={measurer} aria-hidden className={`pointer-events-none invisible absolute inset-x-0 top-0 ${bridge?BRIDGE_CLASS:""}`}/>
+   <div className={bridge?`${BRIDGE_CLASS} text-[#4A4438]`:undefined}>{(parts[part]??paras).map((p,i)=><p key={`${p.id}-${i}`} className={p.verse?`${PARA_CLASS} ${VERSE_CLASS}`:PARA_CLASS}>{p.speaker&&<span className={SPEAKER_CLASS}>{speakerName(p.speaker)}</span>}{p.items.map((s,j)=>renderSentence(s,`${p.id}-${j}`,p.speaker,p.verse))}</p>)}</div>
   </div>
   {sayMode&&<p className="mt-2 shrink-0 text-[14px] font-semibold text-[#8A3B23]">Tap a sentence to say it again.</p>}
+  {bridge&&<button type="button" onClick={()=>setCard({type:"full"})} className="mt-2 inline-flex min-h-11 w-fit shrink-0 items-center gap-2 rounded-full bg-[#F4E1D6] px-4 text-[15px] font-semibold text-[#8A3B23] hover:bg-[#EDD3C4]"><BookOpen size={18}/> Read this part in full</button>}
  </div>;
 
- const picture=<Picture page={page} src={art} isStudent={!!studentImage&&!page.illustration?.src} layout={layout} onFrame={()=>setCard({type:"frame"})} framed={!!frame} skipped={frameSkipped&&!frame} onSkip={()=>setProg(p=>({...p,skippedFrames:[...new Set([...(p.skippedFrames??[]),page.id])]}))}/>;
- const textOnly=prefs.view==="text";
+ const picture=<Picture bridge={!!bridge} page={page} src={art} isStudent={!!studentImage&&!page.illustration?.src} layout={layout} onFrame={()=>setCard({type:"frame"})} framed={!!frame} skipped={frameSkipped&&!frame} onSkip={()=>setProg(p=>({...p,skippedFrames:[...new Set([...(p.skippedFrames??[]),page.id])]}))}/>;
+ const textOnly=prefs.view==="text"||cramped;
 
  return <Shell rootRef={rootRef} preview={preview} title={world.title} onExit={preview?undefined:onExit} tools={<>
    <ToolButton label="Who's who" onClick={()=>setCard({type:"who"})}><Users size={20}/></ToolButton>
-   <ToolButton label={sayMode?"Stop Say it again":"Say it again"} pressed={sayMode} onClick={()=>setSayMode(v=>!v)}><MessageSquareQuote size={20}/></ToolButton>
-   {!preview&&page.mode!=="illustrated"&&<ToolButton label={page.mode==="add_detail"?"Add a detail":"Illustrate this page"} onClick={()=>setCard({type:"frame"})}><PenLine size={20}/></ToolButton>}
+   {!bridge&&<ToolButton label={sayMode?"Stop Say it again":"Say it again"} pressed={sayMode} onClick={()=>setSayMode(v=>!v)}><MessageSquareQuote size={20}/></ToolButton>}
+   {!preview&&!bridge&&page.mode!=="illustrated"&&<ToolButton label={page.mode==="add_detail"?"Add a detail":"Illustrate this page"} onClick={()=>setCard({type:"frame"})}><PenLine size={20}/></ToolButton>}
    <ToolButton label="Reading settings" onClick={()=>setCard({type:"menu"})}><Type size={20}/></ToolButton>
    {!preview&&onFeedback&&<button type="button" onClick={onFeedback} className="ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-full bg-[#F4E1D6] px-3 text-[14px] font-semibold text-[#8A3B23] hover:bg-[#EDD3C4]"><MessageCircleHeart size={18}/><span className="hidden md:inline">Give feedback</span><span className="md:hidden">Feedback</span></button>}
   </>}>
@@ -144,9 +175,10 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
     {card.type==="questions"&&!preview&&<QuestionCard world={world} roleId={role.id} items={gates[index]} demo={demo} setDemo={setDemo} passages={passages} lastPage={index===last} reading={{throughParagraph:pages[furthest].end,characters:characters.map(c=>c.id)}} onAllDone={()=>{setCard(null);advance()}}/>}
     {card.type==="menu"&&<ReadingMenu prefs={prefs} update={update} spanish={demo.homeLanguage==="es"} onSpanish={preview?undefined:on=>{setDemo(d=>({...d,homeLanguage:on?"es":null}));saveHomeLanguage(on?"es":null)}}/>}
     {card.type==="who"&&<WhoCard characters={characters}/>}
-    {card.type==="say"&&<SayCard sentence={card.sentence} restatement={page.restatements[sentenceKey(card.sentence)]}/>}
+    {card.type==="say"&&<SayCard sentence={card.sentence} speaker={card.speaker} restatement={page.restatements[sentenceKey(card.sentence)]}/>}
+    {card.type==="full"&&<FullTextCard passages={pagePassages(passages,page)} format={book.format}/>}
     {card.type==="word"&&(()=>{const v=vocab.find(x=>x.term===card.term);return v?<WordCard entry={v} word={card.word} sentence={card.sentence}/>:null})()}
-    {card.type==="keep"&&<div className="space-y-4"><p className="text-[17px] leading-7">{open?"In the full demo, you prove this clue with a line from the story before the page turns. Characters can help, but they can be wrong.":"That's the end of the preview."}</p><p className="text-[16px] leading-7 text-[#4A4438]">Keep reading to open the whole case: 19 pages, every clue, and your case file.</p>{onKeepReading&&<button type="button" onClick={onKeepReading} className="case-primary w-full">Keep reading <ArrowRight size={18}/></button>}</div>}
+    {card.type==="keep"&&<div className="space-y-4"><p className="text-[17px] leading-7">{open?"In the full demo, you prove this clue with a line from the story before the page turns. Characters can help, but they can be wrong.":"That's the end of the preview."}</p><p className="text-[16px] leading-7 text-[#4A4438]">Keep reading to open the whole case: {realCount} pages, every clue, and your case file.</p>{onKeepReading&&<button type="button" onClick={onKeepReading} className="case-primary w-full">Keep reading <ArrowRight size={18}/></button>}</div>}
     {card.type==="frame"&&<FrameCard page={page} pageText={pageText} demo={demo} setDemo={setDemo} onSkip={()=>{setProg(p=>({...p,skippedFrames:[...new Set([...(p.skippedFrames??[]),page.id])]}));setCard(null)}} onContinue={()=>{setCard(null);advance()}} lastPage={index===last&&pageDone(index)}/>}
    </Drawer>}
    {celebrate&&<div className="absolute inset-0 z-40 grid place-items-center bg-[#2A2620]/45 p-6"><div role="dialog" aria-modal="true" aria-label="Section solved" className="case-rise relative w-full max-w-md rounded-3xl bg-[#FFFDF8] p-7 text-center shadow-2xl">
@@ -160,7 +192,7 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
   <nav aria-label="Page navigation" className="grid h-[72px] shrink-0 grid-cols-[auto_1fr_auto] items-center gap-3 border-t border-[#E4DCCB] bg-[#F6F0E3] px-3 md:px-6">
    <button type="button" onClick={prev} disabled={index===0&&part===0} aria-label="Previous page" className="grid h-14 w-14 place-items-center rounded-full bg-[#FFFDF8] text-[#2A2620] shadow-[0_2px_10px_-4px_rgba(42,38,32,.3)] disabled:opacity-30"><ChevronLeft size={28}/></button>
    <div className="min-w-0 text-center" aria-live="polite">
-    <p className="text-[16px] font-semibold">Page {index+1} of {pages.length}</p>
+    <p className="text-[16px] font-semibold">{bridge?`Between pages ${realPages[index]} and ${realPages[index]+1}`:`Page ${realPages[index]} of ${preview?realPages[last]:realCount}`}</p>
     <div className="mx-auto mt-1.5 h-1.5 w-full max-w-[240px] overflow-hidden rounded-full bg-[#E4DCCB]" aria-hidden><div className="h-full rounded-full bg-[#A0472C] transition-[width]" style={{width:`${((index+(part+1)/parts.length)/pages.length)*100}%`}}/></div>
    </div>
    {part<parts.length-1?<NavNext label="Next" onClick={next}/>
@@ -173,11 +205,11 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
 }
 function NavNext({label,onClick}:{label:string;onClick:()=>void}){return <button type="button" onClick={onClick} aria-label={label} className="grid h-14 w-14 place-items-center rounded-full bg-[#A0472C] text-white shadow-[0_6px_18px_-6px_rgba(160,71,44,.6)]"><ChevronRight size={28}/></button>}
 function ToolButton({label,onClick,pressed,children}:{label:string;onClick:()=>void;pressed?:boolean;children:React.ReactNode}){return <button type="button" onClick={onClick} aria-label={label} title={label} aria-pressed={pressed} className={`grid h-11 w-11 place-items-center rounded-full ${pressed?"bg-[#A0472C] text-white":"text-[#2A2620] hover:bg-[#EFE8D8]"}`}>{children}</button>}
-function cardTitle(card:NonNullable<Card>,page:StoryPage){return card.type==="keep"?"Keep reading":card.type==="questions"?"Before you turn the page":card.type==="menu"?"Reading settings":card.type==="who"?"Who's who":card.type==="say"?"Say it again":card.type==="word"?"Word":page.mode==="add_detail"?"Add a missing detail":"You illustrate this page"}
+function cardTitle(card:NonNullable<Card>,page:StoryPage){return card.type==="keep"?"Keep reading":card.type==="full"?"The author's words":card.type==="questions"?"Before you turn the page":card.type==="menu"?"Reading settings":card.type==="who"?"Who's who":card.type==="say"?"Say it again":card.type==="word"?"Word":page.mode==="add_detail"?"Add a missing detail":"You illustrate this page"}
 
 function Shell({title,onExit,tools,children,rootRef,preview=false}:{title:string;onExit?:()=>void;tools?:React.ReactNode;children:React.ReactNode;rootRef:React.RefObject<HTMLDivElement|null>;preview?:boolean}){
  // Full screen in the reader; a bordered box on the home page hero. The full reader opens with a short book-opening motion.
- return <div ref={rootRef} className={preview?"case-ui relative flex h-full flex-col overflow-hidden rounded-3xl border border-[#E4DCCB] bg-[#F6F0E3] shadow-[0_24px_60px_-24px_rgba(42,38,32,.45)]":"sb-open case-ui fixed inset-0 z-40 flex h-[100dvh] flex-col overflow-hidden bg-[#F6F0E3]"}>
+ return <div ref={rootRef} className={preview?"case-ui relative flex h-full flex-col overflow-hidden rounded-3xl border border-[#E4DCCB] bg-[#F6F0E3] shadow-[0_24px_60px_-24px_rgba(42,38,32,.45)]":"sb-open case-ui fixed inset-0 z-40 flex h-[calc(100dvh/var(--page-zoom,1))] flex-col overflow-hidden bg-[#F6F0E3]"}>
   <header className="flex h-14 shrink-0 items-center gap-1 border-b border-[#E4DCCB] px-2 md:px-4">
    {onExit&&<button type="button" onClick={onExit} className="inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]"><ArrowLeft size={18}/><span className="hidden sm:inline">Stories</span></button>}
    <h1 className="min-w-0 flex-1 truncate px-1 text-[17px] font-bold">{title}</h1>
@@ -188,7 +220,7 @@ function Shell({title,onExit,tools,children,rootRef,preview=false}:{title:string
 }
 
 // The picture side of a page: the curated illustration, the student's own picture, or a styled placeholder.
-function Picture({page,src,isStudent,layout,onFrame,framed,skipped,onSkip}:{page:StoryPage;src?:string;isStudent:boolean;layout:Layout;onFrame:()=>void;framed:boolean;skipped:boolean;onSkip:()=>void}){
+function Picture({bridge,page,src,isStudent,layout,onFrame,framed,skipped,onSkip}:{bridge:boolean;page:StoryPage;src?:string;isStudent:boolean;layout:Layout;onFrame:()=>void;framed:boolean;skipped:boolean;onSkip:()=>void}){
  const optional=!page.frame_required;
  const [broken,setBroken]=useState(false);
  useEffect(()=>setBroken(false),[src]);
@@ -199,9 +231,9 @@ function Picture({page,src,isStudent,layout,onFrame,framed,skipped,onSkip}:{page
   {show?<img src={src} alt={isStudent?"Your illustration of this page":page.illustration?.alt??""} onError={()=>setBroken(true)} className="absolute inset-0 h-full w-full object-cover"/>
   :<div className="sb-placeholder absolute inset-0" role="img" aria-label="No picture yet"/>}
   <div className={`${zone} grid place-items-center p-4`}>
-   {!show&&(page.mode==="illustrated"||skipped)&&<p className="max-w-[18rem] rounded-2xl bg-[#FFFDF8]/80 px-4 py-3 text-center text-[15px] leading-6 text-[#4A4438]"><ImageIcon size={18} className="mb-1 inline text-[#A0472C]"/><br/>The picture for this page is coming. Picture it in your mind as you read.</p>}
+   {bridge?null:<>{!show&&(page.mode==="illustrated"||skipped)&&<p className="max-w-[18rem] rounded-2xl bg-[#FFFDF8]/80 px-4 py-3 text-center text-[15px] leading-6 text-[#4A4438]"><ImageIcon size={18} className="mb-1 inline text-[#A0472C]"/><br/>The picture for this page is coming. Picture it in your mind as you read.</p>}
    {page.mode==="add_detail"&&!skipped&&<div className="flex flex-col items-center gap-2"><button type="button" onClick={onFrame} className="rounded-2xl bg-[#FFFDF8]/90 px-5 py-3 text-center text-[16px] font-semibold text-[#2A2620] shadow-lg"><PenLine size={18} className="mr-2 inline text-[#A0472C]"/>{framed?"Your detail is saved":optional?"Something's missing. Add a detail (optional)":"Something's missing. Add a detail"}</button>{optional&&!framed&&<SkipButton onSkip={onSkip}/>}</div>}
-   {page.mode==="student"&&!show&&!skipped&&<div className="flex flex-col items-center gap-2"><button type="button" onClick={onFrame} className="sb-frame rounded-3xl px-6 py-5 text-center"><span className="block text-[20px] font-bold text-[#2A2620]">You illustrate this page{optional&&!framed?" (optional)":""}</span><span className="mt-1 block text-[15px] text-[#4A4438]">{framed?"Your description is saved. Tap to change it.":"Describe the picture you see in your mind."}</span></button>{optional&&!framed&&<SkipButton onSkip={onSkip}/>}</div>}
+   {page.mode==="student"&&!show&&!skipped&&<div className="flex flex-col items-center gap-2"><button type="button" onClick={onFrame} className="sb-frame rounded-3xl px-6 py-5 text-center"><span className="block text-[20px] font-bold text-[#2A2620]">You illustrate this page{optional&&!framed?" (optional)":""}</span><span className="mt-1 block text-[15px] text-[#4A4438]">{framed?"Your description is saved. Tap to change it.":"Describe the picture you see in your mind."}</span></button>{optional&&!framed&&<SkipButton onSkip={onSkip}/>}</div>}</>}
   </div>
  </div>;
 }

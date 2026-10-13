@@ -9,6 +9,30 @@ Status: DRAFT. Spanish: DRAFT (needs a fluent reviewer). Drafted with gpt-4o, th
 - **Page 11: A neighbor**: Someone who lives nearby. The narrator worries the neighbor will hear the sound.
 - **Page 14: Police officers**: Three men who came to search the house after a neighbor reported a scream.
 
+## Pages and frames
+
+| Page | Paragraphs | Section | Frame |
+|---|---|---|---|
+| Page 1 | ¶ 1 | the-plan | illustrated (placeholder art) |
+| Page 2 | ¶ 2 | the-plan | illustrated (placeholder art) |
+| Page 3 | ¶ 3–4 | the-plan | illustrated (placeholder art) |
+| Page 4 | ¶ 5–6 | the-plan | add a missing detail, **required** |
+| Page 5 | ¶ 7–8 | the-eighth-night | add a missing detail, optional |
+| Page 6 | ¶ 9–11 | the-eighth-night | add a missing detail, optional |
+| Page 7 | ¶ 12–13 | the-eighth-night | you illustrate, optional |
+| Page 8 | ¶ 14–15 | the-eighth-night | you illustrate, optional |
+| Page 9 | ¶ 16–17 | the-eighth-night | you illustrate, optional |
+| Page 10 | ¶ 18–19 | the-eighth-night | you illustrate, **required** |
+| Page 11 | ¶ 20 | the-deed | you illustrate, optional, writing only: Picture the mood and the setting of this page, not the violence: the dark room, the lantern and its light, the bed, the floorboards. Describe the light, the shadows, and the stillness. |
+| Page 12 | ¶ 21–22 | the-deed | you illustrate, optional, writing only: Picture the mood and the setting of this page, not the violence: the dark room, the lantern and its light, the bed, the floorboards. Describe the light, the shadows, and the stillness. |
+| Page 13 | ¶ 23–24 | the-deed | you illustrate, **required**, writing only: Picture the mood and the setting of this page, not the violence: the dark room, the lantern and its light, the bed, the floorboards. Describe the light, the shadows, and the stillness. |
+| Page 14 | ¶ 25–26 | the-visitors | you illustrate, optional |
+| Page 15 | ¶ 27–28 | the-visitors | you illustrate, optional |
+| Page 16 | ¶ 29–30 | the-visitors | you illustrate, optional |
+| Page 17 | ¶ 31 | the-visitors | you illustrate, optional |
+| Page 18 | ¶ 32 | the-visitors | you illustrate, optional |
+| Page 19 | ¶ 33–34 | the-visitors | you illustrate, **required** |
+
 ## Vocabulary
 
 | Word | In the text | Definition | Spanish |

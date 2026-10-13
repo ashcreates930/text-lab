@@ -248,9 +248,9 @@ export default function Home() {
     else fallback();
   }
 
-  if (gated) return <main className="min-h-screen bg-[#F6F0E3] text-[#2A2620]"><DisplaySettings/>{access === "locked" && <AccessGate brand={brand} onGranted={() => setAccess("granted")} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onJoinClass={() => setView("join")} onApproach={() => setView("approach")} />}</main>;
+  if (gated) return <main className="min-h-[calc(100vh/var(--page-zoom,1))] bg-[#F6F0E3] text-[#2A2620]"><DisplaySettings/>{access === "locked" && <AccessGate brand={brand} onGranted={() => setAccess("granted")} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onJoinClass={() => setView("join")} onApproach={() => setView("approach")} />}</main>;
 
-  return <main className="min-h-screen bg-[#F6F0E3] text-[#2A2620]">
+  return <main className="min-h-[calc(100vh/var(--page-zoom,1))] bg-[#F6F0E3] text-[#2A2620]">
     {view !== "landing" && <header className="sticky top-0 z-30 flex min-h-[58px] flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-white/10 bg-[#F6F0E3]/95 px-5 py-2 md:px-10">
       <button onClick={() => setView("landing")} className="flex items-center gap-2"><Wordmark className="text-xl"/><span className="hidden text-xs text-white/45 sm:block">by {brand.organization}</span></button>
       {null}

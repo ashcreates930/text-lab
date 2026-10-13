@@ -5,7 +5,7 @@
 - **Grade band:** 6 to 8
 - **Setting:** The Empty Schoolhouse in the Hudson Valley, the morning after Ichabod Crane fails to return.
 - **Possible roles:** New Schoolteacher; Traveling Reporter; Town Historian
-- **Speaking and non-speaking characters:** Hans Van Ripper (male) speaks; Ichabod Crane is discussed.
+- **Speaking and non-speaking characters:** Hans Van Ripper (male) and Brom Bones (male) speak, in plain standard English. Each can be asked questions only after the student has met him on a storybook page, and each knows only the pages the student has reached. Ichabod Crane, Katrina Van Tassel, Baltus Van Tassel, and the Headless Horseman do not speak; students learn about them through the text and artifacts only.
 - **Shared goal:** Figure out what really happened to Ichabod.
 - **Scene 1 artifact candidates:** The empty schoolhouse; Ichabod’s bundle and belongings; Cotton Mather’s history of witchcraft; hat and shattered pumpkin found near brook and bridge.
 - **Scene 1 DOK 3 prompt:** The searchers found a hat and a shattered pumpkin. Ichabod owned a book about witchcraft. Which explanation does the evidence support better: a ghost or a trick? What can’t you prove yet?

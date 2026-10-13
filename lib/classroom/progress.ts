@@ -7,7 +7,7 @@ const text = (max: number) => z.string().max(max);
 const id = z.string().max(120);
 const readerProgress = z.object({
   page: z.number().int().min(0).max(500).optional(),
-  part: z.number().int().min(0).max(50).optional(),
+  part: z.number().int().min(0).max(500).optional(),
   furthest: z.number().int().min(0).max(500).optional(),
   briefed: z.boolean().optional(),
   sections: z.array(id).max(50).optional(),

@@ -5,7 +5,7 @@ import {useEffect,useId,useRef,useState} from "react";
 import {ArrowLeft,ArrowRight,Check,Lock,MessageCircle,Quote,X} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
-import {quoteInText,splitSentences,type StoryPage} from "@/lib/storybook";
+import {isSpeakerLine,pageUnits,quoteInText,scriptPieces,splitSentences,type StoryPage} from "@/lib/storybook";
 import {CLASS_AI_OFF,evidenceLabel,isDone,useClueSteps,type Clue,type Scene} from "../clue-steps";
 import {recordFactCheck} from "../case-game";
 import type {Demo} from "../page";
@@ -36,18 +36,20 @@ export function WordCard({entry,sentence,word}:{entry:Vocab;sentence:string;word
  </div>;
 }
 
-export function SayCard({sentence,restatement}:{sentence:string;restatement:string|undefined}){
+export function SayCard({sentence,restatement,speaker}:{sentence:string;restatement:string|undefined;speaker?:string}){
  const [tried,setTried]=useState(false);
  return <div className="space-y-5">
+  {speaker&&<p className="text-[15px] font-semibold text-[#8A3B23]"><span className="sb-speaker">{speaker}</span> says:</p>}
   <blockquote className="rounded-2xl border-l-4 border-[#A0472C] bg-[#F4E1D6]/60 px-4 py-3 font-serif text-[18px] leading-8">{sentence}</blockquote>
   {!tried?<><p className="text-[17px] leading-7">First, say it in your own words. You can whisper it or think it.</p><button type="button" onClick={()=>setTried(true)} className="case-primary w-full">I tried <Check size={18}/></button></>
   :<div className="case-rise rounded-2xl bg-[#EFE8D8] p-4"><p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">In plain words</p><p className="mt-2 text-[18px] leading-7">{restatement??"This sentence doesn't have a plain-words version yet. Read it once more, slowly."}</p><p className="mt-3 text-[14px] text-[#6B6457]">How close was yours?</p></div>}
  </div>;
 }
 
-export function WhoCard({characters}:{characters:{id:string;name:string;description:string}[]}){
+// offstage: someone the characters talk about who never appears (Trifles' Mrs. Wright).
+export function WhoCard({characters}:{characters:{id:string;name:string;description:string;offstage?:boolean}[]}){
  if(!characters.length)return <p className="text-[17px]">You haven't met anyone yet.</p>;
- return <ul className="space-y-3">{characters.map(c=><li key={c.id} className="rounded-2xl bg-[#EFE8D8] p-4"><p className="text-[18px] font-bold">{c.name}</p><p className="mt-1 text-[16px] leading-6 text-[#4A4438]">{c.description}</p></li>)}</ul>;
+ return <ul className="space-y-3">{characters.map(c=><li key={c.id} className="rounded-2xl bg-[#EFE8D8] p-4"><p className="text-[18px] font-bold">{c.name}{c.offstage&&<span className="ml-2 align-middle text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Talked about, never seen</span>}</p><p className="mt-1 text-[16px] leading-6 text-[#4A4438]">{c.description}</p></li>)}</ul>;
 }
 
 // spanish/onSpanish is the home-language setting (Spanish help in the briefing and question cards); the word card always shows Spanish.
@@ -79,6 +81,7 @@ export function QuestionCard({world,roleId,items,demo,setDemo,passages,onAllDone
 
 function ClueSteps({world,scene,clue,roleId,demo,setDemo,passages,reading,onBack,onSaved}:{world:WorldPack;scene:Scene;clue:Clue;roleId:string;demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];reading:{throughParagraph:string;characters:string[]};onBack:()=>void;onSaved:(factCheck:boolean)=>void}){
  const s=useClueSteps({world,scene,clue,roleId,demo,setDemo,passages,reading});
+ const script=world.storybook?.format==="script";
  const box=useRef<HTMLTextAreaElement>(null);
  return <div aria-live="polite">
   <div className="flex items-center justify-between gap-3"><button type="button" onClick={onBack} className="inline-flex min-h-11 items-center gap-2 rounded-full px-2 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]"><ArrowLeft size={18}/> All clues</button><ol className="flex gap-2" aria-label={`Step ${s.stepNo} of ${s.steps.length}`}>{s.steps.map((x,i)=><li key={x} className={`h-2 rounded-full ${i<s.stepNo?"w-8 bg-[#A0472C]":"w-4 bg-[#E4DCCB]"}`}/>)}</ol></div>
@@ -95,7 +98,7 @@ function ClueSteps({world,scene,clue,roleId,demo,setDemo,passages,reading,onBack
   {s.step==="prove"&&<div className="mt-4">
    <p className="text-[17px] font-semibold">{s.asked?"Prove it or disprove it":"Find your proof"}</p>
    <p className="text-[16px] leading-7 text-[#4A4438]">{s.asked?`Tap the line that shows whether ${s.char?.name??"the character"} was right.`:s.notice}</p>{!s.asked&&<HomeText text={s.notice}/>}
-   <div className="mt-3 space-y-3 rounded-2xl bg-[#F6F0E3] p-4 font-serif text-[17px] leading-8">{s.source.map(p=><p key={p.id}>{splitSentences(p.text).map((line,i)=>{const picked=s.proof?.text===line;return <button type="button" key={i} onClick={()=>s.setProof({text:line,pid:p.id})} aria-pressed={picked} className={`mr-1 inline rounded-md px-0.5 text-left ${picked?"bg-[#A0472C] text-white":"hover:bg-[#F4E1D6]"}`}>{line}</button>})}</p>)}</div>
+   <div className="mt-3 space-y-3 rounded-2xl bg-[#F6F0E3] p-4 font-serif text-[17px] leading-8">{s.source.map(p=>script&&isSpeakerLine(p.text)?<p key={p.id} className="sb-speaker -mb-2">{p.text.trim().replace(/\.$/,"")}</p>:<p key={p.id}>{(script?scriptPieces(p.text):splitSentences(p.text).map(t=>({text:t,full:t,stage:false}))).map((piece,i)=>{const line=piece.full,picked=s.proof?.text===line;return <button type="button" key={i} onClick={()=>s.setProof({text:line,pid:p.id})} aria-pressed={picked} className={`mr-1 inline rounded-md px-0.5 text-left ${piece.stage?"italic":""} ${picked?"bg-[#A0472C] text-white":"hover:bg-[#F4E1D6]"}`}><Emph text={piece.text}/></button>})}</p>)}</div>
    {s.asked&&s.proof&&<div className="mt-3"><p className="text-[15px] font-semibold">This line…</p><div className="mt-2 grid grid-cols-2 gap-2">{[["supports","Backs them up"],["contradicts","Proves them wrong"]].map(([v,l])=><button type="button" key={v} aria-pressed={s.stance===v} onClick={()=>s.setStance(v)} className={`min-h-12 rounded-2xl px-3 text-[16px] font-semibold ${s.stance===v?"bg-[#2A2620] text-white":"bg-[#EFE8D8]"}`}>{l}</button>)}</div></div>}
    <div className="mt-4 flex justify-end"><button type="button" disabled={!s.proof||(!!s.asked&&!s.stance)} onClick={()=>{s.setStep("explain");setTimeout(()=>box.current?.focus(),50)}} className="case-primary disabled:opacity-40">Use this line <ArrowRight size={18}/></button></div>
   </div>}
@@ -133,5 +136,20 @@ export function FrameCard({page,pageText,demo,setDemo,onSkip,onContinue,lastPage
   {saved&&!status&&<p className="text-[14px] text-[#6B6457]">Saved {new Date(saved.saved_at).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}.</p>}
  </div>;
 }
+
+// The author's own words for the paragraphs a bridge page summarizes. Plays keep their speaker labels and italics.
+export function FullTextCard({passages,format}:{passages:SourcePassage[];format:"prose"|"script"}){
+ return <div className="space-y-4">
+  <p className="text-[15px] leading-6 text-[#6B6457]">This is the part the summary covers, exactly as it was written. It has no clues to prove.</p>
+  <div className="space-y-3 font-serif text-[17px] leading-8">{sourceLines(passages,format).map(l=><p key={l.id}>{l.speaker&&<span className="sb-speaker mr-2">{l.speaker}</span>}{l.items.map((i,j)=>i.stage?<em key={j}>{i.text} </em>:<span key={j}><Emph text={i.text}/> </span>)}</p>)}</div>
+ </div>;
+}
+// Source paragraphs as display lines: speaker lines join the speech that follows them, markdown italics become stage directions.
+function sourceLines(passages:SourcePassage[],format:"prose"|"script"){
+ return pageUnits(passages,{id:"",section:"",start:passages[0]?.id??"p000",end:passages[passages.length-1]?.id??"p000",mode:"student",characters_met:[],restatements:{}},format).map(u=>({...u,speaker:u.speaker?.trim().replace(/\.$/,"")}));
+}
+
+// Spoken emphasis in plays is marked _like this_ in the source.
+export function Emph({text}:{text:string}){return <>{text.split(/_([^_]+)_/).map((s,i)=>i%2?<em key={i}>{s}</em>:s)}</>}
 
 export function LockedHint({count}:{count:number}){return <span className="inline-flex items-center gap-1.5"><Lock size={16}/> {count===1?"Prove the clue to turn the page":`Prove ${count} clues to turn the page`}</span>}
