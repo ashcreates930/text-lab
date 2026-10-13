@@ -138,7 +138,8 @@ export function FrameCard({worldId,page,pageText,demo,setDemo,onSkip,onContinue,
 }
 
 // The author's own words for the paragraphs a bridge page summarizes. Plays keep their speaker labels and italics.
-export function FullTextCard({passages,format}:{passages:SourcePassage[];format:"prose"|"script"}){
+export function FullTextCard({passages,format,note,onNoteRead}:{passages:SourcePassage[];format:"prose"|"script";note?:string;onNoteRead?:()=>void}){
+ if(note)return <div className="space-y-5"><p className="text-[19px] font-bold">A note before you read</p><p className="text-[17px] leading-7">{note}</p><button type="button" onClick={onNoteRead} className="case-primary w-full">Continue reading <ArrowRight size={18}/></button></div>;
  return <div className="space-y-4">
   <p className="text-[15px] leading-6 text-[#6B6457]">This is the part the summary covers, exactly as it was written. It has no clues to prove.</p>
   <div className="space-y-3 font-serif text-[17px] leading-8">{sourceLines(passages,format).map(l=><p key={l.id}>{l.speaker&&<span className="sb-speaker mr-2">{l.speaker}</span>}{l.items.map((i,j)=>i.stage?<em key={j}>{i.text} </em>:<span key={j}><Emph text={i.text}/> </span>)}</p>)}</div>

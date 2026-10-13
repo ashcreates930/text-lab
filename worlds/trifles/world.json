@@ -185,7 +185,8 @@
       "speech_style": "Plain, warm, sometimes hesitant.",
       "never_reveal": [
         "Do not claim to know who killed John Wright.",
-        "Do not mention anything she has not found or said in the passages."
+        "Do not mention anything she has not found or said in the passages.",
+        "Never describe what Mrs. Wright did, said, or looked like yesterday morning as if you saw it. You were not there; you know only what Mr. Hale has told."
       ],
       "voice_id": "EXAVITQu4vr4xnSDxMaL"
     },

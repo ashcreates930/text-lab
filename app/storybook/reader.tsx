@@ -36,7 +36,7 @@ function useLayout(root:React.RefObject<HTMLElement|null>):[Layout,number]{
  useEffect(()=>{const el=root.current;if(!el)return;const on=()=>{const w=el.clientWidth,h=el.clientHeight;const next:Layout=w>=900&&w>h?"spread":w>h?"side":"bottom";setSize(s=>s[0]===next&&s[1]===h?s:[next,h])};on();const ro=new ResizeObserver(on);ro.observe(el);return()=>ro.disconnect()},[root]);
  return size;
 }
-export type ReaderProgress={version?:string;page?:number;part?:number;furthest?:number;briefed?:boolean;sections?:string[];skippedFrames?:string[]};
+export type ReaderProgress={notesSeen?:string[];version?:string;page?:number;part?:number;furthest?:number;briefed?:boolean;sections?:string[];skippedFrames?:string[]};
 
 // Greedy split of a page's sentences into screens that fit the text box, measured with an invisible copy of the text.
 // A sentence too tall for an empty screen (very large text on a small phone) is split between words.
@@ -87,6 +87,11 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
  // A required picture frame is part of the page's gate; optional frames never block and can be skipped.
  const frameNeeded=!!page.frame_required&&!demo.storyFrames?.[frameKey(world.id,page.id)];
  const frameSkipped=(prog.skippedFrames??[]).includes(page.id);
+ // A content note shows once per page, before the page's text (or, on a bridge, before its full text).
+ const noteDue=!preview&&!!page.content_note&&!(prog.notesSeen??[]).includes(page.id);
+// The note takes focus when it appears, after the app has focused the screen heading.
+ useEffect(()=>{if(!noteDue||bridge)return;const t=window.setTimeout(()=>document.getElementById("sb-note-h")?.focus(),60);return()=>window.clearTimeout(t)},[noteDue,bridge,page.id]);
+ const markNoteRead=useCallback(()=>setProg(p=>({...p,notesSeen:[...new Set([...(p.notesSeen??[]),page.id])]})),[setProg,page.id]);
 
  // Pagination: re-measure whenever the page, text settings, layout, panel size, or fonts change.
  const box=useRef<HTMLDivElement>(null),measurer=useRef<HTMLDivElement>(null);
@@ -184,11 +189,16 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
     {card.type==="menu"&&<ReadingMenu prefs={prefs} update={update} spanish={demo.homeLanguage==="es"} onSpanish={preview?undefined:on=>{setDemo(d=>({...d,homeLanguage:on?"es":null}));saveHomeLanguage(on?"es":null)}}/>}
     {card.type==="who"&&<WhoCard characters={characters}/>}
     {card.type==="say"&&<SayCard sentence={card.sentence} speaker={card.speaker} restatement={page.restatements[sentenceKey(card.sentence)]}/>}
-    {card.type==="full"&&<FullTextCard passages={pagePassages(passages,page)} format={book.format}/>}
+    {card.type==="full"&&<FullTextCard passages={pagePassages(passages,page)} format={book.format} note={noteDue?page.content_note:undefined} onNoteRead={markNoteRead}/>}
     {card.type==="word"&&(()=>{const v=vocab.find(x=>x.term===card.term);return v?<WordCard entry={v} word={card.word} sentence={card.sentence}/>:null})()}
     {card.type==="keep"&&<div className="space-y-4"><p className="text-[17px] leading-7">{open?"In the full demo, you prove this clue with a line from the story before the page turns. Characters can help, but they can be wrong.":"That's the end of the preview."}</p><p className="text-[16px] leading-7 text-[#4A4438]">Keep reading to open the whole case: {realCount} pages, every clue, and your case file.</p>{onKeepReading&&<button type="button" onClick={onKeepReading} className="case-primary w-full">Keep reading <ArrowRight size={18}/></button>}</div>}
     {card.type==="frame"&&<FrameCard worldId={world.id} page={page} pageText={pageText} demo={demo} setDemo={setDemo} onSkip={()=>{setProg(p=>({...p,skippedFrames:[...new Set([...(p.skippedFrames??[]),page.id])]}));setCard(null)}} onContinue={()=>{setCard(null);advance()}} lastPage={index===last&&pageDone(index)}/>}
    </Drawer>}
+   {noteDue&&!bridge&&!celebrate&&<div className="absolute inset-0 z-40 grid place-items-center bg-[#F6F0E3] p-6"><div role="dialog" aria-modal="true" aria-labelledby="sb-note-h" className="case-rise w-full max-w-md rounded-3xl bg-[#FFFDF8] p-7 shadow-2xl">
+    <h2 id="sb-note-h" tabIndex={-1} className="text-[22px] font-bold outline-none">A note before you read</h2>
+    <p className="mt-3 text-[17px] leading-7">{page.content_note}</p>
+    <button type="button" autoFocus onClick={markNoteRead} className="case-primary mt-6 w-full">Continue reading <ArrowRight size={18}/></button>
+   </div></div>}
    {celebrate&&<div className="absolute inset-0 z-40 grid place-items-center bg-[#2A2620]/45 p-6"><div role="dialog" aria-modal="true" aria-label="Section solved" className="case-rise relative w-full max-w-md rounded-3xl bg-[#FFFDF8] p-7 text-center shadow-2xl">
     <div aria-hidden className="case-stamp case-stamp-page">Section solved</div>
     <p className="mt-5 text-[22px] font-bold">{celebrate.title}: every clue is proven.</p>

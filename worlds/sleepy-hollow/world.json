@@ -4,7 +4,7 @@
   "author": "Washington Irving",
   "hook": "A schoolteacher vanished on the road home. Was it a ghost, or someone who wanted him gone?",
   "teacher_preview_required": false,
-  "content_notes": "",
+  "content_notes": "Irving's original text includes racist caricatures of Black people in ¶34 (the messenger, inside a summary page's full text) and ¶47–48 (the fiddler and the onlookers at the dance, on page 16). Students see a short note before both; AI characters never receive or discuss these passages.",
   "pack_type": "literature",
   "grade_band": {
     "min": 6,
@@ -186,7 +186,8 @@
       "speech_style": "Plain, direct standard English with no dialect: a practical farmer who says what he means.",
       "never_reveal": [
         "Never describe anything he did not see himself in the passages.",
-        "Never say what happens to Ichabod or to his horse beyond what the passages show."
+        "Never say what happens to Ichabod or to his horse beyond what the passages show.",
+        "Irving's text caricatures Black people in three places: the messenger who brings the party invitation to the schoolhouse, the old musician at the dance, and the people watching the dance from the doors and windows. Never repeat, describe, or joke about any of them. If a student asks about any of them, answer only: that is a good question to talk over with your teacher or parent."
       ],
       "voice_id": "onwK4e9ZLuTAKqWW03F9"
     },
@@ -202,7 +203,8 @@
         "Never confirm or deny any rumor about himself; answer with a laugh, a boast, or a change of subject.",
         "Never say who Katrina will choose or marry.",
         "Never claim to know what Katrina says to anyone in private.",
-        "Never state as fact what happens to Ichabod."
+        "Never state as fact what happens to Ichabod.",
+        "Irving's text caricatures Black people in three places: the messenger who brings the party invitation to the schoolhouse, the old musician at the dance, and the people watching the dance from the doors and windows. Never repeat, describe, or joke about any of them. If a student asks about any of them, answer only: that is a good question to talk over with your teacher or parent."
       ],
       "voice_id": "onwK4e9ZLuTAKqWW03F9"
     }
@@ -2396,7 +2398,8 @@
         "mode": "illustrated",
         "bridge": {
           "summary": "One autumn afternoon, while Ichabod watches over his quiet schoolroom, a messenger on a half-wild colt gallops up to the door. He brings an invitation to a party at the Van Tassels' house that evening. Ichabod rushes the students through their lessons and lets them out an hour early, and the children burst outside, shouting with joy."
-        }
+        },
+        "content_note": "The next part of Irving's original text includes racist caricatures of Black people that were common in writing of the 1820s. They are wrong and hurtful. Your teacher or parent may read and discuss this part with you."
       },
       {
         "id": "page-12",
@@ -2512,7 +2515,8 @@
           "aa96fbea4aac6898": "The girl he liked was his dance partner, smiling at him, while Brom Bones sat alone, feeling jealous."
         },
         "mode": "student",
-        "frame_prompt": "Picture Ichabod dancing with Katrina while Brom sits in the corner. Describe how each of them moves or sits."
+        "frame_prompt": "Picture Ichabod dancing with Katrina while Brom sits in the corner. Describe how each of them moves or sits.",
+        "content_note": "The next part of Irving's original text includes racist caricatures of Black people that were common in writing of the 1820s. They are wrong and hurtful. Your teacher or parent may read and discuss this part with you."
       },
       {
         "id": "bridge-8",
@@ -3875,6 +3879,11 @@
         "es_term": "por lo tanto",
         "es_definition": "por lo tanto o en consecuencia"
       }
+    ],
+    "ai_exclude": [
+      "p034",
+      "p047",
+      "p048"
     ]
   }
 }

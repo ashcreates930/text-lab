@@ -12,6 +12,7 @@ const readerProgress = z.object({
   briefed: z.boolean().optional(),
   sections: z.array(id).max(50).optional(),
   version: z.string().max(40).optional(),
+  notesSeen: z.array(id).max(200).optional(),
   skippedFrames: z.array(id).max(200).optional(),
 });
 const answer = z.object({

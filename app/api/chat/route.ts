@@ -15,7 +15,9 @@ export async function POST(request:NextRequest){
   const markdown=await readFile(join(process.cwd(),"worlds",worldId,"source.md"),"utf8");
   // The storybook reader sends the last paragraph the student has reached, so a character can't reveal what comes next.
   const through=parsed.data.throughParagraph?Number(parsed.data.throughParagraph.slice(1)):null;
-  const source=through?parseSourcePassages(markdown).filter(p=>Number(p.id.slice(1))<=through).map(p=>p.text):markdown.split(/\n\s*\n/).slice(1).map(p=>p.trim()).filter(Boolean);
+  // Paragraphs the story marks ai_exclude never reach a character.
+  const excluded=new Set(pack.storybook?.ai_exclude??[]);
+  const source=through||excluded.size?parseSourcePassages(markdown).filter(p=>(!through||Number(p.id.slice(1))<=through)&&!excluded.has(p.id)).map(p=>p.text):markdown.split(/\n\s*\n/).slice(1).map(p=>p.trim()).filter(Boolean);
   const item=pack.characters.find(x=>x.id===character);if(!item)return NextResponse.json({error:"Character not found."},{status:404});
   const capped=await consumeDemoAi(request,"character",parsed.data.sandboxId);if(capped)return capped;
   const sceneText=through?"The student has read the story only up to this point. Your character notes may mention later events: keep them secret. Every event you mention must appear in the source passages below, and speak only to what you yourself saw, said, or did in them; if they do not show you there, say you were not there. Never mention or hint at later events.":pack.scenes.find(x=>x.id===scene)?.narration??"Only the story's known events are in scope.";

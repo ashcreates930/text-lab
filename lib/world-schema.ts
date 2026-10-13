@@ -11,10 +11,14 @@ const scene = z.object({id:z.string(),narration:z.string(),summary:z.string().op
 const storyIllustration=z.object({src:z.string().optional(),alt:z.string(),scene_description:z.string().optional(),missing_detail:z.string().optional(),status:z.enum(["planned","approved","generated"]).default("planned")});
 const storyPage=z.object({id:z.string(),section:z.string(),start:z.string().regex(/^p\d{3}$/),end:z.string().regex(/^p\d{3}$/),mode:z.enum(["illustrated","add_detail","student"]),illustration:storyIllustration.optional(),no_generation:z.boolean().optional(),no_generation_reason:z.string().optional(),frame_required:z.boolean().optional(),frame_prompt:z.string().optional(),characters_met:z.array(z.object({id:z.string(),name:z.string(),description:z.string(),offstage:z.boolean().optional()})).default([]),restatements:z.record(z.string(),z.string()).default({}),
  // A bridge page summarizes skipped paragraphs (start..end) in our words, clearly labeled; the original text stays one tap away.
- bridge:z.object({summary:z.string().min(1)}).optional()});
+ bridge:z.object({summary:z.string().min(1)}).optional(),
+ // A note students see once before this page's text (on a bridge, before its full text): for example, a warning
+ // about hurtful content in the original.
+ content_note:z.string().optional()});
 // version: bump whenever pages, sections, or clues change. Saved progress from any other version (or saved before
 // versions existed, read as "1") is reset for that story so old answers can never open new gates.
-const storybook=z.object({version:z.string().default("1"),format:z.enum(["prose","script"]).default("prose"),review_status:z.enum(["draft","reviewed"]),spanish_status:z.enum(["draft","reviewed"]),art_style:z.string().optional(),sections:z.array(z.object({id:z.string(),title:z.string()})).min(1),pages:z.array(storyPage).min(1),vocabulary:z.array(z.object({term:z.string(),forms:z.array(z.string()).default([]),part_of_speech:z.string().optional(),definition:z.string(),es_term:z.string().optional(),es_definition:z.string().optional()})).default([])});
+// ai_exclude: paragraphs AI characters never receive (for example, racist caricature in the original text).
+const storybook=z.object({version:z.string().default("1"),ai_exclude:z.array(z.string().regex(/^p\d{3}$/)).default([]),format:z.enum(["prose","script"]).default("prose"),review_status:z.enum(["draft","reviewed"]),spanish_status:z.enum(["draft","reviewed"]),art_style:z.string().optional(),sections:z.array(z.object({id:z.string(),title:z.string()})).min(1),pages:z.array(storyPage).min(1),vocabulary:z.array(z.object({term:z.string(),forms:z.array(z.string()).default([]),part_of_speech:z.string().optional(),definition:z.string(),es_term:z.string().optional(),es_definition:z.string().optional()})).default([])});
 const roleSkill=z.object({name:z.string(),description:z.string()});
 const role=z.object({id:z.string(),name:z.string(),description:z.string(),goal:z.string(),dok_focus:z.string(),briefing:z.string().min(1),what_you_will_do:z.array(z.string()).length(3),skills:z.array(roleSkill).min(3).max(4),final_task:z.string().min(1)});
 export const WorldPackSchema = z.object({
