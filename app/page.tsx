@@ -24,16 +24,21 @@ import { WaitlistPage } from "./waitlist-page";
 import type { PlanId } from "@/config/pricing";
 import { applyProgress, loadClassProgress, useClassProgressSync } from "./class-progress";
 import { TeacherDemo } from "./teacher-demo";
+import { TeacherHub } from "./teacher-hub";
+import { MessageCircleHeart } from "lucide-react";
+import { BookCover, BookSpread, saveSide, savedSide, type Side } from "./book-home";
 import { ClassBar, ClassHome, ClassLive, type ClassAuth } from "./class-student";
 import { LessonPlayer, MiniLessonLibrary, type LessonRecord } from "./mini-lessons";
-import { Landing, Join, Owner, Pricing, Student, Teacher, Waitlist, PickStory, ChooseLevel } from "./ui";
+import { Join, Owner, Pricing, Student, Teacher, Waitlist, PickStory, ChooseLevel } from "./ui";
 
-type View = "landing" | "story" | "level" | "play" | "teacher" | "waitlist" | "pricing" | "owner" | "join" | "lessons" | "classroom" | "classhome" | "classlive" | "approach" | "tutorial" | "shelf" | "teacherdemo";
+type View = "landing" | "story" | "level" | "play" | "teacher" | "waitlist" | "pricing" | "owner" | "join" | "lessons" | "classroom" | "classhome" | "classlive" | "approach" | "tutorial" | "shelf" | "teacherdemo" | "book" | "hub";
 // Pricing and waitlist stay public; the owner screen has its own magic-link check.
 // Class sessions sit outside the demo gate: the class code is their gate, so class students never receive the demo cookie or its device ID.
-const ungatedViews: View[] = ["teacherdemo", "tutorial", "approach", "pricing", "waitlist", "owner", "join", "classroom"];
+const ungatedViews: View[] = ["teacherdemo", "hub", "tutorial", "approach", "pricing", "waitlist", "owner", "join", "classroom"];
 const classViews: View[] = ["shelf", "play", "classhome", "classlive"];
-const demoViews: View[] = ["shelf", "story", "level", "play", "teacher", "teacherdemo", "lessons"];
+const demoViews: View[] = ["shelf", "story", "level", "play", "teacher", "teacherdemo", "hub", "lessons"];
+// The teacher and parent side of the site; everything else is the student side. The top bar's switch flips between them.
+const teacherSideViews: View[] = ["hub", "teacherdemo", "teacher", "classroom", "pricing", "approach", "waitlist"];
 export type Demo = {
   id:string;created: number; preset: string; worldId:string; grade:number|null; role: string; scene: number; events: string[];
   flags: string[]; messages: { q: string; a: string }[]; narrative: string;
@@ -99,6 +104,9 @@ export default function Home() {
   const [access, setAccess] = useState<"checking" | "granted" | "locked">("checking");
   // The feedback and waitlist form, opened from the banner, the reader, the pricing page, and the waitlist page.
   const [form, setForm] = useState<FormOpen>(null);
+  // The side of the home book this visitor chose last (this browser only). Returning visitors skip the closed cover.
+  const [side, setSideState] = useState<Side | null>(null);
+  const chooseSide = (next: Side) => { saveSide(next); setSideState(next); };
   // A ?ref= value in the link (for example ?ref=fellows) is kept for the whole visit and saved with every entry.
   useEffect(() => { rememberRef(); }, []);
   const [activeLesson, setActiveLesson] = useState("");
@@ -184,6 +192,8 @@ export default function Home() {
       }
     } catch { sessionStorage.removeItem("itt-active-sandbox-id"); }
     const params = new URLSearchParams(window.location.search);
+    const lastSide = savedSide(); setSideState(lastSide);
+    const activeId = sessionStorage.getItem("itt-active-sandbox-id"), restored = !!(activeId && sessionStorage.getItem(`itt-sandbox-view-${activeId}`));
     const join=params.get("join");
     if (join) { setJoinCode(join.toUpperCase()); setView("join"); window.history.replaceState({}, "", "/"); }
     else if (params.get("teacher") === "1") {
@@ -197,12 +207,12 @@ export default function Home() {
       });
     } else if (params.get("owner") === "1") {
       setView("owner"); getBrowserSupabase()?.auth.getSession().then(({ data }) => { if (data.session) loadOwnerWaitlist(); });
-    }
+    } else if (lastSide && !restored) setView("book");
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     if (["shelf","story","level","play","teacher","lessons","classhome","classlive"].includes(view)) {sessionStorage.setItem("itt-active-sandbox-id",demo.id);sessionStorage.setItem(`itt-sandbox-${demo.id}`,JSON.stringify(demo));sessionStorage.setItem(`itt-sandbox-view-${demo.id}`,view);if(demo.resumePhrase)localStorage.setItem(`itt-resume-${demo.resumePhrase}`,JSON.stringify(demo));}
-    else if(view==="landing")sessionStorage.removeItem(`itt-sandbox-view-${demo.id}`);
+    else if(view==="landing"||view==="book")sessionStorage.removeItem(`itt-sandbox-view-${demo.id}`);
     const remaining=demo.created+86_400_000-Date.now();
     if(remaining<=0){sessionStorage.removeItem(`itt-sandbox-${demo.id}`);return}
     const timer=window.setTimeout(()=>{sessionStorage.removeItem(`itt-sandbox-${demo.id}`);sessionStorage.removeItem("itt-active-sandbox-id");setDemo(newDemo("student_first_visit"));setView("landing")},remaining);
@@ -251,16 +261,19 @@ export default function Home() {
   if (gated) return <main className="min-h-[calc(100vh/var(--page-zoom,1))] bg-[#F6F0E3] text-[#2A2620]"><DisplaySettings/>{access === "locked" && <AccessGate brand={brand} onGranted={() => setAccess("granted")} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onJoinClass={() => setView("join")} onApproach={() => setView("approach")} />}</main>;
 
   return <main className="min-h-[calc(100vh/var(--page-zoom,1))] bg-[#F6F0E3] text-[#2A2620]">
-    {view !== "landing" && <header className="sticky top-0 z-30 flex min-h-[58px] flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-white/10 bg-[#F6F0E3]/95 px-5 py-2 md:px-10">
-      <button onClick={() => setView("landing")} className="flex items-center gap-2"><Wordmark className="text-xl"/><span className="hidden text-xs text-white/45 sm:block">by {brand.organization}</span></button>
+    <header className="sticky top-0 z-30 flex min-h-[58px] flex-wrap items-center justify-between gap-x-2 gap-y-2 border-b border-white/10 bg-[#F6F0E3]/95 px-3 py-2 sm:gap-x-3 sm:px-5 md:px-10">
+      <button onClick={() => setView(side ? "book" : "landing")} aria-label="TextLab home" className="flex items-center gap-2"><Wordmark className="text-xl"/><span className="hidden text-xs text-white/45 sm:block">by {brand.organization}</span></button>
       {null}
-      <div className="ml-auto flex flex-wrap items-center justify-end gap-2">{(["story","level","play","classhome","classlive"] as View[]).includes(view)&&<HeaderLanguage value={demo.homeLanguage??null} onChange={lang=>setDemo(d=>({...d,homeLanguage:lang}))}/>}<DisplaySettings placement="header"/>
+      <div className="ml-auto flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">{(["story","level","play","classhome","classlive"] as View[]).includes(view)&&<HeaderLanguage value={demo.homeLanguage??null} onChange={lang=>setDemo(d=>({...d,homeLanguage:lang}))}/>}<DisplaySettings placement="header"/>
       {classSession && demo.classAuth ? <button onClick={() => setView("classhome")} className={`rounded-full border px-4 py-2 text-xs ${view === "classhome" ? "border-[#A0472C] bg-[#A0472C] text-[#FFFDF8]" : "border-white/25 text-white/80"}`}>My class</button> : view === "classroom" ? null : <div className="flex gap-1 rounded-full border border-white/15 p-1 text-[11px]">
-        {view === "teacherdemo" ? <button onClick={openShelf} className="rounded-full px-4 py-1.5 font-semibold text-[#8A3B23]">Switch to student view</button> : <button onClick={() => setView("teacherdemo")} className="rounded-full px-4 py-1.5 font-semibold text-[#8A3B23]">Switch to teacher view</button>}
-      </div>}</div>
-    </header>}
+        {teacherSideViews.includes(view) ? <button onClick={() => { chooseSide("student"); openShelf(); }} className="rounded-full px-3 py-1.5 font-semibold text-[#8A3B23] sm:px-4"><span className="sm:hidden">Student view</span><span className="hidden sm:inline">Switch to student view</span></button> : <button onClick={() => { chooseSide("teacher"); setView("hub"); }} className="rounded-full px-3 py-1.5 font-semibold text-[#8A3B23] sm:px-4"><span className="sm:hidden">Teacher view</span><span className="hidden sm:inline">Switch to teacher view</span></button>}
+      </div>}
+      {!classSession && <button onClick={() => setForm({ step: 1, join: false })} className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-[#F4E1D6] px-3 text-[12px] font-semibold text-[#8A3B23] hover:bg-[#EDD3C4]"><MessageCircleHeart size={15}/><span className="sm:hidden">Feedback</span><span className="hidden sm:inline">Give feedback</span></button>}</div>
+    </header>
     {demoViews.includes(view) && !classSession && <FeedbackBanner onOpen={() => setForm({ step: 1, join: false })} />}
-    {view === "landing" && <Landing brand={brand} onStart={tryDemo} onKeepReading={keepReading} onTeacher={() => setView("teacherdemo")} onRole={startRole} onJoinCode={(code:string) => { setJoinCode(code); setView("join"); }} onPreset={start} onJoin={() => setView("join")} onWaitlist={() => setView("waitlist")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} onPricing={() => setView("pricing")} onOwner={() => setView("owner")} onClassroom={() => setView("classroom")} onApproach={() => setView("approach")} />}
+    {view === "landing" && <BookCover onOpen={() => setView("book")} />}
+    {view === "book" && <BookSpread lastSide={side} onCover={() => setView("landing")} onStartReading={() => { chooseSide("student"); openShelf(); }} onJoinCode={code => { chooseSide("student"); setJoinCode(code); setView("join"); }} onTeacher={() => { chooseSide("teacher"); setView("hub"); }} onApproach={() => setView("approach")} onPricing={() => setView("pricing")} />}
+    {view === "hub" && <TeacherHub onSignIn={() => setView("classroom")} onPricing={() => setView("pricing")} onApproach={() => setView("approach")} onKeepReading={keepReading} />}
     {view === "lessons" && <section className="mx-auto max-w-7xl px-5 py-10 md:px-10 md:py-14">{activeLesson ? <LessonPlayer lessonId={activeLesson} grade={demo.grade} onClose={() => { setActiveLesson(""); window.scrollTo(0, 0); }} onFinish={(id, record) => setDemo(d => ({ ...d, lessonsDone: { ...(d.lessonsDone ?? {}), [id]: record } }))} /> : <><button onClick={() => backToPreviousScreen(() => setView("landing"))} className="mb-8 inline-flex items-center gap-2 text-xs text-white/55 hover:text-white">← Back</button><h1 className="sr-only">Mini lessons</h1><MiniLessonLibrary grade={demo.grade} done={demo.lessonsDone ?? {}} onOpen={id => { setActiveLesson(id); window.scrollTo(0, 0); }} /><button onClick={() => setView("story")} className="gold-button mt-10 px-6 py-4 text-sm">Ready? Pick a story →</button></>}</section>}
     {view === "story" && <PickStory onLessons={() => { setActiveLesson(""); setView("lessons"); }} onBack={()=>backToPreviousScreen(()=>setView("landing"))} onPick={chooseStory} initialCourse={demo.course??"all"} />}
     {view === "level" && <ChooseLevel worldId={demo.worldId} course={demo.course??"all"} onBack={()=>backToPreviousScreen(()=>setView("story"))} onChoose={chooseGrade} />}

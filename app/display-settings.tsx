@@ -23,6 +23,6 @@ export function DisplaySettings({placement="floating"}:{placement?:"floating"|"h
    <fieldset className="mt-4"><legend className="text-base">Motion</legend><div className="mt-2 flex gap-2">{([["standard","Standard"],["reduced","Less motion"]] as const).map(([v,l])=><button key={v} aria-pressed={settings.motion===v} onClick={()=>change({motion:v})} className={option(settings.motion===v)}>{l}</button>)}</div></fieldset>
    <button onClick={()=>change(defaults)} className="mt-4 text-sm text-white/75 underline underline-offset-4">Reset to standard</button>
   </div>}
-  <button onClick={()=>setOpen(o=>!o)} aria-expanded={open} aria-label="Page size and display settings" className={`flex items-center gap-2 rounded-full border border-white/30 bg-[#FFFDF8] text-[#2A2620] hover:border-[#A0472C] ${placement==="floating"?"min-h-12 px-4 py-2 text-sm shadow-lg":"min-h-9 px-3 py-1.5 text-[11px]"}`}><Type size={placement==="floating"?16:13} aria-hidden="true"/> {placement==="floating"?"Page size & display":"Page size"}</button>
+  <button onClick={()=>setOpen(o=>!o)} aria-expanded={open} aria-label="Page size and display settings" className={`flex items-center gap-2 rounded-full border border-white/30 bg-[#FFFDF8] text-[#2A2620] hover:border-[#A0472C] ${placement==="floating"?"min-h-12 px-4 py-2 text-sm shadow-lg":"min-h-9 px-3 py-1.5 text-[11px]"}`}><Type size={placement==="floating"?16:13} aria-hidden="true"/> {placement==="floating"?"Page size & display":<span className="hidden sm:inline">Page size</span>}</button>
  </div>;
 }

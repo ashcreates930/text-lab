@@ -140,7 +140,7 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
  const studentImage=frame?.image;
  const art=page.illustration?.src||studentImage;
 
- if(!preview&&!prog.briefed)return <Shell rootRef={rootRef} title={world.title}><Briefing world={world} role={role} onStart={()=>setProg(p=>({...p,briefed:true,page:p.page??0}))} onExit={onExit}/></Shell>;
+ if(!preview&&!prog.briefed)return <Shell rootRef={rootRef} title={world.title}><Briefing world={world} role={role} onStart={roleId=>{if(roleId!==role.id)setDemo(d=>({...d,role:roleId}));setProg(p=>({...p,briefed:true,page:p.page??0}))}} onExit={onExit}/></Shell>;
 
  const textPanel=(extra="")=><div className={`flex min-h-0 flex-col ${extra}`}>
   {/* The part counter sits in a fixed-width slot, always reserved, so the title wraps the same way on every screen of a
@@ -240,20 +240,29 @@ function Picture({bridge,page,src,isStudent,layout,onFrame,framed,skipped,onSkip
 
 function SkipButton({onSkip}:{onSkip:()=>void}){return <button type="button" onClick={onSkip} className="min-h-11 rounded-full bg-[#FFFDF8]/90 px-5 text-[15px] font-semibold text-[#6B6457] shadow">Skip</button>}
 
-// One-screen case briefing before page 1: the student's role, why they're here, and what to look for.
-function Briefing({world,role,onStart,onExit}:{world:WorldPack;role:WorldPack["roles"][number];onStart:()=>void;onExit:()=>void}){
+// One-screen case briefing before page 1. The student chooses a role (Investigator, Attorney, Reporter...) here; the
+// briefing below the choices follows the role picked, and Start reading opens page 1 as that role.
+function Briefing({world,role,onStart,onExit}:{world:WorldPack;role:WorldPack["roles"][number];onStart:(roleId:string)=>void;onExit:()=>void}){
+ const [picked,setPicked]=useState(role.id);
+ const chosen=world.roles.find(r=>r.id===picked)??role;
  return <div className="relative min-h-0 flex-1 overflow-hidden">
   <div className="sb-placeholder absolute inset-0" aria-hidden/>
-  <div className="relative mx-auto flex h-full max-w-xl flex-col justify-center p-4">
-   <div className="flex max-h-full min-h-0 flex-col rounded-3xl bg-[#FFFDF8]/95 p-6 shadow-[0_10px_40px_-14px_rgba(42,38,32,.45)] md:p-8">
+  <div className="relative mx-auto flex h-full max-w-2xl flex-col justify-center p-3 md:p-4">
+   <div className="flex max-h-full min-h-0 flex-col rounded-3xl bg-[#FFFDF8]/95 p-5 shadow-[0_10px_40px_-14px_rgba(42,38,32,.45)] md:p-7">
     <div className="min-h-0 overflow-y-auto">
      <p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Case briefing · {world.title}</p>
-     <h2 className="mt-1 text-[28px] font-bold leading-tight">You are the {role.name}</h2>
-     <p className="mt-4 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Why you're here</p><p className="mt-1 text-[17px] leading-7">{role.briefing}</p><HomeText text={role.briefing}/>
-     <p className="mt-4 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">What to look for</p><p className="mt-1 text-[17px] leading-7">{role.goal}</p><HomeText text={role.goal}/>
-     <ul className="mt-4 space-y-1.5 text-[15px] leading-6 text-[#4A4438]"><li>• Read one page at a time. Swipe, use the arrow keys, or tap the arrows.</li><li>• When a page has a clue, prove it with a line from the story to turn the page.</li><li>• Tap an underlined word for help. Use Say it again or Who's who any time.</li></ul>
+     <fieldset className="mt-1">
+      <legend className="text-[26px] font-bold leading-tight">Choose your role</legend>
+      <div className="mt-3 grid gap-2 sm:grid-cols-3">{world.roles.map(r=><label key={r.id} className={`flex cursor-pointer flex-col rounded-2xl border-2 p-3 transition ${picked===r.id?"border-[#A0472C] bg-[#F4E1D6]/70":"border-[#E4DCCB] bg-white hover:border-[#C9B9A0]"}`}>
+       <input type="radio" name="sb-role" value={r.id} checked={picked===r.id} onChange={()=>setPicked(r.id)} className="sr-only"/>
+       <span className="text-[17px] font-bold leading-snug">{r.name}</span><span className="mt-0.5 text-[14px] leading-5 text-[#4A4438]">{r.description}</span>
+      </label>)}</div>
+     </fieldset>
+     <p className="mt-4 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Why you're here</p><p className="mt-1 text-[16px] leading-6">{chosen.briefing}</p><HomeText text={chosen.briefing}/>
+     <p className="mt-3 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">What to look for</p><p className="mt-1 text-[16px] leading-6">{chosen.goal}</p><HomeText text={chosen.goal}/>
+     <p className="mt-3 text-[14px] leading-6 text-[#4A4438]">Read one page at a time. Prove each clue with a line from the story to turn the page. Tap an underlined word for help.</p>
     </div>
-    <div className="mt-6 flex shrink-0 flex-wrap items-center justify-between gap-3"><button type="button" onClick={onExit} className="min-h-11 text-[15px] text-[#6B6457] underline-offset-4 hover:underline">Choose another story</button><button type="button" autoFocus onClick={onStart} className="case-primary">Start reading <ArrowRight size={18}/></button></div>
+    <div className="mt-4 flex shrink-0 flex-wrap items-center justify-between gap-3"><button type="button" onClick={onExit} className="min-h-11 text-[15px] text-[#6B6457] underline-offset-4 hover:underline">Choose another story</button><button type="button" onClick={()=>onStart(chosen.id)} className="case-primary">Start reading as {chosen.name.split(" ").pop()} <ArrowRight size={18}/></button></div>
    </div>
   </div>
  </div>;

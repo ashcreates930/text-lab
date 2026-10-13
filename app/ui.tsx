@@ -1,5 +1,4 @@
 "use client";
-import { HomeTop } from "./home";
 import { DisplaySettings } from "./display-settings";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, BookOpen, Check, ChevronDown, Download, Headphones, Info, Lightbulb, ShieldAlert, Waypoints } from "lucide-react";
@@ -18,64 +17,6 @@ import { courseFilters, courseFitsBand, courseGrades, courseLabels, gradesFor, t
 function saveText(text: string, name: string) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: "text/csv" })); a.download = name; a.click(); }
 
 // "Have a class code?" in the top bar takes a student straight to joining with the code filled in.
-function ClassCodeField({onJoinCode,className=""}:{onJoinCode:(code:string)=>void;className?:string}){
-  const [code,setCode]=useState("");
-  return <form onSubmit={e=>{e.preventDefault();if(code.trim())onJoinCode(code.trim().toUpperCase())}} className={`items-center gap-2 ${className}`} aria-label="Join your class">
-    <label htmlFor={`class-code-${className}`} className="sr-only">Have a class code?</label>
-    <input id={`class-code-${className}`} value={code} onChange={e=>setCode(e.target.value)} placeholder="Class code" autoCapitalize="characters" autoComplete="off" maxLength={24} className="h-11 w-full min-w-0 rounded-full border border-[#E4DCCB] bg-white px-4 text-[15px] uppercase placeholder:normal-case placeholder:text-[#6B6457] outline-none focus:border-[#A0472C] md:w-48"/>
-    <button type="submit" disabled={!code.trim()} className="h-11 shrink-0 rounded-full bg-[#2A2620] px-4 text-[15px] font-semibold text-white disabled:opacity-40">Join</button>
-  </form>;
-}
-
-export function Landing({ brand, onStart, onPreset, onJoin, onWaitlist, onPricing, onLessons, onClassroom, onApproach, onKeepReading, onTeacher, onRole, onJoinCode }: any) {
-  const stories=[["The Legend of Sleepy Hollow","Washington Irving","Grades 6 to 8"],["The Tell-Tale Heart","Edgar Allan Poe","Grades 8 to 12"],["Trifles","Susan Glaspell","Grades 9 to 11"]];
-  const steps=[["01","Open a clue","Students step into a scene from the story and pick a clue to examine."],["02","Question, then prove","They ask a character what happened. Characters can be wrong, so students tap the line in the text that backs them up or proves them wrong."],["03","Close the case","Every proven clue fills the evidence meter and moves them up the detective ranks. The finished case file is ready to print."]];
-  const audiences:[string,string,string,string[],[string,()=>void]][]=[
-    ["STUDENTS","Grades 6 to 12","Close reading that feels like solving a case, not filling out a worksheet.",["Short scenes, one clue at a time","Home-language help in Español, Kreyòl ayisyen, Português and Tiếng Việt","No email or password: a nickname is enough"],["Try a case",onStart]],
-    ["TEACHERS","English and ELA classrooms","One class link and your students are reading in under a minute.",["Share a link or QR code; students type a nickname and start","See which evidence came from the story and which came from an AI character","Run a live class discussion and assign five-minute mini lessons","Aligned to Florida B.E.S.T., AP and Cambridge AICE"],["Teacher sign in",onClassroom]],
-    ["SCHOOLS AND DISTRICTS","AI literacy inside ELA","Students learn that AI is a resource, not the source, by checking every AI answer against the text.",["School and district plans with an admin view","Professional development for teachers","Built by a practicing English teacher"],["See plans",onPricing]],
-  ];
-  return <div className="case-ui">
-    <nav className="flex h-[70px] items-center justify-between px-5 md:px-14"><a className="text-2xl" href="#top"><Wordmark/></a><div className="hidden items-center gap-7 text-[14px] font-medium text-[#4A4438] lg:flex"><a href="#how" className="hover:text-[#A0472C]">How it works</a><a href="#who" className="hover:text-[#A0472C]">Who it's for</a><button onClick={onLessons} className="hover:text-[#A0472C]">Mini lessons</button><button onClick={onPricing} className="hover:text-[#A0472C]">Pricing</button><button onClick={onClassroom} className="hover:text-[#A0472C]">Teacher sign in</button></div><div className="flex items-center gap-3"><div className="hidden md:block"><DisplaySettings placement="header"/></div><ClassCodeField onJoinCode={onJoinCode} className="hidden md:flex"/><button className="case-primary !min-h-11 shrink-0 whitespace-nowrap !px-5 !text-[15px]" onClick={onStart}>Try the demo <ArrowRight size={16}/></button></div></nav>
-    <div className="flex items-center gap-2 px-4 pb-2 md:hidden"><ClassCodeField onJoinCode={onJoinCode} className="flex min-w-0 flex-1"/><DisplaySettings placement="header"/></div>
-
-    <HomeTop onKeepReading={onKeepReading} onStudent={onStart} onTeacher={onTeacher} onRole={onRole}/>
-
-
-    <section id="how" className="border-t border-[#E4DCCB] bg-[#FFFDF8] px-5 py-16 md:px-14 md:py-20"><div className="mx-auto max-w-7xl">
-      <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">How a case works</p>
-      <h2 className="serif mt-3 max-w-3xl text-[34px] leading-tight md:text-[44px]">AI can summarize any book. Text Lab makes students prove what's true.</h2>
-      <ol className="mt-10 grid gap-6 md:grid-cols-3">{steps.map(([n,t,d])=><li key={n} className="rounded-3xl border border-[#E4DCCB] p-6"><span className="grid h-10 w-10 place-items-center rounded-full bg-[#A0472C] text-[15px] font-bold text-white">{n}</span><h3 className="mt-5 text-[21px] font-bold">{t}</h3><p className="mt-2 text-[16px] leading-7 text-[#4A4438]">{d}</p></li>)}</ol>
-    </div></section>
-
-    <section id="who" className="px-5 py-16 md:px-14 md:py-20"><div className="mx-auto max-w-7xl">
-      <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Who it's for</p>
-      <h2 className="serif mt-3 text-[34px] leading-tight md:text-[44px]">Built for the classroom, from the classroom.</h2>
-      <div className="mt-10 grid gap-6 lg:grid-cols-3">{audiences.map(([eyebrow,sub,lead,points,[cta,go]])=><div key={eyebrow} className="flex flex-col rounded-3xl bg-[#FFFDF8] p-7 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
-        <p className="text-[13px] font-bold tracking-[.12em] text-[#8A3B23]">{eyebrow}</p><p className="mt-1 text-[15px] text-[#6B6457]">{sub}</p>
-        <h3 className="mt-4 text-[22px] font-bold leading-snug">{lead}</h3>
-        <ul className="mt-5 flex-1 space-y-3">{points.map(pt=><li key={pt} className="flex gap-3 text-[16px] leading-6 text-[#4A4438]"><Check size={18} className="mt-0.5 shrink-0 text-[#A0472C]"/>{pt}</li>)}</ul>
-        <button onClick={go} className="case-secondary mt-7 w-fit">{cta} <ArrowRight size={16}/></button>
-      </div>)}</div>
-      <p className="mt-6 text-[15px] text-[#6B6457]">Teachers: want to see the data first? <button onClick={onTeacher} className="font-semibold text-[#8A3B23] underline underline-offset-4">Open a sample class report.</button></p>
-    </div></section>
-
-    <section className="border-t border-[#E4DCCB] bg-[#FFFDF8] px-5 py-16 md:px-14"><div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1fr_1.2fr] md:items-center">
-      <div><p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Ready now</p><h2 className="serif mt-3 text-[34px] leading-tight">Three cases to open today. Twenty-four more on the way.</h2><p className="mt-4 text-[16px] leading-7 text-[#4A4438]">Classic stories from the texts teachers already assign, each built as a four-scene case with clues tied to the original text.</p></div>
-      <ul className="grid gap-3">{stories.map(([t,a,g])=><li key={t}><button onClick={onStart} className="flex w-full items-center justify-between gap-4 rounded-2xl border border-[#E4DCCB] bg-[#F6F0E3] px-5 py-4 text-left transition hover:border-[#A0472C]"><span><span className="block text-[18px] font-bold">{t}</span><span className="text-[15px] text-[#6B6457]">{a} · {g}</span></span><ArrowRight size={18} className="shrink-0 text-[#A0472C]"/></button></li>)}</ul>
-    </div></section>
-
-    <section className="px-5 py-16 md:px-14"><div className="mx-auto max-w-3xl text-center">
-      <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Who built this</p>
-      <p className="serif mt-3 text-[28px] leading-snug md:text-[32px]">Built by Ashley Hodges, a high school English teacher on Florida's Treasure Coast and the founder of {brand.organization}.</p>
-      <p className="mt-4 text-[16px] leading-7 text-[#4A4438]">Every case is built from texts teachers already assign, and every clue is tied to a passage in the original story.</p>
-      <div className="mt-8 flex flex-wrap justify-center gap-3"><button onClick={onStart} className="case-primary">Try a case now <ArrowRight size={18}/></button><button onClick={onApproach} className="case-secondary">Read our approach</button></div>
-    </div></section>
-
-    <footer className="flex flex-wrap justify-between gap-4 border-t border-[#E4DCCB] px-5 py-7 text-[13px] text-[#6B6457] md:px-14"><span>{brand.organization} · {brand.principle}.</span><div className="flex flex-wrap gap-5"><button onClick={onApproach}>Our approach</button><button onClick={onPricing}>Pricing</button><button onClick={onWaitlist}>Join the waitlist</button></div></footer>
-  </div>;
-}
-
 type WorldSummary = {courses?:Course[];id:string;title:string;author:string;hook:string;grade_band:{min:number;max:number};estimated_minutes:number;cover_image:string;status:"playable"|"preview"|"coming_soon";teacher_preview_required:boolean;content_notes:string;available:boolean};
 type CourseFilterId=(typeof courseFilters)[number]["id"];
 const gradeRanges=[["6-8","Grades 6 to 8",6,8],["9-10","Grades 9 to 10",9,10],["11-12","Grades 11 to 12",11,12]] as const;
