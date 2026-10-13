@@ -2030,6 +2030,7 @@
     ]
   },
   "storybook": {
+    "version": "2",
     "format": "prose",
     "review_status": "draft",
     "spanish_status": "draft",

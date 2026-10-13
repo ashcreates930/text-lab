@@ -2156,6 +2156,7 @@
     ]
   },
   "storybook": {
+    "version": "2",
     "format": "script",
     "review_status": "draft",
     "spanish_status": "draft",

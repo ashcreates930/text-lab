@@ -11,6 +11,7 @@ const readerProgress = z.object({
   furthest: z.number().int().min(0).max(500).optional(),
   briefed: z.boolean().optional(),
   sections: z.array(id).max(50).optional(),
+  version: z.string().max(40).optional(),
   skippedFrames: z.array(id).max(200).optional(),
 });
 const answer = z.object({

@@ -5,7 +5,7 @@ import {useEffect,useId,useRef,useState} from "react";
 import {ArrowLeft,ArrowRight,Check,Lock,MessageCircle,Quote,X} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
-import {isSpeakerLine,pageUnits,quoteInText,scriptPieces,splitSentences,type StoryPage} from "@/lib/storybook";
+import {frameKey,isSpeakerLine,pageUnits,quoteInText,scriptPieces,splitSentences,type StoryPage} from "@/lib/storybook";
 import {CLASS_AI_OFF,evidenceLabel,isDone,useClueSteps,type Clue,type Scene} from "../clue-steps";
 import {recordFactCheck} from "../case-game";
 import type {Demo} from "../page";
@@ -115,13 +115,13 @@ function ClueSteps({world,scene,clue,roleId,demo,setDemo,passages,reading,onBack
 
 // Picture frames. Pages with a planned picture ask for one missing detail; later pages ask the student to describe the
 // whole picture. Both need a supporting quote from this page. AI checking and image creation arrive in the next build.
-export function FrameCard({page,pageText,demo,setDemo,onSkip,onContinue,lastPage}:{page:StoryPage;pageText:string;demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onSkip:()=>void;onContinue:()=>void;lastPage:boolean}){
+export function FrameCard({worldId,page,pageText,demo,setDemo,onSkip,onContinue,lastPage}:{worldId:string;page:StoryPage;pageText:string;demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onSkip:()=>void;onContinue:()=>void;lastPage:boolean}){
  const kind=page.mode==="add_detail"?"add_detail":"student";
- const saved=demo.storyFrames?.[page.id];
+ const key=frameKey(worldId,page.id),saved=demo.storyFrames?.[key];
  const [description,setDescription]=useState(saved?.description??""),[quote,setQuote]=useState(saved?.quote??""),[status,setStatus]=useState("");
  const quoteOk=quote.trim()?quoteInText(quote,pageText):null;
  const ready=description.trim().length>=8&&quoteOk===true;
- function save(){if(!ready)return;setDemo(d=>({...d,storyFrames:{...(d.storyFrames??{}),[page.id]:{...(d.storyFrames?.[page.id]??{}),kind,description:description.trim(),quote:quote.trim(),saved_at:new Date().toISOString()}}}));setStatus("Saved. You can change it any time.")}
+ function save(){if(!ready)return;setDemo(d=>({...d,storyFrames:{...(d.storyFrames??{}),[key]:{...(d.storyFrames?.[key]??{}),kind,description:description.trim(),quote:quote.trim(),saved_at:new Date().toISOString()}}}));setStatus("Saved. You can change it any time.")}
  return <div className="space-y-4">
   <p className={`w-fit rounded-full px-3 py-1 text-[13px] font-semibold uppercase tracking-wide ${page.frame_required?"bg-[#A0472C] text-white":"bg-[#EFE8D8] text-[#6B6457]"}`}>{page.frame_required?"Needed to turn the page":"Optional"}</p>
   <p className="text-[17px] leading-7">{kind==="add_detail"?"Something the story describes is missing from this picture. Add one detail, then copy the words from the page that show it.":`${page.frame_prompt??"Picture this page in your mind. Describe what you see: who is there, where they are, what is happening, the light and the colors."} Then copy the words from the page that support it.`}</p>

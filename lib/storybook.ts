@@ -41,6 +41,56 @@ export function cluesByPage(world: WorldPack): { clue: Clue; scene: WorldPack["s
   return out;
 }
 
+// Picture frames are saved per story and page ("sleepy-hollow:page-04"), so one story's frame never counts for another.
+export const frameKey = (worldId: string, pageId: string) => `${worldId}:${pageId}`;
+
+// The gate in one place: the first page whose clues are not all proven or whose required frame is missing, or -1.
+export function firstLockedPage(world: WorldPack, clueDone: (id: string) => boolean, frameSaved: (key: string) => boolean) {
+  const pages = world.storybook?.pages ?? [];
+  const gates = cluesByPage(world);
+  return pages.findIndex((p, i) => !gates[i].every(({ clue }) => clueDone(clue.id)) || (!!p.frame_required && !frameSaved(frameKey(world.id, p.id))));
+}
+
+// Saved reading work for one story: reader progress, clue answers, evidence, and frames.
+type Saved = {
+  readerProgress?: Record<string, { version?: string } & Record<string, unknown>>;
+  artifactAnswers?: Record<string, unknown>;
+  savedTextEvidence?: { artifactId?: string }[];
+  storyFrames?: Record<string, unknown>;
+  submitted?: boolean;
+  worldId?: string;
+};
+// Brings saved work in line with the story's current version. Work saved under another version, or saved before
+// versions existed (read as "1"), is cleared for this story only, so old answers can't make clues look proven. Frames
+// saved under the old page-only keys are moved to story keys when the version still matches.
+export function reconcileSaved<T extends Saved>(world: WorldPack, saved: T): T {
+  const book = world.storybook; if (!book) return saved;
+  const current = book.version ?? "1";
+  const clueIds = new Set(world.scenes.flatMap((s) => s.artifacts.map((a) => a.id)));
+  const pageIds = book.pages.map((p) => p.id);
+  const prog = saved.readerProgress?.[world.id];
+  const hasAnswers = Object.keys(saved.artifactAnswers ?? {}).some((id) => clueIds.has(id));
+  const hasWork = !!prog || hasAnswers;
+  const savedVersion = prog?.version ?? (hasWork ? "1" : current);
+  if (savedVersion === current) {
+    // Already stamped with this version: nothing to do (new saves never use page-only frame keys).
+    if (prog?.version === current) return saved;
+    const frames = { ...(saved.storyFrames ?? {}) };
+    if (hasWork) for (const id of pageIds) if (frames[id] && !frames[frameKey(world.id, id)]) frames[frameKey(world.id, id)] = frames[id];
+    return { ...saved, storyFrames: frames, readerProgress: { ...(saved.readerProgress ?? {}), [world.id]: { ...(prog ?? {}), version: current } } };
+  }
+  const answers = Object.fromEntries(Object.entries(saved.artifactAnswers ?? {}).filter(([id]) => !clueIds.has(id)));
+  const frames = Object.fromEntries(Object.entries(saved.storyFrames ?? {}).filter(([k]) => !k.startsWith(`${world.id}:`) && !pageIds.includes(k)));
+  return {
+    ...saved,
+    artifactAnswers: answers,
+    savedTextEvidence: (saved.savedTextEvidence ?? []).filter((e) => !e.artifactId || !clueIds.has(e.artifactId)),
+    storyFrames: frames,
+    readerProgress: { ...(saved.readerProgress ?? {}), [world.id]: { version: current } },
+    ...(saved.worldId === world.id ? { submitted: false } : {}),
+  };
+}
+
 // Forgiving quote matching: ignores case, punctuation, curly vs. straight quotes, dashes, and extra spaces,
 // and accepts any run of words from the text (part of a sentence is fine).
 export function normalizeQuote(text: string) {

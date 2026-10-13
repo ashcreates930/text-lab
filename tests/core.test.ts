@@ -272,6 +272,45 @@ test("storybook AI characters are met on a page before they can be asked, and br
   assert.equal(sh.storybook!.pages[bromAt].start,"p028");
 });
 
+test("a brand-new reader is stopped by the first clue in every storybook", async()=>{
+  const {cluesByPage,firstLockedPage}=await import("../lib/storybook.ts");
+  for(const id of ["tell-tale-heart","sleepy-hollow","trifles"]){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    const gates=cluesByPage(world),firstClue=gates.findIndex(g=>g.length>0);
+    // Nothing proven and no frames saved: the gate is the first page that holds a clue (or an earlier required frame).
+    const locked=firstLockedPage(world,()=>false,()=>false);
+    assert.ok(locked>=0&&locked<=firstClue,`${id}: locked at ${locked}, first clue at ${firstClue}`);
+    // Proving everything opens the whole story.
+    assert.equal(firstLockedPage(world,()=>true,()=>true),-1,id);
+  }
+});
+
+test("saved work from another version of a story is cleared; current work and other stories are kept", async()=>{
+  const {reconcileSaved,frameKey}=await import("../lib/storybook.ts");
+  const read=async(id:string)=>WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+  const sh=await read("sleepy-hollow"),tth=await read("tell-tale-heart");
+  const shClue=sh.scenes[0].artifacts[0].id,tthClue=tth.scenes[0].artifacts[0].id,answer={notice:"a",interpret:"b"};
+  // A session saved before versions existed (for example, the old case flow) that answered a Sleepy Hollow clue.
+  const old={worldId:"sleepy-hollow",submitted:true,artifactAnswers:{[shClue]:answer,[tthClue]:answer},savedTextEvidence:[{artifactId:shClue},{artifactId:tthClue}],storyFrames:{"page-04":{},[frameKey("sleepy-hollow","page-06")]:{}},readerProgress:{"sleepy-hollow":{page:9,furthest:9}}};
+  const r=reconcileSaved(sh,old);
+  assert.equal(sh.storybook!.version,"2");
+  assert.deepEqual(Object.keys(r.artifactAnswers),[tthClue],"Sleepy Hollow answers cleared, Tell-Tale Heart kept");
+  assert.deepEqual(r.savedTextEvidence,[{artifactId:tthClue}]);
+  assert.deepEqual(r.storyFrames,{},"old page-only and Sleepy Hollow frames cleared");
+  assert.deepEqual(r.readerProgress["sleepy-hollow"],{version:"2"});
+  assert.equal(r.submitted,false);
+  // Current-version work stays exactly as it is.
+  const current={...old,readerProgress:{"sleepy-hollow":{version:"2",page:9}}};
+  assert.equal(reconcileSaved(sh,current),current);
+  // Tell-Tale Heart is still version 1, so a class student's saved work from before versions existed is kept, and
+  // an old page-only frame key moves to the story key.
+  const tthOld={worldId:"tell-tale-heart",artifactAnswers:{[tthClue]:answer},storyFrames:{"page-04":{description:"x"}} as Record<string,unknown>,readerProgress:{"tell-tale-heart":{page:5}}};
+  const t=reconcileSaved(tth,tthOld);
+  assert.deepEqual(Object.keys(t.artifactAnswers),[tthClue]);
+  assert.deepEqual(t.storyFrames[frameKey("tell-tale-heart","page-04")],{description:"x"});
+  assert.equal(t.readerProgress["tell-tale-heart"].page,5);
+});
+
 test("teacher demo sample data quotes the story exactly and tags real benchmarks", async()=>{
   const {sampleCaseFile,sampleFrames,sampleStudents}=await import("../lib/sample-classroom.ts");
   const {quoteInText}=await import("../lib/storybook.ts");

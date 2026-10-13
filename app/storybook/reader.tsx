@@ -7,7 +7,7 @@ import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "rea
 import {ArrowLeft,ArrowRight,BookOpen,ChevronLeft,ChevronRight,ImageIcon,MessageCircleHeart,MessageSquareQuote,PenLine,Type,Users} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
-import {cluesByPage,pagePassages,pageUnits,plain,sentenceKey,splitSentences,unitText,type Piece,type StoryPage,type Unit} from "@/lib/storybook";
+import {cluesByPage,firstLockedPage,frameKey,pagePassages,pageUnits,plain,sentenceKey,splitSentences,unitText,type Piece,type StoryPage,type Unit} from "@/lib/storybook";
 import {isDone} from "../clue-steps";
 import {RankChip,playStamp,recordScene} from "../case-game";
 import {HomeText,saveHomeLanguage} from "../bilingual";
@@ -36,7 +36,7 @@ function useLayout(root:React.RefObject<HTMLElement|null>):[Layout,number]{
  useEffect(()=>{const el=root.current;if(!el)return;const on=()=>{const w=el.clientWidth,h=el.clientHeight;const next:Layout=w>=900&&w>h?"spread":w>h?"side":"bottom";setSize(s=>s[0]===next&&s[1]===h?s:[next,h])};on();const ro=new ResizeObserver(on);ro.observe(el);return()=>ro.disconnect()},[root]);
  return size;
 }
-export type ReaderProgress={page?:number;part?:number;furthest?:number;briefed?:boolean;sections?:string[];skippedFrames?:string[]};
+export type ReaderProgress={version?:string;page?:number;part?:number;furthest?:number;briefed?:boolean;sections?:string[];skippedFrames?:string[]};
 
 // Greedy split of a page's sentences into screens that fit the text box, measured with an invisible copy of the text.
 // A sentence too tall for an empty screen (very large text on a small phone) is split between words.
@@ -70,6 +70,10 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
  const [card,setCard]=useState<Card>(null),[sayMode,setSayMode]=useState(false),[celebrate,setCelebrate]=useState<{title:string;rankUp:string|null}|null>(null);
  const index=Math.min(Math.max(prog.page??0,0),last);const page=pages[index];
  const pageDone=useCallback((i:number)=>gates[i].every(({clue})=>isDone(demo,clue.id)),[gates,demo]);
+ // The first page the student may not pass yet (an unproven clue or a missing required frame), or -1 when none.
+ const locked=useMemo(()=>preview?-1:firstLockedPage(world,id=>isDone(demo,id),k=>!!demo.storyFrames?.[k]),[preview,world,demo]);
+ // Saved progress can never sit past the gate, whatever is in storage: the reader moves back to the locked page.
+ useLayoutEffect(()=>{if(locked>=0&&(prog.page??0)>locked)setProg(p=>({...p,page:locked,part:0,furthest:Math.min(p.furthest??0,locked)}))},[locked,prog.page,setProg]);
  const furthest=Math.max(prog.furthest??0,index);
  // A bridge page shows our labeled summary of skipped paragraphs; the author's words are one tap away.
  const bridge=page.bridge;
@@ -81,7 +85,7 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
  const section=book.sections.find(s=>s.id===page.section);
  const open=gates[index].filter(({clue})=>!isDone(demo,clue.id)).length;
  // A required picture frame is part of the page's gate; optional frames never block and can be skipped.
- const frameNeeded=!!page.frame_required&&!demo.storyFrames?.[page.id];
+ const frameNeeded=!!page.frame_required&&!demo.storyFrames?.[frameKey(world.id,page.id)];
  const frameSkipped=(prog.skippedFrames??[]).includes(page.id);
 
  // Pagination: re-measure whenever the page, text settings, layout, panel size, or fonts change.
@@ -103,17 +107,21 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
  useEffect(()=>{if(preview)return;const root=document.documentElement,prev=root.style.overflow;root.style.overflow="hidden";return()=>{root.style.overflow=prev}},[preview]);
 
  const goTo=useCallback((i:number,toLastPart=false)=>{wantLastPart.current=toLastPart;partRef.current=0;setPartState(0);setSayMode(false);setProg(p=>({...p,page:i,part:0,furthest:Math.max(p.furthest??0,i)}))},[setProg]);
- const finishSection=useCallback((id:string)=>{if((prog.sections??[]).includes(id))return;const title=book.sections.find(s=>s.id===id)?.title??"";const rankUp=recordScene(`${world.id}:${id}`);playStamp();setCelebrate({title,rankUp});setProg(p=>({...p,sections:[...(p.sections??[]),id]}));setDemo(d=>({...d,events:[...d.events,"scene_complete"]}))},[prog.sections,book.sections,world.id,setProg,setDemo]);
+ // "Section solved" comes only after every clue in the section is proven. A section with no clues is recorded
+ // quietly: no stamp, no rank, and no claim that clues were proven.
+ const finishSection=useCallback((id:string)=>{if((prog.sections??[]).includes(id))return;const clues=pages.flatMap((p,i)=>p.section===id?gates[i]:[]);if(!clues.every(({clue})=>isDone(demo,clue.id)))return;if(!clues.length){setProg(p=>({...p,sections:[...(p.sections??[]),id]}));return}const title=book.sections.find(s=>s.id===id)?.title??"";const rankUp=recordScene(`${world.id}:${id}`);playStamp();setCelebrate({title,rankUp});setProg(p=>({...p,sections:[...(p.sections??[]),id]}));setDemo(d=>({...d,events:[...d.events,"scene_complete"]}))},[prog.sections,book.sections,world.id,setProg,setDemo,pages,gates,demo]);
  // advance() turns forward; next() is the same but ignores input while a card or celebration is open.
  const advance=useCallback(()=>{
   if(part<parts.length-1){setPart(part+1);return}
   if(preview&&(index===last||!pageDone(index))){setCard({type:"keep"});return}
   if(!pageDone(index)){setCard({type:"questions"});return}
   if(frameNeeded){setCard({type:"frame"});return}
+  // The case closes only when every clue in the story is proven; otherwise go back to the first unproven one.
+  if(index===last&&locked>=0&&locked!==index){goTo(locked);setCard({type:"questions"});return}
   if(index===last){finishSection(page.section);setDemo(d=>({...d,submitted:true,events:[...d.events,"case_closed"]}));return}
   if(pages[index+1].section!==page.section)finishSection(page.section);
   goTo(index+1);
- },[preview,part,parts.length,pageDone,frameNeeded,index,last,page.section,pages,finishSection,goTo,setDemo,setPart]);
+ },[preview,part,parts.length,pageDone,frameNeeded,index,last,locked,page.section,pages,finishSection,goTo,setDemo,setPart]);
  const next=useCallback(()=>{if(!card&&!celebrate)advance()},[card,celebrate,advance]);
  const prev=useCallback(()=>{if(card||celebrate)return;if(part>0){setPart(part-1);return}if(index>0)goTo(index-1,true)},[card,celebrate,part,index,goTo,setPart]);
 
@@ -136,7 +144,7 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
  }
 
  const characters=pages.slice(0,furthest+1).flatMap(p=>p.characters_met);
- const frame=demo.storyFrames?.[page.id];
+ const frame=demo.storyFrames?.[frameKey(world.id,page.id)];
  const studentImage=frame?.image;
  const art=page.illustration?.src||studentImage;
 
@@ -179,7 +187,7 @@ export function StorybookReader({world,role,passages,demo,setDemo,onExit,onFeedb
     {card.type==="full"&&<FullTextCard passages={pagePassages(passages,page)} format={book.format}/>}
     {card.type==="word"&&(()=>{const v=vocab.find(x=>x.term===card.term);return v?<WordCard entry={v} word={card.word} sentence={card.sentence}/>:null})()}
     {card.type==="keep"&&<div className="space-y-4"><p className="text-[17px] leading-7">{open?"In the full demo, you prove this clue with a line from the story before the page turns. Characters can help, but they can be wrong.":"That's the end of the preview."}</p><p className="text-[16px] leading-7 text-[#4A4438]">Keep reading to open the whole case: {realCount} pages, every clue, and your case file.</p>{onKeepReading&&<button type="button" onClick={onKeepReading} className="case-primary w-full">Keep reading <ArrowRight size={18}/></button>}</div>}
-    {card.type==="frame"&&<FrameCard page={page} pageText={pageText} demo={demo} setDemo={setDemo} onSkip={()=>{setProg(p=>({...p,skippedFrames:[...new Set([...(p.skippedFrames??[]),page.id])]}));setCard(null)}} onContinue={()=>{setCard(null);advance()}} lastPage={index===last&&pageDone(index)}/>}
+    {card.type==="frame"&&<FrameCard worldId={world.id} page={page} pageText={pageText} demo={demo} setDemo={setDemo} onSkip={()=>{setProg(p=>({...p,skippedFrames:[...new Set([...(p.skippedFrames??[]),page.id])]}));setCard(null)}} onContinue={()=>{setCard(null);advance()}} lastPage={index===last&&pageDone(index)}/>}
    </Drawer>}
    {celebrate&&<div className="absolute inset-0 z-40 grid place-items-center bg-[#2A2620]/45 p-6"><div role="dialog" aria-modal="true" aria-label="Section solved" className="case-rise relative w-full max-w-md rounded-3xl bg-[#FFFDF8] p-7 text-center shadow-2xl">
     <div aria-hidden className="case-stamp case-stamp-page">Section solved</div>

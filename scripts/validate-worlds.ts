@@ -36,6 +36,8 @@ function storybookProblems(world:WorldPack,source:string):string[]{
   return problems;
 }
 const root=new URL("../worlds/",import.meta.url);let failed=false,checked=0;
+// Saved answers are keyed by clue id alone, so a clue id may belong to only one story.
+const clueOwners=new Map<string,string>();
 for(const folder of await readdir(root,{withFileTypes:true})){
   if(!folder.isDirectory())continue;
   const pack=JSON.parse(await readFile(new URL(`${folder.name}/world.json`,root),"utf8"));
@@ -45,6 +47,7 @@ for(const folder of await readdir(root,{withFileTypes:true})){
   if(!result.success){failed=true;console.error(`Invalid world pack: ${folder.name}`);console.error(result.error.format());continue}
   let source:string;try{source=await readFile(new URL(`${folder.name}/source.md`,root),"utf8")}catch{failed=true;console.error(`Missing source.md: ${folder.name}`);continue}
   const problems=storybookProblems(result.data,source);
+  for(const scene of result.data.scenes)for(const clue of scene.artifacts){const owner=clueOwners.get(clue.id);if(owner&&owner!==result.data.id)problems.push(`clue id ${clue.id} is also used by ${owner}; clue ids must be unique across stories`);clueOwners.set(clue.id,result.data.id)}
   if(problems.length){failed=true;console.error(`Invalid storybook: ${folder.name}`);problems.forEach(x=>console.error(`  - ${x}`));continue}
   console.log(`Valid world pack: ${result.data.id} (${result.data.status??"playable"}, ${result.data.scenes.length} scenes${result.data.storybook?`, ${result.data.storybook.pages.length} storybook pages`:""})`);
 }
