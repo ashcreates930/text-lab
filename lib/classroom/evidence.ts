@@ -4,13 +4,14 @@
 import type { WorldPack } from "../world-schema.ts";
 
 // What a saved answer looks like in students.progress.artifactAnswers (only the fields this view reads).
-export type SavedAnswer = { notice?: string; interpret?: string; craft?: string };
+export type SavedAnswer = { notice?: string; interpret?: string; craft?: string; character?: string };
 export type EvidenceStudentInput = { id: string; nickname: string; answers: Record<string, SavedAnswer> | null };
 
 // "proved-wrong": the student questioned a character and chose a line that contradicts them.
 // "backed-up": the line supported what the character said. null: no character was questioned for this clue.
 export type Finding = "proved-wrong" | "backed-up" | null;
-export type EvidenceCell = { proven: boolean; quote: string; explanation: string; finding: Finding };
+// character: the name of the character the student questioned, when the save recorded it.
+export type EvidenceCell = { proven: boolean; quote: string; explanation: string; finding: Finding; character?: string };
 export type EvidenceClue = { id: string; name: string; sceneId: string };
 export type EvidenceScene = { id: string; title: string; characters: string[]; clues: EvidenceClue[] };
 export type EvidenceStudent = { id: string; nickname: string; started: boolean; proven: number; provedWrong: number; needsHelp: boolean; cells: Record<string, EvidenceCell> };
@@ -30,7 +31,13 @@ export const findingOf = (a: SavedAnswer | undefined): Finding => (a?.craft === 
 const SMALL = new Set(["a", "an", "and", "the", "of", "in", "on", "at", "to", "for", "with"]);
 export function sceneTitle(id: string, index: number, reference = "") {
   const proper = new Set(reference.match(/\b[A-Z][a-z]+\b/g) ?? []);
-  const words = id.split("-").map((w, i) => { const cap = w.charAt(0).toUpperCase() + w.slice(1); return i === 0 || (proper.has(cap) && !SMALL.has(w)) ? cap : w; });
+  const possessive = new Set((reference.match(/\b[a-z]+[’']s\b/gi) ?? []).map((w) => w.toLowerCase()));
+  const words = id.split("-").map((w, i) => {
+    const stem = w.endsWith("s") ? w.slice(0, -1) : "";
+    const word = stem && possessive.has(`${stem}’s`) ? `${stem}’s` : stem && possessive.has(`${stem}'s`) ? `${stem}’s` : w;
+    const cap = word.charAt(0).toUpperCase() + word.slice(1);
+    return i === 0 || (proper.has(cap) && !SMALL.has(w)) ? cap : word;
+  });
   return `Scene ${index + 1} · ${words.join(" ")}`;
 }
 
@@ -47,7 +54,8 @@ export function buildEvidence(world: WorldPack, students: EvidenceStudentInput[]
     const cells: Record<string, EvidenceCell> = {};
     for (const c of clues) {
       const a = s.answers?.[c.id], proven = isProven(a);
-      cells[c.id] = { proven, quote: proven ? a!.notice!.trim() : "", explanation: proven ? a!.interpret!.trim() : "", finding: proven ? findingOf(a) : null };
+      const character = proven && a?.character ? names.get(a.character) : undefined;
+      cells[c.id] = { proven, quote: proven ? a!.notice!.trim() : "", explanation: proven ? a!.interpret!.trim() : "", finding: proven ? findingOf(a) : null, ...(character ? { character } : {}) };
     }
     const proven = clues.filter((c) => cells[c.id].proven).length;
     const provedWrong = clues.filter((c) => cells[c.id].finding === "proved-wrong").length;
@@ -70,12 +78,20 @@ export function buildEvidence(world: WorldPack, students: EvidenceStudentInput[]
   };
 }
 
-// The plain-language line under a quote: "This line proved Brom Bones wrong." The saved answer does not record which
-// character was asked, so the name is used only when the scene has exactly one character to question.
-export function findingSentence(finding: Finding, scene: EvidenceScene | undefined) {
+// The plain-language line under a quote: "This line proved Hans Van Ripper wrong." Uses the character saved with the
+// answer; older saves without one fall back to the scene's only character, or "the character they questioned".
+export function findingSentence(finding: Finding, scene: EvidenceScene | undefined, character?: string) {
   if (!finding) return "The student did not question a character for this clue.";
-  const who = scene?.characters.length === 1 ? scene.characters[0] : "the character they questioned";
+  const who = character ?? (scene?.characters.length === 1 ? scene.characters[0] : "the character they questioned");
   return finding === "proved-wrong" ? `This line proved ${who} wrong.` : `This line backed up what ${who} said.`;
+}
+
+// What the detail panel shows for one student and clue.
+export function evidenceDetail(e: ClassEvidence, studentId: string, clueId: string) {
+  const student = e.students.find((s) => s.id === studentId), clue = e.scenes.flatMap((s) => s.clues).find((c) => c.id === clueId);
+  if (!student || !clue) return null;
+  const cell = student.cells[clue.id], scene = e.scenes.find((s) => s.id === clue.sceneId);
+  return { title: `${student.nickname} · ${clue.name}`, sceneTitle: scene?.title ?? "", proven: cell.proven, quote: cell.quote, explanation: cell.explanation, finding: cell.finding, findingLine: cell.proven ? findingSentence(cell.finding, scene, cell.character) : "", notProvenLine: `${student.nickname} has not proven this clue yet.` };
 }
 
 // Spreadsheet export: one row per student and clue.
@@ -84,7 +100,7 @@ export function evidenceCsv(e: ClassEvidence) {
   const lines = [["Student", "Scene", "Clue", "Proven", "Line from the story", "Student explanation", "Character check"].join(",")];
   for (const s of e.students) for (const sc of e.scenes) for (const c of sc.clues) {
     const x = s.cells[c.id];
-    lines.push([s.nickname, sc.title, c.name, x.proven ? "Yes" : "No", x.quote, x.explanation, x.proven ? (x.finding === "proved-wrong" ? "Proved the character wrong" : x.finding === "backed-up" ? "Backed up the character" : "No character questioned") : ""].map(cell).join(","));
+    lines.push([s.nickname, sc.title, c.name, x.proven ? "Yes" : "No", x.quote, x.explanation, x.proven ? (x.finding === "proved-wrong" ? `Proved ${x.character ?? "the character"} wrong` : x.finding === "backed-up" ? `Backed up ${x.character ?? "the character"}` : "No character questioned") : ""].map(cell).join(","));
   }
   return lines.join("\r\n");
 }

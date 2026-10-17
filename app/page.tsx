@@ -46,7 +46,7 @@ export type Demo = {
   think: boolean; thinkSupport:boolean; thinkAnswers:Record<string,string>; trace: boolean; evidence: number; connection: string;
   myWords:string[]; glossaryOpens:number; suggestedArtifactType:string; readAloudOn:boolean; hintFrequency:"often"|"sometimes"|"on_request"|"off"; sentenceStartersOn:boolean;
   resumePhrase: string; submitted: boolean;
-  artifactAnswers:Record<string,{notice:string;interpret:string;craft:string;technique:string;revisions:string[];history?:{stage:"notice"|"interpret"|"craft";text:string;submitted_at:string}[]}>;
+  artifactAnswers:Record<string,{notice:string;interpret:string;craft:string;technique:string;revisions:string[];character?:string;history?:{stage:"notice"|"interpret"|"craft";text:string;submitted_at:string}[]}>;
   openedArtifacts:string[]; activeArtifact:string; artifactStage:number; artifactDialogOpen:boolean;
   briefingComplete:boolean; savedTextEvidence:SavedTextEvidence[]; authorshipRanges:AuthorshipRange[]; analysisReport?:AnalysisReport;
   previewComplete?:boolean; course?:"all"|"best"|"ap"|"aice"; lessonsDone?:Record<string,LessonRecord>; portionUnlocks?:string[]; classAuth?:ClassAuth; homeLanguage?:HomeLanguage|null;

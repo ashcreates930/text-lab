@@ -5,7 +5,7 @@
 // Used for real classes (app/classroom.tsx) and the sample classroom (app/teacher-demo.tsx).
 import {useEffect,useMemo,useRef,useState} from "react";
 import {AlertTriangle,Check,Download,ShieldCheck,X} from "lucide-react";
-import {evidenceCsv,findingSentence,type ClassEvidence,type EvidenceClue,type EvidenceStudent} from "@/lib/classroom/evidence";
+import {evidenceCsv,evidenceDetail,type ClassEvidence,type EvidenceClue,type EvidenceStudent} from "@/lib/classroom/evidence";
 
 type Selected={student:EvidenceStudent;clue:EvidenceClue}|null;
 
@@ -90,22 +90,22 @@ function Stat({label,value,note,icon}:{label:string;value:string;note?:string;ic
 // to the square that opened it.
 function DetailPanel({evidence,selected,onClose}:{evidence:ClassEvidence;selected:NonNullable<Selected>;onClose:()=>void}){
  const heading=useRef<HTMLHeadingElement>(null);
- const {student,clue}=selected,cell=student.cells[clue.id],scene=evidence.scenes.find(s=>s.id===clue.sceneId);
+ const {student,clue}=selected,d=evidenceDetail(evidence,student.id,clue.id)!;
  useEffect(()=>{heading.current?.focus({preventScroll:true})},[student.id,clue.id]);
  useEffect(()=>{const esc=(e:KeyboardEvent)=>{if(e.key==="Escape")onClose()};window.addEventListener("keydown",esc);return()=>window.removeEventListener("keydown",esc)},[onClose]);
  return <div className="fixed inset-0 z-50 flex justify-end">
   <button type="button" aria-label="Close" tabIndex={-1} onClick={onClose} className="absolute inset-0 bg-[#2A2620]/25"/>
   <section role="dialog" aria-modal="true" aria-labelledby="evidence-detail-h" className="case-ui relative flex h-full w-full max-w-[460px] flex-col bg-[#FFFDF8] shadow-[-18px_0_50px_-20px_rgba(42,38,32,.45)]">
    <header className="flex items-start justify-between gap-3 border-b border-[#E4DCCB] px-6 py-4">
-    <div><p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">{scene?.title}</p><h3 id="evidence-detail-h" ref={heading} tabIndex={-1} className="mt-1 text-[22px] font-bold leading-tight text-[#2A2620] outline-none">{student.nickname} · {clue.name}</h3></div>
+    <div><p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">{d.sceneTitle}</p><h3 id="evidence-detail-h" ref={heading} tabIndex={-1} className="mt-1 text-[22px] font-bold leading-tight text-[#2A2620] outline-none">{d.title}</h3></div>
     <button type="button" onClick={onClose} aria-label="Close" className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-[#6B6457] hover:bg-[#EFE8D8]"><X size={22}/></button>
    </header>
    <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6">
-    {cell.proven?<>
-     <div><p className="text-[14px] font-semibold text-[#6B6457]">The line from the story</p><blockquote className="mt-2 rounded-2xl border-l-4 border-[#A0472C] bg-[#F4E1D6]/50 px-4 py-3 font-serif text-[18px] leading-8 text-[#2A2620]">“{cell.quote}”</blockquote></div>
-     <div><p className="text-[14px] font-semibold text-[#6B6457]">Their explanation</p><p className="mt-2 text-[17px] leading-7 text-[#2A2620]">{cell.explanation}</p></div>
-     <p className={`flex items-start gap-2 rounded-2xl px-4 py-3 text-[16px] font-semibold ${cell.finding==="proved-wrong"?"bg-[#A0472C] text-white":"bg-[#EFE8D8] text-[#2A2620]"}`}>{cell.finding==="proved-wrong"&&<ShieldCheck size={20} className="mt-0.5 shrink-0"/>}{findingSentence(cell.finding,scene)}</p>
-    </>:<p className="text-[17px] leading-7 text-[#4A4438]">{student.nickname} has not proven this clue yet.</p>}
+    {d.proven?<>
+     <div><p className="text-[14px] font-semibold text-[#6B6457]">The line from the story</p><blockquote className="mt-2 rounded-2xl border-l-4 border-[#A0472C] bg-[#F4E1D6]/50 px-4 py-3 font-serif text-[18px] leading-8 text-[#2A2620]">“{d.quote}”</blockquote></div>
+     <div><p className="text-[14px] font-semibold text-[#6B6457]">Their explanation</p><p className="mt-2 text-[17px] leading-7 text-[#2A2620]">{d.explanation}</p></div>
+     <p className={`flex items-start gap-2 rounded-2xl px-4 py-3 text-[16px] font-semibold ${d.finding==="proved-wrong"?"bg-[#A0472C] text-white":"bg-[#EFE8D8] text-[#2A2620]"}`}>{d.finding==="proved-wrong"&&<ShieldCheck size={20} className="mt-0.5 shrink-0"/>}{d.findingLine}</p>
+    </>:<p className="text-[17px] leading-7 text-[#4A4438]">{d.notProvenLine}</p>}
    </div>
   </section>
  </div>;

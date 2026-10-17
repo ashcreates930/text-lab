@@ -19,6 +19,8 @@ const answer = z.object({
   notice: text(3000), interpret: text(3000), craft: text(3000), technique: text(120),
   revisions: z.array(text(3000)).max(20),
   history: z.array(z.object({ stage: z.enum(["notice", "interpret", "craft"]), text: text(3000), submitted_at: text(40) })).max(60).optional(),
+  // The character the student questioned before proving the clue. Older saves don't have it.
+  character: id.optional(),
 });
 const frame = z.object({
   kind: z.enum(["add_detail", "student"]), description: text(600), quote: text(400), saved_at: text(40),

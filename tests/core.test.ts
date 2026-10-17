@@ -340,7 +340,35 @@ test("evidence view: proven counts, character checks, and the needs-help rule", 
   const csv=evidenceCsv(e).split("\r\n");
   assert.equal(csv.length,1+10*16);
   assert.match(csv[0],/^Student,Scene,Clue,Proven,Line from the story,Student explanation,Character check$/);
-  assert.ok(csv.some(l=>l.startsWith("Amara,")&&l.includes("Proved the character wrong")));
+  assert.ok(csv.some(l=>l.startsWith("Amara,")&&l.includes("Proved Brom Bones wrong")));
+});
+
+test("the detail panel names the character the student questioned", async()=>{
+  const {buildEvidence,evidenceDetail,sceneTitle}=await import("../lib/classroom/evidence.ts");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  const quote="Ichabod was horror-struck on perceiving that he was headless";
+  const e=buildEvidence(world,[
+    {id:"new",nickname:"Ella",answers:{"shadowy-rider":{notice:quote,interpret:"He had no head.",craft:"contradicts",character:"hans-van-ripper"}}},
+    // An older save without the character, in a scene with two characters to question.
+    {id:"old",nickname:"Old",answers:{"shadowy-rider":{notice:quote,interpret:"He had no head.",craft:"contradicts"}}},
+  ]);
+  const saved=evidenceDetail(e,"new","shadowy-rider")!;
+  assert.equal(saved.findingLine,"This line proved Hans Van Ripper wrong.");
+  assert.equal(saved.title,"Ella · The shadowy rider");
+  assert.equal(evidenceDetail(e,"old","shadowy-rider")!.findingLine,"This line proved the character they questioned wrong.");
+  // The scene label keeps the story's own spelling.
+  assert.equal(e.scenes.find(s=>s.id==="the-towns-verdict")!.title,"Scene 4 · The town’s verdict");
+  assert.equal(sceneTitle("the-towns-verdict",3,""),"Scene 4 · The towns verdict");
+});
+
+test("saved answers load with or without the questioned character", async()=>{
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
+  const base={v:1,worldId:"sleepy-hollow",scene:0,submitted:false,readerProgress:{},savedTextEvidence:[],storyFrames:{},updatedAt:"2026-10-17T12:00:00.000Z"};
+  const answer={notice:"a line",interpret:"why",craft:"contradicts",technique:"",revisions:[]};
+  assert.ok(StudentProgressSchema.safeParse({...base,artifactAnswers:{"shadowy-rider":answer}}).success,"older save without a character");
+  const withCharacter=StudentProgressSchema.safeParse({...base,artifactAnswers:{"shadowy-rider":{...answer,character:"hans-van-ripper"}}});
+  assert.ok(withCharacter.success);
+  assert.equal(withCharacter.data!.artifactAnswers["shadowy-rider"].character,"hans-van-ripper");
 });
 
 test("evidence sample class quotes Sleepy Hollow exactly and has the mix the demo promises", async()=>{
@@ -353,6 +381,12 @@ test("evidence sample class quotes Sleepy Hollow exactly and has the mix the dem
   for(const s of sampleEvidenceStudents)for(const [id,a] of Object.entries(s.answers??{})){assert.ok(clueIds.has(id),id);assert.ok(quoteInText(a.notice,source),a.notice)}
   assert.ok(sampleEvidenceStudents.filter(s=>Object.values(s.answers??{}).some(a=>a.craft==="contradicts")).length>=2);
   assert.equal(sampleEvidenceStudents.filter(s=>s.answers&&!Object.keys(s.answers).length).length,1);
+  // Every sample student with work questioned a character the scene allows, so the sample always shows names.
+  const sceneOf=new Map<string,string[]>(world.scenes.flatMap((s:{available_characters:string[];artifacts:{id:string}[]})=>s.artifacts.map(a=>[a.id,s.available_characters] as const)));
+  for(const s of sampleEvidenceStudents.filter(x=>x.answers&&Object.keys(x.answers).length)){
+    assert.ok(Object.values(s.answers!).some(a=>a.character),`${s.nickname} questioned a character`);
+    for(const [id,a] of Object.entries(s.answers!))if(a.craft){assert.ok(a.character,`${s.nickname} ${id}`);assert.ok(sceneOf.get(id)!.includes(a.character!),`${s.nickname} ${id} ${a.character}`)}
+  }
 });
 
 test("a teacher cannot read another teacher's class evidence", async()=>{
