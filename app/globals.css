@@ -124,3 +124,6 @@ h1[tabindex="-1"]:focus{outline:none}
 @media (prefers-reduced-motion:reduce){.book-cover{transition:opacity .2s ease}.book-cover-swing{transform:none;opacity:0}.book-appear{animation:none}}
 /* Short phones (iPhone SE and smaller): tighter spacing so the open book still fits without scrolling. */
 @media (max-height:600px){.book-spread{padding-top:6px;padding-bottom:6px}.book-spread .book-page{padding-top:12px;padding-bottom:12px}.book-spread .book-page .case-primary{margin-top:10px;min-height:44px}.book-spread .book-page form{margin-top:10px}.book-spread .book-page p{margin-top:2px;line-height:1.45}.book-spread .book-page h2{font-size:25px}.book-spread .book-page label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.book-spread .book-page form>div{margin-top:0}}
+@keyframes case-hint{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,6px)}}
+.case-hint{animation:case-hint 1.6s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.case-hint{animation:none;transform:translateX(-50%)}}

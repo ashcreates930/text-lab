@@ -13,6 +13,7 @@ import {CLASS_AI_OFF,evidenceLabel,isDone,useClueSteps,type Clue,type Scene} fro
 import {StorybookReader} from "./storybook/reader";
 import {firstLockedPage,reconcileSaved} from "@/lib/storybook";
 import {useLayoutEffect} from "react";
+const STORYBOOK_ON=false;
 
 function sentences(text:string){return (text.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g)??[text]).map(s=>s.trim()).filter(Boolean)}
 
@@ -24,9 +25,10 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback}:{d
  const [world,setWorld]=useState<WorldPack|null>(null),[passages,setPassages]=useState<SourcePassage[]>([]),[error,setError]=useState("");
  const [openClue,setOpenClue]=useState<string>(""),[toast,setToast]=useState(""),[celebrate,setCelebrate]=useState<{sceneId:string;rankUp:string|null}|null>(null),[justProven,setJustProven]=useState("");
  useEffect(()=>{setWorld(null);fetch(`/worlds/${demo.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setError("We couldn't open this story. Refresh the page to try again."));fetch(`/worlds/${demo.worldId}/source.md`).then(r=>r.ok?r.text():"").then(t=>setPassages(parseSourcePassages(t))).catch(()=>setPassages([]))},[demo.worldId]);
+ // Students play the scene game. The storybook reader stays in the code, switched off, until we decide to bring it back.
  // Storybooks: saved work from another version of the story is cleared before anything renders, and a case can only
  // show as closed when every clue is proven and every required frame is saved.
- useLayoutEffect(()=>{if(!world?.storybook)return;setDemo(d=>{const r=reconcileSaved(world,d);return r.submitted&&r.worldId===world.id&&firstLockedPage(world,id=>isDone(r,id),k=>!!r.storyFrames?.[k])>=0?{...r,submitted:false}:r})},[world,setDemo,demo.classProgressLoaded]);
+ useLayoutEffect(()=>{if(!STORYBOOK_ON||!world?.storybook)return;setDemo(d=>{const r=reconcileSaved(world,d);return r.submitted&&r.worldId===world.id&&firstLockedPage(world,id=>isDone(r,id),k=>!!r.storyFrames?.[k])>=0?{...r,submitted:false}:r})},[world,setDemo,demo.classProgressLoaded]);
  // Students skip role and level screens: the first role is used unless an adult chose one.
  useEffect(()=>{if(world&&!world.roles.some(r=>r.id===demo.role))setDemo(d=>({...d,role:world.roles[0].id,briefingComplete:true,think:true}))},[world,demo.role,setDemo]);
  useEffect(()=>{if(!toast)return;const t=setTimeout(()=>setToast(""),4200);return()=>clearTimeout(t)},[toast]);
@@ -35,7 +37,7 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback}:{d
  const sceneIndex=Math.min(demo.scene,world.scenes.length-1),scene=world.scenes[sceneIndex],role=world.roles.find(r=>r.id===demo.role)!;
  const finished=demo.submitted;
  if(finished)return <CaseSummary world={world} demo={demo} onAnotherStory={onAnotherStory}/>;
- if(world.storybook)return <StorybookReader world={world} role={role} passages={passages} demo={demo} setDemo={setDemo} onExit={onExit} onFeedback={onFeedback}/>;
+ if(STORYBOOK_ON&&world.storybook)return <StorybookReader world={world} role={role} passages={passages} demo={demo} setDemo={setDemo} onExit={onExit} onFeedback={onFeedback}/>;
  const clue=scene.artifacts.find(a=>a.id===openClue);
  if(clue)return <ClueView world={world} scene={scene} clue={clue} roleId={role.id} demo={demo} setDemo={setDemo} passages={passages} onClose={(saved,info)=>{setOpenClue("");if(!saved)return;window.scrollTo({top:0});setJustProven(clue.id);
   const badge=info?.factCheck?recordFactCheck(`${world.id}:${clue.id}`):false;
@@ -63,6 +65,7 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue
    <div className={`case-art aspect-[4/3] w-full sm:aspect-[3/2] md:aspect-[16/8] ${allDone?"case-alive":""}`} style={{backgroundImage:`url('${scene.background_image}')`}} role="img" aria-label={`Scene: ${scene.id.replaceAll("-"," ")}`}/>
    {allDone&&<Ambient worldId={world.id}/>}
    {scene.artifacts.map((a,i)=>{const lk=locked(a),dn=isDone(demo,a.id);return <button key={a.id} disabled={lk} onClick={()=>onOpenClue(a.id)} aria-label={`Clue ${i+1}: ${a.name}${dn?", done":lk?", locked":""}`} className={`absolute grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full text-[15px] font-bold shadow-lg ring-4 transition hover:scale-110 ${a.id===justProven?"case-pop ":""}${dn?"bg-[#FFFDF8] text-[#A0472C] ring-[#FFFDF8]/40":lk?"bg-[#2A2620]/70 text-white/70 ring-white/20":"case-pulse bg-[#A0472C] text-white ring-[#A0472C]/30"}`} style={{left:`${a.position.x+a.position.width/2}%`,top:`${a.position.y+a.position.height/2}%`}}>{dn?<Check size={18}/>:lk?<Lock size={15}/>:i+1}</button>})}
+   {done===0&&next&&<div aria-hidden className="case-hint pointer-events-none absolute z-20" style={{left:`${Math.min(85,Math.max(15,next.position.x+next.position.width/2))}%`,top:`calc(${next.position.y+next.position.height/2}% + 30px)`}}><span className="block whitespace-nowrap rounded-full bg-[#FFFDF8] px-4 py-2 text-[15px] font-bold text-[#8A3B23] shadow-lg">Start here: tap the glowing clue</span></div>}
    {allDone&&<div aria-hidden className={`case-stamp pointer-events-none z-10 ${celebrating?"":"case-stamp-static"}`}>Scene solved</div>}
    <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent p-5 pt-16 md:p-8 md:pt-24">
     <p className="text-[13px] font-semibold uppercase tracking-wide text-[#F3C9B2]">You are the {role.name}</p>
@@ -100,7 +103,7 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue
 
 function ClueView({world,scene,clue,roleId,demo,setDemo,passages,onClose}:{world:WorldPack;scene:Scene;clue:Clue;roleId:string;demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];onClose:(saved:boolean,info?:{solves:boolean;factCheck:boolean})=>void}){
  const {chars,character,setCharacter,char,step,setStep,question,setQuestion,reply,asked,busy,proof,setProof,stance,setStance,explain,setExplain,source,notice,interpret,suggestions,steps,stepNo,ask,save:saveSteps}=useClueSteps({world,scene,clue,roleId,demo,setDemo,passages});
- const boxRef=useRef<HTMLTextAreaElement>(null);
+ const boxRef=useRef<HTMLTextAreaElement>(null);const [peek,setPeek]=useState(false);
  function save(){const info=saveSteps();if(info)onClose(true,info)}
  return <div className="case-ui mx-auto max-w-6xl px-4 pb-24 pt-6 md:px-8">
   <div className="flex items-center justify-between gap-4">
@@ -110,10 +113,12 @@ function ClueView({world,scene,clue,roleId,demo,setDemo,passages,onClose}:{world
   <div className="mt-5 grid gap-6 lg:grid-cols-[1.05fr_1fr]">
    <section className="order-2 lg:order-1" aria-label="From the story">
     <div className="overflow-hidden rounded-3xl shadow-[0_10px_40px_-14px_rgba(42,38,32,.35)]"><div className="case-art aspect-[16/9]" style={{backgroundImage:`url('${scene.background_image}')`,backgroundPosition:`${clue.position.x+clue.position.width/2}% ${clue.position.y+clue.position.height/2}%`,backgroundSize:"220%"}} role="img" aria-label={`Close-up: ${clue.name}`}/></div>
-    <div className="mt-4 rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)] md:p-6">
-     <p className="flex items-center gap-2 text-[14px] font-semibold text-[#8A3B23]"><BookOpen size={16}/> From the story{step==="prove"&&" · tap the line that proves it"}</p>
-     <div className="mt-3 space-y-4 font-serif text-[17px] leading-8 text-[#2A2620]">{source.map(p=><p key={p.id}>{sentences(p.text).map((s,i)=>{const picked=proof?.text===s;return step==="prove"?<button key={i} onClick={()=>setProof({text:s,pid:p.id})} className={`mr-1 inline rounded-md px-0.5 text-left transition ${picked?"bg-[#A0472C] text-white":"hover:bg-[#F4E1D6]"}`}>{s}</button>:<span key={i} className={picked?"rounded-md bg-[#F4E1D6] px-0.5":""}>{s} </span>})}</p>)}{!source.length&&<p className="font-sans text-[15px] text-[#6B6457]">Loading the story…</p>}</div>
-    </div>
+    {step==="ask"&&<div className="mt-4 rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="flex items-center gap-2 text-[15px] font-semibold text-[#2A2620]"><BookOpen size={17} className="text-[#A0472C]"/> The story holds the answer.</p><p className="mt-1 text-[15px] text-[#6B6457]">Ask first. Then you will search the story for proof.</p><button onClick={()=>setPeek(v=>!v)} className="mt-3 text-[15px] font-semibold text-[#8A3B23] underline underline-offset-4">{peek?"Hide the story":"Peek at the story"}</button>{peek&&<div className="mt-3 max-h-[40vh] space-y-3 overflow-y-auto font-serif text-[16px] leading-7">{source.map(p=><p key={p.id}>{p.text}</p>)}</div>}</div>}
+    {step==="prove"&&<div className="mt-4 rounded-3xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)] md:p-5">
+     <p className="flex items-center gap-2 px-1 text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]"><Search size={15}/> Evidence lines · tap the one that proves it</p>
+     <ol className="mt-3 max-h-[62vh] space-y-2 overflow-y-auto pr-1">{source.flatMap(p=>sentences(p.text).map((t,i)=>({t,pid:p.id,k:p.id+"-"+i}))).map((line,n)=>{const picked=proof?.text===line.t;return <li key={line.k}><button onClick={()=>setProof({text:line.t,pid:line.pid})} aria-pressed={picked} className={`flex w-full gap-3 rounded-2xl border px-3 py-2.5 text-left font-serif text-[16px] leading-7 transition ${picked?"border-[#A0472C] bg-[#A0472C] text-white shadow-md":"border-[#E4DCCB] bg-white hover:border-[#A0472C] hover:bg-[#FBF1EB]"}`}><span className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full font-sans text-[12px] font-bold ${picked?"bg-white text-[#A0472C]":"bg-[#EFE8D8] text-[#6B6457]"}`}>{picked?<Check size={14}/>:n+1}</span><span>{line.t}</span></button></li>})}</ol>
+     {!source.length&&<p className="font-sans text-[15px] text-[#6B6457]">Loading the story…</p>}
+    </div>}
    </section>
    <section className="order-1 lg:order-2" aria-live="polite">
     <div className="rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)] md:p-7">

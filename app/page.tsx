@@ -26,6 +26,7 @@ import { applyProgress, loadClassProgress, useClassProgressSync } from "./class-
 import { TeacherDemo } from "./teacher-demo";
 import { TeacherHub } from "./teacher-hub";
 import { MessageCircleHeart } from "lucide-react";
+import { Landing } from "./landing";
 import { BookCover, BookSpread, saveSide, savedSide, type Side } from "./book-home";
 import { ClassBar, ClassHome, ClassLive, type ClassAuth } from "./class-student";
 import { LessonPlayer, MiniLessonLibrary, type LessonRecord } from "./mini-lessons";
@@ -241,7 +242,8 @@ export default function Home() {
   function showTutorial(returnTo:View="play"){tutorialReturn.current=returnTo;tutorial.current?.start();setView("tutorial")}
   // Student front door: "Try the demo" and "I'm a student" land on the shelf, keeping any demo already in progress.
   function openShelf(){if(demo.preset==="student_first_visit"&&!demo.classAuth)setView("shelf");else start("student_first_visit")}
-  const tryDemo=openShelf;
+  // Try the Demo: one click straight into the Sleepy Hollow scene game (keeps progress if the student was already there).
+  function tryDemo(){const base=demo.preset==="student_first_visit"&&!demo.classAuth?demo:newDemo("student_first_visit");chooseSide("student");setDemo({...base,worldId:"sleepy-hollow",course:"all",grade:null,think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:base.worldId==="sleepy-hollow"?base.scene:0});setView("play")}
   // Opening a book keeps that story's progress; switching books starts the case flow at its first scene.
   function openStory(worldId:string){setDemo(d=>d.worldId===worldId?{...d,previewComplete:false}:{...d,worldId,course:"all",grade:null,think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:0});setView("play")}
   // Hero "Keep reading": the full demo straight onto page 1 of the hero story (the hero already showed the opening).
@@ -261,17 +263,17 @@ export default function Home() {
   if (gated) return <main className="min-h-[calc(100vh/var(--page-zoom,1))] bg-[#F6F0E3] text-[#2A2620]"><DisplaySettings/>{access === "locked" && <AccessGate brand={brand} onGranted={() => setAccess("granted")} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onJoinClass={() => setView("join")} onApproach={() => setView("approach")} />}</main>;
 
   return <main className="min-h-[calc(100vh/var(--page-zoom,1))] bg-[#F6F0E3] text-[#2A2620]">
-    <header className="sticky top-0 z-30 flex min-h-[58px] flex-wrap items-center justify-between gap-x-2 gap-y-2 border-b border-white/10 bg-[#F6F0E3]/95 px-3 py-2 sm:gap-x-3 sm:px-5 md:px-10">
-      <button onClick={() => setView(side ? "book" : "landing")} aria-label="TextLab home" className="flex items-center gap-2"><Wordmark className="text-xl"/><span className="hidden text-xs text-white/45 sm:block">by {brand.organization}</span></button>
+    {view !== "landing" && <header className="sticky top-0 z-30 flex min-h-[58px] flex-wrap items-center justify-between gap-x-2 gap-y-2 border-b border-white/10 bg-[#F6F0E3]/95 px-3 py-2 sm:gap-x-3 sm:px-5 md:px-10">
+      <button onClick={() => setView("landing")} aria-label="TextLab home" className="flex items-center gap-2"><Wordmark className="text-xl"/><span className="hidden text-xs text-white/45 sm:block">by {brand.organization}</span></button>
       {null}
       <div className="ml-auto flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">{(["story","level","play","classhome","classlive"] as View[]).includes(view)&&<HeaderLanguage value={demo.homeLanguage??null} onChange={lang=>setDemo(d=>({...d,homeLanguage:lang}))}/>}<DisplaySettings placement="header"/>
       {classSession && demo.classAuth ? <button onClick={() => setView("classhome")} className={`rounded-full border px-4 py-2 text-xs ${view === "classhome" ? "border-[#A0472C] bg-[#A0472C] text-[#FFFDF8]" : "border-white/25 text-white/80"}`}>My class</button> : view === "classroom" ? null : <div className="flex gap-1 rounded-full border border-white/15 p-1 text-[11px]">
-        {teacherSideViews.includes(view) ? <button onClick={() => { chooseSide("student"); openShelf(); }} className="rounded-full px-3 py-1.5 font-semibold text-[#8A3B23] sm:px-4"><span className="sm:hidden">Student view</span><span className="hidden sm:inline">Switch to student view</span></button> : <button onClick={() => { chooseSide("teacher"); setView("hub"); }} className="rounded-full px-3 py-1.5 font-semibold text-[#8A3B23] sm:px-4"><span className="sm:hidden">Teacher view</span><span className="hidden sm:inline">Switch to teacher view</span></button>}
+        {teacherSideViews.includes(view) ? <button onClick={tryDemo} className="rounded-full px-3 py-1.5 font-semibold text-[#8A3B23] sm:px-4"><span className="sm:hidden">Student view</span><span className="hidden sm:inline">Switch to student view</span></button> : <button onClick={() => { chooseSide("teacher"); setView("hub"); }} className="rounded-full px-3 py-1.5 font-semibold text-[#8A3B23] sm:px-4"><span className="sm:hidden">Teacher view</span><span className="hidden sm:inline">Switch to teacher view</span></button>}
       </div>}
       {!classSession && <button onClick={() => setForm({ step: 1, join: false })} className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-[#F4E1D6] px-3 text-[12px] font-semibold text-[#8A3B23] hover:bg-[#EDD3C4]"><MessageCircleHeart size={15}/><span className="sm:hidden">Feedback</span><span className="hidden sm:inline">Give feedback</span></button>}</div>
-    </header>
+    </header>}
     {demoViews.includes(view) && !classSession && <FeedbackBanner onOpen={() => setForm({ step: 1, join: false })} />}
-    {view === "landing" && <BookCover onOpen={() => setView("book")} />}
+    {view === "landing" && <Landing brand={brand} onStart={tryDemo} onPreset={start} onJoin={() => { chooseSide("student"); setView("join"); }} onWaitlist={() => setView("waitlist")} onPricing={() => setView("pricing")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} onClassroom={() => { chooseSide("teacher"); setView("hub"); }} onApproach={() => setView("approach")} />}
     {view === "book" && <BookSpread lastSide={side} onCover={() => setView("landing")} onStartReading={() => { chooseSide("student"); openShelf(); }} onJoinCode={code => { chooseSide("student"); setJoinCode(code); setView("join"); }} onTeacher={() => { chooseSide("teacher"); setView("hub"); }} onApproach={() => setView("approach")} onPricing={() => setView("pricing")} />}
     {view === "hub" && <TeacherHub onSignIn={() => setView("classroom")} onPricing={() => setView("pricing")} onApproach={() => setView("approach")} onKeepReading={keepReading} />}
     {view === "lessons" && <section className="mx-auto max-w-7xl px-5 py-10 md:px-10 md:py-14">{activeLesson ? <LessonPlayer lessonId={activeLesson} grade={demo.grade} onClose={() => { setActiveLesson(""); window.scrollTo(0, 0); }} onFinish={(id, record) => setDemo(d => ({ ...d, lessonsDone: { ...(d.lessonsDone ?? {}), [id]: record } }))} /> : <><button onClick={() => backToPreviousScreen(() => setView("landing"))} className="mb-8 inline-flex items-center gap-2 text-xs text-white/55 hover:text-white">← Back</button><h1 className="sr-only">Mini lessons</h1><MiniLessonLibrary grade={demo.grade} done={demo.lessonsDone ?? {}} onOpen={id => { setActiveLesson(id); window.scrollTo(0, 0); }} /><button onClick={() => setView("story")} className="gold-button mt-10 px-6 py-4 text-sm">Ready? Pick a story →</button></>}</section>}
