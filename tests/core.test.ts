@@ -311,6 +311,79 @@ test("saved work from another version of a story is cleared; current work and ot
   assert.equal(t.readerProgress["tell-tale-heart"].page,5);
 });
 
+test("evidence view: proven counts, character checks, and the needs-help rule", async()=>{
+  const {buildEvidence,findingOf,findingSentence,evidenceCsv}=await import("../lib/classroom/evidence.ts");
+  const {sampleEvidenceStudents}=await import("../lib/sample-classroom.ts");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  const e=buildEvidence(world,[
+    ...sampleEvidenceStudents.map((s,i)=>({id:`s${i}`,nickname:s.nickname,answers:s.answers})),
+    {id:"half",nickname:"Half",answers:{"empty-schoolhouse":{notice:"a line",interpret:"  "}}},
+    {id:"new",nickname:"New",answers:null},
+  ]);
+  const row=(n:string)=>e.students.find(s=>s.nickname===n)!;
+  // Proven only when both the line and the explanation have text (same rule as isDone).
+  assert.equal(row("Amara").proven,9);assert.equal(row("Grace").proven,1);assert.equal(row("Half").proven,0);
+  assert.equal(e.summary.totalClues,16);assert.equal(e.summary.joined,10);
+  // Character checks: "contradicts" proved a character wrong; "supports" backed them up; anything else is no check.
+  assert.equal(findingOf({craft:"contradicts"}),"proved-wrong");assert.equal(findingOf({craft:"supports"}),"backed-up");assert.equal(findingOf({craft:""}),null);
+  assert.equal(row("Amara").provedWrong,2);assert.equal(row("Ella").cells["shadowy-rider"].finding,"proved-wrong");
+  assert.equal(e.summary.provedWrongStudents,3);
+  // The party scene has one character to question, so the line names him; the road home has two.
+  const party=e.scenes.find(s=>s.id==="van-tassel-party"),road=e.scenes.find(s=>s.id==="the-road-home");
+  assert.equal(findingSentence("proved-wrong",party),"This line proved Brom Bones wrong.");
+  assert.equal(findingSentence("proved-wrong",road),"This line proved the character they questioned wrong.");
+  // Needs help: saved progress but nothing proven. A student who never saved progress has not started.
+  assert.equal(row("Hugo").needsHelp,true);assert.equal(row("Half").needsHelp,true);
+  assert.equal(row("New").needsHelp,false);assert.equal(row("New").started,false);assert.equal(row("Amara").needsHelp,false);
+  assert.equal(e.summary.needsHelp,2);
+  // Spreadsheet: one row per student and clue, with commas and quotes escaped.
+  const csv=evidenceCsv(e).split("\r\n");
+  assert.equal(csv.length,1+10*16);
+  assert.match(csv[0],/^Student,Scene,Clue,Proven,Line from the story,Student explanation,Character check$/);
+  assert.ok(csv.some(l=>l.startsWith("Amara,")&&l.includes("Proved the character wrong")));
+});
+
+test("evidence sample class quotes Sleepy Hollow exactly and has the mix the demo promises", async()=>{
+  const {sampleEvidenceStudents}=await import("../lib/sample-classroom.ts");
+  const {quoteInText}=await import("../lib/storybook.ts");
+  const world=JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8"));
+  const source=await readFile(new URL("../worlds/sleepy-hollow/source.md",import.meta.url),"utf8");
+  const clueIds=new Set(world.scenes.flatMap((s:{artifacts:{id:string}[]})=>s.artifacts.map(a=>a.id)));
+  assert.equal(sampleEvidenceStudents.length,8);
+  for(const s of sampleEvidenceStudents)for(const [id,a] of Object.entries(s.answers??{})){assert.ok(clueIds.has(id),id);assert.ok(quoteInText(a.notice,source),a.notice)}
+  assert.ok(sampleEvidenceStudents.filter(s=>Object.values(s.answers??{}).some(a=>a.craft==="contradicts")).length>=2);
+  assert.equal(sampleEvidenceStudents.filter(s=>s.answers&&!Object.keys(s.answers).length).length,1);
+});
+
+test("a teacher cannot read another teacher's class evidence", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {getClassroomStore}=await import("../lib/classroom/store.ts");
+  const {loadClassEvidence}=await import("../lib/classroom/evidence-server.ts");
+  const store=getClassroomStore();assert.ok(store,"memory store");
+  const owner=await store.ensureTeacher("test:owner","owner@example.com"),other=await store.ensureTeacher("test:other","other@example.com");
+  const cls=await store.createClass(owner.id,{name:"Period 1",worldId:"sleepy-hollow",grade:7});
+  const student=await store.createStudent(cls.id,"Robin","hash");assert.notEqual(student,"taken");
+  await store.saveProgress((student as {id:string}).id,{v:1,worldId:"sleepy-hollow",scene:0,submitted:false,readerProgress:{},artifactAnswers:{"empty-schoolhouse":{notice:"It was most ingeniously secured",interpret:"He locks it carefully.",craft:"contradicts",technique:"",revisions:[]}},savedTextEvidence:[],storyFrames:{},updatedAt:new Date().toISOString()});
+  assert.equal(await loadClassEvidence(store,other.id,cls.id),null,"another teacher gets nothing");
+  const mine=await loadClassEvidence(store,owner.id,cls.id);
+  assert.equal(mine?.students.length,1);assert.equal(mine?.students[0].proven,1);assert.equal(mine?.students[0].provedWrong,1);
+});
+
+test("class students start a clue on the ask step when the scene has characters", async()=>{
+  const React=(await import("react")).default;
+  const {renderToString}=await import("react-dom/server");
+  const {useClueSteps,clueStepPlan}=await import("../app/clue-steps.ts");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  const scene=world.scenes.find(s=>s.available_characters.length)!,clue=scene.artifacts[0];
+  const classDemo={id:"00000000-0000-4000-8000-000000000001",preset:"class_student",artifactAnswers:{},savedTextEvidence:[]} as never;
+  let seen:{step:string;steps:string[]}|null=null;
+  function Probe(){const s=useClueSteps({world,scene,clue,roleId:world.roles[0].id,demo:classDemo,setDemo:()=>{},passages:[]});seen={step:s.step,steps:s.steps};return null}
+  renderToString(React.createElement(Probe));
+  assert.deepEqual(seen,{step:"ask",steps:["ask","prove","explain"]});
+  // A scene with no characters still starts at prove.
+  assert.deepEqual(clueStepPlan(world,{...scene,available_characters:[]}).steps,["prove","explain"]);
+});
+
 test("teacher demo sample data quotes the story exactly and tags real benchmarks", async()=>{
   const {sampleCaseFile,sampleFrames,sampleStudents}=await import("../lib/sample-classroom.ts");
   const {quoteInText}=await import("../lib/storybook.ts");

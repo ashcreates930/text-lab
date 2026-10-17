@@ -5,23 +5,26 @@ import {useEffect,useMemo,useState} from "react";
 import {AlertTriangle,ArrowRight,BookOpen,Check,ChevronLeft,ChevronRight,KeyRound,MessageSquare,Quote,Users} from "lucide-react";
 import {WorldPackSchema,type WorldPack} from "@/lib/world-schema";
 import {cluesByPage} from "@/lib/storybook";
-import {STUCK_MINUTES,sampleCaseFile,sampleClass,sampleFrames,sampleStopAndTalk,sampleStudents} from "@/lib/sample-classroom";
+import {STUCK_MINUTES,sampleCaseFile,sampleClass,sampleEvidenceClass,sampleEvidenceStudents,sampleFrames,sampleStopAndTalk,sampleStudents} from "@/lib/sample-classroom";
+import {buildEvidence} from "@/lib/classroom/evidence";
+import {EvidenceView} from "./evidence-view";
 
-type Tab="overview"|"casefile"|"frames"|"live"|"code";
-const tabs:[Tab,string][]=[["overview","Class overview"],["casefile","Case file"],["frames","Picture frames"],["live","Live lesson"],["code","Class code"]];
+type Tab="evidence"|"overview"|"casefile"|"frames"|"live"|"code";
+const tabs:[Tab,string][]=[["evidence","Evidence"],["overview","Class overview"],["casefile","Case file"],["frames","Picture frames"],["live","Live lesson"],["code","Class code"]];
 
 // embedded: shown inside the teacher and parent hub, under its own page heading, so the class name is an h2.
 export function TeacherDemo({onSignIn,embedded=false}:{onSignIn:()=>void;embedded?:boolean}){
  const Heading=embedded?"h2":"h1";
- const [world,setWorld]=useState<WorldPack|null>(null),[tab,setTab]=useState<Tab>("overview");
+ const [world,setWorld]=useState<WorldPack|null>(null),[tab,setTab]=useState<Tab>("evidence");
  useEffect(()=>{fetch(`/worlds/${sampleClass.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setWorld(null))},[]);
  return <div className="case-ui mx-auto max-w-6xl px-4 pb-20 pt-6 md:px-8">
   <div role="note" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-dashed border-[#A0472C]/60 bg-[#F4E1D6]/60 px-5 py-3"><p className="text-[16px] font-semibold text-[#8A3B23]">Sample classroom. Sign in to create your own class.</p><button type="button" onClick={onSignIn} className="case-secondary !min-h-11">Teacher sign in <ArrowRight size={16}/></button></div>
   <p className="mt-6 text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Teacher view · sample data</p>
-  <Heading className="mt-1 text-[32px] font-bold leading-tight md:text-[38px]">{sampleClass.name}</Heading>
-  <p className="mt-1 text-[16px] text-[#6B6457]">{world?.title??"The Tell-Tale Heart"} · {sampleStudents.length} students · fictional names</p>
+  {/* The Evidence tab shows its own sample class (Sleepy Hollow); the other tabs show the Tell-Tale Heart class. */}
+  <Heading className="mt-1 text-[32px] font-bold leading-tight md:text-[38px]">{tab==="evidence"?sampleEvidenceClass.name:sampleClass.name}</Heading>
+  <p className="mt-1 text-[16px] text-[#6B6457]">{tab==="evidence"?`The Legend of Sleepy Hollow · ${sampleEvidenceStudents.length} students`:`${world?.title??"The Tell-Tale Heart"} · ${sampleStudents.length} students`} · fictional names</p>
   <div role="tablist" aria-label="Sample classroom" className="mt-6 flex gap-2 overflow-x-auto pb-1">{tabs.map(([id,label])=><button key={id} role="tab" type="button" aria-selected={tab===id} onClick={()=>setTab(id)} className={`min-h-11 shrink-0 rounded-full px-4 text-[15px] font-semibold ${tab===id?"bg-[#2A2620] text-white":"bg-[#EFE8D8] text-[#2A2620] hover:bg-[#E4DCCB]"}`}>{label}</button>)}</div>
-  <div role="tabpanel" className="mt-6">{!world?<p className="text-[16px] text-[#6B6457]">Opening the sample class…</p>
+  <div role="tabpanel" className="mt-6">{tab==="evidence"?<SampleEvidence/>:!world?<p className="text-[16px] text-[#6B6457]">Opening the sample class…</p>
    :tab==="overview"?<Overview world={world} onCaseFile={()=>setTab("casefile")}/>
    :tab==="casefile"?<CaseFile world={world}/>
    :tab==="frames"?<Frames/>
@@ -113,4 +116,14 @@ function ClassCode(){
    <ol className="mt-5 space-y-3 text-[16px] leading-6">{["Students open Text Lab and type the code in the “Class code” box at the top of the page, or scan your QR code.","They type a first name or nickname. That's it: no account.","They land on their shelf with your story ready. You see their progress here."].map((t,i)=><li key={t} className="flex gap-3"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#A0472C] text-[14px] font-bold text-white">{i+1}</span>{t}</li>)}</ol>
    <p className="mt-5 flex items-center gap-2 rounded-2xl bg-[#EFE8D8] px-4 py-3 text-[15px]"><Users size={16}/> This is a sample. No class was created, and the code doesn't work.</p></div>}
  </div>;
+}
+
+// The Evidence tab with a fictional Sleepy Hollow class (lib/sample-classroom.ts), built by the same code as a real
+// class's Evidence view, so visitors see exactly what a teacher would.
+function SampleEvidence(){
+ const [world,setWorld]=useState<WorldPack|null>(null);
+ useEffect(()=>{fetch(`/worlds/${sampleEvidenceClass.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setWorld(null))},[]);
+ const evidence=useMemo(()=>world?buildEvidence(world,sampleEvidenceStudents.map((s,i)=>({id:`sample-${i}`,nickname:s.nickname,answers:s.answers}))):null,[world]);
+ if(!evidence)return <p className="text-[16px] text-[#6B6457]">Opening the sample class…</p>;
+ return <EvidenceView evidence={evidence} sample className={sampleEvidenceClass.name}/>;
 }
