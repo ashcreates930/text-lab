@@ -28,6 +28,7 @@ import { TeacherHub } from "./teacher-hub";
 import { MessageCircleHeart } from "lucide-react";
 import { Landing } from "./landing";
 import { BookCover, BookSpread, saveSide, savedSide, type Side } from "./book-home";
+import { homeStartView } from "./home-start";
 import { ClassBar, ClassHome, ClassLive, type ClassAuth } from "./class-student";
 import { LessonPlayer, MiniLessonLibrary, type LessonRecord } from "./mini-lessons";
 import { Join, Owner, Pricing, Student, Teacher, Waitlist, PickStory, ChooseLevel } from "./ui";
@@ -208,7 +209,7 @@ export default function Home() {
       });
     } else if (params.get("owner") === "1") {
       setView("owner"); getBrowserSupabase()?.auth.getSession().then(({ data }) => { if (data.session) loadOwnerWaitlist(); });
-    } else if (lastSide && !restored) setView("book");
+    } else { const start = homeStartView(lastSide, restored); if (start) setView(start); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {

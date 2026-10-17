@@ -418,6 +418,19 @@ test("class students start a clue on the ask step when the scene has characters"
   assert.deepEqual(clueStepPlan(world,{...scene,available_characters:[]}).steps,["prove","explain"]);
 });
 
+test("a returning visitor with a saved side starts on the home page, not the book", async()=>{
+  const {homeStartView}=await import("../app/home-start.ts");
+  assert.equal(homeStartView("student",false),"landing");
+  assert.equal(homeStartView("teacher",false),"landing");
+  assert.equal(homeStartView(null,false),"landing");
+  // Resuming a story keeps the saved screen instead.
+  assert.equal(homeStartView("student",true),null);
+  // page.tsx uses this decision and never sends the home flow to the book view.
+  const page=await readFile(new URL("../app/page.tsx",import.meta.url),"utf8");
+  assert.match(page,/homeStartView\(lastSide, restored\)/);
+  assert.doesNotMatch(page,/setView\("book"\)/);
+});
+
 test("teacher demo sample data quotes the story exactly and tags real benchmarks", async()=>{
   const {sampleCaseFile,sampleFrames,sampleStudents}=await import("../lib/sample-classroom.ts");
   const {quoteInText}=await import("../lib/storybook.ts");
