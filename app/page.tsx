@@ -52,7 +52,9 @@ export type Demo = {
   briefingComplete:boolean; savedTextEvidence:SavedTextEvidence[]; authorshipRanges:AuthorshipRange[]; analysisReport?:AnalysisReport;
   previewComplete?:boolean; course?:"all"|"best"|"ap"|"aice"; lessonsDone?:Record<string,LessonRecord>; portionUnlocks?:string[]; classAuth?:ClassAuth; homeLanguage?:HomeLanguage|null;
   // Storybook reader: current page, furthest page reached, briefing seen, sections solved, and the student's own picture frames.
-  readerProgress?:Record<string,import("./storybook/reader").ReaderProgress>; classProgressLoaded?:boolean;
+  readerProgress?:Record<string,import("./storybook/reader").ReaderProgress>;
+  // The option chosen at each scene's choice point (scene id -> option id).
+  choices?:Record<string,string>; classProgressLoaded?:boolean;
   storyFrames?:Record<string,{kind:"add_detail"|"student";description:string;quote:string;saved_at:string;image?:string;check?:{ok:boolean;notes:string[]}}>;
 };
 type ScreenSnapshot = { insideTheTextScreen: true; sequence: number; view: View; demo: Demo };

@@ -2,7 +2,7 @@
 // The simplified student flow: land in the scene, open a clue, ask a character, prove it with a line from the story.
 // Adults (teacher or parent) choose the story, grade and language; students never see those settings.
 import {useEffect,useMemo,useRef,useState} from "react";
-import {PlayCircle,ArrowLeft,ArrowRight,BookOpen,Check,ChevronDown,Lock,MessageCircle,Printer,Quote,Search,Volume2} from "lucide-react";
+import {PlayCircle,ArrowLeft,ArrowRight,BookOpen,Check,ChevronDown,LayoutGrid,Lock,MessageCircle,Printer,Quote,Search,Volume2} from "lucide-react";
 import {WorldPackSchema,type WorldPack} from "@/lib/world-schema";
 import {parseSourcePassages,type SourcePassage} from "@/lib/source-passages";
 import type {Demo} from "./page";
@@ -13,6 +13,8 @@ import {CLASS_AI_OFF,evidenceLabel,isDone,useClueSteps,type Clue,type Scene} fro
 import {StorybookReader} from "./storybook/reader";
 import {firstLockedPage,reconcileSaved} from "@/lib/storybook";
 import {useLayoutEffect} from "react";
+import {AmbientPlayer,CaseBoard,CaseBoardDialog,ConsequenceMoment,Portrait,SoundToggle,useCharacterVoice,useSoundPref} from "./game-feel";
+import {choicesMade} from "@/lib/game-feel";
 const STORYBOOK_ON=false;
 
 function sentences(text:string){return (text.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g)??[text]).map(s=>s.trim()).filter(Boolean)}
@@ -47,7 +49,9 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback}:{d
 }
 
 function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue,onExit,toast,celebrating,rankUp,justProven,onTutorial}:{world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string;onTutorial?:()=>void}){
- const [reading,setReading]=useState(false);
+ const [reading,setReading]=useState(false),[boardOpen,setBoardOpen]=useState(false),[moment,setMoment]=useState<{text:string;image:string}|null>(null);
+ // Ambient sound: on for the demo, off for class sessions; the student can switch it either way.
+ const [ambientOn,toggleAmbient]=useSoundPref("ambient",demo.preset);
  const done=scene.artifacts.filter(a=>isDone(demo,a.id)).length,total=scene.artifacts.length,allDone=done===total;
  const locked=(a:Clue)=>!!a.unlock_condition?.startsWith("artifact:")&&!isDone(demo,a.unlock_condition.slice(9));
  const next=scene.artifacts.find(a=>!isDone(demo,a.id)&&!locked(a));
@@ -56,7 +60,11 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue
  function goNext(){setDemo(d=>({...d,scene:d.scene+1,events:[...d.events,"scene_complete"]}));window.scrollTo({top:0})}
  function finish(){playStamp(250);setDemo(d=>({...d,submitted:true,events:[...d.events,"case_closed"]}));window.scrollTo({top:0})}
  function listen(){if(scene.narration_audio){new Audio(scene.narration_audio).play().catch(()=>{});return}const u=new SpeechSynthesisUtterance(scene.narration);u.rate=.92;speechSynthesis.cancel();speechSynthesis.speak(u)}
+ const nextImage=world.scenes[sceneIndex+1]?.background_image??scene.background_image;
  return <div className="case-ui mx-auto max-w-6xl px-4 pb-24 pt-6 md:px-8">
+  <AmbientPlayer src={moment?null:scene.ambient_audio} on={ambientOn}/>
+  {moment&&<ConsequenceMoment image={moment.image} text={moment.text} onContinue={()=>{setMoment(null);goNext()}}/>}
+  {boardOpen&&<CaseBoardDialog world={world} answers={demo.artifactAnswers} onClose={()=>setBoardOpen(false)}/>}
   <div className="flex items-center justify-between gap-4">
    <button onClick={onExit} className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]"><ArrowLeft size={18}/> Stories</button>{onTutorial&&<button onClick={onTutorial} className="mr-auto inline-flex items-center gap-2 rounded-full px-3 py-2 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]"><PlayCircle size={18}/> <span className="hidden sm:inline">How it works</span><span className="sm:hidden">Tutorial</span></button>}
    <div className="flex items-center gap-3 text-[15px] text-[#6B6457]"><span className="hidden sm:inline">{world.title}</span><span className="whitespace-nowrap rounded-full bg-[#EFE8D8] px-3 py-1 font-semibold text-[#2A2620]">Scene {sceneIndex+1} of {world.scenes.length}</span><RankChip/></div>
@@ -69,7 +77,7 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue
    {allDone&&<div aria-hidden className={`case-stamp pointer-events-none z-10 ${celebrating?"":"case-stamp-static"}`}>Scene solved</div>}
    <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent p-5 pt-16 md:p-8 md:pt-24">
     <p className="text-[13px] font-semibold uppercase tracking-wide text-[#F3C9B2]">You are the {role.name}</p>
-    <p className="mt-1 max-w-3xl text-[20px] font-semibold leading-snug text-white md:text-[26px]">{role.goal}</p>
+    <h1 className="mt-1 max-w-3xl text-[20px] font-semibold leading-snug text-white outline-none md:text-[26px]">{role.goal}</h1>
     <HomeText text={role.goal} className="border-[#F3C9B2] text-[#F7E3D7]"/>
    </div>
   </div>
@@ -87,12 +95,13 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue
     </button></li>})}</ul>
     {allDone&&<div className="mt-8 rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]">
      {last?<><h3 className="text-[22px] font-bold">You proved every clue.</h3><p className="mt-2 text-[16px] text-[#4A4438]">Close the case to stamp your case file.</p><button onClick={finish} className="case-primary mt-5">Close the case <ArrowRight size={18}/></button></>
-     :scene.choice_point?<><h3 className="text-[22px] font-bold">{scene.choice_point.prompt}</h3><HomeText text={scene.choice_point.prompt}/><div className="mt-5 grid gap-3 sm:grid-cols-2">{scene.choice_point.options.map(o=><button key={o.id} onClick={()=>{setDemo(d=>({...d,events:[...d.events,"delegation"],connection:o.consequence_narration}));goNext()}} className="rounded-2xl bg-[#A0472C] px-5 py-4 text-left text-[17px] font-semibold text-white transition hover:bg-[#8A3B23]">{o.label}<HomeText text={o.label} className="border-white/60 text-[15px] font-normal text-white/90"/></button>)}</div></>
+     :scene.choice_point?<><h3 className="text-[22px] font-bold">{scene.choice_point.prompt}</h3><HomeText text={scene.choice_point.prompt}/><div className="mt-5 grid gap-3 sm:grid-cols-2">{scene.choice_point.options.map(o=><button key={o.id} onClick={()=>{setDemo(d=>({...d,events:[...d.events,"delegation"],connection:o.consequence_narration,choices:{...(d.choices??{}),[scene.id]:o.id}}));setMoment({text:o.consequence_narration,image:nextImage})}} className="rounded-2xl bg-[#A0472C] px-5 py-4 text-left text-[17px] font-semibold text-white transition hover:bg-[#8A3B23]">{o.label}<HomeText text={o.label} className="border-white/60 text-[15px] font-normal text-white/90"/></button>)}</div></>
      :<button onClick={goNext} className="case-primary">Next scene <ArrowRight size={18}/></button>}
     </div>}
    </section>
    <aside className="space-y-3">
-    <button onClick={listen} className="case-secondary w-full"><Volume2 size={18}/> Listen to the scene</button>
+    <button onClick={()=>setBoardOpen(true)} className="case-secondary w-full"><LayoutGrid size={18}/> Case board</button>
+    <div className="flex flex-wrap items-center gap-2"><button onClick={listen} className="case-secondary flex-1"><Volume2 size={18}/> Listen to the scene</button>{scene.ambient_audio&&<SoundToggle on={ambientOn} onToggle={toggleAmbient} label="Sound"/>}</div>
     <button onClick={()=>setReading(v=>!v)} aria-expanded={reading} className="case-secondary w-full"><BookOpen size={18}/> {reading?"Hide":"Read"} this part of the story <ChevronDown size={16} className={`ml-auto transition ${reading?"rotate-180":""}`}/></button>
     {reading&&<div className="max-h-[60vh] space-y-4 overflow-y-auto rounded-2xl bg-[#FFFDF8] p-5 font-serif text-[17px] leading-8 text-[#2A2620] shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]">{readingText.map(p=><p key={p.id}>{p.text}</p>)}{!readingText.length&&<p className="text-[#6B6457]">The story text is loading.</p>}</div>}
     {scene.summary&&<div className="rounded-2xl bg-[#EFE8D8] p-5"><p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">What happens here</p><p className="mt-2 text-[15px] leading-6 text-[#4A4438]">{scene.summary}</p><HomeText text={scene.summary} className="text-[15px]"/></div>}
@@ -104,6 +113,14 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue
 function ClueView({world,scene,clue,roleId,demo,setDemo,passages,onClose}:{world:WorldPack;scene:Scene;clue:Clue;roleId:string;demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];onClose:(saved:boolean,info?:{solves:boolean;factCheck:boolean})=>void}){
  const {chars,character,setCharacter,char,step,setStep,question,setQuestion,reply,asked,busy,proof,setProof,stance,setStance,explain,setExplain,source,notice,interpret,suggestions,steps,stepNo,ask,save:saveSteps}=useClueSteps({world,scene,clue,roleId,demo,setDemo,passages});
  const boxRef=useRef<HTMLTextAreaElement>(null);const [peek,setPeek]=useState(false);
+ // Character voices: on for the demo, off for class sessions. A new answer plays once; the speaker button replays it.
+ const [voicesOn,toggleVoices]=useSoundPref("voices",demo.preset);
+ const voice=useCharacterVoice(world.id,demo.id);
+ const askedOf=useRef(character),voiced=useRef("");
+ useEffect(()=>{if(busy)askedOf.current=character},[busy,character]);
+ useEffect(()=>{if(!reply||busy||voiced.current===reply)return;voiced.current=reply;if(voicesOn)voice.play(reply,askedOf.current)},[reply,busy,voicesOn,voice]);
+ useEffect(()=>{if(!voicesOn)voice.stop()},[voicesOn,voice]);
+ const replier=world.characters.find(c=>c.id===askedOf.current)??char;
  function save(){const info=saveSteps();if(info)onClose(true,info)}
  return <div className="case-ui mx-auto max-w-6xl px-4 pb-24 pt-6 md:px-8">
   <div className="flex items-center justify-between gap-4">
@@ -125,11 +142,11 @@ function ClueView({world,scene,clue,roleId,demo,setDemo,passages,onClose}:{world
      <p className="text-[14px] font-semibold text-[#8A3B23]">Clue {scene.artifacts.findIndex(a=>a.id===clue.id)+1} of {scene.artifacts.length} · {evidenceLabel[clue.evidence_type]}</p>
      <h1 className="mt-1 text-[28px] font-bold leading-tight">{clue.name}</h1><HomeText text={clue.name}/>
      {step==="ask"&&char&&<div className="mt-6">
-      <h2 className="text-[20px] font-bold">Ask {chars.length>1?"a character":char.name}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="flex items-center gap-3 text-[20px] font-bold">{chars.length===1&&<Portrait character={char} size={44}/>}Ask {chars.length>1?"a character":char.name}</h2><SoundToggle on={voicesOn} onToggle={toggleVoices} label="Voices"/></div>
       <p className="mt-1 text-[15px] text-[#6B6457]">Characters can be wrong. You'll check the answer against the story next.</p>
-      {chars.length>1&&<div className="mt-4 flex flex-wrap gap-2">{chars.map(c=><button key={c.id} onClick={()=>setCharacter(c.id)} className={`rounded-full px-4 py-2 text-[15px] font-semibold ${character===c.id?"bg-[#2A2620] text-white":"bg-[#EFE8D8] text-[#2A2620]"}`}>{c.name}</button>)}</div>}
+      {chars.length>1&&<div className="mt-4 flex flex-wrap gap-2">{chars.map(c=><button key={c.id} onClick={()=>setCharacter(c.id)} aria-pressed={character===c.id} className={`inline-flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-4 text-[15px] font-semibold ${character===c.id?"bg-[#2A2620] text-white":"bg-[#EFE8D8] text-[#2A2620]"}`}><Portrait character={c} size={36}/>{c.name}</button>)}</div>}
       {!reply&&!busy&&<div className="mt-4 flex flex-col gap-2">{suggestions.map(s=><button key={s} onClick={()=>ask(s)} className="rounded-2xl bg-[#F4E1D6] px-4 py-3 text-left text-[16px] text-[#2A2620] transition hover:bg-[#EDD3C4]"><MessageCircle size={16} className="mr-2 inline text-[#A0472C]"/>{s}</button>)}</div>}
-      {(asked||busy)&&<div className="mt-5 space-y-3"><p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-[#2A2620] px-4 py-3 text-[16px] text-white">{asked}</p><div className="max-w-[90%] rounded-2xl rounded-bl-md bg-[#EFE8D8] px-4 py-3 text-[16px] leading-7"><p className="text-[13px] font-semibold text-[#8A3B23]">{char.name}</p>{busy?<p className="text-[#6B6457]">Thinking…</p>:<p>{reply}</p>}</div></div>}
+      {(asked||busy)&&<div className="mt-5 space-y-3"><p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-[#2A2620] px-4 py-3 text-[16px] text-white">{asked}</p><div className="flex max-w-[94%] items-end gap-3">{replier&&<Portrait character={replier} size={48} speaking={!!voice.speaking&&voice.speaking===replier.id}/>}<div className="min-w-0 flex-1 rounded-2xl rounded-bl-md bg-[#EFE8D8] px-4 py-3 text-[16px] leading-7"><div className="flex items-center justify-between gap-2"><p className="text-[13px] font-semibold text-[#8A3B23]">{replier?.name??char.name}</p>{!busy&&reply&&replier&&<button type="button" onClick={()=>voice.play(reply,replier.id)} aria-label={`Hear ${replier.name} say it again`} title="Hear it again" className="grid h-9 w-9 place-items-center rounded-full text-[#8A3B23] hover:bg-[#E4DCCB]"><Volume2 size={17}/></button>}</div>{busy?<p className="text-[#6B6457]">Thinking…</p>:<p>{reply}</p>}</div></div></div>}
       <form onSubmit={e=>{e.preventDefault();ask(question)}} className="mt-4 flex gap-2"><label className="sr-only" htmlFor="ask-box">Your question</label><input id="ask-box" value={question} onChange={e=>setQuestion(e.target.value)} maxLength={300} placeholder={reply?"Ask a follow-up…":"Or type your own question…"} className="min-w-0 flex-1 rounded-2xl border border-[#E4DCCB] bg-white px-4 py-3 text-[16px] outline-none focus:border-[#A0472C]"/><button disabled={busy||!question.trim()} className="rounded-2xl bg-[#2A2620] px-4 text-[15px] font-semibold text-white disabled:opacity-40">Ask</button></form>
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3"><button onClick={()=>setStep("prove")} className="text-[15px] text-[#6B6457] underline-offset-4 hover:underline">Skip, I'll look myself</button>{reply&&<button onClick={()=>setStep("prove")} className="case-primary">Check it in the story <ArrowRight size={18}/></button>}</div>
      </div>}
@@ -162,6 +179,7 @@ export function CaseSummary({world,demo,onAnotherStory}:{world:WorldPack;demo:De
  const items=world.scenes.flatMap(s=>s.artifacts).filter(a=>isDone(demo,a.id));
  const caught=items.filter(a=>demo.artifactAnswers[a.id]?.craft==="contradicts").length;
  const progress=useProgress();
+ const chosen=choicesMade(world,demo.choices);
  const date=new Date().toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"});
  return <div className="case-ui mx-auto max-w-3xl px-4 pb-24 pt-10 md:px-8">
   <div className="relative overflow-hidden rounded-3xl bg-[#FFFDF8] shadow-[0_10px_40px_-14px_rgba(42,38,32,.35)] print:shadow-none">
@@ -175,7 +193,10 @@ export function CaseSummary({world,demo,onAnotherStory}:{world:WorldPack;demo:De
     <div aria-hidden className="case-stamp case-stamp-page justify-self-center">Case closed</div>
    </div>
   </div>
-  <ol className="mt-6 space-y-4">{items.map((a,i)=>{const x=demo.artifactAnswers[a.id];return <li key={a.id} className="rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)] print:break-inside-avoid print:shadow-none">
+  {chosen.length>0&&<ul className="mt-6 space-y-2 rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)] print:shadow-none">{chosen.map(c=><li key={c.sceneId} className="text-[16px] text-[#2A2620]"><span className="font-semibold">You chose:</span> {c.label}</li>)}</ul>}
+  {/* On screen: the case board. On paper: the clean list below, so it fits the page. */}
+  <div className="mt-6 print:hidden"><h2 className="mb-3 text-[22px] font-bold">Your case board</h2><CaseBoard world={world} answers={demo.artifactAnswers}/></div>
+  <ol className="mt-6 hidden space-y-4 print:block">{items.map((a,i)=>{const x=demo.artifactAnswers[a.id];return <li key={a.id} className="rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)] print:break-inside-avoid print:shadow-none">
    <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-[14px] font-semibold text-[#8A3B23]">Exhibit {i+1}</p>{x.craft==="contradicts"&&<FactCheckerBadge count={1}/>}</div>
    <h2 className="text-[20px] font-bold">{a.name}</h2>
    <p className="mt-3 text-[17px] leading-7">{x.interpret}</p>

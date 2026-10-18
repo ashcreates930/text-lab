@@ -188,7 +188,8 @@
         "Do not mention anything she has not found or said in the passages.",
         "Never describe what Mrs. Wright did, said, or looked like yesterday morning as if you saw it. You were not there; you know only what Mr. Hale has told."
       ],
-      "voice_id": "EXAVITQu4vr4xnSDxMaL"
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "portrait": "/worlds/trifles/characters/mrs-hale.png"
     },
     {
       "id": "mrs-peters",
@@ -202,7 +203,8 @@
         "Do not claim to know who killed John Wright.",
         "Do not mention anything she has not found or said in the passages."
       ],
-      "voice_id": "EXAVITQu4vr4xnSDxMaL"
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "portrait": "/worlds/trifles/characters/mrs-peters.png"
     },
     {
       "id": "mr-hale",
@@ -217,7 +219,8 @@
         "Do not describe the body or the rope beyond what the play states.",
         "Do not say Mrs. Wright looked scared as a fact; he took that back himself."
       ],
-      "voice_id": "onwK4e9ZLuTAKqWW03F9"
+      "voice_id": "onwK4e9ZLuTAKqWW03F9",
+      "portrait": "/worlds/trifles/characters/mr-hale.png"
     }
   ],
   "glossary": [

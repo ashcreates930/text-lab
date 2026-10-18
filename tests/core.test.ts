@@ -431,6 +431,55 @@ test("a returning visitor with a saved side starts on the home page, not the boo
   assert.doesNotMatch(page,/setView\("book"\)/);
 });
 
+test("game layer: portraits fall back to initials, and every character has a portrait file", async()=>{
+  const {initials,portraitFor}=await import("../lib/game-feel.ts");
+  assert.equal(initials("Hans Van Ripper"),"HR");assert.equal(initials("Mrs. Hale"),"MH");assert.equal(initials("Brom Bones"),"BB");assert.equal(initials("The officer"),"O");
+  assert.deepEqual(portraitFor({name:"Brom Bones"}),{kind:"initials",text:"BB"});
+  assert.deepEqual(portraitFor({name:"Brom Bones",portrait:"/worlds/sleepy-hollow/characters/brom-bones.png"}),{kind:"image",src:"/worlds/sleepy-hollow/characters/brom-bones.png"});
+  for(const id of ["sleepy-hollow","trifles","tell-tale-heart"]){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    for(const c of world.characters){assert.equal(c.portrait,`/worlds/${id}/characters/${c.id}.png`);await readFile(new URL(`../public${c.portrait}`,import.meta.url))}
+  }
+});
+
+test("game layer: voices and ambient sound are on for the demo and off for class sessions", async()=>{
+  const {soundOn,soundKey,soundDefault}=await import("../lib/game-feel.ts");
+  for(const kind of ["voices","ambient"] as const){
+    assert.equal(soundOn(kind,"student_first_visit",null),true);
+    assert.equal(soundOn(kind,"class_student",null),false);
+    // The student's own choice on this device wins, either way.
+    assert.equal(soundOn(kind,"class_student","on"),true);assert.equal(soundOn(kind,"student_first_visit","off"),false);
+    assert.notEqual(soundKey(kind,"class_student"),soundKey(kind,"student_first_visit"));
+  }
+  assert.equal(soundDefault("class_student"),false);
+});
+
+test("game layer: older saves load without a choice, and chosen options read back as labels", async()=>{
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
+  const {choicesMade}=await import("../lib/game-feel.ts");
+  const base={v:1,worldId:"sleepy-hollow",scene:1,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],storyFrames:{},updatedAt:"2026-10-17T12:00:00.000Z"};
+  assert.ok(StudentProgressSchema.safeParse(base).success,"older save without choices");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  const first=world.scenes[0],option=first.choice_point!.options[0];
+  const withChoice=StudentProgressSchema.safeParse({...base,choices:{[first.id]:option.id}});
+  assert.ok(withChoice.success);assert.equal(withChoice.data!.choices![first.id],option.id);
+  assert.deepEqual(choicesMade(world,undefined),[]);
+  assert.deepEqual(choicesMade(world,{[first.id]:option.id}),[{sceneId:first.id,label:option.label}]);
+});
+
+test("game layer: the case board has one card per proven clue, in scene order, with the Fact Checker mark", async()=>{
+  const {caseBoardCards}=await import("../lib/game-feel.ts");
+  const {sampleEvidenceStudents}=await import("../lib/sample-classroom.ts");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  const answers={...sampleEvidenceStudents[0].answers!,"searchers-report":{notice:"a line",interpret:" "}};
+  const cards=caseBoardCards(world,answers);
+  assert.equal(cards.length,9,"one card per proven clue; the half-finished one is left off");
+  assert.deepEqual(cards.map(c=>c.sceneIndex),[...cards.map(c=>c.sceneIndex)].sort((a,b)=>a-b));
+  assert.equal(cards.filter(c=>c.factCheck).length,2);
+  assert.equal(cards.find(c=>c.clueId==="broms-race-tale")!.character,"Brom Bones");
+  assert.equal(caseBoardCards(world,{}).length,0);
+});
+
 test("teacher demo sample data quotes the story exactly and tags real benchmarks", async()=>{
   const {sampleCaseFile,sampleFrames,sampleStudents}=await import("../lib/sample-classroom.ts");
   const {quoteInText}=await import("../lib/storybook.ts");

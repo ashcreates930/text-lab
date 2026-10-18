@@ -218,7 +218,8 @@
         "the old man's name",
         "unsupported motive or diagnosis"
       ],
-      "voice_id": "onwK4e9ZLuTAKqWW03F9"
+      "voice_id": "onwK4e9ZLuTAKqWW03F9",
+      "portrait": "/worlds/tell-tale-heart/characters/narrator.png"
     },
     {
       "id": "officer",
@@ -232,7 +233,8 @@
         "private information",
         "facts not in the story"
       ],
-      "voice_id": "EXAVITQu4vr4xnSDxMaL"
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "portrait": "/worlds/tell-tale-heart/characters/officer.png"
     }
   ],
   "glossary": [
