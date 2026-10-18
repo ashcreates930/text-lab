@@ -2,6 +2,7 @@ import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import nextEnv from "@next/env";
 import OpenAI from "openai";
+import sharp from "sharp";
 import { WorldPackSchema } from "../lib/world-schema.ts";
 import { parseSourcePassages } from "../lib/source-passages.ts";
 import { narrationParts } from "../lib/narration.ts";
@@ -28,7 +29,10 @@ if(selectedWorld&&["sleepy-hollow","trifles"].includes(selectedWorld)&&!elevenLa
 // Both take --world=<id> (several allowed, comma-separated) and leave every other file alone. --ambient also takes
 // --only <scene-id> (or --only=<scene-id,...>) to regenerate just those scenes. A regenerated track gets a new
 // versioned name (<scene>-ambient-v2.mp3, -v3, ...) so no browser or CDN cache can keep playing the old one.
-const portraitsMode=process.argv.includes("--portraits"),ambientMode=process.argv.includes("--ambient");
+// --holograms: one transparent-background PNG per character for Hologram mode (full figure from the waist up, lit
+// from the front, nothing behind them), saved to public/worlds/<story>/holograms/<id>.png and recorded as `hologram` in
+// worlds/<story>/world.json. Takes --world=<id,...> and --only=<story/character,...>.
+const portraitsMode=process.argv.includes("--portraits"),ambientMode=process.argv.includes("--ambient"),hologramsMode=process.argv.includes("--holograms");
 const onlyArg=process.argv.findIndex(a=>a==="--only"||a.startsWith("--only="));
 const onlyScenes=ambientMode&&onlyArg>=0?(process.argv[onlyArg]==="--only"?process.argv[onlyArg+1]??"":process.argv[onlyArg].slice(7)).split(",").filter(Boolean):null;
 // One sound description per scene, from the scene's setting.
@@ -114,7 +118,7 @@ if(process.argv.includes("--narration")){
   console.log(`Done. Recorded ${made} paragraph(s) (${chars} characters); ${kept} already existed.`);
   process.exit(0);
 }
-if(portraitsMode||ambientMode){
+if(portraitsMode||ambientMode||hologramsMode){
   const worlds=(selectedWorld??"sleepy-hollow,trifles,tell-tale-heart").split(",");
   // Period and setting per story, so every portrait matches its scene art.
   const period:Record<string,string>={
@@ -144,6 +148,23 @@ if(portraitsMode||ambientMode){
         await writeFile(join(out,"characters",`${c.id}.png`),Buffer.from(encoded,"base64"));
         const target=raw.characters.find((x:{id:string})=>x.id===c.id);target.portrait=`/worlds/${id}/characters/${c.id}.png`;
         console.log(`Portrait ${id}/${c.id}.png${result.usage?` · ${result.usage.total_tokens} tokens`:""}`);
+      }
+    }
+    if(hologramsMode){
+      if(!imageClient)throw new Error("OPENAI_API_KEY is required for holograms.");
+      await mkdir(join(out,"holograms"),{recursive:true});
+      const only=process.argv.find(a=>a.startsWith("--only="))?.slice(7).split(",");
+      for(const c of pack.characters){
+        if(only&&!only.includes(`${id}/${c.id}`))continue;
+        // The figure is reflected in a clear pyramid over a black screen: bright, high-contrast edges read best, and
+        // anything dark disappears. The Tell-Tale Heart narrator stays a faceless silhouette, edged in light.
+        const prompt=`A character figure for a school literature app's hologram display: ${c.name}, from ${pack.title} by ${pack.author}. ${c.description} ${special[`${id}/${c.id}`]??""} Setting and clothing: ${period[id]??"period-accurate clothing"}. Waist up, centered, facing the viewer, the whole figure inside the frame with empty space around it. Bright, even front lighting with a soft pale rim light on the edges so the figure glows against black; painterly storybook style. Fully transparent background: no backdrop, floor, shadow, scenery, or objects. Calm, dignified, age-appropriate for students. An original design, not based on any film, television adaptation, or illustrated edition. No text, letters, frames, or borders.`;
+        const result=await imageClient.images.generate({model:process.env.OPENAI_IMAGE_MODEL||"gpt-image-1",prompt,size:"1024x1024",quality:"medium",background:"transparent",output_format:"png"});
+        const encoded=result.data?.[0]?.b64_json;if(!encoded)throw new Error(`No hologram returned for ${id}/${c.id}`);
+        // 768px palette PNG with transparency: about 300 KB instead of 2 MB, for phones on school Wi-Fi.
+        await sharp(Buffer.from(encoded,"base64")).resize(768).png({palette:true,quality:90,compressionLevel:9,effort:10}).toFile(join(out,"holograms",`${c.id}.png`));
+        const target=raw.characters.find((x:{id:string})=>x.id===c.id);target.hologram=`/worlds/${id}/holograms/${c.id}.png`;
+        console.log(`Hologram ${id}/${c.id}.png${result.usage?` · ${result.usage.total_tokens} tokens`:""}`);
       }
     }
     if(ambientMode){

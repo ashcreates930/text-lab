@@ -2,7 +2,7 @@
 // The simplified student flow: land in the scene, open a clue, ask a character, prove it with a line from the story.
 // Adults (teacher or parent) choose the story, grade and language; students never see those settings.
 import {useEffect,useMemo,useRef,useState} from "react";
-import {PlayCircle,ArrowLeft,ArrowRight,BookOpen,Check,LayoutGrid,Lock,MessageCircle,Printer,Quote,Search,ShieldCheck,Square,Volume2,VolumeX} from "lucide-react";
+import {PlayCircle,ArrowLeft,ArrowRight,BookOpen,Check,LayoutGrid,Lock,MessageCircle,Printer,Quote,Search,ShieldCheck,Sparkles,Square,Volume2,VolumeX} from "lucide-react";
 import {WorldPackSchema,type WorldPack} from "@/lib/world-schema";
 import {parseSourcePassages,type SourcePassage} from "@/lib/source-passages";
 import type {Demo} from "./page";
@@ -32,6 +32,7 @@ import {FrameView,StoryboardRow,StoryboardStrip} from "./storyboard";
 import {VerdictPanel,VerdictStamp,VerdictView} from "./verdict";
 import {theoryOf,verdictFor} from "@/lib/verdict";
 import {PlantLieView} from "./plant-lie";
+import {HologramView} from "./hologram-view";
 
 export function CaseFlow(props:{demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void;onTutorial?:()=>void;onFeedback?:()=>void}){
  return <BilingualProvider worldId={props.demo.worldId} lang={props.demo.homeLanguage??null}><CaseInner {...props}/></BilingualProvider>;
@@ -194,9 +195,15 @@ function ClueView({world,scene,clue,roleId,demo,setDemo,passages,onClose}:{world
  useEffect(()=>{if(!lie||!liar||testified.current||!voicesOn||priorLie?.caught)return;const t=setTimeout(()=>{testified.current=true;playRef.current(lie.testimony,liar.id)},150);return()=>clearTimeout(t)},[lie,liar,voicesOn,priorLie]);
  const replier=world.characters.find(c=>c.id===askedOf.current)??char;
  function save(){const info=saveSteps();if(info)onClose(true,info)}
+ // Hologram mode: the character on this clue (the one answering, or the one testifying) with their latest line.
+ const [holo,setHolo]=useState(false);
+ const holoCharacter=(lie&&liar&&step==="prove"?liar:replier)??liar,holoLine=(holoCharacter&&holoCharacter.id===askedOf.current&&reply)||(lie&&holoCharacter?.id===lie.character_id?lie.testimony:"");
+ const closeHolo=()=>{voice.stop();setHolo(false);setTimeout(()=>focusScreenTop(),0)};
+ if(holo&&holoCharacter)return <HologramView character={holoCharacter} worldId={world.id} line={holoLine} sandboxId={demo.id} title={clue.name} onClose={closeHolo}/>;
  return <div className="case-ui mx-auto max-w-6xl px-4 pb-24 pt-6 md:px-8">
   <div className="flex items-center justify-between gap-4">
    <button onClick={()=>onClose(false)} className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]"><ArrowLeft size={18}/> Back to the scene</button>
+   {holoCharacter&&<button type="button" onClick={()=>{voice.stop();setHolo(true)}} className="ml-auto inline-flex items-center gap-2 rounded-full bg-[#2A2620] px-4 py-2 text-[15px] font-semibold text-white hover:bg-[#3A332B]"><Sparkles size={16}/> Hologram<span className="sr-only"> of {holoCharacter.name}</span></button>}
    <ol className="flex items-center gap-2" aria-label={`Step ${stepNo} of ${steps.length}`}>{steps.map((s,i)=><li key={s} className={`h-2 rounded-full transition-all ${i<stepNo?"w-8 bg-[#A0472C]":"w-4 bg-[#E4DCCB]"}`}/>)}</ol>
   </div>
   <div className="mt-5 grid gap-6 lg:grid-cols-[1.05fr_1fr]">

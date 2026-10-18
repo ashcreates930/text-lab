@@ -1388,3 +1388,99 @@ test("plant a lie: approved lies become live rounds, and the answer never reache
   assert.ok(!JSON.stringify(server.playerView(st,ids[1]).round).includes(lies.lineWords(scene.lie!.truth_line).slice(0,30)),"no truth line on the phones");
   assert.equal(await server.playerAct(store,st,ids[0],{kind:"pin",payload:{quote:"x"}},{judgeAllowed:async()=>false}),"Your squad planted this lie. Watch who catches it.");
 });
+
+// ---------- Hologram mode ----------
+test("hologram layout: four copies around a central square, each turned to face outward", async()=>{
+  const h=await import("../lib/hologram.ts");
+  const copies=h.hologramLayout({width:400,height:800,size:1,gap:0.2,mirror:false});
+  assert.deepEqual(copies.map(c=>[c.side,c.rotate]),[["top",0],["right",90],["bottom",180],["left",270]]);
+  // The shorter edge (400) sets the scale: an 80px central square, and copies that reach the screen edge.
+  const [top,right,bottom,left]=copies;
+  assert.equal(top.size,160);assert.equal(top.x,200);assert.equal(top.y,400-40-80);
+  assert.equal(bottom.y,400+40+80);assert.equal(left.x,200-40-80);assert.equal(right.x,200+40+80);
+  assert.equal(left.x-left.size/2,0,"the left copy reaches the screen edge");
+  // Symmetric: every copy sits the same distance from the centre, and none overlaps the central square.
+  const dist=copies.map(c=>Math.hypot(c.x-200,c.y-400));assert.ok(dist.every(d=>d===dist[0]));
+  assert.ok(copies.every(c=>Math.max(Math.abs(c.x-200),Math.abs(c.y-400))-c.size/2>=40));
+});
+
+test("hologram layout: the gap and size sliders, and the mirror toggle", async()=>{
+  const h=await import("../lib/hologram.ts");
+  const at=(gap:number,size=1)=>h.hologramLayout({width:600,height:600,size,gap,mirror:false})[0];
+  assert.ok(at(0.4).size<at(0.1).size,"a wider gap leaves less room");
+  assert.equal(at(0).y+at(0).size/2,300,"no gap: the top copy touches the centre");
+  assert.equal(at(0.9).size,at(0.5).size,"the gap is capped at half the screen");
+  assert.equal(at(0.2,0.5).size,at(0.2,1).size/2);
+  assert.equal(at(0.2,0.01).size,at(0.2,1).size*0.2,"size is at least 20%");
+  const mirrored=h.hologramLayout({width:600,height:600,size:1,gap:0.2,mirror:true});
+  assert.ok(mirrored.every(c=>c.mirror));
+  assert.equal(h.copyTransform(mirrored[1]),"translate(-50%, -50%) rotate(90deg) scaleX(-1)");
+  assert.equal(h.copyTransform(at(0.2) as never),"translate(-50%, -50%) rotate(0deg)");
+  assert.deepEqual(h.hologramLayout({width:0,height:0,...h.HOLOGRAM_DEFAULTS}).map(c=>c.size),[0,0,0,0]);
+});
+
+test("hologram glow follows the voice level; holograms must be transparent PNGs", async()=>{
+  const h=await import("../lib/hologram.ts");
+  const {deflateSync,inflateSync}=await import("node:zlib");
+  assert.equal(h.voiceLevel(new Uint8Array(512).fill(128)),0,"silence");
+  assert.ok(h.voiceLevel(Uint8Array.from({length:512},(_,i)=>i%2?200:56))>0.9,"loud");
+  // A tiny PNG built by hand: 8-bit RGBA, one row of two pixels.
+  const png=(colorType:number,firstAlpha:number)=>{
+    const chunk=(type:string,data:Buffer)=>{const len=Buffer.alloc(4);len.writeUInt32BE(data.length);return Buffer.concat([len,Buffer.from(type),data,Buffer.alloc(4)])};
+    const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(2,0);ihdr.writeUInt32BE(1,4);ihdr[8]=8;ihdr[9]=colorType;
+    const row=Buffer.from([1,10,20,30,firstAlpha,5,5,5,5]);// filter "Sub" on the first row
+    return new Uint8Array(Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk("IHDR",ihdr),chunk("IDAT",deflateSync(row)),chunk("IEND",Buffer.alloc(0))]));
+  };
+  const inflate=(d:Uint8Array)=>new Uint8Array(inflateSync(d));
+  assert.equal(await h.hologramPngProblem(png(6,0),inflate),null);
+  assert.match(String(await h.hologramPngProblem(png(6,255),inflate)),/corner is not transparent/);
+  assert.match(String(await h.hologramPngProblem(png(2,0),inflate)),/transparent background/);
+  assert.match(String(await h.hologramPngProblem(new Uint8Array(40),inflate)),/not a PNG/);
+  // Palette PNGs (what generate-assets saves) are checked through their transparency chunk.
+  const {default:sharp}=await import("sharp");
+  const rgba=Buffer.alloc(8*8*4);for(let i=0;i<64;i++)if(i>=27&&i<=36)rgba.writeUInt32BE(0x88eeffff,i*4);
+  const pal=new Uint8Array(await sharp(rgba,{raw:{width:8,height:8,channels:4}}).png({palette:true}).toBuffer());
+  assert.equal(pal[25],3,"a palette PNG");assert.equal(await h.hologramPngProblem(pal,inflate),null);
+  const solid=new Uint8Array(await sharp({create:{width:8,height:8,channels:3,background:"#000"}}).png({palette:true}).toBuffer());
+  assert.match(String(await h.hologramPngProblem(solid,inflate)),/transparent background|not transparent/);
+  // Every story's holograms pass, and the schema only accepts files in the story's holograms folder.
+  for(const id of ["sleepy-hollow","trifles","tell-tale-heart"]){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    for(const c of world.characters){assert.ok(c.hologram,`${id}/${c.id} has a hologram`);assert.equal(await h.hologramPngProblem(new Uint8Array(await readFile(new URL(`../public${c.hologram}`,import.meta.url))),inflate),null)}
+  }
+  const base=JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8"));
+  base.characters[0].hologram="https://example.com/x.png";
+  assert.equal(WorldPackSchema.safeParse(base).success,false);
+});
+
+test("witness stand: a signed read-only link that plays the testimony on the host's cue", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {memoryLiveStore}=await import("../lib/live/store.ts");
+  const server=await import("../lib/live/server.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"HOLO01",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  assert.equal(server.isWitness(s.id,server.witnessToken(s.id)),true);
+  assert.equal(server.isWitness(s.id,server.witnessToken("another")),false);
+  for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven"])await server.join(store,s,{nickname:n,studentId:null});
+  let st=(await server.loadState(store,s.id))!;
+  assert.equal(server.witnessView(st).witness,null,"nothing on the stand in the lobby");
+  assert.equal(await server.hostAct(store,st,{action:"witness.play"}),"The Witness stand plays during Spot the Lie.");
+  await server.hostAct(store,st,{action:"squads.auto"});st=(await server.loadState(store,s.id))!;
+  await server.hostAct(store,st,{action:"round.start",type:"lie",sceneId:"empty-schoolhouse"});st=(await server.loadState(store,s.id))!;
+  const w=server.witnessView(st);
+  assert.equal(w.witness?.character.id,"hans-van-ripper");assert.equal(w.witness?.line,st.world.scenes[0].lie!.testimony);assert.ok(w.witness?.character.hologram);
+  assert.equal(w.playKey,null);
+  assert.equal(await server.hostAct(store,st,{action:"witness.play"}),null);st=(await server.loadState(store,s.id))!;
+  const first=server.witnessView(st).playKey;assert.ok(first);
+  await server.hostAct(store,st,{action:"witness.play"});st=(await server.loadState(store,s.id))!;
+  assert.notEqual(server.witnessView(st).playKey,first,"each cue plays again");
+  assert.ok(!JSON.stringify(server.witnessView(st)).includes(st.world.scenes[0].lie!.truth_line.slice(0,40)),"the stand never sees the answer");
+});
+
+test("hologram faces: each copy is cut to its wedge of the pyramid, so neighbours never overlap", async()=>{
+  const h=await import("../lib/hologram.ts");
+  assert.equal(h.faceClip(100,0),"polygon(0% 0%, 100% 0%, 100% 50%, 50% 100%, 50% 100%, 0% 50%)","no gap: a triangle meeting at the centre");
+  assert.equal(h.faceClip(100,40),"polygon(0% 0%, 100% 0%, 100% 70%, 70% 100%, 30% 100%, 0% 70%)","with a gap: a trapezoid as wide as the central square");
+  assert.equal(h.faceClip(0,40),"none");
+  assert.ok(h.hologramLayout({width:375,height:812,size:0.9,gap:0.16,mirror:false}).every(c=>c.clip.startsWith("polygon(")));
+});

@@ -2,7 +2,7 @@
 // The host screen for a live round: projector-friendly, large type, one clear next action at a time.
 // Lobby (QR code, squads) → pick a round → live counters → reveal → scoreboard (squads only) → next round or end.
 import {useEffect,useRef,useState} from "react";
-import {Check,Gavel,MessageCircle,Pause,Play,Search,Shuffle,Square,Users,Volume2,X} from "lucide-react";
+import {Check,Gavel,MessageCircle,Pause,Play,Search,Shuffle,Sparkles,Square,Users,Volume2,X} from "lucide-react";
 import type {hostView} from "@/lib/live/server";
 import {ROLE_INFO,OBJECTION_SECONDS,type Role} from "@/lib/live/engine";
 import {hostKey,postJson,readStored,useLive,useScreenTop} from "./use-live";
@@ -57,10 +57,10 @@ function Counter({label,value}:{label:string;value:number|string}){
  return <div className="rounded-2xl bg-[#2E2821] px-4 py-2 text-center" aria-live="polite"><p className="text-[28px] font-bold leading-none tabular-nums">{value}</p><p className="mt-1 text-[14px] text-[#F3C9B2]">{label}</p></div>;
 }
 
-function Qr({url}:{url:string}){
+function Qr({url,label}:{url:string;label?:string}){
  const [svg,setSvg]=useState("");
  useEffect(()=>{let on=true;import("qrcode").then(m=>((m as unknown as {default?:{toString:typeof m.toString}}).default??m).toString(url,{type:"svg",margin:1,color:{dark:"#1E1A15",light:"#FFFDF8"}})).then(s=>{if(on)setSvg(s)}).catch(()=>{});return()=>{on=false}},[url]);
- return <div role="img" aria-label={`QR code to join: ${url}`} className="h-[min(34vh,260px)] w-[min(34vh,260px)] shrink-0 overflow-hidden rounded-2xl bg-[#FFFDF8] p-2 [&_svg]:h-full [&_svg]:w-full" dangerouslySetInnerHTML={{__html:svg}}/>;
+ return <div role="img" aria-label={label??`QR code to join: ${url}`} className="h-[min(34vh,260px)] w-[min(34vh,260px)] shrink-0 overflow-hidden rounded-2xl bg-[#FFFDF8] p-2 [&_svg]:h-full [&_svg]:w-full" dangerouslySetInnerHTML={{__html:svg}}/>;
 }
 
 function Lobby({state,joinUrl,act}:{state:View;joinUrl:string;act:(b:Record<string,unknown>)=>void}){
@@ -123,7 +123,7 @@ function LiveRound({state,act,sessionId}:{state:View;act:(b:Record<string,unknow
  const round=state.round!;
  return <section className="mt-6" aria-live="polite">
   <p className={`text-[#F3C9B2] ${big}`}>{state.purpose}</p>
-  {round.type==="lie"&&"testimony" in round&&<Testimony round={round} sessionId={sessionId} worldId={state.session.worldId}/>}
+  {round.type==="lie"&&"testimony" in round&&<Testimony round={round} sessionId={sessionId} worldId={state.session.worldId} witnessToken={state.witnessToken} act={act}/>}
   {round.type==="verdict"&&"theories" in round&&<div className="mt-4 rounded-3xl bg-[#2E2821] p-6">
    <p className="text-[clamp(24px,2.4vw,40px)] font-bold">{round.question}</p>
    {round.stage==="vote"?<><p className={`mt-2 ${big}`}>Vote on your phone.</p><VoteBars votes={state.votes??[]}/></>:<p className={`mt-3 ${big}`}>Squads: pin three pieces of evidence and write your argument.</p>}
@@ -138,20 +138,33 @@ function LiveRound({state,act,sessionId}:{state:View;act:(b:Record<string,unknow
  </section>;
 }
 
-function Testimony({round,sessionId,worldId}:{round:Extract<NonNullable<View["round"]>,{type:"lie"}>;sessionId:string;worldId:string}){
+// Witness stand (Hologram mode): a phone under a pyramid on the desk. Once it is set up, the testimony plays there in
+// the character's voice instead of on the board. The choice is remembered on this screen.
+const WITNESS_KEY="textlab-live-witness";
+function Testimony({round,sessionId,worldId,witnessToken,act}:{round:Extract<NonNullable<View["round"]>,{type:"lie"}>;sessionId:string;worldId:string;witnessToken:string;act:(b:Record<string,unknown>)=>void}){
  const [playing,setPlaying]=useState(false);const audio=useRef<HTMLAudioElement|null>(null),played=useRef(false);
+ const [witness,setWitness]=useState(()=>{try{return sessionStorage.getItem(WITNESS_KEY)===sessionId}catch{return false}});
+ const [showQr,setShowQr]=useState(false);
+ const witnessUrl=typeof window!=="undefined"?`${window.location.origin}/live/witness/${sessionId}#${witnessToken}`:"";
+ function chooseWitness(on:boolean){if(on){audio.current?.pause();setPlaying(false)}setWitness(on);setShowQr(on);try{if(on)sessionStorage.setItem(WITNESS_KEY,sessionId);else sessionStorage.removeItem(WITNESS_KEY)}catch{}}
  async function play(){
+  if(witness){act({action:"witness.play"});return}
   if(playing){audio.current?.pause();setPlaying(false);return}
   try{const r=await fetch("/api/voice",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({sandboxId:sessionId,text:round.testimony,worldId,character:round.characterId})});if(!r.ok)return;const a=new Audio(URL.createObjectURL(await r.blob()));audio.current=a;a.onended=()=>setPlaying(false);setPlaying(true);await a.play()}catch{setPlaying(false)}
  }
- useEffect(()=>{if(played.current)return;played.current=true;play()},[]);// eslint-disable-line react-hooks/exhaustive-deps
+ useEffect(()=>{if(played.current||witness)return;played.current=true;play()},[]);// eslint-disable-line react-hooks/exhaustive-deps
  useEffect(()=>()=>audio.current?.pause(),[]);
  return <div className="mt-4 flex flex-col gap-5 rounded-3xl bg-[#2E2821] p-6 md:flex-row md:items-center">
   {round.portrait&&<img src={round.portrait} alt="" className={`h-40 w-40 shrink-0 rounded-full object-cover ${playing?"voice-ring":""}`}/>}
   <div className="min-w-0"><p className="text-[18px] font-semibold uppercase tracking-wide text-[#F3C9B2]">Testimony · {round.character} · {round.clueName}{round.planted?" · Planted by a classmate":""}</p>
    <p className="mt-2 font-serif text-[clamp(22px,2.2vw,36px)] leading-snug">“{round.testimony}”</p>
    <p className={`mt-3 ${big} text-[#F3C9B2]`}>One thing {round.character} said is false. Find the line in the story that proves it.</p>
-   <button type="button" onClick={play} aria-label={playing?"Stop voice":`Hear ${round.character}'s testimony`} className="host-btn-secondary mt-4">{playing?<Square size={20}/>:<Volume2 size={22}/>}{playing?"Stop":"Play testimony"}</button></div>
+   <div className="mt-4 flex flex-wrap gap-3">
+    <button type="button" onClick={play} aria-label={witness?`Play ${round.character}'s testimony on the Witness stand`:playing?"Stop voice":`Hear ${round.character}'s testimony`} className="host-btn-secondary">{witness?<Sparkles size={20}/>:playing?<Square size={20}/>:<Volume2 size={22}/>}{witness?"Play on the Witness stand":playing?"Stop":"Play testimony"}</button>
+    <button type="button" onClick={()=>witness?setShowQr(v=>!v):chooseWitness(true)} aria-expanded={showQr} className="host-btn-secondary"><Sparkles size={20}/>{witness?(showQr?"Hide the code":"Witness stand code"):"Witness stand"}</button>
+    {witness&&<button type="button" onClick={()=>chooseWitness(false)} className="host-btn-secondary">Play on the board instead</button>}
+   </div>
+   {showQr&&<div className="mt-4 flex flex-wrap items-center gap-4 rounded-2xl bg-[#1E1A15] p-4"><Qr url={witnessUrl} label="QR code for the Witness stand phone"/><p className="max-w-xs text-[16px] leading-6 text-[#E8DDCB]">Scan with the phone that goes under the hologram pyramid, then tap Start on it. The testimony will play there.</p></div>}</div>
  </div>;
 }
 function Objection({round}:{round:Extract<NonNullable<View["round"]>,{type:"objection"}>}){

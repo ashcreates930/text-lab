@@ -190,7 +190,8 @@
         "Irving's text caricatures Black people in three places: the messenger who brings the party invitation to the schoolhouse, the old musician at the dance, and the people watching the dance from the doors and windows. Never repeat, describe, or joke about any of them. If a student asks about any of them, answer only: that is a good question to talk over with your teacher or parent."
       ],
       "voice_id": "pqHfZKP75CvOlQylNhV4",
-      "portrait": "/worlds/sleepy-hollow/characters/hans-van-ripper.png"
+      "portrait": "/worlds/sleepy-hollow/characters/hans-van-ripper.png",
+      "hologram": "/worlds/sleepy-hollow/holograms/hans-van-ripper.png"
     },
     {
       "id": "brom-bones",
@@ -208,7 +209,8 @@
         "Irving's text caricatures Black people in three places: the messenger who brings the party invitation to the schoolhouse, the old musician at the dance, and the people watching the dance from the doors and windows. Never repeat, describe, or joke about any of them. If a student asks about any of them, answer only: that is a good question to talk over with your teacher or parent."
       ],
       "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
-      "portrait": "/worlds/sleepy-hollow/characters/brom-bones.png"
+      "portrait": "/worlds/sleepy-hollow/characters/brom-bones.png",
+      "hologram": "/worlds/sleepy-hollow/holograms/brom-bones.png"
     }
   ],
   "glossary": [

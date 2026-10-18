@@ -189,7 +189,8 @@
         "Never describe what Mrs. Wright did, said, or looked like yesterday morning as if you saw it. You were not there; you know only what Mr. Hale has told."
       ],
       "voice_id": "XrExE9yKIg1WjnnlVkGX",
-      "portrait": "/worlds/trifles/characters/mrs-hale.png"
+      "portrait": "/worlds/trifles/characters/mrs-hale.png",
+      "hologram": "/worlds/trifles/holograms/mrs-hale.png"
     },
     {
       "id": "mrs-peters",
@@ -204,7 +205,8 @@
         "Do not mention anything she has not found or said in the passages."
       ],
       "voice_id": "EXAVITQu4vr4xnSDxMaL",
-      "portrait": "/worlds/trifles/characters/mrs-peters.png"
+      "portrait": "/worlds/trifles/characters/mrs-peters.png",
+      "hologram": "/worlds/trifles/holograms/mrs-peters.png"
     },
     {
       "id": "mr-hale",
@@ -220,7 +222,8 @@
         "Do not say Mrs. Wright looked scared as a fact; he took that back himself."
       ],
       "voice_id": "iP95p4xoKVk53GoZ742B",
-      "portrait": "/worlds/trifles/characters/mr-hale.png"
+      "portrait": "/worlds/trifles/characters/mr-hale.png",
+      "hologram": "/worlds/trifles/holograms/mr-hale.png"
     }
   ],
   "glossary": [

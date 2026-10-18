@@ -30,6 +30,9 @@ export function playerFromToken(sessionId: string, token: string | null | undefi
   const [playerId, sig] = (token ?? "").split(".");
   return playerId && sig && safeEqual(sig, sign(`${sessionId}:${playerId}`)) ? playerId : null;
 }
+// The Witness stand phone (Hologram mode) gets a link signed for this session; it can only watch, never act.
+export const witnessToken = (sessionId: string) => sign(`${sessionId}:witness`);
+export const isWitness = (sessionId: string, token: string | null | undefined) => !!token && safeEqual(token, witnessToken(sessionId));
 const CODE_LETTERS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 export const newJoinCode = () => Array.from(randomBytes(6), (b) => CODE_LETTERS[b % CODE_LETTERS.length]).join("");
 
@@ -130,9 +133,23 @@ export function hostView(st: LiveState) {
     scores: sessionScores(st.world, st.session, st.squads, st.responses),
     flagged,
     canObjection: hasVerdictPins(st) && st.squads.filter((s) => members(st, s.id).length).length >= 2,
+    witnessToken: witnessToken(st.session.id),
     lieBank: (st.bank ?? []).map((l) => ({ id: l.id, label: `${st.world.characters.find((c) => c.id === l.characterId)?.name ?? "A character"}: ${l.sentence}` })),
     writerSquadId: writerOf(round),
     lieScenes: st.world.scenes.filter((s) => s.lie).map((s, i) => ({ sceneId: s.id, label: `Scene ${st.world.scenes.indexOf(s) + 1}: ${s.lie!.topic}` , index: i })),
+  };
+}
+
+// What the Witness stand phone shows: the testifying character and their line during Spot the Lie, and when the host
+// last asked it to play.
+export function witnessView(st: LiveState) {
+  const round = currentRound(st), lie = lieOf(st, round);
+  const who = lie ? st.world.characters.find((c) => c.id === lie.character_id) : undefined;
+  const cue = [...st.responses].reverse().find((r) => r.roundIndex === st.session.roundIndex && r.kind === "witness");
+  return {
+    session: { id: st.session.id, title: st.world.title, worldId: st.session.worldId, status: st.session.status },
+    witness: st.session.status === "round" && lie && who ? { character: { id: who.id, name: who.name, portrait: who.portrait, hologram: who.hologram }, line: lie.testimony } : null,
+    playKey: cue ? `${st.session.roundIndex}:${cue.id}` : null,
   };
 }
 
@@ -177,7 +194,7 @@ function hasVerdictPins(st: LiveState) {
 export type HostAction =
   | { action: "squads.auto" } | { action: "squads.move"; playerId: string; squadId: string | null }
   | { action: "round.start"; type: RoundType; sceneId?: string; plantedId?: string } | { action: "round.stage" } | { action: "round.reveal" }
-  | { action: "pause" } | { action: "resume" } | { action: "end" }
+  | { action: "pause" } | { action: "resume" } | { action: "end" } | { action: "witness.play" }
   | { action: "override"; key: "sound"; squadId: string; value: boolean } | { action: "override"; key: "objection"; value: boolean };
 
 export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): Promise<string | null> {
@@ -230,6 +247,11 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
     case "pause": await store.updateSession(s.id, { paused: true }); return null;
     case "resume": await store.updateSession(s.id, { paused: false }); return null;
     case "end": await store.updateSession(s.id, { status: "ended", paused: false }); return null;
+    case "witness.play": {
+      if (s.status !== "round" || round?.type !== "lie") return "The Witness stand plays during Spot the Lie.";
+      await store.addResponse(s.id, { roundIndex: s.roundIndex, squadId: null, playerId: null, role: "host", kind: "witness", payload: {}, flagged: false });
+      return null;
+    }
     case "override": {
       await store.addResponse(s.id, { roundIndex: s.roundIndex, squadId: a.key === "sound" ? a.squadId : null, playerId: null, role: "host", kind: "override", payload: { key: a.key, value: a.value }, flagged: false });
       return null;

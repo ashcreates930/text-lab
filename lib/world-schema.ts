@@ -30,7 +30,7 @@ export const WorldPackSchema = z.object({
   adaptations:z.array(z.object({grade:z.number(),glossary:z.enum(["open","on_request"]),hints:z.boolean(),sentence_starters:z.boolean(),description:z.string()})).min(1),
   benchmarks:z.array(z.object({code:z.string(),description:z.string()})),
   roles:z.array(role),
-  characters:z.array(z.object({id:z.string(),name:z.string(),gender:z.string(),description:z.string(),personality:z.string(),knowledge_limits:z.string(),speech_style:z.string(),never_reveal:z.array(z.string()),voice_id:z.string(),portrait:z.string().optional()})),
+  characters:z.array(z.object({id:z.string(),name:z.string(),gender:z.string(),description:z.string(),personality:z.string(),knowledge_limits:z.string(),speech_style:z.string(),never_reveal:z.array(z.string()),voice_id:z.string(),portrait:z.string().optional(),hologram:z.string().regex(/^\/worlds\/[a-z0-9-]+\/holograms\/[a-z0-9-]+\.png$/).optional()})),
   glossary:z.array(z.object({term:z.string(),student_friendly_definition:z.string(),part_of_speech:z.string().optional(),definition:z.string().optional(),plain_definition:z.string().optional(),example_sentence:z.string().optional(),text_sentence:z.string().optional()})),
   scenes:z.array(scene),
   storybook:storybook.optional(),
