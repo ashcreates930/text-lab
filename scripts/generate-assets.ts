@@ -5,6 +5,7 @@ import OpenAI from "openai";
 import { WorldPackSchema } from "../lib/world-schema.ts";
 import { parseSourcePassages } from "../lib/source-passages.ts";
 import { narrationParts } from "../lib/narration.ts";
+import { frameArtPrompt, providedSceneDescription } from "../lib/frame-art.ts";
 const { loadEnvConfig } = nextEnv;
 loadEnvConfig(process.cwd());
 const root=join(process.cwd(),"worlds"),publicRoot=join(process.cwd(),"public","worlds");
@@ -46,6 +47,37 @@ const ambientPrompts:Record<string,string>={
 // story" (lib/narration.ts). Files that already exist are kept, so a run stopped by the monthly character limit picks up
 // where it left off; --force records them again. Takes --world=<id,...> and --scene=<id>. The app reads any paragraph
 // without a file with the browser's own speech, so nothing breaks while files are missing.
+// --frames: the story's own storyboard pictures, one per "illustrated" or "add_detail" page with a scene_description
+// (add_detail pictures leave out their missing detail), saved to public/worlds/<story>/frames/<page-id>.png, with
+// illustration.src set and status "generated". Pages marked no_generation are skipped. Takes --world=<id,...>,
+// --only=<page-id,...> and --force (otherwise pages that already have a picture are kept).
+if(process.argv.includes("--frames")){
+  if(!imageClient)throw new Error("OPENAI_API_KEY is required for storyboard frames.");
+  const sharp=(await import("sharp")).default;
+  const only=process.argv.find(a=>a.startsWith("--only="))?.slice(7).split(",");
+  const force=process.argv.includes("--force");
+  for(const id of (selectedWorld??"sleepy-hollow,trifles,tell-tale-heart").split(",")){
+    const file=join(root,id,"world.json"),raw=JSON.parse(await readFile(file,"utf8"));const pack=WorldPackSchema.parse(raw);
+    await mkdir(join(publicRoot,id,"frames"),{recursive:true});
+    for(const page of raw.storybook?.pages??[]){
+      const art=page.illustration;
+      if(page.bridge||!art?.scene_description||!["illustrated","add_detail"].includes(page.mode)||page.no_generation)continue;
+      if(only&&!only.includes(page.id))continue;
+      const src=`/worlds/${id}/frames/${page.id}.png`;
+      if(!force&&art.src===src){try{await readFile(join(process.cwd(),"public",src));continue}catch{}}
+      const result=await imageClient.images.generate({model:process.env.OPENAI_IMAGE_MODEL||"gpt-image-1",prompt:frameArtPrompt(pack,providedSceneDescription(art.scene_description)),size:"1536x1024",quality:"medium"});
+      const encoded=result.data?.[0]?.b64_json;if(!encoded)throw new Error(`OpenAI returned no image for ${id}/${page.id}`);
+      // 768 x 512 keeps each frame small enough to load quickly on a school network.
+      await writeFile(join(process.cwd(),"public",src),await sharp(Buffer.from(encoded,"base64")).resize(768,512).png({palette:true,quality:90}).toBuffer());
+      art.src=src;art.status="generated";
+      await writeFile(file,JSON.stringify(raw,null,2)+"\n");
+      console.log(`Frame ${id}/${page.id}.png · ${result.usage?.total_tokens??"?"} tokens`);
+    }
+    WorldPackSchema.parse(raw);
+  }
+  console.log("Done. Run npm run sync:worlds to copy the updated world files.");
+  process.exit(0);
+}
 if(process.argv.includes("--narration")){
   if(!elevenLabsKey)throw new Error("ELEVENLABS_API_KEY is required for narration.");
   const voice=process.env.ELEVENLABS_NARRATOR_VOICE?.trim()||"onwK4e9ZLuTAKqWW03F9";

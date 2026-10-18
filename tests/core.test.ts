@@ -630,3 +630,106 @@ test("Listen button: Stop reading only while this scene's narration plays; missi
   assert.equal(ambientVolumeFor(channel.state),AMBIENT_VOLUME);
   assert.equal(heard.length,3);
 });
+
+async function storyFor(id:string){
+  const {parseSourcePassages,readingPortions}=await import("../lib/source-passages.ts");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+  const passages=parseSourcePassages(await readFile(new URL(`../worlds/${id}/source.md`,import.meta.url),"utf8"));
+  return {world,passages,portions:readingPortions(passages,world.scenes)};
+}
+
+test("storyboard: pages map to the scene whose reading holds their first paragraph, at most 3 frames and 1 required per scene", async()=>{
+  const {pagesByScene,sceneFrames}=await import("../lib/storyboard.ts");
+  for(const id of ["sleepy-hollow","trifles","tell-tale-heart"]){
+    const {world,passages,portions}=await storyFor(id);
+    const byScene=pagesByScene(world,passages),seen=new Set<string>();
+    world.scenes.forEach((scene,i)=>{
+      const ids=new Set(portions[i].map(p=>p.id));
+      for(const p of byScene[i]){assert.ok(ids.has(p.start),`${id}/${p.id} is not in ${scene.id}`);assert.ok(!seen.has(p.id),`${id}/${p.id} is in two scenes`);seen.add(p.id)}
+      const frames=sceneFrames(world,passages,i);
+      assert.ok(frames.length<=3,`${id}/${scene.id} shows ${frames.length} frames`);
+      assert.ok(frames.filter(f=>f.required).length<=1);
+      assert.ok(frames.every(f=>byScene[i].includes(f.page)&&!f.page.bridge));
+      // Story order.
+      const order=frames.map(f=>byScene[i].indexOf(f.page));assert.deepEqual(order,[...order].sort((a,b)=>a-b));
+    });
+    // Every story picture the strip shows has been generated.
+    for(const i of world.scenes.keys())for(const f of sceneFrames(world,passages,i))if(f.kind!=="student"){assert.ok(f.picture,`${id}/${f.page.id} has no picture`);await readFile(new URL(`../public${f.picture}`,import.meta.url))}
+  }
+  const {world,passages}=await storyFor("sleepy-hollow");
+  assert.deepEqual(sceneFrames(world,passages,0).map(f=>`${f.page.id}:${f.kind}${f.required?"*":""}`),["page-01:provided","page-04:add_detail","page-06:add_detail*"]);
+  // The Tell-Tale Heart has no reading ranges: its pages are split across its 4 scenes in story order.
+  const tth=await storyFor("tell-tale-heart");
+  assert.ok(tth.world.scenes.every(s=>!s.reading));
+  assert.deepEqual(pagesByScene(tth.world,tth.passages).map(l=>l.map(p=>p.id)[0]),["page-01","page-06","page-10","page-15"]);
+});
+
+test("storyboard: a scene is solved when its clues are proven and its required frame is saved, with or without a picture", async()=>{
+  const {sceneFrames,sceneSolved,missionText,makeSavedFrame,storyboardSoFar}=await import("../lib/storyboard.ts");
+  const {world,passages}=await storyFor("sleepy-hollow");
+  const frames=sceneFrames(world,passages,0);
+  assert.equal(missionText(4,frames),"Prove all 4 clues and complete 1 frame.");
+  assert.equal(sceneSolved(true,frames,{}),false);
+  assert.equal(sceneSolved(false,frames,{"sleepy-hollow:page-06":makeSavedFrame("add_detail","a line","A thin ray of light.")}),false);
+  // Save without a picture: the frame still counts.
+  const saved={"sleepy-hollow:page-06":makeSavedFrame("add_detail","With what wistful look did he eye every trembling ray of light","A thin, shaky ray of light crosses the fields.")};
+  assert.equal(saved["sleepy-hollow:page-06"].image,undefined);
+  assert.equal(sceneSolved(true,frames,saved),true);
+  // An optional frame does not solve the scene on its own.
+  assert.equal(sceneSolved(true,frames,{"sleepy-hollow:page-04":makeSavedFrame("add_detail","a line","A twisted branch in the door.")}),false);
+  // A scene with no required frame needs only its clues.
+  const tth=await storyFor("tell-tale-heart");
+  const search=sceneFrames(tth.world,tth.passages,1);
+  assert.ok(!search.some(f=>f.required));
+  assert.equal(sceneSolved(true,search,undefined),true);
+  assert.equal(missionText(4,search),"Prove all 4 clues to solve this scene.");
+  // The board shows the story's pictures for reached scenes and the student's saved frame (with the story's picture
+  // for an add-detail frame saved without one).
+  const board=storyboardSoFar(world,passages,saved,0);
+  assert.deepEqual(board.map(f=>[f.pageId,f.mine,!!f.picture]),[["page-01",false,true],["page-06",true,true]]);
+});
+
+test("storyboard: older saves without frames still load and play", async()=>{
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
+  const {sceneFrames,sceneSolved,storyboardSoFar}=await import("../lib/storyboard.ts");
+  const older={v:1,worldId:"sleepy-hollow",scene:1,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],updatedAt:"2026-10-01T12:00:00.000Z"};
+  const parsed=StudentProgressSchema.parse(older);
+  assert.deepEqual(parsed.storyFrames,{});
+  // A frame saved by the old storybook reader (no picture, no check) still counts.
+  const withOldFrame=StudentProgressSchema.parse({...older,storyFrames:{"sleepy-hollow:page-06":{kind:"add_detail",description:"A ray of light.",quote:"every trembling ray of light",saved_at:"2026-10-01T12:00:00.000Z"}}});
+  const {world,passages}=await storyFor("sleepy-hollow");
+  assert.equal(sceneSolved(true,sceneFrames(world,passages,0),withOldFrame.storyFrames),true);
+  assert.deepEqual(storyboardSoFar(world,passages,undefined,0).map(f=>f.pageId),["page-01"]);
+});
+
+test("frame caps: 6 pictures per device a day, 2 attempts per frame, and an image ceiling inside the global ceiling", async()=>{
+  const {limits,usageCall,imageCeiling,globalCeiling}=await import("../lib/demo-limits.ts");
+  assert.deepEqual(limits.frame_image,{sandbox:2,device:6});
+  assert.ok(limits.frame_check.device>=limits.frame_check.sandbox);
+  const image=usageCall("frame_image","sandbox-1","device-1","sleepy-hollow:page-06");
+  assert.equal(image.fn,"consume_demo_ai_capped");
+  assert.equal(image.args.p_sandbox,"sandbox-1:sleepy-hollow:page-06");
+  assert.equal(image.args.p_device_limit,6);assert.equal(image.args.p_sandbox_limit,2);
+  assert.ok("p_kind_global_limit" in image.args&&image.args.p_kind_global_limit<=globalCeiling());
+  const check=usageCall("frame_check","sandbox-1","device-1");
+  assert.equal(check.fn,"consume_demo_ai");assert.equal(check.args.p_sandbox,"sandbox-1");assert.equal(check.args.p_kind,"frame_check");
+  const before={a:process.env.DEMO_DAILY_AI_CEILING,i:process.env.DEMO_DAILY_IMAGE_CEILING};
+  try{process.env.DEMO_DAILY_AI_CEILING="100";process.env.DEMO_DAILY_IMAGE_CEILING="500";assert.equal(imageCeiling(),100)}
+  finally{for(const [k,v] of [["DEMO_DAILY_AI_CEILING",before.a],["DEMO_DAILY_IMAGE_CEILING",before.i]] as const){if(v===undefined)delete process.env[k];else process.env[k]=v}}
+});
+
+test("frame pictures: a flagged description is never painted; writing-only pages never get a picture", async()=>{
+  const {pictureForFrame,OFF_STORY_MESSAGE}=await import("../lib/frames-server.ts");
+  let painted=0,counted=0;
+  const deps=(flagged:boolean|"error")=>({moderate:async()=>{if(flagged==="error")throw new Error("down");return flagged},allow:async()=>{counted++;return true},paint:async()=>{painted++;return "https://example.test/frame.webp"}});
+  const page={mode:"student"};
+  assert.deepEqual(await pictureForFrame(page,"Ichabod rides past the church at midnight.",deps(true)),{image:null,blocked:true,message:OFF_STORY_MESSAGE});
+  assert.equal((await pictureForFrame(page,"Ichabod rides past the church at midnight.",deps("error"))).image,null);
+  // The app's own safety screen stops it too, before moderation is asked.
+  assert.equal((await pictureForFrame(page,"what is your phone number",deps(false))).blocked,true);
+  assert.equal(painted,0);assert.equal(counted,0);
+  assert.equal((await pictureForFrame({mode:"student",no_generation:true},"A cold, gloomy kitchen.",deps(false))).image,null);
+  assert.equal(painted,0);
+  assert.equal((await pictureForFrame(page,"Ichabod rides past the church at midnight.",deps(false))).image,"https://example.test/frame.webp");
+  assert.equal(painted,1);
+});

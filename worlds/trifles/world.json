@@ -2241,7 +2241,8 @@
         "illustration": {
           "alt": "Three bundled-up men warm themselves at a stove in a gloomy, messy farm kitchen while two women stand close together by the door.",
           "scene_description": "A gloomy farmhouse kitchen on a freezing morning, left in disorder: unwashed pans under the sink, a loaf of bread outside the bread-box, a dish-towel on the table. Three men in heavy winter coats (the Sheriff and Mr. Hale, men in middle life, and the young County Attorney) crowd around the iron stove. Two women stand close together just inside the door: a slight, thin-faced woman and a larger woman who looks around fearfully.",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/trifles/frames/page-01.png"
         }
       },
       {
@@ -2282,7 +2283,8 @@
         "illustration": {
           "alt": "Mr. Hale, in a winter coat, begins his story by the stove as the young County Attorney listens.",
           "scene_description": "The same cold kitchen. Mr. Hale, a farmer in middle life in a heavy coat, stands by the stove beginning to explain what happened. The young County Attorney listens closely; the Sheriff has unbuttoned his overcoat. The two women still stand together near the door. Pale winter light from the window.",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/trifles/frames/page-02.png"
         }
       },
       {
@@ -2324,7 +2326,8 @@
         "illustration": {
           "alt": "Everyone in the cold kitchen turns to look at an empty rocking chair.",
           "scene_description": "The kitchen seen past an empty wooden rocking chair in the foreground. The three men and the two women by the door are all turned toward the rocker, looking at it in silence. No one sits in it. Gray light, very still.",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/trifles/frames/page-03.png"
         }
       },
       {
@@ -2439,7 +2442,8 @@
           "alt": "Mr. Hale points to a small chair in the corner of the kitchen while the County Attorney listens.",
           "scene_description": "The kitchen. Mr. Hale points to a small chair in the corner where he says Mrs. Wright sat; the chair is empty. The young County Attorney stands nearby looking around the room, the Sheriff beside him, the women in the background. LEFT OUT ON PURPOSE: the County Attorney's notebook.",
           "missing_detail": "The County Attorney's notebook, where he makes a note (\"The COUNTY ATTORNEY, who has had his notebook out, makes a note\").",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/trifles/frames/page-06.png"
         }
       },
       {

@@ -36,7 +36,8 @@ export const StudentProgressSchema = z.object({
   readerProgress: z.record(z.string().regex(/^[a-z0-9-]+$/), readerProgress),
   artifactAnswers: z.record(id, answer),
   savedTextEvidence: z.array(z.object({ id, paragraphId: text(12), text: text(1500), artifactId: id.optional() })).max(100),
-  storyFrames: z.record(id, frame),
+  // Older saves may not have any frames.
+  storyFrames: z.record(id, frame).default({}),
   // The option chosen at each scene's choice point (scene id -> option id). Older saves don't have it.
   choices: z.record(id, id).optional(),
   updatedAt: text(40),

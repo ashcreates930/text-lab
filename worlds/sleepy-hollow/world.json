@@ -2097,7 +2097,8 @@
         "illustration": {
           "alt": "A small quiet valley among high hills near a wide river, with a brook running through it.",
           "scene_description": "Wide view, late afternoon. The broad, calm Hudson River (the Tappan Zee) with a small river town on its shore in the distance. In the foreground, a little valley tucked among high wooded hills, with a small brook winding through it. A quail on a fence rail and a woodpecker on a tree trunk. Quiet and sleepy, with no people in close view.",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/sleepy-hollow/frames/page-01.png"
         }
       },
       {
@@ -2135,7 +2136,8 @@
         "illustration": {
           "alt": "In the dark, a headless rider on a horse races along a road near a distant church.",
           "scene_description": "Night, seen from far away. A dark rider in a long cloak on a galloping horse, shown only in silhouette against a misty, moonlit sky, racing along a country road like a gust of wind. The rider has no head; nothing is shown at the neck. A small church on a rise in the distance. Dark, windy, and mysterious, not gory.",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/sleepy-hollow/frames/page-02.png"
         }
       },
       {
@@ -2174,7 +2176,8 @@
         "illustration": {
           "alt": "A tall, thin schoolmaster with big ears and a long nose strides along a windy hilltop, his clothes flapping.",
           "scene_description": "Daytime, windy. Ichabod Crane striding along the top of a hill, seen in profile against the sky. He is tall and very thin, with long arms and legs, big hands dangling out of his sleeves, big feet, a small head with huge ears, large green eyes, and a long pointed nose. His loose clothes flap and balloon in the wind, so he looks a little like a scarecrow. Gently funny.",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/sleepy-hollow/frames/page-03.png"
         }
       },
       {
@@ -2196,7 +2199,8 @@
           "alt": "A one-room log schoolhouse at the foot of a wooded hill, beside a brook and a birch tree.",
           "scene_description": "A drowsy summer day. A low, one-room schoolhouse built roughly of logs, at the foot of a wooded hill, with a brook running close by and a large birch tree growing at one end. Some windows have glass; others are patched with pages from old copybooks. LEFT OUT ON PURPOSE: the door's twisted-branch fastening and the stakes set against the window shutters.",
           "missing_detail": "How the schoolhouse is locked when no one is there: a withe (twisted branch) in the door handle and stakes set against the window shutters (\"a withe twisted in the handle of the door, and stakes set against the window shutters\").",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/sleepy-hollow/frames/page-04.png"
         }
       },
       {
@@ -2231,7 +2235,8 @@
           "alt": "At dusk, Ichabod lies on clover by a brook, reading a book, as fireflies begin to glow.",
           "scene_description": "Evening. Ichabod stretched out on a thick bed of clover beside the little brook near his schoolhouse, reading an old book of witch tales, holding it close because the light is fading. Woods and swamp darken behind him. LEFT OUT ON PURPOSE: the fireflies sparkling in the darkest places.",
           "missing_detail": "Fireflies sparkling in the darkest places (\"The fireflies, too, which sparkled most vividly in the darkest places\").",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/sleepy-hollow/frames/page-05.png"
         }
       },
       {
@@ -2256,7 +2261,8 @@
           "alt": "On a snowy night, Ichabod walks home alone across dark fields, glancing over his shoulder.",
           "scene_description": "A snowy winter night. Ichabod walking home alone along a path across empty, snow-covered fields, looking nervously over his shoulder. A snow-covered shrub beside the path looks a little like a ghost in a sheet. Bare trees bend in the wind. LEFT OUT ON PURPOSE: the trembling ray of light from a distant window across the fields.",
           "missing_detail": "A trembling ray of light streaming across the fields from a distant window (\"every trembling ray of light streaming across the waste fields from some distant window\").",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/sleepy-hollow/frames/page-06.png"
         },
         "frame_required": true
       },

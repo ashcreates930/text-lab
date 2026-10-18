@@ -5,7 +5,12 @@ import type { WorldPack } from "../world-schema.ts";
 
 // What a saved answer looks like in students.progress.artifactAnswers (only the fields this view reads).
 export type SavedAnswer = { notice?: string; interpret?: string; craft?: string; character?: string };
-export type EvidenceStudentInput = { id: string; nickname: string; answers: Record<string, SavedAnswer> | null };
+// A saved storyboard frame in students.progress.storyFrames, keyed "<world>:<page>" (only the fields this view reads).
+export type SavedFrameInput = { description?: string; quote?: string; image?: string };
+export type EvidenceStudentInput = { id: string; nickname: string; answers: Record<string, SavedAnswer> | null; frames?: Record<string, SavedFrameInput> | null };
+// A completed storyboard frame, in story order. picture: the student's own, or for an add-detail frame saved without
+// one, the story's picture they added a detail to.
+export type StoryboardFrame = { pageId: string; picture?: string; quote: string; description: string };
 
 // "proved-wrong": the student questioned a character and chose a line that contradicts them.
 // "backed-up": the line supported what the character said. null: no character was questioned for this clue.
@@ -14,7 +19,7 @@ export type Finding = "proved-wrong" | "backed-up" | null;
 export type EvidenceCell = { proven: boolean; quote: string; explanation: string; finding: Finding; character?: string };
 export type EvidenceClue = { id: string; name: string; sceneId: string };
 export type EvidenceScene = { id: string; title: string; characters: string[]; clues: EvidenceClue[] };
-export type EvidenceStudent = { id: string; nickname: string; started: boolean; proven: number; provedWrong: number; needsHelp: boolean; cells: Record<string, EvidenceCell> };
+export type EvidenceStudent = { id: string; nickname: string; started: boolean; proven: number; provedWrong: number; needsHelp: boolean; cells: Record<string, EvidenceCell>; storyboard: StoryboardFrame[] };
 export type ClassEvidence = {
   story: { id: string; title: string };
   scenes: EvidenceScene[];
@@ -61,7 +66,13 @@ export function buildEvidence(world: WorldPack, students: EvidenceStudentInput[]
     const provedWrong = clues.filter((c) => cells[c.id].finding === "proved-wrong").length;
     // Needs help: the student has saved progress for this story but has not proven a single clue.
     const started = s.answers !== null;
-    return { id: s.id, nickname: s.nickname, started, proven, provedWrong, needsHelp: started && proven === 0, cells };
+    const storyboard = (world.storybook?.pages ?? []).flatMap((p): StoryboardFrame[] => {
+      const f = s.frames?.[`${world.id}:${p.id}`];
+      if (!f?.description?.trim()) return [];
+      const picture = f.image ?? (p.mode === "add_detail" && p.illustration?.status === "generated" ? p.illustration.src : undefined);
+      return [{ pageId: p.id, quote: (f.quote ?? "").trim(), description: f.description.trim(), ...(picture ? { picture } : {}) }];
+    });
+    return { id: s.id, nickname: s.nickname, started, proven, provedWrong, needsHelp: started && proven === 0, cells, storyboard };
   });
   const joined = rows.length;
   return {
