@@ -5,7 +5,7 @@
 import {useCallback,useEffect,useLayoutEffect,useRef,useState} from "react";
 import {ArrowRight,Pin,Volume2,VolumeX,X} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
-import {caseBoardCards,initials,portraitFor,soundKey,soundOn,type BoardCard,type SoundKind} from "@/lib/game-feel";
+import {AMBIENT_VOLUME,ambientLevelGain,caseBoardCards,crossfadeLoop,initials,portraitFor,soundKey,soundOn,type BoardCard,type SoundKind} from "@/lib/game-feel";
 import {FactCheckerBadge} from "./case-game";
 
 type Character={id:string;name:string;portrait?:string};
@@ -54,17 +54,35 @@ export function useCharacterVoice(worldId:string,sandboxId:string){
  return {speaking,play,stop};
 }
 
-// A scene's ambient track: quiet, looping, fading in. It starts only after the student's first tap or key press on
-// the page (browser autoplay rules) and stops when sound is off or the scene changes.
+// A scene's ambient track: quiet, looping without a seam, fading in. It starts only after the student's first tap or key
+// press on the page (browser autoplay rules) and stops when sound is off or the scene changes. Every track is brought to
+// the same level and its sudden loud moments are softened, so no scene is silent and none startles. Any failure is silent.
 export function AmbientPlayer({src,on}:{src:string|null|undefined;on:boolean}){
  useEffect(()=>{
   if(!on||!src)return;
-  let audio:HTMLAudioElement|null=null,fade=0,cancelled=false;
-  const start=()=>{if(cancelled||audio)return;audio=new Audio(src);audio.loop=true;audio.volume=0;audio.play().then(()=>{fade=window.setInterval(()=>{if(!audio)return;audio.volume=Math.min(0.14,audio.volume+0.01);if(audio.volume>=0.14)window.clearInterval(fade)},150)}).catch(()=>{})};
+  let ctx:AudioContext|null=null,cancelled=false;
+  const start=async()=>{
+   if(cancelled||ctx)return;
+   try{
+    ctx=new AudioContext();
+    const decoded=await ctx.decodeAudioData(await (await fetch(src)).arrayBuffer());
+    if(cancelled)return;
+    const channels=Array.from({length:decoded.numberOfChannels},(_,i)=>decoded.getChannelData(i));
+    const looped=crossfadeLoop(channels,decoded.sampleRate);
+    const buffer=ctx.createBuffer(looped.length,looped[0].length,decoded.sampleRate);
+    looped.forEach((ch,i)=>buffer.getChannelData(i).set(ch));
+    const source=ctx.createBufferSource();source.buffer=buffer;source.loop=true;
+    const level=ctx.createGain();level.gain.value=ambientLevelGain(channels,decoded.sampleRate);
+    const soften=ctx.createDynamicsCompressor();soften.threshold.value=-24;soften.knee.value=6;soften.ratio.value=12;soften.attack.value=0.003;soften.release.value=0.25;
+    const volume=ctx.createGain();volume.gain.setValueAtTime(0,ctx.currentTime);volume.gain.linearRampToValueAtTime(AMBIENT_VOLUME,ctx.currentTime+2.5);
+    source.connect(level).connect(soften).connect(volume).connect(ctx.destination);
+    await ctx.resume();source.start();
+   }catch{ctx?.close().catch(()=>{});ctx=null}
+  };
   const activated=(navigator as Navigator&{userActivation?:{hasBeenActive:boolean}}).userActivation?.hasBeenActive;
   const onFirst=()=>{window.removeEventListener("pointerdown",onFirst);window.removeEventListener("keydown",onFirst);start()};
   if(activated)start();else{window.addEventListener("pointerdown",onFirst);window.addEventListener("keydown",onFirst)}
-  return()=>{cancelled=true;window.removeEventListener("pointerdown",onFirst);window.removeEventListener("keydown",onFirst);window.clearInterval(fade);audio?.pause();audio=null};
+  return()=>{cancelled=true;window.removeEventListener("pointerdown",onFirst);window.removeEventListener("keydown",onFirst);ctx?.close().catch(()=>{});ctx=null};
  },[src,on]);
  return null;
 }

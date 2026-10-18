@@ -275,7 +275,7 @@
       "narration": "Morning light reaches the empty schoolhouse. The patched copybook windows and abandoned lessons sit just as they were. Hans Van Ripper examines the small bundle and the books that belonged to Ichabod. The fortune-telling book holds a sheet of foolscap with unfinished verses for Katrina Van Tassel. Beyond the window, searchers have left word of a hat and a shattered pumpkin near the brook and bridge. What disappeared: a schoolteacher, a rival, or the truth between them?",
       "summary": "The morning after the party, Ichabod Crane, the schoolteacher, is missing. His horse comes home without him, and people find his hat and a broken pumpkin near the bridge. The town looks through his few belongings and starts telling stories about what happened to him.",
       "background_image": "/worlds/sleepy-hollow/empty-schoolhouse.png",
-      "ambient_audio": null,
+      "ambient_audio": "/worlds/sleepy-hollow/empty-schoolhouse-ambient.mp3",
       "narration_audio": "/worlds/sleepy-hollow/empty-schoolhouse.mp3",
       "available_characters": [
         "hans-van-ripper",
@@ -702,7 +702,7 @@
       "art_direction": "Painterly, warm candlelit interior and porch of a large 1790s Dutch farmhouse in the Hudson Valley on an autumn evening, rich amber and brown tones, period-accurate homespun clothing, figures small and softly rendered with no detailed faces, no readable text. Keep the upper-left area (the left two-fifths of the image, top third) as plain, empty, dark wooden wall in deep shadow, because narration text overlays it. Lower-left foreground (x 4 to 34 percent, y 62 to 90 percent): a long tea table heaped with doughnuts, cakes, pies, sliced ham, and a steaming teapot. Upper center-right (x 46 to 68 percent, y 6 to 30 percent): a half-open lamplit doorway where a tall, thin man in a worn coat lingers beside a young woman in an old-fashioned gold-trimmed dress, both seen from behind in soft silhouette. Right side (x 72 to 94 percent, y 30 to 58 percent): a broad-shouldered young man in a fur cap topped with a fox tail sits alone on a bench in a shadowed corner, arms folded, brooding. Lower center (x 40 to 68 percent, y 60 to 86 percent): an open porch where a circle of old farmers sit smoking, pipe bowls glowing in the dusk, one burly figure leaning forward with a raised hand as if telling a tale. Dancers blur in the middle distance. The tea table, the brooding young man, the pipe-lit storytelling circle, and the doorway pair must all be clearly visible.",
       "background_image": "/worlds/sleepy-hollow/van-tassel-party.png",
       "narration_audio": "/worlds/sleepy-hollow/van-tassel-party.mp3",
-      "ambient_audio": null,
+      "ambient_audio": "/worlds/sleepy-hollow/van-tassel-party-ambient.mp3",
       "available_characters": [
         "brom-bones"
       ],
@@ -1127,7 +1127,7 @@
       "art_direction": "Painterly moonless night on a wooded country road in the 1790s Hudson Valley, deep blues and blacks with faint silver starlight, eerie but not gory, no detailed faces, no readable text. Keep the upper-left area (the left two-fifths of the image, top third) as plain, empty, dark cloudy sky, because narration text overlays it. Upper right (x 62 to 92 percent, y 4 to 34 percent): an enormous gnarled tulip tree with twisting limbs, a pale lightning-scarred patch of bare white wood on its trunk. Center (x 40 to 62 percent, y 40 to 68 percent): a huge cloaked rider on a powerful black horse, a dark silhouette whose shoulders end with no visible head, a rounded dark shape resting on the saddle pommel in front of him. Lower-left foreground (x 6 to 30 percent, y 70 to 90 percent): an old leather saddle lying in the dusty road with a broken girth strap, deep hoofprints pressed around it. Lower right (x 66 to 94 percent, y 66 to 90 percent): a wooden plank bridge over a black brook that reflects one silver star, with the faint pale wall of a small whitewashed church on a knoll behind it. The tree and its white scar, the headless rider, the saddle, and the bridge must all be clearly visible.",
       "background_image": "/worlds/sleepy-hollow/the-road-home.png",
       "narration_audio": "/worlds/sleepy-hollow/the-road-home.mp3",
-      "ambient_audio": null,
+      "ambient_audio": "/worlds/sleepy-hollow/the-road-home-ambient.mp3",
       "available_characters": [
         "brom-bones",
         "hans-van-ripper"
@@ -1556,7 +1556,7 @@
       "art_direction": "Painterly, cozy winter evening inside an old Dutch farmhouse in the Hudson Valley, years later, warm orange firelight against cool blue window light, no detailed faces, no readable text. Keep the upper-left area (the left two-fifths of the image, top third) as plain, empty, dark ceiling beams in deep shadow, because narration text overlays it. Center-right (x 56 to 84 percent, y 30 to 60 percent): a wide stone hearth with a crackling fire where two elderly women in close caps sit at spinning wheels, leaning toward each other as if telling a tale. Lower-left foreground (x 4 to 28 percent, y 64 to 92 percent): a traveler's bundle, a walking stick, and a dusty hat resting by the door, as if a farmer has come home from a long journey. Lower center (x 34 to 58 percent, y 66 to 92 percent): a wooden table with a round orange pumpkin on it, and beside it a broad-shouldered man in a fur cap, seen from behind, shoulders shaking with laughter. Lower right (x 70 to 92 percent, y 68 to 92 percent): a small side table holding a half-filled wine glass, with a pepper-and-salt colored coat draped over a chair. Through a frosted window at the upper right, a tiny ruined schoolhouse is faintly visible in the snowy distance. The hearth with the storytellers, the traveler's bundle, the pumpkin with the laughing man, and the wine glass must all be clearly visible.",
       "background_image": "/worlds/sleepy-hollow/the-towns-verdict.png",
       "narration_audio": "/worlds/sleepy-hollow/the-towns-verdict.mp3",
-      "ambient_audio": null,
+      "ambient_audio": "/worlds/sleepy-hollow/the-towns-verdict-ambient.mp3",
       "available_characters": [
         "brom-bones",
         "hans-van-ripper"

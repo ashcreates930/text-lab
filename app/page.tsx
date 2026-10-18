@@ -32,6 +32,7 @@ import { homeStartView } from "./home-start";
 import { ClassBar, ClassHome, ClassLive, type ClassAuth } from "./class-student";
 import { LessonPlayer, MiniLessonLibrary, type LessonRecord } from "./mini-lessons";
 import { Join, Owner, Pricing, Student, Teacher, Waitlist, PickStory, ChooseLevel } from "./ui";
+import { focusScreenTop } from "./screen-focus";
 
 type View = "landing" | "story" | "level" | "play" | "teacher" | "waitlist" | "pricing" | "owner" | "join" | "lessons" | "classroom" | "classhome" | "classlive" | "approach" | "tutorial" | "shelf" | "teacherdemo" | "book" | "hub";
 // Pricing and waitlist stay public; the owner screen has its own magic-link check.
@@ -58,38 +59,6 @@ export type Demo = {
   storyFrames?:Record<string,{kind:"add_detail"|"student";description:string;quote:string;saved_at:string;image?:string;check?:{ok:boolean;notes:string[]}}>;
 };
 type ScreenSnapshot = { insideTheTextScreen: true; sequence: number; view: View; demo: Demo };
-let pendingHeadingObserver: MutationObserver | null = null;
-function focusScreenTop() {
-  const root = document.documentElement;
-  const previousScrollBehavior = root.style.scrollBehavior;
-  root.style.scrollBehavior = "auto";
-  window.scrollTo(0, 0);
-  root.style.scrollBehavior = previousScrollBehavior;
-  // A screen can name the field to start in (the join screen starts in the nickname box).
-  const autofocus = document.querySelector<HTMLElement>("main [data-autofocus]");
-  if (autofocus) { pendingHeadingObserver?.disconnect(); pendingHeadingObserver = null; autofocus.focus({ preventScroll: true }); return; }
-  const heading = document.querySelector<HTMLElement>("main h1");
-  if (heading) {
-    pendingHeadingObserver?.disconnect();
-    pendingHeadingObserver = null;
-    if (!heading.hasAttribute("tabindex")) heading.setAttribute("tabindex", "-1");
-    heading.focus({ preventScroll: true });
-  } else {
-    pendingHeadingObserver?.disconnect();
-    const main = document.querySelector("main");
-    if (main) {
-      pendingHeadingObserver = new MutationObserver(() => {
-        const loadedHeading = main.querySelector<HTMLElement>("h1");
-        if (!loadedHeading) return;
-        pendingHeadingObserver?.disconnect();
-        pendingHeadingObserver = null;
-        if (!loadedHeading.hasAttribute("tabindex")) loadedHeading.setAttribute("tabindex", "-1");
-        loadedHeading.focus({ preventScroll: true });
-      });
-      pendingHeadingObserver.observe(main, { childList: true, subtree: true });
-    }
-  }
-}
 const newDemo = (preset: string,worldId="tell-tale-heart"): Demo => ({
   id:createDemoSandboxId(),created: Date.now(), preset, worldId, grade:null, role: "", scene: preset === "student_first_visit" ? 0 : 2,
   events: [], flags: [], messages: [], narrative: "", think: false, thinkSupport:false, thinkAnswers:{}, trace: false,

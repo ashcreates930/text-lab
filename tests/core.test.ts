@@ -442,6 +442,15 @@ test("game layer: portraits fall back to initials, and every character has a por
   }
 });
 
+test("game layer: no two characters in a story share a voice, and every scene has its ambient track", async()=>{
+  for(const id of ["sleepy-hollow","trifles","tell-tale-heart"]){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    const voices=world.characters.map(c=>c.voice_id);
+    assert.equal(new Set(voices).size,voices.length,`${id} has two characters with the same voice`);
+    for(const s of world.scenes){assert.equal(s.ambient_audio,`/worlds/${id}/${s.id}-ambient.mp3`);await readFile(new URL(`../public${s.ambient_audio}`,import.meta.url))}
+  }
+});
+
 test("game layer: voices and ambient sound are on for the demo and off for class sessions", async()=>{
   const {soundOn,soundKey,soundDefault}=await import("../lib/game-feel.ts");
   for(const kind of ["voices","ambient"] as const){
@@ -543,4 +552,18 @@ test("feedback form validation: feedback alone needs no email; the waitlist need
   assert.equal(SubmissionSchema.safeParse({waitlist:{...w,plan:"explorer",students:undefined}}).success,true,"explorer does not");
   assert.equal(SubmissionSchema.safeParse({waitlist:{...w,intent:undefined}}).success,false,"intent is required");
   assert.equal(SubmissionSchema.safeParse({waitlist:w,source:"Bad Ref!"}).success,false,"ref values are slugs only");
+});
+
+test("game layer: ambient loops have no seam and every track is brought to the same level", async()=>{
+  const {ambientLevelGain,crossfadeLoop}=await import("../lib/game-feel.ts");
+  const sr=1000,ramp=new Float32Array(4000).map((_,i)=>i/4000);
+  const [looped]=crossfadeLoop([ramp],sr,0.5);
+  assert.equal(looped.length,3500);
+  // Playing past the end runs straight on into the blended start: the samples either side of the loop point are neighbours.
+  assert.ok(Math.abs(looped[0]-looped[looped.length-1])<=2/4000);
+  const tone=(amp:number)=>new Float32Array(sr*5).map((_,i)=>amp*Math.sin(i/3));
+  const level=(a:Float32Array,g:number)=>10*Math.log10(a.reduce((s,x)=>s+(x*g)**2,0)/a.length);
+  const quiet=tone(0.01),loud=tone(0.3);
+  assert.ok(Math.abs(level(quiet,ambientLevelGain([quiet],sr))-level(loud,ambientLevelGain([loud],sr)))<1);
+  assert.equal(ambientLevelGain([new Float32Array(sr)],sr),1);
 });

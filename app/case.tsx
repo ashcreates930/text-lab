@@ -15,6 +15,7 @@ import {firstLockedPage,reconcileSaved} from "@/lib/storybook";
 import {useLayoutEffect} from "react";
 import {AmbientPlayer,CaseBoard,CaseBoardDialog,ConsequenceMoment,Portrait,SoundToggle,useCharacterVoice,useSoundPref} from "./game-feel";
 import {choicesMade} from "@/lib/game-feel";
+import {focusScreenTop} from "./screen-focus";
 const STORYBOOK_ON=false;
 
 function sentences(text:string){return (text.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g)??[text]).map(s=>s.trim()).filter(Boolean)}
@@ -26,6 +27,9 @@ export function CaseFlow(props:{demo:Demo;setDemo:React.Dispatch<React.SetStateA
 function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback}:{demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void;onTutorial?:()=>void;onFeedback?:()=>void}){
  const [world,setWorld]=useState<WorldPack|null>(null),[passages,setPassages]=useState<SourcePassage[]>([]),[error,setError]=useState("");
  const [openClue,setOpenClue]=useState<string>(""),[toast,setToast]=useState(""),[celebrate,setCelebrate]=useState<{sceneId:string;rankUp:string|null}|null>(null),[justProven,setJustProven]=useState("");
+ // Opening a clue, or going back to the scene, is a new screen: start at the top with focus on its heading.
+ const shownClue=useRef(openClue);
+ useLayoutEffect(()=>{if(shownClue.current===openClue)return;shownClue.current=openClue;focusScreenTop()},[openClue]);
  useEffect(()=>{setWorld(null);fetch(`/worlds/${demo.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setError("We couldn't open this story. Refresh the page to try again."));fetch(`/worlds/${demo.worldId}/source.md`).then(r=>r.ok?r.text():"").then(t=>setPassages(parseSourcePassages(t))).catch(()=>setPassages([]))},[demo.worldId]);
  // Students play the scene game. The storybook reader stays in the code, switched off, until we decide to bring it back.
  // Storybooks: saved work from another version of the story is cleared before anything renders, and a case can only

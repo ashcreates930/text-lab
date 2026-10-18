@@ -47,3 +47,33 @@ export function choicesMade(world: WorldPack, choices: Record<string, string> | 
     return option ? [{ sceneId: s.id, label: option.label }] : [];
   });
 }
+
+// Ambient tracks vary a lot in level, and a plain looping <audio> leaves a gap and a jump at the seam. The player
+// evens them out: one gain brings each track's typical level to the same target, and the last moments of the track
+// are blended into its start so the loop has no seam. Works on raw samples so it can be tested without a browser.
+export const AMBIENT_VOLUME = 0.12;
+export function ambientLevelGain(channels: Float32Array[], sampleRate: number, targetDb = -20) {
+  const win = Math.max(1, Math.round(sampleRate * 0.1)), levels: number[] = [];
+  for (let i = 0; i + win <= channels[0].length; i += win) {
+    let sum = 0;
+    for (const ch of channels) for (let j = i; j < i + win; j++) sum += ch[j] * ch[j];
+    const db = 10 * Math.log10(sum / (win * channels.length) || 1e-12);
+    if (db > -90) levels.push(db);
+  }
+  if (!levels.length) return 1;
+  levels.sort((a, b) => a - b);
+  const typical = levels[Math.floor(levels.length * 0.6)];
+  return 10 ** (Math.min(30, Math.max(-12, targetDb - typical)) / 20);
+}
+export function crossfadeLoop(channels: Float32Array[], sampleRate: number, seconds = 1.5) {
+  const len = channels[0].length, fade = Math.min(Math.round(sampleRate * seconds), Math.floor(len / 4));
+  return channels.map((ch) => {
+    const out = new Float32Array(len - fade);
+    out.set(ch.subarray(0, len - fade));
+    for (let i = 0; i < fade; i++) {
+      const t = i / fade;
+      out[i] = ch[i] * Math.sin((t * Math.PI) / 2) + ch[len - fade + i] * Math.cos((t * Math.PI) / 2);
+    }
+    return out;
+  });
+}
