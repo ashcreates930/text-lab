@@ -447,7 +447,8 @@ test("game layer: no two characters in a story share a voice, and every scene ha
     const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
     const voices=world.characters.map(c=>c.voice_id);
     assert.equal(new Set(voices).size,voices.length,`${id} has two characters with the same voice`);
-    for(const s of world.scenes){assert.equal(s.ambient_audio,`/worlds/${id}/${s.id}-ambient.mp3`);await readFile(new URL(`../public${s.ambient_audio}`,import.meta.url))}
+    // <scene>-ambient.mp3, or -vN.mp3 once a track has been regenerated (a new name, so no cache keeps the old one).
+    for(const s of world.scenes){assert.match(s.ambient_audio??"",new RegExp(`^/worlds/${id}/${s.id}-ambient(-v\\d+)?\\.mp3$`));await readFile(new URL(`../public${s.ambient_audio}`,import.meta.url))}
   }
 });
 
@@ -880,4 +881,49 @@ test("Next step: the button points to the next thing to do in every state of a s
   assert.equal(s.progress,"Clues 4 of 4");assert.equal(s.action.kind,"next");
   // Last scene solved.
   assert.deepEqual(nextStep({...base,last:true,clues:clues(4),requiredFrame:frame(true)}).action,{kind:"close",label:"Close the case"});
+});
+
+test("scene 1 ambient: Sleepy Hollow's schoolhouse plays the busy-classroom track, never the old creaking one", async()=>{
+  const {existsSync}=await import("node:fs");
+  for(const dir of ["worlds","public/worlds"]){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../${dir}/sleepy-hollow/world.json`,import.meta.url),"utf8")));
+    assert.equal(world.scenes[0].id,"empty-schoolhouse");
+    assert.equal(world.scenes[0].ambient_audio,"/worlds/sleepy-hollow/empty-schoolhouse-ambient-v2.mp3",`${dir} still points at an old track`);
+  }
+  assert.ok(existsSync(new URL("../public/worlds/sleepy-hollow/empty-schoolhouse-ambient-v2.mp3",import.meta.url)));
+  // The wind-and-creaking track is gone, so no page or cache can fetch it by its old name.
+  assert.equal(existsSync(new URL("../public/worlds/sleepy-hollow/empty-schoolhouse-ambient.mp3",import.meta.url)),false);
+  const script=await readFile(new URL("../scripts/generate-assets.ts",import.meta.url),"utf8");
+  assert.match(script,/"sleepy-hollow\/empty-schoolhouse":"A busy one-room schoolhouse in 1790s rural New York/);
+});
+
+test("character voice: the reply button plays, stops, never double-plays, and stops on leave, new question or switch", async()=>{
+  const {createSoundChannel}=await import("../lib/sound-channel.ts");
+  const {voiceButton,toggleVoice,stopVoice}=await import("../lib/voice-control.ts");
+  const channel=createSoundChannel();let started=0,halted=0;
+  const play=(id:string)=>()=>{started++;channel.begin("voice",id,()=>{halted++})};
+  assert.deepEqual(voiceButton(channel.state,"brom-bones","Brom Bones"),{playing:false,label:"Play",aria:"Hear Brom Bones say it again"});
+  // Play.
+  assert.equal(toggleVoice(channel,"brom-bones",play("brom-bones")),"playing");
+  assert.deepEqual(voiceButton(channel.state,"brom-bones","Brom Bones"),{playing:true,label:"Stop",aria:"Stop voice"});
+  // Tapping again while it plays stops it at once, and never starts a second copy.
+  assert.equal(toggleVoice(channel,"brom-bones",play("brom-bones")),"stopped");
+  assert.equal(started,1);assert.equal(halted,1);assert.equal(channel.state.kind,null);
+  // A new reply (another character) stops the old one: only one voice at a time.
+  toggleVoice(channel,"brom-bones",play("brom-bones"));
+  toggleVoice(channel,"hans-van-ripper",play("hans-van-ripper"));
+  assert.equal(halted,2);assert.equal(channel.state.id,"hans-van-ripper");
+  assert.equal(voiceButton(channel.state,"brom-bones","Brom Bones").playing,false);
+  // Leaving the clue screen, asking a new question and switching characters each stop it.
+  for(const why of ["leave","new-question","switch-character"] as const){
+    toggleVoice(channel,"brom-bones",play("brom-bones"));
+    stopVoice(channel,why);
+    assert.equal(channel.state.kind,null,why);
+  }
+  // Story narration takes the shared channel, so it stops a voice too; a voice stop never stops narration.
+  toggleVoice(channel,"brom-bones",play("brom-bones"));
+  channel.begin("narration","empty-schoolhouse",()=>{});
+  assert.equal(channel.state.kind,"narration");
+  stopVoice(channel,"leave");
+  assert.equal(channel.state.kind,"narration");
 });

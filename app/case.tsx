@@ -19,6 +19,7 @@ import {focusScreenTop} from "./screen-focus";
 import {nextStep} from "@/lib/next-step";
 import {sceneScreenShowing} from "@/lib/ambient";
 import {listenButton,narrationParts,playNarration,sceneReadingItems} from "@/lib/narration";
+import {voiceButton} from "@/lib/voice-control";
 import {contentNotes,withContentNotes} from "@/lib/content-notes";
 import {ContentNote} from "./content-note";
 import {browserNarration,soundChannel,useSoundChannel} from "./sound-player";
@@ -150,9 +151,14 @@ function ClueView({world,scene,clue,roleId,demo,setDemo,passages,onClose}:{world
  const boxRef=useRef<HTMLTextAreaElement>(null);const [peek,setPeek]=useState(false);
  // Character voices: on for the demo, off for class sessions. A new answer plays once; the speaker button replays it.
  const [voicesOn,toggleVoices]=useSoundPref("voices",demo.preset);
- const voice=useCharacterVoice(world.id,demo.id);
+ const voice=useCharacterVoice(world.id,demo.id),soundState=useSoundChannel();
  const askedOf=useRef(character),voiced=useRef("");
- useEffect(()=>{if(busy)askedOf.current=character},[busy,character]);
+ // Asking a new question or switching characters silences the voice that is playing.
+ useEffect(()=>{if(busy){askedOf.current=character;voice.stop("new-question")}},[busy,character,voice]);
+ const shownCharacter=useRef(character);
+ useEffect(()=>{if(shownCharacter.current===character)return;shownCharacter.current=character;voice.stop("switch-character")},[character,voice]);
+ const voiceToggle=replierButton();
+ function replierButton(){const r=world.characters.find(c=>c.id===askedOf.current)??char;return r?voiceButton(soundState,r.id,r.name):null}
  useEffect(()=>{if(!reply||busy||voiced.current===reply)return;voiced.current=reply;if(voicesOn)voice.play(reply,askedOf.current)},[reply,busy,voicesOn,voice]);
  useEffect(()=>{if(!voicesOn)voice.stop()},[voicesOn,voice]);
  const replier=world.characters.find(c=>c.id===askedOf.current)??char;
@@ -181,7 +187,7 @@ function ClueView({world,scene,clue,roleId,demo,setDemo,passages,onClose}:{world
       <p className="mt-1 text-[15px] text-[#6B6457]">Characters can be wrong. You'll check the answer against the story next.</p>
       {chars.length>1&&<div className="mt-4 flex flex-wrap gap-2">{chars.map(c=><button key={c.id} onClick={()=>setCharacter(c.id)} aria-pressed={character===c.id} className={`inline-flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-4 text-[15px] font-semibold ${character===c.id?"bg-[#2A2620] text-white":"bg-[#EFE8D8] text-[#2A2620]"}`}><Portrait character={c} size={36}/>{c.name}</button>)}</div>}
       {!reply&&!busy&&<div className="mt-4 flex flex-col gap-2">{suggestions.map(s=><button key={s} onClick={()=>ask(s)} className="rounded-2xl bg-[#F4E1D6] px-4 py-3 text-left text-[16px] text-[#2A2620] transition hover:bg-[#EDD3C4]"><MessageCircle size={16} className="mr-2 inline text-[#A0472C]"/>{s}</button>)}</div>}
-      {(asked||busy)&&<div className="mt-5 space-y-3"><p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-[#2A2620] px-4 py-3 text-[16px] text-white">{asked}</p><div className="flex max-w-[94%] items-end gap-3">{replier&&<Portrait character={replier} size={48} speaking={!!voice.speaking&&voice.speaking===replier.id}/>}<div className="min-w-0 flex-1 rounded-2xl rounded-bl-md bg-[#EFE8D8] px-4 py-3 text-[16px] leading-7"><div className="flex items-center justify-between gap-2"><p className="text-[13px] font-semibold text-[#8A3B23]">{replier?.name??char.name}</p>{!busy&&reply&&replier&&<button type="button" onClick={()=>voice.play(reply,replier.id)} aria-label={`Hear ${replier.name} say it again`} title="Hear it again" className="grid h-9 w-9 place-items-center rounded-full text-[#8A3B23] hover:bg-[#E4DCCB]"><Volume2 size={17}/></button>}</div>{busy?<p className="text-[#6B6457]">Thinking…</p>:<p>{reply}</p>}</div></div></div>}
+      {(asked||busy)&&<div className="mt-5 space-y-3"><p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-[#2A2620] px-4 py-3 text-[16px] text-white">{asked}</p><div className="flex max-w-[94%] items-end gap-3">{replier&&<Portrait character={replier} size={48} speaking={!!voice.speaking&&voice.speaking===replier.id}/>}<div className="min-w-0 flex-1 rounded-2xl rounded-bl-md bg-[#EFE8D8] px-4 py-3 text-[16px] leading-7"><div className="flex items-center justify-between gap-2"><p className="text-[13px] font-semibold text-[#8A3B23]">{replier?.name??char.name}</p>{!busy&&reply&&replier&&voiceToggle&&<button type="button" onClick={()=>voice.toggle(reply,replier.id)} aria-label={voiceToggle.aria} aria-pressed={voiceToggle.playing} className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-[14px] font-semibold ${voiceToggle.playing?"bg-[#A0472C] text-white hover:bg-[#8A3B23]":"text-[#8A3B23] hover:bg-[#E4DCCB]"}`}>{voiceToggle.playing?<Square size={13} fill="currentColor"/>:<Volume2 size={16}/>}{voiceToggle.label}</button>}</div>{busy?<p className="text-[#6B6457]">Thinking…</p>:<p>{reply}</p>}</div></div></div>}
       <form onSubmit={e=>{e.preventDefault();ask(question)}} className="mt-4 flex gap-2"><label className="sr-only" htmlFor="ask-box">Your question</label><input id="ask-box" value={question} onChange={e=>setQuestion(e.target.value)} maxLength={300} placeholder={reply?"Ask a follow-up…":"Or type your own question…"} className="min-w-0 flex-1 rounded-2xl border border-[#E4DCCB] bg-white px-4 py-3 text-[16px] outline-none focus:border-[#A0472C]"/><button disabled={busy||!question.trim()} className="rounded-2xl bg-[#2A2620] px-4 text-[15px] font-semibold text-white disabled:opacity-40">Ask</button></form>
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3"><button onClick={()=>setStep("prove")} className="text-[15px] text-[#6B6457] underline-offset-4 hover:underline">Skip, I'll look myself</button>{reply&&<button onClick={()=>setStep("prove")} className="case-primary">Check it in the story <ArrowRight size={18}/></button>}</div>
      </div>}

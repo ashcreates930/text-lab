@@ -25,11 +25,15 @@ if(selectedWorld&&["sleepy-hollow","trifles"].includes(selectedWorld)&&!elevenLa
 // public/worlds/<story>/characters/<id>.png and recorded as `portrait` in worlds/<story>/world.json.
 // --ambient: one quiet, loopable ambient track per scene (ElevenLabs sound generation), saved to
 // public/worlds/<story>/<scene>-ambient.mp3 and recorded as the scene's `ambient_audio`.
-// Both take --world=<id> (several allowed, comma-separated) and leave every other file alone.
+// Both take --world=<id> (several allowed, comma-separated) and leave every other file alone. --ambient also takes
+// --only <scene-id> (or --only=<scene-id,...>) to regenerate just those scenes. A regenerated track gets a new
+// versioned name (<scene>-ambient-v2.mp3, -v3, ...) so no browser or CDN cache can keep playing the old one.
 const portraitsMode=process.argv.includes("--portraits"),ambientMode=process.argv.includes("--ambient");
+const onlyArg=process.argv.findIndex(a=>a==="--only"||a.startsWith("--only="));
+const onlyScenes=ambientMode&&onlyArg>=0?(process.argv[onlyArg]==="--only"?process.argv[onlyArg+1]??"":process.argv[onlyArg].slice(7)).split(",").filter(Boolean):null;
 // One sound description per scene, from the scene's setting.
 const ambientPrompts:Record<string,string>={
-  "sleepy-hollow/empty-schoolhouse":"An empty one-room log schoolhouse on an autumn morning: soft wind against the walls, old wood creaking, a small brook trickling outside, a few distant birds.",
+  "sleepy-hollow/empty-schoolhouse":"A busy one-room schoolhouse in 1790s rural New York: many children murmuring and reciting lessons at once, a low steady hum like a beehive, wooden benches scraping, slates tapping, an occasional stern voice calling for quiet. No music. Seamless loop.",
   "sleepy-hollow/van-tassel-party":"A farmhouse party in the next room, heard through a wall: a crackling fireplace, warm muffled voices and laughter, a faint distant fiddle.",
   "sleepy-hollow/the-road-home":"A lonely country road at night in autumn: wind moving through bare trees, creaking branches, crickets, a small stream nearby, very distant owl.",
   "sleepy-hollow/the-towns-verdict":"A country churchyard on a quiet Sunday morning: soft murmuring voices at a distance, birds, a light breeze in tall trees, a brook.",
@@ -145,14 +149,18 @@ if(portraitsMode||ambientMode){
     if(ambientMode){
       if(!elevenLabsKey)throw new Error("ELEVENLABS_API_KEY is required for ambient sound.");
       for(const scene of raw.scenes as {id:string;ambient_audio?:string|null;ambient_prompt?:string}[]){
+        if(onlyScenes&&!onlyScenes.includes(scene.id)&&!onlyScenes.includes(`${id}/${scene.id}`))continue;
         const prompt=ambientPrompts[`${id}/${scene.id}`];if(!prompt){console.log(`No ambient prompt for ${id}/${scene.id}; skipped.`);continue}
-        const body=(loop:boolean)=>JSON.stringify({text:`${prompt} Quiet, steady, seamless background ambience for reading, no music, no speech, no sudden loud sounds.`,duration_seconds:22,prompt_influence:0.5,...(loop?{loop:true,model_id:"eleven_text_to_sound_v2"}:{})});
+        const body=(loop:boolean)=>JSON.stringify({text:`${prompt} Quiet, steady, seamless background ambience for reading, no music, no sudden loud sounds.`,duration_seconds:22,prompt_influence:0.5,...(loop?{loop:true,model_id:"eleven_text_to_sound_v2"}:{})});
         let res=await fetch("https://api.elevenlabs.io/v1/sound-generation",{method:"POST",headers:{"xi-api-key":elevenLabsKey,"Content-Type":"application/json","Accept":"audio/mpeg"},body:body(true)});
         if(!res.ok){console.log(`Looping sound generation not available (${res.status}); generating a plain track.`);res=await fetch("https://api.elevenlabs.io/v1/sound-generation",{method:"POST",headers:{"xi-api-key":elevenLabsKey,"Content-Type":"application/json","Accept":"audio/mpeg"},body:body(false)})}
         if(!res.ok)throw new Error(`ElevenLabs sound generation failed for ${id}/${scene.id} (${res.status})`);
-        await writeFile(join(out,`${scene.id}-ambient.mp3`),Buffer.from(await res.arrayBuffer()));
-        scene.ambient_audio=`/worlds/${id}/${scene.id}-ambient.mp3`;
-        console.log(`Ambient ${id}/${scene.id}-ambient.mp3`);
+        // First recording: <scene>-ambient.mp3. Each regeneration: the next -vN name, so caches never serve the old track.
+        const current=scene.ambient_audio?.match(/-ambient(?:-v(\d+))?\.mp3$/);
+        const file=current?`${scene.id}-ambient-v${Number(current[1]??1)+1}.mp3`:`${scene.id}-ambient.mp3`;
+        await writeFile(join(out,file),Buffer.from(await res.arrayBuffer()));
+        scene.ambient_audio=`/worlds/${id}/${file}`;
+        console.log(`Ambient ${id}/${file}`);
       }
     }
     WorldPackSchema.parse(raw);
