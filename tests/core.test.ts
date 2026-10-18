@@ -326,8 +326,9 @@ test("evidence view: proven counts, character checks, and the needs-help rule", 
   assert.equal(e.summary.totalClues,16);assert.equal(e.summary.joined,10);
   // Character checks: "contradicts" proved a character wrong; "supports" backed them up; anything else is no check.
   assert.equal(findingOf({craft:"contradicts"}),"proved-wrong");assert.equal(findingOf({craft:"supports"}),"backed-up");assert.equal(findingOf({craft:""}),null);
-  assert.equal(row("Amara").provedWrong,2);assert.equal(row("Ella").cells["shadowy-rider"].finding,"proved-wrong");
-  assert.equal(e.summary.provedWrongStudents,3);
+  // Amara proved four characters wrong, two of them by catching a Spot the Lie testimony.
+  assert.equal(row("Amara").provedWrong,4);assert.equal(row("Ella").cells["shadowy-rider"].finding,"proved-wrong");
+  assert.equal(e.summary.provedWrongStudents,5);
   // The party scene has one character to question, so the line names him; the road home has two.
   const party=e.scenes.find(s=>s.id==="van-tassel-party"),road=e.scenes.find(s=>s.id==="the-road-home");
   assert.equal(findingSentence("proved-wrong",party),"This line proved Brom Bones wrong.");
@@ -336,10 +337,10 @@ test("evidence view: proven counts, character checks, and the needs-help rule", 
   assert.equal(row("Hugo").needsHelp,true);assert.equal(row("Half").needsHelp,true);
   assert.equal(row("New").needsHelp,false);assert.equal(row("New").started,false);assert.equal(row("Amara").needsHelp,false);
   assert.equal(e.summary.needsHelp,2);
-  // Spreadsheet: one row per student and clue, with commas and quotes escaped.
+  // Spreadsheet: one row per student and clue, plus one Final Verdict row per student, with commas and quotes escaped.
   const csv=evidenceCsv(e).split("\r\n");
-  assert.equal(csv.length,1+10*16);
-  assert.match(csv[0],/^Student,Scene,Clue,Proven,Line from the story,Student explanation,Character check$/);
+  assert.equal(csv.length,1+10*16+10);
+  assert.match(csv[0],/^Student,Scene,Clue,Proven,Line from the story,Student explanation,Character check,Lie caught$/);
   assert.ok(csv.some(l=>l.startsWith("Amara,")&&l.includes("Proved Brom Bones wrong")));
 });
 
@@ -484,7 +485,7 @@ test("game layer: the case board has one card per proven clue, in scene order, w
   const cards=caseBoardCards(world,answers);
   assert.equal(cards.length,9,"one card per proven clue; the half-finished one is left off");
   assert.deepEqual(cards.map(c=>c.sceneIndex),[...cards.map(c=>c.sceneIndex)].sort((a,b)=>a-b));
-  assert.equal(cards.filter(c=>c.factCheck).length,2);
+  assert.equal(cards.filter(c=>c.factCheck).length,4,"two caught lies and two other characters proved wrong");
   assert.equal(cards.find(c=>c.clueId==="broms-race-tale")!.character,"Brom Bones");
   assert.equal(caseBoardCards(world,{}).length,0);
 });
@@ -880,4 +881,157 @@ test("Next step: the button points to the next thing to do in every state of a s
   assert.equal(s.progress,"Clues 4 of 4");assert.equal(s.action.kind,"next");
   // Last scene solved.
   assert.deepEqual(nextStep({...base,last:true,clues:clues(4),requiredFrame:frame(true)}).action,{kind:"close",label:"Close the case"});
+});
+
+async function storyWorld(id:string){
+  const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+  const passages=parseSourcePassages(await readFile(new URL(`../worlds/${id}/source.md`,import.meta.url),"utf8"));
+  return {world,passages};
+}
+
+test("Spot the Lie: every scene's lie passes validation, and broken lies are caught", async()=>{
+  const {lieProblems}=await import("../lib/lies.ts");
+  for(const id of ["sleepy-hollow","trifles","tell-tale-heart"]){
+    const {world,passages}=await storyWorld(id);
+    assert.equal(world.scenes.filter(s=>s.lie).length,4,`${id} needs a lie in every scene`);
+    assert.deepEqual(lieProblems(world,passages),[],id);
+    assert.equal(world.verdict?.theories.length,3);
+  }
+  const {world,passages}=await storyWorld("sleepy-hollow");
+  const broken=(change:(l:NonNullable<typeof world.scenes[0]["lie"]>)=>void)=>{const w=structuredClone(world);change(w.scenes[0].lie!);return lieProblems(w,passages).join(" | ")};
+  assert.match(broken(l=>{l.truth_line="The pitch-pipe was shiny and new."}),/does not appear word for word/);
+  assert.match(broken(l=>{l.false_claim="Something he never said."}),/false_claim does not appear/);
+  assert.match(broken(l=>{l.truth_paragraph="p068"}),/not one of the clue's evidence paragraphs/);
+  assert.match(broken(l=>{l.character_id="katrina"}),/not available in this scene/);
+  assert.match(broken(l=>{l.testimony=l.false_claim}),/needs 2 to 3/);
+  // A paragraph with a content note can never hold a lie's answer.
+  const w=structuredClone(world);const party=w.scenes[1];party.lie={...party.lie!,clue_id:"broms-corner",truth_paragraph:"p048",truth_line:"Ichabod prided himself upon his dancing as much as upon his vocal powers."};
+  assert.match(lieProblems(w,passages).join(" | "),/content note/);
+});
+
+test("Spot the Lie: the right line catches it; a wrong line names the topic; two misses highlight the paragraph", async()=>{
+  const {tryLine,testimonyParts,isTruthLine}=await import("../lib/lies.ts");
+  const {world}=await storyWorld("sleepy-hollow");
+  const lie=world.scenes[0].lie!;
+  assert.equal(lie.character_id,"hans-van-ripper");
+  let r=tryLine(lie,"The brook was searched, but the body of the schoolmaster was not to be discovered.",0);
+  assert.deepEqual(r,{result:"miss",misses:1,message:"Not quite. Look for a line about what was in Ichabod's bundle."});
+  r=tryLine(lie,"Hans Van Ripper as executor of his estate, examined the bundle which contained all his worldly effects.",r.misses);
+  assert.equal(r.result,"miss");
+  assert.equal(r.result==="miss"&&r.highlight,"p069","after two misses the paragraph (never the line) is highlighted");
+  // The line as the clue screen shows it, with the source's line breaks, still matches.
+  const tapped="They consisted of two shirts and a half; two stocks for the neck; a pair or\ntwo of worsted stockings; an old pair of corduroy small-clothes; a rusty\nrazor; a book of psalm tunes full of dog's-ears; and a broken pitch-pipe.";
+  assert.equal(isTruthLine(lie,tapped),true);
+  assert.deepEqual(tryLine(lie,tapped,2),{result:"caught",misses:2});
+  // Caught: the false sentence is the one struck through.
+  assert.deepEqual(testimonyParts(lie).filter(p=>p.false).map(p=>p.text),[lie.false_claim]);
+});
+
+test("Spot the Lie: a caught lie counts as proving the character wrong (Fact Checker) and shows in the Evidence view", async()=>{
+  const {caseBoardCards}=await import("../lib/game-feel.ts");
+  const {buildEvidence}=await import("../lib/classroom/evidence.ts");
+  const {world}=await storyWorld("sleepy-hollow");
+  const lie=world.scenes[0].lie!;
+  // What the clue screen saves after a catch: the truth line, "contradicts", and the character who testified.
+  const answers={[lie.clue_id]:{notice:lie.truth_line,interpret:"Hans said it was new, but it was broken.",craft:"contradicts",character:lie.character_id}};
+  const card=caseBoardCards(world,answers)[0];
+  assert.equal(card.factCheck,true);assert.equal(card.character,"Hans Van Ripper");
+  const e=buildEvidence(world,[{id:"a",nickname:"Ava",answers,lies:{[world.scenes[0].id]:{clue_id:lie.clue_id,caught:true}}},{id:"b",nickname:"Bo",answers:{},lies:null}],7);
+  assert.equal(e.students[0].provedWrong,1);
+  assert.equal(e.students[0].liesCaught["empty-schoolhouse"],true);
+  assert.equal(e.students[1].liesCaught["empty-schoolhouse"],false);
+  assert.deepEqual(e.scenes[0].lie,{clueId:"ichabods-belongings",character:"Hans Van Ripper"});
+  assert.deepEqual(e.verdict?.standards,["Florida B.E.S.T. ELA.K12.EE.1.1: cite evidence to explain and justify reasoning","Florida B.E.S.T. ELA.7.C.1.4: argumentative writing"]);
+});
+
+test("Final Verdict: exactly 3 pinned clues, a theory, and 2 to 4 sentences are required; one revision", async()=>{
+  const {togglePin,canSubmit,verdictProblems,canRevise}=await import("../lib/verdict.ts");
+  let pins:string[]=[];
+  for(const id of ["a","b","c","d"])pins=togglePin(pins,id);
+  assert.deepEqual(pins,["a","b","c"],"a fourth pin is refused");
+  assert.deepEqual(togglePin(pins,"b"),["a","c"]);
+  const argument="I believe Brom did it because he wanted Katrina. The strongest evidence is his prank on the schoolhouse.";
+  assert.equal(canSubmit({theoryId:"brom-prank",pinned:pins,argument}),true);
+  assert.equal(canSubmit({theoryId:"brom-prank",pinned:["a","b"],argument}),false);
+  assert.match(verdictProblems({theoryId:"brom-prank",pinned:["a","b"],argument}).join(" "),/exactly 3/);
+  assert.equal(canSubmit({theoryId:"",pinned:pins,argument}),false);
+  assert.equal(canSubmit({theoryId:"x",pinned:pins,argument:"Too short."}),false);
+  assert.equal(canSubmit({theoryId:"x",pinned:pins,argument:"One. Two. Three. Four. Five."}),false);
+  const saved={world_id:"sleepy-hollow",theory_id:"brom-prank",pinned:[],argument,feedback:null,submissions:1,saved_at:""};
+  assert.equal(canRevise(saved),true);assert.equal(canRevise({...saved,submissions:2}),false);
+});
+
+test("Final Verdict: 4 judge calls per device a day, and a saved verdict when the judge is unavailable", async()=>{
+  const {limits,usageCall}=await import("../lib/demo-limits.ts");
+  const {judgeVerdict,SAVED_WITHOUT_FEEDBACK,VERDICT_OFF_STORY}=await import("../lib/verdict.ts");
+  assert.equal(limits.verdict.device,4);
+  assert.equal(usageCall("verdict","sb","dev").args.p_device_limit,4);
+  const feedback={strength:"Solid" as const,strength_note:"You used the saddle.",next_step:"Explain the pumpkin."};
+  let judged=0;
+  const deps=(screen:"ok"|"flagged"|"unavailable",allow=true,ok=true)=>({screen:async()=>screen,allow:async()=>allow,judge:async()=>{judged++;if(!ok)throw new Error("down");return feedback}});
+  assert.deepEqual(await judgeVerdict("arg",deps("ok")),{status:"judged",feedback});
+  // Moderation runs first: a flagged argument is never judged.
+  assert.deepEqual(await judgeVerdict("arg",deps("flagged")),{status:"flagged",message:VERDICT_OFF_STORY});
+  // Unavailable judge, cap reached, or no safety check: saved without feedback, never an error.
+  for(const d of [deps("ok",true,false),deps("ok",false),deps("unavailable")])assert.deepEqual(await judgeVerdict("arg",d),{status:"saved",message:SAVED_WITHOUT_FEEDBACK});
+  assert.equal(judged,2);
+});
+
+test("Final Verdict: older saves without lies or a verdict still load; the Next step offers the verdict before closing", async()=>{
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
+  const {nextStep}=await import("../lib/next-step.ts");
+  const {buildEvidence}=await import("../lib/classroom/evidence.ts");
+  const older={v:1,worldId:"sleepy-hollow",scene:3,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],storyFrames:{},updatedAt:"2026-10-01T12:00:00.000Z"};
+  const p=StudentProgressSchema.parse(older);
+  assert.equal(p.lies,undefined);assert.equal(p.verdict,undefined);
+  const withNew=StudentProgressSchema.parse({...older,lies:{"empty-schoolhouse":{clue_id:"ichabods-belongings",caught:true,misses:1}},verdict:{world_id:"sleepy-hollow",theory_id:"ran-away",pinned:[1,2,3].map(i=>({clue_id:`c${i}`,quote:"q"})),argument:"a. b.",feedback:null,submissions:1,saved_at:"x"}});
+  assert.equal(withNew.verdict?.theory_id,"ran-away");
+  assert.throws(()=>StudentProgressSchema.parse({...older,verdict:{...withNew.verdict!,pinned:withNew.verdict!.pinned.slice(0,2)}}));
+  const clues=[{id:"c1",name:"One",done:true,locked:false}];
+  assert.deepEqual(nextStep({clues,last:true,hasChoice:false,verdict:{done:false}}).action,{kind:"verdict",label:"Final verdict"});
+  assert.deepEqual(nextStep({clues,last:true,hasChoice:false,verdict:{done:true}}).action,{kind:"close",label:"Close the case"});
+  assert.deepEqual(nextStep({clues,last:true,hasChoice:false}).action,{kind:"close",label:"Close the case"});
+  // The Evidence view: theory and case strength, the pinned quotes and the argument; another story's verdict is ignored.
+  const {world}=await storyWorld("sleepy-hollow");
+  const e=buildEvidence(world,[{id:"a",nickname:"Ava",answers:{},verdict:{world_id:"sleepy-hollow",theory_id:"brom-prank",pinned:[{clue_id:"broms-corner",quote:"They harried his hitherto peaceful domains"}],argument:"Brom did it.",feedback:{strength:"Strong"}}},{id:"b",nickname:"Bo",answers:{},verdict:{world_id:"trifles",theory_id:"brom-prank"}}]);
+  assert.deepEqual(e.students[0].verdict,{theory:"Brom's prank",strength:"Strong",pinned:[{clue:"Brom Bones, the brooding rival",quote:"They harried his hitherto peaceful domains"}],argument:"Brom did it."});
+  assert.equal(e.students[1].verdict,null);
+});
+
+test("sample class: realistic lies caught and verdicts in the Evidence view", async()=>{
+  const {buildEvidence,evidenceCsv}=await import("../lib/classroom/evidence.ts");
+  const {sampleEvidenceStudents,sampleEvidenceClass}=await import("../lib/sample-classroom.ts");
+  const {world}=await storyWorld("sleepy-hollow");
+  const e=buildEvidence(world,sampleEvidenceStudents.map((s,i)=>({id:`s${i}`,nickname:s.nickname,answers:s.answers,lies:s.lies,verdict:s.verdict})),sampleEvidenceClass.grade);
+  const row=(n:string)=>e.students.find(s=>s.nickname===n)!;
+  assert.equal(Object.values(row("Amara").liesCaught).filter(Boolean).length,3);
+  assert.equal(row("Amara").verdict?.strength,"Strong");
+  assert.equal(row("Carmen").verdict?.strength,"Needs more evidence");
+  assert.equal(row("Hugo").verdict,null);
+  // Every pinned sample quote is one of the clues that student proved.
+  for(const s of sampleEvidenceStudents)for(const p of s.verdict?.pinned??[])assert.ok(p.quote&&s.answers?.[p.clue_id]?.notice===p.quote,`${s.nickname} pinned ${p.clue_id}`);
+  // A caught sample lie quotes the story's line exactly.
+  const {isTruthLine}=await import("../lib/lies.ts");
+  for(const s of sampleEvidenceStudents)for(const [sceneId,l] of Object.entries(s.lies??{}))if(l.caught){const lie=world.scenes.find(x=>x.id===sceneId)!.lie!;assert.ok(isTruthLine(lie,s.answers![l.clue_id].notice),`${s.nickname} ${sceneId}`)}
+  assert.ok(evidenceCsv(e).split("\r\n").some(l=>l.startsWith("Amara,Final verdict,Brom's prank,Strong,")));
+});
+
+test("Final Verdict: the case strength comes from the rubric, checked against the student's own words", async()=>{
+  const {strengthFromRubric,feedbackFromJudge}=await import("../lib/verdict.ts");
+  assert.equal(strengthFromRubric({claim:true,evidence:true,reasoning:true}),"Strong");
+  assert.equal(strengthFromRubric({claim:true,evidence:true,reasoning:false}),"Solid");
+  assert.equal(strengthFromRubric({claim:true,evidence:false,reasoning:false}),"Needs more evidence");
+  const notes={strength_note:"You stated your theory.",next_step:"Say what the quote shows."};
+  const weak="I think Ichabod ran away. Katrina turned him down.";
+  const strong="I believe Ichabod ran away on his own. He left Katrina's house looking desolate and chapfallen, which shows he had a reason to leave.";
+  // Reasoning words must really be in the argument, be more than a restated claim, and run at least six words.
+  assert.equal(feedbackFromJudge({claim:true,supporting_quotes:[1,2],reasoning_words:"Katrina turned him down",...notes},weak)?.strength,"Solid");
+  assert.equal(feedbackFromJudge({claim:true,supporting_quotes:[1,2],reasoning_words:"I think Ichabod ran away",...notes},weak)?.strength,"Solid");
+  assert.equal(feedbackFromJudge({claim:true,supporting_quotes:[1,2],reasoning_words:"he left because the evidence clearly proves it",...notes},weak)?.strength,"Solid","words that aren't in the argument don't count");
+  assert.equal(feedbackFromJudge({claim:true,supporting_quotes:[1,2],reasoning_words:"He left Katrina's house looking desolate and chapfallen, which shows he had a reason to leave",...notes},strong)?.strength,"Strong");
+  assert.equal(feedbackFromJudge({claim:true,supporting_quotes:[1],reasoning_words:"",...notes},strong)?.strength,"Needs more evidence");
+  // A reply that skips the rubric, or rates the theory itself, is treated as the judge being unavailable.
+  assert.equal(feedbackFromJudge({strength:"Strong",...notes},strong),null);
+  assert.equal(feedbackFromJudge({claim:true,supporting_quotes:[1,2,3],reasoning_words:"",strength_note:"",next_step:"y"},strong),null);
 });

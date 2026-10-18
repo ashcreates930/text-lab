@@ -7,7 +7,7 @@ import { screenMessage } from "@/lib/safety";
 import {WorldPackSchema} from "@/lib/world-schema";
 import {consumeDemoAi} from "@/lib/demo-usage";
 import {parseSourcePassages} from "@/lib/source-passages";
-const Input=z.object({sandboxId:z.string().uuid(),question:z.string().min(1).max(1000),scene:z.string(),worldId:z.string().regex(/^[a-z0-9-]+$/).default("tell-tale-heart"),character:z.string().default("narrator"),throughParagraph:z.string().regex(/^p\d{3}$/).optional()});
+const Input=z.object({sandboxId:z.string().uuid(),question:z.string().min(1).max(1000),scene:z.string(),worldId:z.string().regex(/^[a-z0-9-]+$/).default("tell-tale-heart"),character:z.string().default("narrator"),throughParagraph:z.string().regex(/^p\d{3}$/).optional(),clue:z.string().max(120).optional()});
 export async function POST(request:NextRequest){
   const parsed=Input.safeParse(await request.json().catch(()=>null));if(!parsed.success)return NextResponse.json({error:"Invalid question"},{status:400});
   const {question,scene,character,worldId}=parsed.data;const safety=screenMessage(question);if(safety.action!=="allow")return NextResponse.json({text:safety.message,safety});
@@ -21,6 +21,9 @@ export async function POST(request:NextRequest){
   const item=pack.characters.find(x=>x.id===character);if(!item)return NextResponse.json({error:"Character not found."},{status:404});
   const capped=await consumeDemoAi(request,"character",parsed.data.sandboxId);if(capped)return capped;
   const sceneText=through?"The student has read the story only up to this point. Your character notes may mention later events: keep them secret. Every event you mention must appear in the source passages below, and speak only to what you yourself saw, said, or did in them; if they do not show you there, say you were not there. Never mention or hint at later events.":pack.scenes.find(x=>x.id===scene)?.narration??"Only the story's known events are in scope.";
-  try{const passages=await retrieveRelevantPassages(question,source);return NextResponse.json(await characterReply({question,character:item,scene:sceneText,passages}))}
+  // Spot the Lie: on the lie clue, the character who gave the testimony stands by it and makes up nothing new.
+  const lie=pack.scenes.find(x=>x.id===scene)?.lie;
+  const testimony=lie&&lie.clue_id===parsed.data.clue&&lie.character_id===character?` Earlier in this conversation you told the student: "${lie.testimony}" Stand by what you said: do not take it back, correct it, or say which part might be wrong. Do not add any new facts that are not in the source passages; for anything else, answer only from the passages.`:"";
+  try{const passages=await retrieveRelevantPassages(question,source);return NextResponse.json(await characterReply({question,character:item,scene:sceneText+testimony,passages}))}
   catch(error){console.error("Character reply failed:",error instanceof Error?error.message:error);return NextResponse.json({text:"I can’t find an answer to that in the passages I have. What detail in this scene makes you ask?",safety})}
 }

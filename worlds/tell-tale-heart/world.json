@@ -489,7 +489,17 @@
         "p025",
         "p026",
         "p027"
-      ]
+      ],
+      "lie": {
+        "clue_id": "arrival-door-time",
+        "character_id": "officer",
+        "testimony": "A neighbor heard a shriek in the night, so we were sent to search the house. We knocked at the street door just after midnight. The man who let us in was calm and polite.",
+        "false_claim": "We knocked at the street door just after midnight.",
+        "truth_paragraph": "p025",
+        "truth_line": "When I had made an end of these labors, it was four o'clock — still dark as midnight.",
+        "explanation": "The officer said they knocked just after midnight, but the story says it was four o'clock.",
+        "topic": "what time the officers arrived"
+      }
     },
     {
       "id": "search",
@@ -709,7 +719,17 @@
         "p008",
         "p021",
         "p024"
-      ]
+      ],
+      "lie": {
+        "clue_id": "search-treasures",
+        "character_id": "narrator",
+        "testimony": "I welcomed the officers with a smile. I told them the old man was away visiting the city. Then I showed them his treasures, safe and untouched.",
+        "false_claim": "I told them the old man was away visiting the city.",
+        "truth_paragraph": "p027",
+        "truth_line": "The old man, I mentioned, was absent in the country.",
+        "explanation": "The narrator said he told the officers the old man was in the city, but the story says he told them the old man was away in the country.",
+        "topic": "where the narrator said the old man was"
+      }
     },
     {
       "id": "room",
@@ -1463,7 +1483,17 @@
         "p011",
         "p016",
         "p028"
-      ]
+      ],
+      "lie": {
+        "clue_id": "room-shutters",
+        "character_id": "narrator",
+        "testimony": "Every night I opened his door a little at a time. His shutters were wide open, so moonlight filled the room. Still, he never once saw me.",
+        "false_claim": "His shutters were wide open, so moonlight filled the room.",
+        "truth_paragraph": "p009",
+        "truth_line": "His room was as black as pitch with the thick darkness, (for the shutters were close fastened, through fear of robbers,) and so I knew that he could not see the opening of the door, and I kept on pushing it steadily, steadily.",
+        "explanation": "The narrator said the shutters were open, but the story says they were fastened shut and the room was pitch black.",
+        "topic": "the old man's shutters"
+      }
     },
     {
       "id": "confession",
@@ -1664,7 +1694,17 @@
         "p032",
         "p033",
         "p034"
-      ]
+      ],
+      "lie": {
+        "clue_id": "confession-officers-calm",
+        "character_id": "narrator",
+        "testimony": "A low, dull sound grew louder and louder in my ears. By then the officers had stopped talking and were sitting in silence. I could not bear it any longer.",
+        "false_claim": "By then the officers had stopped talking and were sitting in silence.",
+        "truth_paragraph": "p032",
+        "truth_line": "And still the men chatted pleasantly, and smiled.",
+        "explanation": "The narrator said the officers had stopped talking, but the story says they kept chatting and smiling.",
+        "topic": "what the officers were doing"
+      }
     }
   ],
   "recall_checks": [
@@ -2701,5 +2741,25 @@
       }
     ],
     "art_style": "One style for every page: a painterly storybook illustration in muted gouache on warm cream paper, with soft edges, visible brush texture, and deep shadow.\nPalette: charcoal, sepia, and warm cream, with terracotta and dim lantern amber as the only warm accents. Night scenes stay dark but readable.\nSetting: the bedroom (\"chamber\") of an old house at night: a bed, a door with a latch, closed shutters, plank floorboards. Nothing the text does not name.\nThe narrator: never show a face. Show only a shadowed silhouette, the back or side of a head, a hand, or a sleeve in plain dark clothing. The text never describes how the narrator looks.\nThe old man: elderly, thin, in plain nightclothes, features kept soft and mostly in shadow, except his \"pale blue eye, with a film over it\" when the page shows it.\nThe lantern: a small closed tin \"dark lantern\" with a hinged shutter that lets out a thin beam.\nNever: words, letters, or numbers in the image; blood, wounds, weapons, or the body; detailed or frightening faces; anything a later page reveals."
+  },
+  "verdict": {
+    "question": "Why did the narrator confess?",
+    "theories": [
+      {
+        "id": "guilt",
+        "name": "Guilt",
+        "description": "His guilty conscience made him hear the beating heart until he could not keep the secret any longer."
+      },
+      {
+        "id": "his-nerves",
+        "name": "His nerves tricked him",
+        "description": "His overexcited nerves made him imagine the sound, and panic, not guilt, made him shout."
+      },
+      {
+        "id": "they-knew",
+        "name": "He thought they knew",
+        "description": "He believed the officers heard the sound and were mocking him, so he confessed to end their game."
+      }
+    ]
   }
 }

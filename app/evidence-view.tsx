@@ -2,15 +2,17 @@
 // The Teacher Evidence View: one row per student, one column per clue (grouped by scene). A filled terracotta square
 // means the student proved that clue with a line from the story; a shield means that line proved a character wrong.
 // Selecting a square opens the student's line, their explanation, and what it showed about the character.
+// Each scene with a Spot the Lie clue has a "Lie caught" column, and the Verdict column shows each student's Final Verdict
+// (theory and case strength); selecting it opens their pinned quotes and closing argument.
 // Used for real classes (app/classroom.tsx) and the sample classroom (app/teacher-demo.tsx).
 import {useEffect,useMemo,useRef,useState} from "react";
-import {AlertTriangle,Check,Download,ShieldCheck,X} from "lucide-react";
+import {AlertTriangle,Check,Download,Gavel,MessageCircle,ShieldCheck,X} from "lucide-react";
 import {evidenceCsv,evidenceDetail,type ClassEvidence,type EvidenceClue,type EvidenceStudent} from "@/lib/classroom/evidence";
 
 type Selected={student:EvidenceStudent;clue:EvidenceClue}|null;
 
 export function EvidenceView({evidence,sample=false,className}:{evidence:ClassEvidence;sample?:boolean;className?:string}){
- const [selected,setSelected]=useState<Selected>(null);
+ const [selected,setSelected]=useState<Selected>(null),[verdictOf,setVerdictOf]=useState<EvidenceStudent|null>(null);
  const opener=useRef<HTMLElement|null>(null);
  const {summary,scenes,students}=evidence;
  const clues=useMemo(()=>scenes.flatMap(s=>s.clues),[scenes]);
@@ -21,7 +23,8 @@ export function EvidenceView({evidence,sample=false,className}:{evidence:ClassEv
   a.click();URL.revokeObjectURL(a.href);
  }
  const open=(student:EvidenceStudent,clue:EvidenceClue,el:HTMLElement)=>{opener.current=el;setSelected({student,clue})};
- const close=()=>{setSelected(null);opener.current?.focus({preventScroll:true})};
+ const close=()=>{setSelected(null);setVerdictOf(null);opener.current?.focus({preventScroll:true})};
+ const openVerdict=(student:EvidenceStudent,el:HTMLElement)=>{opener.current=el;setVerdictOf(student)};
  return <section aria-labelledby="evidence-h" className="case-ui space-y-5">
   <div className="flex flex-wrap items-start justify-between gap-3">
    <div>
@@ -45,18 +48,20 @@ export function EvidenceView({evidence,sample=false,className}:{evidence:ClassEv
     <li className="flex items-center gap-2"><span className="grid h-6 w-6 place-items-center rounded-md bg-[#A0472C] text-white"><Check size={14}/></span>Proved with a line from the story</li>
     <li className="flex items-center gap-2"><span className="grid h-6 w-6 place-items-center rounded-md bg-[#A0472C] text-white"><ShieldCheck size={14}/></span>Proved a character wrong</li>
     <li className="flex items-center gap-2"><span className="h-6 w-6 rounded-md border-2 border-[#E4DCCB] bg-[#FFFDF8]"/>Not proven yet</li>
+    {scenes.some(s=>s.lie)&&<li className="flex items-center gap-2"><LieMark caught/>Caught the scene's lie (Spot the Lie)</li>}
    </ul>
    {/* The grid scrolls sideways on small screens; student names stay pinned on the left. */}
-   <div className="overflow-x-auto rounded-3xl bg-[#FFFDF8] shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
+   <div className="relative overflow-x-auto rounded-3xl bg-[#FFFDF8] shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
     <table className="w-max min-w-full border-separate border-spacing-0 text-left">
      <caption className="sr-only">Clues each student proved, grouped by scene. Select a square to see the student's line and explanation.</caption>
      <thead>
       <tr>
        <th rowSpan={2} scope="col" className="sticky left-0 z-20 min-w-[170px] border-b border-[#E4DCCB] bg-[#FFFDF8] px-4 py-3 align-bottom text-[14px] font-bold text-[#2A2620]">Student</th>
        <th rowSpan={2} scope="col" className="border-b border-[#E4DCCB] px-3 py-3 align-bottom text-[14px] font-bold text-[#2A2620]">Proven</th>
-       {scenes.map(s=><th key={s.id} colSpan={s.clues.length} scope="colgroup" className="border-b border-l border-[#E4DCCB] px-3 pb-1 pt-3 text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">{s.title}</th>)}
+       {scenes.map(s=><th key={s.id} colSpan={s.clues.length+(s.lie?1:0)} scope="colgroup" className="border-b border-l border-[#E4DCCB] px-3 pb-1 pt-3 text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">{s.title}</th>)}
+       {evidence.verdict&&<th rowSpan={2} scope="col" className="min-w-[190px] border-b border-l border-[#E4DCCB] px-3 py-3 align-bottom text-[14px] font-bold text-[#2A2620]"><span className="flex items-center gap-1.5"><Gavel size={15} className="text-[#A0472C]"/>Verdict</span><span className="mt-1 block text-[11px] font-medium leading-4 text-[#6B6457]" title={evidence.verdict.standards.join(" · ")}>B.E.S.T. ELA.K12.EE.1.1 · C.1.4</span></th>}
       </tr>
-      <tr>{scenes.flatMap(s=>s.clues.map((c,i)=><th key={c.id} scope="col" title={c.name} className={`w-[92px] border-b border-[#E4DCCB] px-2 pb-3 align-bottom text-[12px] font-semibold leading-4 text-[#4A4438] ${i===0?"border-l":""}`}><span className="line-clamp-3 block w-[84px]">{c.name}</span></th>))}</tr>
+      <tr>{scenes.flatMap(s=>s.clues.map((c,i)=><th key={c.id} scope="col" title={c.name} className={`w-[92px] border-b border-[#E4DCCB] px-2 pb-3 align-bottom text-[12px] font-semibold leading-4 text-[#4A4438] ${i===0?"border-l":""}`}><span className="line-clamp-3 block w-[84px]">{c.name}</span></th>).concat(s.lie?[<th key={`${s.id}-lie`} scope="col" title={`Spot the Lie: ${s.lie.character}'s testimony`} className="w-[84px] border-b border-[#E4DCCB] bg-[#FBF7EE] px-2 pb-3 align-bottom text-[12px] font-semibold leading-4 text-[#2A2620]"><span className="block w-[76px]">Lie caught</span></th>]:[]))}</tr>
      </thead>
      <tbody>{students.map(st=><tr key={st.id} className="group">
       <th scope="row" className="sticky left-0 z-10 border-b border-[#EFE8D8] bg-[#FFFDF8] px-4 py-2 text-[16px] font-semibold text-[#2A2620] group-hover:bg-[#FBF7EE]">
@@ -70,13 +75,41 @@ export function EvidenceView({evidence,sample=false,className}:{evidence:ClassEv
         <button type="button" onClick={e=>open(st,c,e.currentTarget)} aria-label={`${st.nickname}, ${c.name}: ${cell.proven?(wrong?"proved, and proved a character wrong":"proved"):"not proven yet"}`} className={`mx-auto grid h-10 w-10 place-items-center rounded-lg transition hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2A2620] ${cell.proven?"bg-[#A0472C] text-white":"border-2 border-[#E4DCCB] bg-[#FFFDF8] hover:border-[#C9B9A0]"}`}>
          {cell.proven?(wrong?<ShieldCheck size={18}/>:<Check size={16}/>):null}
         </button>
-       </td>}))}
+       </td>}).concat(s.lie?[<td key={`${s.id}-lie`} className="border-b border-[#EFE8D8] bg-[#FBF7EE] px-2 py-2 text-center"><span className="sr-only">{st.nickname}, {s.title}, lie: </span><LieMark caught={!!st.liesCaught[s.id]}/></td>]:[]))}
+      {evidence.verdict&&<td className="border-b border-l border-[#EFE8D8] border-l-[#E4DCCB] px-3 py-2">{st.verdict?<button type="button" onClick={e=>openVerdict(st,e.currentTarget)} className="w-full rounded-xl px-2 py-1.5 text-left hover:bg-[#F4E1D6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#A0472C]"><span className="block text-[14px] font-semibold leading-5 text-[#2A2620]">{st.verdict.theory}</span><span className="mt-0.5 block text-[12px] font-semibold text-[#8A3B23]">{st.verdict.strength??"Saved without feedback"}</span></button>:<span className="text-[13px] text-[#8B8478]">Not yet</span>}</td>}
      </tr>)}</tbody>
     </table>
    </div>
   </>}
   {selected&&<DetailPanel evidence={evidence} selected={selected} onClose={close}/>}
+  {verdictOf?.verdict&&<VerdictDetail evidence={evidence} student={verdictOf} onClose={close}/>}
  </section>;
+}
+
+function LieMark({caught}:{caught:boolean}){
+ return caught?<span className="inline-flex items-center gap-1 rounded-md bg-[#2A2620] px-2 py-1 text-[12px] font-bold text-white"><MessageCircle size={12}/>Caught</span>:<span className="text-[13px] text-[#8B8478]">—<span className="sr-only">Not caught yet</span></span>;
+}
+
+// One student's Final Verdict: theory, case strength, the three pinned quotes and the closing argument.
+function VerdictDetail({evidence,student,onClose}:{evidence:ClassEvidence;student:EvidenceStudent;onClose:()=>void}){
+ const heading=useRef<HTMLHeadingElement>(null);const v=student.verdict!;
+ useEffect(()=>{heading.current?.focus({preventScroll:true})},[student.id]);
+ useEffect(()=>{const esc=(e:KeyboardEvent)=>{if(e.key==="Escape")onClose()};window.addEventListener("keydown",esc);return()=>window.removeEventListener("keydown",esc)},[onClose]);
+ return <div className="fixed inset-0 z-50 flex justify-end">
+  <button type="button" aria-label="Close" tabIndex={-1} onClick={onClose} className="absolute inset-0 bg-[#2A2620]/25"/>
+  <section role="dialog" aria-modal="true" aria-labelledby="verdict-detail-h" className="case-ui relative flex h-full w-full max-w-[460px] flex-col bg-[#FFFDF8] shadow-[-18px_0_50px_-20px_rgba(42,38,32,.45)]">
+   <header className="flex items-start justify-between gap-3 border-b border-[#E4DCCB] px-6 py-4">
+    <div><p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">Final verdict · {evidence.verdict?.question}</p><h3 id="verdict-detail-h" ref={heading} tabIndex={-1} className="mt-1 text-[22px] font-bold leading-tight text-[#2A2620] outline-none">{student.nickname} · {v.theory}</h3></div>
+    <button type="button" onClick={onClose} aria-label="Close" className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-[#6B6457] hover:bg-[#EFE8D8]"><X size={22}/></button>
+   </header>
+   <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6">
+    <p className="inline-flex rounded-full bg-[#2A2620] px-3 py-1 text-[14px] font-bold text-white">Case strength: {v.strength??"Saved without feedback"}</p>
+    <div><p className="text-[14px] font-semibold text-[#6B6457]">Pinned evidence</p><ol className="mt-2 space-y-3">{v.pinned.map((p,i)=><li key={i}><p className="text-[13px] font-semibold text-[#8A3B23]">{i+1}. {p.clue}</p><blockquote className="mt-1 rounded-2xl border-l-4 border-[#A0472C] bg-[#F4E1D6]/50 px-4 py-2 font-serif text-[16px] leading-7 text-[#2A2620]">“{p.quote}”</blockquote></li>)}</ol></div>
+    <div><p className="text-[14px] font-semibold text-[#6B6457]">Closing argument</p><p className="mt-2 text-[17px] leading-7 text-[#2A2620]">{v.argument}</p></div>
+    <div className="rounded-2xl bg-[#EFE8D8] p-4"><p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">Standards</p><ul className="mt-1 space-y-1 text-[14px] leading-5 text-[#2A2620]">{evidence.verdict?.standards.map(s=><li key={s}>{s}</li>)}</ul></div>
+   </div>
+  </section>
+ </div>;
 }
 
 function Stat({label,value,note,icon}:{label:string;value:string;note?:string;icon?:React.ReactNode}){

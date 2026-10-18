@@ -132,13 +132,13 @@ export function ConsequenceMoment({image,text,onContinue}:{image:string;text:str
 }
 
 // The case board: each proven clue is a card pinned to a corkboard, joined by a thin terracotta string in scene order.
-export function CaseBoard({world,answers,storyboard=[]}:{world:WorldPack;answers:Record<string,{notice?:string;interpret?:string;craft?:string;character?:string}>;storyboard?:BoardFrame[]}){
+export function CaseBoard({world,answers,storyboard=[],top}:{world:WorldPack;answers:Record<string,{notice?:string;interpret?:string;craft?:string;character?:string}>;storyboard?:BoardFrame[];top?:React.ReactNode}){
  const cards=caseBoardCards(world,answers);
  const board=useRef<HTMLDivElement>(null),pins=useRef<(HTMLSpanElement|null)[]>([]);
  const [points,setPoints]=useState<string>("");
  const measure=useCallback(()=>{const b=board.current;if(!b)return;const r=b.getBoundingClientRect();setPoints(pins.current.slice(0,cards.length).filter(Boolean).map(p=>{const q=p!.getBoundingClientRect();return `${(q.left+q.width/2-r.left).toFixed(1)},${(q.top+q.height/2-r.top).toFixed(1)}`}).join(" "))},[cards.length]);
  useLayoutEffect(()=>{measure();const b=board.current;if(!b)return;const ro=new ResizeObserver(measure);ro.observe(b);return()=>ro.disconnect()},[measure]);
- const row=storyboard.length>0&&<div className="relative mb-6"><p className="mb-2 inline-block rounded-full bg-[#FFFDF8] px-3 py-1 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23] shadow">Your storyboard</p><StoryboardRow frames={storyboard}/></div>;
+ const row=<>{top&&<div className="relative mb-6">{top}</div>}{storyboard.length>0&&<div className="relative mb-6"><p className="mb-2 inline-block rounded-full bg-[#FFFDF8] px-3 py-1 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23] shadow">Your storyboard</p><StoryboardRow frames={storyboard}/></div>}</>;
  if(!cards.length)return <div className="corkboard rounded-3xl p-5 text-center md:p-8">{row}<p className="mx-auto max-w-md rounded-2xl bg-[#FFFDF8] px-5 py-4 text-[17px] font-semibold text-[#2A2620] shadow">Prove a clue to pin it to your case board.</p></div>;
  return <div className="corkboard relative rounded-3xl p-5 md:p-8" data-testid="case-board">
   {row}
@@ -163,14 +163,14 @@ function BoardCardView({card,index,pinRef}:{card:BoardCard;index:number;pinRef:(
 }
 
 // The board so far, opened from the scene screen. Escape or Close returns to the scene.
-export function CaseBoardDialog({world,answers,storyboard,onClose}:{world:WorldPack;answers:Record<string,{notice?:string;interpret?:string;craft?:string;character?:string}>;storyboard?:BoardFrame[];onClose:()=>void}){
+export function CaseBoardDialog({world,answers,storyboard,top,onClose}:{world:WorldPack;answers:Record<string,{notice?:string;interpret?:string;craft?:string;character?:string}>;storyboard?:BoardFrame[];top?:React.ReactNode;onClose:()=>void}){
  const heading=useRef<HTMLHeadingElement>(null);
  useEffect(()=>{const opener=document.activeElement as HTMLElement|null;heading.current?.focus({preventScroll:true});const esc=(e:KeyboardEvent)=>{if(e.key==="Escape")onClose()};window.addEventListener("keydown",esc);return()=>{window.removeEventListener("keydown",esc);opener?.focus?.({preventScroll:true})}},[onClose]);
  return <div role="dialog" aria-modal="true" aria-labelledby="board-h" className="fixed inset-0 z-50 overflow-y-auto bg-[#2A2620]/55 p-3 md:p-8">
   <div className="case-ui mx-auto max-w-6xl rounded-3xl bg-[#F6F0E3] p-4 shadow-2xl md:p-6">
    <div className="mb-4 flex items-center justify-between gap-3"><h2 id="board-h" ref={heading} tabIndex={-1} className="text-[24px] font-bold outline-none">Your case board</h2><button type="button" onClick={onClose} aria-label="Close the case board" className="grid h-11 w-11 place-items-center rounded-full text-[#6B6457] hover:bg-[#EFE8D8]"><X size={22}/></button></div>
    <div className="mb-4 rounded-2xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="mb-2 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Your detective rank</p><RankLadder/></div>
-   <CaseBoard world={world} answers={answers} storyboard={storyboard}/>
+   <CaseBoard world={world} answers={answers} storyboard={storyboard} top={top}/>
   </div>
  </div>;
 }

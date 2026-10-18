@@ -693,7 +693,17 @@
           "end": "p020"
         }
       ],
-      "reading_note": "This case begins at the end. Read what the town found the morning after, then go back to the beginning to meet Ichabod and the legend he believed."
+      "reading_note": "This case begins at the end. Read what the town found the morning after, then go back to the beginning to meet Ichabod and the legend he believed.",
+      "lie": {
+        "clue_id": "ichabods-belongings",
+        "character_id": "hans-van-ripper",
+        "testimony": "I looked through the schoolmaster's bundle myself. Inside were some shirts, a rusty razor, and a brand-new pitch-pipe. His books of magic went straight into the fire.",
+        "false_claim": "Inside were some shirts, a rusty razor, and a brand-new pitch-pipe.",
+        "truth_paragraph": "p069",
+        "truth_line": "They consisted of two shirts and a half; two stocks for the neck; a pair or two of worsted stockings; an old pair of corduroy small-clothes; a rusty razor; a book of psalm tunes full of dog’s-ears; and a broken pitch-pipe.",
+        "explanation": "Hans said the pitch-pipe was brand-new, but the story says it was broken.",
+        "topic": "what was in Ichabod's bundle"
+      }
     },
     {
       "id": "van-tassel-party",
@@ -1118,7 +1128,17 @@
           "start": "p021",
           "end": "p057"
         }
-      ]
+      ],
+      "lie": {
+        "clue_id": "broms-race-tale",
+        "character_id": "brom-bones",
+        "testimony": "I'm not afraid of that headless rider. One night I raced him for a bowl of punch, and my horse Daredevil was winning. Then, just as we reached the old mill, the goblin bolted and vanished in a flash of fire.",
+        "false_claim": "Then, just as we reached the old mill, the goblin bolted and vanished in a flash of fire.",
+        "truth_paragraph": "p055",
+        "truth_line": "He affirmed that on returning one night from the neighboring village of Sing Sing, he had been overtaken by this midnight trooper; that he had offered to race with him for a bowl of punch, and should have won it too, for Daredevil beat the goblin horse all hollow, but just as they came to the church bridge, the Hessian bolted, and vanished in a flash of fire.",
+        "explanation": "Brom said the goblin vanished at the old mill, but the story says it vanished at the church bridge.",
+        "topic": "where Brom's race ended"
+      }
     },
     {
       "id": "the-road-home",
@@ -1547,7 +1567,17 @@
           "start": "p058",
           "end": "p067"
         }
-      ]
+      ],
+      "lie": {
+        "clue_id": "andre-tree",
+        "character_id": "brom-bones",
+        "testimony": "Everybody knows Major André's tree is haunted. When the schoolmaster rode past it that night, a ghost dressed in white was hanging in its branches. No wonder he was shaking in his saddle.",
+        "false_claim": "When the schoolmaster rode past it that night, a ghost dressed in white was hanging in its branches.",
+        "truth_paragraph": "p060",
+        "truth_line": "As he approached a little nearer, he thought he saw something white, hanging in the midst of the tree: he paused and ceased whistling but, on looking more narrowly, perceived that it was a place where the tree had been scathed by lightning, and the white wood laid bare.",
+        "explanation": "Brom said a ghost in white hung in the tree, but the story says the white thing was bare wood where lightning had struck.",
+        "topic": "the white thing in the tree"
+      }
     },
     {
       "id": "the-towns-verdict",
@@ -1953,7 +1983,17 @@
           "start": "p071",
           "end": "p082"
         }
-      ]
+      ],
+      "lie": {
+        "clue_id": "old-wives-tale",
+        "character_id": "hans-van-ripper",
+        "testimony": "The old wives still tell that ghost story by the fire every winter. The road to the church still crosses that old bridge, the same as it always has. Folks are silly to be scared of it.",
+        "false_claim": "The road to the church still crosses that old bridge, the same as it always has.",
+        "truth_paragraph": "p072",
+        "truth_line": "The bridge became more than ever an object of superstitious awe; and that may be the reason why the road has been altered of late years, so as to approach the church by the border of the millpond.",
+        "explanation": "Hans said the road still crosses the old bridge, but the story says the road was changed to go by the millpond.",
+        "topic": "the road to the church"
+      }
     }
   ],
   "recall_checks": [
@@ -3892,6 +3932,26 @@
       "p034",
       "p047",
       "p048"
+    ]
+  },
+  "verdict": {
+    "question": "What really happened to Ichabod Crane?",
+    "theories": [
+      {
+        "id": "brom-prank",
+        "name": "Brom's prank",
+        "description": "Brom Bones dressed up as the Headless Horseman and threw a pumpkin to scare his rival out of Sleepy Hollow."
+      },
+      {
+        "id": "the-horseman",
+        "name": "The Headless Horseman",
+        "description": "The ghostly Galloping Hessian really chased Ichabod that night and carried him away."
+      },
+      {
+        "id": "ran-away",
+        "name": "He ran away",
+        "description": "Frightened and turned down by Katrina, Ichabod left on his own and started a new life far away."
+      }
     ]
   }
 }

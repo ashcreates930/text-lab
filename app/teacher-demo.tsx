@@ -123,7 +123,7 @@ function ClassCode(){
 function SampleEvidence(){
  const [world,setWorld]=useState<WorldPack|null>(null);
  useEffect(()=>{fetch(`/worlds/${sampleEvidenceClass.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setWorld(null))},[]);
- const evidence=useMemo(()=>world?buildEvidence(world,sampleEvidenceStudents.map((s,i)=>({id:`sample-${i}`,nickname:s.nickname,answers:s.answers,frames:s.frames}))):null,[world]);
+ const evidence=useMemo(()=>world?buildEvidence(world,sampleEvidenceStudents.map((s,i)=>({id:`sample-${i}`,nickname:s.nickname,answers:s.answers,frames:s.frames,lies:s.lies,verdict:s.verdict})),sampleEvidenceClass.grade):null,[world]);
  if(!evidence)return <p className="text-[16px] text-[#6B6457]">Opening the sample class…</p>;
  return <EvidenceView evidence={evidence} sample className={sampleEvidenceClass.name}/>;
 }
