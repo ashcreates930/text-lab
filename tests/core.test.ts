@@ -1296,3 +1296,95 @@ test("live evidence: per-student role actions and squad answers, in the Evidence
   const csv=evidenceCsv({story:{id:"x",title:"x"},scenes:[],students:[],summary:{joined:0,totalClues:0,averageProven:0,provedWrongStudents:0,needsHelp:0,anyProven:false},live});
   assert.match(csv,/Live round,Date,Round type/);assert.equal(csv.split("\r\n").filter(l=>l.startsWith("1,2026-10-19")).length,3);
 });
+
+// ---------- Plant a Lie ----------
+async function plantKit(worldId="sleepy-hollow"){
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${worldId}/world.json`,import.meta.url),"utf8")));
+  const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  const passages=parseSourcePassages(await readFile(new URL(`../worlds/${worldId}/source.md`,import.meta.url),"utf8"));
+  const planted=await import("../lib/planted-lies.ts");const lies=await import("../lib/lies.ts");
+  return {world,passages,planted,lies};
+}
+
+test("plant a lie: a catchable lie passes; it must be one sentence, by a speaking character, disproved by exactly one line", async()=>{
+  const {world,passages,planted,lies}=await plantKit();
+  const scene=world.scenes[0],clue=scene.artifacts.find(a=>a.id===scene.lie!.clue_id)!;
+  const p=passages.find(x=>x.id===scene.lie!.truth_paragraph)!;
+  const line=lies.evidenceSentences(p.text).find(s=>s.includes("rusty razor"))!;
+  const ok={sceneId:scene.id,clueId:clue.id,characterId:scene.lie!.character_id,sentence:"The schoolmaster packed a golden razor and a brand-new flute.",truthParagraph:p.id,truthLine:line};
+  assert.deepEqual(planted.plantedLieProblems(world,passages,ok),[]);
+  const problems=(x:Partial<typeof ok>)=>planted.plantedLieProblems(world,passages,{...ok,...x});
+  assert.match(problems({sentence:"A razor."}).join(),/at least 5 words/);
+  assert.match(problems({sentence:"He packed a golden razor. He also packed a flute and a hat."}).join(),/just one sentence/);
+  assert.match(problems({characterId:"ichabod"}).join(),/speaks in this scene/,"non-speaking characters are never voiced");
+  assert.match(problems({truthLine:"Something the story never says."}).join(),/proves it false/);
+  assert.match(problems({truthParagraph:"p001"}).join(),/this clue's evidence/);
+  assert.match(problems({sentence:line}).join(),/says something false/);
+  // Exactly one tappable line may match: a line that appears twice in the clue's evidence is refused.
+  const twice=[...passages,{...p,id:"p999"}];
+  const w2=structuredClone(world);w2.scenes[0].artifacts.find(a=>a.id===clue.id)!.source_anchor.push("p999");
+  assert.match(planted.plantedLieProblems(w2,twice,ok).join(),/more than once/);
+});
+
+test("plant a lie: never on a paragraph with a content note", async()=>{
+  const {world,passages,planted,lies}=await plantKit();
+  const scene=world.scenes[0],pid=scene.lie!.truth_paragraph;
+  const line=lies.evidenceSentences(passages.find(x=>x.id===pid)!.text).find(x=>x.includes("rusty razor"))!;
+  const input={sceneId:scene.id,clueId:scene.lie!.clue_id,characterId:scene.lie!.character_id,sentence:"The schoolmaster packed a golden razor and a brand-new flute.",truthParagraph:pid,truthLine:line};
+  assert.deepEqual(planted.plantedLieProblems(world,passages,input),[]);
+  // The same lie, once its paragraph carries a content note, is refused.
+  const noted=structuredClone(world);
+  noted.storybook={...(noted.storybook??{pages:[]}),ai_exclude:[...(noted.storybook?.ai_exclude??[]),pid],pages:[...(noted.storybook?.pages??[]),{id:"noted",section:"x",start:pid,end:pid,mode:"student",content_note:"A test note."} as never]} as never;
+  assert.match(planted.plantedLieProblems(noted,passages,input).join(),/content note/);
+});
+
+test("plant a lie: the writer's squad sits out and earns only when other squads catch it soundly", async()=>{
+  const {world,planted}=await plantKit();
+  const engine=await import("../lib/live/engine.ts");
+  const scene=world.scenes[0];
+  const lie=planted.asLie({sceneId:scene.id,clueId:scene.lie!.clue_id,characterId:scene.lie!.character_id,sentence:"He packed a golden razor and a new flute.",truthParagraph:scene.lie!.truth_paragraph,truthLine:scene.lie!.truth_line},world);
+  let t=0;const rows:import("../lib/live/engine.ts").LiveResponse[]=[];
+  const add=(sq:string,kind:string,payload:Record<string,unknown>)=>rows.push({id:`r${t}`,roundIndex:0,squadId:sq,playerId:`${sq}-${kind}`,role:null,kind:kind as never,payload,flagged:false,createdAt:new Date(Date.UTC(2026,9,19,14,0,t++)).toISOString()});
+  const answer=(sq:string,quote:string,text:string)=>{add(sq,"pin",{quote});add(sq,"explain",{text});add(sq,"approve",{});add(sq,"submit",{})};
+  const squads=["writer","a","b","c"].map((id,position)=>({id,name:id,position}));
+  // Nobody catches it soundly: the writer earns nothing.
+  answer("a",lie.truth_line,"Because.");
+  let s=Object.fromEntries(engine.scoreLieRound(lie,squads,rows,0,"writer").map(x=>[x.squadId,x]));
+  assert.equal(s.writer.points,0);assert.equal(s.writer.writer,true);assert.equal(s.a.points,50+10,"right line only, first in");
+  answer("b",lie.truth_line,"He said the razor was golden, but the story says it was a rusty razor.");
+  answer("c","The brook was searched, but the body of the schoolmaster was not to be discovered.","The razor was rusty in the story, not golden at all.");
+  answer("writer",lie.truth_line,"The story says the razor was rusty, so the golden razor is false.");
+  s=Object.fromEntries(engine.scoreLieRound(lie,squads,rows,0,"writer").map(x=>[x.squadId,x]));
+  assert.equal(s.writer.points,planted.PLANTED_LIE_POINTS,"one other squad caught it soundly; the writer's own answer doesn't count");
+  assert.equal(s.a.points,50+10);assert.equal(s.b.points,100+7);assert.equal(s.c.points,0);
+  assert.equal(planted.writerPoints([{squadId:"x",correct:true,sound:true}],null),0);
+});
+
+test("plant a lie: approved lies become live rounds, and the answer never reaches the phones", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {world,lies}=await plantKit();
+  const {memoryLiveStore}=await import("../lib/live/store.ts");
+  const {memoryLieBankStore}=await import("../lib/lie-bank-store.ts");
+  const server=await import("../lib/live/server.ts");
+  const bank=memoryLieBankStore([]);
+  const scene=world.scenes[0];
+  const p=await bank.add({classId:"c1",studentId:"st-writer",worldId:"sleepy-hollow",sceneId:scene.id,clueId:scene.lie!.clue_id,characterId:scene.lie!.character_id,sentence:"He packed a golden razor and a new flute.",truthParagraph:scene.lie!.truth_paragraph,truthLine:scene.lie!.truth_line,status:"pending"});
+  await bank.setStatus(p.id,"approved");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"PLANT1",teacherId:"t1",classId:"c1",demo:false,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const ids:string[]=[];
+  for(const [n,sid] of [["Ana","st-writer"],["Ben",null],["Cy",null],["Di",null],["Ed",null],["Flo",null]] as const){const r=await server.join(store,s,{nickname:n,studentId:sid});assert.ok(r.player);ids.push(r.player.id)}
+  let st={...(await server.loadState(store,s.id))!,bank:[(await bank.get(p.id))!]};
+  await server.hostAct(store,st,{action:"squads.auto"});
+  st={...(await server.loadState(store,s.id))!,bank:st.bank};
+  assert.equal(server.hostView(st).lieBank.length,1);
+  assert.equal(await server.hostAct(store,st,{action:"round.start",type:"lie",plantedId:p.id}),null);
+  st={...(await server.loadState(store,s.id))!,bank:st.bank};
+  const writerSquad=st.players.find(x=>x.id===ids[0])!.squadId;
+  assert.equal(server.hostView(st).writerSquadId,writerSquad);
+  assert.equal(server.hostView(st).counters.squadsAnswering,1,"the writer's squad sits out");
+  const view=server.playerView(st,ids[0]);
+  assert.equal(view.plantedByMySquad,true);assert.equal(view.answering,false);
+  assert.ok(!JSON.stringify(server.playerView(st,ids[1]).round).includes(lies.lineWords(scene.lie!.truth_line).slice(0,30)),"no truth line on the phones");
+  assert.equal(await server.playerAct(store,st,ids[0],{kind:"pin",payload:{quote:"x"}},{judgeAllowed:async()=>false}),"Your squad planted this lie. Watch who catches it.");
+});

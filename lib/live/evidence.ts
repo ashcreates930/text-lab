@@ -2,7 +2,7 @@
 // student did in their role. Built from the response rows (each one records the player and the role they acted in).
 // Flagged writing is shown here, marked, because this view is the teacher's only; it never reaches the host screen.
 import type { WorldPack } from "../world-schema.ts";
-import { ROLE_INFO, objectionResult, scoreLieRound, scoreVerdictRound, type LivePlayer, type LiveResponse, type LiveSession, type LiveSquad, type Role } from "./engine.ts";
+import { ROLE_INFO, objectionResult, roundLie, scoreLieRound, scoreVerdictRound, type LivePlayer, type LiveResponse, type LiveSession, type LiveSquad, type Role } from "./engine.ts";
 
 export type LiveMemberEvidence = { nickname: string; studentId: string | null; actions: string[] };
 export type LiveSquadEvidence = { name: string; members: LiveMemberEvidence[]; answer: string; explanation: string; flagged: boolean; result: string; points: number };
@@ -40,9 +40,9 @@ export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] 
     const results = new Map<string, { result: string; points: number }>();
     let prompt = "";
     if (round.type === "lie") {
-      const scene = world.scenes.find((s) => s.id === round.sceneId), lie = scene?.lie;
-      prompt = lie ? `${world.characters.find((c) => c.id === lie.character_id)?.name ?? "A witness"} said: "${lie.false_claim}"` : "";
-      if (lie) for (const s of scoreLieRound(lie, squads, responses, i)) results.set(s.squadId, { result: s.detail, points: s.points });
+      const lie = roundLie(world, round);
+      prompt = lie ? `${round.planted ? "Planted by a classmate · " : ""}${world.characters.find((c) => c.id === lie.character_id)?.name ?? "A witness"} said: "${lie.false_claim}"` : "";
+      if (lie) for (const s of scoreLieRound(lie, squads, responses, i, round.planted?.writerSquadId ?? null)) results.set(s.squadId, { result: s.detail, points: s.points });
     } else if (round.type === "verdict") {
       prompt = world.verdict?.question ?? "";
       for (const s of scoreVerdictRound(squads, responses, i)) results.set(s.squadId, { result: s.theoryId ? `${world.verdict?.theories.find((t) => t.id === s.theoryId)?.name ?? s.theoryId} · ${s.detail}` : s.detail, points: s.points });

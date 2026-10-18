@@ -31,6 +31,7 @@ import {frameSaved,requiredFrame,sceneFrames,sceneSolved,storyboardSoFar,type Sc
 import {FrameView,StoryboardRow,StoryboardStrip} from "./storyboard";
 import {VerdictPanel,VerdictStamp,VerdictView} from "./verdict";
 import {theoryOf,verdictFor} from "@/lib/verdict";
+import {PlantLieView} from "./plant-lie";
 
 export function CaseFlow(props:{demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void;onTutorial?:()=>void;onFeedback?:()=>void}){
  return <BilingualProvider worldId={props.demo.worldId} lang={props.demo.homeLanguage??null}><CaseInner {...props}/></BilingualProvider>;
@@ -38,9 +39,9 @@ export function CaseFlow(props:{demo:Demo;setDemo:React.Dispatch<React.SetStateA
 
 function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback}:{demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void;onTutorial?:()=>void;onFeedback?:()=>void}){
  const [world,setWorld]=useState<WorldPack|null>(null),[passages,setPassages]=useState<SourcePassage[]>([]),[error,setError]=useState("");
- const [openClue,setOpenClue]=useState<string>(""),[openFrame,setOpenFrame]=useState(""),[verdictOpen,setVerdictOpen]=useState(false),[toast,setToast]=useState(""),[celebrate,setCelebrate]=useState<{sceneId:string;rankUp:string|null}|null>(null),[justProven,setJustProven]=useState("");
+ const [openClue,setOpenClue]=useState<string>(""),[openFrame,setOpenFrame]=useState(""),[verdictOpen,setVerdictOpen]=useState(false),[toast,setToast]=useState(""),[celebrate,setCelebrate]=useState<{sceneId:string;rankUp:string|null}|null>(null),[justProven,setJustProven]=useState(""),[plantClue,setPlantClue]=useState("");
  // Opening a clue or a storyboard frame, or going back to the scene, is a new screen: start at the top with focus on its heading.
- const screen=`${openClue}|${openFrame}|${verdictOpen}`,shownScreen=useRef(screen);
+ const screen=`${openClue}|${openFrame}|${verdictOpen}|${plantClue}`,shownScreen=useRef(screen);
  useLayoutEffect(()=>{if(shownScreen.current===screen)return;shownScreen.current=screen;focusScreenTop()},[screen]);
  useEffect(()=>{setWorld(null);fetch(`/worlds/${demo.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setError("We couldn't open this story. Refresh the page to try again."));fetch(`/worlds/${demo.worldId}/source.md`).then(r=>r.ok?r.text():"").then(t=>setPassages(parseSourcePassages(t))).catch(()=>setPassages([]))},[demo.worldId]);
  // Students play the scene game. The storybook reader stays in the code, switched off, until we decide to bring it back.
@@ -65,15 +66,18 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback}:{d
  const frame=frames.find(f=>f.key===openFrame);
  if(frame)return <FrameView world={world} frame={frame} passages={passages} demo={demo} setDemo={setDemo} onClose={saved=>{setOpenFrame("");if(!saved)return;window.scrollTo({top:0});setToast("Frame saved to your storyboard.");
   if(frame.required&&!frameSaved(demo.storyFrames,frame.key)&&scene.artifacts.every(a=>isDone(demo,a.id)))celebrateScene()}}/>;
+ // Plant a Lie (class students only): a new screen for a clue they have proven.
+ const planting=demo.classAuth?scene.artifacts.find(a=>a.id===plantClue&&isDone(demo,a.id)):undefined;
+ if(planting&&demo.classAuth)return <PlantLieView world={world} scene={scene} clue={planting} passages={passages} token={demo.classAuth.token} onClose={()=>setPlantClue("")}/>;
  const clue=scene.artifacts.find(a=>a.id===openClue);
  if(clue)return <ClueView world={world} scene={scene} clue={clue} roleId={role.id} demo={demo} setDemo={setDemo} passages={passages} onClose={(saved,info)=>{setOpenClue("");if(!saved)return;window.scrollTo({top:0});setJustProven(clue.id);
   const badge=info?.factCheck?recordFactCheck(`${world.id}:${clue.id}`):false;
   setToast(badge?"Badge earned: Fact Checker. You used the story to prove a character wrong.":"Clue proven and saved to your case file.");
   if(info?.solves&&sceneSolved(true,frames,demo.storyFrames))celebrateScene()}}/>;
- return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} role={role} demo={demo} setDemo={setDemo} passages={passages} frames={frames} onOpenFrame={setOpenFrame} onOpenVerdict={()=>setVerdictOpen(true)} onCloseCase={closeCase} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
+ return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} role={role} demo={demo} setDemo={setDemo} passages={passages} frames={frames} onOpenFrame={setOpenFrame} onOpenVerdict={()=>setVerdictOpen(true)} onCloseCase={closeCase} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} onPlantLie={demo.classAuth?setPlantClue:undefined} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
 }
 
-function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onOpenFrame,onOpenVerdict,onCloseCase,onOpenClue,onExit,toast,celebrating,rankUp,justProven,onTutorial}:{world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];frames:SceneFrame[];onOpenFrame:(key:string)=>void;onOpenVerdict:()=>void;onCloseCase:()=>void;onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string;onTutorial?:()=>void}){
+function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onOpenFrame,onOpenVerdict,onCloseCase,onOpenClue,onExit,onPlantLie,toast,celebrating,rankUp,justProven,onTutorial}:{onPlantLie?:(clueId:string)=>void;world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];frames:SceneFrame[];onOpenFrame:(key:string)=>void;onOpenVerdict:()=>void;onCloseCase:()=>void;onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string;onTutorial?:()=>void}){
  const [reading,setReading]=useState(false),[boardOpen,setBoardOpen]=useState(false),[moment,setMoment]=useState<{text:string;image:string}|null>(null);
  // Ambient sound: on for the demo, off for class sessions; the student can switch it either way.
  const [ambientOn,toggleAmbient]=useSoundPref("ambient",demo.preset);
@@ -131,7 +135,8 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onO
     :<button onClick={act} className="case-primary min-h-[58px] w-full text-[18px] md:w-auto md:min-w-[300px] md:shrink-0">{step.action.label} <ArrowRight size={20}/></button>}
   </section>
   <div role="status" aria-live="polite">{celebrating&&<p className="case-rise mt-4 rounded-2xl bg-[#A0472C] px-5 py-3 text-[16px] font-semibold text-white">Scene solved. Every clue is backed by the story.{rankUp?` New rank: ${rankUp}.`:""}</p>}
-  {toast&&<p className="mt-4 rounded-2xl bg-[#2A2620] px-5 py-3 text-[15px] text-white"><Check size={16} className="mr-2 inline"/>{toast}</p>}</div>
+  {toast&&<p className="mt-4 rounded-2xl bg-[#2A2620] px-5 py-3 text-[15px] text-white"><Check size={16} className="mr-2 inline"/>{toast}</p>}
+  {onPlantLie&&justProven&&isDone(demo,justProven)&&<button type="button" onClick={()=>onPlantLie(justProven)} className="mt-2 text-[15px] font-semibold text-[#8A3B23] underline-offset-4 hover:underline">Plant a lie about this clue for your class</button>}</div>
   {/* Clues: one compact row. A chip opens its clue, just like its pin on the picture. */}
   <section aria-labelledby="clues-h" className="mt-5">
    <h2 id="clues-h" className="sr-only">Clues</h2>

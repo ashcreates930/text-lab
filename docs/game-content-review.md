@@ -160,3 +160,32 @@ How a lie plays: the character's testimony appears first and plays in their voic
 - No lie uses a paragraph with a content note (Sleepy Hollow ¶34, ¶47 and ¶48), and none is about a death, violence or another sensitive subject. The Trifles lies stay with potatoes, a drawer, a dress and the windows; the Tell-Tale Heart lies stay with the time, a place, the shutters and the officers' chatting.
 - Some story lines in Trifles are split oddly at stage directions and at "Mrs."; each truth line here is chosen so the line the student taps reads cleanly.
 - The judge scores every verdict with one rubric (a claim that matches the theory, evidence that supports it, reasoning that connects them) and never says a theory is wrong.
+
+## Live class mode (squads on phones)
+
+Fixed lines students and the class see. Nothing here is generated; the testimony in live Spot the Lie is the reviewed scene testimony above, or a classmate's lie the teacher approved.
+
+| Where | Text |
+| --- | --- |
+| Join (guests) | Pick your detective name. Tap one to join. No real names here. |
+| Lobby | You're in. Your teacher is putting everyone into squads. Eyes on the board. The round starts soon. |
+| Roles | Lead Investigator: Submit your squad's answer once everyone has done their part. · Evidence Keeper: Pin the line from the story. · Skeptic: Approve the answer, or object so your squad fixes it. · Reporter: Write the one-sentence explanation. |
+| Squad purpose | Spot the Lie: Catch the false claim with one line from the story. · Verdict Vote: Defend your theory with three pieces of evidence. · Objection!: Counter the other squad's evidence with a better line from the text. |
+| Objection! vote | Sustained or overruled? Did (squad)'s line beat (squad)'s evidence? |
+| Objection! result | Your counter beat their evidence · Their evidence held · Their counter beat your evidence · Your evidence held |
+| Hidden writing | Hidden for the teacher to review. |
+| Scoreboard | Points come from evidence and reasoning. Speed is only a small bonus on correct answers. |
+
+## Plant a Lie
+
+| Where | Text |
+| --- | --- |
+| Scene, after proving a clue (class students) | Plant a lie about this clue for your class |
+| Plant a lie screen | Write one false sentence a character might say about this clue. Then tap the line from the story that proves it false. A good lie is catchable: one line disproves it. |
+| Checks | Write a full sentence, at least 5 words. · Write just one sentence. · Pick a character who speaks in this scene. · Tap the line from the story that proves it false. · Pick a line from a different paragraph. That one has a content note. · That line appears more than once in this clue. Pick a different one. · Change the sentence so it says something false. |
+| Sent | Sent to your teacher. If your teacher approves it, it goes into your class's Lie bank. Your squad earns points when a classmate catches it with the right line and a good explanation. |
+| Live round, writer's squad | Your squad planted this lie. Watch the board. Your squad earns points for every squad that catches it with the right line and a sound explanation. |
+| Reveal (planted lie) | A classmate wrote this lie. The line from the story shows what really happened. |
+
+- A planted lie is one sentence by a speaking character in the clue's scene (never a non-speaking character), disproved by exactly one evidence line, never from a paragraph with a content note. Every planted lie is screened; a flagged one is shown to the teacher only.
+- The writer's squad sits out its own lie and earns 25 points for each other squad that catches it with the right line and a sound explanation; nothing when it stumps everyone.

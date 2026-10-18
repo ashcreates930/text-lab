@@ -107,8 +107,9 @@ function RoundPicker({state,act,first}:{state:View;act:(b:Record<string,unknown>
   <div className="mt-4 grid gap-3 md:grid-cols-3">
    <div className="rounded-2xl bg-[#1E1A15] p-4"><p className="flex items-center gap-2 text-[22px] font-bold"><Search size={22}/> Spot the Lie</p><p className="mt-1 text-[16px] text-[#E8DDCB]">A character testifies. Squads find the line that disproves them.</p>
     <label htmlFor="lie-scene" className="mt-3 block text-[14px] text-[#F3C9B2]">Testimony</label>
-    <select id="lie-scene" value={scene} onChange={e=>setScene(e.target.value)} className="mt-1 w-full rounded-xl bg-[#FFFDF8] px-3 py-2 text-[16px] text-[#2A2620]">{state.lieScenes.map(l=><option key={l.sceneId} value={l.sceneId}>{l.label}</option>)}</select>
-    <button type="button" onClick={()=>act({action:"round.start",type:"lie",sceneId:scene})} className="host-btn mt-3 w-full">Start<span className="sr-only"> Spot the Lie</span></button></div>
+    <select id="lie-scene" value={scene} onChange={e=>setScene(e.target.value)} className="mt-1 w-full rounded-xl bg-[#FFFDF8] px-3 py-2 text-[16px] text-[#2A2620]"><optgroup label="From the story">{state.lieScenes.map(l=><option key={l.sceneId} value={l.sceneId}>{l.label}</option>)}</optgroup>
+     {state.lieBank.length>0&&<optgroup label="Class Lie bank">{state.lieBank.map(l=><option key={l.id} value={`planted:${l.id}`}>{l.label}</option>)}</optgroup>}</select>
+    <button type="button" onClick={()=>act(scene.startsWith("planted:")?{action:"round.start",type:"lie",plantedId:scene.slice(8)}:{action:"round.start",type:"lie",sceneId:scene})} className="host-btn mt-3 w-full">Start<span className="sr-only"> Spot the Lie</span></button></div>
    <div className="rounded-2xl bg-[#1E1A15] p-4"><p className="flex items-center gap-2 text-[22px] font-bold"><Gavel size={22}/> Verdict Vote</p><p className="mt-1 text-[16px] text-[#E8DDCB]">Everyone votes on a theory. Squads defend it with three pieces of evidence.</p>
     <button type="button" disabled={!state.session.hasVerdict} onClick={()=>act({action:"round.start",type:"verdict"})} className="host-btn mt-3 w-full">Start<span className="sr-only"> Verdict Vote</span></button></div>
    <div className="rounded-2xl bg-[#1E1A15] p-4"><p className="flex items-center gap-2 text-[22px] font-bold"><MessageCircle size={22}/> Objection!</p><p className="mt-1 text-[16px] text-[#E8DDCB]">One squad counters another squad's evidence in {OBJECTION_SECONDS} seconds. The class decides.</p>
@@ -147,7 +148,7 @@ function Testimony({round,sessionId,worldId}:{round:Extract<NonNullable<View["ro
  useEffect(()=>()=>audio.current?.pause(),[]);
  return <div className="mt-4 flex flex-col gap-5 rounded-3xl bg-[#2E2821] p-6 md:flex-row md:items-center">
   {round.portrait&&<img src={round.portrait} alt="" className={`h-40 w-40 shrink-0 rounded-full object-cover ${playing?"voice-ring":""}`}/>}
-  <div className="min-w-0"><p className="text-[18px] font-semibold uppercase tracking-wide text-[#F3C9B2]">Testimony · {round.character} · {round.clueName}</p>
+  <div className="min-w-0"><p className="text-[18px] font-semibold uppercase tracking-wide text-[#F3C9B2]">Testimony · {round.character} · {round.clueName}{round.planted?" · Planted by a classmate":""}</p>
    <p className="mt-2 font-serif text-[clamp(22px,2.2vw,36px)] leading-snug">“{round.testimony}”</p>
    <p className={`mt-3 ${big} text-[#F3C9B2]`}>One thing {round.character} said is false. Find the line in the story that proves it.</p>
    <button type="button" onClick={play} aria-label={playing?"Stop voice":`Hear ${round.character}'s testimony`} className="host-btn-secondary mt-4">{playing?<Square size={20}/>:<Volume2 size={22}/>}{playing?"Stop":"Play testimony"}</button></div>
@@ -175,7 +176,8 @@ function SquadStatus({state}:{state:View}){
  const squads=state.squads.filter(q=>q.members.length&&(round.type!=="objection"||("objectSquad" in round&&q.name===round.objectSquad)));
  return <ul className="mt-5 flex flex-wrap gap-3" aria-label="Squads">{squads.map(q=><li key={q.id} className={`rounded-2xl px-4 py-3 text-[18px] ${q.submitted?"bg-[#A0472C]":"bg-[#2E2821]"}`}>
   <p className="flex items-center gap-2 font-bold">{q.submitted&&<Check size={20}/>}{q.name}</p>
-  {!q.submitted&&<p className="text-[15px] text-[#F3C9B2]">Waiting for {q.waitingFor.map(r=>ROLE_INFO[r as Role].name).join(", ")}</p>}
+  {q.id===state.writerSquadId?<p className="text-[15px] text-[#F3C9B2]">Planted this lie. Watching who catches it.</p>
+  :!q.submitted&&<p className="text-[15px] text-[#F3C9B2]">Waiting for {q.waitingFor.map(r=>ROLE_INFO[r as Role].name).join(", ")}</p>}
  </li>)}</ul>;
 }
 

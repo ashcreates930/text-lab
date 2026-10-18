@@ -8,6 +8,7 @@ import {stageLabels,talkStarters,secondsLeft,type LivePlan,type LiveStep,type Ph
 import {HelpTip} from "./help-tip";
 import {EvidenceView} from "./evidence-view";
 import {ClassWeekBoard,StartLiveRound} from "./live/entry";
+import {LieBankTab} from "./lie-bank";
 import type {ClassEvidence} from "@/lib/classroom/evidence";
 
 const big="min-h-12 px-5 py-3 text-sm md:text-base";
@@ -74,7 +75,7 @@ function JoinQr({url}:{url:string}){
 }
 
 function ClassDetail({classId,onPresent}:{classId:string;onPresent:()=>void}){
- const [data,setData]=useState<Detail|null>(null),[tab,setTab]=useState<"evidence"|"students"|"lessons"|"live">("evidence"),[error,setError]=useState(""),[copied,setCopied]=useState(false);
+ const [data,setData]=useState<Detail|null>(null),[tab,setTab]=useState<"evidence"|"students"|"lessons"|"live"|"lies">("evidence"),[error,setError]=useState(""),[copied,setCopied]=useState(false);
  const load=useCallback(async()=>{const r=await teacherFetch(`/api/teacher/classes/${classId}`);if(r.ok)setData(r.body);else setError(r.body.error||"Could not load this class.")},[classId]);
  useEffect(()=>{load();const t=window.setInterval(load,8000);return()=>window.clearInterval(t)},[load]);
  if(error)return <p className="mt-6 text-base text-[#A33B20]">{error}</p>;
@@ -86,8 +87,9 @@ function ClassDetail({classId,onPresent}:{classId:string;onPresent:()=>void}){
   {data.world?.teacherPreviewRequired&&<div className="panel flex flex-wrap items-center justify-between gap-3 p-5"><p className="text-base text-white/85">This story has content notes, so students cannot join until you enable it after previewing.</p><button onClick={async()=>{await teacherFetch(`/api/teacher/classes/${classId}`,{method:"PATCH",body:JSON.stringify({previewEnabled:!c.preview_enabled})});load()}} className={`${c.preview_enabled?"soft-button":"gold-button"} ${big}`}>{c.preview_enabled?"Enabled · turn off":"I previewed it · enable for students"}</button></div>}
   <div className="panel flex flex-wrap items-center justify-between gap-4 p-6"><div><p className="eyebrow">LIVE ROUND</p><h2 className="serif mt-1 text-2xl">Squads on their phones</h2></div><StartLiveRound classId={classId} fetcher={teacherFetch}/></div>
   <ClassWeekBoard fetcher={teacherFetch}/>
-  <div role="tablist" className="flex flex-wrap gap-2">{([["evidence","Evidence"],["live","Live class analysis"],["lessons","Assign mini lessons"],["students","Students"]] as const).map(([id,label])=><button key={id} role="tab" aria-selected={tab===id} onClick={()=>setTab(id)} className={`border ${big} ${tab===id?"border-[#A0472C] bg-[#A0472C]/15 text-[#8A3B23]":"border-white/25 text-white/80"}`}>{label}</button>)}</div>
+  <div role="tablist" className="flex flex-wrap gap-2">{([["evidence","Evidence"],["lies","Lie bank"],["live","Live class analysis"],["lessons","Assign mini lessons"],["students","Students"]] as const).map(([id,label])=><button key={id} role="tab" aria-selected={tab===id} onClick={()=>setTab(id)} className={`border ${big} ${tab===id?"border-[#A0472C] bg-[#A0472C]/15 text-[#8A3B23]":"border-white/25 text-white/80"}`}>{label}</button>)}</div>
   {tab==="evidence"&&<ClassEvidenceTab classId={classId} className={c.name||""}/>}
+  {tab==="lies"&&<LieBankTab classId={classId} fetcher={teacherFetch}/>}
   {tab==="live"&&<LivePlanner classId={classId} detail={data} onStarted={onPresent}/>}
   {tab==="lessons"&&<AssignLessons classId={classId} detail={data} onChange={load}/>}
   {tab==="students"&&<div className="panel p-6"><h2 className="serif text-2xl">Students</h2>{data.students.length===0?<p className="mt-3 text-base text-white/75">No one has joined yet. Share the class code above.</p>:<ul className="mt-4 grid gap-2 md:grid-cols-3">{data.students.map(s=>{const done=data.completions.filter(x=>x.student_id===s.id&&data.assignments.some(a=>a.lesson_id===x.lesson_id)).length;return <li key={s.id} className="border border-white/20 p-3"><p className="text-base font-bold">{s.nickname}</p><p className="text-sm text-white/70">{done} of {data.assignments.length} assigned lessons finished</p></li>})}</ul>}</div>}

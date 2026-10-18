@@ -5,6 +5,7 @@
 import type { WorldPack } from "../world-schema.ts";
 import { isTruthLine, type Lie } from "../lies.ts";
 import { STRENGTHS, type VerdictFeedback } from "../verdict.ts";
+import { writerPoints } from "../planted-lies.ts";
 
 export const ROLES = ["lead", "keeper", "skeptic", "reporter"] as const;
 export type Role = (typeof ROLES)[number];
@@ -17,7 +18,8 @@ export const ROLE_INFO: Record<Role, { name: string; job: string }> = {
 
 export type RoundType = "lie" | "verdict" | "objection";
 export type Round =
-  | { type: "lie"; sceneId: string }
+  // planted: a classmate's approved lie from the Lie bank (a snapshot), and the squad its writer is in, which sits out.
+  | { type: "lie"; sceneId: string; planted?: { id: string; lie: Lie; writerSquadId: string | null } }
   | { type: "verdict"; stage: "vote" | "argue" }
   | { type: "objection"; stage: "counter" | "vote"; defendSquadId: string; objectSquadId: string; pin: { clueId?: string; quote: string }; endsAt: string };
 export type SessionStatus = "lobby" | "round" | "reveal" | "ended";
@@ -141,8 +143,9 @@ const override = (responses: LiveResponse[], roundIndex: number, squadId: string
 
 // Spot the Lie: right line + sound explanation = 100; right line alone = 50; wrong line = 0. Correct squads also get a
 // small speed bonus by the order they submitted (10, 7, 4, then 2).
-export function scoreLieRound(lie: Lie, squads: LiveSquad[], responses: LiveResponse[], roundIndex: number): (SquadScore & { correct: boolean; sound: boolean; line?: string; explanation?: string })[] {
-  const rows = squads.map((s) => {
+// A planted lie: the writer's squad doesn't answer; it earns points only for other squads' sound catches.
+export function scoreLieRound(lie: Lie, squads: LiveSquad[], responses: LiveResponse[], roundIndex: number, writerSquadId: string | null = null): (SquadScore & { correct: boolean; sound: boolean; line?: string; explanation?: string; writer?: boolean })[] {
+  const rows = squads.filter((s) => s.id !== writerSquadId).map((s) => {
     const p = squadProgress({ type: "lie", sceneId: "" }, responses, s.id, roundIndex);
     const line = p.submitted ? String(p.pin?.payload.quote ?? "") : undefined;
     const explanation = p.submitted ? String(p.explain?.payload.text ?? "") : undefined;
@@ -153,14 +156,22 @@ export function scoreLieRound(lie: Lie, squads: LiveSquad[], responses: LiveResp
     return { squadId: s.id, correct, sound, line, explanation, submittedAt: p.submitted?.createdAt ?? "" };
   });
   const order = rows.filter((r) => r.correct).sort((a, b) => a.submittedAt.localeCompare(b.submittedAt)).map((r) => r.squadId);
-  return rows.map(({ submittedAt: _s, ...r }) => {
+  const scored: (SquadScore & { correct: boolean; sound: boolean; line?: string; explanation?: string; writer?: boolean })[] = rows.map(({ submittedAt: _s, ...r }) => {
     const base = !r.correct ? 0 : r.sound ? LIE_POINTS.full : LIE_POINTS.lineOnly;
     const rank = order.indexOf(r.squadId);
     const speed = r.correct ? (LIE_POINTS.speed[rank] ?? LIE_POINTS.speed.at(-1)!) : 0;
     const points = base + speed;
     return { ...r, points, detail: !r.line ? "No answer" : !r.correct ? "Not the line" : r.sound ? "Right line, sound explanation" : "Right line" };
   });
+  if (writerSquadId && squads.some((s) => s.id === writerSquadId)) {
+    const caught = scored.filter((r) => r.correct && r.sound).length;
+    scored.push({ squadId: writerSquadId, correct: false, sound: false, writer: true, points: writerPoints(scored, writerSquadId), detail: caught ? `Planted the lie · caught by ${caught} squad${caught === 1 ? "" : "s"}` : "Planted the lie · no one caught it soundly" });
+  }
+  return scored;
 }
+// The lie a round uses: a planted lie's snapshot, or the scene's lie from the world file.
+export const roundLie = (world: WorldPack, round: Round | undefined): Lie | undefined =>
+  round?.type !== "lie" ? undefined : round.planted?.lie ?? world.scenes.find((s) => s.id === round.sceneId)?.lie;
 
 // Verdict Vote: everyone votes; each squad's argument is scored by the judge's case strength.
 export function tallyVotes(world: WorldPack, responses: LiveResponse[], roundIndex: number) {
@@ -206,7 +217,7 @@ export function sessionScores(world: WorldPack, session: LiveSession, squads: Li
   session.rounds.forEach((round, i) => {
     if (i > session.roundIndex || (i === session.roundIndex && session.status === "round")) return; // only rounds that have been revealed count
     let scores: { squadId: string; points: number }[] = [];
-    if (round.type === "lie") { const lie = world.scenes.find((s) => s.id === round.sceneId)?.lie; if (lie) scores = scoreLieRound(lie, squads, responses, i); }
+    if (round.type === "lie") { const lie = roundLie(world, round); if (lie) scores = scoreLieRound(lie, squads, responses, i, round.planted?.writerSquadId ?? null); }
     else if (round.type === "verdict") scores = scoreVerdictRound(squads, responses, i);
     else scores = objectionResult(round, responses, i).scores;
     for (const s of scores) total.set(s.squadId, (total.get(s.squadId) ?? 0) + s.points);
