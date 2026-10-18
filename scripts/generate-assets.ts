@@ -3,6 +3,9 @@ import { join } from "node:path";
 import nextEnv from "@next/env";
 import OpenAI from "openai";
 import { WorldPackSchema } from "../lib/world-schema.ts";
+import { parseSourcePassages } from "../lib/source-passages.ts";
+import { narrationParts } from "../lib/narration.ts";
+import { frameArtPrompt, providedSceneDescription } from "../lib/frame-art.ts";
 const { loadEnvConfig } = nextEnv;
 loadEnvConfig(process.cwd());
 const root=join(process.cwd(),"worlds"),publicRoot=join(process.cwd(),"public","worlds");
@@ -18,6 +21,146 @@ const audioOnly=process.argv.includes("--audio-only");
 const noAudio=process.argv.includes("--no-audio");
 if(selectedWorld&&!imageClient&&!syncOnly)throw new Error(`OPENAI_API_KEY is required to generate assets for ${selectedWorld}; no files were changed.`);
 if(selectedWorld&&["sleepy-hollow","trifles"].includes(selectedWorld)&&!elevenLabsKey&&!syncOnly)throw new Error(`ELEVENLABS_API_KEY is required to generate narration for ${selectedWorld}; no files were changed.`);
+// --portraits: one square, painted, head-and-shoulders portrait per character, from the character's description, saved to
+// public/worlds/<story>/characters/<id>.png and recorded as `portrait` in worlds/<story>/world.json.
+// --ambient: one quiet, loopable ambient track per scene (ElevenLabs sound generation), saved to
+// public/worlds/<story>/<scene>-ambient.mp3 and recorded as the scene's `ambient_audio`.
+// Both take --world=<id> (several allowed, comma-separated) and leave every other file alone.
+const portraitsMode=process.argv.includes("--portraits"),ambientMode=process.argv.includes("--ambient");
+// One sound description per scene, from the scene's setting.
+const ambientPrompts:Record<string,string>={
+  "sleepy-hollow/empty-schoolhouse":"An empty one-room log schoolhouse on an autumn morning: soft wind against the walls, old wood creaking, a small brook trickling outside, a few distant birds.",
+  "sleepy-hollow/van-tassel-party":"A farmhouse party in the next room, heard through a wall: a crackling fireplace, warm muffled voices and laughter, a faint distant fiddle.",
+  "sleepy-hollow/the-road-home":"A lonely country road at night in autumn: wind moving through bare trees, creaking branches, crickets, a small stream nearby, very distant owl.",
+  "sleepy-hollow/the-towns-verdict":"A country churchyard on a quiet Sunday morning: soft murmuring voices at a distance, birds, a light breeze in tall trees, a brook.",
+  "trifles/kitchen":"A cold, empty farmhouse kitchen in winter: wind pressing against the windows, a small iron stove crackling, a wall clock ticking.",
+  "trifles/minnie-foster":"A quiet farmhouse kitchen on a winter day: a wall clock ticking, the stove ticking as it warms, wind outside, an occasional creak of floorboards.",
+  "trifles/the-law-and-the-women":"A very quiet farmhouse kitchen: a clock ticking slowly, faint wind outside, muffled footsteps and floorboards upstairs.",
+  "trifles/the-last-word":"A farmhouse kitchen as a cold winter day ends: wind outside, a horse team shifting and snorting faintly in the yard, a clock ticking.",
+  "tell-tale-heart/arrival":"An old city street at four in the morning in the 1840s: a light night wind, distant dog barking once, footsteps on stone far away, a door latch.",
+  "tell-tale-heart/search":"Inside a quiet old house at night: floorboards creaking under slow footsteps, a clock ticking in another room, soft wind at the shutters.",
+  "tell-tale-heart/room":"A dark, still bedroom late at night: deep quiet, a pocket watch ticking softly, a faint draft, an old house settling.",
+  "tell-tale-heart/confession":"A quiet room with a few people sitting still: a low muffled ticking like a watch wrapped in cloth, chairs creaking, faint daylight street sounds outside.",
+};
+// --narration: the scene's own reading, read aloud by the narrator voice, one file per paragraph, saved to
+// public/worlds/<story>/narration/<scene>/<paragraph>.mp3. It reads exactly the paragraphs in "Read this part of the
+// story" (lib/narration.ts). Files that already exist are kept, so a run stopped by the monthly character limit picks up
+// where it left off; --force records them again. Takes --world=<id,...>, --scene=<id> and --only=<part,...> (paragraph ids,
+// or note-<paragraph> for a content note, which is read just before its paragraph). The app reads any paragraph
+// without a file with the browser's own speech, so nothing breaks while files are missing.
+// --frames: the story's own storyboard pictures, one per "illustrated" or "add_detail" page with a scene_description
+// (add_detail pictures leave out their missing detail), saved to public/worlds/<story>/frames/<page-id>.png, with
+// illustration.src set and status "generated". Pages marked no_generation are skipped. Takes --world=<id,...>,
+// --only=<page-id,...> and --force (otherwise pages that already have a picture are kept).
+if(process.argv.includes("--frames")){
+  if(!imageClient)throw new Error("OPENAI_API_KEY is required for storyboard frames.");
+  const sharp=(await import("sharp")).default;
+  const only=process.argv.find(a=>a.startsWith("--only="))?.slice(7).split(",");
+  const force=process.argv.includes("--force");
+  for(const id of (selectedWorld??"sleepy-hollow,trifles,tell-tale-heart").split(",")){
+    const file=join(root,id,"world.json"),raw=JSON.parse(await readFile(file,"utf8"));const pack=WorldPackSchema.parse(raw);
+    await mkdir(join(publicRoot,id,"frames"),{recursive:true});
+    for(const page of raw.storybook?.pages??[]){
+      const art=page.illustration;
+      if(page.bridge||!art?.scene_description||!["illustrated","add_detail"].includes(page.mode)||page.no_generation)continue;
+      if(only&&!only.includes(page.id))continue;
+      const src=`/worlds/${id}/frames/${page.id}.png`;
+      if(!force&&art.src===src){try{await readFile(join(process.cwd(),"public",src));continue}catch{}}
+      const result=await imageClient.images.generate({model:process.env.OPENAI_IMAGE_MODEL||"gpt-image-1",prompt:frameArtPrompt(pack,providedSceneDescription(art.scene_description)),size:"1536x1024",quality:"medium"});
+      const encoded=result.data?.[0]?.b64_json;if(!encoded)throw new Error(`OpenAI returned no image for ${id}/${page.id}`);
+      // 768 x 512 keeps each frame small enough to load quickly on a school network.
+      await writeFile(join(process.cwd(),"public",src),await sharp(Buffer.from(encoded,"base64")).resize(768,512).png({palette:true,quality:90}).toBuffer());
+      art.src=src;art.status="generated";
+      await writeFile(file,JSON.stringify(raw,null,2)+"\n");
+      console.log(`Frame ${id}/${page.id}.png · ${result.usage?.total_tokens??"?"} tokens`);
+    }
+    WorldPackSchema.parse(raw);
+  }
+  console.log("Done. Run npm run sync:worlds to copy the updated world files.");
+  process.exit(0);
+}
+if(process.argv.includes("--narration")){
+  if(!elevenLabsKey)throw new Error("ELEVENLABS_API_KEY is required for narration.");
+  const voice=process.env.ELEVENLABS_NARRATOR_VOICE?.trim()||"onwK4e9ZLuTAKqWW03F9";
+  const force=process.argv.includes("--force");let made=0,kept=0,chars=0;
+  const onlyParts=process.argv.find(a=>a.startsWith("--only="))?.slice(7).split(",");
+  for(const id of (selectedWorld??"sleepy-hollow,trifles,tell-tale-heart").split(",")){
+    const pack=WorldPackSchema.parse(JSON.parse(await readFile(join(root,id,"world.json"),"utf8")));
+    const passages=parseSourcePassages(await readFile(join(root,id,"source.md"),"utf8"));
+    for(const scene of pack.scenes){
+      if(selectedScene&&scene.id!==selectedScene)continue;
+      const parts=narrationParts(pack,scene,passages);
+      await mkdir(join(publicRoot,id,"narration",scene.id),{recursive:true});
+      for(const [i,part] of parts.entries()){
+        if(onlyParts&&!onlyParts.includes(part.id))continue;
+        const file=join(process.cwd(),"public",part.src);
+        if(!force){try{await readFile(file);kept++;continue}catch{}}
+        const res=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voice)}`,{method:"POST",headers:{"xi-api-key":elevenLabsKey,"Content-Type":"application/json","Accept":"audio/mpeg"},body:JSON.stringify({text:part.text,model_id:"eleven_turbo_v2_5",voice_settings:{stability:0.6,similarity_boost:0.75},previous_text:parts[i-1]?.text.slice(-400),next_text:parts[i+1]?.text.slice(0,400)})});
+        if(!res.ok){
+          const detail=(await res.text()).slice(0,200);
+          console.log(`Stopped at ${id}/${scene.id}/${part.id} (${res.status}): ${detail}`);
+          console.log(`Recorded ${made} paragraph(s) (${chars} characters); ${kept} already existed. Run the same command again to continue.`);
+          process.exit(1);
+        }
+        await writeFile(file,Buffer.from(await res.arrayBuffer()));made++;chars+=part.text.length;
+        console.log(`Narration ${id}/${scene.id}/${part.id}.mp3 · ${part.text.length} characters`);
+      }
+    }
+  }
+  console.log(`Done. Recorded ${made} paragraph(s) (${chars} characters); ${kept} already existed.`);
+  process.exit(0);
+}
+if(portraitsMode||ambientMode){
+  const worlds=(selectedWorld??"sleepy-hollow,trifles,tell-tale-heart").split(",");
+  // Period and setting per story, so every portrait matches its scene art.
+  const period:Record<string,string>={
+    "sleepy-hollow":"a Dutch farming valley on the Hudson River around 1790; homespun wool coat, linen shirt, waistcoat",
+    "trifles":"a lonely Iowa farmhouse in winter around 1916; plain heavy wool winter clothing of a farm family",
+    "tell-tale-heart":"an American city around 1843; dark plain clothing of the period",
+  };
+  // Story-specific limits from each story's art style: the Tell-Tale Heart narrator's face is never shown.
+  const special:Record<string,string>={
+    "tell-tale-heart/narrator":"Show him only as a shadowed silhouette from the side: no visible face or features, just the outline of head and shoulders in dark clothing, lit faintly from behind.",
+    "sleepy-hollow/brom-bones":"A burly, broad-shouldered young farmer with short curly black hair, a bold, good-humored face, and a fur cap with a fox tail.",
+    "sleepy-hollow/hans-van-ripper":"An older, weathered Dutch farmer with a stern, practical face.",
+    "tell-tale-heart/officer":"A woman police officer of the period in a plain dark wool uniform coat, no badge or insignia, with a calm, observant face.",
+  };
+  for(const id of worlds){
+    const file=join(root,id,"world.json"),raw=JSON.parse(await readFile(file,"utf8"));const pack=WorldPackSchema.parse(raw);
+    const out=join(publicRoot,id);await mkdir(join(out,"characters"),{recursive:true});
+    if(portraitsMode){
+      if(!imageClient)throw new Error("OPENAI_API_KEY is required for portraits.");
+      // --only=trifles/mr-hale,... regenerates just those characters.
+      const only=process.argv.find(a=>a.startsWith("--only="))?.slice(7).split(",");
+      for(const c of pack.characters){
+        if(only&&!only.includes(`${id}/${c.id}`))continue;
+        const prompt=`A painted portrait for a school literature app: ${c.name}, from ${pack.title} by ${pack.author}. ${c.description} ${special[`${id}/${c.id}`]??""} Setting and clothing: ${period[id]??"period-accurate clothing"}. Head and shoulders, centered, facing slightly to one side, against a plain, solid, very dark brown backdrop: no scenery, landscape, windows, buildings, or objects behind them. Warm, low lantern light; painterly gouache-and-oil look with visible brush texture, matching a restrained American Gothic storybook style. Calm, dignified, age-appropriate for students. An original design, not based on any film, television adaptation, or illustrated edition. No text, letters, frames, or borders.`;
+        const result=await imageClient.images.generate({model:process.env.OPENAI_IMAGE_MODEL||"gpt-image-1",prompt,size:"1024x1024",quality:"medium"});
+        const encoded=result.data?.[0]?.b64_json;if(!encoded)throw new Error(`No portrait returned for ${id}/${c.id}`);
+        await writeFile(join(out,"characters",`${c.id}.png`),Buffer.from(encoded,"base64"));
+        const target=raw.characters.find((x:{id:string})=>x.id===c.id);target.portrait=`/worlds/${id}/characters/${c.id}.png`;
+        console.log(`Portrait ${id}/${c.id}.png${result.usage?` · ${result.usage.total_tokens} tokens`:""}`);
+      }
+    }
+    if(ambientMode){
+      if(!elevenLabsKey)throw new Error("ELEVENLABS_API_KEY is required for ambient sound.");
+      for(const scene of raw.scenes as {id:string;ambient_audio?:string|null;ambient_prompt?:string}[]){
+        const prompt=ambientPrompts[`${id}/${scene.id}`];if(!prompt){console.log(`No ambient prompt for ${id}/${scene.id}; skipped.`);continue}
+        const body=(loop:boolean)=>JSON.stringify({text:`${prompt} Quiet, steady, seamless background ambience for reading, no music, no speech, no sudden loud sounds.`,duration_seconds:22,prompt_influence:0.5,...(loop?{loop:true,model_id:"eleven_text_to_sound_v2"}:{})});
+        let res=await fetch("https://api.elevenlabs.io/v1/sound-generation",{method:"POST",headers:{"xi-api-key":elevenLabsKey,"Content-Type":"application/json","Accept":"audio/mpeg"},body:body(true)});
+        if(!res.ok){console.log(`Looping sound generation not available (${res.status}); generating a plain track.`);res=await fetch("https://api.elevenlabs.io/v1/sound-generation",{method:"POST",headers:{"xi-api-key":elevenLabsKey,"Content-Type":"application/json","Accept":"audio/mpeg"},body:body(false)})}
+        if(!res.ok)throw new Error(`ElevenLabs sound generation failed for ${id}/${scene.id} (${res.status})`);
+        await writeFile(join(out,`${scene.id}-ambient.mp3`),Buffer.from(await res.arrayBuffer()));
+        scene.ambient_audio=`/worlds/${id}/${scene.id}-ambient.mp3`;
+        console.log(`Ambient ${id}/${scene.id}-ambient.mp3`);
+      }
+    }
+    WorldPackSchema.parse(raw);
+    await writeFile(file,JSON.stringify(raw,null,2)+"\n");
+  }
+  console.log("Done. Run npm run sync:worlds to copy the updated world files.");
+  process.exit(0);
+}
 const usageTotals={images:0,textInputTokens:0,imageInputTokens:0,imageOutputTokens:0,audioChars:0,audioUnits:0,audioFiles:0};
 const coursesById=new Map<string,string[]>();
 const packs=[] as Array<{id:string;title:string;author:string;hook:string;grade_band:{min:number;max:number};estimated_minutes:number;cover_image:string;status:"playable"|"preview"|"coming_soon";teacher_preview_required:boolean;content_notes:string;available:boolean}>;

@@ -218,7 +218,8 @@
         "the old man's name",
         "unsupported motive or diagnosis"
       ],
-      "voice_id": "onwK4e9ZLuTAKqWW03F9"
+      "voice_id": "N2lVS1w4EtoT3dr4eOWO",
+      "portrait": "/worlds/tell-tale-heart/characters/narrator.png"
     },
     {
       "id": "officer",
@@ -232,7 +233,8 @@
         "private information",
         "facts not in the story"
       ],
-      "voice_id": "EXAVITQu4vr4xnSDxMaL"
+      "voice_id": "XrExE9yKIg1WjnnlVkGX",
+      "portrait": "/worlds/tell-tale-heart/characters/officer.png"
     }
   ],
   "glossary": [
@@ -279,7 +281,7 @@
       "narration": "Before dawn, you arrive at the house with officers. A neighbor heard a shriek in the night. The narrator says the old man is away in the country, yet invites you to search.",
       "summary": "It is four o'clock in the morning. Police officers knock at the narrator's door because a neighbor heard a scream in the night. The narrator smiles, says the scream was his own bad dream, and invites the officers to search the house.",
       "background_image": "/worlds/tell-tale-heart/arrival.png",
-      "ambient_audio": null,
+      "ambient_audio": "/worlds/tell-tale-heart/arrival-ambient.mp3",
       "available_characters": [
         "narrator",
         "officer"
@@ -494,7 +496,7 @@
       "narration": "The officers search the house. The narrator brings chairs into the old man's chamber and sits above the floorboards. He is at ease, but soon grows pale.",
       "summary": "The narrator explains how his plan began: he could not stand the old man's pale, clouded eye. He describes creeping into the room for eight nights, killing the old man, and hiding the body under the floorboards. He believes no one could ever find it.",
       "background_image": "/worlds/tell-tale-heart/search.png",
-      "ambient_audio": null,
+      "ambient_audio": "/worlds/tell-tale-heart/search-ambient.mp3",
       "available_characters": [
         "narrator",
         "officer"
@@ -714,7 +716,7 @@
       "narration": "The officers remain in the room. The narrator talks more freely, grows pale, and paces. He says a low, quick sound grows louder, though the officers continue chatting.",
       "summary": "The narrator remembers watching the old man every night with a lantern and hearing his heart beat. Now he brings chairs into that same room and sits right above the hidden body. He feels proud and calm, but he begins to hear a sound.",
       "background_image": "/worlds/tell-tale-heart/room.png",
-      "ambient_audio": null,
+      "ambient_audio": "/worlds/tell-tale-heart/room-ambient.mp3",
       "available_characters": [
         "narrator",
         "officer"
@@ -1468,7 +1470,7 @@
       "narration": "The narrator can bear the officers' smiles no longer. He cries out, admits the deed, and demands that they tear up the planks.",
       "summary": "The sound grows louder and louder. The narrator believes the officers hear it too and are only pretending not to. He cannot stand it, so he screams that he did it and tells them to tear up the floorboards.",
       "background_image": "/worlds/tell-tale-heart/confession.png",
-      "ambient_audio": null,
+      "ambient_audio": "/worlds/tell-tale-heart/confession-ambient.mp3",
       "available_characters": [
         "narrator",
         "officer"
@@ -1768,7 +1770,8 @@
         "illustration": {
           "alt": "A shadowed figure in the dark, head tilted, listening.",
           "scene_description": "Darkness, with a single shadowed figure seen from behind and slightly to the side, sitting very still with head tilted as if listening hard. Faint sound-like ripples of light in the dark around them suggest hearing that is very sharp. No room details: the page names none.",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/tell-tale-heart/frames/page-01.png"
         },
         "characters_met": [
           {
@@ -1798,7 +1801,8 @@
         "illustration": {
           "alt": "An old man's face in soft shadow, one pale blue eye clouded by a film.",
           "scene_description": "A close, quiet view of the old man resting, his face soft and mostly in shadow. One pale blue eye with a cloudy film over it catches the light. At the edge of the frame, the narrator's dark silhouette watches. No gold, no weapon, nothing threatening on screen.",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/tell-tale-heart/frames/page-02.png"
         },
         "characters_met": [
           {
@@ -1830,7 +1834,8 @@
         "illustration": {
           "alt": "At midnight, a bedroom door opened a crack; a closed lantern and a shadowed head push through while the old man sleeps.",
           "scene_description": "Midnight in the old man's bedroom, almost completely dark. The door is open only a few inches; a closed tin dark lantern, giving no light, has been pushed through the gap, and the narrator's head, in silhouette, is slowly coming through after it. The old man sleeps in his bed in the darkness.",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/tell-tale-heart/frames/page-03.png"
         },
         "characters_met": [],
         "restatements": {
@@ -1856,7 +1861,8 @@
           "alt": "The old man asleep in the dark, eyes closed; a shadowed head and closed lantern in the doorway.",
           "scene_description": "The same dark bedroom. The old man sleeps in bed with his eyes closed. In the doorway, the narrator's shadowed head is all the way inside the room, holding the tin lantern, its shutter slightly open. LEFT OUT ON PURPOSE: the single thin ray of light falling on the vulture eye.",
           "missing_detail": "The single thin ray of lantern light falling on the old man's eye (\"a single thin ray fell upon the vulture eye\").",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/tell-tale-heart/frames/page-04.png"
         },
         "characters_met": [],
         "restatements": {
@@ -1879,7 +1885,8 @@
           "alt": "The old man in bed, moving suddenly as if startled, in a dark room.",
           "scene_description": "The dark bedroom on the eighth night. The old man has moved suddenly in his bed, as if startled, half turned toward the room. LEFT OUT ON PURPOSE: the door being opened little by little, and the narrator behind it.",
           "missing_detail": "The door opening a little at a time, with the narrator behind it (\"opening the door, little by little\").",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/tell-tale-heart/frames/page-05.png"
         },
         "characters_met": [],
         "restatements": {
@@ -1903,7 +1910,8 @@
           "alt": "The old man sitting up in bed in pitch darkness, listening; a shadowed head at the door.",
           "scene_description": "Pitch-black bedroom. The old man sits up in bed, listening, as if he has just called out. The narrator's shadowed head is in the doorway with the closed tin lantern, perfectly still. The window area is dark. LEFT OUT ON PURPOSE: the shutters, closed and fastened tight.",
           "missing_detail": "The shutters over the window, closed and fastened (\"the shutters were close fastened, through fear of robbers\").",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/tell-tale-heart/frames/page-06.png"
         },
         "characters_met": [],
         "restatements": {

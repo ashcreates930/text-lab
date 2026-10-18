@@ -62,8 +62,14 @@ const q = {
   knowing: "was observed to look exceedingly knowing whenever the story of Ichabod was related",
 };
 export const sampleEvidenceClass = { name: "Period 2 · English 7", worldId: "sleepy-hollow", grade: 7 };
-export const sampleEvidenceStudents: { nickname: string; answers: Record<string, SampleAnswer> | null }[] = [
-  { nickname: "Amara", answers: {
+// Sample storyboard frames (saved without pictures, so the add-detail frames show the story's picture).
+const sampleFrame = (quote: string, description: string) => ({ kind: "add_detail" as const, quote, description, saved_at: "2026-10-14T14:20:00.000Z" });
+const schoolhouseFrame = sampleFrame("It was most ingeniously secured at vacant hours, by a withe twisted in the handle of the door, and stakes set against the window shutters; so that though a thief might get in with perfect ease, he would find some embarrassment in getting out,--an idea most probably borrowed by the architect, Yost Van Houten, from the mystery of an eelpot.", "In this moment, I see a twisted branch pushed through the door handle and wooden stakes leaning against the shutters, so the empty schoolhouse is shut up like an eel trap.");
+export const sampleEvidenceStudents: { nickname: string; answers: Record<string, SampleAnswer> | null; frames?: Record<string, ReturnType<typeof sampleFrame>> }[] = [
+  { nickname: "Amara", frames: {
+    "sleepy-hollow:page-04": schoolhouseFrame,
+    "sleepy-hollow:page-06": sampleFrame("With what wistful look did he eye every trembling ray of light streaming across the waste fields from some distant window!", "The setting looks dark and snowy. A thin, shaky ray of light from a faraway farmhouse window stretches across the empty fields, and Ichabod stares at it on his way home."),
+  }, answers: {
     "empty-schoolhouse": { notice: q.lock, interpret: "Ichabod locks up a schoolhouse that has nothing worth stealing. It shows he worries a lot, even about small things." },
     "ichabods-belongings": { notice: q.belongings, interpret: "Everything he owns fits in one bundle and most of it is worn out. He was really poor, which is why the Van Tassel farm mattered so much to him.", craft: "supports", character: "hans-van-ripper" },
     "ichabods-own-books": { notice: q.books, interpret: "Hans burns the books right away. I think he blames the ghost books for filling Ichabod's head with fear." },
@@ -74,7 +80,7 @@ export const sampleEvidenceStudents: { nickname: string; answers: Record<string,
     "andre-tree": { notice: q.tree, interpret: "Every scary sound at the tree has a normal cause, like the wind. Ichabod is scaring himself." },
     "fallen-saddle": { notice: q.saddleRoad, interpret: "The saddle is in the road, so something really happened on the ride home. It is not just a rumor." },
   } },
-  { nickname: "Ben", answers: {
+  { nickname: "Ben", frames: { "sleepy-hollow:page-04": schoolhouseFrame }, answers: {
     "empty-schoolhouse": { notice: q.lock, interpret: "The locks are silly because a thief could get in easily. Irving is making fun of Ichabod." },
     "party-feast": { notice: q.feast, interpret: "Ichabod thinks about being the lord of the farm while he eats. He cares about money." },
     "broms-corner": { notice: q.brooding, interpret: "Brom is jealous and alone in the corner.", craft: "supports", character: "brom-bones" },

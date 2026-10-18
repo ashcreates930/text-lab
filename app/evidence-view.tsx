@@ -106,6 +106,12 @@ function DetailPanel({evidence,selected,onClose}:{evidence:ClassEvidence;selecte
      <div><p className="text-[14px] font-semibold text-[#6B6457]">Their explanation</p><p className="mt-2 text-[17px] leading-7 text-[#2A2620]">{d.explanation}</p></div>
      <p className={`flex items-start gap-2 rounded-2xl px-4 py-3 text-[16px] font-semibold ${d.finding==="proved-wrong"?"bg-[#A0472C] text-white":"bg-[#EFE8D8] text-[#2A2620]"}`}>{d.finding==="proved-wrong"&&<ShieldCheck size={20} className="mt-0.5 shrink-0"/>}{d.findingLine}</p>
     </>:<p className="text-[17px] leading-7 text-[#4A4438]">{d.notProvenLine}</p>}
+    {student.storyboard.length>0&&<div className="border-t border-[#E4DCCB] pt-5"><h4 className="text-[17px] font-bold text-[#2A2620]">Storyboard</h4><p className="mt-1 text-[14px] text-[#6B6457]">{student.nickname}'s completed frames, in story order.</p>
+     <ol className="mt-3 space-y-4">{student.storyboard.map((f,i)=><li key={f.pageId} className="overflow-hidden rounded-2xl bg-[#F6F0E3]">
+      {f.picture&&<img src={f.picture} alt={`${student.nickname}'s frame: ${f.description}`} className="aspect-[3/2] w-full object-cover"/>}
+      <div className="p-4"><p className="text-[12px] font-semibold uppercase tracking-wide text-[#8A3B23]">Frame {i+1}{f.picture?"":" · Saved without a picture"}</p><blockquote className="mt-2 border-l-4 border-[#A0472C] pl-3 font-serif text-[16px] italic leading-7 text-[#2A2620]">“{f.quote}”</blockquote><p className="mt-2 text-[16px] leading-7 text-[#2A2620]">{f.description}</p></div>
+     </li>)}</ol>
+    </div>}
    </div>
   </section>
  </div>;

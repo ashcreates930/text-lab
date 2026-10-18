@@ -431,6 +431,64 @@ test("a returning visitor with a saved side starts on the home page, not the boo
   assert.doesNotMatch(page,/setView\("book"\)/);
 });
 
+test("game layer: portraits fall back to initials, and every character has a portrait file", async()=>{
+  const {initials,portraitFor}=await import("../lib/game-feel.ts");
+  assert.equal(initials("Hans Van Ripper"),"HR");assert.equal(initials("Mrs. Hale"),"MH");assert.equal(initials("Brom Bones"),"BB");assert.equal(initials("The officer"),"O");
+  assert.deepEqual(portraitFor({name:"Brom Bones"}),{kind:"initials",text:"BB"});
+  assert.deepEqual(portraitFor({name:"Brom Bones",portrait:"/worlds/sleepy-hollow/characters/brom-bones.png"}),{kind:"image",src:"/worlds/sleepy-hollow/characters/brom-bones.png"});
+  for(const id of ["sleepy-hollow","trifles","tell-tale-heart"]){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    for(const c of world.characters){assert.equal(c.portrait,`/worlds/${id}/characters/${c.id}.png`);await readFile(new URL(`../public${c.portrait}`,import.meta.url))}
+  }
+});
+
+test("game layer: no two characters in a story share a voice, and every scene has its ambient track", async()=>{
+  for(const id of ["sleepy-hollow","trifles","tell-tale-heart"]){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    const voices=world.characters.map(c=>c.voice_id);
+    assert.equal(new Set(voices).size,voices.length,`${id} has two characters with the same voice`);
+    for(const s of world.scenes){assert.equal(s.ambient_audio,`/worlds/${id}/${s.id}-ambient.mp3`);await readFile(new URL(`../public${s.ambient_audio}`,import.meta.url))}
+  }
+});
+
+test("game layer: voices and ambient sound are on for the demo and off for class sessions", async()=>{
+  const {soundOn,soundKey,soundDefault}=await import("../lib/game-feel.ts");
+  for(const kind of ["voices","ambient"] as const){
+    assert.equal(soundOn(kind,"student_first_visit",null),true);
+    assert.equal(soundOn(kind,"class_student",null),false);
+    // The student's own choice on this device wins, either way.
+    assert.equal(soundOn(kind,"class_student","on"),true);assert.equal(soundOn(kind,"student_first_visit","off"),false);
+    assert.notEqual(soundKey(kind,"class_student"),soundKey(kind,"student_first_visit"));
+  }
+  assert.equal(soundDefault("class_student"),false);
+});
+
+test("game layer: older saves load without a choice, and chosen options read back as labels", async()=>{
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
+  const {choicesMade}=await import("../lib/game-feel.ts");
+  const base={v:1,worldId:"sleepy-hollow",scene:1,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],storyFrames:{},updatedAt:"2026-10-17T12:00:00.000Z"};
+  assert.ok(StudentProgressSchema.safeParse(base).success,"older save without choices");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  const first=world.scenes[0],option=first.choice_point!.options[0];
+  const withChoice=StudentProgressSchema.safeParse({...base,choices:{[first.id]:option.id}});
+  assert.ok(withChoice.success);assert.equal(withChoice.data!.choices![first.id],option.id);
+  assert.deepEqual(choicesMade(world,undefined),[]);
+  assert.deepEqual(choicesMade(world,{[first.id]:option.id}),[{sceneId:first.id,label:option.label}]);
+});
+
+test("game layer: the case board has one card per proven clue, in scene order, with the Fact Checker mark", async()=>{
+  const {caseBoardCards}=await import("../lib/game-feel.ts");
+  const {sampleEvidenceStudents}=await import("../lib/sample-classroom.ts");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  const answers={...sampleEvidenceStudents[0].answers!,"searchers-report":{notice:"a line",interpret:" "}};
+  const cards=caseBoardCards(world,answers);
+  assert.equal(cards.length,9,"one card per proven clue; the half-finished one is left off");
+  assert.deepEqual(cards.map(c=>c.sceneIndex),[...cards.map(c=>c.sceneIndex)].sort((a,b)=>a-b));
+  assert.equal(cards.filter(c=>c.factCheck).length,2);
+  assert.equal(cards.find(c=>c.clueId==="broms-race-tale")!.character,"Brom Bones");
+  assert.equal(caseBoardCards(world,{}).length,0);
+});
+
 test("teacher demo sample data quotes the story exactly and tags real benchmarks", async()=>{
   const {sampleCaseFile,sampleFrames,sampleStudents}=await import("../lib/sample-classroom.ts");
   const {quoteInText}=await import("../lib/storybook.ts");
@@ -494,4 +552,332 @@ test("feedback form validation: feedback alone needs no email; the waitlist need
   assert.equal(SubmissionSchema.safeParse({waitlist:{...w,plan:"explorer",students:undefined}}).success,true,"explorer does not");
   assert.equal(SubmissionSchema.safeParse({waitlist:{...w,intent:undefined}}).success,false,"intent is required");
   assert.equal(SubmissionSchema.safeParse({waitlist:w,source:"Bad Ref!"}).success,false,"ref values are slugs only");
+});
+
+test("game layer: ambient loops have no seam and every track is brought to the same level", async()=>{
+  const {ambientLevelGain,crossfadeLoop}=await import("../lib/game-feel.ts");
+  const sr=1000,ramp=new Float32Array(4000).map((_,i)=>i/4000);
+  const [looped]=crossfadeLoop([ramp],sr,0.5);
+  assert.equal(looped.length,3500);
+  // Playing past the end runs straight on into the blended start: the samples either side of the loop point are neighbours.
+  assert.ok(Math.abs(looped[0]-looped[looped.length-1])<=2/4000);
+  const tone=(amp:number)=>new Float32Array(sr*5).map((_,i)=>amp*Math.sin(i/3));
+  const level=(a:Float32Array,g:number)=>10*Math.log10(a.reduce((s,x)=>s+(x*g)**2,0)/a.length);
+  const quiet=tone(0.01),loud=tone(0.3);
+  assert.ok(Math.abs(level(quiet,ambientLevelGain([quiet],sr))-level(loud,ambientLevelGain([loud],sr)))<1);
+  assert.equal(ambientLevelGain([new Float32Array(sr)],sr),1);
+});
+
+test("sound channel: only one sound plays at a time; starting a new one stops the current one", async()=>{
+  const {createSoundChannel}=await import("../lib/sound-channel.ts");
+  const channel=createSoundChannel(),stopped:string[]=[];
+  const reading=channel.begin("narration","empty-schoolhouse",()=>stopped.push("narration"));
+  assert.deepEqual(channel.state,{kind:"narration",id:"empty-schoolhouse",part:-1});
+  // Pressing Listen again, or replaying a character while the scene is read, starts a new sound: the old one stops.
+  const voice=channel.begin("voice","brom-bones",()=>stopped.push("voice"));
+  assert.deepEqual(stopped,["narration"]);
+  assert.equal(reading.active,false);
+  reading.part(3);reading.end(); // reports from a stopped sound are ignored
+  assert.deepEqual(channel.state,{kind:"voice",id:"brom-bones",part:-1});
+  channel.stop();
+  assert.deepEqual(stopped,["narration","voice"]);
+  assert.equal(voice.active,false);
+  assert.equal(channel.state.kind,null);
+});
+
+test("narration reads exactly the reading panel's paragraphs (and content notes) for every scene, one file per part", async()=>{
+  const {sceneReading,sceneReadingItems,narrationParts}=await import("../lib/narration.ts");
+  const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  for(const id of ["sleepy-hollow","trifles","tell-tale-heart"]){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    const passages=parseSourcePassages(await readFile(new URL(`../worlds/${id}/source.md`,import.meta.url),"utf8"));
+    for(const scene of world.scenes){
+      const panel=sceneReadingItems(world,scene,passages),parts=narrationParts(world,scene,passages);
+      assert.ok(panel.length>0,`${id}/${scene.id} has no reading`);
+      assert.deepEqual(panel.filter(i=>i.kind==="passage").map(i=>i.id),sceneReading(passages,scene).map(p=>p.id));
+      assert.deepEqual(parts.map(p=>p.text),panel.map(p=>p.text));
+      assert.deepEqual(parts.map(p=>p.src),panel.map(p=>`/worlds/${id}/narration/${scene.id}/${p.id}.mp3`));
+    }
+  }
+  // The panel's paragraphs are the scene's anchors, in story order.
+  assert.deepEqual(sceneReading([{id:"p001",text:"a"},{id:"p002",text:"b"},{id:"p003",text:"c"}],{passage_anchors:["p003","p001"]}).map(p=>p.id),["p001","p003"]);
+});
+
+test("Listen button: Stop reading only while this scene's narration plays; missing files fall back to speech", async()=>{
+  const {createSoundChannel}=await import("../lib/sound-channel.ts");
+  const {listenButton,playNarration}=await import("../lib/narration.ts");
+  const {ambientVolumeFor,AMBIENT_VOLUME}=await import("../lib/game-feel.ts");
+  const channel=createSoundChannel();
+  assert.deepEqual(listenButton(channel.state,"s1"),{playing:false,label:"Listen to the scene",part:-1});
+  const heard:string[]=[];let release=()=>{};
+  const io={
+    clip:(src:string,signal:AbortSignal)=>new Promise<boolean>(resolve=>{
+      if(src.endsWith("p2.mp3"))return resolve(false); // this paragraph's file is missing
+      heard.push(`file ${src.split("/").pop()}`);release=()=>resolve(true);signal.addEventListener("abort",()=>resolve(true));
+    }),
+    speak:async(text:string)=>{heard.push(`speech ${text}`)},
+  };
+  const parts=["p1","p2","p3"].map(id=>({id,text:`text ${id}`,src:`/worlds/w/narration/s1/${id}.mp3`}));
+  const done=playNarration(channel,"s1",parts,io);
+  assert.deepEqual(listenButton(channel.state,"s1"),{playing:true,label:"Stop reading",part:0});
+  assert.equal(listenButton(channel.state,"s2").playing,false);
+  assert.equal(ambientVolumeFor(channel.state),AMBIENT_VOLUME/3);
+  release();await new Promise(r=>setTimeout(r,0));
+  assert.equal(channel.state.part,2);
+  assert.deepEqual(heard,["file p1.mp3","speech text p2","file p3.mp3"]);
+  // Pressing Stop reading stops it at once, and the button goes back to Listen.
+  channel.stop();await done;
+  assert.deepEqual(listenButton(channel.state,"s1"),{playing:false,label:"Listen to the scene",part:-1});
+  assert.equal(ambientVolumeFor(channel.state),AMBIENT_VOLUME);
+  assert.equal(heard.length,3);
+});
+
+async function storyFor(id:string){
+  const {parseSourcePassages,readingPortions}=await import("../lib/source-passages.ts");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+  const passages=parseSourcePassages(await readFile(new URL(`../worlds/${id}/source.md`,import.meta.url),"utf8"));
+  return {world,passages,portions:readingPortions(passages,world.scenes)};
+}
+
+test("storyboard: pages map to the scene whose reading holds their first paragraph, at most 3 frames and 1 required per scene", async()=>{
+  const {pagesByScene,sceneFrames}=await import("../lib/storyboard.ts");
+  for(const id of ["sleepy-hollow","trifles","tell-tale-heart"]){
+    const {world,passages,portions}=await storyFor(id);
+    const byScene=pagesByScene(world,passages),seen=new Set<string>();
+    world.scenes.forEach((scene,i)=>{
+      const ids=new Set(portions[i].map(p=>p.id));
+      for(const p of byScene[i]){assert.ok(ids.has(p.start),`${id}/${p.id} is not in ${scene.id}`);assert.ok(!seen.has(p.id),`${id}/${p.id} is in two scenes`);seen.add(p.id)}
+      const frames=sceneFrames(world,passages,i);
+      assert.ok(frames.length<=3,`${id}/${scene.id} shows ${frames.length} frames`);
+      assert.ok(frames.filter(f=>f.required).length<=1);
+      assert.ok(frames.every(f=>byScene[i].includes(f.page)&&!f.page.bridge));
+      // Story order.
+      const order=frames.map(f=>byScene[i].indexOf(f.page));assert.deepEqual(order,[...order].sort((a,b)=>a-b));
+    });
+    // Every story picture the strip shows has been generated.
+    for(const i of world.scenes.keys())for(const f of sceneFrames(world,passages,i))if(f.kind!=="student"){assert.ok(f.picture,`${id}/${f.page.id} has no picture`);await readFile(new URL(`../public${f.picture}`,import.meta.url))}
+  }
+  const {world,passages}=await storyFor("sleepy-hollow");
+  assert.deepEqual(sceneFrames(world,passages,0).map(f=>`${f.page.id}:${f.kind}${f.required?"*":""}`),["page-01:provided","page-04:add_detail","page-06:add_detail*"]);
+  // The Tell-Tale Heart has no reading ranges: its pages are split across its 4 scenes in story order.
+  const tth=await storyFor("tell-tale-heart");
+  assert.ok(tth.world.scenes.every(s=>!s.reading));
+  assert.deepEqual(pagesByScene(tth.world,tth.passages).map(l=>l.map(p=>p.id)[0]),["page-01","page-06","page-10","page-15"]);
+});
+
+test("storyboard: a scene is solved when its clues are proven and its required frame is saved, with or without a picture", async()=>{
+  const {sceneFrames,sceneSolved,missionText,makeSavedFrame,storyboardSoFar}=await import("../lib/storyboard.ts");
+  const {world,passages}=await storyFor("sleepy-hollow");
+  const frames=sceneFrames(world,passages,0);
+  assert.equal(missionText(4,frames),"Prove all 4 clues and complete 1 frame.");
+  assert.equal(sceneSolved(true,frames,{}),false);
+  assert.equal(sceneSolved(false,frames,{"sleepy-hollow:page-06":makeSavedFrame("add_detail","a line","A thin ray of light.")}),false);
+  // Save without a picture: the frame still counts.
+  const saved={"sleepy-hollow:page-06":makeSavedFrame("add_detail","With what wistful look did he eye every trembling ray of light","A thin, shaky ray of light crosses the fields.")};
+  assert.equal(saved["sleepy-hollow:page-06"].image,undefined);
+  assert.equal(sceneSolved(true,frames,saved),true);
+  // An optional frame does not solve the scene on its own.
+  assert.equal(sceneSolved(true,frames,{"sleepy-hollow:page-04":makeSavedFrame("add_detail","a line","A twisted branch in the door.")}),false);
+  // A scene with no required frame needs only its clues.
+  const tth=await storyFor("tell-tale-heart");
+  const search=sceneFrames(tth.world,tth.passages,1);
+  assert.ok(!search.some(f=>f.required));
+  assert.equal(sceneSolved(true,search,undefined),true);
+  assert.equal(missionText(4,search),"Prove all 4 clues to solve this scene.");
+  // The board shows the story's pictures for reached scenes and the student's saved frame (with the story's picture
+  // for an add-detail frame saved without one).
+  const board=storyboardSoFar(world,passages,saved,0);
+  assert.deepEqual(board.map(f=>[f.pageId,f.mine,!!f.picture]),[["page-01",false,true],["page-06",true,true]]);
+});
+
+test("storyboard: older saves without frames still load and play", async()=>{
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
+  const {sceneFrames,sceneSolved,storyboardSoFar}=await import("../lib/storyboard.ts");
+  const older={v:1,worldId:"sleepy-hollow",scene:1,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],updatedAt:"2026-10-01T12:00:00.000Z"};
+  const parsed=StudentProgressSchema.parse(older);
+  assert.deepEqual(parsed.storyFrames,{});
+  // A frame saved by the old storybook reader (no picture, no check) still counts.
+  const withOldFrame=StudentProgressSchema.parse({...older,storyFrames:{"sleepy-hollow:page-06":{kind:"add_detail",description:"A ray of light.",quote:"every trembling ray of light",saved_at:"2026-10-01T12:00:00.000Z"}}});
+  const {world,passages}=await storyFor("sleepy-hollow");
+  assert.equal(sceneSolved(true,sceneFrames(world,passages,0),withOldFrame.storyFrames),true);
+  assert.deepEqual(storyboardSoFar(world,passages,undefined,0).map(f=>f.pageId),["page-01"]);
+});
+
+test("frame caps: 6 pictures per device a day, 2 attempts per frame, and an image ceiling inside the global ceiling", async()=>{
+  const {limits,usageCall,imageCeiling,globalCeiling}=await import("../lib/demo-limits.ts");
+  assert.deepEqual(limits.frame_image,{sandbox:2,device:6});
+  assert.ok(limits.frame_check.device>=limits.frame_check.sandbox);
+  const image=usageCall("frame_image","sandbox-1","device-1","sleepy-hollow:page-06");
+  assert.equal(image.fn,"consume_demo_ai_capped");
+  assert.equal(image.args.p_sandbox,"sandbox-1:sleepy-hollow:page-06");
+  assert.equal(image.args.p_device_limit,6);assert.equal(image.args.p_sandbox_limit,2);
+  assert.ok("p_kind_global_limit" in image.args&&image.args.p_kind_global_limit<=globalCeiling());
+  const check=usageCall("frame_check","sandbox-1","device-1");
+  assert.equal(check.fn,"consume_demo_ai");assert.equal(check.args.p_sandbox,"sandbox-1");assert.equal(check.args.p_kind,"frame_check");
+  const before={a:process.env.DEMO_DAILY_AI_CEILING,i:process.env.DEMO_DAILY_IMAGE_CEILING};
+  try{process.env.DEMO_DAILY_AI_CEILING="100";process.env.DEMO_DAILY_IMAGE_CEILING="500";assert.equal(imageCeiling(),100)}
+  finally{for(const [k,v] of [["DEMO_DAILY_AI_CEILING",before.a],["DEMO_DAILY_IMAGE_CEILING",before.i]] as const){if(v===undefined)delete process.env[k];else process.env[k]=v}}
+});
+
+test("frame pictures: a flagged description is never painted; writing-only pages never get a picture", async()=>{
+  const {pictureForFrame,OFF_STORY_MESSAGE}=await import("../lib/frames-server.ts");
+  let painted=0,counted=0;
+  const deps=(flagged:boolean|"error")=>({moderate:async()=>{if(flagged==="error")throw new Error("down");return flagged},allow:async()=>{counted++;return true},paint:async()=>{painted++;return "https://example.test/frame.webp"}});
+  const page={mode:"student"};
+  assert.deepEqual(await pictureForFrame(page,"Ichabod rides past the church at midnight.",deps(true)),{image:null,blocked:true,message:OFF_STORY_MESSAGE});
+  assert.equal((await pictureForFrame(page,"Ichabod rides past the church at midnight.",deps("error"))).image,null);
+  // The app's own safety screen stops it too, before moderation is asked.
+  assert.equal((await pictureForFrame(page,"what is your phone number",deps(false))).blocked,true);
+  assert.equal(painted,0);assert.equal(counted,0);
+  assert.equal((await pictureForFrame({mode:"student",no_generation:true},"A cold, gloomy kitchen.",deps(false))).image,null);
+  assert.equal(painted,0);
+  assert.equal((await pictureForFrame(page,"Ichabod rides past the church at midnight.",deps(false))).image,"https://example.test/frame.webp");
+  assert.equal(painted,1);
+});
+
+test("content notes: every flagged paragraph shown in a scene, clue or frame has its note directly before it", async()=>{
+  const {contentNotes,withContentNotes}=await import("../lib/content-notes.ts");
+  const {sceneReadingItems,narrationParts}=await import("../lib/narration.ts");
+  const {pagePassages}=await import("../lib/storybook.ts");
+  const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  let flaggedShown=0;
+  for(const id of ["sleepy-hollow","trifles","tell-tale-heart"]){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    const passages=parseSourcePassages(await readFile(new URL(`../worlds/${id}/source.md`,import.meta.url),"utf8"));
+    const notes=contentNotes(world);
+    // A flagged paragraph's note is either directly before it or before the flagged paragraph just ahead of it under the same note.
+    const check=(items:ReturnType<typeof withContentNotes>,where:string)=>items.forEach((item,i)=>{
+      if(item.kind!=="passage"||!notes.has(item.id))return;
+      flaggedShown++;
+      let j=i-1;while(j>=0&&items[j].kind==="passage"&&notes.get(items[j].id)===notes.get(item.id))j--;
+      const before=items[j];
+      assert.ok(before?.kind==="note"&&before.text===notes.get(item.id),`${where}: ${item.id} has no content note before it`);
+    });
+    for(const scene of world.scenes){
+      const items=sceneReadingItems(world,scene,passages);
+      check(items,`${id}/${scene.id} reading`);
+      // Narration reads the note first, then the paragraph.
+      const parts=narrationParts(world,scene,passages);
+      for(const [i,item] of items.entries())if(item.kind==="note")assert.equal(parts[i+1].id,item.before);
+      for(const clue of scene.artifacts)check(withContentNotes(passages.filter(p=>clue.source_anchor.includes(p.id)),notes),`${id}/${clue.id} clue`);
+    }
+    for(const page of world.storybook?.pages??[])check(withContentNotes(pagePassages(passages,page),notes),`${id}/${page.id} frame`);
+  }
+  assert.ok(flaggedShown>0);
+  // Sleepy Hollow flags ¶34, ¶47 and ¶48; scene 2's reading shows ¶48 with its note.
+  const sh=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  assert.deepEqual([...contentNotes(sh).keys()].sort(),["p034","p047","p048"]);
+  const shPassages=parseSourcePassages(await readFile(new URL("../worlds/sleepy-hollow/source.md",import.meta.url),"utf8"));
+  const scene2=sceneReadingItems(sh,sh.scenes[1],shPassages).map(i=>i.id);
+  assert.equal(scene2[scene2.indexOf("p048")-1],"note-p048");
+  // ¶47 and ¶48 together share one note.
+  assert.deepEqual(withContentNotes(shPassages.filter(p=>["p046","p047","p048"].includes(p.id)),contentNotes(sh)).map(i=>i.id),["p046","note-p047","p047","p048"]);
+});
+
+// A fake ambient engine and clock: counts live tracks and records every fade, so the tests can follow the sound.
+async function ambientRig(){
+  const {createAmbientController}=await import("../lib/ambient.ts");
+  let now=0;const timers:{at:number;fn:()=>void;id:number}[]=[];let nextId=1;
+  const clock={after:(ms:number,fn:()=>void)=>{const id=nextId++;timers.push({at:now+ms,fn,id});return id},cancel:(h:unknown)=>{const i=timers.findIndex(t=>t.id===h);if(i>=0)timers.splice(i,1)}};
+  const tick=(ms:number)=>{now+=ms;for(let t=timers.filter(t=>t.at<=now).sort((a,b)=>a.at-b.at)[0];t;t=timers.filter(t=>t.at<=now).sort((a,b)=>a.at-b.at)[0]){timers.splice(timers.indexOf(t),1);t.fn()}};
+  const live=new Set<{src:string}>();let started=0,maxLive=0;const fades:{src:string;volume:number;seconds:number}[]=[];
+  const engine={start(src:string){started++;const track={src,fade(volume:number,seconds:number){fades.push({src,volume,seconds})},stop(){live.delete(track)}};live.add(track);maxLive=Math.max(maxLive,live.size);return track}};
+  const c=createAmbientController(engine,clock);
+  return {c,tick,live,fades,get started(){return started},get maxLive(){return maxLive}};
+}
+
+test("ambient sound: fades out over half a second and stops on every screen change that hides the scene", async()=>{
+  const {sceneScreenShowing,AMBIENT_VOLUME}=await import("../lib/ambient.ts");
+  const scene={inCase:true,clueOpen:false,frameOpen:false,boardOpen:false,consequence:false};
+  const changes:Record<string,(s:typeof scene)=>typeof scene>={
+    "opens a clue":s=>({...s,clueOpen:true}),
+    "opens the case board":s=>({...s,boardOpen:true}),
+    "opens a storyboard frame":s=>({...s,frameOpen:true}),
+    "sees a choice consequence":s=>({...s,consequence:true}),
+    "leaves the case":s=>({...s,inCase:false}),
+  };
+  for(const [what,change] of Object.entries(changes)){
+    const r=await ambientRig();
+    r.c.set({src:"/a.mp3",on:true,unlocked:true,visible:true,showing:sceneScreenShowing(scene)});
+    assert.equal(r.live.size,1,what);
+    assert.deepEqual(r.fades.at(-1),{src:"/a.mp3",volume:AMBIENT_VOLUME,seconds:2.5});
+    r.c.set({showing:sceneScreenShowing(change(scene))});
+    assert.deepEqual(r.fades.at(-1),{src:"/a.mp3",volume:0,seconds:0.5},what);
+    assert.equal(r.live.size,1,`${what}: still fading`);
+    r.tick(500);
+    assert.equal(r.live.size,0,`${what}: stopped completely`);
+    assert.equal(r.c.track,null);
+  }
+  // Switching to another browser tab.
+  const r=await ambientRig();
+  r.c.set({src:"/a.mp3",on:true,unlocked:true,showing:true});
+  r.c.set({visible:false});r.tick(500);
+  assert.equal(r.live.size,0);
+  // Sound off stops it too; and nothing plays before the student's first tap.
+  const q=await ambientRig();
+  q.c.set({src:"/a.mp3",on:true,showing:true});assert.equal(q.started,0);
+  q.c.set({unlocked:true});assert.equal(q.live.size,1);
+  q.c.set({on:false});q.tick(500);assert.equal(q.live.size,0);
+});
+
+test("ambient sound: comes back on return, dips for narration, and never plays two tracks", async()=>{
+  const {AMBIENT_VOLUME}=await import("../lib/ambient.ts");
+  const r=await ambientRig();
+  r.c.set({src:"/a.mp3",on:true,unlocked:true,showing:true});
+  // Clue opened and closed: the track stops, then a fresh one fades back in.
+  r.c.set({showing:false});r.tick(500);assert.equal(r.live.size,0);
+  r.c.set({showing:true});
+  assert.equal(r.live.size,1);assert.equal(r.started,2);
+  assert.deepEqual(r.fades.at(-1),{src:"/a.mp3",volume:AMBIENT_VOLUME,seconds:2.5});
+  // Back before the fade-out finished: the same track comes back up; no second copy.
+  r.c.set({showing:false});r.tick(200);r.c.set({showing:true});r.tick(1000);
+  assert.equal(r.started,2);assert.equal(r.live.size,1);
+  assert.deepEqual(r.fades.at(-1),{src:"/a.mp3",volume:AMBIENT_VOLUME,seconds:1});
+  // Narration dips to a third and back.
+  r.c.set({narrating:true});assert.equal(r.fades.at(-1)!.volume,AMBIENT_VOLUME/3);
+  r.c.set({narrating:false});assert.equal(r.fades.at(-1)!.volume,AMBIENT_VOLUME);
+  // Toggling the scene screen quickly many times (and React's double mount) never stacks tracks.
+  for(let i=0;i<20;i++){r.c.set({showing:i%2===0?false:true});r.tick(i%3===0?600:100)}
+  r.c.set({showing:true});r.tick(1000);
+  // The next scene's track starts only after this one has stopped.
+  r.c.set({src:"/b.mp3"});
+  assert.equal(r.live.size,1);assert.equal([...r.live][0].src,"/a.mp3");
+  r.tick(500);
+  assert.equal(r.live.size,1);assert.equal([...r.live][0].src,"/b.mp3");
+  assert.equal(r.maxLive,1);
+});
+
+test("Next step: the button points to the next thing to do in every state of a scene", async()=>{
+  const {nextStep}=await import("../lib/next-step.ts");
+  const names=["The empty schoolhouse","Ichabod's belongings","Ichabod's own books and the unfinished poem","The searchers' report"];
+  const clues=(done:number,lockedFrom=99)=>names.map((name,i)=>({id:`c${i+1}`,name,done:i<done,locked:i>=lockedFrom&&i>=done}));
+  const frame=(saved:boolean)=>({key:"sleepy-hollow:page-06",saved});
+  const base={last:false,hasChoice:true,choicePrompt:"The trail leads back to the night before. Where do you begin?"};
+  // No clues proven.
+  let s=nextStep({...base,clues:clues(0),requiredFrame:frame(false)});
+  assert.equal(s.progress,"Clues 0 of 4 · Frame 0 of 1");
+  assert.deepEqual(s.action,{kind:"clue",clueId:"c1",number:1,label:"Open Clue 1: The empty schoolhouse"});
+  // Some proven.
+  s=nextStep({...base,clues:clues(1),requiredFrame:frame(false)});
+  assert.equal(s.progress,"Clues 1 of 4 · Frame 0 of 1");
+  assert.equal(s.action.label,"Open Clue 2: Ichabod's belongings");
+  // A locked clue is skipped while an open one waits.
+  s=nextStep({...base,clues:clues(1).map((c,i)=>i===1?{...c,locked:true}:c),requiredFrame:frame(false)});
+  assert.equal(s.action.kind==="clue"&&s.action.clueId,"c3");
+  // All proven, frame missing.
+  s=nextStep({...base,clues:clues(4),requiredFrame:frame(false)});
+  assert.equal(s.progress,"Clues 4 of 4 · Frame 0 of 1");
+  assert.deepEqual(s.action,{kind:"frame",frameKey:"sleepy-hollow:page-06",label:"Complete your frame"});
+  assert.equal(s.solved,false);
+  // Scene solved: the scene's choice, or the next scene.
+  s=nextStep({...base,clues:clues(4),requiredFrame:frame(true)});
+  assert.equal(s.progress,"Clues 4 of 4 · Frame 1 of 1");
+  assert.deepEqual(s.action,{kind:"choice",label:base.choicePrompt});
+  assert.equal(s.solved,true);
+  assert.deepEqual(nextStep({...base,hasChoice:false,clues:clues(4),requiredFrame:frame(true)}).action,{kind:"next",label:"Next scene"});
+  // A scene without a required frame needs only its clues, and the line leaves the frame out.
+  s=nextStep({...base,hasChoice:false,clues:clues(4)});
+  assert.equal(s.progress,"Clues 4 of 4");assert.equal(s.action.kind,"next");
+  // Last scene solved.
+  assert.deepEqual(nextStep({...base,last:true,clues:clues(4),requiredFrame:frame(true)}).action,{kind:"close",label:"Close the case"});
 });

@@ -188,7 +188,8 @@
         "Do not mention anything she has not found or said in the passages.",
         "Never describe what Mrs. Wright did, said, or looked like yesterday morning as if you saw it. You were not there; you know only what Mr. Hale has told."
       ],
-      "voice_id": "EXAVITQu4vr4xnSDxMaL"
+      "voice_id": "XrExE9yKIg1WjnnlVkGX",
+      "portrait": "/worlds/trifles/characters/mrs-hale.png"
     },
     {
       "id": "mrs-peters",
@@ -202,7 +203,8 @@
         "Do not claim to know who killed John Wright.",
         "Do not mention anything she has not found or said in the passages."
       ],
-      "voice_id": "EXAVITQu4vr4xnSDxMaL"
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "portrait": "/worlds/trifles/characters/mrs-peters.png"
     },
     {
       "id": "mr-hale",
@@ -217,7 +219,8 @@
         "Do not describe the body or the rope beyond what the play states.",
         "Do not say Mrs. Wright looked scared as a fact; he took that back himself."
       ],
-      "voice_id": "onwK4e9ZLuTAKqWW03F9"
+      "voice_id": "iP95p4xoKVk53GoZ742B",
+      "portrait": "/worlds/trifles/characters/mr-hale.png"
     }
   ],
   "glossary": [
@@ -280,7 +283,7 @@
       "narration": "The sheriff’s party enters the cold Wright farmhouse kitchen. Unwashed pans, a loaf left out, and a dish towel mark unfinished work. Mr. Hale tells the men about the morning he found Mrs. Wright in her rocking chair. While the men discuss the case, Mrs. Hale and Mrs. Peters notice frozen preserves, an uneven quilt, and a birdcage with a broken hinge. The kitchen holds ordinary things, but the women begin to see how they fit together.",
       "summary": "The sheriff, the county attorney, and Mr. Hale search the Wright farmhouse kitchen after Mr. Wright was found dead. Mr. Hale tells how he found Mrs. Wright sitting calmly in her rocking chair. While the men look for big clues, Mrs. Hale and Mrs. Peters notice small things in the kitchen that may explain what happened.",
       "background_image": "/worlds/trifles/kitchen.png",
-      "ambient_audio": null,
+      "ambient_audio": "/worlds/trifles/kitchen-ambient.mp3",
       "narration_audio": "/worlds/trifles/kitchen.mp3",
       "available_characters": [
         "mrs-hale",
@@ -806,7 +809,7 @@
       "art_direction": "Painterly, period-accurate interior of a plain 1910s Midwestern farmhouse kitchen in winter, cold gray daylight, muted browns and grays with touches of faded blue. Keep the upper-left area of the image as plain, empty, dark wall in shadow with no objects, because text will overlay it. Upper center: a plain wooden table edge with a worn, faded woman's skirt laid across it, its hem frayed, clearly visible. Upper right: a narrow stair door standing ajar with a small dark knitted shawl hanging on a hook behind it and a folded apron on a shelf beside it, clearly visible. Lower left foreground: a small frosted window looking out on a snowy, empty hollow with bare trees and no road in sight, clearly visible. Lower center: the heavy outer door rimed with frost, a cold draft suggested by a thin drift of snow on the floorboards and an empty hook beside it, clearly visible. No people in the foreground; no readable text; no faces in detail; quiet, lonely mood.",
       "background_image": "/worlds/trifles/minnie-foster.png",
       "narration_audio": "/worlds/trifles/minnie-foster.mp3",
-      "ambient_audio": null,
+      "ambient_audio": "/worlds/trifles/minnie-foster-ambient.mp3",
       "available_characters": [
         "mrs-hale",
         "mrs-peters",
@@ -1239,7 +1242,7 @@
       "art_direction": "Painterly, period-accurate 1910s farmhouse kitchen in late afternoon winter light, deep shadows, muted browns, grays, and a little dull red from scattered quilt pieces. Keep the upper-left area as plain, empty, dark wall in shadow with no objects, because text will overlay it. Upper center: a narrow stair door, slightly open, with faint light spilling down the steps from the room above where the men are searching, clearly visible. Upper right: a frosted window with a wide, empty, snow-covered prairie beyond it, flat and silent, clearly visible. Lower center: the kitchen table with an empty birdcage, its small door hanging crooked, and a woman's hand resting on top of the cage, seen from the wrist down, clearly visible; quilt pieces scattered beside it. Lower right: a slight, thin woman in a dark coat seated near the stove, seen from behind and to the side, one hand lifted toward her face, no facial detail, clearly visible. No readable text; no faces in detail; no violence shown; tense, quiet mood.",
       "background_image": "/worlds/trifles/the-law-and-the-women.png",
       "narration_audio": "/worlds/trifles/the-law-and-the-women.mp3",
-      "ambient_audio": null,
+      "ambient_audio": "/worlds/trifles/the-law-and-the-women-ambient.mp3",
       "available_characters": [
         "mrs-hale",
         "mrs-peters"
@@ -1672,7 +1675,7 @@
       "art_direction": "Painterly, period-accurate 1910s farmhouse kitchen at dusk in winter, the last gray light at the window, a warm glow from the iron stove, muted browns, grays, and deep blue shadows. Keep the upper-left area as plain, empty, dark wall in shadow with no objects, because text will overlay it. Lower left: a young man's small open notebook and a pencil lying on a chair seat, pages blank or blurred, clearly visible. Center: on the kitchen table, a small bundle of clothes (a folded apron and a skirt) with a glass jar wrapped in a petticoat beside it, clearly visible. Center right: a woman's large, heavy winter coat seen from the side, one hand pressed flat against a bulging pocket, no face shown, clearly visible. Lower center foreground: scattered bright quilt blocks in a log cabin pattern spread across the table's edge, clearly visible. A door to the front room stands open in the background. No readable text; no faces in detail; no dead animal shown; tense, quiet mood.",
       "background_image": "/worlds/trifles/the-last-word.png",
       "narration_audio": "/worlds/trifles/the-last-word.mp3",
-      "ambient_audio": null,
+      "ambient_audio": "/worlds/trifles/the-last-word-ambient.mp3",
       "available_characters": [
         "mrs-hale",
         "mrs-peters",
@@ -2238,7 +2241,8 @@
         "illustration": {
           "alt": "Three bundled-up men warm themselves at a stove in a gloomy, messy farm kitchen while two women stand close together by the door.",
           "scene_description": "A gloomy farmhouse kitchen on a freezing morning, left in disorder: unwashed pans under the sink, a loaf of bread outside the bread-box, a dish-towel on the table. Three men in heavy winter coats (the Sheriff and Mr. Hale, men in middle life, and the young County Attorney) crowd around the iron stove. Two women stand close together just inside the door: a slight, thin-faced woman and a larger woman who looks around fearfully.",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/trifles/frames/page-01.png"
         }
       },
       {
@@ -2279,7 +2283,8 @@
         "illustration": {
           "alt": "Mr. Hale, in a winter coat, begins his story by the stove as the young County Attorney listens.",
           "scene_description": "The same cold kitchen. Mr. Hale, a farmer in middle life in a heavy coat, stands by the stove beginning to explain what happened. The young County Attorney listens closely; the Sheriff has unbuttoned his overcoat. The two women still stand together near the door. Pale winter light from the window.",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/trifles/frames/page-02.png"
         }
       },
       {
@@ -2321,7 +2326,8 @@
         "illustration": {
           "alt": "Everyone in the cold kitchen turns to look at an empty rocking chair.",
           "scene_description": "The kitchen seen past an empty wooden rocking chair in the foreground. The three men and the two women by the door are all turned toward the rocker, looking at it in silence. No one sits in it. Gray light, very still.",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/trifles/frames/page-03.png"
         }
       },
       {
@@ -2436,7 +2442,8 @@
           "alt": "Mr. Hale points to a small chair in the corner of the kitchen while the County Attorney listens.",
           "scene_description": "The kitchen. Mr. Hale points to a small chair in the corner where he says Mrs. Wright sat; the chair is empty. The young County Attorney stands nearby looking around the room, the Sheriff beside him, the women in the background. LEFT OUT ON PURPOSE: the County Attorney's notebook.",
           "missing_detail": "The County Attorney's notebook, where he makes a note (\"The COUNTY ATTORNEY, who has had his notebook out, makes a note\").",
-          "status": "planned"
+          "status": "generated",
+          "src": "/worlds/trifles/frames/page-06.png"
         }
       },
       {
