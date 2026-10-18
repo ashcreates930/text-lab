@@ -1,0 +1,312 @@
+// Server side of live class mode: tokens, loading a session, the host's and players' views, and every action. All
+// writes come through here, so role gating, moderation and the judge cap are enforced in one place.
+import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import type { WorldPack } from "../world-schema.ts";
+import { readWorld } from "../classroom/worlds.ts";
+import { memoryModeEnabled } from "../classroom/store.ts";
+import { screenArgument, judgeWithRubric } from "../verdict-server.ts";
+import {
+  DEMO_ROOM, OBJECTION_SECONDS, ROLE_INFO, buildSquads, mayAct, objectionResult, rolesFor, rolesOf, roundTakesSquadAnswers, scoreLieRound,
+  scoreVerdictRound, sessionScores, squadName, squadProgress, squadPurpose, strongestByTheory, tallyVotes,
+  type LivePlayer, type LiveResponse, type ResponseKind, type Role, type Round, type RoundType,
+} from "./engine.ts";
+import type { LiveStore, StoredSession } from "./store.ts";
+
+// ---------- Tokens ----------
+function secret() {
+  const value = process.env.CLASS_TOKEN_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || (memoryModeEnabled() ? "local-dev-only-secret" : "");
+  if (!value) throw new Error("No live token secret configured.");
+  return value;
+}
+const sign = (value: string) => createHmac("sha256", `itt-live:${secret()}`).update(value).digest("base64url");
+const safeEqual = (a: string, b: string) => { const x = Buffer.from(a), y = Buffer.from(b); return x.length === y.length && timingSafeEqual(x, y); };
+export const newHostToken = () => randomBytes(24).toString("base64url");
+export const hashHostToken = (t: string) => createHash("sha256").update(t).digest("hex");
+export const isHost = (s: StoredSession, token: string | null | undefined) => !!token && safeEqual(hashHostToken(token), s.hostHash);
+export const playerToken = (sessionId: string, playerId: string) => `${playerId}.${sign(`${sessionId}:${playerId}`)}`;
+export function playerFromToken(sessionId: string, token: string | null | undefined) {
+  const [playerId, sig] = (token ?? "").split(".");
+  return playerId && sig && safeEqual(sig, sign(`${sessionId}:${playerId}`)) ? playerId : null;
+}
+const CODE_LETTERS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+export const newJoinCode = () => Array.from(randomBytes(6), (b) => CODE_LETTERS[b % CODE_LETTERS.length]).join("");
+
+// ---------- Realtime ping ----------
+// Tells every open screen of a session to refetch. The ping carries no data; screens also poll as a fallback.
+export async function broadcast(sessionId: string) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL, key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return;
+  try {
+    await fetch(`${url}/realtime/v1/api/broadcast`, { method: "POST", headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, body: JSON.stringify({ messages: [{ topic: `live:${sessionId}`, event: "changed", payload: { at: Date.now() } }] }) });
+  } catch { /* screens poll anyway */ }
+}
+
+// ---------- Loading ----------
+export type LiveState = { session: StoredSession; world: WorldPack; squads: Awaited<ReturnType<LiveStore["listSquads"]>>; players: LivePlayer[]; responses: LiveResponse[] };
+export async function loadState(store: LiveStore, sessionId: string): Promise<LiveState | null> {
+  const session = await store.getSession(sessionId);
+  if (!session) return null;
+  const world = await readWorld(session.worldId);
+  if (!world) return null;
+  const [squads, players, responses] = await Promise.all([store.listSquads(sessionId), store.listPlayers(sessionId), store.listResponses(sessionId)]);
+  return { session, world, squads, players, responses };
+}
+export const expired = (s: StoredSession, now = Date.now()) => new Date(s.expiresAt).getTime() < now;
+const members = (st: LiveState, squadId: string) => st.players.filter((p) => p.squadId === squadId).map((p) => p.id);
+const currentRound = (st: LiveState): Round | undefined => st.session.rounds[st.session.roundIndex];
+const HIDDEN = "Hidden for the teacher to review.";
+
+// ---------- Views ----------
+function lieOf(st: LiveState, round: Round | undefined) { return round?.type === "lie" ? st.world.scenes.find((s) => s.id === round.sceneId)?.lie : undefined; }
+// Objection!: what the reveal means for the two squads involved (everyone else only voted).
+function objectionMine(reveal: { type: string; sustained?: boolean; scores?: { squadId: string; points: number }[] }, squadId: string) {
+  if (reveal.type !== "objection" || !reveal.scores) return null;
+  const i = reveal.scores.findIndex((x) => x.squadId === squadId);
+  if (i < 0) return null;
+  const detail = i === 0 ? (reveal.sustained ? "Your counter beat their evidence" : "Their evidence held") : reveal.sustained ? "Their counter beat your evidence" : "Your evidence held";
+  return { points: reveal.scores[i].points, detail };
+}
+function revealFor(st: LiveState) {
+  const round = currentRound(st), i = st.session.roundIndex;
+  if (!round) return null;
+  if (round.type === "lie") {
+    const lie = lieOf(st, round)!;
+    return { type: "lie" as const, truthLine: lie.truth_line, explanation: lie.explanation, falseClaim: lie.false_claim,
+      squads: scoreLieRound(lie, st.squads, st.responses, i).map((r) => ({ ...r, explanation: r.explanation && st.responses.some((x) => x.roundIndex === i && x.squadId === r.squadId && x.kind === "explain" && x.flagged) ? HIDDEN : r.explanation })) };
+  }
+  if (round.type === "verdict") {
+    const scores = scoreVerdictRound(st.squads, st.responses, i);
+    return { type: "verdict" as const, votes: tallyVotes(st.world, st.responses, i), squads: scores, strongest: Object.fromEntries(strongestByTheory(scores)) };
+  }
+  return { type: "objection" as const, ...objectionResult(round, st.responses, i) };
+}
+function squadSummary(st: LiveState, squadId: string) {
+  const round = currentRound(st), ids = members(st, squadId), roles = rolesFor(ids, Math.max(0, st.session.roundIndex));
+  const progress = squadProgress(round, st.responses, squadId, st.session.roundIndex);
+  return { ids, roles, progress };
+}
+const publicRound = (st: LiveState) => {
+  const round = currentRound(st);
+  if (!round) return null;
+  if (round.type === "lie") {
+    const lie = lieOf(st, round)!, scene = st.world.scenes.find((s) => s.id === round.sceneId)!, clue = scene.artifacts.find((a) => a.id === lie.clue_id)!;
+    const who = st.world.characters.find((c) => c.id === lie.character_id)!;
+    return { ...round, testimony: lie.testimony, characterId: who.id, character: who.name, portrait: who.portrait ?? null, clueName: clue.name, evidence: clue.source_anchor, topic: lie.topic };
+  }
+  if (round.type === "verdict") return { ...round, question: st.world.verdict?.question ?? "", theories: st.world.verdict?.theories ?? [] };
+  // In the vote stage everyone sees the counter they are judging (a flagged sentence stays hidden).
+  const o = round.stage === "vote" ? objectionResult(round, st.responses, st.session.roundIndex) : null;
+  return { ...round, defendSquad: st.squads.find((s) => s.id === round.defendSquadId)?.name ?? "", objectSquad: st.squads.find((s) => s.id === round.objectSquadId)?.name ?? "", counter: o?.countered ? { line: o.counterLine, text: o.counterText } : null };
+};
+const sessionInfo = (st: LiveState) => ({ id: st.session.id, code: st.session.code, status: st.session.status, paused: st.session.paused, roundIndex: st.session.roundIndex, roundCount: st.session.rounds.length, roundStartedAt: st.session.roundStartedAt, worldId: st.session.worldId, title: st.world.title, demo: st.session.demo, expiresAt: st.session.expiresAt, hasVerdict: !!st.world.verdict });
+
+export function hostView(st: LiveState) {
+  const round = currentRound(st);
+  const squads = st.squads.map((s) => {
+    const { ids, roles, progress } = squadSummary(st, s.id);
+    return { id: s.id, name: s.name, members: ids.map((pid) => ({ id: pid, nickname: st.players.find((p) => p.id === pid)!.nickname, roles: rolesOf(roles, pid) })), submitted: !!progress.submitted, waitingFor: progress.waitingFor };
+  });
+  const answering = squads.filter((s) => s.members.length);
+  // Squads answering right now: in Objection! only the objecting squad writes a counter.
+  const answeringNow = !roundTakesSquadAnswers(round) ? [] : round?.type === "objection" ? answering.filter((s) => s.id === round.objectSquadId) : answering;
+  const flagged = st.responses.filter((r) => r.flagged && r.roundIndex === st.session.roundIndex).length;
+  return {
+    session: sessionInfo(st), round: publicRound(st), purpose: round ? squadPurpose(round.type) : "",
+    squads, unassigned: st.players.filter((p) => !p.squadId).map((p) => ({ id: p.id, nickname: p.nickname })),
+    counters: { players: st.players.length, squadsJoined: answering.length, squadsAnswering: answeringNow.length, squadsSubmitted: answeringNow.filter((s) => s.submitted).length,
+      votes: round?.type === "verdict" || round?.type === "objection" ? new Set(st.responses.filter((r) => r.roundIndex === st.session.roundIndex && (r.kind === "vote" || r.kind === "counter_vote")).map((r) => r.playerId)).size : 0 },
+    votes: round?.type === "verdict" ? tallyVotes(st.world, st.responses, st.session.roundIndex) : null,
+    reveal: st.session.status === "reveal" ? revealFor(st) : null,
+    scores: sessionScores(st.world, st.session, st.squads, st.responses),
+    flagged,
+    canObjection: hasVerdictPins(st) && st.squads.filter((s) => members(st, s.id).length).length >= 2,
+    lieScenes: st.world.scenes.filter((s) => s.lie).map((s, i) => ({ sceneId: s.id, label: `Scene ${st.world.scenes.indexOf(s) + 1}: ${s.lie!.topic}` , index: i })),
+  };
+}
+
+export function playerView(st: LiveState, playerId: string) {
+  const me = st.players.find((p) => p.id === playerId)!;
+  const round = currentRound(st), i = st.session.roundIndex;
+  const squad = me.squadId ? st.squads.find((s) => s.id === me.squadId) ?? null : null;
+  const summary = squad ? squadSummary(st, squad.id) : null;
+  const myRoles = summary ? rolesOf(summary.roles, me.id) : [];
+  const p = summary?.progress;
+  const text = (r: LiveResponse | undefined, key: string) => (r ? (r.flagged ? HIDDEN : String(r.payload[key] ?? "")) : "");
+  const myVote = [...st.responses].reverse().find((r) => r.roundIndex === i && r.playerId === me.id && r.kind === "vote")?.payload.theoryId ?? null;
+  const myCounterVote = [...st.responses].reverse().find((r) => r.roundIndex === i && r.playerId === me.id && r.kind === "counter_vote")?.payload.sustain ?? null;
+  // Only the squad whose turn it is answers an objection; everyone votes on it.
+  const answering = !!squad && roundTakesSquadAnswers(round) && (round?.type !== "objection" || round.objectSquadId === squad.id);
+  const reveal = st.session.status === "reveal" ? revealFor(st) : null;
+  return {
+    session: sessionInfo(st), round: publicRound(st), purpose: round ? squadPurpose(round.type) : "",
+    me: { id: me.id, nickname: me.nickname },
+    squad: squad && summary ? { id: squad.id, name: squad.name, members: summary.ids.map((pid) => ({ id: pid, nickname: st.players.find((x) => x.id === pid)!.nickname, roles: rolesOf(summary.roles, pid) })) } : null,
+    myRoles, roleInfo: ROLE_INFO, answering,
+    progress: p ? { pin: p.pin ? String(p.pin.payload.quote) : "", explanation: text(p.explain, "text"), pins: (p.pins?.payload.pins ?? []) as { clueId?: string; quote: string }[], argument: text(p.argument, "text"), skeptic: p.skeptic?.kind ?? null, approved: p.approved, submitted: !!p.submitted, canSubmit: p.canSubmit, waitingFor: p.waitingFor, objectionNote: p.skeptic?.kind === "object" ? String(p.skeptic.payload.note ?? "") : "" } : null,
+    myVote, myCounterVote,
+    squadTheory: squad && round?.type === "verdict" ? squadMajority(st, squad.id) : null,
+    reveal: reveal && squad ? { ...reveal, mine: "squads" in reveal ? (reveal.squads as { squadId: string }[]).find((x) => x.squadId === squad.id) ?? null : objectionMine(reveal, squad.id) } : reveal,
+    score: squad ? sessionScores(st.world, st.session, st.squads, st.responses).find((s) => s.squadId === squad.id)?.points ?? 0 : 0,
+  };
+}
+function squadMajority(st: LiveState, squadId: string) {
+  const ids = new Set(members(st, squadId)), i = st.session.roundIndex, latest = new Map<string, string>();
+  for (const r of st.responses) if (r.roundIndex === i && r.kind === "vote" && r.playerId && ids.has(r.playerId)) latest.set(r.playerId, String(r.payload.theoryId));
+  const counts = new Map<string, number>();
+  for (const v of latest.values()) counts.set(v, (counts.get(v) ?? 0) + 1);
+  return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+}
+function hasVerdictPins(st: LiveState) {
+  return st.session.rounds.some((r, i) => r.type === "verdict" && st.squads.some((s) => squadProgress(r, st.responses, s.id, i).submitted));
+}
+
+// ---------- Host actions ----------
+export type HostAction =
+  | { action: "squads.auto" } | { action: "squads.move"; playerId: string; squadId: string | null }
+  | { action: "round.start"; type: RoundType; sceneId?: string } | { action: "round.stage" } | { action: "round.reveal" }
+  | { action: "pause" } | { action: "resume" } | { action: "end" }
+  | { action: "override"; key: "sound"; squadId: string; value: boolean } | { action: "override"; key: "objection"; value: boolean };
+
+export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): Promise<string | null> {
+  const s = st.session, round = currentRound(st);
+  if (s.status === "ended") return "This live round has ended.";
+  switch (a.action) {
+    case "squads.auto": {
+      const groups = buildSquads(st.players.map((p) => p.id));
+      const squads = await store.replaceSquads(s.id, groups.map((_, i) => squadName(i)));
+      await store.setSquads(s.id, groups.flatMap((ids, i) => ids.map((playerId) => ({ playerId, squadId: squads[i].id }))));
+      return null;
+    }
+    case "squads.move": {
+      if (a.squadId && !st.squads.some((x) => x.id === a.squadId)) return "That squad no longer exists.";
+      await store.setSquads(s.id, [{ playerId: a.playerId, squadId: a.squadId }]);
+      return null;
+    }
+    case "round.start": {
+      if (s.status === "round") return "Reveal this round before starting the next.";
+      if (!st.squads.length) return "Build squads first.";
+      let next: Round;
+      if (a.type === "lie") {
+        const used = new Set(s.rounds.filter((r) => r.type === "lie").map((r) => (r as { sceneId: string }).sceneId));
+        const scene = st.world.scenes.find((x) => x.id === a.sceneId && x.lie) ?? st.world.scenes.find((x) => x.lie && !used.has(x.id)) ?? st.world.scenes.find((x) => x.lie);
+        if (!scene) return "This story has no Spot the Lie testimony.";
+        next = { type: "lie", sceneId: scene.id };
+      } else if (a.type === "verdict") {
+        if (!st.world.verdict) return "This story has no verdict question.";
+        next = { type: "verdict", stage: "vote" };
+      } else {
+        const pairing = objectionPairing(st);
+        if (!pairing) return "Play a Verdict Vote first, with at least two squads.";
+        next = { type: "objection", stage: "counter", ...pairing, endsAt: new Date(Date.now() + (OBJECTION_SECONDS + 1) * 1000).toISOString() };
+      }
+      await store.updateSession(s.id, { rounds: [...s.rounds, next], roundIndex: s.rounds.length, status: "round", paused: false, roundStartedAt: new Date().toISOString() });
+      return null;
+    }
+    case "round.stage": {
+      if (round?.type === "verdict" && round.stage === "vote") return set(store, st, { ...round, stage: "argue" });
+      if (round?.type === "objection" && round.stage === "counter") return set(store, st, { ...round, stage: "vote" });
+      return "This round has no next step.";
+    }
+    case "round.reveal": if (s.status !== "round") return "No round to reveal."; await store.updateSession(s.id, { status: "reveal" }); return null;
+    case "pause": await store.updateSession(s.id, { paused: true }); return null;
+    case "resume": await store.updateSession(s.id, { paused: false }); return null;
+    case "end": await store.updateSession(s.id, { status: "ended", paused: false }); return null;
+    case "override": {
+      await store.addResponse(s.id, { roundIndex: s.roundIndex, squadId: a.key === "sound" ? a.squadId : null, playerId: null, role: "host", kind: "override", payload: { key: a.key, value: a.value }, flagged: false });
+      return null;
+    }
+  }
+}
+async function set(store: LiveStore, st: LiveState, round: Round) {
+  const rounds = [...st.session.rounds]; rounds[st.session.roundIndex] = round;
+  await store.updateSession(st.session.id, { rounds });
+  return null;
+}
+// Objection!: the squad with the strongest argument defends its first pinned line; a squad that argued for a different
+// theory (or any other squad) objects.
+function objectionPairing(st: LiveState) {
+  const idx = [...st.session.rounds.keys()].reverse().find((i) => st.session.rounds[i].type === "verdict");
+  if (idx === undefined) return null;
+  const scores = scoreVerdictRound(st.squads, st.responses, idx).filter((x) => x.pins.length);
+  const defend = [...scores].sort((a, b) => b.points - a.points)[0];
+  if (!defend) return null;
+  const others = st.squads.filter((s) => s.id !== defend.squadId && members(st, s.id).length);
+  const rival = others.find((s) => scores.find((x) => x.squadId === s.id)?.theoryId !== defend.theoryId) ?? others[0];
+  if (!rival) return null;
+  return { defendSquadId: defend.squadId, objectSquadId: rival.id, pin: defend.pins[0] };
+}
+
+// ---------- Player actions ----------
+export type PlayerAction = { kind: ResponseKind; payload: Record<string, unknown> };
+const textKinds: ResponseKind[] = ["explain", "argument"];
+// Returns an error for the player, or null. judge: runs the existing verdict judge (capped per session by the caller).
+export async function playerAct(store: LiveStore, st: LiveState, playerId: string, act: PlayerAction, deps: { judgeAllowed: () => Promise<boolean> }): Promise<string | null> {
+  const s = st.session, round = currentRound(st), i = s.roundIndex;
+  if (s.status !== "round") return "Wait for the next round.";
+  if (s.paused) return "The round is paused.";
+  const me = st.players.find((p) => p.id === playerId);
+  if (!me) return "Please join again.";
+  if (act.kind === "vote") {
+    if (!(round?.type === "verdict" && round.stage === "vote")) return "Voting is closed.";
+    const theoryId = String(act.payload.theoryId ?? "");
+    if (!st.world.verdict?.theories.some((t) => t.id === theoryId)) return "Pick one of the theories.";
+    await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: "vote", payload: { theoryId }, flagged: false });
+    return null;
+  }
+  if (act.kind === "counter_vote") {
+    if (!(round?.type === "objection" && round.stage === "vote")) return "Voting is closed.";
+    await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: "counter_vote", payload: { sustain: act.payload.sustain === true }, flagged: false });
+    return null;
+  }
+  if (!me.squadId) return "Wait for your teacher to put you in a squad.";
+  if (round?.type === "objection" && round.objectSquadId !== me.squadId) return "The other squad is answering this objection.";
+  if (round?.type === "objection" && Date.now() > new Date(round.endsAt).getTime() + 3000) return "Time's up for this objection.";
+  const roles = rolesFor(members(st, me.squadId), Math.max(0, i));
+  const progress = squadProgress(round, st.responses, me.squadId, i);
+  if (!mayAct(round, roles, playerId, act.kind, progress)) return "That's another role's job right now.";
+  const role = (Object.entries(roles ?? {}).find(([r, pid]) => pid === playerId && roleFor(act.kind) === r)?.[0] ?? null) as Role | null;
+  let payload: Record<string, unknown> = {}, flagged = false;
+  if (act.kind === "pin") payload = { quote: String(act.payload.quote ?? "").slice(0, 1200), pid: String(act.payload.pid ?? "") };
+  else if (act.kind === "pins") {
+    const pins = Array.isArray(act.payload.pins) ? (act.payload.pins as { clueId?: unknown; quote?: unknown }[]).slice(0, 3).map((x) => ({ clueId: String(x.clueId ?? ""), quote: String(x.quote ?? "").slice(0, 1200) })) : [];
+    if (pins.length !== 3) return "Pin exactly 3 pieces of evidence.";
+    payload = { pins };
+  } else if (textKinds.includes(act.kind)) {
+    const text = String(act.payload.text ?? "").trim().slice(0, act.kind === "argument" ? 1200 : 400);
+    if (text.split(/\s+/).length < 3) return "Write a full sentence.";
+    // Every typed explanation is screened before it can reach the host screen; anything flagged goes to the teacher only.
+    flagged = (await screenArgument(text)) !== "ok";
+    payload = { text };
+  } else if (act.kind === "object") payload = { note: String(act.payload.note ?? "").slice(0, 200) };
+  else if (act.kind === "submit") payload = round?.type === "verdict" ? { theoryId: String(act.payload.theoryId ?? squadMajority(st, me.squadId) ?? "") } : {};
+  const saved = await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role, kind: act.kind, payload, flagged });
+  if (act.kind === "submit" && round?.type === "verdict") await judgeSquad(store, st, me.squadId, saved, deps);
+  return null;
+}
+const roleFor = (kind: ResponseKind): Role | null => kind === "pin" || kind === "pins" ? "keeper" : kind === "explain" || kind === "argument" ? "reporter" : kind === "approve" || kind === "object" ? "skeptic" : kind === "submit" ? "lead" : null;
+
+async function judgeSquad(store: LiveStore, st: LiveState, squadId: string, submit: LiveResponse, deps: { judgeAllowed: () => Promise<boolean> }) {
+  const i = st.session.roundIndex, all = [...st.responses, submit];
+  const p = squadProgress({ type: "verdict", stage: "argue" }, all, squadId, i);
+  const theory = st.world.verdict?.theories.find((t) => t.id === submit.payload.theoryId) ?? st.world.verdict?.theories[0];
+  let feedback = null;
+  if (theory && p.argument && !p.argument.flagged && (await deps.judgeAllowed().catch(() => false))) {
+    const clues = new Map(st.world.scenes.flatMap((x) => x.artifacts).map((a) => [a.id, a.name]));
+    const pins = (p.pins?.payload.pins ?? []) as { clueId?: string; quote: string }[];
+    feedback = await judgeWithRubric({ world: st.world, theory, argument: String(p.argument.payload.text), pinned: pins.map((x) => ({ clueName: clues.get(x.clueId ?? "") ?? "Evidence", quote: x.quote })) }).catch(() => null);
+  }
+  await store.addResponse(st.session.id, { roundIndex: i, squadId, playerId: null, role: "system", kind: "judged", payload: { feedback }, flagged: false });
+}
+
+// ---------- Joining ----------
+export async function join(store: LiveStore, session: StoredSession, input: { nickname: string; studentId: string | null }) {
+  if (session.status === "ended" || expired(session)) return { error: "This live round has ended." } as const;
+  const players = await store.listPlayers(session.id);
+  // A class student who joins again (another tab, a reload) is the same player.
+  if (input.studentId) { const mine = players.find((p) => p.studentId === input.studentId); if (mine) return { player: mine } as const; }
+  if (session.demo && players.length >= DEMO_ROOM.maxPlayers) return { error: "This demo room is full." } as const;
+  const p = await store.addPlayer(session.id, input);
+  if (p === "taken") return { error: "That detective name was just taken. Pick another." } as const;
+  return { player: p } as const;
+}
+

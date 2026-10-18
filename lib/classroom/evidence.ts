@@ -2,6 +2,7 @@
 // their explanation, and whether that line proved a character wrong. Built from each student's saved progress
 // (students.progress) and the class story's world pack. Shared by the teacher API, the sample classroom, and tests.
 import type { WorldPack } from "../world-schema.ts";
+import type { LiveRoundEvidence } from "../live/evidence.ts";
 
 // What a saved answer looks like in students.progress.artifactAnswers (only the fields this view reads).
 export type SavedAnswer = { notice?: string; interpret?: string; craft?: string; character?: string };
@@ -33,6 +34,8 @@ export type ClassEvidence = {
   students: EvidenceStudent[];
   // The story's verdict question and the standards it is aligned to, when the story has a Final Verdict.
   verdict?: { question: string; standards: string[] };
+  // Live rounds the class played: each squad's answer and result, and what each student did in their role.
+  live?: LiveRoundEvidence[];
   summary: { joined: number; totalClues: number; averageProven: number; provedWrongStudents: number; needsHelp: number; anyProven: boolean };
 };
 
@@ -138,6 +141,12 @@ export function evidenceCsv(e: ClassEvidence) {
    }
    // One row for the Final Verdict: theory, case strength, the pinned quotes and the closing argument.
    if (e.verdict) lines.push([s.nickname, "Final verdict", s.verdict?.theory ?? "Not yet", s.verdict ? (s.verdict.strength ?? "Saved without feedback") : "", (s.verdict?.pinned ?? []).map((p) => `${p.clue}: ${p.quote}`).join(" | "), s.verdict?.argument ?? "", "", ""].map(cell).join(","));
+  }
+  // Live rounds: a second table, one row per student per round (squads score together; no individual ranking).
+  if (e.live?.length) {
+    lines.push("", ["Live round", "Date", "Round type", "Prompt", "Squad", "Student", "Role actions", "Squad answer", "Squad explanation", "Flagged for review", "Squad result", "Squad points"].join(","));
+    for (const r of e.live) for (const sq of r.squads) for (const m of sq.members)
+      lines.push([String(r.number), r.date, r.type, r.prompt, sq.name, m.nickname, m.actions.join(" | "), sq.answer, sq.explanation, sq.flagged ? "Yes" : "", sq.result, String(sq.points)].map(cell).join(","));
   }
   return lines.join("\r\n");
 }

@@ -1133,3 +1133,166 @@ test("testimony and reply voices: each button stops only its own words, and the 
   toggleVoiceKey(channel,null,"hans",testimony,play("hans",testimony));channel.begin("narration","empty-schoolhouse",()=>{});
   assert.equal(live,0);assert.equal(channel.state.kind,"narration");
 });
+
+// ---------- Live class mode ----------
+async function liveKit(){
+  const engine=await import("../lib/live/engine.ts");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  let t=0;const at=()=>new Date(Date.UTC(2026,9,19,14,0,t++)).toISOString();
+  const rows:import("../lib/live/engine.ts").LiveResponse[]=[];
+  const add=(r:Omit<import("../lib/live/engine.ts").LiveResponse,"id"|"createdAt"|"flagged">&{flagged?:boolean})=>{const row={...r,flagged:r.flagged??false,id:`r${rows.length}`,createdAt:at()};rows.push(row);return row};
+  return {engine,world,rows,add};
+}
+
+test("live squads: groups of 3 or 4, dealt round-robin; roles rotate every round", async()=>{
+  const {engine}=await liveKit();
+  assert.deepEqual(engine.squadSizes(8),[4,4]);assert.deepEqual(engine.squadSizes(10),[4,3,3]);assert.deepEqual(engine.squadSizes(9),[3,3,3]);assert.deepEqual(engine.squadSizes(13),[4,3,3,3]);
+  assert.deepEqual(engine.squadSizes(3),[3]);assert.deepEqual(engine.squadSizes(0),[]);
+  const squads=engine.buildSquads(["a","b","c","d","e","f","g","h","i","j"]);
+  assert.deepEqual(squads.map(s=>s.length),[4,3,3]);assert.deepEqual(squads[0],["a","d","g","j"]);
+  // A squad of 4: one role each, and everyone's role changes next round.
+  const r0=engine.rolesFor(["a","b","c","d"],0)!,r1=engine.rolesFor(["a","b","c","d"],1)!;
+  assert.deepEqual(r0,{lead:"a",keeper:"b",skeptic:"c",reporter:"d"});
+  assert.ok(engine.ROLES.every(r=>r0[r]!==r1[r]));
+  // A squad of 3: someone holds two roles, and who that is rotates.
+  const holders=(n:number)=>{const r=engine.rolesFor(["a","b","c"],n)!;return ["a","b","c"].find(p=>engine.rolesOf(r,p).length===2)};
+  assert.deepEqual([0,1,2].map(holders),["a","b","c"]);
+  assert.equal(engine.squadPurpose("lie"),"Catch the false claim with one line from the story.");
+});
+
+test("live roles: a squad can't submit until every role has acted, and the Skeptic approves after the last change", async()=>{
+  const {engine,add,rows}=await liveKit();
+  const round={type:"lie" as const,sceneId:"empty-schoolhouse"};const roles=engine.rolesFor(["a","b","c","d"],0)!;
+  const progress=()=>engine.squadProgress(round,rows,"s1",0);
+  assert.deepEqual(progress().waitingFor,["keeper","reporter","skeptic","lead"]);
+  // Only the role holder may act: the Lead can't pin, and nobody can submit yet.
+  assert.equal(engine.mayAct(round,roles,"a","pin",progress()),false);
+  assert.equal(engine.mayAct(round,roles,"b","pin",progress()),true);
+  assert.equal(engine.mayAct(round,roles,"a","submit",progress()),false);
+  assert.equal(engine.mayAct(round,roles,"c","approve",progress()),false,"nothing to approve yet");
+  add({roundIndex:0,squadId:"s1",playerId:"b",role:"keeper",kind:"pin",payload:{quote:"a line"}});
+  add({roundIndex:0,squadId:"s1",playerId:"d",role:"reporter",kind:"explain",payload:{text:"This shows the claim is false."}});
+  assert.equal(engine.mayAct(round,roles,"c","approve",progress()),true);
+  add({roundIndex:0,squadId:"s1",playerId:"c",role:"skeptic",kind:"object",payload:{note:"wrong line"}});
+  assert.equal(progress().canSubmit,false);
+  // Fixing the evidence after an approval needs a fresh approval.
+  add({roundIndex:0,squadId:"s1",playerId:"c",role:"skeptic",kind:"approve",payload:{}});
+  assert.equal(progress().canSubmit,true);
+  add({roundIndex:0,squadId:"s1",playerId:"b",role:"keeper",kind:"pin",payload:{quote:"a better line"}});
+  assert.equal(progress().canSubmit,false);assert.deepEqual(progress().waitingFor,["skeptic","lead"]);
+  add({roundIndex:0,squadId:"s1",playerId:"c",role:"skeptic",kind:"approve",payload:{}});
+  assert.equal(engine.mayAct(round,roles,"a","submit",progress()),true);
+  add({roundIndex:0,squadId:"s1",playerId:"a",role:"lead",kind:"submit",payload:{}});
+  assert.equal(engine.mayAct(round,roles,"b","pin",progress()),false,"no changes after submitting");
+  // Every action records who did it and in which role.
+  assert.deepEqual(rows.map(r=>`${r.playerId}:${r.role}:${r.kind}`),["b:keeper:pin","d:reporter:explain","c:skeptic:object","c:skeptic:approve","b:keeper:pin","c:skeptic:approve","a:lead:submit"]);
+});
+
+test("live scoring: Spot the Lie rewards the right line and a sound explanation; speed is a small bonus on correct answers only", async()=>{
+  const {engine,world,add,rows}=await liveKit();
+  const lie=world.scenes[0].lie!;
+  const submit=(squad:string,quote:string,text:string)=>{add({roundIndex:0,squadId:squad,playerId:`${squad}k`,role:"keeper",kind:"pin",payload:{quote}});add({roundIndex:0,squadId:squad,playerId:`${squad}r`,role:"reporter",kind:"explain",payload:{text}});add({roundIndex:0,squadId:squad,playerId:`${squad}s`,role:"skeptic",kind:"approve",payload:{}});add({roundIndex:0,squadId:squad,playerId:`${squad}l`,role:"lead",kind:"submit",payload:{}})};
+  submit("fast-wrong","The brook was searched, but the body of the schoolmaster was not to be discovered.","Hans was wrong about everything in the bundle he found.");
+  submit("right-sound",lie.truth_line,"Hans said the pitch-pipe was brand-new, but the story says it was broken.");
+  submit("right-thin",lie.truth_line,"Because.");
+  const squads=["fast-wrong","right-sound","right-thin","silent"].map((id,position)=>({id,name:id,position}));
+  const scores=Object.fromEntries(engine.scoreLieRound(lie,squads,rows,0).map(s=>[s.squadId,s]));
+  assert.equal(scores["fast-wrong"].points,0,"speed never rewards a wrong answer");
+  assert.equal(scores["right-sound"].points,100+10);
+  assert.equal(scores["right-thin"].points,50+7,"the right line alone earns half");
+  assert.equal(scores["silent"].points,0);
+  assert.equal(engine.soundExplanation("Hans said the pitch-pipe was brand-new, but the story says it was broken.",lie),true);
+  assert.equal(engine.soundExplanation("I think it is this one because it is.",lie),false);
+  // The teacher can mark an explanation sound or not at the reveal.
+  add({roundIndex:0,squadId:"right-thin",playerId:null,role:"host",kind:"override",payload:{key:"sound",value:true}});
+  assert.equal(engine.scoreLieRound(lie,squads,rows,0).find(s=>s.squadId==="right-thin")!.points,100+7);
+});
+
+test("live scoring: Verdict Vote scores the judge's case strength; Objection! is decided by the class vote or the teacher", async()=>{
+  const {engine,world,add,rows}=await liveKit();
+  const squads=[{id:"s1",name:"Squad Lantern",position:0},{id:"s2",name:"Squad Quill",position:1}];
+  for(const p of ["a","b","c"])add({roundIndex:0,squadId:"s1",playerId:p,role:null,kind:"vote",payload:{theoryId:"brom-prank"}});
+  add({roundIndex:0,squadId:"s2",playerId:"d",role:null,kind:"vote",payload:{theoryId:"ran-away"}});
+  add({roundIndex:0,squadId:"s1",playerId:"a",role:null,kind:"vote",payload:{theoryId:"ran-away"}});// a changed their vote
+  assert.deepEqual(engine.tallyVotes(world,rows,0).map(v=>v.votes),[2,0,2]);
+  const argue=(sq:string,theory:string,text:string)=>{add({roundIndex:0,squadId:sq,playerId:`${sq}k`,role:"keeper",kind:"pins",payload:{pins:[{quote:"q1"},{quote:"q2"},{quote:"q3"}]}});add({roundIndex:0,squadId:sq,playerId:`${sq}r`,role:"reporter",kind:"argument",payload:{text}});add({roundIndex:0,squadId:sq,playerId:`${sq}s`,role:"skeptic",kind:"approve",payload:{}});add({roundIndex:0,squadId:sq,playerId:`${sq}l`,role:"lead",kind:"submit",payload:{theoryId:theory}})};
+  argue("s1","brom-prank","Brom did it. He wanted Katrina.");argue("s2","ran-away","Ichabod left. He was turned down.");
+  add({roundIndex:0,squadId:"s1",playerId:null,role:"system",kind:"judged",payload:{feedback:{strength:"Strong",strength_note:"x",next_step:"y"}}});
+  add({roundIndex:0,squadId:"s2",playerId:null,role:"system",kind:"judged",payload:{feedback:null}});
+  const v=engine.scoreVerdictRound(squads,rows,0);
+  assert.deepEqual(v.map(x=>x.points),[100,50],"judge unavailable: saved for 50");
+  assert.deepEqual([...engine.strongestByTheory(v).keys()].sort(),["brom-prank","ran-away"]);
+  // Objection!
+  const round={type:"objection" as const,stage:"vote" as const,defendSquadId:"s1",objectSquadId:"s2",pin:{quote:"q1"},endsAt:new Date().toISOString()};
+  add({roundIndex:1,squadId:"s2",playerId:"s2k",role:"keeper",kind:"pin",payload:{quote:"a counter line"}});add({roundIndex:1,squadId:"s2",playerId:"s2r",role:"reporter",kind:"explain",payload:{text:"This line shows Brom was home."}});add({roundIndex:1,squadId:"s2",playerId:"s2s",role:"skeptic",kind:"approve",payload:{}});add({roundIndex:1,squadId:"s2",playerId:"s2l",role:"lead",kind:"submit",payload:{}});
+  for(const [p,s] of [["a",true],["b",true],["c",false]] as const)add({roundIndex:1,squadId:null,playerId:p,role:null,kind:"counter_vote",payload:{sustain:s}});
+  let o=engine.objectionResult(round,rows,1);
+  assert.equal(o.sustained,true);assert.deepEqual(o.scores,[{squadId:"s2",points:60},{squadId:"s1",points:0}]);
+  add({roundIndex:1,squadId:null,playerId:null,role:"host",kind:"override",payload:{key:"objection",value:false}});
+  o=engine.objectionResult(round,rows,1);
+  assert.equal(o.sustained,false);assert.equal(o.overridden,true);assert.deepEqual(o.scores,[{squadId:"s2",points:0},{squadId:"s1",points:40}]);
+});
+
+test("live boards rank classes, never students; guests pick generated nicknames", async()=>{
+  const {engine}=await liveKit();
+  const now=new Date("2026-10-19T12:00:00Z");
+  const board=engine.classBoard([{classId:"p1",className:"Period 1",createdAt:"2026-10-18T10:00:00Z",points:300},{classId:"p2",className:"Period 2",createdAt:"2026-10-17T10:00:00Z",points:450},{classId:"p1",className:"Period 1",createdAt:"2026-10-19T09:00:00Z",points:200},{classId:"p2",className:"Period 2",createdAt:"2026-10-01T10:00:00Z",points:999}],now);
+  assert.deepEqual(board.map(b=>[b.className,b.points,b.rounds]),[["Period 1",500,2],["Period 2",450,1]],"last week only");
+  assert.ok(board.every(b=>Object.keys(b).sort().join()==="classId,className,points,rounds"),"no student fields");
+  const names=engine.nicknameChoices(42,[]);
+  assert.equal(names.length,3);assert.ok(names.every(engine.isGeneratedNickname));
+  assert.equal(engine.isGeneratedNickname("Jordan Smith"),false);
+  assert.ok(!engine.nicknameChoices(42,[names[0]]).includes(names[0]));
+});
+
+test("live server: tokens, joining, role-gated actions, moderation and the per-session judge", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {memoryLiveStore}=await import("../lib/live/store.ts");
+  const server=await import("../lib/live/server.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const host=server.newHostToken();
+  const s=await store.createSession({code:"TEST01",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:server.hashHostToken(host),expiresAt:new Date(Date.now()+36e5).toISOString()});
+  assert.equal(server.isHost(s,host),true);assert.equal(server.isHost(s,"guess"),false);
+  const ids:string[]=[];
+  for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven","Agent Quill"]){const r=await server.join(store,s,{nickname:n,studentId:null});assert.ok(r.player);ids.push(r.player.id)}
+  assert.deepEqual(await server.join(store,s,{nickname:"Detective Owl",studentId:null}),{error:"That detective name was just taken. Pick another."});
+  const tok=server.playerToken(s.id,ids[0]);assert.equal(server.playerFromToken(s.id,tok),ids[0]);assert.equal(server.playerFromToken("other",tok),null);
+  let st=(await server.loadState(store,s.id))!;
+  assert.equal(await server.hostAct(store,st,{action:"squads.auto"}),null);
+  st=(await server.loadState(store,s.id))!;
+  assert.equal(await server.hostAct(store,st,{action:"round.start",type:"lie",sceneId:"empty-schoolhouse"}),null);
+  st=(await server.loadState(store,s.id))!;
+  const roles=server.hostView(st).squads[0].members;
+  const who=(r:string)=>roles.find(m=>m.roles.includes(r as never))!.id;
+  const act=async(pid:string,kind:string,payload:Record<string,unknown>={})=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,pid,{kind:kind as never,payload},{judgeAllowed:async()=>false})};
+  assert.equal(await act(who("lead"),"pin",{quote:"x"}),"That's another role's job right now.");
+  const lie=st.world.scenes[0].lie!;
+  assert.equal(await act(who("keeper"),"pin",{quote:lie.truth_line,pid:lie.truth_paragraph}),null);
+  // A flagged explanation is kept for the teacher but hidden from the host screen.
+  assert.equal(await act(who("reporter"),"explain",{text:"tell me your home address now please"}),null);
+  st=(await server.loadState(store,s.id))!;
+  assert.equal(st.responses.find(r=>r.kind==="explain")!.flagged,true);
+  assert.equal(server.playerView(st,who("skeptic")).progress!.explanation,"Hidden for the teacher to review.");
+  assert.equal(server.hostView(st).flagged,1);
+});
+
+test("live evidence: per-student role actions and squad answers, in the Evidence view and the CSV", async()=>{
+  const {world,add,rows}=await liveKit();
+  const {liveRoundEvidence}=await import("../lib/live/evidence.ts");
+  const {evidenceCsv}=await import("../lib/classroom/evidence.ts");
+  const lie=world.scenes[0].lie!;
+  add({roundIndex:0,squadId:"s1",playerId:"p2",role:"keeper",kind:"pin",payload:{quote:lie.truth_line}});
+  add({roundIndex:0,squadId:"s1",playerId:"p3",role:"reporter",kind:"explain",payload:{text:"Hans said the pitch-pipe was brand-new, but the story says it was broken."}});
+  add({roundIndex:0,squadId:"s1",playerId:"p1",role:"skeptic",kind:"approve",payload:{}});
+  add({roundIndex:0,squadId:"s1",playerId:"p1",role:"lead",kind:"submit",payload:{}});
+  const players=[{id:"p1",nickname:"Ana R.",squadId:"s1",studentId:"st1",joinedAt:""},{id:"p2",nickname:"Ben T.",squadId:"s1",studentId:"st2",joinedAt:""},{id:"p3",nickname:"Cy L.",squadId:"s1",studentId:"st3",joinedAt:""}];
+  const session={id:"L1",code:"ABCDEF",worldId:"sleepy-hollow",classId:"c1",demo:false,status:"reveal" as const,paused:false,roundIndex:0,rounds:[{type:"lie" as const,sceneId:world.scenes[0].id}],roundStartedAt:null,createdAt:"2026-10-19T14:00:00Z",expiresAt:""};
+  const live=liveRoundEvidence({session,world,squads:[{id:"s1",name:"Squad Lantern",position:0}],players,responses:rows});
+  assert.equal(live.length,1);assert.equal(live[0].type,"Live Spot the Lie");
+  const sq=live[0].squads[0];
+  assert.equal(sq.points,110);assert.equal(sq.answer,lie.truth_line);
+  assert.deepEqual(sq.members.map(m=>[m.nickname,m.actions.length]),[["Ana R.",2],["Ben T.",1],["Cy L.",1]]);
+  assert.match(sq.members[0].actions.join(),/Skeptic: approved,Lead Investigator: submitted/);
+  const csv=evidenceCsv({story:{id:"x",title:"x"},scenes:[],students:[],summary:{joined:0,totalClues:0,averageProven:0,provedWrongStudents:0,needsHelp:0,anyProven:false},live});
+  assert.match(csv,/Live round,Date,Round type/);assert.equal(csv.split("\r\n").filter(l=>l.startsWith("1,2026-10-19")).length,3);
+});
