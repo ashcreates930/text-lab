@@ -2,22 +2,24 @@
 // Game layer for the case flow: scene progress, detective ranks, the Fact Checker badge, the stamp sound, and ambient scene motion.
 // Progress is kept on this device only (localStorage). Nothing here is sent to a server.
 import {useEffect,useState} from "react";
-import {Award,ShieldCheck} from "lucide-react";
+import {Award,Gavel,ShieldCheck} from "lucide-react";
 
 const KEY="textlab-progress-v1",EVENT="textlab-progress";
-type Progress={scenes:string[];factChecks:string[]};
+type Progress={scenes:string[];factChecks:string[];closingArguments:string[]};
 export const RANKS=[{min:0,name:"Witness"},{min:1,name:"Investigator"},{min:4,name:"Lead Detective"},{min:8,name:"Case Closer"}] as const;
 export function rankFor(solved:number){return [...RANKS].reverse().find(r=>solved>=r.min)!.name}
 export function nextRank(solved:number){return RANKS.find(r=>r.min>solved)??null}
 
-function empty():Progress{return {scenes:[],factChecks:[]}}
-export function loadProgress():Progress{try{const p=JSON.parse(localStorage.getItem(KEY)||"{}");return {scenes:Array.isArray(p.scenes)?p.scenes:[],factChecks:Array.isArray(p.factChecks)?p.factChecks:[]}}catch{return empty()}}
+function empty():Progress{return {scenes:[],factChecks:[],closingArguments:[]}}
+export function loadProgress():Progress{try{const p=JSON.parse(localStorage.getItem(KEY)||"{}");return {scenes:Array.isArray(p.scenes)?p.scenes:[],factChecks:Array.isArray(p.factChecks)?p.factChecks:[],closingArguments:Array.isArray(p.closingArguments)?p.closingArguments:[]}}catch{return empty()}}
 function store(p:Progress){try{localStorage.setItem(KEY,JSON.stringify(p))}catch{}try{window.dispatchEvent(new Event(EVENT))}catch{}}
 
 /** Records a solved scene. Returns the new rank name when the student moved up, otherwise null. */
 export function recordScene(key:string):string|null{const p=loadProgress();if(p.scenes.includes(key))return null;const before=rankFor(p.scenes.length);p.scenes.push(key);store(p);const after=rankFor(p.scenes.length);return after!==before?after:null}
 /** Records a Fact Checker moment (the student used the story to prove a character wrong). Returns true the first time for this clue. */
 export function recordFactCheck(key:string){const p=loadProgress();if(p.factChecks.includes(key))return false;p.factChecks.push(key);store(p);return true}
+/** Records a completed Final Verdict (the Closing Argument badge). Returns true the first time for this story. */
+export function recordClosingArgument(key:string){const p=loadProgress();if(p.closingArguments.includes(key))return false;p.closingArguments.push(key);store(p);return true}
 
 export function useProgress(){
  const [p,setP]=useState<Progress>(empty);
@@ -29,6 +31,10 @@ export function RankChip({className=""}:{className?:string}){
  const p=useProgress(),solved=p.scenes.length,rank=rankFor(solved),next=nextRank(solved);
  const hint=next?`${next.min-solved} more scene${next.min-solved===1?"":"s"} to ${next.name}`:"Top rank";
  return <span title={hint} className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-[#2A2620] px-3 py-1 text-[14px] font-semibold text-white ${className}`}><Award size={15} className="text-[#F3C9B2]"/>{rank}<span className="sr-only">. {hint}.</span></span>;
+}
+
+export function ClosingArgumentBadge(){
+ return <span className="inline-flex items-center gap-2 rounded-full border-2 border-[#2A2620] bg-[#EFE8D8] px-3 py-1 text-[14px] font-bold text-[#2A2620]"><Gavel size={16}/>Closing Argument</span>;
 }
 
 export function FactCheckerBadge({count}:{count:number}){

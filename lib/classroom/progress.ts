@@ -40,6 +40,19 @@ export const StudentProgressSchema = z.object({
   storyFrames: z.record(id, frame).default({}),
   // The option chosen at each scene's choice point (scene id -> option id). Older saves don't have it.
   choices: z.record(id, id).optional(),
+  // Spot the Lie, per scene (scene id -> result). Older saves don't have it.
+  lies: z.record(id, z.object({ clue_id: id, caught: z.boolean(), misses: z.number().int().min(0).max(100), caught_at: text(40).optional() })).optional(),
+  // The Final Verdict: theory, the three pinned clues with their quotes, the closing argument, and the judge's feedback
+  // (null when the judge was unavailable and the verdict was saved without it). Older saves don't have it.
+  verdict: z.object({
+    world_id: id,
+    theory_id: id,
+    pinned: z.array(z.object({ clue_id: id, quote: text(3000) })).length(3),
+    argument: text(1500),
+    feedback: z.object({ strength: z.enum(["Strong", "Solid", "Needs more evidence"]), strength_note: text(400), next_step: text(400) }).nullable(),
+    submissions: z.number().int().min(1).max(5),
+    saved_at: text(40),
+  }).optional(),
   updatedAt: text(40),
 });
 export type StudentProgress = z.infer<typeof StudentProgressSchema>;

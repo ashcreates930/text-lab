@@ -800,7 +800,17 @@
           "start": "p001",
           "end": "p076"
         }
-      ]
+      ],
+      "lie": {
+        "clue_id": "mr-hales-account",
+        "character_id": "mr-hale",
+        "testimony": "Harry and I were driving to town that morning with a load of corn. I stopped at the Wright place to ask John about getting a party telephone. I knocked twice before I went in.",
+        "false_claim": "Harry and I were driving to town that morning with a load of corn.",
+        "truth_paragraph": "p019",
+        "truth_line": "Harry and I had started to town with a load of potatoes.",
+        "explanation": "Mr. Hale said they were carrying corn, but the story says it was a load of potatoes.",
+        "topic": "what Mr. Hale was taking to town"
+      }
     },
     {
       "id": "minnie-foster",
@@ -1233,7 +1243,17 @@
           "start": "p077",
           "end": "p240"
         }
-      ]
+      ],
+      "lie": {
+        "clue_id": "apron-and-shawl",
+        "character_id": "mrs-peters",
+        "testimony": "Mrs. Wright asked me to bring her an apron and her little shawl. She said the apron was in the bottom drawer of the cupboard. I found the shawl hanging behind the door.",
+        "false_claim": "She said the apron was in the bottom drawer of the cupboard.",
+        "truth_paragraph": "p127",
+        "truth_line": "She said they was in the top drawer in this cupboard.",
+        "explanation": "Mrs. Peters said the apron was in the bottom drawer, but the story says it was in the top drawer.",
+        "topic": "where the apron was kept"
+      }
     },
     {
       "id": "the-law-and-the-women",
@@ -1666,7 +1686,17 @@
           "start": "p241",
           "end": "p300"
         }
-      ]
+      ],
+      "lie": {
+        "clue_id": "two-kinds-of-crime",
+        "character_id": "mrs-peters",
+        "testimony": "Mrs. Hale knew Minnie Foster long ago, before she married. She told me Minnie used to wear a red dress with yellow ribbons. Back then, Minnie sang in the choir.",
+        "false_claim": "She told me Minnie used to wear a red dress with yellow ribbons.",
+        "truth_paragraph": "p298",
+        "truth_line": "I wish you’d seen Minnie Foster when she wore a white dress with blue ribbons and stood up there in the choir and sang.",
+        "explanation": "Mrs. Peters said Minnie wore a red dress with yellow ribbons, but the story says it was a white dress with blue ribbons.",
+        "topic": "what Minnie Foster wore in the choir"
+      }
     },
     {
       "id": "the-last-word",
@@ -2080,7 +2110,17 @@
           "start": "p301",
           "end": "p334"
         }
-      ]
+      ],
+      "lie": {
+        "clue_id": "married-to-the-law",
+        "character_id": "mr-hale",
+        "testimony": "The county attorney laughed at the apron the women picked out for Mrs. Wright. He joked that a sheriff's wife is married to the law. Then he called the sheriff into the other room to look at the back door.",
+        "false_claim": "Then he called the sheriff into the other room to look at the back door.",
+        "truth_paragraph": "p323",
+        "truth_line": "We ought to take a look at these windows.",
+        "explanation": "Mr. Hale said they went to look at the back door, but the story says they went to look at the windows.",
+        "topic": "what the men went to look at"
+      }
     }
   ],
   "recall_checks": [
@@ -3628,6 +3668,26 @@
         "definition": "in a joking or playful way",
         "es_term": "facetiosamente",
         "es_definition": "de manera bromista o juguetona"
+      }
+    ]
+  },
+  "verdict": {
+    "question": "Should Mrs. Hale and Mrs. Peters have hidden the evidence?",
+    "theories": [
+      {
+        "id": "yes-fair",
+        "name": "Yes, it was fair",
+        "description": "They understood how lonely and mistreated Minnie was, and hiding the bird kept her story from being used against her."
+      },
+      {
+        "id": "no-law-first",
+        "name": "No, the law comes first",
+        "description": "Hiding evidence was wrong; the truth should go to court so the law can decide fairly."
+      },
+      {
+        "id": "stood-by-minnie",
+        "name": "They stood by Minnie",
+        "description": "The men laughed at the women and ignored what they noticed, so the women chose to stand by Minnie instead."
       }
     ]
   }

@@ -57,6 +57,8 @@ export type Demo = {
   readerProgress?:Record<string,import("./storybook/reader").ReaderProgress>;
   // The option chosen at each scene's choice point (scene id -> option id).
   choices?:Record<string,string>; classProgressLoaded?:boolean;
+  // Spot the Lie results per scene, and the Final Verdict (see lib/lies.ts and lib/verdict.ts).
+  lies?:Record<string,import("@/lib/lies").LieRecord>; verdict?:import("@/lib/verdict").SavedVerdict;
   storyFrames?:Record<string,{kind:"add_detail"|"student";description:string;quote:string;saved_at:string;image?:string;check?:{ok:boolean;notes:string[]}}>;
 };
 type ScreenSnapshot = { insideTheTextScreen: true; sequence: number; view: View; demo: Demo };
