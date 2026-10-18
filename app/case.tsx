@@ -2,7 +2,7 @@
 // The simplified student flow: land in the scene, open a clue, ask a character, prove it with a line from the story.
 // Adults (teacher or parent) choose the story, grade and language; students never see those settings.
 import {useEffect,useMemo,useRef,useState} from "react";
-import {PlayCircle,ArrowLeft,ArrowRight,BookOpen,Check,ChevronDown,LayoutGrid,Lock,MessageCircle,Printer,Quote,Search,Volume2} from "lucide-react";
+import {PlayCircle,ArrowLeft,ArrowRight,BookOpen,Check,ChevronDown,LayoutGrid,Lock,MessageCircle,Printer,Quote,Search,Square,Volume2} from "lucide-react";
 import {WorldPackSchema,type WorldPack} from "@/lib/world-schema";
 import {parseSourcePassages,type SourcePassage} from "@/lib/source-passages";
 import type {Demo} from "./page";
@@ -16,6 +16,8 @@ import {useLayoutEffect} from "react";
 import {AmbientPlayer,CaseBoard,CaseBoardDialog,ConsequenceMoment,Portrait,SoundToggle,useCharacterVoice,useSoundPref} from "./game-feel";
 import {choicesMade} from "@/lib/game-feel";
 import {focusScreenTop} from "./screen-focus";
+import {listenButton,narrationParts,playNarration,sceneReading} from "@/lib/narration";
+import {browserNarration,soundChannel,useSoundChannel} from "./sound-player";
 const STORYBOOK_ON=false;
 
 function sentences(text:string){return (text.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g)??[text]).map(s=>s.trim()).filter(Boolean)}
@@ -60,10 +62,16 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue
  const locked=(a:Clue)=>!!a.unlock_condition?.startsWith("artifact:")&&!isDone(demo,a.unlock_condition.slice(9));
  const next=scene.artifacts.find(a=>!isDone(demo,a.id)&&!locked(a));
  const last=sceneIndex===world.scenes.length-1;
- const readingText=passages.filter(p=>scene.passage_anchors.includes(p.id));
+ const readingText=sceneReading(passages,scene);
+ // "Listen to the scene" reads the paragraphs in the reading panel, one at a time, highlighting each. It stops when the
+ // student opens a clue, moves to another scene, leaves the case or switches language.
+ const listening=listenButton(useSoundChannel(),scene.id);
+ const paragraphRefs=useRef<(HTMLParagraphElement|null)[]>([]);
+ useEffect(()=>()=>{if(soundChannel.state.kind==="narration")soundChannel.stop()},[scene.id,demo.homeLanguage]);
+ useEffect(()=>{const el=paragraphRefs.current[listening.part];if(!el)return;const still=window.matchMedia("(prefers-reduced-motion: reduce)").matches;el.scrollIntoView({block:"nearest",behavior:still?"auto":"smooth"})},[listening.part]);
  function goNext(){setDemo(d=>({...d,scene:d.scene+1,events:[...d.events,"scene_complete"]}));window.scrollTo({top:0})}
  function finish(){playStamp(250);setDemo(d=>({...d,submitted:true,events:[...d.events,"case_closed"]}));window.scrollTo({top:0})}
- function listen(){if(scene.narration_audio){new Audio(scene.narration_audio).play().catch(()=>{});return}const u=new SpeechSynthesisUtterance(scene.narration);u.rate=.92;speechSynthesis.cancel();speechSynthesis.speak(u)}
+ function listen(){if(listening.playing){soundChannel.stop();return}setReading(true);playNarration(soundChannel,scene.id,narrationParts(world.id,scene,passages),browserNarration)}
  const nextImage=world.scenes[sceneIndex+1]?.background_image??scene.background_image;
  return <div className="case-ui mx-auto max-w-6xl px-4 pb-24 pt-6 md:px-8">
   <AmbientPlayer src={moment?null:scene.ambient_audio} on={ambientOn}/>
@@ -105,9 +113,9 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,onOpenClue
    </section>
    <aside className="space-y-3">
     <button onClick={()=>setBoardOpen(true)} className="case-secondary w-full"><LayoutGrid size={18}/> Case board</button>
-    <div className="flex flex-wrap items-center gap-2"><button onClick={listen} className="case-secondary flex-1"><Volume2 size={18}/> Listen to the scene</button>{scene.ambient_audio&&<SoundToggle on={ambientOn} onToggle={toggleAmbient} label="Sound"/>}</div>
+    <div className="flex flex-wrap items-center gap-2"><button onClick={listen} className="case-secondary flex-1">{listening.playing?<Square size={16} fill="currentColor"/>:<Volume2 size={18}/>} {listening.label}</button>{scene.ambient_audio&&<SoundToggle on={ambientOn} onToggle={toggleAmbient} label="Sound"/>}</div>
     <button onClick={()=>setReading(v=>!v)} aria-expanded={reading} className="case-secondary w-full"><BookOpen size={18}/> {reading?"Hide":"Read"} this part of the story <ChevronDown size={16} className={`ml-auto transition ${reading?"rotate-180":""}`}/></button>
-    {reading&&<div className="max-h-[60vh] space-y-4 overflow-y-auto rounded-2xl bg-[#FFFDF8] p-5 font-serif text-[17px] leading-8 text-[#2A2620] shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]">{readingText.map(p=><p key={p.id}>{p.text}</p>)}{!readingText.length&&<p className="text-[#6B6457]">The story text is loading.</p>}</div>}
+    {reading&&<div className="max-h-[60vh] space-y-4 overflow-y-auto rounded-2xl bg-[#FFFDF8] p-5 font-serif text-[17px] leading-8 text-[#2A2620] shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]">{readingText.map((p,i)=><p key={p.id} ref={el=>{paragraphRefs.current[i]=el}} aria-current={listening.part===i||undefined} className={`-mx-2 rounded-lg px-2 transition-colors motion-reduce:transition-none ${listening.part===i?"bg-[#F3E2D6]":""}`}>{p.text}</p>)}{!readingText.length&&<p className="text-[#6B6457]">The story text is loading.</p>}</div>}
     {scene.summary&&<div className="rounded-2xl bg-[#EFE8D8] p-5"><p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">What happens here</p><p className="mt-2 text-[15px] leading-6 text-[#4A4438]">{scene.summary}</p><HomeText text={scene.summary} className="text-[15px]"/></div>}
    </aside>
   </div>

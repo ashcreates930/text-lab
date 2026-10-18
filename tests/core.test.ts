@@ -567,3 +567,66 @@ test("game layer: ambient loops have no seam and every track is brought to the s
   assert.ok(Math.abs(level(quiet,ambientLevelGain([quiet],sr))-level(loud,ambientLevelGain([loud],sr)))<1);
   assert.equal(ambientLevelGain([new Float32Array(sr)],sr),1);
 });
+
+test("sound channel: only one sound plays at a time; starting a new one stops the current one", async()=>{
+  const {createSoundChannel}=await import("../lib/sound-channel.ts");
+  const channel=createSoundChannel(),stopped:string[]=[];
+  const reading=channel.begin("narration","empty-schoolhouse",()=>stopped.push("narration"));
+  assert.deepEqual(channel.state,{kind:"narration",id:"empty-schoolhouse",part:-1});
+  // Pressing Listen again, or replaying a character while the scene is read, starts a new sound: the old one stops.
+  const voice=channel.begin("voice","brom-bones",()=>stopped.push("voice"));
+  assert.deepEqual(stopped,["narration"]);
+  assert.equal(reading.active,false);
+  reading.part(3);reading.end(); // reports from a stopped sound are ignored
+  assert.deepEqual(channel.state,{kind:"voice",id:"brom-bones",part:-1});
+  channel.stop();
+  assert.deepEqual(stopped,["narration","voice"]);
+  assert.equal(voice.active,false);
+  assert.equal(channel.state.kind,null);
+});
+
+test("narration reads exactly the reading panel's paragraphs for every scene, one file per paragraph", async()=>{
+  const {sceneReading,narrationParts}=await import("../lib/narration.ts");
+  const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  for(const id of ["sleepy-hollow","trifles","tell-tale-heart"]){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    const passages=parseSourcePassages(await readFile(new URL(`../worlds/${id}/source.md`,import.meta.url),"utf8"));
+    for(const scene of world.scenes){
+      const panel=sceneReading(passages,scene),parts=narrationParts(id,scene,passages);
+      assert.ok(panel.length>0,`${id}/${scene.id} has no reading`);
+      assert.deepEqual(parts.map(p=>p.text),panel.map(p=>p.text));
+      assert.deepEqual(parts.map(p=>p.src),panel.map(p=>`/worlds/${id}/narration/${scene.id}/${p.id}.mp3`));
+    }
+  }
+  // The panel's paragraphs are the scene's anchors, in story order.
+  assert.deepEqual(sceneReading([{id:"p001",text:"a"},{id:"p002",text:"b"},{id:"p003",text:"c"}],{passage_anchors:["p003","p001"]}).map(p=>p.id),["p001","p003"]);
+});
+
+test("Listen button: Stop reading only while this scene's narration plays; missing files fall back to speech", async()=>{
+  const {createSoundChannel}=await import("../lib/sound-channel.ts");
+  const {listenButton,playNarration}=await import("../lib/narration.ts");
+  const {ambientVolumeFor,AMBIENT_VOLUME}=await import("../lib/game-feel.ts");
+  const channel=createSoundChannel();
+  assert.deepEqual(listenButton(channel.state,"s1"),{playing:false,label:"Listen to the scene",part:-1});
+  const heard:string[]=[];let release=()=>{};
+  const io={
+    clip:(src:string,signal:AbortSignal)=>new Promise<boolean>(resolve=>{
+      if(src.endsWith("p2.mp3"))return resolve(false); // this paragraph's file is missing
+      heard.push(`file ${src.split("/").pop()}`);release=()=>resolve(true);signal.addEventListener("abort",()=>resolve(true));
+    }),
+    speak:async(text:string)=>{heard.push(`speech ${text}`)},
+  };
+  const parts=["p1","p2","p3"].map(id=>({id,text:`text ${id}`,src:`/worlds/w/narration/s1/${id}.mp3`}));
+  const done=playNarration(channel,"s1",parts,io);
+  assert.deepEqual(listenButton(channel.state,"s1"),{playing:true,label:"Stop reading",part:0});
+  assert.equal(listenButton(channel.state,"s2").playing,false);
+  assert.equal(ambientVolumeFor(channel.state),AMBIENT_VOLUME/3);
+  release();await new Promise(r=>setTimeout(r,0));
+  assert.equal(channel.state.part,2);
+  assert.deepEqual(heard,["file p1.mp3","speech text p2","file p3.mp3"]);
+  // Pressing Stop reading stops it at once, and the button goes back to Listen.
+  channel.stop();await done;
+  assert.deepEqual(listenButton(channel.state,"s1"),{playing:false,label:"Listen to the scene",part:-1});
+  assert.equal(ambientVolumeFor(channel.state),AMBIENT_VOLUME);
+  assert.equal(heard.length,3);
+});

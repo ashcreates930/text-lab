@@ -3,6 +3,8 @@ import { join } from "node:path";
 import nextEnv from "@next/env";
 import OpenAI from "openai";
 import { WorldPackSchema } from "../lib/world-schema.ts";
+import { parseSourcePassages } from "../lib/source-passages.ts";
+import { narrationParts } from "../lib/narration.ts";
 const { loadEnvConfig } = nextEnv;
 loadEnvConfig(process.cwd());
 const root=join(process.cwd(),"worlds"),publicRoot=join(process.cwd(),"public","worlds");
@@ -39,6 +41,40 @@ const ambientPrompts:Record<string,string>={
   "tell-tale-heart/room":"A dark, still bedroom late at night: deep quiet, a pocket watch ticking softly, a faint draft, an old house settling.",
   "tell-tale-heart/confession":"A quiet room with a few people sitting still: a low muffled ticking like a watch wrapped in cloth, chairs creaking, faint daylight street sounds outside.",
 };
+// --narration: the scene's own reading, read aloud by the narrator voice, one file per paragraph, saved to
+// public/worlds/<story>/narration/<scene>/<paragraph>.mp3. It reads exactly the paragraphs in "Read this part of the
+// story" (lib/narration.ts). Files that already exist are kept, so a run stopped by the monthly character limit picks up
+// where it left off; --force records them again. Takes --world=<id,...> and --scene=<id>. The app reads any paragraph
+// without a file with the browser's own speech, so nothing breaks while files are missing.
+if(process.argv.includes("--narration")){
+  if(!elevenLabsKey)throw new Error("ELEVENLABS_API_KEY is required for narration.");
+  const voice=process.env.ELEVENLABS_NARRATOR_VOICE?.trim()||"onwK4e9ZLuTAKqWW03F9";
+  const force=process.argv.includes("--force");let made=0,kept=0,chars=0;
+  for(const id of (selectedWorld??"sleepy-hollow,trifles,tell-tale-heart").split(",")){
+    const pack=WorldPackSchema.parse(JSON.parse(await readFile(join(root,id,"world.json"),"utf8")));
+    const passages=parseSourcePassages(await readFile(join(root,id,"source.md"),"utf8"));
+    for(const scene of pack.scenes){
+      if(selectedScene&&scene.id!==selectedScene)continue;
+      const parts=narrationParts(id,scene,passages);
+      await mkdir(join(publicRoot,id,"narration",scene.id),{recursive:true});
+      for(const [i,part] of parts.entries()){
+        const file=join(process.cwd(),"public",part.src);
+        if(!force){try{await readFile(file);kept++;continue}catch{}}
+        const res=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voice)}`,{method:"POST",headers:{"xi-api-key":elevenLabsKey,"Content-Type":"application/json","Accept":"audio/mpeg"},body:JSON.stringify({text:part.text,model_id:"eleven_turbo_v2_5",voice_settings:{stability:0.6,similarity_boost:0.75},previous_text:parts[i-1]?.text.slice(-400),next_text:parts[i+1]?.text.slice(0,400)})});
+        if(!res.ok){
+          const detail=(await res.text()).slice(0,200);
+          console.log(`Stopped at ${id}/${scene.id}/${part.id} (${res.status}): ${detail}`);
+          console.log(`Recorded ${made} paragraph(s) (${chars} characters); ${kept} already existed. Run the same command again to continue.`);
+          process.exit(1);
+        }
+        await writeFile(file,Buffer.from(await res.arrayBuffer()));made++;chars+=part.text.length;
+        console.log(`Narration ${id}/${scene.id}/${part.id}.mp3 · ${part.text.length} characters`);
+      }
+    }
+  }
+  console.log(`Done. Recorded ${made} paragraph(s) (${chars} characters); ${kept} already existed.`);
+  process.exit(0);
+}
 if(portraitsMode||ambientMode){
   const worlds=(selectedWorld??"sleepy-hollow,trifles,tell-tale-heart").split(",");
   // Period and setting per story, so every portrait matches its scene art.

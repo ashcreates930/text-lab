@@ -52,6 +52,8 @@ export function choicesMade(world: WorldPack, choices: Record<string, string> | 
 // evens them out: one gain brings each track's typical level to the same target, and the last moments of the track
 // are blended into its start so the loop has no seam. Works on raw samples so it can be tested without a browser.
 export const AMBIENT_VOLUME = 0.12;
+// The ambience dips to a third of its volume while the scene is read aloud.
+export const ambientVolumeFor = (state: { kind: string | null }) => state.kind === "narration" ? AMBIENT_VOLUME / 3 : AMBIENT_VOLUME;
 export function ambientLevelGain(channels: Float32Array[], sampleRate: number, targetDb = -20) {
   const win = Math.max(1, Math.round(sampleRate * 0.1)), levels: number[] = [];
   for (let i = 0; i + win <= channels[0].length; i += win) {

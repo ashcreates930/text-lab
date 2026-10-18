@@ -5,8 +5,9 @@
 import {useCallback,useEffect,useLayoutEffect,useRef,useState} from "react";
 import {ArrowRight,Pin,Volume2,VolumeX,X} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
-import {AMBIENT_VOLUME,ambientLevelGain,caseBoardCards,crossfadeLoop,initials,portraitFor,soundKey,soundOn,type BoardCard,type SoundKind} from "@/lib/game-feel";
+import {ambientLevelGain,ambientVolumeFor,caseBoardCards,crossfadeLoop,initials,portraitFor,soundKey,soundOn,type BoardCard,type SoundKind} from "@/lib/game-feel";
 import {FactCheckerBadge} from "./case-game";
+import {playClip,soundChannel,useSoundChannel} from "./sound-player";
 
 type Character={id:string;name:string;portrait?:string};
 
@@ -35,22 +36,26 @@ export function SoundToggle({on,onToggle,label}:{on:boolean;onToggle:()=>void;la
  return <button type="button" onClick={onToggle} aria-pressed={on} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#EFE8D8] px-4 text-[15px] font-semibold text-[#2A2620] hover:bg-[#E4DCCB]">{on?<Volume2 size={17}/>:<VolumeX size={17}/>}{label} {on?"on":"off"}</button>;
 }
 
-// Plays character answers in their voice through /api/voice. Any failure (no voice service, daily limit, autoplay
-// blocked) leaves the text answer silently: a student never sees an error. Answers are cached so replay is free.
+// Plays character answers in their voice through /api/voice, on the shared player, so a voice stops any narration
+// (and narration stops a voice). Any failure (no voice service, daily limit, autoplay blocked) leaves the text answer
+// silently: a student never sees an error. Answers are cached so replay is free.
 export function useCharacterVoice(worldId:string,sandboxId:string){
- const [speaking,setSpeaking]=useState("");
- const audio=useRef<HTMLAudioElement|null>(null),cache=useRef(new Map<string,string>());
- const stop=useCallback(()=>{audio.current?.pause();audio.current=null;setSpeaking("")},[]);
- useEffect(()=>()=>{audio.current?.pause();for(const url of cache.current.values())URL.revokeObjectURL(url)},[]);
+ const channel=useSoundChannel();
+ const speaking=channel.kind==="voice"?channel.id:"";
+ const cache=useRef(new Map<string,string>());
+ const stop=useCallback(()=>{if(soundChannel.state.kind==="voice")soundChannel.stop()},[]);
+ useEffect(()=>()=>{if(soundChannel.state.kind==="voice")soundChannel.stop();for(const url of cache.current.values())URL.revokeObjectURL(url)},[]);
  const play=useCallback(async(text:string,characterId:string)=>{
-  stop();const key=`${characterId}:${text}`;
+  const stopper=new AbortController();
+  const handle=soundChannel.begin("voice",characterId,()=>stopper.abort());
+  const key=`${characterId}:${text}`;
   try{
    let url=cache.current.get(key);
-   if(!url){const r=await fetch("/api/voice",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({sandboxId,text:text.slice(0,1800),worldId,character:characterId})});if(!r.ok||!(r.headers.get("content-type")||"").includes("audio"))return;url=URL.createObjectURL(await r.blob());cache.current.set(key,url)}
-   const a=new Audio(url);audio.current=a;a.onended=()=>{if(audio.current===a)setSpeaking("")};a.onerror=()=>{if(audio.current===a)setSpeaking("")};
-   setSpeaking(characterId);await a.play();
-  }catch{setSpeaking("")}
- },[sandboxId,worldId,stop]);
+   if(!url){const r=await fetch("/api/voice",{method:"POST",signal:stopper.signal,headers:{"Content-Type":"application/json"},body:JSON.stringify({sandboxId,text:text.slice(0,1800),worldId,character:characterId})});if(!r.ok||!(r.headers.get("content-type")||"").includes("audio"))return handle.end();url=URL.createObjectURL(await r.blob());cache.current.set(key,url)}
+   if(handle.active)await playClip(url,stopper.signal);
+  }catch{}
+  handle.end();
+ },[sandboxId,worldId]);
  return {speaking,play,stop};
 }
 
@@ -60,7 +65,7 @@ export function useCharacterVoice(worldId:string,sandboxId:string){
 export function AmbientPlayer({src,on}:{src:string|null|undefined;on:boolean}){
  useEffect(()=>{
   if(!on||!src)return;
-  let ctx:AudioContext|null=null,cancelled=false;
+  let ctx:AudioContext|null=null,cancelled=false,unsubscribe=()=>{};
   const start=async()=>{
    if(cancelled||ctx)return;
    try{
@@ -74,15 +79,19 @@ export function AmbientPlayer({src,on}:{src:string|null|undefined;on:boolean}){
     const source=ctx.createBufferSource();source.buffer=buffer;source.loop=true;
     const level=ctx.createGain();level.gain.value=ambientLevelGain(channels,decoded.sampleRate);
     const soften=ctx.createDynamicsCompressor();soften.threshold.value=-24;soften.knee.value=6;soften.ratio.value=12;soften.attack.value=0.003;soften.release.value=0.25;
-    const volume=ctx.createGain();volume.gain.setValueAtTime(0,ctx.currentTime);volume.gain.linearRampToValueAtTime(AMBIENT_VOLUME,ctx.currentTime+2.5);
+    const volume=ctx.createGain();volume.gain.setValueAtTime(0,ctx.currentTime);volume.gain.linearRampToValueAtTime(ambientVolumeFor(soundChannel.state),ctx.currentTime+2.5);
     source.connect(level).connect(soften).connect(volume).connect(ctx.destination);
     await ctx.resume();source.start();
+    // While the scene is being read aloud the ambience dips to a third, then comes back when the reading ends or stops.
+    if(cancelled)return;
+    const audio=ctx;
+    unsubscribe=soundChannel.subscribe(state=>{const now=audio.currentTime,g=volume.gain;g.cancelScheduledValues(now);g.setValueAtTime(g.value,now);g.linearRampToValueAtTime(ambientVolumeFor(state),now+(state.kind==="narration"?0.4:1.2))});
    }catch{ctx?.close().catch(()=>{});ctx=null}
   };
   const activated=(navigator as Navigator&{userActivation?:{hasBeenActive:boolean}}).userActivation?.hasBeenActive;
   const onFirst=()=>{window.removeEventListener("pointerdown",onFirst);window.removeEventListener("keydown",onFirst);start()};
   if(activated)start();else{window.addEventListener("pointerdown",onFirst);window.addEventListener("keydown",onFirst)}
-  return()=>{cancelled=true;window.removeEventListener("pointerdown",onFirst);window.removeEventListener("keydown",onFirst);ctx?.close().catch(()=>{});ctx=null};
+  return()=>{cancelled=true;unsubscribe();window.removeEventListener("pointerdown",onFirst);window.removeEventListener("keydown",onFirst);ctx?.close().catch(()=>{});ctx=null};
  },[src,on]);
  return null;
 }
