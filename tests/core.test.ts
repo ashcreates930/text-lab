@@ -919,7 +919,7 @@ test("Spot the Lie: the right line catches it; a wrong line names the topic; two
   assert.deepEqual(r,{result:"miss",misses:1,message:"Not quite. Look for a line about what was in Ichabod's bundle."});
   r=tryLine(lie,"Hans Van Ripper as executor of his estate, examined the bundle which contained all his worldly effects.",r.misses);
   assert.equal(r.result,"miss");
-  assert.equal(r.result==="miss"&&r.highlight,"p069","after two misses the paragraph (never the line) is highlighted");
+  assert.deepEqual(r.result==="miss"&&r.highlight,{paragraph:"p069"},"without the clue evidence, the paragraph is highlighted");
   // The line as the clue screen shows it, with the source's line breaks, still matches.
   const tapped="They consisted of two shirts and a half; two stocks for the neck; a pair or\ntwo of worsted stockings; an old pair of corduroy small-clothes; a rusty\nrazor; a book of psalm tunes full of dog's-ears; and a broken pitch-pipe.";
   assert.equal(isTruthLine(lie,tapped),true);
@@ -1034,4 +1034,32 @@ test("Final Verdict: the case strength comes from the rubric, checked against th
   // A reply that skips the rubric, or rates the theory itself, is treated as the judge being unavailable.
   assert.equal(feedbackFromJudge({strength:"Strong",...notes},strong),null);
   assert.equal(feedbackFromJudge({claim:true,supporting_quotes:[1,2,3],reasoning_words:"",strength_note:"",next_step:"y"},strong),null);
+});
+
+test("Spot the Lie hint: a one-paragraph clue highlights three lines around the answer; several paragraphs highlight the paragraph", async()=>{
+  const {tryLine,hintFor,isHighlighted,evidenceSentences,isTruthLine}=await import("../lib/lies.ts");
+  const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  const passages=parseSourcePassages(await readFile(new URL("../worlds/sleepy-hollow/source.md",import.meta.url),"utf8"));
+  const evidenceOf=(sceneIndex:number)=>{const s=world.scenes[sceneIndex];const clue=s.artifacts.find(a=>a.id===s.lie!.clue_id)!;return passages.filter(p=>clue.source_anchor.includes(p.id))};
+  // Scene 1: Ichabod's belongings has one paragraph (¶69, six lines); the answer is line 3.
+  const lie=world.scenes[0].lie!,evidence=evidenceOf(0);
+  assert.equal(evidence.length,1);
+  let r=tryLine(lie,"not this line",0,evidence);assert.equal(r.result==="miss"&&r.highlight,undefined,"no highlight after one miss");
+  r=tryLine(lie,"not this line either",1,evidence);
+  const lines=evidenceSentences(evidence[0].text);
+  assert.ok(r.result==="miss"&&r.highlight&&"lines" in r.highlight);
+  const lit=lines.filter(t=>isHighlighted(r.result==="miss"?r.highlight:undefined,{text:t,pid:"p069"}));
+  assert.equal(lit.length,3,"three lines, not the whole paragraph");
+  assert.deepEqual(lit,lines.slice(1,4),"the answer with one line on each side");
+  assert.ok(isTruthLine(lie,lit[1]));
+  // At the edge of a paragraph it still shows three lines.
+  const first={...lie,truth_line:lines[0]};assert.deepEqual(hintFor(first,evidence),{lines:lines.slice(0,3)});
+  const last={...lie,truth_line:lines.at(-1)!};assert.deepEqual(hintFor(last,evidence),{lines:lines.slice(-3)});
+  // Scene 2: Brom's race tale cites two paragraphs (¶55 and ¶56), so the paragraph with the answer is highlighted.
+  const party=world.scenes[1].lie!,partyEvidence=evidenceOf(1);
+  assert.equal(partyEvidence.length,2);
+  assert.deepEqual(hintFor(party,partyEvidence),{paragraph:"p055"});
+  assert.equal(isHighlighted({paragraph:"p055"},{text:"anything",pid:"p055"}),true);
+  assert.equal(isHighlighted({paragraph:"p055"},{text:"anything",pid:"p056"}),false);
 });

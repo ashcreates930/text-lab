@@ -26,13 +26,27 @@ export const lieFor = (scene: { lie?: Lie }, clueId: string) => (scene.lie?.clue
 
 export type LieAttempt =
   | { result: "caught"; misses: number }
-  | { result: "miss"; misses: number; message: string; highlight?: string };
+  | { result: "miss"; misses: number; message: string; highlight?: LieHighlight };
+// The gentle hint after two misses. A clue with several paragraphs highlights the paragraph that holds the answer. A
+// one-paragraph clue would light up every line, so it highlights the answer and one line on each side instead (three
+// lines, so the exact line is still the student's to find).
+export type LieHighlight = { paragraph: string } | { lines: string[] };
+export function hintFor(lie: Lie, evidence?: SourcePassage[]): LieHighlight {
+  if (!evidence || evidence.length !== 1) return { paragraph: lie.truth_paragraph };
+  const lines = evidenceSentences(evidence[0].text);
+  const at = lines.findIndex((l) => isTruthLine(lie, l));
+  if (at < 0) return { paragraph: lie.truth_paragraph };
+  const start = Math.max(0, Math.min(at - 1, lines.length - 3));
+  return { lines: lines.slice(start, start + 3) };
+}
+export const isHighlighted = (h: LieHighlight | undefined, line: { text: string; pid: string }) =>
+  !!h && ("paragraph" in h ? h.paragraph === line.pid : h.lines.includes(line.text));
 // One tap on an evidence line. A miss names the detail to look for; after two misses the right paragraph is gently
-// highlighted (never the exact line).
-export function tryLine(lie: Lie, tapped: string, misses: number): LieAttempt {
+// highlighted (see hintFor), never the exact line alone.
+export function tryLine(lie: Lie, tapped: string, misses: number, evidence?: SourcePassage[]): LieAttempt {
   if (isTruthLine(lie, tapped)) return { result: "caught", misses };
   const next = misses + 1;
-  return { result: "miss", misses: next, message: `Not quite. Look for a line about ${lie.topic}.`, ...(next >= 2 ? { highlight: lie.truth_paragraph } : {}) };
+  return { result: "miss", misses: next, message: `Not quite. Look for a line about ${lie.topic}.`, ...(next >= 2 ? { highlight: hintFor(lie, evidence) } : {}) };
 }
 
 // The testimony split so the false sentence can be struck through once the lie is caught.

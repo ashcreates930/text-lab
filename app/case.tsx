@@ -17,7 +17,7 @@ import {AmbientPlayer,CaseBoard,CaseBoardDialog,ConsequenceMoment,Portrait,Sound
 import {choicesMade} from "@/lib/game-feel";
 import {focusScreenTop} from "./screen-focus";
 import {nextStep} from "@/lib/next-step";
-import {lieFor,testimonyParts,tryLine} from "@/lib/lies";
+import {hintFor,lieFor,testimonyParts,tryLine,type LieHighlight} from "@/lib/lies";
 import {sceneScreenShowing} from "@/lib/ambient";
 import {listenButton,narrationParts,playNarration,sceneReadingItems} from "@/lib/narration";
 import {contentNotes,withContentNotes} from "@/lib/content-notes";
@@ -159,11 +159,11 @@ function ClueView({world,scene,clue,roleId,demo,setDemo,passages,onClose}:{world
  const lie=lieFor(scene,clue.id),liar=lie?world.characters.find(c=>c.id===lie.character_id):undefined;
  const {chars,character,setCharacter,char,step,setStep,question,setQuestion,reply,asked,busy,proof,setProof,stance,setStance,explain,setExplain,source,notice,interpret,suggestions,steps,stepNo,ask,save:saveSteps}=useClueSteps({world,scene,clue,roleId,demo,setDemo,passages,testimony:lie&&{characterId:lie.character_id,text:lie.testimony}});
  const priorLie=lie?demo.lies?.[scene.id]:undefined;
- const [lieState,setLieState]=useState<{caught:boolean;misses:number;message:string;highlight?:string}>(()=>({caught:!!priorLie?.caught,misses:priorLie?.misses??0,message:"",...((priorLie?.misses??0)>=2&&!priorLie?.caught&&lie?{highlight:lie.truth_paragraph}:{})}));
+ const [lieState,setLieState]=useState<{caught:boolean;misses:number;message:string;highlight?:LieHighlight}>(()=>({caught:!!priorLie?.caught,misses:priorLie?.misses??0,message:"",...((priorLie?.misses??0)>=2&&!priorLie?.caught&&lie?{highlight:hintFor(lie,source)}:{})}));
  function pickLine(line:{text:string;pid:string}){
   if(!lie){setProof(line);return}
   if(lieState.caught)return;
-  const r=tryLine(lie,line.text,lieState.misses);
+  const r=tryLine(lie,line.text,lieState.misses,source);
   if(r.result==="caught"){setProof(line);setStance("contradicts");setLieState({caught:true,misses:r.misses,message:""});playStamp(0);setDemo(d=>({...d,lies:{...(d.lies??{}),[scene.id]:{clue_id:clue.id,caught:true,misses:r.misses,caught_at:new Date().toISOString()}}}));return}
   setLieState({caught:false,misses:r.misses,message:r.message,...(r.highlight?{highlight:r.highlight}:{})});
   setDemo(d=>({...d,lies:{...(d.lies??{}),[scene.id]:{clue_id:clue.id,caught:false,misses:r.misses}}}));
@@ -220,7 +220,7 @@ function ClueView({world,scene,clue,roleId,demo,setDemo,passages,onClose}:{world
        {lieState.caught&&<div aria-hidden className="case-stamp z-10 whitespace-nowrap" style={{fontSize:22,top:"55%"}}>Lie caught</div>}
       </div>
       <div>
-       {!lieState.caught&&lieState.message&&<p className="mt-3 rounded-2xl bg-[#FBF1EB] px-4 py-3 text-[16px] text-[#2A2620]">{lieState.message}{lieState.highlight?" The paragraph to look in is highlighted.":""}</p>}
+       {!lieState.caught&&lieState.message&&<p className="mt-3 rounded-2xl bg-[#FBF1EB] px-4 py-3 text-[16px] text-[#2A2620]">{lieState.message}{lieState.highlight?("lines" in lieState.highlight?" The lines to look in are highlighted.":" The paragraph to look in is highlighted."):""}</p>}
        {lieState.caught&&<div className="mt-4 rounded-2xl bg-[#A0472C] p-4 text-white"><p className="flex items-center gap-2 text-[16px] font-bold"><ShieldCheck size={18}/> Lie caught. You proved {liar.name} wrong.</p><p className="mt-1 text-[16px] leading-7">{lie.explanation}</p></div>}
        {lieState.caught&&proof&&<blockquote className="mt-4 rounded-2xl border-l-4 border-[#A0472C] bg-[#F4E1D6]/60 px-4 py-3 font-serif text-[17px] leading-7"><Quote size={16} className="mb-1 text-[#A0472C]"/>{proof.text}</blockquote>}
       </div>
