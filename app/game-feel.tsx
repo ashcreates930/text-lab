@@ -2,7 +2,7 @@
 // The game layer around the scene game: character portraits and voices, ambient sound, the consequence moment after a
 // choice, and the case board. Rules (fallbacks, sound defaults, which cards appear) live in lib/game-feel.ts.
 // Every sound has a visible off switch, and every animation stops under reduced motion (globals.css).
-import {useCallback,useEffect,useLayoutEffect,useRef,useState} from "react";
+import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
 import {ArrowRight,Pin,Volume2,VolumeX,X} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import {createAmbientController,type AmbientController,type AmbientTrack} from "@/lib/ambient";
@@ -11,6 +11,7 @@ import {FactCheckerBadge,RankLadder} from "./case-game";
 import {StoryboardRow} from "./storyboard";
 import type {BoardFrame} from "@/lib/storyboard";
 import {playClip,soundChannel,useSoundChannel} from "./sound-player";
+import {stopVoice,toggleVoice,type VoiceStop} from "@/lib/voice-control";
 
 type Character={id:string;name:string;portrait?:string};
 
@@ -46,8 +47,9 @@ export function useCharacterVoice(worldId:string,sandboxId:string){
  const channel=useSoundChannel();
  const speaking=channel.kind==="voice"?channel.id:"";
  const cache=useRef(new Map<string,string>());
- const stop=useCallback(()=>{if(soundChannel.state.kind==="voice")soundChannel.stop()},[]);
- useEffect(()=>()=>{if(soundChannel.state.kind==="voice")soundChannel.stop();for(const url of cache.current.values())URL.revokeObjectURL(url)},[]);
+ const stop=useCallback((why:VoiceStop="leave")=>stopVoice(soundChannel,why),[]);
+ // Leaving the clue screen (back, next or closing the clue) silences the voice.
+ useEffect(()=>()=>{stopVoice(soundChannel,"leave");for(const url of cache.current.values())URL.revokeObjectURL(url)},[]);
  const play=useCallback(async(text:string,characterId:string)=>{
   const stopper=new AbortController();
   const handle=soundChannel.begin("voice",characterId,()=>stopper.abort());
@@ -59,7 +61,9 @@ export function useCharacterVoice(worldId:string,sandboxId:string){
   }catch{}
   handle.end();
  },[sandboxId,worldId]);
- return {speaking,play,stop};
+ // The speaker button: Stop while this character's reply plays (never a second copy), Play otherwise.
+ const toggle=useCallback((text:string,characterId:string)=>toggleVoice(soundChannel,characterId,()=>{play(text,characterId)}),[play]);
+ return useMemo(()=>({speaking,play,stop,toggle}),[speaking,play,stop,toggle]);
 }
 
 // The scene's ambient sound. One shared controller (rules in lib/ambient.ts) owns the only ambient track; this engine

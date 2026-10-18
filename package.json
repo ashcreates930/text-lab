@@ -12,7 +12,8 @@
     "test": "node --experimental-strip-types --test tests/core.test.ts",
     "validate:worlds": "node --experimental-strip-types scripts/validate-worlds.ts",
     "assets": "node --experimental-strip-types scripts/generate-assets.ts",
-    "sync:worlds": "node --experimental-strip-types scripts/generate-assets.ts --sync-only"
+    "sync:worlds": "node --experimental-strip-types scripts/generate-assets.ts --sync-only",
+    "generate-assets": "node --experimental-strip-types scripts/generate-assets.ts"
   },
   "dependencies": {
     "@scure/bip39": "^2.4.0",

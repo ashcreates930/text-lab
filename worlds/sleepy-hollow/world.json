@@ -275,7 +275,7 @@
       "narration": "Morning light reaches the empty schoolhouse. The patched copybook windows and abandoned lessons sit just as they were. Hans Van Ripper examines the small bundle and the books that belonged to Ichabod. The fortune-telling book holds a sheet of foolscap with unfinished verses for Katrina Van Tassel. Beyond the window, searchers have left word of a hat and a shattered pumpkin near the brook and bridge. What disappeared: a schoolteacher, a rival, or the truth between them?",
       "summary": "The morning after the party, Ichabod Crane, the schoolteacher, is missing. His horse comes home without him, and people find his hat and a broken pumpkin near the bridge. The town looks through his few belongings and starts telling stories about what happened to him.",
       "background_image": "/worlds/sleepy-hollow/empty-schoolhouse.png",
-      "ambient_audio": "/worlds/sleepy-hollow/empty-schoolhouse-ambient.mp3",
+      "ambient_audio": "/worlds/sleepy-hollow/empty-schoolhouse-ambient-v2.mp3",
       "narration_audio": "/worlds/sleepy-hollow/empty-schoolhouse.mp3",
       "available_characters": [
         "hans-van-ripper",
