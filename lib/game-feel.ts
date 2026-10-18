@@ -51,7 +51,8 @@ export function choicesMade(world: WorldPack, choices: Record<string, string> | 
 // Ambient tracks vary a lot in level, and a plain looping <audio> leaves a gap and a jump at the seam. The player
 // evens them out: one gain brings each track's typical level to the same target, and the last moments of the track
 // are blended into its start so the loop has no seam. Works on raw samples so it can be tested without a browser.
-export const AMBIENT_VOLUME = 0.12;
+import { AMBIENT_VOLUME } from "./ambient.ts";
+export { AMBIENT_VOLUME };
 // The ambience dips to a third of its volume while the scene is read aloud.
 export const ambientVolumeFor = (state: { kind: string | null }) => state.kind === "narration" ? AMBIENT_VOLUME / 3 : AMBIENT_VOLUME;
 export function ambientLevelGain(channels: Float32Array[], sampleRate: number, targetDb = -20) {

@@ -5,8 +5,9 @@
 import {useCallback,useEffect,useLayoutEffect,useRef,useState} from "react";
 import {ArrowRight,Pin,Volume2,VolumeX,X} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
-import {ambientLevelGain,ambientVolumeFor,caseBoardCards,crossfadeLoop,initials,portraitFor,soundKey,soundOn,type BoardCard,type SoundKind} from "@/lib/game-feel";
-import {FactCheckerBadge} from "./case-game";
+import {createAmbientController,type AmbientController,type AmbientTrack} from "@/lib/ambient";
+import {ambientLevelGain,caseBoardCards,crossfadeLoop,initials,portraitFor,soundKey,soundOn,type BoardCard,type SoundKind} from "@/lib/game-feel";
+import {FactCheckerBadge,RankLadder} from "./case-game";
 import {StoryboardRow} from "./storyboard";
 import type {BoardFrame} from "@/lib/storyboard";
 import {playClip,soundChannel,useSoundChannel} from "./sound-player";
@@ -61,40 +62,58 @@ export function useCharacterVoice(worldId:string,sandboxId:string){
  return {speaking,play,stop};
 }
 
-// A scene's ambient track: quiet, looping without a seam, fading in. It starts only after the student's first tap or key
-// press on the page (browser autoplay rules) and stops when sound is off or the scene changes. Every track is brought to
-// the same level and its sudden loud moments are softened, so no scene is silent and none startles. Any failure is silent.
-export function AmbientPlayer({src,on}:{src:string|null|undefined;on:boolean}){
- useEffect(()=>{
-  if(!on||!src)return;
-  let ctx:AudioContext|null=null,cancelled=false,unsubscribe=()=>{};
-  const start=async()=>{
-   if(cancelled||ctx)return;
-   try{
-    ctx=new AudioContext();
-    const decoded=await ctx.decodeAudioData(await (await fetch(src)).arrayBuffer());
-    if(cancelled)return;
-    const channels=Array.from({length:decoded.numberOfChannels},(_,i)=>decoded.getChannelData(i));
-    const looped=crossfadeLoop(channels,decoded.sampleRate);
-    const buffer=ctx.createBuffer(looped.length,looped[0].length,decoded.sampleRate);
-    looped.forEach((ch,i)=>buffer.getChannelData(i).set(ch));
-    const source=ctx.createBufferSource();source.buffer=buffer;source.loop=true;
-    const level=ctx.createGain();level.gain.value=ambientLevelGain(channels,decoded.sampleRate);
-    const soften=ctx.createDynamicsCompressor();soften.threshold.value=-24;soften.knee.value=6;soften.ratio.value=12;soften.attack.value=0.003;soften.release.value=0.25;
-    const volume=ctx.createGain();volume.gain.setValueAtTime(0,ctx.currentTime);volume.gain.linearRampToValueAtTime(ambientVolumeFor(soundChannel.state),ctx.currentTime+2.5);
-    source.connect(level).connect(soften).connect(volume).connect(ctx.destination);
-    await ctx.resume();source.start();
-    // While the scene is being read aloud the ambience dips to a third, then comes back when the reading ends or stops.
-    if(cancelled)return;
-    const audio=ctx;
-    unsubscribe=soundChannel.subscribe(state=>{const now=audio.currentTime,g=volume.gain;g.cancelScheduledValues(now);g.setValueAtTime(g.value,now);g.linearRampToValueAtTime(ambientVolumeFor(state),now+(state.kind==="narration"?0.4:1.2))});
-   }catch{ctx?.close().catch(()=>{});ctx=null}
-  };
-  const activated=(navigator as Navigator&{userActivation?:{hasBeenActive:boolean}}).userActivation?.hasBeenActive;
-  const onFirst=()=>{window.removeEventListener("pointerdown",onFirst);window.removeEventListener("keydown",onFirst);start()};
-  if(activated)start();else{window.addEventListener("pointerdown",onFirst);window.addEventListener("keydown",onFirst)}
-  return()=>{cancelled=true;unsubscribe();window.removeEventListener("pointerdown",onFirst);window.removeEventListener("keydown",onFirst);ctx?.close().catch(()=>{});ctx=null};
- },[src,on]);
+// The scene's ambient sound. One shared controller (rules in lib/ambient.ts) owns the only ambient track; this engine
+// plays it with Web Audio: each track is brought to the same level, its sudden loud moments are softened, and its end
+// is blended into its start so the loop has no seam. Any failure is silent.
+// Each ambient file is downloaded once per visit; returning to the scene reuses it.
+const ambientFiles=new Map<string,Promise<ArrayBuffer>>();
+function ambientFile(src:string){let file=ambientFiles.get(src);if(!file){file=fetch(src).then(r=>{if(!r.ok)throw new Error(String(r.status));return r.arrayBuffer()});file.catch(()=>ambientFiles.delete(src));ambientFiles.set(src,file)}return file}
+function webAudioTrack(src:string):AmbientTrack{
+ let ctx:AudioContext|null=null,gain:GainNode|null=null,stopped=false,target={volume:0,seconds:0};
+ const ramp=()=>{if(!ctx||!gain)return;const now=ctx.currentTime,g=gain.gain;g.cancelScheduledValues(now);g.setValueAtTime(g.value,now);g.linearRampToValueAtTime(target.volume,now+Math.max(.05,target.seconds))};
+ (async()=>{
+  try{
+   ctx=new AudioContext();
+   const decoded=await ctx.decodeAudioData((await ambientFile(src)).slice(0));
+   if(stopped)return;
+   const channels=Array.from({length:decoded.numberOfChannels},(_,i)=>decoded.getChannelData(i));
+   const looped=crossfadeLoop(channels,decoded.sampleRate);
+   const buffer=ctx.createBuffer(looped.length,looped[0].length,decoded.sampleRate);
+   looped.forEach((ch,i)=>buffer.getChannelData(i).set(ch));
+   const source=ctx.createBufferSource();source.buffer=buffer;source.loop=true;
+   const level=ctx.createGain();level.gain.value=ambientLevelGain(channels,decoded.sampleRate);
+   const soften=ctx.createDynamicsCompressor();soften.threshold.value=-24;soften.knee.value=6;soften.ratio.value=12;soften.attack.value=0.003;soften.release.value=0.25;
+   gain=ctx.createGain();gain.gain.value=0;
+   source.connect(level).connect(soften).connect(gain).connect(ctx.destination);
+   await ctx.resume();if(stopped)return;
+   source.start();ramp();
+  }catch{ctx?.close().catch(()=>{});ctx=null;gain=null}
+ })();
+ return {src,fade(volume,seconds){target={volume,seconds};ramp()},stop(){stopped=true;ctx?.close().catch(()=>{});ctx=null;gain=null}};
+}
+
+let ambient:AmbientController|null=null;
+// The one ambient controller, wired once to the things outside the scene screen: the student's first tap (browsers allow
+// sound only after one), switching browser tabs, and scene narration (which dips the sound).
+export function ambientController(){
+ if(ambient)return ambient;
+ const c=createAmbientController({start:webAudioTrack});
+ ambient=c;
+ const activated=(navigator as Navigator&{userActivation?:{hasBeenActive:boolean}}).userActivation?.hasBeenActive;
+ if(activated)c.set({unlocked:true});
+ else{const unlock=()=>{window.removeEventListener("pointerdown",unlock);window.removeEventListener("keydown",unlock);c.set({unlocked:true})};window.addEventListener("pointerdown",unlock);window.addEventListener("keydown",unlock)}
+ c.set({visible:document.visibilityState!=="hidden"});
+ document.addEventListener("visibilitychange",()=>c.set({visible:document.visibilityState!=="hidden"}));
+ c.set({narrating:soundChannel.state.kind==="narration"});
+ soundChannel.subscribe(state=>c.set({narrating:state.kind==="narration"}));
+ return c;
+}
+
+// Placed on the scene screen. showing is false while the case board or a choice's consequence covers the screen; when
+// the scene screen goes away (a clue or frame opens, the student leaves the case) the sound fades out and stops.
+export function AmbientPlayer({src,on,showing}:{src:string|null|undefined;on:boolean;showing:boolean}){
+ useEffect(()=>{ambientController().set({src:src??null,on,showing})},[src,on,showing]);
+ useEffect(()=>()=>{ambientController().set({showing:false})},[]);
  return null;
 }
 
@@ -150,6 +169,7 @@ export function CaseBoardDialog({world,answers,storyboard,onClose}:{world:WorldP
  return <div role="dialog" aria-modal="true" aria-labelledby="board-h" className="fixed inset-0 z-50 overflow-y-auto bg-[#2A2620]/55 p-3 md:p-8">
   <div className="case-ui mx-auto max-w-6xl rounded-3xl bg-[#F6F0E3] p-4 shadow-2xl md:p-6">
    <div className="mb-4 flex items-center justify-between gap-3"><h2 id="board-h" ref={heading} tabIndex={-1} className="text-[24px] font-bold outline-none">Your case board</h2><button type="button" onClick={onClose} aria-label="Close the case board" className="grid h-11 w-11 place-items-center rounded-full text-[#6B6457] hover:bg-[#EFE8D8]"><X size={22}/></button></div>
+   <div className="mb-4 rounded-2xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="mb-2 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Your detective rank</p><RankLadder/></div>
    <CaseBoard world={world} answers={answers} storyboard={storyboard}/>
   </div>
  </div>;

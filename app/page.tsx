@@ -25,7 +25,6 @@ import type { PlanId } from "@/config/pricing";
 import { applyProgress, loadClassProgress, useClassProgressSync } from "./class-progress";
 import { TeacherDemo } from "./teacher-demo";
 import { TeacherHub } from "./teacher-hub";
-import { MessageCircleHeart } from "lucide-react";
 import { Landing } from "./landing";
 import { BookCover, BookSpread, saveSide, savedSide, type Side } from "./book-home";
 import { homeStartView } from "./home-start";
@@ -41,6 +40,8 @@ const ungatedViews: View[] = ["teacherdemo", "hub", "tutorial", "approach", "pri
 const classViews: View[] = ["shelf", "play", "classhome", "classlive"];
 const demoViews: View[] = ["shelf", "story", "level", "play", "teacher", "teacherdemo", "hub", "lessons"];
 // The teacher and parent side of the site; everything else is the student side. The top bar's switch flips between them.
+// Student screens: no teacher switch in the header (teachers reach their view from the home page).
+const studentViews: View[] = ["play", "shelf", "story", "level"];
 const teacherSideViews: View[] = ["hub", "teacherdemo", "teacher", "classroom", "pricing", "approach", "waitlist"];
 export type Demo = {
   id:string;created: number; preset: string; worldId:string; grade:number|null; role: string; scene: number; events: string[];
@@ -239,12 +240,12 @@ export default function Home() {
       <button onClick={() => setView("landing")} aria-label="TextLab home" className="flex items-center gap-2"><Wordmark className="text-xl"/><span className="hidden text-xs text-white/45 sm:block">by {brand.organization}</span></button>
       {null}
       <div className="ml-auto flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">{(["story","level","play","classhome","classlive"] as View[]).includes(view)&&<HeaderLanguage value={demo.homeLanguage??null} onChange={lang=>setDemo(d=>({...d,homeLanguage:lang}))}/>}<DisplaySettings placement="header"/>
-      {classSession && demo.classAuth ? <button onClick={() => setView("classhome")} className={`rounded-full border px-4 py-2 text-xs ${view === "classhome" ? "border-[#A0472C] bg-[#A0472C] text-[#FFFDF8]" : "border-white/25 text-white/80"}`}>My class</button> : view === "classroom" ? null : <div className="flex gap-1 rounded-full border border-white/15 p-1 text-[11px]">
+      {classSession && demo.classAuth ? <button onClick={() => setView("classhome")} className={`rounded-full border px-4 py-2 text-xs ${view === "classhome" ? "border-[#A0472C] bg-[#A0472C] text-[#FFFDF8]" : "border-white/25 text-white/80"}`}>My class</button> : view === "classroom" || studentViews.includes(view) ? null : <div className="flex gap-1 rounded-full border border-white/15 p-1 text-[11px]">
         {teacherSideViews.includes(view) ? <button onClick={tryDemo} className="rounded-full px-3 py-1.5 font-semibold text-[#8A3B23] sm:px-4"><span className="sm:hidden">Student view</span><span className="hidden sm:inline">Switch to student view</span></button> : <button onClick={() => { chooseSide("teacher"); setView("hub"); }} className="rounded-full px-3 py-1.5 font-semibold text-[#8A3B23] sm:px-4"><span className="sm:hidden">Teacher view</span><span className="hidden sm:inline">Switch to teacher view</span></button>}
       </div>}
-      {!classSession && <button onClick={() => setForm({ step: 1, join: false })} className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-[#F4E1D6] px-3 text-[12px] font-semibold text-[#8A3B23] hover:bg-[#EDD3C4]"><MessageCircleHeart size={15}/><span className="sm:hidden">Feedback</span><span className="hidden sm:inline">Give feedback</span></button>}</div>
+      </div>
     </header>}
-    {demoViews.includes(view) && !classSession && <FeedbackBanner onOpen={() => setForm({ step: 1, join: false })} />}
+    {demoViews.includes(view) && view !== "play" && !classSession && <FeedbackBanner onOpen={() => setForm({ step: 1, join: false })} />}
     {view === "landing" && <Landing brand={brand} onStart={tryDemo} onPreset={start} onJoin={() => { chooseSide("student"); setView("join"); }} onWaitlist={() => setView("waitlist")} onPricing={() => setView("pricing")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} onClassroom={() => { chooseSide("teacher"); setView("hub"); }} onApproach={() => setView("approach")} />}
     {view === "book" && <BookSpread lastSide={side} onCover={() => setView("landing")} onStartReading={() => { chooseSide("student"); openShelf(); }} onJoinCode={code => { chooseSide("student"); setJoinCode(code); setView("join"); }} onTeacher={() => { chooseSide("teacher"); setView("hub"); }} onApproach={() => setView("approach")} onPricing={() => setView("pricing")} />}
     {view === "hub" && <TeacherHub onSignIn={() => setView("classroom")} onPricing={() => setView("pricing")} onApproach={() => setView("approach")} onKeepReading={keepReading} />}
@@ -264,6 +265,8 @@ export default function Home() {
     {view === "approach" && <Approach onVideo={() => showTutorial("approach")} onDemo={tryDemo} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} />}
     {view === "join" && <Join initialCode={joinCode} onJoined={joinClass} />}
     {view === "owner" && <OwnerDashboard />}
+    {/* Feedback is a small footer link, and only in the public demo (never in class sessions). */}
+    {view !== "landing" && !classSession && <footer className="mx-auto max-w-6xl px-4 pb-8 text-center md:px-8"><button type="button" onClick={() => setForm({ step: 1, join: false })} className="text-[13px] font-semibold text-[#8A3B23] underline underline-offset-4 hover:text-[#A0472C]">Give feedback</button></footer>}
     {form && <FeedbackForm open={form} onClose={() => setForm(null)} />}
     <Tutorial ref={tutorial} visible={view === "tutorial"} onDone={() => setView(tutorialReturn.current)} />
   </main>;

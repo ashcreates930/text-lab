@@ -18,7 +18,7 @@ const card="rounded-3xl bg-[#FFFDF8] shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]
 // show a dashed outline until the student saves them.
 export function StoryboardStrip({frames,saved,onOpen}:{frames:SceneFrame[];saved:Record<string,SavedFrame>|undefined;onOpen:(key:string)=>void}){
  if(!frames.length)return null;
- return <section aria-labelledby="storyboard-h" className="mt-10">
+ return <section aria-labelledby="storyboard-h" className="mt-6">
   <div className="flex items-end justify-between gap-4"><h2 id="storyboard-h" className="text-[21px] font-bold sm:text-[24px]">Your storyboard</h2><p className="text-[15px] font-semibold text-[#2A2620]">{frames.filter(f=>f.kind==="provided"||frameSaved(saved,f.key)).length} of {frames.length} frames</p></div>
   <p className="mt-1 text-[15px] text-[#6B6457]">The story paints the first frame. You complete the rest from the text.</p>
   <ol className="mt-4 grid gap-4 sm:grid-cols-3">{frames.map((f,i)=><li key={f.key}><FrameCard frame={f} index={i} mine={saved?.[f.key]} onOpen={()=>onOpen(f.key)}/></li>)}</ol>

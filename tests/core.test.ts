@@ -773,3 +773,111 @@ test("content notes: every flagged paragraph shown in a scene, clue or frame has
   // ¶47 and ¶48 together share one note.
   assert.deepEqual(withContentNotes(shPassages.filter(p=>["p046","p047","p048"].includes(p.id)),contentNotes(sh)).map(i=>i.id),["p046","note-p047","p047","p048"]);
 });
+
+// A fake ambient engine and clock: counts live tracks and records every fade, so the tests can follow the sound.
+async function ambientRig(){
+  const {createAmbientController}=await import("../lib/ambient.ts");
+  let now=0;const timers:{at:number;fn:()=>void;id:number}[]=[];let nextId=1;
+  const clock={after:(ms:number,fn:()=>void)=>{const id=nextId++;timers.push({at:now+ms,fn,id});return id},cancel:(h:unknown)=>{const i=timers.findIndex(t=>t.id===h);if(i>=0)timers.splice(i,1)}};
+  const tick=(ms:number)=>{now+=ms;for(let t=timers.filter(t=>t.at<=now).sort((a,b)=>a.at-b.at)[0];t;t=timers.filter(t=>t.at<=now).sort((a,b)=>a.at-b.at)[0]){timers.splice(timers.indexOf(t),1);t.fn()}};
+  const live=new Set<{src:string}>();let started=0,maxLive=0;const fades:{src:string;volume:number;seconds:number}[]=[];
+  const engine={start(src:string){started++;const track={src,fade(volume:number,seconds:number){fades.push({src,volume,seconds})},stop(){live.delete(track)}};live.add(track);maxLive=Math.max(maxLive,live.size);return track}};
+  const c=createAmbientController(engine,clock);
+  return {c,tick,live,fades,get started(){return started},get maxLive(){return maxLive}};
+}
+
+test("ambient sound: fades out over half a second and stops on every screen change that hides the scene", async()=>{
+  const {sceneScreenShowing,AMBIENT_VOLUME}=await import("../lib/ambient.ts");
+  const scene={inCase:true,clueOpen:false,frameOpen:false,boardOpen:false,consequence:false};
+  const changes:Record<string,(s:typeof scene)=>typeof scene>={
+    "opens a clue":s=>({...s,clueOpen:true}),
+    "opens the case board":s=>({...s,boardOpen:true}),
+    "opens a storyboard frame":s=>({...s,frameOpen:true}),
+    "sees a choice consequence":s=>({...s,consequence:true}),
+    "leaves the case":s=>({...s,inCase:false}),
+  };
+  for(const [what,change] of Object.entries(changes)){
+    const r=await ambientRig();
+    r.c.set({src:"/a.mp3",on:true,unlocked:true,visible:true,showing:sceneScreenShowing(scene)});
+    assert.equal(r.live.size,1,what);
+    assert.deepEqual(r.fades.at(-1),{src:"/a.mp3",volume:AMBIENT_VOLUME,seconds:2.5});
+    r.c.set({showing:sceneScreenShowing(change(scene))});
+    assert.deepEqual(r.fades.at(-1),{src:"/a.mp3",volume:0,seconds:0.5},what);
+    assert.equal(r.live.size,1,`${what}: still fading`);
+    r.tick(500);
+    assert.equal(r.live.size,0,`${what}: stopped completely`);
+    assert.equal(r.c.track,null);
+  }
+  // Switching to another browser tab.
+  const r=await ambientRig();
+  r.c.set({src:"/a.mp3",on:true,unlocked:true,showing:true});
+  r.c.set({visible:false});r.tick(500);
+  assert.equal(r.live.size,0);
+  // Sound off stops it too; and nothing plays before the student's first tap.
+  const q=await ambientRig();
+  q.c.set({src:"/a.mp3",on:true,showing:true});assert.equal(q.started,0);
+  q.c.set({unlocked:true});assert.equal(q.live.size,1);
+  q.c.set({on:false});q.tick(500);assert.equal(q.live.size,0);
+});
+
+test("ambient sound: comes back on return, dips for narration, and never plays two tracks", async()=>{
+  const {AMBIENT_VOLUME}=await import("../lib/ambient.ts");
+  const r=await ambientRig();
+  r.c.set({src:"/a.mp3",on:true,unlocked:true,showing:true});
+  // Clue opened and closed: the track stops, then a fresh one fades back in.
+  r.c.set({showing:false});r.tick(500);assert.equal(r.live.size,0);
+  r.c.set({showing:true});
+  assert.equal(r.live.size,1);assert.equal(r.started,2);
+  assert.deepEqual(r.fades.at(-1),{src:"/a.mp3",volume:AMBIENT_VOLUME,seconds:2.5});
+  // Back before the fade-out finished: the same track comes back up; no second copy.
+  r.c.set({showing:false});r.tick(200);r.c.set({showing:true});r.tick(1000);
+  assert.equal(r.started,2);assert.equal(r.live.size,1);
+  assert.deepEqual(r.fades.at(-1),{src:"/a.mp3",volume:AMBIENT_VOLUME,seconds:1});
+  // Narration dips to a third and back.
+  r.c.set({narrating:true});assert.equal(r.fades.at(-1)!.volume,AMBIENT_VOLUME/3);
+  r.c.set({narrating:false});assert.equal(r.fades.at(-1)!.volume,AMBIENT_VOLUME);
+  // Toggling the scene screen quickly many times (and React's double mount) never stacks tracks.
+  for(let i=0;i<20;i++){r.c.set({showing:i%2===0?false:true});r.tick(i%3===0?600:100)}
+  r.c.set({showing:true});r.tick(1000);
+  // The next scene's track starts only after this one has stopped.
+  r.c.set({src:"/b.mp3"});
+  assert.equal(r.live.size,1);assert.equal([...r.live][0].src,"/a.mp3");
+  r.tick(500);
+  assert.equal(r.live.size,1);assert.equal([...r.live][0].src,"/b.mp3");
+  assert.equal(r.maxLive,1);
+});
+
+test("Next step: the button points to the next thing to do in every state of a scene", async()=>{
+  const {nextStep}=await import("../lib/next-step.ts");
+  const names=["The empty schoolhouse","Ichabod's belongings","Ichabod's own books and the unfinished poem","The searchers' report"];
+  const clues=(done:number,lockedFrom=99)=>names.map((name,i)=>({id:`c${i+1}`,name,done:i<done,locked:i>=lockedFrom&&i>=done}));
+  const frame=(saved:boolean)=>({key:"sleepy-hollow:page-06",saved});
+  const base={last:false,hasChoice:true,choicePrompt:"The trail leads back to the night before. Where do you begin?"};
+  // No clues proven.
+  let s=nextStep({...base,clues:clues(0),requiredFrame:frame(false)});
+  assert.equal(s.progress,"Clues 0 of 4 · Frame 0 of 1");
+  assert.deepEqual(s.action,{kind:"clue",clueId:"c1",number:1,label:"Open Clue 1: The empty schoolhouse"});
+  // Some proven.
+  s=nextStep({...base,clues:clues(1),requiredFrame:frame(false)});
+  assert.equal(s.progress,"Clues 1 of 4 · Frame 0 of 1");
+  assert.equal(s.action.label,"Open Clue 2: Ichabod's belongings");
+  // A locked clue is skipped while an open one waits.
+  s=nextStep({...base,clues:clues(1).map((c,i)=>i===1?{...c,locked:true}:c),requiredFrame:frame(false)});
+  assert.equal(s.action.kind==="clue"&&s.action.clueId,"c3");
+  // All proven, frame missing.
+  s=nextStep({...base,clues:clues(4),requiredFrame:frame(false)});
+  assert.equal(s.progress,"Clues 4 of 4 · Frame 0 of 1");
+  assert.deepEqual(s.action,{kind:"frame",frameKey:"sleepy-hollow:page-06",label:"Complete your frame"});
+  assert.equal(s.solved,false);
+  // Scene solved: the scene's choice, or the next scene.
+  s=nextStep({...base,clues:clues(4),requiredFrame:frame(true)});
+  assert.equal(s.progress,"Clues 4 of 4 · Frame 1 of 1");
+  assert.deepEqual(s.action,{kind:"choice",label:base.choicePrompt});
+  assert.equal(s.solved,true);
+  assert.deepEqual(nextStep({...base,hasChoice:false,clues:clues(4),requiredFrame:frame(true)}).action,{kind:"next",label:"Next scene"});
+  // A scene without a required frame needs only its clues, and the line leaves the frame out.
+  s=nextStep({...base,hasChoice:false,clues:clues(4)});
+  assert.equal(s.progress,"Clues 4 of 4");assert.equal(s.action.kind,"next");
+  // Last scene solved.
+  assert.deepEqual(nextStep({...base,last:true,clues:clues(4),requiredFrame:frame(true)}).action,{kind:"close",label:"Close the case"});
+});
