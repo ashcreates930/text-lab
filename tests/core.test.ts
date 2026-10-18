@@ -585,15 +585,16 @@ test("sound channel: only one sound plays at a time; starting a new one stops th
   assert.equal(channel.state.kind,null);
 });
 
-test("narration reads exactly the reading panel's paragraphs for every scene, one file per paragraph", async()=>{
-  const {sceneReading,narrationParts}=await import("../lib/narration.ts");
+test("narration reads exactly the reading panel's paragraphs (and content notes) for every scene, one file per part", async()=>{
+  const {sceneReading,sceneReadingItems,narrationParts}=await import("../lib/narration.ts");
   const {parseSourcePassages}=await import("../lib/source-passages.ts");
   for(const id of ["sleepy-hollow","trifles","tell-tale-heart"]){
     const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
     const passages=parseSourcePassages(await readFile(new URL(`../worlds/${id}/source.md`,import.meta.url),"utf8"));
     for(const scene of world.scenes){
-      const panel=sceneReading(passages,scene),parts=narrationParts(id,scene,passages);
+      const panel=sceneReadingItems(world,scene,passages),parts=narrationParts(world,scene,passages);
       assert.ok(panel.length>0,`${id}/${scene.id} has no reading`);
+      assert.deepEqual(panel.filter(i=>i.kind==="passage").map(i=>i.id),sceneReading(passages,scene).map(p=>p.id));
       assert.deepEqual(parts.map(p=>p.text),panel.map(p=>p.text));
       assert.deepEqual(parts.map(p=>p.src),panel.map(p=>`/worlds/${id}/narration/${scene.id}/${p.id}.mp3`));
     }
@@ -732,4 +733,43 @@ test("frame pictures: a flagged description is never painted; writing-only pages
   assert.equal(painted,0);
   assert.equal((await pictureForFrame(page,"Ichabod rides past the church at midnight.",deps(false))).image,"https://example.test/frame.webp");
   assert.equal(painted,1);
+});
+
+test("content notes: every flagged paragraph shown in a scene, clue or frame has its note directly before it", async()=>{
+  const {contentNotes,withContentNotes}=await import("../lib/content-notes.ts");
+  const {sceneReadingItems,narrationParts}=await import("../lib/narration.ts");
+  const {pagePassages}=await import("../lib/storybook.ts");
+  const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  let flaggedShown=0;
+  for(const id of ["sleepy-hollow","trifles","tell-tale-heart"]){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    const passages=parseSourcePassages(await readFile(new URL(`../worlds/${id}/source.md`,import.meta.url),"utf8"));
+    const notes=contentNotes(world);
+    // A flagged paragraph's note is either directly before it or before the flagged paragraph just ahead of it under the same note.
+    const check=(items:ReturnType<typeof withContentNotes>,where:string)=>items.forEach((item,i)=>{
+      if(item.kind!=="passage"||!notes.has(item.id))return;
+      flaggedShown++;
+      let j=i-1;while(j>=0&&items[j].kind==="passage"&&notes.get(items[j].id)===notes.get(item.id))j--;
+      const before=items[j];
+      assert.ok(before?.kind==="note"&&before.text===notes.get(item.id),`${where}: ${item.id} has no content note before it`);
+    });
+    for(const scene of world.scenes){
+      const items=sceneReadingItems(world,scene,passages);
+      check(items,`${id}/${scene.id} reading`);
+      // Narration reads the note first, then the paragraph.
+      const parts=narrationParts(world,scene,passages);
+      for(const [i,item] of items.entries())if(item.kind==="note")assert.equal(parts[i+1].id,item.before);
+      for(const clue of scene.artifacts)check(withContentNotes(passages.filter(p=>clue.source_anchor.includes(p.id)),notes),`${id}/${clue.id} clue`);
+    }
+    for(const page of world.storybook?.pages??[])check(withContentNotes(pagePassages(passages,page),notes),`${id}/${page.id} frame`);
+  }
+  assert.ok(flaggedShown>0);
+  // Sleepy Hollow flags ¶34, ¶47 and ¶48; scene 2's reading shows ¶48 with its note.
+  const sh=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  assert.deepEqual([...contentNotes(sh).keys()].sort(),["p034","p047","p048"]);
+  const shPassages=parseSourcePassages(await readFile(new URL("../worlds/sleepy-hollow/source.md",import.meta.url),"utf8"));
+  const scene2=sceneReadingItems(sh,sh.scenes[1],shPassages).map(i=>i.id);
+  assert.equal(scene2[scene2.indexOf("p048")-1],"note-p048");
+  // ¶47 and ¶48 together share one note.
+  assert.deepEqual(withContentNotes(shPassages.filter(p=>["p046","p047","p048"].includes(p.id)),contentNotes(sh)).map(i=>i.id),["p046","note-p047","p047","p048"]);
 });

@@ -10,6 +10,7 @@ import {pagePassages} from "@/lib/storybook";
 import {frameSaved,makeSavedFrame,type BoardFrame,type SavedFrame,type SceneFrame} from "@/lib/storyboard";
 import type {Demo} from "./page";
 import {EvidenceLines} from "./evidence-lines";
+import {contentNotes} from "@/lib/content-notes";
 
 const card="rounded-3xl bg-[#FFFDF8] shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]";
 
@@ -87,7 +88,7 @@ export function FrameView({world,frame,passages,demo,setDemo,onClose}:{world:Wor
    <section className={`${card} p-4 md:p-5`} aria-labelledby="frame-line-h">
     <h2 id="frame-line-h" className="px-1 text-[17px] font-bold"><span className="mr-2 inline-grid h-7 w-7 place-items-center rounded-full bg-[#A0472C] text-[14px] text-white">1</span>Choose your line</h2>
     <p className="mt-1 px-1 text-[15px] text-[#6B6457]">Tap the line your picture shows.</p>
-    <EvidenceLines passages={lines} picked={quote||undefined} onPick={l=>{setQuote(l.text);setCheck(null)}} className="mt-3 max-h-[56vh] space-y-2 overflow-y-auto pr-1"/>
+    <EvidenceLines passages={lines} notes={contentNotes(world)} picked={quote||undefined} onPick={l=>{setQuote(l.text);setCheck(null)}} className="mt-3 max-h-[56vh] space-y-2 overflow-y-auto pr-1"/>
    </section>
    <section className="space-y-4">
     {addDetail&&frame.picture&&<img src={image??frame.picture} alt={frame.page.illustration?.alt??""} className="aspect-[3/2] w-full rounded-3xl object-cover shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"/>}

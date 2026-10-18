@@ -45,7 +45,8 @@ const ambientPrompts:Record<string,string>={
 // --narration: the scene's own reading, read aloud by the narrator voice, one file per paragraph, saved to
 // public/worlds/<story>/narration/<scene>/<paragraph>.mp3. It reads exactly the paragraphs in "Read this part of the
 // story" (lib/narration.ts). Files that already exist are kept, so a run stopped by the monthly character limit picks up
-// where it left off; --force records them again. Takes --world=<id,...> and --scene=<id>. The app reads any paragraph
+// where it left off; --force records them again. Takes --world=<id,...>, --scene=<id> and --only=<part,...> (paragraph ids,
+// or note-<paragraph> for a content note, which is read just before its paragraph). The app reads any paragraph
 // without a file with the browser's own speech, so nothing breaks while files are missing.
 // --frames: the story's own storyboard pictures, one per "illustrated" or "add_detail" page with a scene_description
 // (add_detail pictures leave out their missing detail), saved to public/worlds/<story>/frames/<page-id>.png, with
@@ -82,14 +83,16 @@ if(process.argv.includes("--narration")){
   if(!elevenLabsKey)throw new Error("ELEVENLABS_API_KEY is required for narration.");
   const voice=process.env.ELEVENLABS_NARRATOR_VOICE?.trim()||"onwK4e9ZLuTAKqWW03F9";
   const force=process.argv.includes("--force");let made=0,kept=0,chars=0;
+  const onlyParts=process.argv.find(a=>a.startsWith("--only="))?.slice(7).split(",");
   for(const id of (selectedWorld??"sleepy-hollow,trifles,tell-tale-heart").split(",")){
     const pack=WorldPackSchema.parse(JSON.parse(await readFile(join(root,id,"world.json"),"utf8")));
     const passages=parseSourcePassages(await readFile(join(root,id,"source.md"),"utf8"));
     for(const scene of pack.scenes){
       if(selectedScene&&scene.id!==selectedScene)continue;
-      const parts=narrationParts(id,scene,passages);
+      const parts=narrationParts(pack,scene,passages);
       await mkdir(join(publicRoot,id,"narration",scene.id),{recursive:true});
       for(const [i,part] of parts.entries()){
+        if(onlyParts&&!onlyParts.includes(part.id))continue;
         const file=join(process.cwd(),"public",part.src);
         if(!force){try{await readFile(file);kept++;continue}catch{}}
         const res=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voice)}`,{method:"POST",headers:{"xi-api-key":elevenLabsKey,"Content-Type":"application/json","Accept":"audio/mpeg"},body:JSON.stringify({text:part.text,model_id:"eleven_turbo_v2_5",voice_settings:{stability:0.6,similarity_boost:0.75},previous_text:parts[i-1]?.text.slice(-400),next_text:parts[i+1]?.text.slice(0,400)})});

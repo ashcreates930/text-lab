@@ -1,17 +1,24 @@
-// Scene narration: "Listen to the scene" reads exactly the paragraphs shown in "Read this part of the story", one
-// recorded file per paragraph, in order. A paragraph whose file is missing or fails is read by the browser's own
-// speech instead, so a student never meets an error.
+// Scene narration: "Listen to the scene" reads exactly what "Read this part of the story" shows, one recorded file per
+// paragraph, in order, including any content note, read just before its paragraph. A part whose file is missing or
+// fails is read by the browser's own speech instead, so a student never meets an error.
 import type { SourcePassage } from "./source-passages.ts";
+import { contentNotes, withContentNotes, type ReadingItem } from "./content-notes.ts";
 import type { ChannelState, SoundChannel } from "./sound-channel.ts";
 
 // The paragraphs of the story shown for a scene. The reading panel and the narration both use this, so they always match.
 export function sceneReading(passages: SourcePassage[], scene: { passage_anchors: string[] }) {
   return passages.filter((p) => scene.passage_anchors.includes(p.id));
 }
-export const narrationFile = (worldId: string, sceneId: string, passageId: string) => `/worlds/${worldId}/narration/${sceneId}/${passageId}.mp3`;
+// What the reading panel shows, in order: the scene's paragraphs with any content note directly before its paragraph.
+type ReadingWorld = Parameters<typeof contentNotes>[0] & { id: string };
+export function sceneReadingItems(world: ReadingWorld, scene: { passage_anchors: string[] }, passages: SourcePassage[]): ReadingItem[] {
+  return withContentNotes(sceneReading(passages, scene), contentNotes(world));
+}
+// One file per part: <paragraph>.mp3, and note-<paragraph>.mp3 for a content note.
+export const narrationFile = (worldId: string, sceneId: string, partId: string) => `/worlds/${worldId}/narration/${sceneId}/${partId}.mp3`;
 export type NarrationPart = { id: string; text: string; src: string };
-export function narrationParts(worldId: string, scene: { id: string; passage_anchors: string[] }, passages: SourcePassage[]): NarrationPart[] {
-  return sceneReading(passages, scene).map((p) => ({ id: p.id, text: p.text, src: narrationFile(worldId, scene.id, p.id) }));
+export function narrationParts(world: ReadingWorld, scene: { id: string; passage_anchors: string[] }, passages: SourcePassage[]): NarrationPart[] {
+  return sceneReadingItems(world, scene, passages).map((item) => ({ id: item.id, text: item.text, src: narrationFile(world.id, scene.id, item.id) }));
 }
 
 // The Listen button: "Stop reading" only while this scene's narration is playing.

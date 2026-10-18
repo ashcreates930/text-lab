@@ -16,7 +16,9 @@ import {useLayoutEffect} from "react";
 import {AmbientPlayer,CaseBoard,CaseBoardDialog,ConsequenceMoment,Portrait,SoundToggle,useCharacterVoice,useSoundPref} from "./game-feel";
 import {choicesMade} from "@/lib/game-feel";
 import {focusScreenTop} from "./screen-focus";
-import {listenButton,narrationParts,playNarration,sceneReading} from "@/lib/narration";
+import {listenButton,narrationParts,playNarration,sceneReadingItems} from "@/lib/narration";
+import {contentNotes,withContentNotes} from "@/lib/content-notes";
+import {ContentNote} from "./content-note";
 import {browserNarration,soundChannel,useSoundChannel} from "./sound-player";
 const STORYBOOK_ON=false;
 
@@ -71,16 +73,16 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onO
  const locked=(a:Clue)=>!!a.unlock_condition?.startsWith("artifact:")&&!isDone(demo,a.unlock_condition.slice(9));
  const next=scene.artifacts.find(a=>!isDone(demo,a.id)&&!locked(a));
  const last=sceneIndex===world.scenes.length-1;
- const readingText=sceneReading(passages,scene);
+ const readingItems=sceneReadingItems(world,scene,passages);
  // "Listen to the scene" reads the paragraphs in the reading panel, one at a time, highlighting each. It stops when the
  // student opens a clue, moves to another scene, leaves the case or switches language.
  const listening=listenButton(useSoundChannel(),scene.id);
- const paragraphRefs=useRef<(HTMLParagraphElement|null)[]>([]);
+ const paragraphRefs=useRef<(HTMLElement|null)[]>([]);
  useEffect(()=>()=>{if(soundChannel.state.kind==="narration")soundChannel.stop()},[scene.id,demo.homeLanguage]);
  useEffect(()=>{const el=paragraphRefs.current[listening.part];if(!el)return;const still=window.matchMedia("(prefers-reduced-motion: reduce)").matches;el.scrollIntoView({block:"nearest",behavior:still?"auto":"smooth"})},[listening.part]);
  function goNext(){setDemo(d=>({...d,scene:d.scene+1,events:[...d.events,"scene_complete"]}));window.scrollTo({top:0})}
  function finish(){playStamp(250);setDemo(d=>({...d,submitted:true,events:[...d.events,"case_closed"]}));window.scrollTo({top:0})}
- function listen(){if(listening.playing){soundChannel.stop();return}setReading(true);playNarration(soundChannel,scene.id,narrationParts(world.id,scene,passages),browserNarration)}
+ function listen(){if(listening.playing){soundChannel.stop();return}setReading(true);playNarration(soundChannel,scene.id,narrationParts(world,scene,passages),browserNarration)}
  const nextImage=world.scenes[sceneIndex+1]?.background_image??scene.background_image;
  return <div className="case-ui mx-auto max-w-6xl px-4 pb-24 pt-6 md:px-8">
   <AmbientPlayer src={moment?null:scene.ambient_audio} on={ambientOn}/>
@@ -126,7 +128,7 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onO
     <button onClick={()=>setBoardOpen(true)} className="case-secondary w-full"><LayoutGrid size={18}/> Case board</button>
     <div className="flex flex-wrap items-center gap-2"><button onClick={listen} className="case-secondary flex-1">{listening.playing?<Square size={16} fill="currentColor"/>:<Volume2 size={18}/>} {listening.label}</button>{scene.ambient_audio&&<SoundToggle on={ambientOn} onToggle={toggleAmbient} label="Sound"/>}</div>
     <button onClick={()=>setReading(v=>!v)} aria-expanded={reading} className="case-secondary w-full"><BookOpen size={18}/> {reading?"Hide":"Read"} this part of the story <ChevronDown size={16} className={`ml-auto transition ${reading?"rotate-180":""}`}/></button>
-    {reading&&<div className="max-h-[60vh] space-y-4 overflow-y-auto rounded-2xl bg-[#FFFDF8] p-5 font-serif text-[17px] leading-8 text-[#2A2620] shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]">{readingText.map((p,i)=><p key={p.id} ref={el=>{paragraphRefs.current[i]=el}} aria-current={listening.part===i||undefined} className={`-mx-2 rounded-lg px-2 transition-colors motion-reduce:transition-none ${listening.part===i?"bg-[#F3E2D6]":""}`}>{p.text}</p>)}{!readingText.length&&<p className="text-[#6B6457]">The story text is loading.</p>}</div>}
+    {reading&&<div className="max-h-[60vh] space-y-4 overflow-y-auto rounded-2xl bg-[#FFFDF8] p-5 font-serif text-[17px] leading-8 text-[#2A2620] shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]">{readingItems.map((item,i)=>item.kind==="note"?<div key={item.id} ref={el=>{paragraphRefs.current[i]=el}}><ContentNote text={item.text} active={listening.part===i}/></div>:<p key={item.id} ref={el=>{paragraphRefs.current[i]=el}} aria-current={listening.part===i||undefined} className={`-mx-2 rounded-lg px-2 transition-colors motion-reduce:transition-none ${listening.part===i?"bg-[#F3E2D6]":""}`}>{item.text}</p>)}{!readingItems.length&&<p className="text-[#6B6457]">The story text is loading.</p>}</div>}
     {scene.summary&&<div className="rounded-2xl bg-[#EFE8D8] p-5"><p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">What happens here</p><p className="mt-2 text-[15px] leading-6 text-[#4A4438]">{scene.summary}</p><HomeText text={scene.summary} className="text-[15px]"/></div>}
    </aside>
   </div>
@@ -153,10 +155,10 @@ function ClueView({world,scene,clue,roleId,demo,setDemo,passages,onClose}:{world
   <div className="mt-5 grid gap-6 lg:grid-cols-[1.05fr_1fr]">
    <section className="order-2 lg:order-1" aria-label="From the story">
     <div className="overflow-hidden rounded-3xl shadow-[0_10px_40px_-14px_rgba(42,38,32,.35)]"><div className="case-art aspect-[16/9]" style={{backgroundImage:`url('${scene.background_image}')`,backgroundPosition:`${clue.position.x+clue.position.width/2}% ${clue.position.y+clue.position.height/2}%`,backgroundSize:"220%"}} role="img" aria-label={`Close-up: ${clue.name}`}/></div>
-    {step==="ask"&&<div className="mt-4 rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="flex items-center gap-2 text-[15px] font-semibold text-[#2A2620]"><BookOpen size={17} className="text-[#A0472C]"/> The story holds the answer.</p><p className="mt-1 text-[15px] text-[#6B6457]">Ask first. Then you will search the story for proof.</p><button onClick={()=>setPeek(v=>!v)} className="mt-3 text-[15px] font-semibold text-[#8A3B23] underline underline-offset-4">{peek?"Hide the story":"Peek at the story"}</button>{peek&&<div className="mt-3 max-h-[40vh] space-y-3 overflow-y-auto font-serif text-[16px] leading-7">{source.map(p=><p key={p.id}>{p.text}</p>)}</div>}</div>}
+    {step==="ask"&&<div className="mt-4 rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="flex items-center gap-2 text-[15px] font-semibold text-[#2A2620]"><BookOpen size={17} className="text-[#A0472C]"/> The story holds the answer.</p><p className="mt-1 text-[15px] text-[#6B6457]">Ask first. Then you will search the story for proof.</p><button onClick={()=>setPeek(v=>!v)} className="mt-3 text-[15px] font-semibold text-[#8A3B23] underline underline-offset-4">{peek?"Hide the story":"Peek at the story"}</button>{peek&&<div className="mt-3 max-h-[40vh] space-y-3 overflow-y-auto font-serif text-[16px] leading-7">{withContentNotes(source,contentNotes(world)).map(item=>item.kind==="note"?<ContentNote key={item.id} text={item.text}/>:<p key={item.id}>{item.text}</p>)}</div>}</div>}
     {step==="prove"&&<div className="mt-4 rounded-3xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)] md:p-5">
      <p className="flex items-center gap-2 px-1 text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]"><Search size={15}/> Evidence lines · tap the one that proves it</p>
-     <EvidenceLines passages={source} picked={proof?.text} onPick={setProof}/>
+     <EvidenceLines passages={source} picked={proof?.text} onPick={setProof} notes={contentNotes(world)}/>
      {!source.length&&<p className="font-sans text-[15px] text-[#6B6457]">Loading the story…</p>}
     </div>}
    </section>
