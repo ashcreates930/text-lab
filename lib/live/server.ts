@@ -2,7 +2,9 @@
 // writes come through here, so role gating, moderation and the judge cap are enforced in one place.
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import type { WorldPack } from "../world-schema.ts";
-import { readWorld } from "../classroom/worlds.ts";
+import { readPassages, readWorld } from "../classroom/worlds.ts";
+import { NOT_EVIDENCE, matchEvidence } from "../evidence-check.ts";
+import type { SourcePassage } from "../source-passages.ts";
 import { memoryModeEnabled } from "../classroom/store.ts";
 import { screenArgument, judgeWithRubric } from "../verdict-server.ts";
 import { getLieBankStore } from "../lie-bank-store.ts";
@@ -48,14 +50,14 @@ export async function broadcast(sessionId: string) {
 
 // ---------- Loading ----------
 // bank: the class's approved planted lies for this story (class sessions only).
-export type LiveState = { session: StoredSession; world: WorldPack; squads: Awaited<ReturnType<LiveStore["listSquads"]>>; players: LivePlayer[]; responses: LiveResponse[]; bank?: PlantedLie[] };
+export type LiveState = { session: StoredSession; world: WorldPack; squads: Awaited<ReturnType<LiveStore["listSquads"]>>; players: LivePlayer[]; responses: LiveResponse[]; bank?: PlantedLie[]; passages?: SourcePassage[] };
 export async function loadState(store: LiveStore, sessionId: string): Promise<LiveState | null> {
   const session = await store.getSession(sessionId);
   if (!session) return null;
   const world = await readWorld(session.worldId);
   if (!world) return null;
-  const [squads, players, responses, bank] = await Promise.all([store.listSquads(sessionId), store.listPlayers(sessionId), store.listResponses(sessionId), loadBank(session)]);
-  return { session, world, squads, players, responses, bank };
+  const [squads, players, responses, bank, passages] = await Promise.all([store.listSquads(sessionId), store.listPlayers(sessionId), store.listResponses(sessionId), loadBank(session), readPassages(session.worldId)]);
+  return { session, world, squads, players, responses, bank, passages };
 }
 async function loadBank(session: StoredSession) {
   const lies = session.classId ? getLieBankStore() : null;
@@ -308,11 +310,23 @@ export async function playerAct(store: LiveStore, st: LiveState, playerId: strin
   if (!mayAct(round, roles, playerId, act.kind, progress)) return "That's another role's job right now.";
   const role = (Object.entries(roles ?? {}).find(([r, pid]) => pid === playerId && roleFor(act.kind) === r)?.[0] ?? null) as Role | null;
   let payload: Record<string, unknown> = {}, flagged = false;
-  if (act.kind === "pin") payload = { quote: String(act.payload.quote ?? "").slice(0, 1200), pid: String(act.payload.pid ?? "") };
-  else if (act.kind === "pins") {
-    const pins = Array.isArray(act.payload.pins) ? (act.payload.pins as { clueId?: unknown; quote?: unknown }[]).slice(0, 3).map((x) => ({ clueId: String(x.clueId ?? ""), quote: String(x.quote ?? "").slice(0, 1200) })) : [];
-    if (pins.length !== 3) return "Pin exactly 3 pieces of evidence.";
-    payload = { pins };
+  // Every pinned line must be a real evidence line from the world file; we store the world file's own text.
+  const passages = st.passages ?? await readPassages(st.world.id);
+  if (act.kind === "pin") {
+    // Spot the Lie: a line from the testimony's clue. Objection!: a line from any clue's evidence.
+    const lie = lieOf(st, round);
+    const pid = typeof act.payload.pid === "string" && act.payload.pid ? act.payload.pid : undefined;
+    const clueId = typeof act.payload.clueId === "string" && act.payload.clueId ? act.payload.clueId : undefined;
+    const line = matchEvidence(st.world, passages, act.payload.quote, lie ? { clueId: lie.clue_id, pid } : { clueId, pid });
+    if (!line) return NOT_EVIDENCE;
+    payload = { quote: line.text, pid: line.pid, clueId: line.clueId };
+  } else if (act.kind === "pins") {
+    const raw = Array.isArray(act.payload.pins) ? (act.payload.pins as { clueId?: unknown; quote?: unknown; pid?: unknown }[]) : [];
+    if (raw.length !== 3) return "Pin exactly 3 pieces of evidence.";
+    const pins = raw.map((x) => matchEvidence(st.world, passages, x.quote, { clueId: typeof x.clueId === "string" && x.clueId ? x.clueId : undefined, pid: typeof x.pid === "string" && x.pid ? x.pid : undefined }));
+    if (pins.some((p) => !p)) return NOT_EVIDENCE;
+    if (new Set(pins.map((p) => p!.text)).size !== 3) return "Pin 3 different lines.";
+    payload = { pins: pins.map((p) => ({ clueId: p!.clueId, quote: p!.text, pid: p!.pid })) };
   } else if (textKinds.includes(act.kind)) {
     const text = String(act.payload.text ?? "").trim().slice(0, act.kind === "argument" ? 1200 : 400);
     if (text.split(/\s+/).length < 3) return "Write a full sentence.";

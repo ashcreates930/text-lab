@@ -34,6 +34,8 @@ export function VerdictView({world,demo,setDemo,onBack,onFinish}:{world:WorldPac
   setSending(false);
   // An argument that isn't about the story is not saved; the student revises it.
   if(result.status==="flagged"){setNotice(result.message??"Let's keep your argument about the story.");return}
+  // A pinned quote that isn't a line from the story is refused, and the verdict isn't saved.
+  if(result.status==="invalid"){setNotice(result.message??"Each pinned clue needs a line from the story as its proof.");return}
   const next:SavedVerdict={world_id:world.id,theory_id:theoryId,pinned:pins,argument:argument.trim(),feedback:result.status==="judged"&&result.feedback?result.feedback:null,submissions:(saved?.submissions??0)+1,saved_at:new Date().toISOString()};
   setDemo(d=>({...d,verdict:next,events:[...d.events,"verdict"]}));
   setEditing(false);

@@ -1546,3 +1546,89 @@ test("what's your angle: only the three choices reach the AI, and the teacher's 
   assert.deepEqual(personalSettings({}),{rolesOn:true,anglesOn:true},"on until the teacher turns them off");
   assert.deepEqual(personalSettings({roles_enabled:false,angles_enabled:true}),{rolesOn:false,anglesOn:true});
 });
+
+// ---------- Server checks: every pinned or tapped line is a real evidence line ----------
+async function evidenceKit(){
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  const passages=parseSourcePassages(await readFile(new URL("../worlds/sleepy-hollow/source.md",import.meta.url),"utf8"));
+  const ev=await import("../lib/evidence-check.ts");const lies=await import("../lib/lies.ts");
+  const scene=world.scenes[0],lie=scene.lie!;
+  const truth=lies.evidenceSentences(passages.find(p=>p.id===lie.truth_paragraph)!.text).find(s=>lies.isTruthLine(lie,s))!;
+  const other=world.scenes[0].artifacts.find(a=>a.id!==lie.clue_id&&a.source_anchor.every(id=>!world.scenes[0].artifacts.find(x=>x.id===lie.clue_id)!.source_anchor.includes(id)))!;
+  const otherLine=ev.evidenceLines(world,passages,[other.id])[0];
+  return {world,passages,ev,lies,lie,truth,other,otherLine};
+}
+
+test("evidence check: only an exact evidence line from the world file matches", async()=>{
+  const {world,passages,ev,lie,truth,other,otherLine}=await evidenceKit();
+  const m=ev.matchEvidence(world,passages,truth,{clueId:lie.clue_id});
+  assert.deepEqual(m,{clueId:lie.clue_id,pid:lie.truth_paragraph,text:truth});
+  // Spacing, line breaks, curly quotes and case don't matter; the stored text is the world file's.
+  assert.equal(ev.matchEvidence(world,passages,"  "+truth.toUpperCase().replace(/ /g,"\n  ")+" ",{clueId:lie.clue_id})?.text,truth);
+  assert.equal(ev.matchEvidence(world,passages,truth.slice(0,truth.length-12),{clueId:lie.clue_id}),null,"a fragment is not a line");
+  assert.equal(ev.matchEvidence(world,passages,truth.replace("broken","brand-new"),{clueId:lie.clue_id}),null,"an edited line is not a line");
+  assert.equal(ev.matchEvidence(world,passages,"Ichabod was carried off by the Horseman.",{}),null,"made-up text");
+  assert.equal(ev.matchEvidence(world,passages,truth,{clueId:other.id}),null,"a line from a different clue");
+  assert.equal(ev.matchEvidence(world,passages,truth,{clueId:lie.clue_id,pid:"p001"}),null,"the wrong paragraph");
+  assert.equal(ev.matchEvidence(world,passages,truth,{clueId:"no-such-clue"}),null);
+  assert.equal(ev.matchEvidence(world,passages,{quote:truth},{}),null,"not a string");
+  assert.equal(ev.matchEvidence(world,passages,"   ",{}),null);
+  assert.equal(ev.matchEvidence(world,passages,otherLine.text)?.clueId,other.id,"with no clue named, any clue's evidence");
+});
+
+test("evidence check: live rounds refuse pins that aren't evidence lines and store the world file's text", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {lie,truth,otherLine}=await evidenceKit();
+  const {memoryLiveStore}=await import("../lib/live/store.ts");
+  const server=await import("../lib/live/server.ts");const {NOT_EVIDENCE}=await import("../lib/evidence-check.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"EVID01",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven","Agent Quill","Constable Ember","Detective Comet"])await server.join(store,s,{nickname:n,studentId:null});
+  let st=(await server.loadState(store,s.id))!;
+  await server.hostAct(store,st,{action:"squads.auto"});st=(await server.loadState(store,s.id))!;
+  const roleHolder=(squad:number,role:string)=>server.hostView(st).squads[squad].members.find(m=>m.roles.includes(role as never))!.id;
+  const act=async(pid:string,kind:string,payload:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,pid,{kind:kind as never,payload},{judgeAllowed:async()=>false})};
+  // Spot the Lie: only lines from the testimony's clue.
+  await server.hostAct(store,st,{action:"round.start",type:"lie",sceneId:"empty-schoolhouse"});st=(await server.loadState(store,s.id))!;
+  const keeper=roleHolder(0,"keeper");
+  assert.equal(await act(keeper,"pin",{quote:"Hans said it was brand-new."}),NOT_EVIDENCE);
+  assert.equal(await act(keeper,"pin",{quote:truth.slice(0,40)}),NOT_EVIDENCE,"a fragment of the right line");
+  assert.equal(await act(keeper,"pin",{quote:otherLine.text}),NOT_EVIDENCE,"a real line from another clue");
+  assert.equal(await act(keeper,"pin",{quote:truth.replace(/\s+/g,"  "),pid:lie.truth_paragraph}),null);
+  const pinned=(await server.loadState(store,s.id))!.responses.find(r=>r.kind==="pin")!;
+  assert.deepEqual(pinned.payload,{quote:truth,pid:lie.truth_paragraph,clueId:lie.clue_id},"stored as the world file's line");
+  // Verdict Vote: three real, different lines from any clue.
+  await server.hostAct(store,(await server.loadState(store,s.id))!,{action:"round.reveal"});
+  st=(await server.loadState(store,s.id))!;
+  await server.hostAct(store,st,{action:"round.start",type:"verdict"});st=(await server.loadState(store,s.id))!;
+  await server.hostAct(store,st,{action:"round.stage"});st=(await server.loadState(store,s.id))!;
+  const vk=roleHolder(1,"keeper");
+  const {world,passages,ev,truth:truthLine,other:wrongClue}=await evidenceKit();
+  const three=ev.evidenceLines(world,passages).filter((l,i,a)=>a.findIndex(x=>x.text===l.text)===i).slice(0,3);
+  assert.equal(await act(vk,"pins",{pins:[...three.slice(0,2).map(l=>({clueId:l.clueId,quote:l.text})),{clueId:three[2].clueId,quote:"Brom did it."}]}),NOT_EVIDENCE);
+  assert.equal(await act(vk,"pins",{pins:[three[0],three[0],three[1]].map(l=>({clueId:l.clueId,quote:l.text}))}),"Pin 3 different lines.");
+  assert.equal(await act(vk,"pins",{pins:[{clueId:wrongClue.id,quote:truthLine},...three.slice(1).map(l=>({clueId:l.clueId,quote:l.text}))]}),NOT_EVIDENCE,"a line under the wrong clue");
+  assert.equal(await act(vk,"pins",{pins:three.map(l=>({clueId:l.clueId,quote:l.text.toLowerCase()}))}),null);
+  const saved=(await server.loadState(store,s.id))!.responses.find(r=>r.kind==="pins")!;
+  assert.deepEqual((saved.payload.pins as {quote:string}[]).map(p=>p.quote),three.map(l=>l.text));
+});
+
+test("evidence check: the Final Verdict and planted lies refuse lines that aren't in the story", async()=>{
+  const {world,passages,ev,lie,truth,other,otherLine}=await evidenceKit();
+  const lines=ev.evidenceLines(world,passages);
+  const pick=(id:string)=>lines.find(l=>l.clueId===id)!;
+  const clues=world.scenes.flatMap(s=>s.artifacts).map(a=>pick(a.id)).filter((l,i,a)=>a.findIndex(x=>x.text===l.text)===i).slice(0,3);
+  assert.deepEqual(ev.verdictPins(world,passages,clues.map(l=>({clue_id:l.clueId,quote:l.text}))),clues.map(l=>({clue_id:l.clueId,quote:l.text})));
+  assert.equal(ev.verdictPins(world,passages,[...clues.slice(0,2).map(l=>({clue_id:l.clueId,quote:l.text})),{clue_id:clues[2].clueId,quote:"I made this up."}]),null);
+  assert.equal(ev.verdictPins(world,passages,[{clue_id:clues[1].clueId,quote:clues[0].text},...clues.slice(1).map(l=>({clue_id:l.clueId,quote:l.text}))]),null,"quote under another clue");
+  assert.equal(ev.verdictPins(world,passages,[clues[0],clues[0],clues[1]].map(l=>({clue_id:l.clueId,quote:l.text}))),null,"the same line twice");
+  // Planted lies: the truth line must be exactly one of the clue's evidence lines, in the paragraph named.
+  const {plantedLieProblems}=await import("../lib/planted-lies.ts");
+  const base={sceneId:world.scenes[0].id,clueId:lie.clue_id,characterId:lie.character_id,sentence:"The schoolmaster packed a golden razor and a brand-new flute.",truthParagraph:lie.truth_paragraph,truthLine:truth};
+  assert.deepEqual(plantedLieProblems(world,passages,base),[]);
+  assert.match(plantedLieProblems(world,passages,{...base,truthLine:"a broken pitch-pipe."}).join(),/proves it false/,"a fragment of a real line");
+  assert.match(plantedLieProblems(world,passages,{...base,truthLine:truth+" And a flute."}).join(),/proves it false/,"an edited line");
+  assert.match(plantedLieProblems(world,passages,{...base,truthLine:otherLine.text,truthParagraph:otherLine.pid}).join(),/proves it false|this clue's evidence/,"a line from another clue");
+  void other;
+});

@@ -4,6 +4,7 @@ import { isFailure, studentFromRequest } from "@/lib/classroom/auth";
 import { readPassages, readWorld } from "@/lib/classroom/worlds";
 import { getLieBankStore } from "@/lib/lie-bank-store";
 import { plantedLieProblems } from "@/lib/planted-lies";
+import { matchEvidence } from "@/lib/evidence-check";
 import { screenArgument } from "@/lib/verdict-server";
 
 // Plant a Lie: a class student's planted lies (GET) and a new one (POST). Each is checked like a world-file lie,
@@ -31,8 +32,11 @@ export async function POST(request: Request) {
   const world = await readWorld(cls.world_id);
   if (!world) return NextResponse.json({ error: "This story can't take planted lies." }, { status: 400 });
   const data = { ...input.data, sentence: input.data.sentence.trim().replace(/\s+/g, " ") };
-  const problems = plantedLieProblems(world, await readPassages(cls.world_id), data);
+  const passages = await readPassages(cls.world_id);
+  const problems = plantedLieProblems(world, passages, data);
   if (problems.length) return NextResponse.json({ error: problems[0], problems }, { status: 422 });
+  // Store the world file's own text for the line, not what the client sent.
+  data.truthLine = matchEvidence(world, passages, data.truthLine, { clueId: data.clueId, pid: data.truthParagraph })!.text;
   // A student can have at most 10 lies waiting for the teacher at once.
   const mine = await store.listForStudent(ctx.student.id);
   if (mine.filter((l) => l.status === "pending" || l.status === "flagged").length >= 10) return NextResponse.json({ error: "You have 10 lies waiting for your teacher. Plant more once they've reviewed some." }, { status: 429 });

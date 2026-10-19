@@ -7,6 +7,7 @@ import type { WorldPack } from "./world-schema.ts";
 import type { SourcePassage } from "./source-passages.ts";
 import { contentNotes } from "./content-notes.ts";
 import { evidenceSentences, isTruthLine, lineWords, type Lie } from "./lies.ts";
+import { matchEvidence } from "./evidence-check.ts";
 
 export type PlantedLieStatus = "pending" | "approved" | "rejected" | "flagged";
 export type PlantedLie = {
@@ -32,9 +33,9 @@ export function plantedLieProblems(world: WorldPack, passages: SourcePassage[], 
   if (evidenceSentences(sentence.replace(/\b(Mrs|Mr|Ms|Dr|St)\./g, "$1")).length > 1) problems.push("Write just one sentence.");
   if (!clue.source_anchor.includes(input.truthParagraph)) problems.push("Tap a line from this clue's evidence.");
   if (contentNotes(world).has(input.truthParagraph)) problems.push("Pick a line from a different paragraph. That one has a content note.");
-  const paragraph = passages.find((p) => p.id === input.truthParagraph);
+  // The truth line must be exactly one of this clue's evidence lines, in the paragraph named: not a fragment or an edit.
   const lie = asLie(input);
-  if (!paragraph || !evidenceSentences(paragraph.text).some((s) => isTruthLine(lie, s))) problems.push("Tap the line from the story that proves it false.");
+  if (!matchEvidence(world, passages, input.truthLine, { clueId: input.clueId, pid: input.truthParagraph })) problems.push("Tap the line from the story that proves it false.");
   // Exactly one tappable line may be the answer, so classmates can't be marked wrong for an equally good line.
   const matches = passages.filter((p) => clue.source_anchor.includes(p.id)).flatMap((p) => evidenceSentences(p.text)).filter((s) => isTruthLine(lie, s));
   if (matches.length > 1) problems.push("That line appears more than once in this clue. Pick a different one.");
