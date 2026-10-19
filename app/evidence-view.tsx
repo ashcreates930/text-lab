@@ -82,6 +82,7 @@ export function EvidenceView({evidence,sample=false,className}:{evidence:ClassEv
     </table>
    </div>
   </>}
+  {evidence.storyMode?.some(s=>s.rows.length)?<StoryBoards boards={evidence.storyMode}/>:null}
   {evidence.live?.length?<LiveRounds rounds={evidence.live}/>:null}
   {selected&&<DetailPanel evidence={evidence} selected={selected} onClose={close}/>}
   {verdictOf?.verdict&&<VerdictDetail evidence={evidence} student={verdictOf} onClose={close}/>}
@@ -167,5 +168,22 @@ function LiveRounds({rounds}:{rounds:LiveRoundEvidence[]}){
     <ul className="mt-3 space-y-1.5 text-[14px] text-[#4A4438]">{sq.members.map(m=><li key={m.nickname}><span className="font-semibold text-[#2A2620]">{m.nickname}</span>: {m.actions.length?m.actions.join("; "):"No actions"}</li>)}</ul>
    </li>)}</ul>
   </details>)}
+ </section>;
+}
+
+// Story Mode: the full class leaderboard per scene (teachers only; students see the top 5 and their own rank), with
+// each student's points and proof per round.
+const ROUND_LABEL=["Read and notice","Something happens to you","Catch the lie","Make your call"];
+function StoryBoards({boards}:{boards:NonNullable<ClassEvidence["storyMode"]>}){
+ return <section aria-labelledby="story-boards-h" className="space-y-3">
+  <h3 id="story-boards-h" className="flex items-center gap-2 text-[22px] font-bold text-[#2A2620]"><Gavel size={20} className="text-[#A0472C]"/>Story Mode leaderboard</h3>
+  <p className="max-w-2xl text-[15px] leading-6 text-[#4A4438]">The full board, for you only. Students see the top 5 and their own rank. Open a student to see their proof in each round.</p>
+  {boards.filter(b=>b.rows.length).map(b=><div key={b.sceneId} className="rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
+   <p className="text-[14px] font-bold uppercase tracking-wide text-[#8A3B23]">{b.sceneTitle}</p>
+   <ol className="mt-3 space-y-2">{b.rows.map(r=><li key={r.nickname+r.rank}><details className="rounded-2xl border border-[#E4DCCB] px-4 py-3">
+    <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-2 text-[16px]"><span className="flex items-center gap-3"><span className="w-7 text-right font-bold tabular-nums">{r.rank}</span><span className="font-semibold">{r.nickname}</span>{r.timeSetting!=="1"&&<span className="rounded-full bg-[#EFE8D8] px-2 py-0.5 text-[12px] font-semibold">{r.timeSetting==="untimed"?"Untimed":r.timeSetting+"x time"}</span>}{!r.finished&&<span className="text-[13px] text-[#8B8478]">in progress</span>}</span><span className="tabular-nums">{r.score} pts · best streak {r.bestStreak}</span></summary>
+    <ul className="mt-3 space-y-2 text-[14px] leading-6 text-[#4A4438]">{r.rounds.map(x=><li key={x.round}><b>Round {x.round}, {ROUND_LABEL[x.round-1]}:</b> {x.points} pts{x.grace?" (late, half points)":""}{x.choice&&x.round!==1?<> · {x.choice}</>:null}{x.proof.map(p=><span key={p} className="mt-1 block font-serif italic">“{p.replace(/\s+/g," ")}”</span>)}{x.explanation&&<span className="mt-1 block">Explanation: {x.explanation}</span>}</li>)}</ul>
+   </details></li>)}</ol>
+  </div>)}
  </section>;
 }

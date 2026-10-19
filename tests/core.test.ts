@@ -1779,3 +1779,41 @@ test("story mode leaderboard: students see the top 5 and their own rank, never t
   const pulse=sm.classPulse([{choice:"a",valid:true,proof:["L1"]},{choice:"a",valid:true,proof:["L1"]},{choice:"a",valid:false,proof:["L2"]},{choice:"b",valid:true,proof:["L3"]}],[{key:"a",label:"A"},{key:"b",label:"B"},{key:"c",label:"C"}]);
   assert.deepEqual(pulse.map(p=>[p.key,p.pct,p.strongest]),[["a",75,"L1"],["b",25,"L3"],["c",0,""]]);
 });
+
+test("story mode server: one run per player, rounds in order, late answers forced to half, boards and pulse", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {world,passages,scene,c,line}=await storyKit();
+  const {memoryStoryStore}=await import("../lib/story-store.ts");const srv=await import("../lib/story-server.ts");
+  const store=memoryStoryStore({runs:[],rounds:[]});
+  const who=(i:number)=>({scope:"class" as const,classId:"c1",worldId:world.id,studentId:`st${i}`,nickname:["Ana Ruiz","Ben Tate","Cy Lu","Di Moss","Ed Kim","Flo Park","Gus Quinn"][i],timeSetting:"1" as const,leaderboard:"individual" as const});
+  // Two starts at once still make one run.
+  const [a,b]=await Promise.all([srv.startRun(store,world,scene,who(0)),srv.startRun(store,world,scene,who(0))]);
+  assert.equal((a as {id:string}).id,(b as {id:string}).id);
+  let run=a as import("../lib/story-store.ts").StoryRun;
+  const play=async(body:Parameters<typeof srv.playRound>[5])=>{const r=await srv.playRound(store,world,passages,scene,run,body);if(r.run)run=r.run;return r};
+  assert.deepEqual(await play({round:2,input:{kind:"confront",actionId:"x",proof:""},elapsedMs:0,grace:false,relaxed:false}),{error:"That round is already scored."},"rounds go in order");
+  const r1=await play({round:1,input:{kind:"read",pouch:[line("p068",5),line("p069",0),line("p070",2)]},elapsedMs:30000,grace:false,relaxed:false});
+  assert.equal(r1.record?.points,300);assert.deepEqual(run.state.pouch.length,3);
+  // A proof sent 70 seconds into a 60-second phase counts as late, whatever the client says.
+  const hat=c.confront.actions[0];
+  const r2=await play({round:2,input:{kind:"confront",actionId:hat.id,proof:hat.supports[0]},elapsedMs:70000,grace:false,relaxed:false});
+  assert.ok("record" in r2);if("record" in r2){assert.equal(r2.record!.base,250);assert.equal(r2.record!.speed,0);assert.equal(r2.reaction?.trust,hat.trust)}
+  assert.equal(run.state.trust["brom-bones"],hat.trust);
+  // Relaxed: the same 70 seconds is on time with 2x.
+  const other=(await srv.startRun(store,world,scene,who(1))) as import("../lib/story-store.ts").StoryRun;
+  const s2=await srv.playRound(store,world,passages,scene,other,{round:1,input:{kind:"read",pouch:[line("p068",5)]},elapsedMs:1000,grace:false,relaxed:true});
+  {const s3=await srv.playRound(store,world,passages,scene,s2.run!,{round:2,input:{kind:"confront",actionId:hat.id,proof:hat.supports[0]},elapsedMs:70000,grace:false,relaxed:true});assert.equal(s3.record?.base,500);assert.ok((s3.record?.speed??0)>0)}
+  // Seven students: each sees the top 5 and their own rank; the teacher sees everyone.
+  for(let i=2;i<7;i++){const r=(await srv.startRun(store,world,scene,who(i))) as import("../lib/story-store.ts").StoryRun;await srv.playRound(store,world,passages,scene,r,{round:1,input:{kind:"read",pouch:[line("p068",5),line("p069",0)].slice(0,i%2+1)},elapsedMs:1000,grace:false,relaxed:false})}
+  const board=await srv.boardFor(store,run,"individual",null);
+  assert.equal(board!.top.length,5);assert.equal(board!.players,7);assert.ok(board!.me);
+  assert.ok(board!.top.every(r=>/^[A-Z][a-z]+ [A-Z]\.$/.test(r.name)),"first name and last initial");
+  assert.equal(await srv.boardFor(store,run,"off",null),null);
+  const squads=new Map([["st0","Squad Lantern"],["st1","Squad Lantern"],["st2","Squad Quill"]]);
+  const sq=await srv.boardFor(store,run,"squad",null,squads);assert.equal(sq!.kind,"squad");assert.deepEqual(sq!.top.map(t=>t.name).sort(),["Squad Lantern","Squad Quill"]);
+  const teacher=await srv.teacherBoard(store,"c1",world,scene);assert.equal(teacher.length,7);assert.equal(teacher[0].rank,1);assert.ok(teacher.find(t=>t.nickname==="Ana Ruiz")!.rounds.length===2);
+  const pulse=await srv.pulseFor(store,run,scene,2);assert.equal(pulse.find(p=>p.key===hat.id)!.pct,100);assert.ok(pulse.find(p=>p.key===hat.id)!.strongest.includes("pumpkin"));
+  // Starting over keeps the best score and clears the rounds.
+  const again=(await srv.startRun(store,world,scene,who(0),true)) as import("../lib/story-store.ts").StoryRun;
+  assert.equal(again.state.round,0);assert.equal(again.bestTotal,run.bestTotal);
+});

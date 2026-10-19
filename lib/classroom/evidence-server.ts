@@ -7,6 +7,9 @@ import { buildEvidence, type ClassEvidence } from "./evidence.ts";
 import { getLiveStore } from "../live/store.ts";
 import { loadState } from "../live/server.ts";
 import { liveRoundEvidence, type LiveRoundEvidence } from "../live/evidence.ts";
+import { getStoryStore } from "../story-store.ts";
+import { teacherBoard } from "../story-server.ts";
+import { sceneTitle } from "./evidence.ts";
 
 export async function loadClassEvidence(store: ClassroomStore, teacherId: string, classId: string): Promise<ClassEvidence | null> {
   const cls = await store.getClass(teacherId, classId);
@@ -22,7 +25,10 @@ export async function loadClassEvidence(store: ClassroomStore, teacherId: string
     return { id: s.id, nickname: s.nickname, answers: mine ? p.artifactAnswers : null, frames: mine ? p.storyFrames : null, lies: mine ? p.lies ?? null : null, verdict: mine ? p.verdict ?? null : null };
   }), cls.grade);
   const live = await loadLiveRounds(cls.id);
-  return live.length ? { ...evidence, live } : evidence;
+  // Story Mode boards for the scenes that have it (none until the migration runs).
+  const storyStore = getStoryStore();
+  const story = storyStore ? (await Promise.all(world.scenes.map((s, i) => s.story_mode ? teacherBoard(storyStore, cls.id, world, s).then((rows) => ({ sceneId: s.id, sceneTitle: sceneTitle(s.id, i, s.narration), rows })).catch(() => null) : null))).filter((x): x is NonNullable<typeof x> => !!x) : [];
+  return { ...evidence, ...(live.length ? { live } : {}), ...(story.length ? { storyMode: story } : {}) };
 }
 
 // The class's live rounds, newest session first. A live store that isn't set up yet (migration not run) means none.

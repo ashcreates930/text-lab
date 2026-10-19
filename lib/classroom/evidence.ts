@@ -36,6 +36,8 @@ export type ClassEvidence = {
   verdict?: { question: string; standards: string[] };
   // Live rounds the class played: each squad's answer and result, and what each student did in their role.
   live?: LiveRoundEvidence[];
+  // Story Mode: every student ranked per scene, with each round's points and proof (teachers only).
+  storyMode?: { sceneId: string; sceneTitle: string; rows: { rank: number; nickname: string; score: number; bestStreak: number; finished: boolean; timeSetting: string; rounds: { round: number; kind: string; points: number; valid: boolean; choice: string; proof: string[]; explanation: string; grace: boolean }[] }[] }[];
   summary: { joined: number; totalClues: number; averageProven: number; provedWrongStudents: number; needsHelp: number; anyProven: boolean };
 };
 
@@ -141,6 +143,15 @@ export function evidenceCsv(e: ClassEvidence) {
    }
    // One row for the Final Verdict: theory, case strength, the pinned quotes and the closing argument.
    if (e.verdict) lines.push([s.nickname, "Final verdict", s.verdict?.theory ?? "Not yet", s.verdict ? (s.verdict.strength ?? "Saved without feedback") : "", (s.verdict?.pinned ?? []).map((p) => `${p.clue}: ${p.quote}`).join(" | "), s.verdict?.argument ?? "", "", ""].map(cell).join(","));
+  }
+  // Story Mode: one row per student per scene, with each round's points and proof.
+  if (e.storyMode?.some((s) => s.rows.length)) {
+    lines.push("", ["Story Mode scene", "Rank", "Student", "Score", "Best streak", "Time", "Round 1 points", "Round 1 proof", "Round 2 points", "Round 2 move", "Round 2 proof", "Round 3 points", "Round 3 line", "Round 3 explanation", "Round 4 points", "Round 4 theory", "Round 4 proof"].join(","));
+    for (const sc of e.storyMode) for (const r of sc.rows) {
+      const rd = (n: number) => r.rounds.find((x) => x.round === n);
+      const pts = (n: number) => (rd(n) ? `${rd(n)!.points}${rd(n)!.grace ? " (late, half)" : ""}` : "");
+      lines.push([sc.sceneTitle, String(r.rank), r.nickname, String(r.score), String(r.bestStreak), r.timeSetting === "1" ? "Standard" : r.timeSetting === "untimed" ? "Untimed" : `${r.timeSetting}x`, pts(1), (rd(1)?.proof ?? []).join(" | "), pts(2), rd(2)?.choice ?? "", (rd(2)?.proof ?? []).join(" | "), pts(3), (rd(3)?.proof ?? []).join(" | "), rd(3)?.explanation ?? "", pts(4), rd(4)?.choice ?? "", (rd(4)?.proof ?? []).join(" | ")].map(cell).join(","));
+    }
   }
   // Live rounds: a second table, one row per student per round (squads score together; no individual ranking).
   if (e.live?.length) {
