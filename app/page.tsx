@@ -60,6 +60,8 @@ export type Demo = {
   choices?:Record<string,string>; classProgressLoaded?:boolean;
   // Spot the Lie results per scene, and the Final Verdict (see lib/lies.ts and lib/verdict.ts).
   lies?:Record<string,import("@/lib/lies").LieRecord>; verdict?:import("@/lib/verdict").SavedVerdict;
+  // Students in the story: "What's your angle?" (three choices) and whether the role intro card was seen.
+  angle?:import("@/lib/student-role").Angle; roleIntroSeen?:boolean;
   storyFrames?:Record<string,{kind:"add_detail"|"student";description:string;quote:string;saved_at:string;image?:string;check?:{ok:boolean;notes:string[]}}>;
 };
 type ScreenSnapshot = { insideTheTextScreen: true; sequence: number; view: View; demo: Demo };

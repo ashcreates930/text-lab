@@ -201,3 +201,58 @@ Fixed lines students and the class see. Nothing here is generated; the testimony
 | Host screen | Witness stand · Play on the Witness stand · Play on the board instead · Scan with the phone that goes under the hologram pyramid, then tap Start on it. The testimony will play there. |
 
 - Hologram figures are generated once per speaking character (`npm run generate-assets -- --holograms`), from the same descriptions and period notes as the portraits. The Tell-Tale Heart narrator stays a faceless silhouette. Non-speaking characters have no hologram.
+
+## Students in the story
+
+Each story gives the student a part to play (`student_role` in the world file) and a personal frame on every choice point (`choice_point.role_frame`). Teachers can turn roles and angles off per class.
+
+### The Legend of Sleepy Hollow
+
+| Field | Text |
+| --- | --- |
+| Role | The newest student in Ichabod's class |
+| Setup (sent to characters) | You are the newest student in Ichabod Crane's schoolhouse, and you saw something near the bridge the night he vanished. |
+| Starts in | `empty-schoolhouse` |
+| Intro card | You are the newest student in Ichabod Crane's one-room schoolhouse. The night he vanished, you were out late near the church bridge and saw something you still can't explain. This morning his seat is empty, and the whole valley has a theory. What you saw is only a start. The story is your proof. |
+| Never plays | Ichabod Crane, Katrina Van Tassel, Baltus Van Tassel, Headless Horseman |
+| Choice frame, `empty-schoolhouse` | This morning you found his desk empty. Last night you saw something near the bridge. Which do you check first? |
+| Choice frame, `van-tassel-party` | Everyone at the party heard the ghost stories, and so did you. You know which road Ichabod took home. |
+| Choice frame, `the-road-home` | This is the bridge where you saw something that night. Now you can test it against what the town found. |
+
+### Trifles
+
+| Field | Text |
+| --- | --- |
+| Role | The young deputy watching the kitchen |
+| Setup (sent to characters) | You are the sheriff's young deputy, told to keep watch in the Wright kitchen while the men search. |
+| Starts in | `kitchen` |
+| Intro card | You are the sheriff's youngest deputy. This cold morning your job is to keep watch in the Wright farmhouse kitchen while the sheriff and the county attorney search upstairs and in the barn. The men call the kitchen things trifles. You get to watch what Mrs. Hale and Mrs. Peters notice, and decide what counts as evidence. |
+| Never plays | Minnie Wright, John Wright, Mrs. Hale, Mrs. Peters, Mr. Hale, Sheriff, County Attorney |
+| Choice frame, `kitchen` | From your post by the door, you watched the women find the first clues. Which question would you follow? |
+| Choice frame, `minnie-foster` | The women seem to forget you are in the room. Their talk is turning serious. |
+| Choice frame, `the-law-and-the-women` | You can hear the men on the stairs. You are the officer in the kitchen. What do you watch? |
+
+### The Tell-Tale Heart
+
+| Field | Text |
+| --- | --- |
+| Role | The neighbor who heard the shriek |
+| Setup (sent to characters) | You live next door, and the shriek you heard in the night is why the police came. |
+| Starts in | `arrival` |
+| Intro card | You live next door to the old man's house. In the dead of night you heard a shriek, and the police were sent for. Now the officers are inside, and the man who let them in says the shriek was his own, in a dream. You know what you heard. Find out whether his story holds up. |
+| Never plays | old man, narrator |
+| Choice frame, `arrival` | You are the one who heard the shriek. The man at the door is smiling. Where do you start? |
+| Choice frame, `search` | He is showing everyone around as if he has nothing to hide. You heard that shriek. What do you question? |
+| Choice frame, `room` | You know what you heard that night. How do you test what he says? |
+
+### What's your angle?
+
+| Question | Choices |
+| --- | --- |
+| What fires you up? | Unfairness · Being underestimated · Loyalty · Winning · Money |
+| What's your lane? | Sports · Music · Gaming · Fashion · Social media |
+| How do you play? | Solo detective · Squad · Rival |
+
+- Screen text: What's your angle? · Three quick taps, so the characters know how to talk to you. Only these three answers are shared. · Skip · Step into the story · Your part in (story) · You are (part).
+- What characters are told (lib/student-role.ts): the role's name and one-line setup, with the rule that the part adds no new events and every fact must come from the source passages; and the three choices, with permission for at most one short, plain comparison and never to change story facts. No free text from the student is ever sent.
+- Teacher setting (class page): Roles and angles · Student roles: Each student plays a part in the story, and characters speak to them in it. · What's your angle?: Three quick choices that help characters make a point clearer. Only those choices reach the AI.

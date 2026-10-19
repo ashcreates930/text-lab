@@ -65,7 +65,7 @@ function ClassList({email,classes,onOpen,onCreated,onSignOut}:{email:string;clas
  </div>;
 }
 
-type Detail={class:{id:string;name:string|null;class_code:string;grade:number;preview_enabled:boolean};students:{id:string;nickname:string}[];assignments:{lesson_id:string;due_date:string|null}[];completions:{student_id:string;lesson_id:string;first_try_correct:number;total:number}[];activeAnalysisId:string|null;world:{title:string;teacherPreviewRequired:boolean;scenes:{id:string;clues:number}[];roles:{id:string;name:string}[]}|null};
+type Detail={class:{id:string;name:string|null;class_code:string;grade:number;preview_enabled:boolean;roles_enabled?:boolean;angles_enabled?:boolean};students:{id:string;nickname:string}[];assignments:{lesson_id:string;due_date:string|null}[];completions:{student_id:string;lesson_id:string;first_try_correct:number;total:number}[];activeAnalysisId:string|null;world:{title:string;teacherPreviewRequired:boolean;scenes:{id:string;clues:number}[];roles:{id:string;name:string}[]}|null};
 
 // QR code for the class link, drawn as SVG in the browser. Projected on the board, students scan it to join.
 function JoinQr({url}:{url:string}){
@@ -85,6 +85,7 @@ function ClassDetail({classId,onPresent}:{classId:string;onPresent:()=>void}){
  return <div className="mt-6 space-y-5">
   <div className="panel flex flex-wrap items-center justify-between gap-5 p-6"><div><p className="eyebrow">CLASS</p><h1 className="serif mt-2 text-4xl">{c.name||"Untitled class"}</h1><p className="mt-1 text-base text-white/75">{data.world?.title} · Grade {c.grade} · {data.students.length} students joined</p></div><div className="flex flex-wrap items-center gap-5"><JoinQr url={joinUrl}/><div className="text-right"><p className="text-sm text-white/70">Students scan the code or open this link, then type a nickname:</p><p className="mt-1 break-all font-mono text-lg font-bold text-[#8A3B23]">{joinUrl.replace(/^https?:\/\//,"")}</p><button onClick={()=>{navigator.clipboard?.writeText(joinUrl);setCopied(true);setTimeout(()=>setCopied(false),1500)}} className="mt-2 text-sm text-white/70 underline underline-offset-4"><Copy size={13} className="mr-1 inline"/>{copied?"Copied":"Copy class link"}</button><p className="mt-2 text-xs text-white/60">Without the link: class code <span className="font-mono font-bold tracking-widest">{c.class_code}</span></p></div></div></div>
   {data.world?.teacherPreviewRequired&&<div className="panel flex flex-wrap items-center justify-between gap-3 p-5"><p className="text-base text-white/85">This story has content notes, so students cannot join until you enable it after previewing.</p><button onClick={async()=>{await teacherFetch(`/api/teacher/classes/${classId}`,{method:"PATCH",body:JSON.stringify({previewEnabled:!c.preview_enabled})});load()}} className={`${c.preview_enabled?"soft-button":"gold-button"} ${big}`}>{c.preview_enabled?"Enabled · turn off":"I previewed it · enable for students"}</button></div>}
+  <StoryPersonalPanel classId={classId} rolesOn={c.roles_enabled!==false} anglesOn={c.angles_enabled!==false} onChange={load}/>
   <div className="panel flex flex-wrap items-center justify-between gap-4 p-6"><div><p className="eyebrow">LIVE ROUND</p><h2 className="serif mt-1 text-2xl">Squads on their phones</h2></div><StartLiveRound classId={classId} fetcher={teacherFetch}/></div>
   <ClassWeekBoard fetcher={teacherFetch}/>
   <div role="tablist" className="flex flex-wrap gap-2">{([["evidence","Evidence"],["lies","Lie bank"],["live","Live class analysis"],["lessons","Assign mini lessons"],["students","Students"]] as const).map(([id,label])=><button key={id} role="tab" aria-selected={tab===id} onClick={()=>setTab(id)} className={`border ${big} ${tab===id?"border-[#A0472C] bg-[#A0472C]/15 text-[#8A3B23]":"border-white/25 text-white/80"}`}>{label}</button>)}</div>
@@ -179,3 +180,13 @@ function LivePresenter({classId,onExit}:{classId:string;onExit:()=>void}){
  </section>;
 }
 
+
+// Students in the story: the teacher turns student roles (the part each student plays) and "What's your angle?" on or off.
+function StoryPersonalPanel({classId,rolesOn,anglesOn,onChange}:{classId:string;rolesOn:boolean;anglesOn:boolean;onChange:()=>void}){
+ const [busy,setBusy]=useState(false),[error,setError]=useState("");
+ async function set(change:{rolesOn?:boolean;anglesOn?:boolean}){if(busy)return;setBusy(true);setError("");const r=await teacherFetch(`/api/teacher/classes/${classId}`,{method:"PATCH",body:JSON.stringify(change)});setBusy(false);if(!r.ok)setError(r.body.error||"Could not save that.");onChange()}
+ const toggle=(label:string,note:string,on:boolean,change:{rolesOn?:boolean;anglesOn?:boolean})=><div className="flex items-center justify-between gap-4 py-2"><div><p className="text-base font-semibold">{label}</p><p className="text-sm text-white/70">{note}</p></div><button type="button" role="switch" aria-checked={on} aria-busy={busy} onClick={()=>set(change)} className={`relative h-8 w-14 shrink-0 rounded-full transition motion-reduce:transition-none ${on?"bg-[#A0472C]":"bg-white/25"}`}><span className="sr-only">{label}</span><span aria-hidden className={`absolute top-1 h-6 w-6 rounded-full bg-[#FFFDF8] transition-all motion-reduce:transition-none ${on?"left-7":"left-1"}`}/></button></div>;
+ return <section className="panel p-6" aria-labelledby="personal-h"><p className="eyebrow">STUDENTS IN THE STORY</p><h2 id="personal-h" className="serif mt-1 text-2xl">Roles and angles</h2>
+  <div className="mt-3 divide-y divide-white/10">{toggle("Student roles","Each student plays a part in the story, and characters speak to them in it.",rolesOn,{rolesOn:!rolesOn})}{toggle("What's your angle?","Three quick choices that help characters make a point clearer. Only those choices reach the AI.",anglesOn,{anglesOn:!anglesOn})}</div>
+  {error&&<p role="alert" className="mt-2 text-sm text-[#F3C9B2]">{error}</p>}</section>;
+}

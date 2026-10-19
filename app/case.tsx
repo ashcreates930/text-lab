@@ -33,6 +33,8 @@ import {VerdictPanel,VerdictStamp,VerdictView} from "./verdict";
 import {theoryOf,verdictFor} from "@/lib/verdict";
 import {PlantLieView} from "./plant-lie";
 import {HologramView} from "./hologram-view";
+import {RoleIntro} from "./role-intro";
+import {DEFAULT_PERSONAL,choiceFrame,partName,type StoryPersonalSettings} from "@/lib/student-role";
 
 export function CaseFlow(props:{demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void;onTutorial?:()=>void;onFeedback?:()=>void}){
  return <BilingualProvider worldId={props.demo.worldId} lang={props.demo.homeLanguage??null}><CaseInner {...props}/></BilingualProvider>;
@@ -42,7 +44,10 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback}:{d
  const [world,setWorld]=useState<WorldPack|null>(null),[passages,setPassages]=useState<SourcePassage[]>([]),[error,setError]=useState("");
  const [openClue,setOpenClue]=useState<string>(""),[openFrame,setOpenFrame]=useState(""),[verdictOpen,setVerdictOpen]=useState(false),[toast,setToast]=useState(""),[celebrate,setCelebrate]=useState<{sceneId:string;rankUp:string|null}|null>(null),[justProven,setJustProven]=useState(""),[plantClue,setPlantClue]=useState("");
  // Opening a clue or a storyboard frame, or going back to the scene, is a new screen: start at the top with focus on its heading.
- const screen=`${openClue}|${openFrame}|${verdictOpen}|${plantClue}`,shownScreen=useRef(screen);
+ // Students in the story: a class follows its teacher's settings for roles and angles; everyone else has both on.
+ const [personal,setPersonal]=useState<StoryPersonalSettings|null>(demo.classAuth?null:DEFAULT_PERSONAL);
+ useEffect(()=>{if(!demo.classAuth)return;fetch("/api/student/class",{headers:{"x-class-token":demo.classAuth.token},cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>setPersonal(j?{rolesOn:j.rolesOn!==false,anglesOn:j.anglesOn!==false}:DEFAULT_PERSONAL)).catch(()=>setPersonal(DEFAULT_PERSONAL))},[demo.classAuth]);
+ const screen=`${openClue}|${openFrame}|${verdictOpen}|${plantClue}|${!!demo.roleIntroSeen}`,shownScreen=useRef(screen);
  useLayoutEffect(()=>{if(shownScreen.current===screen)return;shownScreen.current=screen;focusScreenTop()},[screen]);
  useEffect(()=>{setWorld(null);fetch(`/worlds/${demo.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setError("We couldn't open this story. Refresh the page to try again."));fetch(`/worlds/${demo.worldId}/source.md`).then(r=>r.ok?r.text():"").then(t=>setPassages(parseSourcePassages(t))).catch(()=>setPassages([]))},[demo.worldId]);
  // Students play the scene game. The storybook reader stays in the code, switched off, until we decide to bring it back.
@@ -56,7 +61,10 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback}:{d
  if(!world||!world.roles.some(r=>r.id===demo.role))return <div className="case-ui grid min-h-[60vh] place-items-center"><p className="text-[15px] text-[#6B6457]">Opening the story…</p></div>;
  const sceneIndex=Math.min(demo.scene,world.scenes.length-1),scene=world.scenes[sceneIndex],role=world.roles.find(r=>r.id===demo.role)!;
  const finished=demo.submitted;
- if(finished)return <CaseSummary world={world} demo={demo} passages={passages} onAnotherStory={onAnotherStory}/>;
+ if(finished)return <CaseSummary world={world} demo={demo} passages={passages} onAnotherStory={onAnotherStory} personal={personal??DEFAULT_PERSONAL}/>;
+ // The role card and "What's your angle?" come once, before the first clue (after saved progress has loaded).
+ const introDue=!!personal&&(!demo.classAuth||demo.classProgressLoaded)&&!demo.roleIntroSeen&&!Object.keys(demo.artifactAnswers).length&&((personal.rolesOn&&!!world.student_role)||personal.anglesOn);
+ if(introDue&&personal)return <RoleIntro world={world} settings={personal} onDone={angle=>setDemo(d=>({...d,roleIntroSeen:true,...(angle?{angle}:{}),scene:d.scene===0&&personal.rolesOn&&world.student_role?Math.max(0,world.scenes.findIndex(s=>s.id===world.student_role!.start_scene)):d.scene}))}/>;
  if(STORYBOOK_ON&&world.storybook)return <StorybookReader world={world} role={role} passages={passages} demo={demo} setDemo={setDemo} onExit={onExit} onFeedback={onFeedback}/>;
  const frames=sceneFrames(world,passages,sceneIndex);
  // The scene is solved when every clue is proven and its required frame is saved, whichever comes last.
@@ -75,10 +83,10 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback}:{d
   const badge=info?.factCheck?recordFactCheck(`${world.id}:${clue.id}`):false;
   setToast(badge?"Badge earned: Fact Checker. You used the story to prove a character wrong.":"Clue proven and saved to your case file.");
   if(info?.solves&&sceneSolved(true,frames,demo.storyFrames))celebrateScene()}}/>;
- return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} role={role} demo={demo} setDemo={setDemo} passages={passages} frames={frames} onOpenFrame={setOpenFrame} onOpenVerdict={()=>setVerdictOpen(true)} onCloseCase={closeCase} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} onPlantLie={demo.classAuth?setPlantClue:undefined} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
+ return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} role={role} demo={demo} setDemo={setDemo} passages={passages} frames={frames} onOpenFrame={setOpenFrame} onOpenVerdict={()=>setVerdictOpen(true)} onCloseCase={closeCase} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} onPlantLie={demo.classAuth?setPlantClue:undefined} personal={personal??DEFAULT_PERSONAL} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
 }
 
-function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onOpenFrame,onOpenVerdict,onCloseCase,onOpenClue,onExit,onPlantLie,toast,celebrating,rankUp,justProven,onTutorial}:{onPlantLie?:(clueId:string)=>void;world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];frames:SceneFrame[];onOpenFrame:(key:string)=>void;onOpenVerdict:()=>void;onCloseCase:()=>void;onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string;onTutorial?:()=>void}){
+function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onOpenFrame,onOpenVerdict,onCloseCase,onOpenClue,onExit,onPlantLie,personal,toast,celebrating,rankUp,justProven,onTutorial}:{onPlantLie?:(clueId:string)=>void;personal:StoryPersonalSettings;world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];frames:SceneFrame[];onOpenFrame:(key:string)=>void;onOpenVerdict:()=>void;onCloseCase:()=>void;onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string;onTutorial?:()=>void}){
  const [reading,setReading]=useState(false),[boardOpen,setBoardOpen]=useState(false),[moment,setMoment]=useState<{text:string;image:string}|null>(null);
  // Ambient sound: on for the demo, off for class sessions; the student can switch it either way.
  const [ambientOn,toggleAmbient]=useSoundPref("ambient",demo.preset);
@@ -119,7 +127,7 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onO
    {done===0&&next&&<div aria-hidden className="case-hint pointer-events-none absolute z-20" style={{left:`${Math.min(85,Math.max(15,next.position.x+next.position.width/2))}%`,top:`calc(${next.position.y+next.position.height/2}% + 30px)`}}><span className="block whitespace-nowrap rounded-full bg-[#FFFDF8] px-4 py-2 text-[15px] font-bold text-[#8A3B23] shadow-lg">Start here: tap the glowing clue</span></div>}
    {solved&&<div aria-hidden className={`case-stamp pointer-events-none z-10 ${celebrating?"":"case-stamp-static"}`}>Scene solved</div>}
    <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent p-5 pt-16 md:p-8 md:pt-24">
-    <p className="text-[13px] font-semibold uppercase tracking-wide text-[#F3C9B2]">You are the {role.name}</p>
+    <p className="text-[13px] font-semibold uppercase tracking-wide text-[#F3C9B2]">You are {partName(world,role.name,personal)}</p>
     <h1 className="mt-1 max-w-3xl text-[20px] font-semibold leading-snug text-white outline-none md:text-[26px]">{role.goal}</h1>
     <HomeText text={role.goal} className="border-[#F3C9B2] text-[#F7E3D7]"/>
    </div>
@@ -129,6 +137,7 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onO
    <div className="min-w-0">
     <p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Next step</p>
     <p className="mt-0.5 text-[17px] font-bold text-[#2A2620]">{step.progress}</p>
+    {step.action.kind==="choice"&&choiceFrame(world,scene.choice_point,personal)&&<p className="mt-1 text-[16px] italic leading-6 text-[#4A4438]">{choiceFrame(world,scene.choice_point,personal)}</p>}
     {step.action.kind==="choice"&&<><p className="mt-1 text-[16px] leading-6 text-[#2A2620]">{step.action.label}</p><HomeText text={step.action.label}/></>}
    </div>
    {step.action.kind==="choice"&&scene.choice_point
@@ -273,7 +282,7 @@ function ClueView({world,scene,clue,roleId,demo,setDemo,passages,onClose}:{world
  </div>;
 }
 
-export function CaseSummary({world,demo,passages=[],onAnotherStory}:{world:WorldPack;demo:Demo;passages?:SourcePassage[];onAnotherStory:()=>void}){
+export function CaseSummary({world,demo,passages=[],onAnotherStory,personal=DEFAULT_PERSONAL}:{world:WorldPack;demo:Demo;passages?:SourcePassage[];onAnotherStory:()=>void;personal?:StoryPersonalSettings}){
  const role=world.roles.find(r=>r.id===demo.role);
  const items=world.scenes.flatMap(s=>s.artifacts).filter(a=>isDone(demo,a.id));
  const caught=items.filter(a=>demo.artifactAnswers[a.id]?.craft==="contradicts").length;
@@ -288,7 +297,7 @@ export function CaseSummary({world,demo,passages=[],onAnotherStory}:{world:World
    <div className="grid gap-6 p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:p-8">
     <div>
      <h1 className="text-[34px] font-bold leading-tight">Here's what you proved.</h1>
-     <p className="mt-2 text-[17px] text-[#4A4438]">{role?`As the ${role.name}, you`:"You"} proved {items.length} clue{items.length===1?"":"s"}, each one backed by a line from the story.</p>
+     <p className="mt-2 text-[17px] text-[#4A4438]">{role?`As ${partName(world,role.name,personal)}, you`:"You"} proved {items.length} clue{items.length===1?"":"s"}, each one backed by a line from the story.</p>
      <div className="mt-4 flex flex-wrap items-center gap-2"><RankChip/>{caught>0&&<FactCheckerBadge count={caught}/>}{verdict&&<ClosingArgumentBadge/>}<span className="text-[14px] text-[#6B6457]">{progress.scenes.length} scene{progress.scenes.length===1?"":"s"} solved so far</span></div>
     </div>
     <div aria-hidden className="case-stamp case-stamp-page justify-self-center">Case closed</div>

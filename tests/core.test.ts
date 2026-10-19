@@ -1484,3 +1484,65 @@ test("hologram faces: each copy is cut to its wedge of the pyramid, so neighbour
   assert.equal(h.faceClip(0,40),"none");
   assert.ok(h.hologramLayout({width:375,height:812,size:0.9,gap:0.16,mirror:false}).every(c=>c.clip.startsWith("polygon(")));
 });
+
+// ---------- Students in the story ----------
+const roleWorld=async(id:string)=>WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+
+test("student roles load for every story: a part to play, a start scene, a second-person intro, and a frame on every choice", async()=>{
+  const sr=await import("../lib/student-role.ts");
+  const expected:Record<string,RegExp>={"sleepy-hollow":/newest student in Ichabod's class/i,"trifles":/young deputy watching the kitchen/i,"tell-tale-heart":/neighbor who heard the shriek/i};
+  for(const [id,name] of Object.entries(expected)){
+    const world=await roleWorld(id);const role=world.student_role!;
+    assert.match(role.name,name);
+    assert.ok(world.scenes.some(s=>s.id===role.start_scene));
+    assert.match(role.intro,/^You /);assert.match(role.setup,/^You /);
+    assert.deepEqual(sr.studentRoleProblems(world),[]);
+    for(const s of world.scenes)if(s.choice_point)assert.ok(sr.choiceFrame(world,s.choice_point).length>10,`${id}/${s.id} has a personal frame`);
+    // The public copy the app loads carries the same role.
+    const pub=JSON.parse(await readFile(new URL(`../public/worlds/${id}/world.json`,import.meta.url),"utf8"));
+    if(id!=="tell-tale-heart")assert.deepEqual(pub.student_role,role);
+  }
+  const tth=await roleWorld("tell-tale-heart");
+  assert.ok(!/old man/i.test(tth.student_role!.name),"never the old man");
+  assert.match(tth.student_role!.setup,/shriek/);
+});
+
+test("student roles are validated: a real start scene, one line of setup, never one of the story's people", async()=>{
+  const sr=await import("../lib/student-role.ts");
+  const world=await roleWorld("tell-tale-heart");
+  const bad=(change:(w:typeof world)=>void)=>{const w=structuredClone(world);change(w);return sr.studentRoleProblems(w).join(" | ")};
+  assert.match(bad(w=>{w.student_role!.start_scene="nowhere"}),/not a scene/);
+  assert.match(bad(w=>{w.student_role!.setup="You heard it.\nThen more."}),/one line/);
+  assert.match(bad(w=>{w.student_role!.intro="The neighbor heard a shriek."}),/second person/);
+  assert.match(bad(w=>{w.student_role!.name="The old man"}),/can't play old man/);
+  assert.match(bad(w=>{w.student_role!.name="The officer on duty"}),/can't play Officer/i);
+  assert.match(bad(w=>{delete w.scenes[0].choice_point!.role_frame}),/without a role_frame/);
+});
+
+test("what's your angle: only the three choices reach the AI, and the teacher's settings turn roles and angles off", async()=>{
+  const sr=await import("../lib/student-role.ts");
+  const world=await roleWorld("sleepy-hollow");
+  const p=sr.personaPrompt(world,{firedUpBy:"underestimated",lane:"music",style:"rival"});
+  assert.match(p,/newest student in Ichabod's class/);assert.match(p,/being underestimated/);assert.match(p,/music/);assert.match(p,/rival/);
+  assert.match(p,/must still come from the source passages/);
+  assert.equal(sr.personaPrompt(world,{lane:"music"},{rolesOn:false,anglesOn:false}),"");
+  assert.doesNotMatch(sr.personaPrompt(world,{lane:"music"},{rolesOn:true,anglesOn:false}),/music/);
+  assert.doesNotMatch(sr.personaPrompt(world,null,{rolesOn:false,anglesOn:true}),/playing a part/);
+  // Anything but the listed choices is refused: no free text can ride along.
+  assert.equal(sr.AngleSchema.safeParse({lane:"my name is Sam"}).success,false);
+  assert.equal(sr.AngleSchema.safeParse({lane:"music",note:"hi"}).success,false);
+  assert.equal(sr.personaPrompt(world,{lane:"I live on Elm St"} as never).includes("Elm"),false);
+  assert.equal(sr.choiceFrame(world,world.scenes[0].choice_point,{rolesOn:false,anglesOn:true}),"");
+  assert.equal(sr.ANGLE_STEPS.length,3);
+  assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.firedUpBy.options),["Unfairness","Being underestimated","Loyalty","Winning","Money"]);
+  assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.lane.options),["Sports","Music","Gaming","Fashion","Social media"]);
+  assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.style.options),["Solo detective","Squad","Rival"]);
+  // Saved with progress only.
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
+  const base={v:1,worldId:"sleepy-hollow",scene:0,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],updatedAt:"2026-10-19T00:00:00Z"};
+  assert.equal(StudentProgressSchema.safeParse({...base,angle:{lane:"gaming"},roleIntroSeen:true}).success,true);
+  assert.equal(StudentProgressSchema.safeParse({...base,angle:{lane:"anything"}}).success,false);
+  const {personalSettings}=await import("../lib/classroom/store.ts");
+  assert.deepEqual(personalSettings({}),{rolesOn:true,anglesOn:true},"on until the teacher turns them off");
+  assert.deepEqual(personalSettings({roles_enabled:false,angles_enabled:true}),{rolesOn:false,anglesOn:true});
+});

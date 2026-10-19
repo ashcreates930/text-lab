@@ -6,7 +6,9 @@ import { getServiceSupabase } from "../supabase.ts";
 import type { LivePlan, LiveState } from "./plan.ts";
 import type { StudentProgress } from "./progress.ts";
 
-export type ClassRow = { id: string; teacher_id: string; name: string | null; class_code: string; world_id: string; grade: number; status: string; preview_enabled: boolean; created_at: string };
+export type ClassRow = { id: string; teacher_id: string; name: string | null; class_code: string; world_id: string; grade: number; status: string; preview_enabled: boolean; created_at: string; roles_enabled?: boolean; angles_enabled?: boolean };
+// Student roles and angles are on unless the teacher turned them off (older rows, before the migration, have neither).
+export const personalSettings = (c: Pick<ClassRow, "roles_enabled" | "angles_enabled">) => ({ rolesOn: c.roles_enabled !== false, anglesOn: c.angles_enabled !== false });
 export type StudentRow = { id: string; session_id: string; nickname: string; created_at: string };
 export type AssignmentRow = { id: string; session_id: string; lesson_id: string; due_date: string | null; created_at: string };
 export type CompletionRow = { student_id: string; lesson_id: string; first_try_correct: number; total: number; finished_at: string };
@@ -19,6 +21,7 @@ export interface ClassroomStore {
   createClass(teacherId: string, input: { name: string; worldId: string; grade: number }): Promise<ClassRow>;
   getClass(teacherId: string, classId: string): Promise<ClassRow | null>;
   setPreviewEnabled(classId: string, enabled: boolean): Promise<void>;
+  setPersonalSettings(classId: string, settings: { rolesOn?: boolean; anglesOn?: boolean }): Promise<void>;
   findActiveClassByCode(code: string): Promise<ClassRow | null>;
   getClassById(classId: string): Promise<ClassRow | null>;
   listStudents(classId: string): Promise<StudentRow[]>;
@@ -64,6 +67,7 @@ function supabaseStore(db: SupabaseClient): ClassroomStore {
     },
     async getClass(teacherId, classId) { return must(await db.from("sessions").select("*").eq("id", classId).eq("teacher_id", teacherId).maybeSingle()) as ClassRow | null; },
     async setPreviewEnabled(classId, enabled) { must(await db.from("sessions").update({ preview_enabled: enabled }).eq("id", classId)); },
+    async setPersonalSettings(classId, s) { must(await db.from("sessions").update({ ...(s.rolesOn !== undefined ? { roles_enabled: s.rolesOn } : {}), ...(s.anglesOn !== undefined ? { angles_enabled: s.anglesOn } : {}) }).eq("id", classId)); },
     async findActiveClassByCode(code) { return must(await db.from("sessions").select("*").eq("class_code", code.toUpperCase()).eq("status", "active").maybeSingle()) as ClassRow | null; },
     async getClassById(classId) { return must(await db.from("sessions").select("*").eq("id", classId).maybeSingle()) as ClassRow | null; },
     async listStudents(classId) { return must(await db.from("students").select("id,session_id,nickname,created_at").eq("session_id", classId).order("nickname")) as StudentRow[]; },
@@ -105,6 +109,7 @@ function memoryStore(): ClassroomStore {
     async createClass(teacherId, input) { const row: ClassRow = { id: id(), teacher_id: teacherId, name: input.name, class_code: newClassCode(), world_id: input.worldId, grade: input.grade, status: "active", preview_enabled: false, created_at: now() }; m.classes.push(row); return row; },
     async getClass(teacherId, classId) { return m.classes.find((c) => c.id === classId && c.teacher_id === teacherId) ?? null; },
     async setPreviewEnabled(classId, enabled) { const c = m.classes.find((x) => x.id === classId); if (c) c.preview_enabled = enabled; },
+    async setPersonalSettings(classId, s) { const c = m.classes.find((x) => x.id === classId); if (!c) return; if (s.rolesOn !== undefined) c.roles_enabled = s.rolesOn; if (s.anglesOn !== undefined) c.angles_enabled = s.anglesOn; },
     async findActiveClassByCode(code) { return m.classes.find((c) => c.class_code === code.toUpperCase() && c.status === "active") ?? null; },
     async getClassById(classId) { return m.classes.find((c) => c.id === classId) ?? null; },
     async listStudents(classId) { return m.students.filter((s) => s.session_id === classId).map(strip).sort((a, b) => a.nickname.localeCompare(b.nickname)); },

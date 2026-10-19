@@ -2,6 +2,7 @@
 // with their class code and nickname (same device) or their returning-student phrase (any device). It holds only the
 // student's own reading work: pages and screens, clue answers, saved evidence, and picture frames. No device ID.
 import { z } from "zod";
+import { AngleSchema } from "../student-role.ts";
 
 const text = (max: number) => z.string().max(max);
 const id = z.string().max(120);
@@ -53,6 +54,9 @@ export const StudentProgressSchema = z.object({
     submissions: z.number().int().min(1).max(5),
     saved_at: text(40),
   }).optional(),
+  // Students in the story: "What's your angle?" (three choices only) and whether the role intro card was seen.
+  angle: AngleSchema.optional(),
+  roleIntroSeen: z.boolean().optional(),
   updatedAt: text(40),
 });
 export type StudentProgress = z.infer<typeof StudentProgressSchema>;

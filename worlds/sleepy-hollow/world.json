@@ -175,6 +175,18 @@
       "final_task": "Write the story of that night the way the town tells it, then show which parts are legend and which parts the evidence supports."
     }
   ],
+  "student_role": {
+    "name": "The newest student in Ichabod's class",
+    "setup": "You are the newest student in Ichabod Crane's schoolhouse, and you saw something near the bridge the night he vanished.",
+    "start_scene": "empty-schoolhouse",
+    "intro": "You are the newest student in Ichabod Crane's one-room schoolhouse. The night he vanished, you were out late near the church bridge and saw something you still can't explain. This morning his seat is empty, and the whole valley has a theory. What you saw is only a start. The story is your proof.",
+    "never": [
+      "Ichabod Crane",
+      "Katrina Van Tassel",
+      "Baltus Van Tassel",
+      "Headless Horseman"
+    ]
+  },
   "characters": [
     {
       "id": "hans-van-ripper",
@@ -301,7 +313,8 @@
             "next_scene_id": "van-tassel-party",
             "unlocks": []
           }
-        ]
+        ],
+        "role_frame": "This morning you found his desk empty. Last night you saw something near the bridge. Which do you check first?"
       },
       "dok_task": "The searchers found a hat and a shattered pumpkin. Ichabod owned books about witchcraft. Which explanation does the evidence support better: a ghost or a trick? What can’t you prove yet?",
       "passage_anchors": [
@@ -736,7 +749,8 @@
             "next_scene_id": "the-road-home",
             "unlocks": []
           }
-        ]
+        ],
+        "role_frame": "Everyone at the party heard the ghost stories, and so did you. You know which road Ichabod took home."
       },
       "dok_task": "Ichabod heard Brom's tale of racing the Headless Horseman only hours before his own ride, and he left the party upset after his talk with Katrina. How might these two events shape what Ichabod expects and sees on the road home? Which details from the party support your answer?",
       "passage_anchors": [
@@ -1172,7 +1186,8 @@
             "next_scene_id": "the-towns-verdict",
             "unlocks": []
           }
-        ]
+        ],
+        "role_frame": "This is the bridge where you saw something that night. Now you can test it against what the town found."
       },
       "dok_task": "At Major André's tree, Ichabod mistakes a lightning scar for a ghost and creaking branches for a groan. How should that pattern affect how much you trust his view of the headless rider? Which details on the road cannot be explained by fear alone?",
       "passage_anchors": [

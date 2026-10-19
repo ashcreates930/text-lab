@@ -205,6 +205,16 @@
       "final_task": "Write a feature story that explains what readers should believe and why."
     }
   ],
+  "student_role": {
+    "name": "The neighbor who heard the shriek",
+    "setup": "You live next door, and the shriek you heard in the night is why the police came.",
+    "start_scene": "arrival",
+    "intro": "You live next door to the old man's house. In the dead of night you heard a shriek, and the police were sent for. Now the officers are inside, and the man who let them in says the shriek was his own, in a dream. You know what you heard. Find out whether his story holds up.",
+    "never": [
+      "old man",
+      "narrator"
+    ]
+  },
   "characters": [
     {
       "id": "narrator",
@@ -306,7 +316,8 @@
             "next_scene_id": "search",
             "unlocks": []
           }
-        ]
+        ],
+        "role_frame": "You are the one who heard the shriek. The man at the door is smiling. Where do you start?"
       },
       "dok_task": "Separate what the narrator claims from what the neighbor reported.",
       "artifacts": [
@@ -535,7 +546,8 @@
               "compare_claims"
             ]
           }
-        ]
+        ],
+        "role_frame": "He is showing everyone around as if he has nothing to hide. You heard that shriek. What do you question?"
       },
       "dok_task": "Identify a detail an investigator could record without assuming what caused it.",
       "artifacts": [
@@ -765,7 +777,8 @@
               "corroboration"
             ]
           }
-        ]
+        ],
+        "role_frame": "You know what you heard that night. How do you test what he says?"
       },
       "dok_task": "Compare the narrator's claim of calmness with the behavior described in the text.",
       "artifacts": [

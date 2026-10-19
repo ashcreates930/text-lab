@@ -7,7 +7,10 @@ import { screenMessage } from "@/lib/safety";
 import {WorldPackSchema} from "@/lib/world-schema";
 import {consumeDemoAi} from "@/lib/demo-usage";
 import {parseSourcePassages} from "@/lib/source-passages";
-const Input=z.object({sandboxId:z.string().uuid(),question:z.string().min(1).max(1000),scene:z.string(),worldId:z.string().regex(/^[a-z0-9-]+$/).default("tell-tale-heart"),character:z.string().default("narrator"),throughParagraph:z.string().regex(/^p\d{3}$/).optional(),clue:z.string().max(120).optional()});
+import {AngleSchema,DEFAULT_PERSONAL,personaPrompt} from "@/lib/student-role";
+import {isFailure,studentFromRequest} from "@/lib/classroom/auth";
+import {personalSettings} from "@/lib/classroom/store";
+const Input=z.object({sandboxId:z.string().uuid(),question:z.string().min(1).max(1000),scene:z.string(),worldId:z.string().regex(/^[a-z0-9-]+$/).default("tell-tale-heart"),character:z.string().default("narrator"),throughParagraph:z.string().regex(/^p\d{3}$/).optional(),clue:z.string().max(120).optional(),inRole:z.boolean().optional(),angle:AngleSchema.optional()});
 export async function POST(request:NextRequest){
   const parsed=Input.safeParse(await request.json().catch(()=>null));if(!parsed.success)return NextResponse.json({error:"Invalid question"},{status:400});
   const {question,scene,character,worldId}=parsed.data;const safety=screenMessage(question);if(safety.action!=="allow")return NextResponse.json({text:safety.message,safety});
@@ -20,10 +23,14 @@ export async function POST(request:NextRequest){
   const source=through||excluded.size?parseSourcePassages(markdown).filter(p=>(!through||Number(p.id.slice(1))<=through)&&!excluded.has(p.id)).map(p=>p.text):markdown.split(/\n\s*\n/).slice(1).map(p=>p.trim()).filter(Boolean);
   const item=pack.characters.find(x=>x.id===character);if(!item)return NextResponse.json({error:"Character not found."},{status:404});
   const capped=await consumeDemoAi(request,"character",parsed.data.sandboxId);if(capped)return capped;
+  // Students in the story: the student's part and their angle (three choices only). A class student's teacher settings win.
+  let personal={rolesOn:parsed.data.inRole!==false,anglesOn:!!parsed.data.angle};
+  if(request.headers.get("x-class-token")){const ctx=await studentFromRequest(request);if(!isFailure(ctx)){const cls=await ctx.store.getClassById(ctx.student.session_id);const s=cls?personalSettings(cls):DEFAULT_PERSONAL;personal={rolesOn:personal.rolesOn&&s.rolesOn,anglesOn:personal.anglesOn&&s.anglesOn}}}
+  const persona=personaPrompt(pack,parsed.data.angle,personal);
   const sceneText=through?"The student has read the story only up to this point. Your character notes may mention later events: keep them secret. Every event you mention must appear in the source passages below, and speak only to what you yourself saw, said, or did in them; if they do not show you there, say you were not there. Never mention or hint at later events.":pack.scenes.find(x=>x.id===scene)?.narration??"Only the story's known events are in scope.";
   // Spot the Lie: on the lie clue, the character who gave the testimony stands by it and makes up nothing new.
   const lie=pack.scenes.find(x=>x.id===scene)?.lie;
   const testimony=lie&&lie.clue_id===parsed.data.clue&&lie.character_id===character?` Earlier in this conversation you told the student: "${lie.testimony}" Stand by what you said: do not take it back, correct it, or say which part might be wrong. Do not add any new facts that are not in the source passages; for anything else, answer only from the passages.`:"";
-  try{const passages=await retrieveRelevantPassages(question,source);return NextResponse.json(await characterReply({question,character:item,scene:sceneText+testimony,passages}))}
+  try{const passages=await retrieveRelevantPassages(question,source);return NextResponse.json(await characterReply({question,character:item,scene:sceneText+testimony+(persona?` ${persona}`:""),passages}))}
   catch(error){console.error("Character reply failed:",error instanceof Error?error.message:error);return NextResponse.json({text:"I can’t find an answer to that in the passages I have. What detail in this scene makes you ask?",safety})}
 }
