@@ -13,7 +13,8 @@ import {FactCheckerBadge} from "./case-game";
 const card="rounded-3xl bg-[#FFFDF8] shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]";
 const STARTERS=["I believe… because…","The strongest evidence is… This shows…","Some might say…, but…"];
 
-export function VerdictView({world,demo,setDemo,onBack,onFinish}:{world:WorldPack;demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onBack:()=>void;onFinish:()=>void}){
+// reprove: clues whose saved line isn't a line from the story; they can't be pinned until re-proven.
+export function VerdictView({world,demo,setDemo,onBack,onFinish,reprove=[]}:{world:WorldPack;demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onBack:()=>void;onFinish:()=>void;reprove?:string[]}){
  const verdict=world.verdict!;
  const saved=verdictFor(demo.verdict,world.id);
  const cards=caseBoardCards(world,demo.artifactAnswers);
@@ -23,7 +24,7 @@ export function VerdictView({world,demo,setDemo,onBack,onFinish}:{world:WorldPac
  const [editing,setEditing]=useState(!saved);
  const [sending,setSending]=useState(false),[notice,setNotice]=useState(""),[stamp,setStamp]=useState(false);
  const box=useRef<HTMLTextAreaElement>(null);
- const ready=canSubmit({theoryId,pinned,argument});
+ const ready=canSubmit({theoryId,pinned,argument})&&!pinned.some(id=>reprove.includes(id));
  const problems=verdictProblems({theoryId,pinned,argument});
  async function submit(){
   if(!ready||sending)return;
@@ -34,6 +35,8 @@ export function VerdictView({world,demo,setDemo,onBack,onFinish}:{world:WorldPac
   setSending(false);
   // An argument that isn't about the story is not saved; the student revises it.
   if(result.status==="flagged"){setNotice(result.message??"Let's keep your argument about the story.");return}
+  // A pinned quote that isn't a line from the story is refused, and the verdict isn't saved.
+  if(result.status==="invalid"){setNotice(result.message??"Each pinned clue needs a line from the story as its proof.");return}
   const next:SavedVerdict={world_id:world.id,theory_id:theoryId,pinned:pins,argument:argument.trim(),feedback:result.status==="judged"&&result.feedback?result.feedback:null,submissions:(saved?.submissions??0)+1,saved_at:new Date().toISOString()};
   setDemo(d=>({...d,verdict:next,events:[...d.events,"verdict"]}));
   setEditing(false);
@@ -57,9 +60,9 @@ export function VerdictView({world,demo,setDemo,onBack,onFinish}:{world:WorldPac
   <section className="mt-8" aria-labelledby="v-pin">
    <div className="flex flex-wrap items-end justify-between gap-2"><h2 id="v-pin" className="text-[19px] font-bold"><span className="mr-2 inline-grid h-7 w-7 place-items-center rounded-full bg-[#A0472C] text-[14px] text-white">2</span>Pin your evidence</h2><p className="text-[15px] font-semibold" aria-live="polite">{pinned.length} of {PINS_NEEDED} pinned</p></div>
    <p className="mt-1 text-[15px] text-[#6B6457]">These are the clues you proved. Pin the {PINS_NEEDED} that best support your theory.</p>
-   <ol className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{cards.map(c=>{const on=pinned.includes(c.clueId),full=!on&&pinned.length>=PINS_NEEDED;return <li key={c.clueId}><button type="button" disabled={!editing||full} onClick={()=>setPinned(p=>togglePin(p,c.clueId))} aria-pressed={on} className={`relative flex h-full w-full flex-col rounded-2xl p-4 text-left transition ${on?"bg-[#FFFDF8] ring-4 ring-[#A0472C]":"bg-[#FFFDF8] ring-1 ring-[#E4DCCB] hover:ring-[#A0472C]"} disabled:cursor-default ${full?"opacity-50":""}`}>
+   <ol className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{cards.map(c=>{const on=pinned.includes(c.clueId),full=!on&&pinned.length>=PINS_NEEDED,stale=reprove.includes(c.clueId);return <li key={c.clueId}><button type="button" disabled={!editing||full||(stale&&!on)} onClick={()=>setPinned(p=>togglePin(p,c.clueId))} aria-pressed={on} className={`relative flex h-full w-full flex-col rounded-2xl p-4 text-left transition ${on?"bg-[#FFFDF8] ring-4 ring-[#A0472C]":"bg-[#FFFDF8] ring-1 ring-[#E4DCCB] hover:ring-[#A0472C]"} disabled:cursor-default ${full?"opacity-50":""}`}>
     {on&&<span aria-hidden className="absolute -top-2 left-1/2 grid h-6 w-6 -translate-x-1/2 place-items-center rounded-full bg-[#A0472C] text-white shadow"><Pin size={12}/></span>}
-    <span className="flex items-start justify-between gap-2"><span className="text-[12px] font-semibold uppercase tracking-wide text-[#8A3B23]">Scene {c.sceneIndex+1} · {c.name}</span>{c.factCheck&&<FactCheckerBadge count={1}/>}</span>
+    <span className="flex items-start justify-between gap-2"><span className="text-[12px] font-semibold uppercase tracking-wide text-[#8A3B23]">Scene {c.sceneIndex+1} · {c.name}</span>{c.factCheck&&<FactCheckerBadge count={1}/>}</span>{stale&&<span className="mt-1 block text-[13px] font-bold text-[#A33B20]">Re-prove this clue</span>}
     <span className="mt-2 block border-l-4 border-[#A0472C] pl-3 font-serif text-[15px] italic leading-6 text-[#2A2620]">“{c.quote.length>220?c.quote.slice(0,220)+"…":c.quote}”</span>
     <span className="mt-auto pt-3 text-[14px] font-semibold text-[#8A3B23]">{on?"Pinned":"Pin this"}</span>
    </button></li>})}</ol>

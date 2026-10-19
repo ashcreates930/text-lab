@@ -9,10 +9,10 @@ type Auth={token:string};
 const headers=(auth:Auth)=>({"Content-Type":"application/json","x-class-token":auth.token});
 
 export function toProgress(demo:Demo):StudentProgress{
- return {v:1,worldId:demo.worldId,scene:demo.scene,submitted:demo.submitted,role:demo.role||undefined,readerProgress:demo.readerProgress??{},artifactAnswers:demo.artifactAnswers,savedTextEvidence:demo.savedTextEvidence,storyFrames:demo.storyFrames??{},...(demo.choices?{choices:demo.choices}:{}),...(demo.lies?{lies:demo.lies}:{}),...(demo.verdict?{verdict:demo.verdict}:{}),updatedAt:new Date().toISOString()};
+ return {v:1,worldId:demo.worldId,scene:demo.scene,submitted:demo.submitted,role:demo.role||undefined,readerProgress:demo.readerProgress??{},artifactAnswers:demo.artifactAnswers,savedTextEvidence:demo.savedTextEvidence,storyFrames:demo.storyFrames??{},...(demo.choices?{choices:demo.choices}:{}),...(demo.lies?{lies:demo.lies}:{}),...(demo.verdict?{verdict:demo.verdict}:{}),...(demo.angle?{angle:demo.angle}:{}),...(demo.roleIntroSeen?{roleIntroSeen:true}:{}),updatedAt:new Date().toISOString()};
 }
 export function applyProgress(demo:Demo,p:StudentProgress):Demo{
- return {...demo,scene:p.scene,submitted:p.submitted,role:p.role??demo.role,readerProgress:p.readerProgress,artifactAnswers:p.artifactAnswers,savedTextEvidence:p.savedTextEvidence,...(p.lies?{lies:p.lies}:{}),...(p.verdict?{verdict:p.verdict}:{}),storyFrames:p.storyFrames,...(p.choices?{choices:p.choices}:{})};
+ return {...demo,scene:p.scene,submitted:p.submitted,role:p.role??demo.role,readerProgress:p.readerProgress,artifactAnswers:p.artifactAnswers,savedTextEvidence:p.savedTextEvidence,...(p.lies?{lies:p.lies}:{}),...(p.verdict?{verdict:p.verdict}:{}),storyFrames:p.storyFrames,...(p.choices?{choices:p.choices}:{}),...(p.angle?{angle:p.angle}:{}),...(p.roleIntroSeen?{roleIntroSeen:true}:{})};
 }
 // ok is false when the server could not be reached, so callers never mistake a failed load for "no progress yet".
 export async function loadClassProgress(auth:Auth,worldId:string):Promise<{ok:boolean;progress:StudentProgress|null}>{

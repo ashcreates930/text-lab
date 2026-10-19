@@ -174,6 +174,21 @@
       "final_task": "Write a narrative of the kitchen investigation from the neighbor’s point of view, showing what the women notice and why it matters."
     }
   ],
+  "student_role": {
+    "name": "The young deputy watching the kitchen",
+    "setup": "You are the sheriff's young deputy, told to keep watch in the Wright kitchen while the men search.",
+    "start_scene": "kitchen",
+    "intro": "You are the sheriff's youngest deputy. This cold morning your job is to keep watch in the Wright farmhouse kitchen while the sheriff and the county attorney search upstairs and in the barn. The men call the kitchen things trifles. You get to watch what Mrs. Hale and Mrs. Peters notice, and decide what counts as evidence.",
+    "never": [
+      "Minnie Wright",
+      "John Wright",
+      "Mrs. Hale",
+      "Mrs. Peters",
+      "Mr. Hale",
+      "Sheriff",
+      "County Attorney"
+    ]
+  },
   "characters": [
     {
       "id": "mrs-hale",
@@ -189,7 +204,8 @@
         "Never describe what Mrs. Wright did, said, or looked like yesterday morning as if you saw it. You were not there; you know only what Mr. Hale has told."
       ],
       "voice_id": "XrExE9yKIg1WjnnlVkGX",
-      "portrait": "/worlds/trifles/characters/mrs-hale.png"
+      "portrait": "/worlds/trifles/characters/mrs-hale.png",
+      "hologram": "/worlds/trifles/holograms/mrs-hale.png"
     },
     {
       "id": "mrs-peters",
@@ -204,7 +220,8 @@
         "Do not mention anything she has not found or said in the passages."
       ],
       "voice_id": "EXAVITQu4vr4xnSDxMaL",
-      "portrait": "/worlds/trifles/characters/mrs-peters.png"
+      "portrait": "/worlds/trifles/characters/mrs-peters.png",
+      "hologram": "/worlds/trifles/holograms/mrs-peters.png"
     },
     {
       "id": "mr-hale",
@@ -220,7 +237,8 @@
         "Do not say Mrs. Wright looked scared as a fact; he took that back himself."
       ],
       "voice_id": "iP95p4xoKVk53GoZ742B",
-      "portrait": "/worlds/trifles/characters/mr-hale.png"
+      "portrait": "/worlds/trifles/characters/mr-hale.png",
+      "hologram": "/worlds/trifles/holograms/mr-hale.png"
     }
   ],
   "glossary": [
@@ -308,7 +326,8 @@
             "next_scene_id": "minnie-foster",
             "unlocks": []
           }
-        ]
+        ],
+        "role_frame": "From your post by the door, you watched the women find the first clues. Which question would you follow?"
       },
       "dok_task": "The men call these things trifles. Pick two artifacts. What do they show together that neither shows alone? What does the play suggest about who notices evidence and why?",
       "passage_anchors": [
@@ -843,7 +862,8 @@
             "next_scene_id": "the-law-and-the-women",
             "unlocks": []
           }
-        ]
+        ],
+        "role_frame": "The women seem to forget you are in the room. Their talk is turning serious."
       },
       "dok_task": "Mrs. Hale is the only person in the play who knew Minnie Foster before her marriage. Using two artifacts, explain how her memories change the way a reader sees Mrs. Wright, and evaluate how far a reader should trust a friend who also feels guilty.",
       "passage_anchors": [
@@ -1285,7 +1305,8 @@
             "next_scene_id": "the-last-word",
             "unlocks": []
           }
-        ]
+        ],
+        "role_frame": "You can hear the men on the stairs. You are the officer in the kitchen. What do you watch?"
       },
       "dok_task": "Mrs. Peters says \"the law is the law,\" but she also remembers her kitten and the stillness in Dakota. Using two artifacts, trace how her position changes in this scene and explain what causes the change.",
       "passage_anchors": [

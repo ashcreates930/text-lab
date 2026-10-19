@@ -6,7 +6,8 @@
 // (theory and case strength); selecting it opens their pinned quotes and closing argument.
 // Used for real classes (app/classroom.tsx) and the sample classroom (app/teacher-demo.tsx).
 import {useEffect,useMemo,useRef,useState} from "react";
-import {AlertTriangle,Check,Download,Gavel,MessageCircle,ShieldCheck,X} from "lucide-react";
+import {AlertTriangle,Check,Download,Flag,Gavel,MessageCircle,Radio,ShieldCheck,X} from "lucide-react";
+import type {LiveRoundEvidence} from "@/lib/live/evidence";
 import {evidenceCsv,evidenceDetail,type ClassEvidence,type EvidenceClue,type EvidenceStudent} from "@/lib/classroom/evidence";
 
 type Selected={student:EvidenceStudent;clue:EvidenceClue}|null;
@@ -81,6 +82,7 @@ export function EvidenceView({evidence,sample=false,className}:{evidence:ClassEv
     </table>
    </div>
   </>}
+  {evidence.live?.length?<LiveRounds rounds={evidence.live}/>:null}
   {selected&&<DetailPanel evidence={evidence} selected={selected} onClose={close}/>}
   {verdictOf?.verdict&&<VerdictDetail evidence={evidence} student={verdictOf} onClose={close}/>}
  </section>;
@@ -148,4 +150,22 @@ function DetailPanel({evidence,selected,onClose}:{evidence:ClassEvidence;selecte
    </div>
   </section>
  </div>;
+}
+
+// Live rounds: one card per round with each squad's answer and result, and what each student did in their role.
+// Flagged writing shows here, marked, for the teacher only; it was hidden from the host screen.
+function LiveRounds({rounds}:{rounds:LiveRoundEvidence[]}){
+ return <section aria-labelledby="live-rounds-h" className="space-y-3">
+  <h3 id="live-rounds-h" className="flex items-center gap-2 text-[22px] font-bold text-[#2A2620]"><Radio size={20} className="text-[#A0472C]"/>Live rounds</h3>
+  <p className="max-w-2xl text-[15px] leading-6 text-[#4A4438]">Squads score together. Each student's role actions show who pinned, wrote, checked and submitted.</p>
+  {rounds.map(r=><details key={`${r.sessionId}-${r.number}`} className="rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
+   <summary className="cursor-pointer text-[17px] font-semibold text-[#2A2620]">{r.date} · Round {r.number} · {r.type}<span className="mt-1 block text-[14px] font-normal text-[#6B6457]">{r.prompt}</span></summary>
+   <ul className="mt-4 grid gap-3 md:grid-cols-2">{r.squads.map(sq=><li key={sq.name} className="rounded-2xl border border-[#E4DCCB] p-4">
+    <p className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-[16px] font-bold text-[#2A2620]">{sq.name}</span><span className="text-[14px] font-semibold tabular-nums text-[#8A3B23]">{sq.points} pts · {sq.result}</span></p>
+    {sq.answer&&<p className="mt-2 text-[15px] italic leading-6 text-[#2A2620]">“{sq.answer}”</p>}
+    {sq.explanation&&<p className="mt-1 text-[15px] leading-6 text-[#4A4438]">{sq.flagged&&<span className="mr-2 inline-flex items-center gap-1 rounded-full bg-[#F7DCD3] px-2 py-0.5 text-[12px] font-bold text-[#A33B20]"><Flag size={12}/>Flagged, hidden from the class</span>}{sq.explanation}</p>}
+    <ul className="mt-3 space-y-1.5 text-[14px] text-[#4A4438]">{sq.members.map(m=><li key={m.nickname}><span className="font-semibold text-[#2A2620]">{m.nickname}</span>: {m.actions.length?m.actions.join("; "):"No actions"}</li>)}</ul>
+   </li>)}</ul>
+  </details>)}
+ </section>;
 }

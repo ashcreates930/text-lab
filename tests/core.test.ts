@@ -1133,3 +1133,535 @@ test("testimony and reply voices: each button stops only its own words, and the 
   toggleVoiceKey(channel,null,"hans",testimony,play("hans",testimony));channel.begin("narration","empty-schoolhouse",()=>{});
   assert.equal(live,0);assert.equal(channel.state.kind,"narration");
 });
+
+// ---------- Live class mode ----------
+async function liveKit(){
+  const engine=await import("../lib/live/engine.ts");
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  let t=0;const at=()=>new Date(Date.UTC(2026,9,19,14,0,t++)).toISOString();
+  const rows:import("../lib/live/engine.ts").LiveResponse[]=[];
+  const add=(r:Omit<import("../lib/live/engine.ts").LiveResponse,"id"|"createdAt"|"flagged">&{flagged?:boolean})=>{const row={...r,flagged:r.flagged??false,id:`r${rows.length}`,createdAt:at()};rows.push(row);return row};
+  return {engine,world,rows,add};
+}
+
+test("live squads: groups of 3 or 4, dealt round-robin; roles rotate every round", async()=>{
+  const {engine}=await liveKit();
+  assert.deepEqual(engine.squadSizes(8),[4,4]);assert.deepEqual(engine.squadSizes(10),[4,3,3]);assert.deepEqual(engine.squadSizes(9),[3,3,3]);assert.deepEqual(engine.squadSizes(13),[4,3,3,3]);
+  assert.deepEqual(engine.squadSizes(3),[3]);assert.deepEqual(engine.squadSizes(0),[]);
+  const squads=engine.buildSquads(["a","b","c","d","e","f","g","h","i","j"]);
+  assert.deepEqual(squads.map(s=>s.length),[4,3,3]);assert.deepEqual(squads[0],["a","d","g","j"]);
+  // A squad of 4: one role each, and everyone's role changes next round.
+  const r0=engine.rolesFor(["a","b","c","d"],0)!,r1=engine.rolesFor(["a","b","c","d"],1)!;
+  assert.deepEqual(r0,{lead:"a",keeper:"b",skeptic:"c",reporter:"d"});
+  assert.ok(engine.ROLES.every(r=>r0[r]!==r1[r]));
+  // A squad of 3: someone holds two roles, and who that is rotates.
+  const holders=(n:number)=>{const r=engine.rolesFor(["a","b","c"],n)!;return ["a","b","c"].find(p=>engine.rolesOf(r,p).length===2)};
+  assert.deepEqual([0,1,2].map(holders),["a","b","c"]);
+  assert.equal(engine.squadPurpose("lie"),"Catch the false claim with one line from the story.");
+});
+
+test("live roles: a squad can't submit until every role has acted, and the Skeptic approves after the last change", async()=>{
+  const {engine,add,rows}=await liveKit();
+  const round={type:"lie" as const,sceneId:"empty-schoolhouse"};const roles=engine.rolesFor(["a","b","c","d"],0)!;
+  const progress=()=>engine.squadProgress(round,rows,"s1",0);
+  assert.deepEqual(progress().waitingFor,["keeper","reporter","skeptic","lead"]);
+  // Only the role holder may act: the Lead can't pin, and nobody can submit yet.
+  assert.equal(engine.mayAct(round,roles,"a","pin",progress()),false);
+  assert.equal(engine.mayAct(round,roles,"b","pin",progress()),true);
+  assert.equal(engine.mayAct(round,roles,"a","submit",progress()),false);
+  assert.equal(engine.mayAct(round,roles,"c","approve",progress()),false,"nothing to approve yet");
+  add({roundIndex:0,squadId:"s1",playerId:"b",role:"keeper",kind:"pin",payload:{quote:"a line"}});
+  add({roundIndex:0,squadId:"s1",playerId:"d",role:"reporter",kind:"explain",payload:{text:"This shows the claim is false."}});
+  assert.equal(engine.mayAct(round,roles,"c","approve",progress()),true);
+  add({roundIndex:0,squadId:"s1",playerId:"c",role:"skeptic",kind:"object",payload:{note:"wrong line"}});
+  assert.equal(progress().canSubmit,false);
+  // Fixing the evidence after an approval needs a fresh approval.
+  add({roundIndex:0,squadId:"s1",playerId:"c",role:"skeptic",kind:"approve",payload:{}});
+  assert.equal(progress().canSubmit,true);
+  add({roundIndex:0,squadId:"s1",playerId:"b",role:"keeper",kind:"pin",payload:{quote:"a better line"}});
+  assert.equal(progress().canSubmit,false);assert.deepEqual(progress().waitingFor,["skeptic","lead"]);
+  add({roundIndex:0,squadId:"s1",playerId:"c",role:"skeptic",kind:"approve",payload:{}});
+  assert.equal(engine.mayAct(round,roles,"a","submit",progress()),true);
+  add({roundIndex:0,squadId:"s1",playerId:"a",role:"lead",kind:"submit",payload:{}});
+  assert.equal(engine.mayAct(round,roles,"b","pin",progress()),false,"no changes after submitting");
+  // Every action records who did it and in which role.
+  assert.deepEqual(rows.map(r=>`${r.playerId}:${r.role}:${r.kind}`),["b:keeper:pin","d:reporter:explain","c:skeptic:object","c:skeptic:approve","b:keeper:pin","c:skeptic:approve","a:lead:submit"]);
+});
+
+test("live scoring: Spot the Lie rewards the right line and a sound explanation; speed is a small bonus on correct answers only", async()=>{
+  const {engine,world,add,rows}=await liveKit();
+  const lie=world.scenes[0].lie!;
+  const submit=(squad:string,quote:string,text:string)=>{add({roundIndex:0,squadId:squad,playerId:`${squad}k`,role:"keeper",kind:"pin",payload:{quote}});add({roundIndex:0,squadId:squad,playerId:`${squad}r`,role:"reporter",kind:"explain",payload:{text}});add({roundIndex:0,squadId:squad,playerId:`${squad}s`,role:"skeptic",kind:"approve",payload:{}});add({roundIndex:0,squadId:squad,playerId:`${squad}l`,role:"lead",kind:"submit",payload:{}})};
+  submit("fast-wrong","The brook was searched, but the body of the schoolmaster was not to be discovered.","Hans was wrong about everything in the bundle he found.");
+  submit("right-sound",lie.truth_line,"Hans said the pitch-pipe was brand-new, but the story says it was broken.");
+  submit("right-thin",lie.truth_line,"Because.");
+  const squads=["fast-wrong","right-sound","right-thin","silent"].map((id,position)=>({id,name:id,position}));
+  const scores=Object.fromEntries(engine.scoreLieRound(lie,squads,rows,0).map(s=>[s.squadId,s]));
+  assert.equal(scores["fast-wrong"].points,0,"speed never rewards a wrong answer");
+  assert.equal(scores["right-sound"].points,100+10);
+  assert.equal(scores["right-thin"].points,50+7,"the right line alone earns half");
+  assert.equal(scores["silent"].points,0);
+  assert.equal(engine.soundExplanation("Hans said the pitch-pipe was brand-new, but the story says it was broken.",lie),true);
+  assert.equal(engine.soundExplanation("I think it is this one because it is.",lie),false);
+  // The teacher can mark an explanation sound or not at the reveal.
+  add({roundIndex:0,squadId:"right-thin",playerId:null,role:"host",kind:"override",payload:{key:"sound",value:true}});
+  assert.equal(engine.scoreLieRound(lie,squads,rows,0).find(s=>s.squadId==="right-thin")!.points,100+7);
+});
+
+test("live scoring: Verdict Vote scores the judge's case strength; Objection! is decided by the class vote or the teacher", async()=>{
+  const {engine,world,add,rows}=await liveKit();
+  const squads=[{id:"s1",name:"Squad Lantern",position:0},{id:"s2",name:"Squad Quill",position:1}];
+  for(const p of ["a","b","c"])add({roundIndex:0,squadId:"s1",playerId:p,role:null,kind:"vote",payload:{theoryId:"brom-prank"}});
+  add({roundIndex:0,squadId:"s2",playerId:"d",role:null,kind:"vote",payload:{theoryId:"ran-away"}});
+  add({roundIndex:0,squadId:"s1",playerId:"a",role:null,kind:"vote",payload:{theoryId:"ran-away"}});// a changed their vote
+  assert.deepEqual(engine.tallyVotes(world,rows,0).map(v=>v.votes),[2,0,2]);
+  const argue=(sq:string,theory:string,text:string)=>{add({roundIndex:0,squadId:sq,playerId:`${sq}k`,role:"keeper",kind:"pins",payload:{pins:[{quote:"q1"},{quote:"q2"},{quote:"q3"}]}});add({roundIndex:0,squadId:sq,playerId:`${sq}r`,role:"reporter",kind:"argument",payload:{text}});add({roundIndex:0,squadId:sq,playerId:`${sq}s`,role:"skeptic",kind:"approve",payload:{}});add({roundIndex:0,squadId:sq,playerId:`${sq}l`,role:"lead",kind:"submit",payload:{theoryId:theory}})};
+  argue("s1","brom-prank","Brom did it. He wanted Katrina.");argue("s2","ran-away","Ichabod left. He was turned down.");
+  add({roundIndex:0,squadId:"s1",playerId:null,role:"system",kind:"judged",payload:{feedback:{strength:"Strong",strength_note:"x",next_step:"y"}}});
+  add({roundIndex:0,squadId:"s2",playerId:null,role:"system",kind:"judged",payload:{feedback:null}});
+  const v=engine.scoreVerdictRound(squads,rows,0);
+  assert.deepEqual(v.map(x=>x.points),[100,50],"judge unavailable: saved for 50");
+  assert.deepEqual([...engine.strongestByTheory(v).keys()].sort(),["brom-prank","ran-away"]);
+  // Objection!
+  const round={type:"objection" as const,stage:"vote" as const,defendSquadId:"s1",objectSquadId:"s2",pin:{quote:"q1"},endsAt:new Date().toISOString()};
+  add({roundIndex:1,squadId:"s2",playerId:"s2k",role:"keeper",kind:"pin",payload:{quote:"a counter line"}});add({roundIndex:1,squadId:"s2",playerId:"s2r",role:"reporter",kind:"explain",payload:{text:"This line shows Brom was home."}});add({roundIndex:1,squadId:"s2",playerId:"s2s",role:"skeptic",kind:"approve",payload:{}});add({roundIndex:1,squadId:"s2",playerId:"s2l",role:"lead",kind:"submit",payload:{}});
+  for(const [p,s] of [["a",true],["b",true],["c",false]] as const)add({roundIndex:1,squadId:null,playerId:p,role:null,kind:"counter_vote",payload:{sustain:s}});
+  let o=engine.objectionResult(round,rows,1);
+  assert.equal(o.sustained,true);assert.deepEqual(o.scores,[{squadId:"s2",points:60},{squadId:"s1",points:0}]);
+  add({roundIndex:1,squadId:null,playerId:null,role:"host",kind:"override",payload:{key:"objection",value:false}});
+  o=engine.objectionResult(round,rows,1);
+  assert.equal(o.sustained,false);assert.equal(o.overridden,true);assert.deepEqual(o.scores,[{squadId:"s2",points:0},{squadId:"s1",points:40}]);
+});
+
+test("live boards rank classes, never students; guests pick generated nicknames", async()=>{
+  const {engine}=await liveKit();
+  const now=new Date("2026-10-19T12:00:00Z");
+  const board=engine.classBoard([{classId:"p1",className:"Period 1",createdAt:"2026-10-18T10:00:00Z",points:300},{classId:"p2",className:"Period 2",createdAt:"2026-10-17T10:00:00Z",points:450},{classId:"p1",className:"Period 1",createdAt:"2026-10-19T09:00:00Z",points:200},{classId:"p2",className:"Period 2",createdAt:"2026-10-01T10:00:00Z",points:999}],now);
+  assert.deepEqual(board.map(b=>[b.className,b.points,b.rounds]),[["Period 1",500,2],["Period 2",450,1]],"last week only");
+  assert.ok(board.every(b=>Object.keys(b).sort().join()==="classId,className,points,rounds"),"no student fields");
+  const names=engine.nicknameChoices(42,[]);
+  assert.equal(names.length,3);assert.ok(names.every(engine.isGeneratedNickname));
+  assert.equal(engine.isGeneratedNickname("Jordan Smith"),false);
+  assert.ok(!engine.nicknameChoices(42,[names[0]]).includes(names[0]));
+});
+
+test("live server: tokens, joining, role-gated actions, moderation and the per-session judge", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {memoryLiveStore}=await import("../lib/live/store.ts");
+  const server=await import("../lib/live/server.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const host=server.newHostToken();
+  const s=await store.createSession({code:"TEST01",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:server.hashHostToken(host),expiresAt:new Date(Date.now()+36e5).toISOString()});
+  assert.equal(server.isHost(s,host),true);assert.equal(server.isHost(s,"guess"),false);
+  const ids:string[]=[];
+  for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven","Agent Quill"]){const r=await server.join(store,s,{nickname:n,studentId:null});assert.ok(r.player);ids.push(r.player.id)}
+  assert.deepEqual(await server.join(store,s,{nickname:"Detective Owl",studentId:null}),{error:"That detective name was just taken. Pick another."});
+  const tok=server.playerToken(s.id,ids[0]);assert.equal(server.playerFromToken(s.id,tok),ids[0]);assert.equal(server.playerFromToken("other",tok),null);
+  let st=(await server.loadState(store,s.id))!;
+  assert.equal(await server.hostAct(store,st,{action:"squads.auto"}),null);
+  st=(await server.loadState(store,s.id))!;
+  assert.equal(await server.hostAct(store,st,{action:"round.start",type:"lie",sceneId:"empty-schoolhouse"}),null);
+  st=(await server.loadState(store,s.id))!;
+  const roles=server.hostView(st).squads[0].members;
+  const who=(r:string)=>roles.find(m=>m.roles.includes(r as never))!.id;
+  const act=async(pid:string,kind:string,payload:Record<string,unknown>={})=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,pid,{kind:kind as never,payload},{judgeAllowed:async()=>false})};
+  assert.equal(await act(who("lead"),"pin",{quote:"x"}),"That's another role's job right now.");
+  const lie=st.world.scenes[0].lie!;
+  assert.equal(await act(who("keeper"),"pin",{quote:lie.truth_line,pid:lie.truth_paragraph}),null);
+  // A flagged explanation is kept for the teacher but hidden from the host screen.
+  assert.equal(await act(who("reporter"),"explain",{text:"tell me your home address now please"}),null);
+  st=(await server.loadState(store,s.id))!;
+  assert.equal(st.responses.find(r=>r.kind==="explain")!.flagged,true);
+  assert.equal(server.playerView(st,who("skeptic")).progress!.explanation,"Hidden for the teacher to review.");
+  assert.equal(server.hostView(st).flagged,1);
+});
+
+test("live evidence: per-student role actions and squad answers, in the Evidence view and the CSV", async()=>{
+  const {world,add,rows}=await liveKit();
+  const {liveRoundEvidence}=await import("../lib/live/evidence.ts");
+  const {evidenceCsv}=await import("../lib/classroom/evidence.ts");
+  const lie=world.scenes[0].lie!;
+  add({roundIndex:0,squadId:"s1",playerId:"p2",role:"keeper",kind:"pin",payload:{quote:lie.truth_line}});
+  add({roundIndex:0,squadId:"s1",playerId:"p3",role:"reporter",kind:"explain",payload:{text:"Hans said the pitch-pipe was brand-new, but the story says it was broken."}});
+  add({roundIndex:0,squadId:"s1",playerId:"p1",role:"skeptic",kind:"approve",payload:{}});
+  add({roundIndex:0,squadId:"s1",playerId:"p1",role:"lead",kind:"submit",payload:{}});
+  const players=[{id:"p1",nickname:"Ana R.",squadId:"s1",studentId:"st1",joinedAt:""},{id:"p2",nickname:"Ben T.",squadId:"s1",studentId:"st2",joinedAt:""},{id:"p3",nickname:"Cy L.",squadId:"s1",studentId:"st3",joinedAt:""}];
+  const session={id:"L1",code:"ABCDEF",worldId:"sleepy-hollow",classId:"c1",demo:false,status:"reveal" as const,paused:false,roundIndex:0,rounds:[{type:"lie" as const,sceneId:world.scenes[0].id}],roundStartedAt:null,createdAt:"2026-10-19T14:00:00Z",expiresAt:""};
+  const live=liveRoundEvidence({session,world,squads:[{id:"s1",name:"Squad Lantern",position:0}],players,responses:rows});
+  assert.equal(live.length,1);assert.equal(live[0].type,"Live Spot the Lie");
+  const sq=live[0].squads[0];
+  assert.equal(sq.points,110);assert.equal(sq.answer,lie.truth_line);
+  assert.deepEqual(sq.members.map(m=>[m.nickname,m.actions.length]),[["Ana R.",2],["Ben T.",1],["Cy L.",1]]);
+  assert.match(sq.members[0].actions.join(),/Skeptic: approved,Lead Investigator: submitted/);
+  const csv=evidenceCsv({story:{id:"x",title:"x"},scenes:[],students:[],summary:{joined:0,totalClues:0,averageProven:0,provedWrongStudents:0,needsHelp:0,anyProven:false},live});
+  assert.match(csv,/Live round,Date,Round type/);assert.equal(csv.split("\r\n").filter(l=>l.startsWith("1,2026-10-19")).length,3);
+});
+
+// ---------- Plant a Lie ----------
+async function plantKit(worldId="sleepy-hollow"){
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${worldId}/world.json`,import.meta.url),"utf8")));
+  const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  const passages=parseSourcePassages(await readFile(new URL(`../worlds/${worldId}/source.md`,import.meta.url),"utf8"));
+  const planted=await import("../lib/planted-lies.ts");const lies=await import("../lib/lies.ts");
+  return {world,passages,planted,lies};
+}
+
+test("plant a lie: a catchable lie passes; it must be one sentence, by a speaking character, disproved by exactly one line", async()=>{
+  const {world,passages,planted,lies}=await plantKit();
+  const scene=world.scenes[0],clue=scene.artifacts.find(a=>a.id===scene.lie!.clue_id)!;
+  const p=passages.find(x=>x.id===scene.lie!.truth_paragraph)!;
+  const line=lies.evidenceSentences(p.text).find(s=>s.includes("rusty razor"))!;
+  const ok={sceneId:scene.id,clueId:clue.id,characterId:scene.lie!.character_id,sentence:"The schoolmaster packed a golden razor and a brand-new flute.",truthParagraph:p.id,truthLine:line};
+  assert.deepEqual(planted.plantedLieProblems(world,passages,ok),[]);
+  const problems=(x:Partial<typeof ok>)=>planted.plantedLieProblems(world,passages,{...ok,...x});
+  assert.match(problems({sentence:"A razor."}).join(),/at least 5 words/);
+  assert.match(problems({sentence:"He packed a golden razor. He also packed a flute and a hat."}).join(),/just one sentence/);
+  assert.match(problems({characterId:"ichabod"}).join(),/speaks in this scene/,"non-speaking characters are never voiced");
+  assert.match(problems({truthLine:"Something the story never says."}).join(),/proves it false/);
+  assert.match(problems({truthParagraph:"p001"}).join(),/this clue's evidence/);
+  assert.match(problems({sentence:line}).join(),/says something false/);
+  // Exactly one tappable line may match: a line that appears twice in the clue's evidence is refused.
+  const twice=[...passages,{...p,id:"p999"}];
+  const w2=structuredClone(world);w2.scenes[0].artifacts.find(a=>a.id===clue.id)!.source_anchor.push("p999");
+  assert.match(planted.plantedLieProblems(w2,twice,ok).join(),/more than once/);
+});
+
+test("plant a lie: never on a paragraph with a content note", async()=>{
+  const {world,passages,planted,lies}=await plantKit();
+  const scene=world.scenes[0],pid=scene.lie!.truth_paragraph;
+  const line=lies.evidenceSentences(passages.find(x=>x.id===pid)!.text).find(x=>x.includes("rusty razor"))!;
+  const input={sceneId:scene.id,clueId:scene.lie!.clue_id,characterId:scene.lie!.character_id,sentence:"The schoolmaster packed a golden razor and a brand-new flute.",truthParagraph:pid,truthLine:line};
+  assert.deepEqual(planted.plantedLieProblems(world,passages,input),[]);
+  // The same lie, once its paragraph carries a content note, is refused.
+  const noted=structuredClone(world);
+  noted.storybook={...(noted.storybook??{pages:[]}),ai_exclude:[...(noted.storybook?.ai_exclude??[]),pid],pages:[...(noted.storybook?.pages??[]),{id:"noted",section:"x",start:pid,end:pid,mode:"student",content_note:"A test note."} as never]} as never;
+  assert.match(planted.plantedLieProblems(noted,passages,input).join(),/content note/);
+});
+
+test("plant a lie: the writer's squad sits out and earns only when other squads catch it soundly", async()=>{
+  const {world,planted}=await plantKit();
+  const engine=await import("../lib/live/engine.ts");
+  const scene=world.scenes[0];
+  const lie=planted.asLie({sceneId:scene.id,clueId:scene.lie!.clue_id,characterId:scene.lie!.character_id,sentence:"He packed a golden razor and a new flute.",truthParagraph:scene.lie!.truth_paragraph,truthLine:scene.lie!.truth_line},world);
+  let t=0;const rows:import("../lib/live/engine.ts").LiveResponse[]=[];
+  const add=(sq:string,kind:string,payload:Record<string,unknown>)=>rows.push({id:`r${t}`,roundIndex:0,squadId:sq,playerId:`${sq}-${kind}`,role:null,kind:kind as never,payload,flagged:false,createdAt:new Date(Date.UTC(2026,9,19,14,0,t++)).toISOString()});
+  const answer=(sq:string,quote:string,text:string)=>{add(sq,"pin",{quote});add(sq,"explain",{text});add(sq,"approve",{});add(sq,"submit",{})};
+  const squads=["writer","a","b","c"].map((id,position)=>({id,name:id,position}));
+  // Nobody catches it soundly: the writer earns nothing.
+  answer("a",lie.truth_line,"Because.");
+  let s=Object.fromEntries(engine.scoreLieRound(lie,squads,rows,0,"writer").map(x=>[x.squadId,x]));
+  assert.equal(s.writer.points,0);assert.equal(s.writer.writer,true);assert.equal(s.a.points,50+10,"right line only, first in");
+  answer("b",lie.truth_line,"He said the razor was golden, but the story says it was a rusty razor.");
+  answer("c","The brook was searched, but the body of the schoolmaster was not to be discovered.","The razor was rusty in the story, not golden at all.");
+  answer("writer",lie.truth_line,"The story says the razor was rusty, so the golden razor is false.");
+  s=Object.fromEntries(engine.scoreLieRound(lie,squads,rows,0,"writer").map(x=>[x.squadId,x]));
+  assert.equal(s.writer.points,planted.PLANTED_LIE_POINTS,"one other squad caught it soundly; the writer's own answer doesn't count");
+  assert.equal(s.a.points,50+10);assert.equal(s.b.points,100+7);assert.equal(s.c.points,0);
+  assert.equal(planted.writerPoints([{squadId:"x",correct:true,sound:true}],null),0);
+});
+
+test("plant a lie: approved lies become live rounds, and the answer never reaches the phones", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {world,lies}=await plantKit();
+  const {memoryLiveStore}=await import("../lib/live/store.ts");
+  const {memoryLieBankStore}=await import("../lib/lie-bank-store.ts");
+  const server=await import("../lib/live/server.ts");
+  const bank=memoryLieBankStore([]);
+  const scene=world.scenes[0];
+  const p=await bank.add({classId:"c1",studentId:"st-writer",worldId:"sleepy-hollow",sceneId:scene.id,clueId:scene.lie!.clue_id,characterId:scene.lie!.character_id,sentence:"He packed a golden razor and a new flute.",truthParagraph:scene.lie!.truth_paragraph,truthLine:scene.lie!.truth_line,status:"pending"});
+  await bank.setStatus(p.id,"approved");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"PLANT1",teacherId:"t1",classId:"c1",demo:false,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const ids:string[]=[];
+  for(const [n,sid] of [["Ana","st-writer"],["Ben",null],["Cy",null],["Di",null],["Ed",null],["Flo",null]] as const){const r=await server.join(store,s,{nickname:n,studentId:sid});assert.ok(r.player);ids.push(r.player.id)}
+  let st={...(await server.loadState(store,s.id))!,bank:[(await bank.get(p.id))!]};
+  await server.hostAct(store,st,{action:"squads.auto"});
+  st={...(await server.loadState(store,s.id))!,bank:st.bank};
+  assert.equal(server.hostView(st).lieBank.length,1);
+  assert.equal(await server.hostAct(store,st,{action:"round.start",type:"lie",plantedId:p.id}),null);
+  st={...(await server.loadState(store,s.id))!,bank:st.bank};
+  const writerSquad=st.players.find(x=>x.id===ids[0])!.squadId;
+  assert.equal(server.hostView(st).writerSquadId,writerSquad);
+  assert.equal(server.hostView(st).counters.squadsAnswering,1,"the writer's squad sits out");
+  const view=server.playerView(st,ids[0]);
+  assert.equal(view.plantedByMySquad,true);assert.equal(view.answering,false);
+  assert.ok(!JSON.stringify(server.playerView(st,ids[1]).round).includes(lies.lineWords(scene.lie!.truth_line).slice(0,30)),"no truth line on the phones");
+  assert.equal(await server.playerAct(store,st,ids[0],{kind:"pin",payload:{quote:"x"}},{judgeAllowed:async()=>false}),"Your squad planted this lie. Watch who catches it.");
+});
+
+// ---------- Hologram mode ----------
+test("hologram layout: four copies around a central square, each turned to face outward", async()=>{
+  const h=await import("../lib/hologram.ts");
+  const copies=h.hologramLayout({width:400,height:800,size:1,gap:0.2,mirror:false});
+  assert.deepEqual(copies.map(c=>[c.side,c.rotate]),[["top",0],["right",90],["bottom",180],["left",270]]);
+  // The shorter edge (400) sets the scale: an 80px central square, and copies that reach the screen edge.
+  const [top,right,bottom,left]=copies;
+  assert.equal(top.size,160);assert.equal(top.x,200);assert.equal(top.y,400-40-80);
+  assert.equal(bottom.y,400+40+80);assert.equal(left.x,200-40-80);assert.equal(right.x,200+40+80);
+  assert.equal(left.x-left.size/2,0,"the left copy reaches the screen edge");
+  // Symmetric: every copy sits the same distance from the centre, and none overlaps the central square.
+  const dist=copies.map(c=>Math.hypot(c.x-200,c.y-400));assert.ok(dist.every(d=>d===dist[0]));
+  assert.ok(copies.every(c=>Math.max(Math.abs(c.x-200),Math.abs(c.y-400))-c.size/2>=40));
+});
+
+test("hologram layout: the gap and size sliders, and the mirror toggle", async()=>{
+  const h=await import("../lib/hologram.ts");
+  const at=(gap:number,size=1)=>h.hologramLayout({width:600,height:600,size,gap,mirror:false})[0];
+  assert.ok(at(0.4).size<at(0.1).size,"a wider gap leaves less room");
+  assert.equal(at(0).y+at(0).size/2,300,"no gap: the top copy touches the centre");
+  assert.equal(at(0.9).size,at(0.5).size,"the gap is capped at half the screen");
+  assert.equal(at(0.2,0.5).size,at(0.2,1).size/2);
+  assert.equal(at(0.2,0.01).size,at(0.2,1).size*0.2,"size is at least 20%");
+  const mirrored=h.hologramLayout({width:600,height:600,size:1,gap:0.2,mirror:true});
+  assert.ok(mirrored.every(c=>c.mirror));
+  assert.equal(h.copyTransform(mirrored[1]),"translate(-50%, -50%) rotate(90deg) scaleX(-1)");
+  assert.equal(h.copyTransform(at(0.2) as never),"translate(-50%, -50%) rotate(0deg)");
+  assert.deepEqual(h.hologramLayout({width:0,height:0,...h.HOLOGRAM_DEFAULTS}).map(c=>c.size),[0,0,0,0]);
+});
+
+test("hologram glow follows the voice level; holograms must be transparent PNGs", async()=>{
+  const h=await import("../lib/hologram.ts");
+  const {deflateSync,inflateSync}=await import("node:zlib");
+  assert.equal(h.voiceLevel(new Uint8Array(512).fill(128)),0,"silence");
+  assert.ok(h.voiceLevel(Uint8Array.from({length:512},(_,i)=>i%2?200:56))>0.9,"loud");
+  // A tiny PNG built by hand: 8-bit RGBA, one row of two pixels.
+  const png=(colorType:number,firstAlpha:number)=>{
+    const chunk=(type:string,data:Buffer)=>{const len=Buffer.alloc(4);len.writeUInt32BE(data.length);return Buffer.concat([len,Buffer.from(type),data,Buffer.alloc(4)])};
+    const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(2,0);ihdr.writeUInt32BE(1,4);ihdr[8]=8;ihdr[9]=colorType;
+    const row=Buffer.from([1,10,20,30,firstAlpha,5,5,5,5]);// filter "Sub" on the first row
+    return new Uint8Array(Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk("IHDR",ihdr),chunk("IDAT",deflateSync(row)),chunk("IEND",Buffer.alloc(0))]));
+  };
+  const inflate=(d:Uint8Array)=>new Uint8Array(inflateSync(d));
+  assert.equal(await h.hologramPngProblem(png(6,0),inflate),null);
+  assert.match(String(await h.hologramPngProblem(png(6,255),inflate)),/corner is not transparent/);
+  assert.match(String(await h.hologramPngProblem(png(2,0),inflate)),/transparent background/);
+  assert.match(String(await h.hologramPngProblem(new Uint8Array(40),inflate)),/not a PNG/);
+  // Palette PNGs (what generate-assets saves) are checked through their transparency chunk.
+  const {default:sharp}=await import("sharp");
+  const rgba=Buffer.alloc(8*8*4);for(let i=0;i<64;i++)if(i>=27&&i<=36)rgba.writeUInt32BE(0x88eeffff,i*4);
+  const pal=new Uint8Array(await sharp(rgba,{raw:{width:8,height:8,channels:4}}).png({palette:true}).toBuffer());
+  assert.equal(pal[25],3,"a palette PNG");assert.equal(await h.hologramPngProblem(pal,inflate),null);
+  const solid=new Uint8Array(await sharp({create:{width:8,height:8,channels:3,background:"#000"}}).png({palette:true}).toBuffer());
+  assert.match(String(await h.hologramPngProblem(solid,inflate)),/transparent background|not transparent/);
+  // Every story's holograms pass, and the schema only accepts files in the story's holograms folder.
+  for(const id of ["sleepy-hollow","trifles","tell-tale-heart"]){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+    for(const c of world.characters){assert.ok(c.hologram,`${id}/${c.id} has a hologram`);assert.equal(await h.hologramPngProblem(new Uint8Array(await readFile(new URL(`../public${c.hologram}`,import.meta.url))),inflate),null)}
+  }
+  const base=JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8"));
+  base.characters[0].hologram="https://example.com/x.png";
+  assert.equal(WorldPackSchema.safeParse(base).success,false);
+});
+
+test("witness stand: a signed read-only link that plays the testimony on the host's cue", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {memoryLiveStore}=await import("../lib/live/store.ts");
+  const server=await import("../lib/live/server.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"HOLO01",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  assert.equal(server.isWitness(s.id,server.witnessToken(s.id)),true);
+  assert.equal(server.isWitness(s.id,server.witnessToken("another")),false);
+  for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven"])await server.join(store,s,{nickname:n,studentId:null});
+  let st=(await server.loadState(store,s.id))!;
+  assert.equal(server.witnessView(st).witness,null,"nothing on the stand in the lobby");
+  assert.equal(await server.hostAct(store,st,{action:"witness.play"}),"The Witness stand plays during Spot the Lie.");
+  await server.hostAct(store,st,{action:"squads.auto"});st=(await server.loadState(store,s.id))!;
+  await server.hostAct(store,st,{action:"round.start",type:"lie",sceneId:"empty-schoolhouse"});st=(await server.loadState(store,s.id))!;
+  const w=server.witnessView(st);
+  assert.equal(w.witness?.character.id,"hans-van-ripper");assert.equal(w.witness?.line,st.world.scenes[0].lie!.testimony);assert.ok(w.witness?.character.hologram);
+  assert.equal(w.playKey,null);
+  assert.equal(await server.hostAct(store,st,{action:"witness.play"}),null);st=(await server.loadState(store,s.id))!;
+  const first=server.witnessView(st).playKey;assert.ok(first);
+  await server.hostAct(store,st,{action:"witness.play"});st=(await server.loadState(store,s.id))!;
+  assert.notEqual(server.witnessView(st).playKey,first,"each cue plays again");
+  assert.ok(!JSON.stringify(server.witnessView(st)).includes(st.world.scenes[0].lie!.truth_line.slice(0,40)),"the stand never sees the answer");
+});
+
+test("hologram faces: each copy is cut to its wedge of the pyramid, so neighbours never overlap", async()=>{
+  const h=await import("../lib/hologram.ts");
+  assert.equal(h.faceClip(100,0),"polygon(0% 0%, 100% 0%, 100% 50%, 50% 100%, 50% 100%, 0% 50%)","no gap: a triangle meeting at the centre");
+  assert.equal(h.faceClip(100,40),"polygon(0% 0%, 100% 0%, 100% 70%, 70% 100%, 30% 100%, 0% 70%)","with a gap: a trapezoid as wide as the central square");
+  assert.equal(h.faceClip(0,40),"none");
+  assert.ok(h.hologramLayout({width:375,height:812,size:0.9,gap:0.16,mirror:false}).every(c=>c.clip.startsWith("polygon(")));
+});
+
+// ---------- Students in the story ----------
+const roleWorld=async(id:string)=>WorldPackSchema.parse(JSON.parse(await readFile(new URL(`../worlds/${id}/world.json`,import.meta.url),"utf8")));
+
+test("student roles load for every story: a part to play, a start scene, a second-person intro, and a frame on every choice", async()=>{
+  const sr=await import("../lib/student-role.ts");
+  const expected:Record<string,RegExp>={"sleepy-hollow":/newest student in Ichabod's class/i,"trifles":/young deputy watching the kitchen/i,"tell-tale-heart":/neighbor who heard the shriek/i};
+  for(const [id,name] of Object.entries(expected)){
+    const world=await roleWorld(id);const role=world.student_role!;
+    assert.match(role.name,name);
+    assert.ok(world.scenes.some(s=>s.id===role.start_scene));
+    assert.match(role.intro,/^You /);assert.match(role.setup,/^You /);
+    assert.deepEqual(sr.studentRoleProblems(world),[]);
+    for(const s of world.scenes)if(s.choice_point)assert.ok(sr.choiceFrame(world,s.choice_point).length>10,`${id}/${s.id} has a personal frame`);
+    // The public copy the app loads carries the same role.
+    const pub=JSON.parse(await readFile(new URL(`../public/worlds/${id}/world.json`,import.meta.url),"utf8"));
+    if(id!=="tell-tale-heart")assert.deepEqual(pub.student_role,role);
+  }
+  const tth=await roleWorld("tell-tale-heart");
+  assert.ok(!/old man/i.test(tth.student_role!.name),"never the old man");
+  assert.match(tth.student_role!.setup,/shriek/);
+});
+
+test("student roles are validated: a real start scene, one line of setup, never one of the story's people", async()=>{
+  const sr=await import("../lib/student-role.ts");
+  const world=await roleWorld("tell-tale-heart");
+  const bad=(change:(w:typeof world)=>void)=>{const w=structuredClone(world);change(w);return sr.studentRoleProblems(w).join(" | ")};
+  assert.match(bad(w=>{w.student_role!.start_scene="nowhere"}),/not a scene/);
+  assert.match(bad(w=>{w.student_role!.setup="You heard it.\nThen more."}),/one line/);
+  assert.match(bad(w=>{w.student_role!.intro="The neighbor heard a shriek."}),/second person/);
+  assert.match(bad(w=>{w.student_role!.name="The old man"}),/can't play old man/);
+  assert.match(bad(w=>{w.student_role!.name="The officer on duty"}),/can't play Officer/i);
+  assert.match(bad(w=>{delete w.scenes[0].choice_point!.role_frame}),/without a role_frame/);
+});
+
+test("what's your angle: only the three choices reach the AI, and the teacher's settings turn roles and angles off", async()=>{
+  const sr=await import("../lib/student-role.ts");
+  const world=await roleWorld("sleepy-hollow");
+  const p=sr.personaPrompt(world,{firedUpBy:"underestimated",lane:"music",style:"rival"});
+  assert.match(p,/newest student in Ichabod's class/);assert.match(p,/being underestimated/);assert.match(p,/music/);assert.match(p,/rival/);
+  assert.match(p,/must still come from the source passages/);
+  assert.equal(sr.personaPrompt(world,{lane:"music"},{rolesOn:false,anglesOn:false}),"");
+  assert.doesNotMatch(sr.personaPrompt(world,{lane:"music"},{rolesOn:true,anglesOn:false}),/music/);
+  assert.doesNotMatch(sr.personaPrompt(world,null,{rolesOn:false,anglesOn:true}),/playing a part/);
+  // Anything but the listed choices is refused: no free text can ride along.
+  assert.equal(sr.AngleSchema.safeParse({lane:"my name is Sam"}).success,false);
+  assert.equal(sr.AngleSchema.safeParse({lane:"music",note:"hi"}).success,false);
+  assert.equal(sr.personaPrompt(world,{lane:"I live on Elm St"} as never).includes("Elm"),false);
+  assert.equal(sr.choiceFrame(world,world.scenes[0].choice_point,{rolesOn:false,anglesOn:true}),"");
+  assert.equal(sr.ANGLE_STEPS.length,3);
+  assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.firedUpBy.options),["Unfairness","Being underestimated","Loyalty","Winning","Money"]);
+  assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.lane.options),["Sports","Music","Gaming","Fashion","Social media"]);
+  assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.style.options),["Solo detective","Squad","Rival"]);
+  // Saved with progress only.
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
+  const base={v:1,worldId:"sleepy-hollow",scene:0,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],updatedAt:"2026-10-19T00:00:00Z"};
+  assert.equal(StudentProgressSchema.safeParse({...base,angle:{lane:"gaming"},roleIntroSeen:true}).success,true);
+  assert.equal(StudentProgressSchema.safeParse({...base,angle:{lane:"anything"}}).success,false);
+  const {personalSettings}=await import("../lib/classroom/store.ts");
+  assert.deepEqual(personalSettings({}),{rolesOn:true,anglesOn:true},"on until the teacher turns them off");
+  assert.deepEqual(personalSettings({roles_enabled:false,angles_enabled:true}),{rolesOn:false,anglesOn:true});
+});
+
+// ---------- Server checks: every pinned or tapped line is a real evidence line ----------
+async function evidenceKit(){
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  const passages=parseSourcePassages(await readFile(new URL("../worlds/sleepy-hollow/source.md",import.meta.url),"utf8"));
+  const ev=await import("../lib/evidence-check.ts");const lies=await import("../lib/lies.ts");
+  const scene=world.scenes[0],lie=scene.lie!;
+  const truth=lies.evidenceSentences(passages.find(p=>p.id===lie.truth_paragraph)!.text).find(s=>lies.isTruthLine(lie,s))!;
+  const other=world.scenes[0].artifacts.find(a=>a.id!==lie.clue_id&&a.source_anchor.every(id=>!world.scenes[0].artifacts.find(x=>x.id===lie.clue_id)!.source_anchor.includes(id)))!;
+  const otherLine=ev.evidenceLines(world,passages,[other.id])[0];
+  return {world,passages,ev,lies,lie,truth,other,otherLine};
+}
+
+test("evidence check: only an exact evidence line from the world file matches", async()=>{
+  const {world,passages,ev,lie,truth,other,otherLine}=await evidenceKit();
+  const m=ev.matchEvidence(world,passages,truth,{clueId:lie.clue_id});
+  assert.deepEqual(m,{clueId:lie.clue_id,pid:lie.truth_paragraph,text:truth});
+  // Spacing, line breaks, curly quotes and case don't matter; the stored text is the world file's.
+  assert.equal(ev.matchEvidence(world,passages,"  "+truth.toUpperCase().replace(/ /g,"\n  ")+" ",{clueId:lie.clue_id})?.text,truth);
+  assert.equal(ev.matchEvidence(world,passages,truth.slice(0,truth.length-12),{clueId:lie.clue_id}),null,"a fragment is not a line");
+  assert.equal(ev.matchEvidence(world,passages,truth.replace("broken","brand-new"),{clueId:lie.clue_id}),null,"an edited line is not a line");
+  assert.equal(ev.matchEvidence(world,passages,"Ichabod was carried off by the Horseman.",{}),null,"made-up text");
+  assert.equal(ev.matchEvidence(world,passages,truth,{clueId:other.id}),null,"a line from a different clue");
+  assert.equal(ev.matchEvidence(world,passages,truth,{clueId:lie.clue_id,pid:"p001"}),null,"the wrong paragraph");
+  assert.equal(ev.matchEvidence(world,passages,truth,{clueId:"no-such-clue"}),null);
+  assert.equal(ev.matchEvidence(world,passages,{quote:truth},{}),null,"not a string");
+  assert.equal(ev.matchEvidence(world,passages,"   ",{}),null);
+  assert.equal(ev.matchEvidence(world,passages,otherLine.text)?.clueId,other.id,"with no clue named, any clue's evidence");
+});
+
+test("evidence check: live rounds refuse pins that aren't evidence lines and store the world file's text", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {lie,truth,otherLine}=await evidenceKit();
+  const {memoryLiveStore}=await import("../lib/live/store.ts");
+  const server=await import("../lib/live/server.ts");const {NOT_EVIDENCE}=await import("../lib/evidence-check.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"EVID01",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven","Agent Quill","Constable Ember","Detective Comet"])await server.join(store,s,{nickname:n,studentId:null});
+  let st=(await server.loadState(store,s.id))!;
+  await server.hostAct(store,st,{action:"squads.auto"});st=(await server.loadState(store,s.id))!;
+  const roleHolder=(squad:number,role:string)=>server.hostView(st).squads[squad].members.find(m=>m.roles.includes(role as never))!.id;
+  const act=async(pid:string,kind:string,payload:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,pid,{kind:kind as never,payload},{judgeAllowed:async()=>false})};
+  // Spot the Lie: only lines from the testimony's clue.
+  await server.hostAct(store,st,{action:"round.start",type:"lie",sceneId:"empty-schoolhouse"});st=(await server.loadState(store,s.id))!;
+  const keeper=roleHolder(0,"keeper");
+  assert.equal(await act(keeper,"pin",{quote:"Hans said it was brand-new."}),NOT_EVIDENCE);
+  assert.equal(await act(keeper,"pin",{quote:truth.slice(0,40)}),NOT_EVIDENCE,"a fragment of the right line");
+  assert.equal(await act(keeper,"pin",{quote:otherLine.text}),NOT_EVIDENCE,"a real line from another clue");
+  assert.equal(await act(keeper,"pin",{quote:truth.replace(/\s+/g,"  "),pid:lie.truth_paragraph}),null);
+  const pinned=(await server.loadState(store,s.id))!.responses.find(r=>r.kind==="pin")!;
+  assert.deepEqual(pinned.payload,{quote:truth,pid:lie.truth_paragraph,clueId:lie.clue_id},"stored as the world file's line");
+  // Verdict Vote: three real, different lines from any clue.
+  await server.hostAct(store,(await server.loadState(store,s.id))!,{action:"round.reveal"});
+  st=(await server.loadState(store,s.id))!;
+  await server.hostAct(store,st,{action:"round.start",type:"verdict"});st=(await server.loadState(store,s.id))!;
+  await server.hostAct(store,st,{action:"round.stage"});st=(await server.loadState(store,s.id))!;
+  const vk=roleHolder(1,"keeper");
+  const {world,passages,ev,truth:truthLine,other:wrongClue}=await evidenceKit();
+  const three=ev.evidenceLines(world,passages).filter((l,i,a)=>a.findIndex(x=>x.text===l.text)===i).slice(0,3);
+  assert.equal(await act(vk,"pins",{pins:[...three.slice(0,2).map(l=>({clueId:l.clueId,quote:l.text})),{clueId:three[2].clueId,quote:"Brom did it."}]}),NOT_EVIDENCE);
+  assert.equal(await act(vk,"pins",{pins:[three[0],three[0],three[1]].map(l=>({clueId:l.clueId,quote:l.text}))}),"Pin 3 different lines.");
+  assert.equal(await act(vk,"pins",{pins:[{clueId:wrongClue.id,quote:truthLine},...three.slice(1).map(l=>({clueId:l.clueId,quote:l.text}))]}),NOT_EVIDENCE,"a line under the wrong clue");
+  assert.equal(await act(vk,"pins",{pins:three.map(l=>({clueId:l.clueId,quote:l.text.toLowerCase()}))}),null);
+  const saved=(await server.loadState(store,s.id))!.responses.find(r=>r.kind==="pins")!;
+  assert.deepEqual((saved.payload.pins as {quote:string}[]).map(p=>p.quote),three.map(l=>l.text));
+});
+
+test("evidence check: the Final Verdict and planted lies refuse lines that aren't in the story", async()=>{
+  const {world,passages,ev,lie,truth,other,otherLine}=await evidenceKit();
+  const lines=ev.evidenceLines(world,passages);
+  const pick=(id:string)=>lines.find(l=>l.clueId===id)!;
+  const clues=world.scenes.flatMap(s=>s.artifacts).map(a=>pick(a.id)).filter((l,i,a)=>a.findIndex(x=>x.text===l.text)===i).slice(0,3);
+  assert.deepEqual(ev.verdictPins(world,passages,clues.map(l=>({clue_id:l.clueId,quote:l.text}))),clues.map(l=>({clue_id:l.clueId,quote:l.text})));
+  assert.equal(ev.verdictPins(world,passages,[...clues.slice(0,2).map(l=>({clue_id:l.clueId,quote:l.text})),{clue_id:clues[2].clueId,quote:"I made this up."}]),null);
+  assert.equal(ev.verdictPins(world,passages,[{clue_id:clues[1].clueId,quote:clues[0].text},...clues.slice(1).map(l=>({clue_id:l.clueId,quote:l.text}))]),null,"quote under another clue");
+  assert.equal(ev.verdictPins(world,passages,[clues[0],clues[0],clues[1]].map(l=>({clue_id:l.clueId,quote:l.text}))),null,"the same line twice");
+  // Planted lies: the truth line must be exactly one of the clue's evidence lines, in the paragraph named.
+  const {plantedLieProblems}=await import("../lib/planted-lies.ts");
+  const base={sceneId:world.scenes[0].id,clueId:lie.clue_id,characterId:lie.character_id,sentence:"The schoolmaster packed a golden razor and a brand-new flute.",truthParagraph:lie.truth_paragraph,truthLine:truth};
+  assert.deepEqual(plantedLieProblems(world,passages,base),[]);
+  assert.match(plantedLieProblems(world,passages,{...base,truthLine:"a broken pitch-pipe."}).join(),/proves it false/,"a fragment of a real line");
+  assert.match(plantedLieProblems(world,passages,{...base,truthLine:truth+" And a flute."}).join(),/proves it false/,"an edited line");
+  assert.match(plantedLieProblems(world,passages,{...base,truthLine:otherLine.text,truthParagraph:otherLine.pid}).join(),/proves it false|this clue's evidence/,"a line from another clue");
+  void other;
+});
+
+test("saved proofs: older quotes are upgraded to their exact evidence line, or marked to re-prove", async()=>{
+  const {world,passages,ev,lie,truth}=await evidenceKit();
+  const id=lie.clue_id;
+  // Exact (spacing aside): kept as the world file's line.
+  assert.equal(ev.upgradeQuote(world,passages,id,truth.replace(/\s+/g," ")).status,"exact");
+  // A fragment that only one evidence line contains: upgraded to that line.
+  const frag=ev.upgradeQuote(world,passages,id,"a book of psalm tunes full of dog's-ears");
+  assert.equal(frag.status,"upgraded");assert.equal("line" in frag?frag.line.text:"",truth);
+  // A whole paragraph saved as the proof contains several lines: no single match.
+  const para=passages.find(p=>p.id===lie.truth_paragraph)!.text;
+  assert.equal(ev.upgradeQuote(world,passages,id,para).status,"unmatched");
+  // Too short, made up, or from another clue's evidence: no match.
+  assert.equal(ev.upgradeQuote(world,passages,id,"razor").status,"unmatched");
+  assert.equal(ev.upgradeQuote(world,passages,id,"He packed a golden flute and a hat.").status,"unmatched");
+  // A phrase in more than one evidence line of the clue is ambiguous.
+  const lines=ev.evidenceLines(world,passages,[id]);
+  const shared=["the schoolmaster","of the"].find(w=>lines.filter(l=>l.text.toLowerCase().includes(w)).length>1);
+  if(shared)assert.equal(ev.upgradeQuote(world,passages,id,shared+" was").status,"unmatched");
+
+  const other=world.scenes[0].artifacts.find(a=>a.id!==id)!;
+  const answers={[id]:{notice:"a book of psalm tunes full of dog's-ears",interpret:"It was broken.",craft:""},[other.id]:{notice:"Something nobody wrote.",interpret:"Because.",craft:""},"unproven-clue":{notice:"",interpret:""}};
+  const evidence=[{id:"e1",artifactId:id,paragraphId:"p001",text:"a book of psalm tunes full of dog's-ears"}];
+  const r=ev.upgradeSavedProofs(world,passages,answers,evidence);
+  assert.equal(r.changed,true);
+  assert.equal(r.answers[id].notice,truth);assert.equal(r.answers[id].interpret,"It was broken.","the explanation is kept");
+  assert.deepEqual(r.evidence[0],{id:"e1",artifactId:id,paragraphId:lie.truth_paragraph,text:truth},"saved evidence follows");
+  assert.deepEqual(r.reprove,[other.id]);
+  assert.deepEqual(ev.cluesToReprove(world,passages,r.answers),[other.id]);
+  assert.deepEqual(ev.cluesToReprove(world,[],r.answers),[],"nothing is marked before the story loads");
+  // Running it again changes nothing.
+  assert.equal(ev.upgradeSavedProofs(world,passages,r.answers,r.evidence).changed,false);
+});

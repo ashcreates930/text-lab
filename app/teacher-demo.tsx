@@ -8,6 +8,7 @@ import {cluesByPage} from "@/lib/storybook";
 import {STUCK_MINUTES,sampleCaseFile,sampleClass,sampleEvidenceClass,sampleEvidenceStudents,sampleFrames,sampleStopAndTalk,sampleStudents} from "@/lib/sample-classroom";
 import {buildEvidence} from "@/lib/classroom/evidence";
 import {EvidenceView} from "./evidence-view";
+import {DemoRoomButton} from "./live/entry";
 
 type Tab="evidence"|"overview"|"casefile"|"frames"|"live"|"code";
 const tabs:[Tab,string][]=[["evidence","Evidence"],["overview","Class overview"],["casefile","Case file"],["frames","Picture frames"],["live","Live lesson"],["code","Class code"]];
@@ -19,6 +20,7 @@ export function TeacherDemo({onSignIn,embedded=false}:{onSignIn:()=>void;embedde
  useEffect(()=>{fetch(`/worlds/${sampleClass.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setWorld(null))},[]);
  return <div className="case-ui mx-auto max-w-6xl px-4 pb-20 pt-6 md:px-8">
   <div role="note" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-dashed border-[#A0472C]/60 bg-[#F4E1D6]/60 px-5 py-3"><p className="text-[16px] font-semibold text-[#8A3B23]">Sample classroom. Sign in to create your own class.</p><button type="button" onClick={onSignIn} className="case-secondary !min-h-11">Teacher sign in <ArrowRight size={16}/></button></div>
+  <div className="mt-4 rounded-2xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="mb-2 text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Demo room · live squads</p><DemoRoomButton worldId={sampleEvidenceClass.worldId}/></div>
   <p className="mt-6 text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Teacher view · sample data</p>
   {/* The Evidence tab shows its own sample class (Sleepy Hollow); the other tabs show the Tell-Tale Heart class. */}
   <Heading className="mt-1 text-[32px] font-bold leading-tight md:text-[38px]">{tab==="evidence"?sampleEvidenceClass.name:sampleClass.name}</Heading>

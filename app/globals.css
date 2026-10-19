@@ -12,6 +12,8 @@
 
 /* Student case flow (app/case.tsx): one typeface, generous spacing, soft cards, one primary button style. */
 .case-ui{font-family:"Plus Jakarta Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#2A2620;--color-white:#ffffff}
+/* The projector host screen: the same type, light on dark. */
+.case-ui.case-ui-dark{color:#FFFDF8}
 .case-ui .font-serif{font-family:Georgia,"Times New Roman",serif}
 .case-art{background-size:cover;background-position:center;filter:brightness(1.6) contrast(1.06) saturate(1.08)}
 .case-primary{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:52px;border-radius:16px;background:#A0472C;color:#fff;padding:0 22px;font-size:17px;font-weight:700;transition:background .15s,transform .15s}
@@ -139,3 +141,10 @@ h1[tabindex="-1"]:focus{outline:none}
 .corkboard{background-color:#C9A57A;background-image:radial-gradient(rgba(90,58,30,.22) 1px,transparent 1.4px),radial-gradient(rgba(255,240,215,.18) 1px,transparent 1.6px);background-size:9px 9px,13px 13px;background-position:0 0,4px 6px;box-shadow:inset 0 0 0 10px #8A5A36,inset 0 0 30px rgba(42,38,32,.35)}
 @media (prefers-reduced-motion:reduce){.voice-ring,.consequence-in{animation:none}.voice-ring{box-shadow:0 0 0 3px #A0472C}}
 @media print{.corkboard{display:none!important}}
+
+/* Live round host screen (projector): large, high-contrast buttons. */
+.host-btn{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;min-height:60px;border-radius:18px;background:#A0472C;color:#fff;padding:0 26px;font-size:clamp(18px,1.5vw,24px);font-weight:700}
+.host-btn:hover:not(:disabled){background:#B4552F}
+.host-btn:disabled{opacity:.4;cursor:not-allowed}
+.host-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:52px;border-radius:16px;background:#2E2821;color:#FFFDF8;padding:0 18px;font-size:18px;font-weight:600;border:2px solid #5A4F42}
+.host-btn-secondary:hover{background:#3A332B}
