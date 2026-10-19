@@ -1,11 +1,14 @@
 "use client";
 // Public home page: what Text Lab is, who it is for, and one click into a case.
-import { ArrowRight, Check } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, Check, MessageCircle, Radio, Sparkles } from "lucide-react";
 import { Wordmark } from "./wordmark";
+import { openDemoRoom } from "./live/entry";
+import { copyTransform, faceClip, hologramLayout } from "@/lib/hologram";
 
-export function Landing({ brand, onStart, onPreset, onJoin, onWaitlist, onPricing, onLessons, onClassroom, onApproach }: any) {
+export function Landing({ brand, onStart, onCatchLie, onPreset, onJoin, onWaitlist, onPricing, onLessons, onClassroom, onApproach }: any) {
   const stories=[["The Legend of Sleepy Hollow","Washington Irving","Grades 6 to 8"],["The Tell-Tale Heart","Edgar Allan Poe","Grades 8 to 12"],["Trifles","Susan Glaspell","Grades 9 to 11"]];
-  const steps=[["01","Open a clue","Students step into a scene from the story and pick a clue to examine."],["02","Question, then prove","They ask a character what happened. Characters can be wrong, so students tap the line in the text that backs them up or proves them wrong."],["03","Close the case","Every proven clue fills the evidence meter and moves them up the detective ranks. The finished case file is ready to print."]];
+  const steps=[["01","Open a clue","Students step into a scene from the story and pick a clue to examine."],["02","Question, then prove","They ask a character what happened. Characters can be wrong, so students tap the line in the text that backs them up or proves them wrong."],["03","Spot the Lie","In every scene one character tells a lie on purpose. Students catch it with the one line from the story that disproves it."],["04","The Final Verdict","Students pin three proven clues, defend their theory in a short argument, and get feedback on the strength of their case."],["05","Play live in squads","Teachers run live rounds on the board. Squads of 3 or 4 share roles and earn points for evidence and reasoning, not speed."]];
   const audiences:[string,string,string,string[],[string,()=>void]][]=[
     ["STUDENTS","Grades 6 to 12","Close reading that feels like solving a case, not filling out a worksheet.",["Short scenes, one clue at a time","Home-language help in Español, Kreyòl ayisyen, Português and Tiếng Việt","No email or password: a nickname is enough"],["Try a case",onStart]],
     ["TEACHERS","English and ELA classrooms","One class link and your students are reading in under a minute.",["Share a link or QR code; students type a nickname and start","See which evidence came from the story and which came from an AI character","Run a live class discussion and assign five-minute mini lessons","Aligned to Florida B.E.S.T., AP and Cambridge AICE"],["Teacher sign in",onClassroom]],
@@ -37,10 +40,12 @@ export function Landing({ brand, onStart, onPreset, onJoin, onWaitlist, onPricin
       </div>
     </section>
 
+    <NewStrip onCatchLie={onCatchLie}/>
+
     <section id="how" className="border-t border-[#E4DCCB] bg-[#FFFDF8] px-5 py-16 md:px-14 md:py-20"><div className="mx-auto max-w-7xl">
       <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">How a case works</p>
       <h2 className="serif mt-3 max-w-3xl text-[34px] leading-tight md:text-[44px]">AI can summarize any book. Text Lab makes students prove what's true.</h2>
-      <ol className="mt-10 grid gap-6 md:grid-cols-3">{steps.map(([n,t,d])=><li key={n} className="rounded-3xl border border-[#E4DCCB] p-6"><span className="grid h-10 w-10 place-items-center rounded-full bg-[#A0472C] text-[15px] font-bold text-white">{n}</span><h3 className="mt-5 text-[21px] font-bold">{t}</h3><p className="mt-2 text-[16px] leading-7 text-[#4A4438]">{d}</p></li>)}</ol>
+      <ol className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-5">{steps.map(([n,t,d])=><li key={n} className="rounded-3xl border border-[#E4DCCB] p-6"><span className="grid h-10 w-10 place-items-center rounded-full bg-[#A0472C] text-[15px] font-bold text-white">{n}</span><h3 className="mt-5 text-[21px] font-bold">{t}</h3><p className="mt-2 text-[16px] leading-7 text-[#4A4438]">{d}</p></li>)}</ol>
     </div></section>
 
     <section id="who" className="px-5 py-16 md:px-14 md:py-20"><div className="mx-auto max-w-7xl">
@@ -68,5 +73,33 @@ export function Landing({ brand, onStart, onPreset, onJoin, onWaitlist, onPricin
     </div></section>
 
     <footer className="flex flex-wrap justify-between gap-4 border-t border-[#E4DCCB] px-5 py-7 text-[13px] text-[#6B6457] md:px-14"><span>{brand.organization} · {brand.principle}.</span><div className="flex flex-wrap gap-5"><button onClick={onApproach}>Our approach</button><button onClick={onPricing}>Pricing</button><button onClick={onWaitlist}>Join the waitlist</button></div></footer>
+  </div>;
+}
+
+// New: three ways into live squads, Spot the Lie and hologram mode. Each card is one tap into the real thing.
+function NewStrip({onCatchLie}:{onCatchLie:()=>void}){
+  const [busy,setBusy]=useState(false),[error,setError]=useState("");
+  async function playLive(){if(busy)return;setBusy(true);setError("");setError(await openDemoRoom());setBusy(false)}
+  const card="flex flex-col rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]";
+  return <section aria-labelledby="new-h" className="px-5 pb-16 md:px-14"><div className="mx-auto max-w-7xl">
+    <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">New</p>
+    <h2 id="new-h" className="serif mt-2 text-[30px] leading-tight md:text-[36px]">More ways to prove what's true</h2>
+    <div className="mt-6 grid gap-5 md:grid-cols-3">
+      <div className={card}><Radio size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Play live with your class</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-[#4A4438]">Squads join on their phones with a QR code, take turns in four roles, and score points for evidence. The board shows the testimony, the votes and the strongest arguments.</p>
+        <button type="button" onClick={playLive} aria-busy={busy} className="case-primary mt-5 w-full sm:w-fit">{busy?"Opening the demo room…":"Open a demo room"} <ArrowRight size={18}/></button>
+        {error&&<p role="alert" className="mt-2 text-[15px] text-[#A33B20]">{error}</p>}</div>
+      <div className={card}><MessageCircle size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Catch the lie</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-[#4A4438]">Hans Van Ripper swears he knows what was in Ichabod's bundle. One thing he says is false. Find the line in the story that proves it.</p>
+        <button type="button" onClick={onCatchLie} className="case-primary mt-5 w-full sm:w-fit">Hear his testimony <ArrowRight size={18}/></button></div>
+      <div className={card}><Sparkles size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Characters as holograms</h3><p className="mt-2 text-[16px] leading-7 text-[#4A4438]">Set a phone under a clear pyramid and a witness takes the stand, speaking their testimony. Open any clue and tap Hologram.</p>
+        <MiniHologram/></div>
+    </div>
+  </div></section>;
+}
+
+// A small, still picture of the four-way hologram layout, built with the same layout code as the real view.
+function MiniHologram(){
+  const size=168,copies=hologramLayout({width:size,height:size,size:0.95,gap:0.16,mirror:false}),clip=faceClip(copies[0].size,0.16*size);
+  return <div aria-hidden className="relative mx-auto mt-5 overflow-hidden rounded-2xl bg-black" style={{width:size,height:size}}>
+    {copies.map(c=><img key={c.side} src="/worlds/sleepy-hollow/holograms/hans-van-ripper.png" alt="" loading="lazy" className="absolute max-w-none" style={{left:c.x,top:c.y,width:c.size,height:c.size,transform:copyTransform(c),clipPath:clip,filter:"drop-shadow(0 0 6px rgba(140,235,255,.55))"}}/>)}
   </div>;
 }

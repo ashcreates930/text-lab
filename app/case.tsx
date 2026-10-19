@@ -37,11 +37,14 @@ import {RoleIntro} from "./role-intro";
 import {REPROVE,REPROVE_VERDICT,cluesToReprove,upgradeSavedProofs} from "@/lib/evidence-check";
 import {DEFAULT_PERSONAL,choiceFrame,partName,type StoryPersonalSettings} from "@/lib/student-role";
 
-export function CaseFlow(props:{demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void;onTutorial?:()=>void;onFeedback?:()=>void}){
+// startAtLie: open straight to the story's first Spot the Lie clue (the home page's "Catch the lie"). onStartOver: clear
+// this demo's progress (demo visitors only; the scene screen asks first).
+type CaseProps={demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void;onTutorial?:()=>void;onFeedback?:()=>void;startAtLie?:boolean;onStarted?:()=>void;onStartOver?:()=>void};
+export function CaseFlow(props:CaseProps){
  return <BilingualProvider worldId={props.demo.worldId} lang={props.demo.homeLanguage??null}><CaseInner {...props}/></BilingualProvider>;
 }
 
-function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback}:{demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void;onTutorial?:()=>void;onFeedback?:()=>void}){
+function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,startAtLie,onStarted,onStartOver}:CaseProps){
  const [world,setWorld]=useState<WorldPack|null>(null),[passages,setPassages]=useState<SourcePassage[]>([]),[error,setError]=useState("");
  const [openClue,setOpenClue]=useState<string>(""),[openFrame,setOpenFrame]=useState(""),[verdictOpen,setVerdictOpen]=useState(false),[toast,setToast]=useState(""),[celebrate,setCelebrate]=useState<{sceneId:string;rankUp:string|null}|null>(null),[justProven,setJustProven]=useState(""),[plantClue,setPlantClue]=useState("");
  // Opening a clue or a storyboard frame, or going back to the scene, is a new screen: start at the top with focus on its heading.
@@ -60,6 +63,8 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback}:{d
  useEffect(()=>{if(!toast)return;const t=setTimeout(()=>setToast(""),4200);return()=>clearTimeout(t)},[toast]);
  // Older saves: once the story and the saved progress have loaded, upgrade each proven clue's line to its exact evidence
  // line (lib/evidence-check.ts) and save that. Clues that can't be upgraded are marked "Re-prove this clue".
+ // "Catch the lie": once the story has loaded, go to the first scene with a testimony and open its clue.
+ useEffect(()=>{if(!startAtLie||!world)return;const i=world.scenes.findIndex(s=>s.lie);if(i>=0){setDemo(d=>({...d,scene:i}));setOpenClue(world.scenes[i].lie!.clue_id)}onStarted?.()},[startAtLie,world,setDemo,onStarted]);
  const upgradedFor=useRef("");
  useEffect(()=>{if(!world||!passages.length||(demo.classAuth&&!demo.classProgressLoaded))return;const key=`${world.id}:${!!demo.classProgressLoaded}`;if(upgradedFor.current===key)return;upgradedFor.current=key;
   setDemo(d=>{const r=upgradeSavedProofs(world,passages,d.artifactAnswers,d.savedTextEvidence);return r.changed?{...d,artifactAnswers:r.answers,savedTextEvidence:r.evidence}:d})},[world,passages,demo.classAuth,demo.classProgressLoaded,setDemo]);
@@ -70,7 +75,7 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback}:{d
  const finished=demo.submitted;
  if(finished)return <CaseSummary world={world} demo={demo} passages={passages} onAnotherStory={onAnotherStory} personal={personal??DEFAULT_PERSONAL}/>;
  // The role card and "What's your angle?" come once, before the first clue (after saved progress has loaded).
- const introDue=!!personal&&(!demo.classAuth||demo.classProgressLoaded)&&!demo.roleIntroSeen&&!Object.keys(demo.artifactAnswers).length&&((personal.rolesOn&&!!world.student_role)||personal.anglesOn);
+ const introDue=!!personal&&(!demo.classAuth||demo.classProgressLoaded)&&!demo.roleIntroSeen&&(!demo.classAuth||!Object.keys(demo.artifactAnswers).length)&&((personal.rolesOn&&!!world.student_role)||personal.anglesOn);
  if(introDue&&personal)return <RoleIntro world={world} settings={personal} onDone={angle=>setDemo(d=>({...d,roleIntroSeen:true,...(angle?{angle}:{}),scene:d.scene===0&&personal.rolesOn&&world.student_role?Math.max(0,world.scenes.findIndex(s=>s.id===world.student_role!.start_scene)):d.scene}))}/>;
  if(STORYBOOK_ON&&world.storybook)return <StorybookReader world={world} role={role} passages={passages} demo={demo} setDemo={setDemo} onExit={onExit} onFeedback={onFeedback}/>;
  const frames=sceneFrames(world,passages,sceneIndex);
@@ -90,11 +95,12 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback}:{d
   const badge=info?.factCheck?recordFactCheck(`${world.id}:${clue.id}`):false;
   setToast(badge?"Badge earned: Fact Checker. You used the story to prove a character wrong.":"Clue proven and saved to your case file.");
   if(info?.solves&&sceneSolved(true,frames,demo.storyFrames))celebrateScene()}}/>;
- return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} role={role} demo={demo} setDemo={setDemo} passages={passages} frames={frames} onOpenFrame={setOpenFrame} onOpenVerdict={()=>setVerdictOpen(true)} onCloseCase={closeCase} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} onPlantLie={demo.classAuth?setPlantClue:undefined} personal={personal??DEFAULT_PERSONAL} reprove={reprove} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
+ return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} role={role} demo={demo} setDemo={setDemo} passages={passages} frames={frames} onOpenFrame={setOpenFrame} onOpenVerdict={()=>setVerdictOpen(true)} onCloseCase={closeCase} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} onStartOver={demo.classAuth?undefined:onStartOver} onPlantLie={demo.classAuth?setPlantClue:undefined} personal={personal??DEFAULT_PERSONAL} reprove={reprove} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
 }
 
-function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onOpenFrame,onOpenVerdict,onCloseCase,onOpenClue,onExit,onPlantLie,personal,reprove,toast,celebrating,rankUp,justProven,onTutorial}:{onPlantLie?:(clueId:string)=>void;personal:StoryPersonalSettings;reprove:string[];world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];frames:SceneFrame[];onOpenFrame:(key:string)=>void;onOpenVerdict:()=>void;onCloseCase:()=>void;onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string;onTutorial?:()=>void}){
- const [reading,setReading]=useState(false),[boardOpen,setBoardOpen]=useState(false),[moment,setMoment]=useState<{text:string;image:string}|null>(null);
+function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onOpenFrame,onOpenVerdict,onCloseCase,onOpenClue,onExit,onStartOver,onPlantLie,personal,reprove,toast,celebrating,rankUp,justProven,onTutorial}:{onStartOver?:()=>void;onPlantLie?:(clueId:string)=>void;personal:StoryPersonalSettings;reprove:string[];world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];frames:SceneFrame[];onOpenFrame:(key:string)=>void;onOpenVerdict:()=>void;onCloseCase:()=>void;onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string;onTutorial?:()=>void}){
+ const startOverRef=useRef<HTMLButtonElement>(null);
+ const [confirmStart,setConfirmStart]=useState(false),[reading,setReading]=useState(false),[boardOpen,setBoardOpen]=useState(false),[moment,setMoment]=useState<{text:string;image:string}|null>(null);
  // Ambient sound: on for the demo, off for class sessions; the student can switch it either way.
  const [ambientOn,toggleAmbient]=useSoundPref("ambient",demo.preset);
  const done=scene.artifacts.filter(a=>isDone(demo,a.id)).length,total=scene.artifacts.length,allDone=done===total;
@@ -124,9 +130,11 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onO
   {stamping&&savedVerdict&&<VerdictStamp theory={theoryOf(world,savedVerdict.theory_id)?.name??""} onContinue={onCloseCase}/>}
   {boardOpen&&<CaseBoardDialog world={world} answers={demo.artifactAnswers} reprove={reprove} storyboard={storyboardSoFar(world,passages,demo.storyFrames,sceneIndex)} top={savedVerdict&&<VerdictPanel world={world} verdict={savedVerdict}/>} onClose={()=>setBoardOpen(false)}/>}
   <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-2 sm:gap-4">
-   <button onClick={onExit} className="inline-flex items-center gap-2 rounded-full px-2 py-2 sm:px-3 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]"><ArrowLeft size={18}/> Stories</button>{onTutorial&&<button onClick={onTutorial} className="mr-auto inline-flex items-center gap-2 rounded-full px-3 py-2 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]"><PlayCircle size={18}/> <span className="hidden sm:inline">How it works</span><span className="sr-only sm:hidden">How it works</span></button>}
+   <button onClick={onExit} className="inline-flex items-center gap-2 rounded-full px-2 py-2 sm:px-3 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]"><ArrowLeft size={18}/> Stories</button>{onTutorial&&<button onClick={onTutorial} className={`${onStartOver&&!confirmStart?"":"mr-auto "}inline-flex items-center gap-2 rounded-full px-3 py-2 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]`}><PlayCircle size={18}/> <span className="hidden sm:inline">How it works</span><span className="sr-only sm:hidden">How it works</span></button>}
+   {onStartOver&&!confirmStart&&<button ref={startOverRef} type="button" onClick={()=>setConfirmStart(true)} className="mr-auto inline-flex min-h-11 items-center rounded-full px-3 py-2 text-[15px] text-[#6B6457] underline-offset-4 hover:underline">Start over</button>}
    <div className="flex items-center gap-2 text-[15px] text-[#6B6457] sm:gap-3"><span className="hidden sm:inline">{world.title}</span><span className="whitespace-nowrap rounded-full bg-[#EFE8D8] px-3 py-1 font-semibold text-[#2A2620]">Scene {sceneIndex+1} of {world.scenes.length}</span><RankChip/></div>
   </div>
+  {confirmStart&&onStartOver&&<div role="group" aria-labelledby="start-over-h" className="mt-3 flex flex-wrap items-center gap-3 rounded-2xl bg-[#FBF1EB] px-4 py-3"><p id="start-over-h" className="text-[16px] font-semibold text-[#2A2620]">Start over? This clears your clues and progress in this demo.</p><div className="flex gap-2"><button type="button" onClick={()=>{setConfirmStart(false);onStartOver()}} className="case-primary !min-h-11 !px-4 !text-[15px]">Yes, start over</button><button type="button" autoFocus onClick={()=>{setConfirmStart(false);setTimeout(()=>startOverRef.current?.focus({preventScroll:true}),0)}} className="case-secondary !min-h-11 !px-4 !text-[15px]">Keep playing</button></div></div>}
   <div className="relative mx-auto mt-4 overflow-hidden rounded-3xl shadow-[0_10px_40px_-12px_rgba(42,38,32,.35)] md:max-w-[calc(44vh*2)]">
    <div className={`case-art aspect-[4/3] w-full sm:aspect-[3/2] md:aspect-[16/8] ${solved?"case-alive":""}`} style={{backgroundImage:`url('${scene.background_image}')`}} role="img" aria-label={`Scene: ${scene.id.replaceAll("-"," ")}`}/>
    {solved&&<Ambient worldId={world.id}/>}

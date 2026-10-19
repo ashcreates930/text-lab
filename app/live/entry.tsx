@@ -5,22 +5,27 @@ import {useCallback,useEffect,useState} from "react";
 import {ArrowRight,Radio,Trophy} from "lucide-react";
 import {hostKey,playerKey,postJson,store} from "./use-live";
 
-function openHost(id:string,token:string){store(hostKey(id),token);window.open(`/live/host/${id}`,"_blank","noopener")||(window.location.href=`/live/host/${id}`)}
+// The host screen opens in a new tab for the projector; if the browser blocks that, it opens here instead.
+// (window.open with "noopener" always returns null, so the opener link is cut by hand.)
+function openHost(id:string,token:string){store(hostKey(id),token);const url=`/live/host/${id}`,w=window.open(url,"_blank");if(w)w.opener=null;else window.location.href=url}
 
-export function DemoRoomButton({worldId="sleepy-hollow"}:{worldId?:string}){
+// Opens a Demo room (sample classroom, up to 40 players, 2 hours) on its host screen. Returns an error to show, or "".
+export async function openDemoRoom(worldId="sleepy-hollow"){const r=await postJson("/api/live/sessions",{demo:true,worldId});if(!r.ok)return r.error;openHost(r.data.id,r.data.hostToken);return ""}
+
+export function DemoRoomButton({worldId="sleepy-hollow",label="Run a live demo round",large=false}:{worldId?:string;label?:string;large?:boolean}){
  const [busy,setBusy]=useState(false),[error,setError]=useState("");
- async function start(){setBusy(true);setError("");const r=await postJson("/api/live/sessions",{demo:true,worldId});setBusy(false);if(r.ok)openHost(r.data.id,r.data.hostToken);else setError(r.error)}
+ async function start(){if(busy)return;setBusy(true);setError("");const e=await openDemoRoom(worldId);setBusy(false);setError(e)}
  return <div className="flex flex-wrap items-center gap-3">
-  <button type="button" onClick={start} disabled={busy} className="case-primary"><Radio size={18}/>{busy?"Opening the demo room…":"Run a live demo round"}</button>
-  <p className="text-[14px] text-[#6B6457]">Fellows join on their phones by scanning a QR code. Up to 40 players; the room closes after 2 hours.</p>
+  <button type="button" onClick={start} aria-busy={busy} className={`case-primary ${large?"!min-h-[60px] !px-7 !text-[19px]":""}`}><Radio size={large?22:18}/>{busy?"Opening the demo room…":label}</button>
+  <p className="text-[14px] text-[#6B6457]">Players join on their phones by scanning a QR code. Up to 40 players; the room closes after 2 hours.</p>
   {error&&<p role="alert" className="w-full text-[15px] text-[#A33B20]">{error}</p>}
  </div>;
 }
 
 export function StartLiveRound({classId,fetcher}:{classId:string;fetcher:(path:string,init?:RequestInit)=>Promise<{ok:boolean;status:number;body:{id?:string;hostToken?:string;error?:string}}>}){
  const [busy,setBusy]=useState(false),[error,setError]=useState("");
- async function start(){setBusy(true);setError("");const r=await fetcher("/api/live/sessions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({classId})});setBusy(false);if(r.ok&&r.body.id&&r.body.hostToken)openHost(r.body.id,r.body.hostToken);else setError(r.body.error||"Could not start a live round.")}
- return <div><button type="button" onClick={start} disabled={busy} className="gold-button flex min-h-12 items-center gap-2 px-5 py-3 text-sm"><Radio size={18}/>{busy?"Opening…":"Start a live round"}</button>
+ async function start(){if(busy)return;setBusy(true);setError("");const r=await fetcher("/api/live/sessions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({classId})});setBusy(false);if(r.ok&&r.body.id&&r.body.hostToken)openHost(r.body.id,r.body.hostToken);else setError(r.body.error||"Could not start a live round.")}
+ return <div><button type="button" onClick={start} aria-busy={busy} className="gold-button flex min-h-[60px] items-center gap-3 px-7 py-3 text-lg font-bold"><Radio size={22}/>{busy?"Opening…":"Start a live round"}</button>
   <p className="mt-2 text-sm text-white/70">Squads play Spot the Lie, Verdict Vote and Objection! on their phones. Students tap "Join live round" on their class screen.</p>
   {error&&<p role="alert" className="mt-2 text-sm text-[#F3C9B2]">{error}</p>}</div>;
 }
