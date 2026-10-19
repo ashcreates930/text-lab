@@ -23,7 +23,8 @@ export function WitnessStand({sessionId}:{sessionId:string}){
  useEffect(()=>{if(!token)return;refresh();const db=getBrowserSupabase();const ch=db?.channel(`live:${sessionId}`).on("broadcast",{event:"changed"},()=>{refresh()}).subscribe();const t=window.setInterval(refresh,1500);return()=>{window.clearInterval(t);if(ch)db?.removeChannel(ch)}},[token,sessionId,refresh]);
  useEffect(()=>{focusScreenTop()},[started]);
  if(token===null&&typeof window!=="undefined"&&!window.location.hash)return <Shell><h1 className="text-[24px] font-bold">Scan the Witness stand code on the board.</h1></Shell>;
- const w=view?.witness;
+ // Spot the Lie's witness, or Story Mode's speaker (round 2 confronts you, round 3 testifies).
+ const w=view?.witness??view?.story??null;
  // The first tap unlocks sound on the phone; after that the host can play the testimony from the board.
  if(!started||!w)return <Shell>
   <p className="text-[13px] font-semibold uppercase tracking-wide text-[#8CEBFF]">{view?.session.title??"Live round"} · Witness stand</p>

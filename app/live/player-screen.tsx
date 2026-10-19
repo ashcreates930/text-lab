@@ -8,6 +8,7 @@ import {ROLE_INFO,type Role} from "@/lib/live/engine";
 import {contentNotes} from "@/lib/content-notes";
 import {EvidenceLines} from "../evidence-lines";
 import {playerKey,postJson,readStored,store,useLive,useScreenTop,useStory} from "./use-live";
+import {PlayerStory} from "./player-story";
 
 type View=ReturnType<typeof playerView>;
 type Seat={sessionId:string;playerToken:string;nickname:string};
@@ -87,6 +88,8 @@ function RoundView({state,act,world,passages}:{state:View;act:(k:string,p?:Recor
  const [text,setText]=useState("");const [note,setNote]=useState("");
  useEffect(()=>{setText("")},[state.session.roundIndex]);
  const notes=useMemo(()=>world?contentNotes(world):new Map<string,string>(),[world]);
+ // Story Mode: the phone shows only this round's controls.
+ if(round.type==="story"&&state.story)return <PlayerStory round={round as never} story={state.story} act={act} world={world} passages={passages} sceneId={"sceneId" in round?String(round.sceneId):""}/>;
  // Verdict vote and objection vote: everyone votes.
  if(round.type==="verdict"&&"stage" in round&&round.stage==="vote")return <section className="mt-5"><h1 className="text-[26px] font-bold leading-tight">{"question" in round?round.question:""}</h1><p className="mt-1 text-[16px] text-[#4A4438]">Vote for the theory you can best defend.</p>
   <div className="mt-4 grid gap-3">{"theories" in round&&round.theories.map(t=><button key={t.id} type="button" onClick={()=>act("vote",{theoryId:t.id})} aria-pressed={state.myVote===t.id} className={`rounded-2xl p-4 text-left ${state.myVote===t.id?"bg-[#A0472C] text-white":"bg-[#FFFDF8] shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"}`}><span className="flex items-center justify-between text-[19px] font-bold">{t.name}{state.myVote===t.id&&<Check size={20}/>}</span><span className={`mt-1 block text-[15px] ${state.myVote===t.id?"text-white/90":"text-[#4A4438]"}`}>{t.description}</span></button>)}</div></section>;
@@ -163,6 +166,8 @@ function PinThree({world,passages,notes,saved,onSave}:{world:NonNullable<ReturnT
 function Revealed({state}:{state:View}){
  const r=state.reveal as (View["reveal"]&{mine?:{points:number;detail:string}|null})|null;
  if(!r)return null;
+ // Story Mode's final reveal: your total and your rank (the top 5 are on the board).
+ if(r.type==="story")return <section className="mt-6"><h1 className="text-[28px] font-bold">Story Mode complete</h1>{state.story&&<p className="mt-3 rounded-2xl bg-[#2A2620] px-4 py-3 text-[18px] text-white">{state.story.total} points{state.story.board.me?` · ${state.story.boardKind==="squad"?"your squad is ":"you're "}#${state.story.board.me.rank} of ${state.story.board.players}`:""}</p>}<p className="mt-3 text-[16px]">Eyes on the board for the top 5.</p></section>;
  return <section className="mt-6"><h1 className="text-[28px] font-bold">{r.type==="objection"?(("sustained" in r&&r.sustained)?"Objection sustained!":"Objection overruled!"):"Eyes on the board"}</h1>
   {r.type==="lie"&&"truthLine" in r&&<><p className="mt-3 text-[15px] font-semibold text-[#8A3B23]">The line that disproves it</p><p className="mt-1 rounded-2xl bg-[#FFFDF8] p-4 font-serif text-[17px] leading-7">“{r.truthLine}”</p><p className="mt-2 text-[16px]">{r.explanation}</p></>}
   {r.mine&&<p className="mt-4 rounded-2xl bg-[#2A2620] px-4 py-4 text-[18px] text-white"><b>{state.squad?.name}:</b> {r.mine.detail} · {r.mine.points} pts</p>}

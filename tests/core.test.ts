@@ -1817,3 +1817,46 @@ test("story mode server: one run per player, rounds in order, late answers force
   const again=(await srv.startRun(store,world,scene,who(0),true)) as import("../lib/story-store.ts").StoryRun;
   assert.equal(again.state.round,0);assert.equal(again.bestTotal,run.bestTotal);
 });
+
+test("story mode live: shared rounds, each player scored with the solo rules, top 5 on the board, answers never on phones", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {line,c,scene}=await storyKit();
+  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"STORY1",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const ids:string[]=[];
+  for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven","Agent Quill","Constable Ember","Detective Comet","Agent Flint"]){const r=await server.join(store,s,{nickname:n,studentId:null});ids.push(r.player!.id)}
+  let st=(await server.loadState(store,s.id))!;await server.hostAct(store,st,{action:"squads.auto"});st=(await server.loadState(store,s.id))!;
+  assert.equal(await server.hostAct(store,st,{action:"round.start",type:"story"}),null);st=(await server.loadState(store,s.id))!;
+  const act=async(pid:string,input:unknown,deps={judgeAllowed:async()=>false})=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,pid,{kind:"story",payload:{input}},deps)};
+  // Phones get the controls but never the answers.
+  const pub=JSON.stringify(server.playerView(st,ids[0]).round);
+  assert.ok(pub.includes("Tap the lines that matter"));assert.ok(!pub.includes("supports"));
+  for(const [k,pid] of ids.entries())assert.equal(await act(pid,{kind:"read",pouch:k<4?[line("p068",5),line("p069",0),line("p070",2)]:[line("p068",5)]}),null);
+  assert.equal(await act(ids[0],{kind:"read",pouch:[]}),"You've already answered this round.");
+  st=(await server.loadState(store,s.id))!;assert.equal(server.hostView(st).storyAnswered,7);
+  await server.hostAct(store,st,{action:"round.stage"});st=(await server.loadState(store,s.id))!;
+  const board=server.hostView(st).storyBoard!;assert.equal(board.top.length,5);assert.equal(board.players,7);
+  const me=server.playerView(st,ids[6]).story!;assert.equal(me.last?.points,100);assert.ok(me.board.me&&me.board.top.length<=5);
+  // Round 2: the move and its proof; the Witness stand shows the speaker.
+  await server.hostAct(store,st,{action:"round.stage"});st=(await server.loadState(store,s.id))!;
+  assert.equal(server.witnessView(st).story?.character.id,c.confront.character_id);
+  const hat=c.confront.actions[0];
+  assert.equal(await act(ids[0],{kind:"confront",actionId:hat.id,proof:hat.supports[0]}),null);
+  st=(await server.loadState(store,s.id))!;
+  const rec=st.responses.find(r=>r.kind==="story"&&r.playerId===ids[0]&&(r.payload as {step:number}).step===1)!.payload.record as {points:number;multiplier:number};
+  assert.ok(rec.points>=600&&rec.multiplier===1.2,"500 proof plus speed, x1.2 for a second valid round");
+  // Extended time: a step that's over for everyone else is still open for a 2x student.
+  const late=new Date(Date.now()-100000).toISOString();
+  const round=st.session.rounds[st.session.roundIndex] as import("../lib/live/story.ts").LiveStoryRound;
+  await store.updateSession(s.id,{rounds:[{...round,stepStartedAt:late}]});
+  assert.equal(await act(ids[1],{kind:"confront",actionId:hat.id,proof:hat.supports[0]}),null,"100 seconds in: inside 90 + 20 grace");
+  await store.updateSession(s.id,{rounds:[{...round,stepStartedAt:new Date(Date.now()-150000).toISOString()}]});
+  assert.equal(await act(ids[2],{kind:"confront",actionId:hat.id,proof:hat.supports[0]}),"Time's up for this round.");
+  assert.equal(await act(ids[3],{kind:"confront",actionId:hat.id,proof:hat.supports[0]},{judgeAllowed:async()=>false,timeSetting:"2"} as never),null,"150 seconds is inside a 2x student's 180");
+  // Squads: the class can rank squads instead.
+  const {liveStoryBoard}=await import("../lib/live/story.ts");
+  st=(await server.loadState(store,s.id))!;
+  const sq=liveStoryBoard(st.responses,st.session.roundIndex,st.players,st.squads,true);assert.equal(sq.kind,"squad");assert.equal(sq.rows.length,st.squads.length);
+  void scene;
+});

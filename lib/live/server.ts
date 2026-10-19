@@ -5,6 +5,8 @@ import type { WorldPack } from "../world-schema.ts";
 import { readPassages, readWorld } from "../classroom/worlds.ts";
 import { NOT_EVIDENCE, matchEvidence } from "../evidence-check.ts";
 import type { SourcePassage } from "../source-passages.ts";
+import { answerStep, answeredStep, liveStoryBoard, myStepRecord, playerState, publicStory, stepKind, type LiveStoryRound } from "./story.ts";
+import { studentBoard, type RoundInput, type TimeSetting } from "../story-mode.ts";
 import { memoryModeEnabled } from "../classroom/store.ts";
 import { screenArgument, judgeWithRubric } from "../verdict-server.ts";
 import { getLieBankStore } from "../lie-bank-store.ts";
@@ -83,6 +85,7 @@ function objectionMine(reveal: { type: string; sustained?: boolean; scores?: { s
 function revealFor(st: LiveState) {
   const round = currentRound(st), i = st.session.roundIndex;
   if (!round) return null;
+  if (round.type === "story") { const b = liveStoryBoard(st.responses, i, st.players, st.squads, round.squadsOn); return { type: "story" as const, kind: b.kind, top: b.rows.slice(0, 5).map((r, k) => ({ rank: k + 1, name: r.name, score: r.score })), players: b.rows.length }; }
   if (round.type === "lie") {
     const lie = lieOf(st, round)!;
     return { type: "lie" as const, truthLine: lie.truth_line, explanation: lie.explanation, falseClaim: lie.false_claim,
@@ -99,9 +102,11 @@ function squadSummary(st: LiveState, squadId: string) {
   const progress = squadProgress(round, st.responses, squadId, st.session.roundIndex);
   return { ids, roles, progress };
 }
+const storyScene = (st: LiveState, round: LiveStoryRound) => st.world.scenes.find((s) => s.id === round.sceneId && s.story_mode);
 const publicRound = (st: LiveState) => {
   const round = currentRound(st);
   if (!round) return null;
+  if (round.type === "story") { const scene = storyScene(st, round); return scene ? publicStory(st.world, st.passages ?? [], scene, round) : null; }
   if (round.type === "lie") {
     const lie = lieOf(st, round)!, scene = st.world.scenes.find((s) => s.id === round.sceneId)!, clue = scene.artifacts.find((a) => a.id === lie.clue_id)!;
     const who = st.world.characters.find((c) => c.id === lie.character_id)!;
@@ -138,18 +143,30 @@ export function hostView(st: LiveState) {
     witnessToken: witnessToken(st.session.id),
     lieBank: (st.bank ?? []).map((l) => ({ id: l.id, label: `${st.world.characters.find((c) => c.id === l.characterId)?.name ?? "A character"}: ${l.sentence}` })),
     writerSquadId: writerOf(round),
+    // Story Mode: the scenes that have it, how many players answered this step, and the top 5 at the reveal.
+    storyScenes: st.world.scenes.map((sc, k) => ({ sceneId: sc.id, label: `Scene ${k + 1}`, on: !!sc.story_mode })).filter((x) => x.on),
+    storyAnswered: round?.type === "story" ? answeredStep(st.responses, st.session.roundIndex, round.step) : 0,
+    storyBoard: round?.type === "story" ? (() => { const b = liveStoryBoard(st.responses, st.session.roundIndex, st.players, st.squads, round.squadsOn); return { kind: b.kind, top: b.rows.slice(0, 5).map((r, k) => ({ rank: k + 1, name: r.name, score: r.score })), players: b.rows.length }; })() : null,
     lieScenes: st.world.scenes.filter((s) => s.lie).map((s, i) => ({ sceneId: s.id, label: `Scene ${st.world.scenes.indexOf(s) + 1}: ${s.lie!.topic}` , index: i })),
   };
 }
 
 // What the Witness stand phone shows: the testifying character and their line during Spot the Lie, and when the host
 // last asked it to play.
+function storyWitness(st: LiveState, round: LiveStoryRound) {
+  const scene = storyScene(st, round), kind = stepKind(round.step);
+  const speak = scene && round.showing === "round" && st.session.status === "round" ? (kind === "confront" ? { id: scene.story_mode!.confront.character_id, line: scene.story_mode!.confront.line } : kind === "lie" && scene.lie ? { id: scene.lie.character_id, line: scene.lie.testimony } : null) : null;
+  const who = speak ? st.world.characters.find((c) => c.id === speak.id) : undefined;
+  return { story: who && speak ? { character: { id: who.id, name: who.name, portrait: who.portrait, hologram: who.hologram }, line: speak.line } : null };
+}
 export function witnessView(st: LiveState) {
   const round = currentRound(st), lie = lieOf(st, round);
   const who = lie ? st.world.characters.find((c) => c.id === lie.character_id) : undefined;
   const cue = [...st.responses].reverse().find((r) => r.roundIndex === st.session.roundIndex && r.kind === "witness");
   return {
     session: { id: st.session.id, title: st.world.title, worldId: st.session.worldId, status: st.session.status },
+    // Story Mode: the character who confronts the student (round 2) or testifies (round 3) takes the stand.
+    ...(round?.type === "story" ? storyWitness(st, round) : {}),
     witness: st.session.status === "round" && lie && who ? { character: { id: who.id, name: who.name, portrait: who.portrait, hologram: who.hologram }, line: lie.testimony } : null,
     playKey: cue ? `${st.session.roundIndex}:${cue.id}` : null,
   };
@@ -169,8 +186,14 @@ export function playerView(st: LiveState, playerId: string) {
   const plantedByMySquad = !!squad && writerOf(round) === squad.id;
   const answering = !!squad && roundTakesSquadAnswers(round) && !plantedByMySquad && (round?.type !== "objection" || round.objectSquadId === squad.id);
   const reveal = st.session.status === "reveal" ? revealFor(st) : null;
+  // Story Mode: this player's own answers, points and place (the top 5 and their own rank, never the full list).
+  const story = round?.type === "story" ? (() => {
+    const state = playerState(st.responses, i, me.id), board = liveStoryBoard(st.responses, i, st.players, st.squads, round.squadsOn);
+    const view = studentBoard(board.rows, board.kind === "squad" ? me.squadId : me.id);
+    return { answered: !!myStepRecord(st.responses, i, round.step, me.id), last: round.showing === "board" || st.session.status !== "round" ? myStepRecord(st.responses, i, round.step, me.id) : null, total: state.total, pouch: state.pouch, board: view, boardKind: board.kind };
+  })() : null;
   return {
-    session: sessionInfo(st), round: publicRound(st), purpose: round ? squadPurpose(round.type) : "",
+    session: sessionInfo(st), round: publicRound(st), purpose: round ? squadPurpose(round.type) : "", story,
     me: { id: me.id, nickname: me.nickname },
     squad: squad && summary ? { id: squad.id, name: squad.name, members: summary.ids.map((pid) => ({ id: pid, nickname: st.players.find((x) => x.id === pid)!.nickname, roles: rolesOf(summary.roles, pid) })) } : null,
     myRoles, roleInfo: ROLE_INFO, answering, plantedByMySquad,
@@ -195,7 +218,7 @@ function hasVerdictPins(st: LiveState) {
 // ---------- Host actions ----------
 export type HostAction =
   | { action: "squads.auto" } | { action: "squads.move"; playerId: string; squadId: string | null }
-  | { action: "round.start"; type: RoundType; sceneId?: string; plantedId?: string } | { action: "round.stage" } | { action: "round.reveal" }
+  | { action: "round.start"; type: RoundType; sceneId?: string; plantedId?: string; squads?: boolean } | { action: "round.stage" } | { action: "round.reveal" }
   | { action: "pause" } | { action: "resume" } | { action: "end" } | { action: "witness.play" }
   | { action: "override"; key: "sound"; squadId: string; value: boolean } | { action: "override"; key: "objection"; value: boolean };
 
@@ -229,6 +252,10 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
         const scene = st.world.scenes.find((x) => x.id === a.sceneId && x.lie) ?? st.world.scenes.find((x) => x.lie && !used.has(x.id)) ?? st.world.scenes.find((x) => x.lie);
         if (!scene) return "This story has no Spot the Lie testimony.";
         next = { type: "lie", sceneId: scene.id };
+      } else if (a.type === "story") {
+        const scene = st.world.scenes.find((x) => x.id === a.sceneId && x.story_mode) ?? st.world.scenes.find((x) => x.story_mode);
+        if (!scene) return "This story has no Story Mode yet.";
+        next = { type: "story", sceneId: scene.id, step: 0, showing: "round", stepStartedAt: new Date().toISOString(), squadsOn: a.squads === true };
       } else if (a.type === "verdict") {
         if (!st.world.verdict) return "This story has no verdict question.";
         next = { type: "verdict", stage: "vote" };
@@ -243,6 +270,9 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
     case "round.stage": {
       if (round?.type === "verdict" && round.stage === "vote") return set(store, st, { ...round, stage: "argue" });
       if (round?.type === "objection" && round.stage === "counter") return set(store, st, { ...round, stage: "vote" });
+      // Story Mode: a round, then its leaderboard reveal, then the next round. After round 4's board, Reveal finishes.
+      if (round?.type === "story" && round.showing === "round") return set(store, st, { ...round, showing: "board" });
+      if (round?.type === "story" && round.step < 3) return set(store, st, { ...round, step: round.step + 1, showing: "round", stepStartedAt: new Date().toISOString() });
       return "This round has no next step.";
     }
     case "round.reveal": if (s.status !== "round") return "No round to reveal."; await store.updateSession(s.id, { status: "reveal" }); return null;
@@ -250,7 +280,8 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
     case "resume": await store.updateSession(s.id, { paused: false }); return null;
     case "end": await store.updateSession(s.id, { status: "ended", paused: false }); return null;
     case "witness.play": {
-      if (s.status !== "round" || round?.type !== "lie") return "The Witness stand plays during Spot the Lie.";
+      const storySpeaks = round?.type === "story" && round.showing === "round" && (stepKind(round.step) === "confront" || stepKind(round.step) === "lie");
+      if (s.status !== "round" || (round?.type !== "lie" && !storySpeaks)) return "The Witness stand plays during Spot the Lie.";
       await store.addResponse(s.id, { roundIndex: s.roundIndex, squadId: null, playerId: null, role: "host", kind: "witness", payload: {}, flagged: false });
       return null;
     }
@@ -283,7 +314,8 @@ function objectionPairing(st: LiveState) {
 export type PlayerAction = { kind: ResponseKind; payload: Record<string, unknown> };
 const textKinds: ResponseKind[] = ["explain", "argument"];
 // Returns an error for the player, or null. judge: runs the existing verdict judge (capped per session by the caller).
-export async function playerAct(store: LiveStore, st: LiveState, playerId: string, act: PlayerAction, deps: { judgeAllowed: () => Promise<boolean> }): Promise<string | null> {
+// timeSetting: the player's own Story Mode time (a class student's extra time).
+export async function playerAct(store: LiveStore, st: LiveState, playerId: string, act: PlayerAction, deps: { judgeAllowed: () => Promise<boolean>; timeSetting?: TimeSetting }): Promise<string | null> {
   const s = st.session, round = currentRound(st), i = s.roundIndex;
   if (s.status !== "round") return "Wait for the next round.";
   if (s.paused) return "The round is paused.";
@@ -294,6 +326,15 @@ export async function playerAct(store: LiveStore, st: LiveState, playerId: strin
     const theoryId = String(act.payload.theoryId ?? "");
     if (!st.world.verdict?.theories.some((t) => t.id === theoryId)) return "Pick one of the theories.";
     await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: "vote", payload: { theoryId }, flagged: false });
+    return null;
+  }
+  if (act.kind === "story") {
+    if (round?.type !== "story") return "This isn't a Story Mode round.";
+    const scene = storyScene(st, round);
+    if (!scene) return "This scene has no Story Mode.";
+    const r = answerStep(st.world, st.passages ?? [], scene, round, st.responses, i, playerId, act.payload.input as RoundInput, Date.now(), deps.timeSetting ?? "1");
+    if (typeof r === "string") return r;
+    await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: "story", payload: { step: round.step, record: r.record, ...(act.payload.input && (act.payload.input as RoundInput).kind === "lie" ? { explanation: String((act.payload.input as { explanation?: string }).explanation ?? "").slice(0, 400) } : {}) }, flagged: false });
     return null;
   }
   if (act.kind === "counter_vote") {

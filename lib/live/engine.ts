@@ -16,12 +16,14 @@ export const ROLE_INFO: Record<Role, { name: string; job: string }> = {
   reporter: { name: "Reporter", job: "Write the one-sentence explanation." },
 };
 
-export type RoundType = "lie" | "verdict" | "objection";
+export type RoundType = "lie" | "verdict" | "objection" | "story";
 export type Round =
   // planted: a classmate's approved lie from the Lie bank (a snapshot), and the squad its writer is in, which sits out.
   | { type: "lie"; sceneId: string; planted?: { id: string; lie: Lie; writerSquadId: string | null } }
   | { type: "verdict"; stage: "vote" | "argue" }
-  | { type: "objection"; stage: "counter" | "vote"; defendSquadId: string; objectSquadId: string; pin: { clueId?: string; quote: string }; endsAt: string };
+  | { type: "objection"; stage: "counter" | "vote"; defendSquadId: string; objectSquadId: string; pin: { clueId?: string; quote: string }; endsAt: string }
+  // Story Mode, live (lib/live/story.ts): step 0 to 3, each shown as a round and then as a leaderboard reveal.
+  | import("./story.ts").LiveStoryRound;
 export type SessionStatus = "lobby" | "round" | "reveal" | "ended";
 
 export type LiveSession = {
@@ -32,7 +34,7 @@ export type LiveSession = {
 export type LiveSquad = { id: string; name: string; position: number };
 export type LivePlayer = { id: string; nickname: string; squadId: string | null; studentId: string | null; joinedAt: string };
 // witness: the host asked the Witness stand phone to play the testimony (Hologram mode).
-export type ResponseKind = "pin" | "explain" | "approve" | "object" | "submit" | "vote" | "pins" | "argument" | "judged" | "counter_vote" | "override" | "witness";
+export type ResponseKind = "pin" | "explain" | "approve" | "object" | "submit" | "vote" | "pins" | "argument" | "judged" | "counter_vote" | "override" | "witness" | "story";
 export type LiveResponse = {
   id: string; roundIndex: number; squadId: string | null; playerId: string | null; role: Role | "host" | "system" | null;
   kind: ResponseKind; payload: Record<string, unknown>; flagged: boolean; createdAt: string;
@@ -68,7 +70,8 @@ export function rolesFor(memberIds: string[], roundIndex: number): Record<Role, 
 export const rolesOf = (roles: Record<Role, string> | null, playerId: string) => (roles ? ROLES.filter((r) => roles[r] === playerId) : []);
 
 export function squadPurpose(type: RoundType) {
-  return type === "lie" ? "Catch the false claim with one line from the story."
+  return type === "story" ? "Play the scene together: read, answer, catch the lie and make your call."
+    : type === "lie" ? "Catch the false claim with one line from the story."
     : type === "verdict" ? "Defend your theory with three pieces of evidence."
     : "Counter the other squad's evidence with a better line from the text.";
 }
@@ -220,10 +223,21 @@ export function sessionScores(world: WorldPack, session: LiveSession, squads: Li
     let scores: { squadId: string; points: number }[] = [];
     if (round.type === "lie") { const lie = roundLie(world, round); if (lie) scores = scoreLieRound(lie, squads, responses, i, round.planted?.writerSquadId ?? null); }
     else if (round.type === "verdict") scores = scoreVerdictRound(squads, responses, i);
+    else if (round.type === "story") scores = storySquadScores(squads, responses, i);
     else scores = objectionResult(round, responses, i).scores;
     for (const s of scores) total.set(s.squadId, (total.get(s.squadId) ?? 0) + s.points);
   });
   return squads.map((s) => ({ squadId: s.id, name: s.name, points: total.get(s.id) ?? 0 })).sort((a, b) => b.points - a.points);
+}
+
+// Story Mode live: each squad earns its members' average score (each answer row holds its points).
+export function storySquadScores(squads: LiveSquad[], responses: LiveResponse[], roundIndex: number) {
+  return squads.map((s) => {
+    const rows = responses.filter((r) => r.roundIndex === roundIndex && r.kind === "story" && r.squadId === s.id);
+    const players = new Set(rows.map((r) => r.playerId));
+    const sum = rows.reduce((n, r) => n + Number((r.payload.record as { points?: number } | undefined)?.points ?? 0), 0);
+    return { squadId: s.id, points: players.size ? Math.round(sum / players.size) : 0 };
+  });
 }
 
 // Period vs. period: squad points added up per class over the last seven days. Classes only, never students.

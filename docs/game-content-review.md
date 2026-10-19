@@ -298,3 +298,14 @@ Authored in `worlds/sleepy-hollow/world.json` (`scenes[0].story_mode`), checked 
 | Class pulse | Class pulse (class) · Today's players (demo) · Strongest proof: (a line from the story). Percentages only; no student names or writing. |
 | Scene cleared | Scene cleared · points · Best streak · Rank · Coins left · Your Evidence pouch · No lines kept this time. · Play this scene again · On to the next scene |
 | Teacher | Story Mode (switch) · Story Mode leaderboard: Individual / Squads / Off · Squads come from your most recent live round. · Story Mode time: Standard / 1.5x / 2x / Untimed |
+
+### Story Mode, live (teacher-hosted)
+
+| Where | Text |
+| --- | --- |
+| Host picker | Story Mode: Everyone plays the scene at once: four timed rounds on the board, controls on their phones, and a leaderboard between rounds. · Rank squads instead of players |
+| Host round | Round N of 4 · (round name) · Ns / Time! · Confronts the class / Testimony · (speaker) · N of N answered on their phones. · Show the leaderboard · Start round N: (name) · Finish Story Mode · Play on the Witness stand · Witness stand code · Scan with the phone under the hologram pyramid. The speaker in rounds 2 and 3 appears there. |
+| Host board | Leaderboard · Top 5 · N players / Squads · N squads · No answers yet. · Story Mode: final leaderboard |
+| Purpose line | Play the scene together: read, answer, catch the lie and make your call. |
+| Phone | Story Mode · Round N of 4 · (name) · N seconds left · Keep the lines that matter · Lock in N lines · Your pouch is full. Tap a kept line to take it out. · What do you do? · Back it up with one line · Or pick a line from the passage · Back it up · Go without proof · Tap the line that proves it false · Lie caught. Now say why in one sentence. · Why does it prove it false? · Submit / I'm stuck, move on · Pin 2 lines from your pouch · Make my call · Locked in. · Eyes on the board. Your points show at the leaderboard. · No answer this round · N points · you're #N of N / your squad is #N of N · up N · Eyes on the board for the top 5. · Story Mode complete |
+| Errors | That isn't this round. · You've already answered this round. · Time's up for this round. · This story has no Story Mode yet. |
