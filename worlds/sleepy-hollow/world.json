@@ -718,6 +718,85 @@
         "truth_line": "They consisted of two shirts and a half; two stocks for the neck; a pair or two of worsted stockings; an old pair of corduroy small-clothes; a rusty razor; a book of psalm tunes full of dog’s-ears; and a broken pitch-pipe.",
         "explanation": "Hans said the pitch-pipe was brand-new, but the story says it was broken.",
         "topic": "what was in Ichabod's bundle"
+      },
+      "story_mode": {
+        "intro": "It is the morning after. You walk into the schoolhouse, and Ichabod's seat is empty. Listen closely and keep the lines that matter.",
+        "read": {
+          "chunks": [
+            "p068",
+            "p069",
+            "p070"
+          ],
+          "prompt": "Tap the lines that matter as you listen. Your Evidence pouch holds 3."
+        },
+        "confront": {
+          "character_id": "brom-bones",
+          "line": "You're the new one in the schoolmaster's class, and I hear you were out near the bridge the night he vanished. The whole valley is telling tales this morning. So what do you say happened to him?",
+          "actions": [
+            {
+              "id": "hat-and-pumpkin",
+              "label": "Point out the hat and the shattered pumpkin by the brook",
+              "supports": [
+                "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin."
+              ],
+              "reaction": "Brom bursts into a hearty laugh at the word pumpkin, then changes the subject.",
+              "trust": -1
+            },
+            {
+              "id": "horse-came-home",
+              "label": "Say his horse came home without its saddle",
+              "supports": [
+                "The next morning the old horse was found without his saddle, and with\nthe bridle under his feet, soberly cropping the grass at his master’s\ngate.",
+                "Hans\nVan Ripper now began to feel some uneasiness about the fate of poor\nIchabod, and his saddle."
+              ],
+              "reaction": "Brom shrugs. \"Old Gunpowder always finds his way home. The rider is another matter.\"",
+              "trust": 1
+            },
+            {
+              "id": "galloping-hessian",
+              "label": "Say the town thinks the Galloping Hessian carried him off",
+              "supports": [
+                "The stories of Brouwer, of Bones, and a whole budget of\nothers were called to mind; and when they had diligently considered them\nall, and compared them with the symptoms of the present case, they shook\ntheir heads, and came to the conclusion that Ichabod had been carried\noff by the Galloping Hessian."
+              ],
+              "reaction": "Brom grins and nods slowly. \"Now you sound like a true son of Sleepy Hollow.\"",
+              "trust": 2
+            }
+          ]
+        },
+        "call": {
+          "question": "Ichabod is gone. What do you think happened to him?",
+          "theories": [
+            {
+              "id": "brom-prank",
+              "name": "Brom's prank",
+              "description": "Someone played a trick on Ichabod to scare him out of Sleepy Hollow.",
+              "supports": [
+                "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin.",
+                "The brook was searched, but the body of the schoolmaster was not to\nbe discovered."
+              ]
+            },
+            {
+              "id": "the-horseman",
+              "name": "The Headless Horseman",
+              "description": "The ghostly Galloping Hessian really chased Ichabod and carried him away.",
+              "supports": [
+                "The stories of Brouwer, of Bones, and a whole budget of\nothers were called to mind; and when they had diligently considered them\nall, and compared them with the symptoms of the present case, they shook\ntheir heads, and came to the conclusion that Ichabod had been carried\noff by the Galloping Hessian.",
+                "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin.",
+                "Knots of gazers and gossips were collected in the\nchurchyard, at the bridge, and at the spot where the hat and pumpkin\nhad been found."
+              ]
+            },
+            {
+              "id": "ran-away",
+              "name": "He ran away",
+              "description": "Ichabod left on his own and started a new life somewhere else.",
+              "supports": [
+                "Whatever money the\nschoolmaster possessed, and he had received his quarter’s pay but a\nday or two before, he must have had about his person at the time of his\ndisappearance.",
+                "The brook was searched, but the body of the schoolmaster was not to\nbe discovered.",
+                "The next morning the old horse was found without his saddle, and with\nthe bridle under his feet, soberly cropping the grass at his master’s\ngate."
+              ]
+            }
+          ]
+        }
       }
     },
     {

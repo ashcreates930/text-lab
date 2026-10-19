@@ -1665,3 +1665,117 @@ test("saved proofs: older quotes are upgraded to their exact evidence line, or m
   // Running it again changes nothing.
   assert.equal(ev.upgradeSavedProofs(world,passages,r.answers,r.evidence).changed,false);
 });
+
+// ---------- Story Mode ----------
+async function storyKit(){
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  const passages=parseSourcePassages(await readFile(new URL("../worlds/sleepy-hollow/source.md",import.meta.url),"utf8"));
+  const sm=await import("../lib/story-mode.ts");const ev=await import("../lib/evidence-check.ts");const {evidenceSentences}=await import("../lib/lies.ts");
+  const scene=world.scenes[0],c=scene.story_mode!;
+  const line=(pid:string,i:number)=>evidenceSentences(passages.find(p=>p.id===pid)!.text)[i];
+  return {world,passages,sm,ev,scene,c,line};
+}
+const onTime={elapsedMs:5000,grace:false};
+
+test("story mode content: authored, validated, anchored in scene 1's evidence lines", async()=>{
+  const {world,passages,sm,scene,c,ev}=await storyKit();
+  assert.deepEqual(sm.storyModeProblems(world,passages),[]);
+  assert.equal(c.confront.character_id,"brom-bones","Brom Bones is available in scene 1");
+  assert.match(c.confront.line,/\byou\b/i);
+  for(const a of c.confront.actions)for(const s of a.supports)assert.ok(sm.sceneEvidence(world,passages,scene,s),`${a.id} support is an evidence line`);
+  for(const t of c.call.theories)assert.ok(t.supports.length>=2&&t.supports.every(s=>sm.sceneEvidence(world,passages,scene,s)));
+  assert.deepEqual(c.call.theories.map(t=>t.id),world.verdict!.theories.map(t=>t.id),"same theories as the Final Verdict");
+  const all=JSON.stringify(c);assert.ok(!all.includes("—"),"no em dashes");
+  // A support line that isn't evidence, or a missing confrontation "you", is caught.
+  const bad=structuredClone(world);bad.scenes[0].story_mode!.confront.actions[0].supports=["He flew to the moon."];bad.scenes[0].story_mode!.confront.line="He was there.";
+  const p=sm.storyModeProblems(bad,passages).join(" | ");assert.match(p,/not one of this scene's evidence lines/);assert.match(p,/speaks to the student/);
+  void ev;
+});
+
+test("story mode scoring: rounds pay for proof, and speed is small and only on valid proof", async()=>{
+  const {world,passages,sm,scene,c,line}=await storyKit();
+  const score=(input:Parameters<typeof sm.scoreRound>[3],t=onTime,set:import("../lib/story-mode.ts").TimeSetting="1",pouch:string[]=[])=>sm.scoreRound(world,passages,scene,input,t,set,pouch);
+  // Round 1: 100 per evidence line, at most 3, duplicates once.
+  const r1=score({kind:"read",pouch:[line("p068",5),line("p068",5),"Not in the story at all.",line("p070",2),line("p069",0)]});
+  assert.equal(r1.base,100,"only the first 3 count: the same evidence line twice (once) and one made up");assert.equal(r1.coinsEarned,1);
+  assert.equal(score({kind:"read",pouch:[line("p068",5),line("p070",2),line("p069",5)]}).base,300);
+  // Round 2: 500 for proof that backs the move, 100 for the move alone, speed only with valid proof.
+  const hat=c.confront.actions[0];
+  const r2=score({kind:"confront",actionId:hat.id,proof:hat.supports[0]},{elapsedMs:0,grace:false});
+  assert.equal(r2.base,500);assert.equal(r2.speed,100);assert.equal(r2.valid,true);
+  const wrong=score({kind:"confront",actionId:hat.id,proof:line("p070",2)});assert.deepEqual([wrong.base,wrong.speed,wrong.valid],[100,0,false],"a real line that doesn't back this move");
+  assert.equal(score({kind:"confront",actionId:hat.id,proof:""}).base,100);
+  // Round 3: 600 with a sound explanation, 300 for the line alone, nothing for a wrong line.
+  const truth=line("p069",2);
+  assert.equal(score({kind:"lie",line:truth,explanation:"Hans said the pitch-pipe was brand-new, but the story says it was broken."}).base,600);
+  assert.equal(score({kind:"lie",line:truth,explanation:"Because."}).base,300);
+  const miss=score({kind:"lie",line:line("p069",0),explanation:"Hans lied about the pitch-pipe being new."},{elapsedMs:0,grace:false});assert.deepEqual([miss.base,miss.speed],[0,0]);
+  // Round 4: 200 per valid pinned pouch line, plus 200 when both support the theory.
+  const pouch=[line("p068",5),line("p069",0),line("p070",2)];
+  assert.equal(score({kind:"call",theoryId:"brom-prank",pins:[line("p068",5),line("p069",0)]},onTime,"1",pouch).base,600);
+  assert.equal(score({kind:"call",theoryId:"ran-away",pins:[line("p068",5),line("p070",2)]},onTime,"1",pouch).base,400,"valid lines that don't support the theory");
+  assert.equal(score({kind:"call",theoryId:"brom-prank",pins:[line("p068",5),line("p069",5)]},onTime,"1",pouch).base,200,"pins must come from the pouch");
+  // Reading carefully always pays more than answering fast.
+  assert.ok(sm.POINTS.speedMax<sm.POINTS.readLine*1.01&&sm.POINTS.speedMax<sm.POINTS.confrontProof-sm.POINTS.confrontAction);
+});
+
+test("story mode timeouts: proof in the grace period earns half and no speed bonus", async()=>{
+  const {world,passages,sm,scene,c,line}=await storyKit();
+  const grace={elapsedMs:65000,grace:true};
+  const hat=c.confront.actions[0];
+  const r=sm.scoreRound(world,passages,scene,{kind:"confront",actionId:hat.id,proof:hat.supports[0]},grace,"1");
+  assert.deepEqual([r.base,r.speed,r.valid],[250,0,true]);
+  assert.equal(sm.scoreRound(world,passages,scene,{kind:"read",pouch:[line("p068",5)]},grace,"1").base,50);
+  assert.equal(sm.GRACE_SECONDS,20);
+});
+
+test("story mode streaks, coins and power-ups", async()=>{
+  const {sm}=await storyKit();
+  const ok=(base:number,coins=1,speed=0)=>({kind:"read" as const,base,speed,valid:true,coinsEarned:coins,detail:"",choice:"",proof:[]});
+  const bad={kind:"read" as const,base:100,speed:0,valid:false,coinsEarned:0,detail:"",choice:"",proof:[]};
+  let s=sm.newRun();
+  s=sm.applyRound(s,ok(100));assert.deepEqual([s.rounds[0].multiplier,s.total,s.streak],[1,100,1]);
+  s=sm.applyRound(s,ok(100));assert.deepEqual([s.rounds[1].multiplier,s.total],[1.2,220]);
+  s=sm.applyRound(s,ok(100));assert.equal(s.rounds[2].multiplier,1.5);
+  s=sm.applyRound(s,ok(100));assert.equal(s.rounds[3].multiplier,1.5,"capped at x1.5");
+  assert.equal(s.bestStreak,4);assert.equal(s.coins,4);
+  s=sm.applyRound(s,bad);assert.deepEqual([s.streak,s.rounds[4].multiplier,s.bestStreak],[0,1,4],"an invalid round resets the streak");
+  // Power-ups cost coins and last one round.
+  let r=sm.newRun();r={...r,coins:3};
+  assert.equal(sm.buy({...r,coins:1},"lantern"),"You need 2 coins for Lantern.");
+  const lit=sm.buy(r,"lantern") as typeof r;assert.deepEqual([lit.coins,lit.lantern],[1,true]);
+  const after=sm.applyRound(lit,ok(100,0));assert.equal(after.lantern,false,"the Lantern lights one round");
+  assert.equal((sm.buy({...r,coins:1},"second-look") as typeof r).coins,0);
+  const dd=sm.buy(r,"double-down") as typeof r;assert.deepEqual([dd.coins,dd.doubleDown],[0,true]);
+  const won=sm.applyRound(dd,ok(500,1,80));assert.deepEqual([won.rounds[0].points,won.rounds[0].doubled],[1160,true],"(500+80) doubled");
+  const lost=sm.applyRound(dd,{...bad,speed:40});assert.deepEqual([lost.rounds[0].points,lost.rounds[0].speed,lost.doubleDown],[100,0,false],"no proof: no doubling, speed lost");
+  // The trust meter and the pouch are saved on the run.
+  const t=sm.applyRound(sm.newRun(),ok(500),{trust:{characterId:"brom-bones",delta:-1},pouch:["a","b","a","c","d"]});
+  assert.deepEqual(t.trust,{"brom-bones":-1});assert.deepEqual(t.pouch,["a","b","c"]);
+});
+
+test("story mode extended time: the timer stretches and the speed bonus is measured against the student's own time", async()=>{
+  const {sm}=await storyKit();
+  assert.equal(sm.phaseSeconds(60,"1"),60);assert.equal(sm.phaseSeconds(60,"1.5"),90);assert.equal(sm.phaseSeconds(60,"2"),120);assert.equal(sm.phaseSeconds(60,"untimed"),null);
+  // Answering at the same share of your own time earns the same bonus.
+  assert.equal(sm.speedBonus(30000,60,"1"),50);assert.equal(sm.speedBonus(60000,60,"2"),50);assert.equal(sm.speedBonus(45000,60,"1.5"),50);
+  assert.equal(sm.speedBonus(120000,60,"untimed"),0);assert.equal(sm.speedBonus(60000,60,"untimed"),50);
+  assert.equal(sm.speedBonus(-5,60,"1"),0);
+  // Screen readers hear the time at 30, 10 and 5 seconds, never every second.
+  assert.equal(sm.timeAnnouncement(31,30),"30 seconds left");assert.equal(sm.timeAnnouncement(30,29),"");assert.equal(sm.timeAnnouncement(11,9),"10 seconds left");assert.equal(sm.timeAnnouncement(6,5),"5 seconds left");
+});
+
+test("story mode leaderboard: students see the top 5 and their own rank, never the full list", async()=>{
+  const {sm}=await storyKit();
+  const rows=["Ana R","Ben T","Cy L","Di M","Ed K","Flo P","Gus Q","Hal Z"].map((n,i)=>({id:`s${i}`,name:sm.boardName(n),score:1000-i*100}));
+  const me=sm.studentBoard(rows,"s6",9);
+  assert.equal(me.top.length,5);assert.deepEqual(me.top.map(r=>r.name),["Ana R.","Ben T.","Cy L.","Di M.","Ed K."]);
+  assert.deepEqual(me.me,{rank:7,score:400,movement:2},"+2 spots");
+  assert.ok(!JSON.stringify(me).includes("Flo")&&!JSON.stringify(me).includes("Hal"),"no one outside the top 5 but me");
+  assert.equal(sm.studentBoard(rows,"s1").top.find(r=>r.me)?.name,"Ben T.");
+  assert.equal(sm.boardName("  rosa   maria  p "),"rosa P.");assert.equal(sm.boardName("Jo"),"Jo");
+  // Class pulse: percentages and the strongest line on each side, never student writing.
+  const pulse=sm.classPulse([{choice:"a",valid:true,proof:["L1"]},{choice:"a",valid:true,proof:["L1"]},{choice:"a",valid:false,proof:["L2"]},{choice:"b",valid:true,proof:["L3"]}],[{key:"a",label:"A"},{key:"b",label:"B"},{key:"c",label:"C"}]);
+  assert.deepEqual(pulse.map(p=>[p.key,p.pct,p.strongest]),[["a",75,"L1"],["b",25,"L3"],["c",0,""]]);
+});
