@@ -15,7 +15,7 @@ export function portraitFor(character: { name: string; portrait?: string }) {
 
 // Voices and ambient sound: on by default for the public demo, off for class sessions (30 laptops in one room), and the
 // student's own choice is remembered on the device, separately for class and demo use.
-export type SoundKind = "voices" | "ambient";
+export type SoundKind = "voices" | "ambient" | "effects";
 export const soundDefault = (preset: string) => preset !== "class_student";
 export const soundKey = (kind: SoundKind, preset: string) => `textlab-${kind}-${preset === "class_student" ? "class" : "demo"}`;
 export function soundOn(kind: SoundKind, preset: string, stored: string | null | undefined) {

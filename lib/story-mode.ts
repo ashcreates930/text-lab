@@ -52,7 +52,8 @@ export type RoundInput =
   | { kind: "confront"; actionId: string; proof: string }
   | { kind: "lie"; line: string; explanation: string }
   | { kind: "call"; theoryId: string; pins: string[] };
-export type RoundScore = { kind: RoundKind; base: number; speed: number; valid: boolean; coinsEarned: number; detail: string; choice: string; proof: string[] };
+// grace: scored in the 20 seconds after time ran out (half points, no speed bonus).
+export type RoundScore = { kind: RoundKind; base: number; speed: number; valid: boolean; coinsEarned: number; detail: string; choice: string; proof: string[]; grace?: boolean };
 
 export const POINTS = { readLine: 100, confrontProof: 500, confrontAction: 100, lieFull: 600, lieLine: 300, callLine: 200, callSupports: 200, speedMax: 100 };
 export const POUCH_MAX = 3;
@@ -62,6 +63,9 @@ const sceneClueIds = (scene: Scene) => scene.artifacts.map((a) => a.id);
 export const sceneEvidence = (world: WorldPack, passages: SourcePassage[], scene: Scene, quote: string) => matchEvidence(world, passages, quote, { clueIds: sceneClueIds(scene) });
 
 export function scoreRound(world: WorldPack, passages: SourcePassage[], scene: Scene, input: RoundInput, timing: Timing, setting: TimeSetting, pouch: string[] = []): RoundScore {
+  return { ...scoreInput(world, passages, scene, input, timing, setting, pouch), grace: timing.grace };
+}
+function scoreInput(world: WorldPack, passages: SourcePassage[], scene: Scene, input: RoundInput, timing: Timing, setting: TimeSetting, pouch: string[]): RoundScore {
   const content = scene.story_mode!;
   const half = (n: number) => (timing.grace ? Math.round(n / 2) : n);
   const fast = (base: number) => (timing.grace ? 0 : speedBonus(timing.elapsedMs, base, setting));
@@ -103,7 +107,7 @@ export const POWER_UPS: Record<PowerUp, { name: string; cost: number; what: stri
   "double-down": { name: "Double down", cost: 3, what: "Doubles the next round's points if your proof is valid. Lose your speed bonus if it isn't." },
 };
 export type RoundRecord = RoundScore & { round: number; multiplier: number; doubled: boolean; points: number; streak: number };
-export type RunState = { round: number; total: number; streak: number; bestStreak: number; coins: number; pouch: string[]; trust: Record<string, number>; lantern: boolean; doubleDown: boolean; rounds: RoundRecord[] };
+export type RunState = { round: number; total: number; streak: number; bestStreak: number; coins: number; pouch: string[]; trust: Record<string, number>; lantern: boolean; doubleDown: boolean; rounds: RoundRecord[]; restarts?: number };
 export const newRun = (): RunState => ({ round: 0, total: 0, streak: 0, bestStreak: 0, coins: 0, pouch: [], trust: {}, lantern: false, doubleDown: false, rounds: [] });
 // Consecutive rounds with valid proof: the 2nd in a row x1.2, the 3rd and on x1.5 (the cap).
 export const streakMultiplier = (streakBefore: number) => (streakBefore >= 2 ? 1.5 : streakBefore === 1 ? 1.2 : 1);

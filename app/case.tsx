@@ -34,6 +34,7 @@ import {theoryOf,verdictFor} from "@/lib/verdict";
 import {PlantLieView} from "./plant-lie";
 import {HologramView} from "./hologram-view";
 import {RoleIntro} from "./role-intro";
+import {StoryMode} from "./story-mode";
 import {REPROVE,REPROVE_VERDICT,cluesToReprove,upgradeSavedProofs} from "@/lib/evidence-check";
 import {DEFAULT_PERSONAL,choiceFrame,partName,type StoryPersonalSettings} from "@/lib/student-role";
 
@@ -50,7 +51,9 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  // Opening a clue or a storyboard frame, or going back to the scene, is a new screen: start at the top with focus on its heading.
  // Students in the story: a class follows its teacher's settings for roles and angles; everyone else has both on.
  const [personal,setPersonal]=useState<StoryPersonalSettings|null>(demo.classAuth?null:DEFAULT_PERSONAL);
- useEffect(()=>{if(!demo.classAuth)return;fetch("/api/student/class",{headers:{"x-class-token":demo.classAuth.token},cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>setPersonal(j?{rolesOn:j.rolesOn!==false,anglesOn:j.anglesOn!==false}:DEFAULT_PERSONAL)).catch(()=>setPersonal(DEFAULT_PERSONAL))},[demo.classAuth]);
+ // Story Mode is on unless the class's teacher switched scenes to the Case file view.
+ const [storyModeOn,setStoryModeOn]=useState(true);
+ useEffect(()=>{if(!demo.classAuth)return;fetch("/api/student/class",{headers:{"x-class-token":demo.classAuth.token},cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{setPersonal(j?{rolesOn:j.rolesOn!==false,anglesOn:j.anglesOn!==false}:DEFAULT_PERSONAL);setStoryModeOn(j?.storyModeOn!==false)}).catch(()=>setPersonal(DEFAULT_PERSONAL))},[demo.classAuth]);
  const screen=`${openClue}|${openFrame}|${verdictOpen}|${plantClue}|${!!demo.roleIntroSeen}`,shownScreen=useRef(screen);
  useLayoutEffect(()=>{if(shownScreen.current===screen)return;shownScreen.current=screen;focusScreenTop()},[screen]);
  useEffect(()=>{setWorld(null);fetch(`/worlds/${demo.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setError("We couldn't open this story. Refresh the page to try again."));fetch(`/worlds/${demo.worldId}/source.md`).then(r=>r.ok?r.text():"").then(t=>setPassages(parseSourcePassages(t))).catch(()=>setPassages([]))},[demo.worldId]);
@@ -95,10 +98,14 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
   const badge=info?.factCheck?recordFactCheck(`${world.id}:${clue.id}`):false;
   setToast(badge?"Badge earned: Fact Checker. You used the story to prove a character wrong.":"Clue proven and saved to your case file.");
   if(info?.solves&&sceneSolved(true,frames,demo.storyFrames))celebrateScene()}}/>;
- return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} role={role} demo={demo} setDemo={setDemo} passages={passages} frames={frames} onOpenFrame={setOpenFrame} onOpenVerdict={()=>setVerdictOpen(true)} onCloseCase={closeCase} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} onStartOver={demo.classAuth?undefined:onStartOver} onPlantLie={demo.classAuth?setPlantClue:undefined} personal={personal??DEFAULT_PERSONAL} reprove={reprove} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
+ // Story Mode: scenes with a story_mode block are played as four timed rounds, unless an adult opened the Case file
+ // view (demo) or the teacher turned Story Mode off for the class. Then the clue board below is the scene.
+ const storyHere=!!scene.story_mode&&storyModeOn&&!demo.caseFileView;
+ if(storyHere)return <StoryMode key={scene.id} world={world} scene={scene} sceneIndex={sceneIndex} passages={passages} demo={demo} setDemo={setDemo} onCleared={()=>{setDemo(d=>({...d,scene:Math.min(d.scene+1,world.scenes.length-1),events:[...d.events,"scene_complete"]}))}} onCaseFile={demo.classAuth?undefined:()=>setDemo(d=>({...d,caseFileView:true}))}/>;
+ return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} onStoryMode={scene.story_mode&&demo.caseFileView&&!demo.classAuth?()=>setDemo(d=>({...d,caseFileView:false})):undefined} role={role} demo={demo} setDemo={setDemo} passages={passages} frames={frames} onOpenFrame={setOpenFrame} onOpenVerdict={()=>setVerdictOpen(true)} onCloseCase={closeCase} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} onStartOver={demo.classAuth?undefined:onStartOver} onPlantLie={demo.classAuth?setPlantClue:undefined} personal={personal??DEFAULT_PERSONAL} reprove={reprove} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
 }
 
-function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onOpenFrame,onOpenVerdict,onCloseCase,onOpenClue,onExit,onStartOver,onPlantLie,personal,reprove,toast,celebrating,rankUp,justProven,onTutorial}:{onStartOver?:()=>void;onPlantLie?:(clueId:string)=>void;personal:StoryPersonalSettings;reprove:string[];world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];frames:SceneFrame[];onOpenFrame:(key:string)=>void;onOpenVerdict:()=>void;onCloseCase:()=>void;onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string;onTutorial?:()=>void}){
+function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onOpenFrame,onOpenVerdict,onCloseCase,onOpenClue,onExit,onStartOver,onStoryMode,onPlantLie,personal,reprove,toast,celebrating,rankUp,justProven,onTutorial}:{onStartOver?:()=>void;onStoryMode?:()=>void;onPlantLie?:(clueId:string)=>void;personal:StoryPersonalSettings;reprove:string[];world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];frames:SceneFrame[];onOpenFrame:(key:string)=>void;onOpenVerdict:()=>void;onCloseCase:()=>void;onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string;onTutorial?:()=>void}){
  const startOverRef=useRef<HTMLButtonElement>(null);
  const [confirmStart,setConfirmStart]=useState(false),[reading,setReading]=useState(false),[boardOpen,setBoardOpen]=useState(false),[moment,setMoment]=useState<{text:string;image:string}|null>(null);
  // Ambient sound: on for the demo, off for class sessions; the student can switch it either way.
@@ -131,6 +138,7 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onO
   {boardOpen&&<CaseBoardDialog world={world} answers={demo.artifactAnswers} reprove={reprove} storyboard={storyboardSoFar(world,passages,demo.storyFrames,sceneIndex)} top={savedVerdict&&<VerdictPanel world={world} verdict={savedVerdict}/>} onClose={()=>setBoardOpen(false)}/>}
   <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-2 sm:gap-4">
    <button onClick={onExit} className="inline-flex items-center gap-2 rounded-full px-2 py-2 sm:px-3 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]"><ArrowLeft size={18}/> Stories</button>{onTutorial&&<button onClick={onTutorial} className={`${onStartOver&&!confirmStart?"":"mr-auto "}inline-flex items-center gap-2 rounded-full px-3 py-2 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]`}><PlayCircle size={18}/> <span className="hidden sm:inline">How it works</span><span className="sr-only sm:hidden">How it works</span></button>}
+   {onStoryMode&&<button type="button" onClick={onStoryMode} className="inline-flex min-h-11 items-center rounded-full px-3 py-2 text-[15px] font-semibold text-[#8A3B23] underline-offset-4 hover:underline">Play Story Mode</button>}
    {onStartOver&&!confirmStart&&<button ref={startOverRef} type="button" onClick={()=>setConfirmStart(true)} className="mr-auto inline-flex min-h-11 items-center rounded-full px-3 py-2 text-[15px] text-[#6B6457] underline-offset-4 hover:underline">Start over</button>}
    <div className="flex items-center gap-2 text-[15px] text-[#6B6457] sm:gap-3"><span className="hidden sm:inline">{world.title}</span><span className="whitespace-nowrap rounded-full bg-[#EFE8D8] px-3 py-1 font-semibold text-[#2A2620]">Scene {sceneIndex+1} of {world.scenes.length}</span><RankChip/></div>
   </div>

@@ -6,7 +6,11 @@ import { getServiceSupabase } from "../supabase.ts";
 import type { LivePlan, LiveState } from "./plan.ts";
 import type { StudentProgress } from "./progress.ts";
 
-export type ClassRow = { id: string; teacher_id: string; name: string | null; class_code: string; world_id: string; grade: number; status: string; preview_enabled: boolean; created_at: string; roles_enabled?: boolean; angles_enabled?: boolean };
+export type ClassRow = { id: string; teacher_id: string; name: string | null; class_code: string; world_id: string; grade: number; status: string; preview_enabled: boolean; created_at: string; roles_enabled?: boolean; angles_enabled?: boolean; leaderboard_mode?: "individual" | "squad" | "off"; story_mode_on?: boolean };
+// Story Mode settings: the class leaderboard (individual unless the teacher picks squads or off) and whether scenes with
+// Story Mode use it (otherwise the Case file clue board). Older rows, before the migration, have neither.
+export const storySettings = (c: Pick<ClassRow, "leaderboard_mode" | "story_mode_on">) => ({ leaderboard: c.leaderboard_mode ?? "individual", storyModeOn: c.story_mode_on !== false });
+export type TimeSettingValue = "1" | "1.5" | "2" | "untimed";
 // Student roles and angles are on unless the teacher turned them off (older rows, before the migration, have neither).
 export const personalSettings = (c: Pick<ClassRow, "roles_enabled" | "angles_enabled">) => ({ rolesOn: c.roles_enabled !== false, anglesOn: c.angles_enabled !== false });
 export type StudentRow = { id: string; session_id: string; nickname: string; created_at: string };
@@ -22,6 +26,10 @@ export interface ClassroomStore {
   getClass(teacherId: string, classId: string): Promise<ClassRow | null>;
   setPreviewEnabled(classId: string, enabled: boolean): Promise<void>;
   setPersonalSettings(classId: string, settings: { rolesOn?: boolean; anglesOn?: boolean }): Promise<void>;
+  setStorySettings(classId: string, settings: { leaderboard?: "individual" | "squad" | "off"; storyModeOn?: boolean }): Promise<void>;
+  // Extra time per student for Story Mode (1.5x, 2x or untimed). Students without a setting have normal time.
+  setStudentTime(studentId: string, setting: TimeSettingValue): Promise<void>;
+  getStudentTimes(classId: string): Promise<Record<string, TimeSettingValue>>;
   findActiveClassByCode(code: string): Promise<ClassRow | null>;
   getClassById(classId: string): Promise<ClassRow | null>;
   listStudents(classId: string): Promise<StudentRow[]>;
@@ -67,6 +75,9 @@ function supabaseStore(db: SupabaseClient): ClassroomStore {
     },
     async getClass(teacherId, classId) { return must(await db.from("sessions").select("*").eq("id", classId).eq("teacher_id", teacherId).maybeSingle()) as ClassRow | null; },
     async setPreviewEnabled(classId, enabled) { must(await db.from("sessions").update({ preview_enabled: enabled }).eq("id", classId)); },
+    async setStorySettings(classId, s) { must(await db.from("sessions").update({ ...(s.leaderboard ? { leaderboard_mode: s.leaderboard } : {}), ...(s.storyModeOn !== undefined ? { story_mode_on: s.storyModeOn } : {}) }).eq("id", classId)); },
+    async setStudentTime(studentId, setting) { must(await db.from("students").update({ time_setting: setting }).eq("id", studentId)); },
+    async getStudentTimes(classId) { const res = await db.from("students").select("id,time_setting").eq("session_id", classId); if (res.error) return {}; return Object.fromEntries((res.data as { id: string; time_setting: TimeSettingValue }[]).map((r) => [r.id, r.time_setting])); },
     async setPersonalSettings(classId, s) { must(await db.from("sessions").update({ ...(s.rolesOn !== undefined ? { roles_enabled: s.rolesOn } : {}), ...(s.anglesOn !== undefined ? { angles_enabled: s.anglesOn } : {}) }).eq("id", classId)); },
     async findActiveClassByCode(code) { return must(await db.from("sessions").select("*").eq("class_code", code.toUpperCase()).eq("status", "active").maybeSingle()) as ClassRow | null; },
     async getClassById(classId) { return must(await db.from("sessions").select("*").eq("id", classId).maybeSingle()) as ClassRow | null; },
@@ -109,6 +120,9 @@ function memoryStore(): ClassroomStore {
     async createClass(teacherId, input) { const row: ClassRow = { id: id(), teacher_id: teacherId, name: input.name, class_code: newClassCode(), world_id: input.worldId, grade: input.grade, status: "active", preview_enabled: false, created_at: now() }; m.classes.push(row); return row; },
     async getClass(teacherId, classId) { return m.classes.find((c) => c.id === classId && c.teacher_id === teacherId) ?? null; },
     async setPreviewEnabled(classId, enabled) { const c = m.classes.find((x) => x.id === classId); if (c) c.preview_enabled = enabled; },
+    async setStorySettings(classId, s) { const c = m.classes.find((x) => x.id === classId); if (!c) return; if (s.leaderboard) c.leaderboard_mode = s.leaderboard; if (s.storyModeOn !== undefined) c.story_mode_on = s.storyModeOn; },
+    async setStudentTime(studentId, setting) { const s = m.students.find((x) => x.id === studentId) as (typeof m.students)[number] & { time_setting?: TimeSettingValue } | undefined; if (s) s.time_setting = setting; },
+    async getStudentTimes(classId) { return Object.fromEntries((m.students as ((typeof m.students)[number] & { time_setting?: TimeSettingValue })[]).filter((s) => s.session_id === classId && s.time_setting).map((s) => [s.id, s.time_setting!])); },
     async setPersonalSettings(classId, s) { const c = m.classes.find((x) => x.id === classId); if (!c) return; if (s.rolesOn !== undefined) c.roles_enabled = s.rolesOn; if (s.anglesOn !== undefined) c.angles_enabled = s.anglesOn; },
     async findActiveClassByCode(code) { return m.classes.find((c) => c.class_code === code.toUpperCase() && c.status === "active") ?? null; },
     async getClassById(classId) { return m.classes.find((c) => c.id === classId) ?? null; },
