@@ -140,7 +140,8 @@ export function ConsequenceMoment({image,text,onContinue}:{image:string;text:str
 }
 
 // The case board: each proven clue is a card pinned to a corkboard, joined by a thin terracotta string in scene order.
-export function CaseBoard({world,answers,storyboard=[],top}:{world:WorldPack;answers:Record<string,{notice?:string;interpret?:string;craft?:string;character?:string}>;storyboard?:BoardFrame[];top?:React.ReactNode}){
+// reprove: clues whose saved line isn't a line from the story (lib/evidence-check.ts); their cards say so.
+export function CaseBoard({world,answers,storyboard=[],top,reprove=[]}:{world:WorldPack;answers:Record<string,{notice?:string;interpret?:string;craft?:string;character?:string}>;storyboard?:BoardFrame[];top?:React.ReactNode;reprove?:string[]}){
  const cards=caseBoardCards(world,answers);
  const board=useRef<HTMLDivElement>(null),pins=useRef<(HTMLSpanElement|null)[]>([]);
  const [points,setPoints]=useState<string>("");
@@ -152,18 +153,19 @@ export function CaseBoard({world,answers,storyboard=[],top}:{world:WorldPack;ans
   {row}
   <div ref={board} className="relative">
   <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"><polyline points={points} fill="none" stroke="#A0472C" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" opacity=".85"/></svg>
-  <ol className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{cards.map((c,i)=><BoardCardView key={c.clueId} card={c} index={i} pinRef={el=>{pins.current[i]=el}}/>)}</ol>
+  <ol className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{cards.map((c,i)=><BoardCardView key={c.clueId} card={c} index={i} reprove={reprove.includes(c.clueId)} pinRef={el=>{pins.current[i]=el}}/>)}</ol>
   </div>
  </div>;
 }
 
-function BoardCardView({card,index,pinRef}:{card:BoardCard;index:number;pinRef:(el:HTMLSpanElement|null)=>void}){
+function BoardCardView({card,index,pinRef,reprove=false}:{card:BoardCard;index:number;pinRef:(el:HTMLSpanElement|null)=>void;reprove?:boolean}){
  const tilt=[-1.6,1.2,-0.8,1.6,-1.2,0.8][index%6];
  return <li className="relative rounded-2xl bg-[#FFFDF8] p-4 pt-6 shadow-[0_10px_24px_-12px_rgba(42,38,32,.6)]" style={{transform:`rotate(${tilt}deg)`}}>
   <span ref={pinRef} aria-hidden className="absolute left-1/2 top-1.5 grid h-5 w-5 -translate-x-1/2 place-items-center rounded-full bg-[#A0472C] text-white shadow"><Pin size={11}/></span>
   <div className="flex items-start justify-between gap-2"><p className="text-[12px] font-semibold uppercase tracking-wide text-[#8A3B23]">Scene {card.sceneIndex+1} · Exhibit {index+1}</p>{card.factCheck&&<FactCheckerBadge count={1}/>}</div>
   <div className="case-art mt-2 aspect-[16/9] rounded-xl" role="img" aria-label={`Close-up: ${card.name}`} style={{backgroundImage:`url('${card.image}')`,backgroundPosition:`${card.focus.x}% ${card.focus.y}%`,backgroundSize:"300%"}}/>
   <h3 className="mt-3 text-[17px] font-bold leading-snug text-[#2A2620]">{card.name}</h3>
+  {reprove&&<p className="mt-1 inline-flex rounded-full bg-[#F7DCD3] px-2 py-0.5 text-[13px] font-bold text-[#A33B20]">Re-prove this clue</p>}
   <blockquote className="mt-2 border-l-4 border-[#A0472C] pl-3 font-serif text-[15px] italic leading-6 text-[#4A4438]">“{card.quote}”</blockquote>
   <p className="mt-2 text-[15px] leading-6 text-[#2A2620]">{card.explanation}</p>
   {card.factCheck&&<p className="mt-2 text-[13px] font-semibold text-[#8A3B23]">This line proved {card.character??"a character"} wrong.</p>}
@@ -171,14 +173,14 @@ function BoardCardView({card,index,pinRef}:{card:BoardCard;index:number;pinRef:(
 }
 
 // The board so far, opened from the scene screen. Escape or Close returns to the scene.
-export function CaseBoardDialog({world,answers,storyboard,top,onClose}:{world:WorldPack;answers:Record<string,{notice?:string;interpret?:string;craft?:string;character?:string}>;storyboard?:BoardFrame[];top?:React.ReactNode;onClose:()=>void}){
+export function CaseBoardDialog({world,answers,storyboard,top,onClose,reprove}:{world:WorldPack;answers:Record<string,{notice?:string;interpret?:string;craft?:string;character?:string}>;storyboard?:BoardFrame[];top?:React.ReactNode;onClose:()=>void;reprove?:string[]}){
  const heading=useRef<HTMLHeadingElement>(null);
  useEffect(()=>{const opener=document.activeElement as HTMLElement|null;heading.current?.focus({preventScroll:true});const esc=(e:KeyboardEvent)=>{if(e.key==="Escape")onClose()};window.addEventListener("keydown",esc);return()=>{window.removeEventListener("keydown",esc);opener?.focus?.({preventScroll:true})}},[onClose]);
  return <div role="dialog" aria-modal="true" aria-labelledby="board-h" className="fixed inset-0 z-50 overflow-y-auto bg-[#2A2620]/55 p-3 md:p-8">
   <div className="case-ui mx-auto max-w-6xl rounded-3xl bg-[#F6F0E3] p-4 shadow-2xl md:p-6">
    <div className="mb-4 flex items-center justify-between gap-3"><h2 id="board-h" ref={heading} tabIndex={-1} className="text-[24px] font-bold outline-none">Your case board</h2><button type="button" onClick={onClose} aria-label="Close the case board" className="grid h-11 w-11 place-items-center rounded-full text-[#6B6457] hover:bg-[#EFE8D8]"><X size={22}/></button></div>
    <div className="mb-4 rounded-2xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="mb-2 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Your detective rank</p><RankLadder/></div>
-   <CaseBoard world={world} answers={answers} storyboard={storyboard} top={top}/>
+   <CaseBoard world={world} answers={answers} storyboard={storyboard} top={top} reprove={reprove}/>
   </div>
  </div>;
 }

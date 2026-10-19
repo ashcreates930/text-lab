@@ -39,3 +39,52 @@ export function verdictPins(world: WorldPack, passages: SourcePassage[], pinned:
   if (lines.length !== 3 || lines.some((l) => !l) || new Set(lines.map((l) => l!.text)).size !== 3) return null;
   return lines.map((l) => ({ clue_id: l!.clueId, quote: l!.text }));
 }
+
+// ---------- Saved proofs from older saves ----------
+// A proof saved before the server checked lines may not be an exact evidence line. On load we try to upgrade it: an
+// exact match keeps it; otherwise, if exactly one of the clue's evidence lines contains it (or is contained in it, at
+// least three words either way, compared with lineWords as above), that line replaces it. Anything else is "unmatched",
+// and the student is asked to re-prove that clue before the Final Verdict.
+export type ProofCheck = { status: "exact" | "upgraded"; line: EvidenceLine } | { status: "unmatched" };
+export function upgradeQuote(world: WorldPack, passages: SourcePassage[], clueId: string, quote: string): ProofCheck {
+  const exact = matchEvidence(world, passages, quote, { clueId });
+  if (exact) return { status: "exact", line: exact };
+  const want = lineWords(quote);
+  if (want.split(" ").length < 3) return { status: "unmatched" };
+  const found = new Map<string, EvidenceLine>();
+  for (const l of evidenceLines(world, passages, [clueId])) {
+    const have = lineWords(l.text);
+    if (have.includes(want) || (have.split(" ").length >= 3 && want.includes(have))) found.set(have, l);
+  }
+  return found.size === 1 ? { status: "upgraded", line: [...found.values()][0] } : { status: "unmatched" };
+}
+
+type SavedAnswer = { notice?: string; interpret?: string };
+type SavedEvidence = { artifactId?: string; paragraphId: string; text: string };
+const provenAnswer = (a: SavedAnswer | undefined) => !!(a?.notice?.trim() && a?.interpret?.trim());
+// Upgrades every proven clue's saved line (and its saved evidence entry). changed: something was rewritten and should
+// be saved; reprove: the clues whose line still isn't an evidence line.
+export function upgradeSavedProofs<A extends SavedAnswer, E extends SavedEvidence>(world: WorldPack, passages: SourcePassage[], answers: Record<string, A>, evidence: E[]) {
+  const known = new Set(world.scenes.flatMap((s) => s.artifacts.map((a) => a.id)));
+  const nextAnswers = { ...answers }, nextEvidence = [...evidence], reprove: string[] = [];
+  let changed = false;
+  for (const [clueId, a] of Object.entries(answers)) {
+    if (!known.has(clueId) || !provenAnswer(a)) continue;
+    const r = upgradeQuote(world, passages, clueId, a.notice!);
+    if (r.status === "unmatched") { reprove.push(clueId); continue; }
+    if (r.line.text === a.notice) continue;
+    changed = true;
+    nextAnswers[clueId] = { ...a, notice: r.line.text };
+    const i = nextEvidence.findIndex((e) => e.artifactId === clueId);
+    if (i >= 0) nextEvidence[i] = { ...nextEvidence[i], text: r.line.text, paragraphId: r.line.pid };
+  }
+  return { answers: nextAnswers, evidence: nextEvidence, changed, reprove };
+}
+// The proven clues whose saved line is not an exact evidence line (what the case board and the verdict button show).
+export function cluesToReprove(world: WorldPack, passages: SourcePassage[], answers: Record<string, SavedAnswer>) {
+  if (!passages.length) return [];
+  const known = new Set(world.scenes.flatMap((s) => s.artifacts.map((a) => a.id)));
+  return Object.entries(answers).filter(([id, a]) => known.has(id) && provenAnswer(a) && !matchEvidence(world, passages, a.notice, { clueId: id })).map(([id]) => id);
+}
+export const REPROVE = "Re-prove this clue";
+export const REPROVE_VERDICT = "Re-prove the clues marked on your case board before your Final verdict: their saved lines aren't lines from the story.";

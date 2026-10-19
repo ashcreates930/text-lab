@@ -1632,3 +1632,36 @@ test("evidence check: the Final Verdict and planted lies refuse lines that aren'
   assert.match(plantedLieProblems(world,passages,{...base,truthLine:otherLine.text,truthParagraph:otherLine.pid}).join(),/proves it false|this clue's evidence/,"a line from another clue");
   void other;
 });
+
+test("saved proofs: older quotes are upgraded to their exact evidence line, or marked to re-prove", async()=>{
+  const {world,passages,ev,lie,truth}=await evidenceKit();
+  const id=lie.clue_id;
+  // Exact (spacing aside): kept as the world file's line.
+  assert.equal(ev.upgradeQuote(world,passages,id,truth.replace(/\s+/g," ")).status,"exact");
+  // A fragment that only one evidence line contains: upgraded to that line.
+  const frag=ev.upgradeQuote(world,passages,id,"a book of psalm tunes full of dog's-ears");
+  assert.equal(frag.status,"upgraded");assert.equal("line" in frag?frag.line.text:"",truth);
+  // A whole paragraph saved as the proof contains several lines: no single match.
+  const para=passages.find(p=>p.id===lie.truth_paragraph)!.text;
+  assert.equal(ev.upgradeQuote(world,passages,id,para).status,"unmatched");
+  // Too short, made up, or from another clue's evidence: no match.
+  assert.equal(ev.upgradeQuote(world,passages,id,"razor").status,"unmatched");
+  assert.equal(ev.upgradeQuote(world,passages,id,"He packed a golden flute and a hat.").status,"unmatched");
+  // A phrase in more than one evidence line of the clue is ambiguous.
+  const lines=ev.evidenceLines(world,passages,[id]);
+  const shared=["the schoolmaster","of the"].find(w=>lines.filter(l=>l.text.toLowerCase().includes(w)).length>1);
+  if(shared)assert.equal(ev.upgradeQuote(world,passages,id,shared+" was").status,"unmatched");
+
+  const other=world.scenes[0].artifacts.find(a=>a.id!==id)!;
+  const answers={[id]:{notice:"a book of psalm tunes full of dog's-ears",interpret:"It was broken.",craft:""},[other.id]:{notice:"Something nobody wrote.",interpret:"Because.",craft:""},"unproven-clue":{notice:"",interpret:""}};
+  const evidence=[{id:"e1",artifactId:id,paragraphId:"p001",text:"a book of psalm tunes full of dog's-ears"}];
+  const r=ev.upgradeSavedProofs(world,passages,answers,evidence);
+  assert.equal(r.changed,true);
+  assert.equal(r.answers[id].notice,truth);assert.equal(r.answers[id].interpret,"It was broken.","the explanation is kept");
+  assert.deepEqual(r.evidence[0],{id:"e1",artifactId:id,paragraphId:lie.truth_paragraph,text:truth},"saved evidence follows");
+  assert.deepEqual(r.reprove,[other.id]);
+  assert.deepEqual(ev.cluesToReprove(world,passages,r.answers),[other.id]);
+  assert.deepEqual(ev.cluesToReprove(world,[],r.answers),[],"nothing is marked before the story loads");
+  // Running it again changes nothing.
+  assert.equal(ev.upgradeSavedProofs(world,passages,r.answers,r.evidence).changed,false);
+});
