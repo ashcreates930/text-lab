@@ -9,6 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "pretest": "npm run sync:worlds",
     "test": "node --experimental-strip-types --test tests/core.test.ts",
     "validate:worlds": "node --experimental-strip-types scripts/validate-worlds.ts",
     "assets": "node --experimental-strip-types scripts/generate-assets.ts",
