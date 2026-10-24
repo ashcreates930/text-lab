@@ -2324,3 +2324,15 @@ test("Your Turn live: the host starts it for everyone; each phone saves one of i
   assert.deepEqual([y.title,y.heldUp,y.writing],["Style Ichabod for the party","1 of 1","Ichabod only had one suit. It was rusty black."]);
   assert.match(evidenceCsv(ev),/Your Turn,Rosa Park,Style Ichabod for the party,1 of 1,Ichabod only had one suit/);
 });
+
+test("Story Mode needs no access code for public demo visitors (usage caps stay)", async()=>{
+  const prev=process.env.CLASSROOM_DEV_STORE;delete process.env.CLASSROOM_DEV_STORE;
+  try{
+    const {storyIdentity}=await import("../lib/story-api.ts");
+    const id="11111111-2222-4333-8444-555555555555";
+    const req={headers:new Headers(),cookies:{get:()=>undefined}} as never;
+    assert.deepEqual(await storyIdentity(req,id),{scope:"demo",sandboxId:id},"no cookie, no code");
+    assert.deepEqual(await storyIdentity(req,"not-a-sandbox"),{error:"Start the demo again.",status:400});
+    const srv=await import("../lib/story-server.ts");assert.equal(srv.MAX_RESTARTS,20,"the per-day restart cap is unchanged");
+  }finally{if(prev!==undefined)process.env.CLASSROOM_DEV_STORE=prev}
+});

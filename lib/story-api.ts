@@ -1,12 +1,11 @@
 // Shared by the Story Mode API routes: who is playing (a class student by their class token, or a demo visitor by their
 // sandbox id and demo access cookie), loading the story, checking a run belongs to the caller, and the class squads.
 import type { NextRequest } from "next/server";
-import { isFailure, studentFromRequest } from "./classroom/auth.ts";
+import {isFailure,studentFromRequest} from "./classroom/auth.ts";
 import { storySettings } from "./classroom/store.ts";
-import { readPassages, readWorld } from "./classroom/worlds.ts";
-import { DEMO_ACCESS_COOKIE, verifyDemoAccessToken } from "./demo-access.ts";
-import { absentDay, getClassroomStore, memoryModeEnabled } from "./classroom/store.ts";
-import { getLiveStore } from "./live/store.ts";
+import {readPassages,readWorld} from "./classroom/worlds.ts";
+import { absentDay, getClassroomStore } from "./classroom/store.ts";
+import {getLiveStore} from "./live/store.ts";
 import type { Identity } from "./story-server.ts";
 import type { StoryRun } from "./story-store.ts";
 import type { TimeSetting } from "./story-mode.ts";
@@ -22,8 +21,9 @@ export async function storyIdentity(request: NextRequest, sandboxId: unknown): P
     return { scope: "class", classId: cls.id, worldId: cls.world_id, studentId: ctx.student.id, nickname: ctx.student.nickname, timeSetting: times[ctx.student.id] ?? "1", leaderboard: storySettings(cls).leaderboard };
   }
   if (typeof sandboxId !== "string" || !UUID.test(sandboxId)) return { error: "Start the demo again.", status: 400 };
-  // Demo runs write to the database, so they need the demo access code, like the rest of the demo.
-  if (!memoryModeEnabled() && !(await verifyDemoAccessToken(request.cookies.get(DEMO_ACCESS_COOKIE)?.value))) return { error: "Enter your demo access code to continue.", status: 401 };
+  // Public demo visitors need no access code, like the rest of the demo. Their runs are capped per sandbox and day
+  // (startRun's restart limit), and the run route gives them the same signed device cookie the rest of the demo uses,
+  // so the per-device AI caps (lib/demo-usage.ts) still apply.
   return { scope: "demo", sandboxId };
 }
 export const isIdentityError = (x: unknown): x is { error: string; status: number } => typeof x === "object" && x !== null && "error" in x && "status" in x;
