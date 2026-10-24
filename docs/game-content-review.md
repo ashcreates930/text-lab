@@ -321,7 +321,7 @@ Authored in `worlds/sleepy-hollow/world.json` (`scenes[0].story_mode`), checked 
 
 ## The clue screen: The Legend of Sleepy Hollow
 
-Authored in `worlds/sleepy-hollow/world.json` and checked by `validate:worlds` (lib/clue-game.ts). Lines are copied exactly from the story; Irving's "--" shows as a dash on screen only. Characters deliver an off claim in their own voice on their first or second answer about a clue (picked per student); students catch it with "Something's off" and the line that corrects it.
+Authored in `worlds/sleepy-hollow/world.json` and checked by `validate:worlds` (lib/clue-game.ts). Lines are copied exactly from the story; Irving's "--" shows as a dash on screen only. Characters deliver an off claim in their own voice on one of their first three answers about a clue (picked per student); answers are cut at three sentences; students catch it with "Something's off" and the line that corrects it.
 
 ### Off claims (one per clue)
 

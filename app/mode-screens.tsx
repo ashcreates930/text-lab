@@ -15,6 +15,9 @@ import {focusScreenTop} from "./screen-focus";
 
 export type PlayMode="solo"|"rival"|"squad";
 // How this student plays. A class student who picked squads plays solo outside a live round.
+export const SQUAD_SOLO_NOTE="Squads play in live class. You're playing solo today.";
+// A class student who picked squads, outside a live round.
+export const squadSoloToday=(demo:Demo)=>demo.angle?.style==="squad"&&!!demo.classAuth;
 export function playMode(demo:Demo):PlayMode{
  const s=demo.angle?.style;
  if(s==="rival")return "rival";
@@ -54,6 +57,7 @@ export function MissionScreen({world,demo,sceneIndex,onGo}:{world:WorldPack;demo
  const scene=world.scenes[sceneIndex];
  return <div className="case-ui mx-auto flex min-h-[calc(100dvh-64px)] max-w-xl flex-col px-4 pb-6 pt-4">
   <div className="flex items-center justify-between gap-2"><p className="text-[13px] font-semibold text-[#6B6457]">{world.title}</p><span className="rounded-full bg-[#2A2620] px-3 py-1 text-[12px] font-bold text-white">Solo</span></div>
+  {squadSoloToday(demo)&&<p className="mt-2 rounded-2xl bg-[#F4E1D6] px-4 py-2 text-[14px] font-semibold text-[#8A3B23]">{SQUAD_SOLO_NOTE}</p>}
   <section className="relative mt-3 overflow-hidden rounded-3xl bg-[#2A2620] p-5 text-[#FFFDF8]">
    <div aria-hidden className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[radial-gradient(circle,rgba(231,181,74,.35),transparent_70%)]"/>
    {role&&<p className="inline-flex items-center gap-2 rounded-full bg-[#A0472C] py-1 pl-1 pr-3 text-[13px] font-bold"><span aria-hidden className="grid h-6 w-6 place-items-center rounded-full bg-[#F3C9B2] text-[#8A3B23]">★</span>{role.name}</p>}

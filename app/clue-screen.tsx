@@ -19,7 +19,7 @@ import {squadName} from "@/lib/live/engine";
 import {voiceButtonFor} from "@/lib/voice-control";
 import {ReadingPanel,MarkSheet,type PanelLine,type PanelPin,type PanelReaction} from "./reading-panel";
 import {CharacterCard} from "./character-card";
-import {FaceOff,GameChips,Huddle,RivalEmblem,TugBar,playMode,trustMeter,type HuddleMember} from "./mode-screens";
+import {FaceOff,GameChips,Huddle,RivalEmblem,SQUAD_SOLO_NOTE,TugBar,playMode,squadSoloToday,trustMeter,type HuddleMember} from "./mode-screens";
 import {Portrait,SoundToggle,useCharacterVoice,useSoundPref} from "./game-feel";
 import {HologramView} from "./hologram-view";
 import {focusScreenTop} from "./screen-focus";
@@ -192,6 +192,7 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
    {/* Side column (top on phones): banner, the character's claim, the task */}
    <div className="flex shrink-0 flex-col gap-2 md:order-2 md:w-[400px] md:min-h-0 md:overflow-y-auto">
     {raceState&&<RaceBar state={raceState} now={now} rivalName={rivalName} emblem={world.computer_players?.rival.emblem??"lantern"} locked={locked} game={game}/>}
+    {squadSoloToday(demo)&&<p className="rounded-2xl bg-[#F4E1D6] px-3 py-1.5 text-[13px] font-semibold text-[#8A3B23]">{SQUAD_SOLO_NOTE}</p>}
     {squad&&<p className="rounded-2xl bg-[#F4E1D6] px-3 py-2 text-[13px] leading-5"><b>Reader:</b> {SQUAD_JOBS.reader.does} Your part: {squad.mine.map(x=>paragraphLabel(x.id)).join(", ")}.</p>}
     {/* The claim */}
     {speaking&&(lie&&!s.reply&&!s.busy?

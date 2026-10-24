@@ -24,9 +24,9 @@ function actionLine(r: LiveResponse, world: WorldPack) {
     case "submit": return `${role}submitted`;
     case "vote": return `Voted: ${world.verdict?.theories.find((t) => t.id === r.payload.theoryId)?.name ?? "a theory"}`;
     case "counter_vote": return `Voted ${r.payload.sustain ? "sustained" : "overruled"}`;
-    case "story_pin": return r.payload.remove ? "" : `Pinned "${text(r, "line").replace(/\s+/g, " ")}"`;
-    case "story_react": return `Reacted${r.flagged ? " (flagged)" : ""}: ${text(r, "stemText")} ${text(r, "body")}`;
-    case "story_vote": return `Voted for "${text(r, "line").replace(/\s+/g, " ")}"`;
+    case "story_pin": return r.payload.remove ? "" : `Round ${Number(r.payload.step) + 1}: pinned "${text(r, "line").replace(/\s+/g, " ")}"`;
+    case "story_react": return `Round ${Number(r.payload.step) + 1}: reacted${r.flagged ? " (flagged)" : ""}: ${text(r, "stemText")} ${text(r, "body")}`;
+    case "story_vote": return `Round ${Number(r.payload.step) + 1}: voted for "${text(r, "line").replace(/\s+/g, " ")}"`;
     case "story": { const rec = r.payload.record as { round?: number; points?: number; detail?: string; proof?: string[] } | undefined; return `Story Mode round ${rec?.round ?? Number(r.payload.step) + 1}: ${rec?.points ?? 0} pts${rec?.detail ? ` (${rec.detail})` : ""}${rec?.proof?.length ? `, proof: ${rec.proof.map((p) => `"${p.replace(/\s+/g, " ")}"`).join(" | ")}` : ""}`; }
     default: return "";
   }

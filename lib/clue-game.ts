@@ -59,12 +59,12 @@ export function checkProof(world: WorldPack, passages: SourcePassage[], clue: Cl
   const where = clue.source_anchor.map(paragraphLabel).join(" and ");
   return { ok: false, hint: `Not that one. This clue is about ${inSentence(clue.name)}. Look again in ${where}.` };
 }
-// Off claims: one per clue, said by a character at an unpredictable answer (the first or second they give on that
+// Off claims: one per clue, said by a character at an unpredictable answer (any of the first three they give on that
 // clue, picked from the student's id). The student flags it with "Something's off" and taps the line that corrects it.
 export function offClaimTurn(seed: string, clueId: string) {
   let h = 0;
   for (const ch of `${seed}:${clueId}`) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  return 1 + (h % 2);
+  return 1 + (h % 3);
 }
 export const offClaimFor = (clue: Clue, characterId: string) => (clue.off_claim?.character_id === characterId ? clue.off_claim : undefined);
 export const correctsOffClaim = (clue: Clue, line: string) => !!clue.off_claim && sameLine(clue.off_claim.line, line);

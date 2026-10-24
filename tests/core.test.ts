@@ -2029,13 +2029,17 @@ test("clue game scoring: right proofs earn once, streaks build, a wrong proof en
   assert.equal(cg.earn(r.game,"proof","b").points,0,"the same award counts once");
   const m=cg.miss(r.game);assert.deepEqual([m.streak,m.points,m.bestStreak],[0,r.game.points,3]);
   const clue=world.scenes[0].artifacts[2];
-  for(const seed of ["a","b","c","d"]){const t=cg.offClaimTurn(seed,clue.id);assert.ok(t===1||t===2);assert.equal(cg.offClaimTurn(seed,clue.id),t)}
-  assert.ok(new Set(["s1","s2","s3","s4","s5","s6"].map(x=>cg.offClaimTurn(x,clue.id))).size===2,"unpredictable: both turns happen");
+  for(const seed of ["a","b","c","d"]){const t=cg.offClaimTurn(seed,clue.id);assert.ok(t>=1&&t<=3);assert.equal(cg.offClaimTurn(seed,clue.id),t)}
+  assert.equal(new Set(Array.from({length:30},(_,i)=>cg.offClaimTurn(`s${i}`,clue.id))).size,3,"unpredictable: any of the first three answers");
   assert.ok(cg.correctsOffClaim(clue,clue.off_claim!.line));assert.ok(!cg.correctsOffClaim(clue,"Something else."));
   assert.equal(cg.offClaimFor(clue,clue.off_claim!.character_id)?.claim,clue.off_claim!.claim);
   const {offClaimInstruction,ANSWER_STYLE}=await import("../lib/llm.ts");
   assert.match(offClaimInstruction("He kept the books."),/as if it were true: "He kept the books\."/);
   assert.match(ANSWER_STYLE,/Never retell or summarize/);assert.match(ANSWER_STYLE,/no dialect/);
+  const {capSentences}=await import("../lib/llm.ts");
+  assert.equal(capSentences("One. Two! Three? Four. Five."),"One. Two! Three?");
+  assert.equal(capSentences("I think he ran. Folks talk. The valley is odd. I kept his books on the schoolhouse shelf.","I kept his books on the schoolhouse shelf. Waste not, want not."),"I think he ran. Folks talk. I kept his books on the schoolhouse shelf. Waste not, want not.","a cut never drops the off claim");
+  assert.equal(capSentences("I kept his books on the shelf. Waste not. Read the book. Then argue.","I kept his books on the schoolhouse shelf. Waste not, want not."),"I kept his books on the shelf. Waste not. Read the book.","the claim was kept in its own words");
 });
 
 test("rival: the right line wins, speed only breaks a tie, a wrong tap locks out for 3 seconds; the computer uses authored lines", async()=>{
@@ -2106,7 +2110,7 @@ test("live squads read together: pins with names, screened reactions, a vote, an
   assert.equal(v2.everyoneVoted,false);
   const ev=liveRoundEvidence({session:st.session,world:st.world,squads:st.squads,players:st.players,responses:st.responses});
   const acts=ev[0].squads[0].members.flatMap(m=>m.actions).join(" | ");
-  assert.match(acts,/Pinned "In one part of the road/);assert.match(acts,/Reacted: This proves… someone rode fast/);assert.match(acts,/Reacted \(flagged\)/);assert.match(acts,/Voted for "They consisted/);
+  assert.match(acts,/Round 1: pinned "In one part of the road/);assert.match(acts,/Round 1: reacted: This proves… someone rode fast/);assert.match(acts,/reacted \(flagged\)/);assert.match(acts,/Round 1: voted for "They consisted/);
   void c;
 });
 
@@ -2121,4 +2125,40 @@ test("saved progress keeps clue game points, marks and flags, and the Evidence v
   const e=buildEvidence(world,[{id:"s1",nickname:"Ana Ruiz",answers:{},marks:p.marks,claimFlags:p.claimFlags}]);
   assert.deepEqual(e.students[0].marks,[{tag:"Word to know",paragraph:"¶69",text:"They consisted of two shirts and a half."}]);
   assert.deepEqual(e.students[0].claimFlags.map(f=>[f.clue,f.character,f.matched]),[["Ichabod's own books and the unfinished poem","Hans Van Ripper",true],["The empty schoolhouse","Brom Bones",false]]);
+});
+
+test("live squads read together in every round: jobs move round by round, pins and votes belong to their round", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {line}=await storyKit();
+  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");const {liveRoundEvidence}=await import("../lib/live/evidence.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"READ02",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const ids:string[]=[];for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven"]){ids.push((await server.join(store,s,{nickname:n,studentId:null})).player!.id);await new Promise(r=>setTimeout(r,5))}
+  const sq=await store.replaceSquads(s.id,["Squad Lantern"]);await store.setSquads(s.id,ids.map(playerId=>({playerId,squadId:sq[0].id})));
+  let st=(await server.loadState(store,s.id))!;await server.hostAct(store,st,{action:"round.start",type:"story",squads:true} as never);
+  const host=async(a:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;return server.hostAct(store,st,a as never)};
+  const act=async(pid:string,kind:string,payload:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,pid,{kind:kind as never,payload},{judgeAllowed:async()=>false})};
+  const view=async(pid:string)=>{st=(await server.loadState(store,s.id))!;return server.playerView(st,pid).story!.reading!};
+  assert.equal(await act(ids[0],"story_pin",{line:line("p068",5)}),null,"round 1");
+  // Round 2: the confrontation. Jobs have moved on; round 1's pin isn't carried over.
+  await host({action:"round.stage"});await host({action:"round.stage"});
+  let v=await view(ids[0]);
+  assert.deepEqual(v.members.map(m=>m.job),["connector","reader","fact-checker"]);
+  assert.equal(v.pins.length,0,"pins belong to their round");
+  assert.equal(await act(ids[1],"story_pin",{line:line("p070",2)}),null);
+  assert.equal(await act(ids[0],"story_react",{line:line("p070",2),stem:"proves",body:"the town blamed the Hessian."}),null);
+  assert.equal(await act(ids[2],"story_vote",{line:line("p070",2)}),null);
+  v=await view(ids[0]);assert.equal(v.pins.length,1);assert.equal(v.reactions.length,1);assert.equal(v.votes[0].votes,1);
+  // Round 3: Catch the lie reads the testimony's clue, so a line from elsewhere is refused.
+  await host({action:"round.stage"});await host({action:"round.stage"});
+  assert.equal(await act(ids[1],"story_pin",{line:line("p068",5)}),"Pick a line from the reading.");
+  assert.equal(await act(ids[1],"story_pin",{line:line("p069",2)}),null);
+  v=await view(ids[2]);assert.deepEqual(v.myChunk,["p069"]);assert.equal(v.pins[0].by,"Inspector Fox");
+  // Round 4.
+  await host({action:"round.stage"});await host({action:"round.stage"});
+  assert.equal(await act(ids[2],"story_pin",{line:line("p069",1)}),null);
+  v=await view(ids[0]);assert.deepEqual(v.members.map(m=>m.job),["reader","fact-checker","connector"],"round 4: back where round 1 started");
+  const acts=liveRoundEvidence({session:st.session,world:st.world,squads:st.squads,players:st.players,responses:st.responses})[0].squads[0].members.flatMap(m=>m.actions).join(" | ");
+  for(const r of [1,2,3,4])assert.match(acts,new RegExp(`Round ${r}: pinned`));
+  assert.match(acts,/Round 2: reacted: This proves… the town blamed/);assert.match(acts,/Round 2: voted for/);
 });

@@ -362,11 +362,11 @@ export async function playerAct(store: LiveStore, st: LiveState, playerId: strin
   }
   // Reading together: pins, reactions and votes in a live Story Mode squad (round 1, squads on).
   if (act.kind === "story_pin" || act.kind === "story_react" || act.kind === "story_vote") {
-    if (round?.type !== "story" || !round.squadsOn || round.step !== 0 || round.showing !== "round") return "Reading together is in round 1 with squads.";
+    if (round?.type !== "story" || !round.squadsOn || round.showing !== "round") return "Reading together works in Story Mode rounds with squads.";
     if (!me.squadId) return "Join a squad first.";
     const scene = storyScene(st, round);
     if (!scene) return "This scene has no Story Mode.";
-    const r = readingAction(scene, st.passages ?? [], act.kind, act.payload);
+    const r = readingAction(scene, st.passages ?? [], act.kind, act.payload, round.step);
     if (typeof r === "string") return r;
     // Reactions go through the same safety filter as character questions; a flagged one is kept for the teacher only.
     const flagged = act.kind === "story_react" && screenMessage(String(r.payload.body)).action !== "allow";

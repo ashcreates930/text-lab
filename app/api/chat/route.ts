@@ -32,7 +32,7 @@ export async function POST(request:NextRequest){
   // Spot the Lie: on the lie clue, the character who gave the testimony stands by it and makes up nothing new.
   const lie=pack.scenes.find(x=>x.id===scene)?.lie;
   const testimony=lie&&lie.clue_id===parsed.data.clue&&lie.character_id===character?` Earlier in this conversation you told the student: "${lie.testimony}" Stand by what you said: do not take it back, correct it, or say which part might be wrong. Do not add any new facts that are not in the source passages; for anything else, answer only from the passages.`:"";
-  // Off claim: once per clue, on the character's first or second answer (picked from the student's id), the character
+  // Off claim: once per clue, on one of the character's first three answers (picked from the student's id), the character
   // states the clue's authored off claim. The reply says so, so "Something's off" can award the catch.
   const clueRow=pack.scenes.flatMap(s=>s.artifacts).find(a=>a.id===parsed.data.clue);
   const off=clueRow&&parsed.data.turn&&parsed.data.turn===offClaimTurn(parsed.data.sandboxId,clueRow.id)?offClaimFor(clueRow,character):undefined;
