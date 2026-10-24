@@ -44,6 +44,7 @@ const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|nul
   {s.status==="round"&&round&&<LiveRound state={state} act={act} sessionId={sessionId}/>}
   {s.status==="reveal"&&round&&<Reveal state={state} act={act}/>}
   {(s.status==="reveal"||s.status==="lobby")&&state.squads.some(q=>q.members.length)&&<RoundPicker state={state} act={act} first={s.status==="lobby"}/>}
+  {(s.status==="reveal"||s.status==="ended")&&state.yourTurn&&<YourTurnHost yourTurn={state.yourTurn} players={state.counters.players} act={act}/>}
   {s.status!=="lobby"&&<Scoreboard state={state}/>}
   {s.status!=="ended"&&s.status!=="lobby"&&<p className="mt-8 text-[18px] text-[#F3C9B2]">Join at {joinUrl.replace(/^https?:\/\//,"")}</p>}
  </Shell>;
@@ -52,7 +53,7 @@ const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|nul
 function Shell({children}:{children:React.ReactNode}){
  return <main className="case-ui case-ui-dark min-h-screen bg-[#1E1A15] px-5 py-6 md:px-10 md:py-8">{children}</main>;
 }
-const roundTitle=(t:string)=>t==="lie"?"Spot the Lie":t==="verdict"?"Verdict Vote":"Objection!";
+const roundTitle=(t:string)=>t==="story"?"Story Mode":t==="lie"?"Spot the Lie":t==="verdict"?"Verdict Vote":"Objection!";
 function Counter({label,value}:{label:string;value:number|string}){
  return <div className="rounded-2xl bg-[#2E2821] px-4 py-2 text-center" aria-live="polite"><p className="text-[28px] font-bold leading-none tabular-nums">{value}</p><p className="mt-1 text-[14px] text-[#F3C9B2]">{label}</p></div>;
 }
@@ -105,6 +106,7 @@ function RoundPicker({state,act,first}:{state:View;act:(b:Record<string,unknown>
  return <section className="mt-8 rounded-3xl bg-[#2E2821] p-5" aria-labelledby="pick-h">
   <h2 id="pick-h" className="text-[24px] font-bold">{first?"Start the first round":"Next round"}</h2>
   <div className="mt-4 grid gap-3 md:grid-cols-3">
+   {state.storyScenes.length>0&&<StoryPick state={state} act={act}/>}
    <div className="rounded-2xl bg-[#1E1A15] p-4"><p className="flex items-center gap-2 text-[22px] font-bold"><Search size={22}/> Spot the Lie</p><p className="mt-1 text-[16px] text-[#E8DDCB]">A character testifies. Squads find the line that disproves them.</p>
     <label htmlFor="lie-scene" className="mt-3 block text-[14px] text-[#F3C9B2]">Testimony</label>
     <select id="lie-scene" value={scene} onChange={e=>setScene(e.target.value)} className="mt-1 w-full rounded-xl bg-[#FFFDF8] px-3 py-2 text-[16px] text-[#2A2620]"><optgroup label="From the story">{state.lieScenes.map(l=><option key={l.sceneId} value={l.sceneId}>{l.label}</option>)}</optgroup>
@@ -123,18 +125,19 @@ function LiveRound({state,act,sessionId}:{state:View;act:(b:Record<string,unknow
  const round=state.round!;
  return <section className="mt-6" aria-live="polite">
   <p className={`text-[#F3C9B2] ${big}`}>{state.purpose}</p>
+  {round.type==="story"&&"showing" in round&&<StoryHost state={state} round={round} act={act} sessionId={sessionId}/>}
   {round.type==="lie"&&"testimony" in round&&<Testimony round={round} sessionId={sessionId} worldId={state.session.worldId} witnessToken={state.witnessToken} act={act}/>}
   {round.type==="verdict"&&"theories" in round&&<div className="mt-4 rounded-3xl bg-[#2E2821] p-6">
    <p className="text-[clamp(24px,2.4vw,40px)] font-bold">{round.question}</p>
    {round.stage==="vote"?<><p className={`mt-2 ${big}`}>Vote on your phone.</p><VoteBars votes={state.votes??[]}/></>:<p className={`mt-3 ${big}`}>Squads: pin three pieces of evidence and write your argument.</p>}
   </div>}
   {round.type==="objection"&&"pin" in round&&<Objection round={round}/>}
-  <SquadStatus state={state}/>
+  {round.type!=="story"&&<><SquadStatus state={state}/>
   <div className="mt-6 flex flex-wrap gap-3">
    {round.type==="verdict"&&"stage" in round&&round.stage==="vote"&&<button type="button" onClick={()=>act({action:"round.stage"})} className="host-btn">Squads argue now</button>}
    {round.type==="objection"&&"stage" in round&&round.stage==="counter"&&<button type="button" onClick={()=>act({action:"round.stage"})} className="host-btn">Class votes now</button>}
    {!(round.type==="verdict"&&"stage" in round&&round.stage==="vote")&&!(round.type==="objection"&&"stage" in round&&round.stage==="counter")&&<button type="button" onClick={()=>act({action:"round.reveal"})} className="host-btn">Reveal</button>}
-  </div>
+  </div></>}
  </section>;
 }
 
@@ -197,6 +200,7 @@ function SquadStatus({state}:{state:View}){
 function Reveal({state,act}:{state:View;act:(b:Record<string,unknown>)=>void}){
  const r=state.reveal;const names=new Map(state.squads.map(q=>[q.id,q.name]));
  if(!r)return null;
+ if(r.type==="story")return <section className="mt-6" aria-labelledby="reveal-h"><h2 id="reveal-h" className="text-[30px] font-bold">Story Mode: final leaderboard</h2><StoryTop top={r.top} kind={r.kind} players={r.players}/></section>;
  if(r.type==="lie")return <section className="mt-6" aria-labelledby="reveal-h">
   <h2 id="reveal-h" className="text-[26px] font-bold">The line that disproves it</h2>
   <p className="mt-2 rounded-3xl bg-[#FFFDF8] p-5 font-serif text-[clamp(20px,2vw,32px)] leading-snug text-[#2A2620]">“{r.truthLine}”</p>
@@ -236,5 +240,77 @@ function Scoreboard({state}:{state:View}){
  return <section className="mt-8" aria-labelledby="score-h"><h2 id="score-h" className="text-[24px] font-bold">Squad points</h2>
   <ol className="mt-3 flex flex-wrap gap-3">{scores.map(s=><li key={s.squadId} className="rounded-2xl bg-[#2E2821] px-5 py-3"><p className="text-[18px] font-semibold">{s.name}</p><p className="text-[30px] font-bold tabular-nums">{s.points}</p></li>)}</ol>
   <p className="mt-2 text-[15px] text-[#B8AD9E]">Points come from evidence and reasoning. Speed is only a small bonus on correct answers.</p>
+ </section>;
+}
+
+// ---------- Story Mode, live ----------
+const STEP_NAMES=["Read and notice","Something happens to you","Catch the lie","Make your call"];
+function StoryPick({state,act}:{state:View;act:(b:Record<string,unknown>)=>void}){
+ const [squads,setSquads]=useState(false),[freezes,setFreezes]=useState(false);
+ return <div className="rounded-2xl bg-[#1E1A15] p-4 md:col-span-3"><p className="flex items-center gap-2 text-[22px] font-bold"><Sparkles size={22}/> Story Mode</p><p className="mt-1 text-[16px] text-[#E8DDCB]">Everyone plays the scene at once: four timed rounds on the board, controls on their phones, and a leaderboard between rounds.</p>
+  <label className="mt-3 flex min-h-11 items-center gap-3 text-[16px]"><input type="checkbox" checked={squads} onChange={e=>{setSquads(e.target.checked);if(!e.target.checked)setFreezes(false)}} className="h-5 w-5 accent-[#A0472C]"/>Rank squads instead of players</label>
+  {/* Freezes: off by default, squads only. Earned by 3 right proofs in a row; holds another squad's lock-in for 5 seconds. */}
+  <label className={`mt-1 flex min-h-11 items-start gap-3 text-[16px] ${squads?"":"opacity-50"}`}><input type="checkbox" role="switch" checked={freezes} disabled={!squads} onChange={e=>setFreezes(e.target.checked)} className="mt-1 h-5 w-5 accent-[#A0472C]"/><span><b>❄ Freezes</b><span className="block text-[14px] text-[#E8DDCB]">Off by default. A student earns one with 3 right proofs in a row. It holds another squad's lock-in for 5 seconds; reading and pins keep working. Never teammates. Every freeze is logged in Evidence.</span></span></label>
+  <button type="button" onClick={()=>act({action:"round.start",type:"story",sceneId:state.storyScenes[0].sceneId,squads,freezes:squads&&freezes})} className="host-btn mt-3 w-full">Start<span className="sr-only"> Story Mode</span></button></div>;
+}
+function useCountdown(startedAt:string,seconds:number){
+ const [left,setLeft]=useState(seconds);
+ useEffect(()=>{const tick=()=>setLeft(Math.max(0,Math.ceil(seconds-(Date.now()-new Date(startedAt).getTime())/1000)));tick();const t=setInterval(tick,500);return()=>clearInterval(t)},[startedAt,seconds]);
+ return left;
+}
+function StoryTop({top,kind,players}:{top:{rank:number;name:string;score:number}[];kind:"individual"|"squad";players:number}){
+ return <div className="mt-4 rounded-3xl bg-[#2E2821] p-6"><p className="text-[18px] font-semibold uppercase tracking-wide text-[#F3C9B2]">{kind==="squad"?"Squads":"Top 5"} · {players} {kind==="squad"?(players===1?"squad":"squads"):(players===1?"player":"players")}</p>
+  <ol className="mt-3 space-y-2">{top.map(r=><li key={r.rank} className="flex items-center justify-between rounded-2xl bg-[#1E1A15] px-5 py-3 text-[clamp(20px,2vw,32px)]"><span className="flex items-center gap-4"><span className="w-8 text-right font-bold tabular-nums">{r.rank}</span><span className="font-semibold">{r.name}</span></span><span className="font-bold tabular-nums">{r.score}</span></li>)}</ol>
+  {!top.length&&<p className="mt-3 text-[20px]">No answers yet.</p>}</div>;
+}
+function StoryHost({state,round,act,sessionId}:{state:View;round:Extract<NonNullable<View["round"]>,{type:"story"}>;act:(b:Record<string,unknown>)=>void;sessionId:string}){
+ const left=useCountdown(round.stepStartedAt,round.seconds);
+ const step=round.step,board=round.showing==="board";
+ const speaker=round.confront?.speaker??round.lie?.speaker??null,line=round.confront?.line??round.lie?.testimony??"";
+ return <div className="mt-4">
+  <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-[clamp(22px,2.2vw,34px)] font-bold">Round {step+1} of 4 · {STEP_NAMES[step]}</p>
+   {!board&&<p className="rounded-2xl bg-[#2E2821] px-5 py-2 text-[clamp(22px,2.2vw,34px)] font-bold tabular-nums" aria-label={`${left} seconds left`}>{left>0?`${left}s`:"Time!"}</p>}</div>
+  {!board&&<div aria-hidden className="mt-3 h-3 overflow-hidden rounded-full bg-[#2E2821]"><div className="h-full rounded-full bg-[#A0472C]" style={{width:`${Math.max(0,left/round.seconds)*100}%`}}/></div>}
+  {board?<><h2 className="mt-5 text-[28px] font-bold">Leaderboard</h2>{state.storyBoard&&<StoryTop top={state.storyBoard.top} kind={state.storyBoard.kind} players={state.storyBoard.players}/>}</>
+  :<>
+   {round.read&&<p className="mt-4 rounded-2xl bg-[#A0472C] px-6 py-4 text-[clamp(22px,2.2vw,36px)] font-bold">{round.read.focus}</p>}
+   {round.read&&<div className="mt-4 grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]"><div className="case-art aspect-[4/3] w-full rounded-3xl" role="img" aria-label="The scene" style={{backgroundImage:`url('${round.image}')`}}/><div className="space-y-4 rounded-3xl bg-[#2E2821] p-6">{round.read.chunks.map(c=><p key={c.id} className="font-serif text-[clamp(18px,1.6vw,26px)] leading-snug">{c.text.replace(/\s+/g," ")}</p>)}</div></div>}
+   {speaker&&<div className="mt-4 flex flex-col gap-5 rounded-3xl bg-[#2E2821] p-6 md:flex-row md:items-center">{speaker.portrait&&<img src={speaker.portrait} alt="" className="h-40 w-40 shrink-0 rounded-full object-cover"/>}<div><p className="text-[18px] font-semibold uppercase tracking-wide text-[#F3C9B2]">{round.confront?"Confronts the class":"Testimony"} · {speaker.name}</p><p className="mt-2 font-serif text-[clamp(22px,2.2vw,36px)] leading-snug">“{line}”</p>
+    {round.confront&&<ul className="mt-4 grid gap-2 md:grid-cols-3">{round.confront.actions.map(a=><li key={a.id} className="rounded-2xl bg-[#1E1A15] p-4 text-[20px]">{a.label}</li>)}</ul>}
+    <button type="button" onClick={()=>act({action:"witness.play"})} className="host-btn-secondary mt-4"><Sparkles size={20}/>Play on the Witness stand</button></div></div>}
+   {round.call&&<div className="mt-4 rounded-3xl bg-[#2E2821] p-6"><p className="text-[clamp(24px,2.4vw,40px)] font-bold">{round.call.question}</p><ul className="mt-4 grid gap-3 md:grid-cols-3">{round.call.theories.map(t=><li key={t.id} className="rounded-2xl bg-[#1E1A15] p-4"><p className="text-[22px] font-bold">{t.name}</p><p className="mt-1 text-[17px] text-[#E8DDCB]">{t.description}</p></li>)}</ul></div>}
+   <p className={`mt-4 ${big}`}>{state.storyAnswered} of {state.counters.players} answered on their phones.</p>
+  </>}
+  <div className="mt-6 flex flex-wrap gap-3">
+   {!board&&<button type="button" onClick={()=>act({action:"round.stage"})} className="host-btn">Show the leaderboard</button>}
+   {board&&step<3&&<button type="button" onClick={()=>act({action:"round.stage"})} className="host-btn">Start round {step+2}: {STEP_NAMES[step+1]}</button>}
+   {board&&step===3&&<button type="button" onClick={()=>act({action:"round.reveal"})} className="host-btn">Finish Story Mode</button>}
+  </div>
+  <AbsentList roster={state.roster} act={act}/>
+  <WitnessLink sessionId={sessionId} token={state.witnessToken}/>
+ </div>;
+}
+// Mark absent: absent students are left out of their squad's average for today. Everyone else counts, 0 if silent.
+function AbsentList({roster,act}:{roster:View["roster"];act:(b:Record<string,unknown>)=>void}){
+ const marks=roster.filter(p=>p.canMark);
+ if(!marks.length)return null;
+ const away=marks.filter(p=>p.absent).length;
+ return <details className="mt-4 rounded-2xl bg-[#1E1A15] p-4"><summary className="cursor-pointer text-[18px] font-semibold">Mark absent{away?` · ${away} absent`:""}</summary>
+  <p className="mt-2 text-[16px] text-[#E8DDCB]">Squads score their members' average. Silent members count as 0; students marked absent are left out.</p>
+  <ul className="mt-3 flex flex-wrap gap-2">{marks.map(p=><li key={p.id}><button type="button" aria-pressed={p.absent} onClick={()=>act({action:"player.absent",playerId:p.id,absent:!p.absent})} className={`min-h-11 rounded-full px-4 text-[16px] font-semibold ${p.absent?"bg-[#F3C9B2] text-black":"bg-[#2E2821] text-white"}`}>{p.nickname}{p.absent?": absent":""}<span className="sr-only">{p.absent?", tap to mark here":", tap to mark absent"}</span></button></li>)}</ul></details>;
+}
+function WitnessLink({sessionId,token}:{sessionId:string;token:string}){
+ const [open,setOpen]=useState(false);const url=typeof window!=="undefined"?`${window.location.origin}/live/witness/${sessionId}#${token}`:"";
+ return <div className="mt-4"><button type="button" onClick={()=>setOpen(v=>!v)} aria-expanded={open} className="host-btn-secondary"><Sparkles size={20}/>{open?"Hide the Witness stand code":"Witness stand code"}</button>{open&&<div className="mt-3 flex flex-wrap items-center gap-4 rounded-2xl bg-[#1E1A15] p-4"><Qr url={url} label="QR code for the Witness stand phone"/><p className="max-w-xs text-[16px] text-[#E8DDCB]">Scan with the phone under the hologram pyramid. The speaker in rounds 2 and 3 appears there.</p></div>}</div>;
+}
+
+// Your Turn: after the game, the teacher starts a personal activity on every phone (each student's own, from their
+// "What's your angle?" answers). Each one ends with 2 or 3 cited sentences, saved to the Evidence view.
+function YourTurnHost({yourTurn,players,act}:{yourTurn:{started:boolean;saved:number};players:number;act:(b:Record<string,unknown>)=>void}){
+ return <section aria-labelledby="yt-host-h" className="mt-6 rounded-3xl bg-[#2E2821] p-6">
+  <h2 id="yt-host-h" className="text-[clamp(22px,2.2vw,32px)] font-bold">Your Turn</h2>
+  {yourTurn.started?<p className="mt-2 text-[20px]">Your Turn is on. {yourTurn.saved} of {players} saved so far.</p>
+  :<><p className="mt-2 max-w-3xl text-[18px] text-[#E8DDCB]">A 5 to 7 minute activity on every phone, picked from each student's angle answers. Every one ends with 2 or 3 sentences citing the story, saved to Evidence.</p>
+   <button type="button" onClick={()=>act({action:"yourturn.start"})} className="host-btn mt-4">Start Your Turn for everyone</button></>}
  </section>;
 }

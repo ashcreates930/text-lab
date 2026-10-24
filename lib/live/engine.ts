@@ -16,12 +16,14 @@ export const ROLE_INFO: Record<Role, { name: string; job: string }> = {
   reporter: { name: "Reporter", job: "Write the one-sentence explanation." },
 };
 
-export type RoundType = "lie" | "verdict" | "objection";
+export type RoundType = "lie" | "verdict" | "objection" | "story";
 export type Round =
   // planted: a classmate's approved lie from the Lie bank (a snapshot), and the squad its writer is in, which sits out.
   | { type: "lie"; sceneId: string; planted?: { id: string; lie: Lie; writerSquadId: string | null } }
   | { type: "verdict"; stage: "vote" | "argue" }
-  | { type: "objection"; stage: "counter" | "vote"; defendSquadId: string; objectSquadId: string; pin: { clueId?: string; quote: string }; endsAt: string };
+  | { type: "objection"; stage: "counter" | "vote"; defendSquadId: string; objectSquadId: string; pin: { clueId?: string; quote: string }; endsAt: string }
+  // Story Mode, live (lib/live/story.ts): step 0 to 3, each shown as a round and then as a leaderboard reveal.
+  | import("./story.ts").LiveStoryRound;
 export type SessionStatus = "lobby" | "round" | "reveal" | "ended";
 
 export type LiveSession = {
@@ -32,7 +34,10 @@ export type LiveSession = {
 export type LiveSquad = { id: string; name: string; position: number };
 export type LivePlayer = { id: string; nickname: string; squadId: string | null; studentId: string | null; joinedAt: string };
 // witness: the host asked the Witness stand phone to play the testimony (Hologram mode).
-export type ResponseKind = "pin" | "explain" | "approve" | "object" | "submit" | "vote" | "pins" | "argument" | "judged" | "counter_vote" | "override" | "witness";
+// story_pin / story_react / story_vote: reading together in a live Story Mode squad (lib/live/story.ts squadReading).
+// story_freeze: a squad member froze another squad's lock-in (lib/freeze.ts). your_turn_start / your_turn: the host
+// started Your Turn for everyone; a player saved their activity (lib/your-turn.ts).
+export type ResponseKind = "pin" | "explain" | "approve" | "object" | "submit" | "vote" | "pins" | "argument" | "judged" | "counter_vote" | "override" | "witness" | "story" | "story_pin" | "story_react" | "story_vote" | "story_freeze" | "your_turn_start" | "your_turn";
 export type LiveResponse = {
   id: string; roundIndex: number; squadId: string | null; playerId: string | null; role: Role | "host" | "system" | null;
   kind: ResponseKind; payload: Record<string, unknown>; flagged: boolean; createdAt: string;
@@ -68,7 +73,8 @@ export function rolesFor(memberIds: string[], roundIndex: number): Record<Role, 
 export const rolesOf = (roles: Record<Role, string> | null, playerId: string) => (roles ? ROLES.filter((r) => roles[r] === playerId) : []);
 
 export function squadPurpose(type: RoundType) {
-  return type === "lie" ? "Catch the false claim with one line from the story."
+  return type === "story" ? "Play the scene together: read, answer, catch the lie and make your call."
+    : type === "lie" ? "Catch the false claim with one line from the story."
     : type === "verdict" ? "Defend your theory with three pieces of evidence."
     : "Counter the other squad's evidence with a better line from the text.";
 }
@@ -212,18 +218,39 @@ export function objectionResult(round: Extract<Round, { type: "objection" }>, re
   };
 }
 
-// Points per squad for the whole session.
-export function sessionScores(world: WorldPack, session: LiveSession, squads: LiveSquad[], responses: LiveResponse[]) {
+// Points per squad for the whole session. players and absent (player ids marked absent today) set who counts in a
+// Story Mode squad average.
+export function sessionScores(world: WorldPack, session: LiveSession, squads: LiveSquad[], responses: LiveResponse[], players: LivePlayer[] = [], absent: string[] = []) {
   const total = new Map(squads.map((s) => [s.id, 0]));
   session.rounds.forEach((round, i) => {
     if (i > session.roundIndex || (i === session.roundIndex && session.status === "round")) return; // only rounds that have been revealed count
     let scores: { squadId: string; points: number }[] = [];
     if (round.type === "lie") { const lie = roundLie(world, round); if (lie) scores = scoreLieRound(lie, squads, responses, i, round.planted?.writerSquadId ?? null); }
     else if (round.type === "verdict") scores = scoreVerdictRound(squads, responses, i);
+    else if (round.type === "story") scores = storySquadScores(squads, responses, i, players, absent);
     else scores = objectionResult(round, responses, i).scores;
     for (const s of scores) total.set(s.squadId, (total.get(s.squadId) ?? 0) + s.points);
   });
   return squads.map((s) => ({ squadId: s.id, name: s.name, points: total.get(s.id) ?? 0 })).sort((a, b) => b.points - a.points);
+}
+
+// Story Mode live: each squad earns its members' average score (each answer row holds its points).
+// Every member counts: a member who didn't answer adds 0. Members the teacher marked absent are left out (unless they
+// answered after all). The same rule ranks squads on the live Story Mode board (lib/live/story.ts).
+export function storySquadScores(squads: LiveSquad[], responses: LiveResponse[], roundIndex: number, players: LivePlayer[] = [], absent: string[] = []) {
+  return squads.map((s) => {
+    const rows = responses.filter((r) => r.roundIndex === roundIndex && r.kind === "story" && r.squadId === s.id);
+    const counted = squadMembersCounted(s.id, players, absent, rows);
+    const sum = rows.reduce((n, r) => n + Number((r.payload.record as { points?: number } | undefined)?.points ?? 0), 0);
+    return { squadId: s.id, points: counted.size ? Math.round(sum / counted.size) : 0 };
+  });
+}
+// Who a squad average divides by: present members, plus anyone who answered for the squad.
+export function squadMembersCounted(squadId: string, players: LivePlayer[], absent: string[], answers: { playerId: string | null; squadId: string | null }[]) {
+  const away = new Set(absent);
+  const ids = new Set(players.filter((p) => p.squadId === squadId && !away.has(p.id)).map((p) => p.id));
+  for (const r of answers) if (r.squadId === squadId && r.playerId) ids.add(r.playerId);
+  return ids;
 }
 
 // Period vs. period: squad points added up per class over the last seven days. Classes only, never students.

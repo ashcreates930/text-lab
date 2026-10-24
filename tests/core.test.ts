@@ -956,7 +956,7 @@ test("Spot the Lie: every scene's lie passes validation, and broken lies are cau
   assert.match(lieProblems(w,passages).join(" | "),/content note/);
 });
 
-test("Spot the Lie: the right line catches it; a wrong line names the topic; two misses highlight the paragraph", async()=>{
+test("Spot the Lie: the right line catches it; a wrong line names the topic; two misses name the paragraph", async()=>{
   const {tryLine,testimonyParts,isTruthLine}=await import("../lib/lies.ts");
   const {world}=await storyWorld("sleepy-hollow");
   const lie=world.scenes[0].lie!;
@@ -965,7 +965,7 @@ test("Spot the Lie: the right line catches it; a wrong line names the topic; two
   assert.deepEqual(r,{result:"miss",misses:1,message:"Not quite. Look for a line about what was in Ichabod's bundle."});
   r=tryLine(lie,"Hans Van Ripper as executor of his estate, examined the bundle which contained all his worldly effects.",r.misses);
   assert.equal(r.result,"miss");
-  assert.deepEqual(r.result==="miss"&&r.highlight,{paragraph:"p069"},"without the clue evidence, the paragraph is highlighted");
+  assert.deepEqual(r,{result:"miss",misses:2,message:"Not quite. Look for a line about what was in Ichabod's bundle. Look again in ¶69."},"the paragraph is named, never highlighted");
   // The line as the clue screen shows it, with the source's line breaks, still matches.
   const tapped="They consisted of two shirts and a half; two stocks for the neck; a pair or\ntwo of worsted stockings; an old pair of corduroy small-clothes; a rusty\nrazor; a book of psalm tunes full of dog's-ears; and a broken pitch-pipe.";
   assert.equal(isTruthLine(lie,tapped),true);
@@ -1082,7 +1082,7 @@ test("Final Verdict: the case strength comes from the rubric, checked against th
   assert.equal(feedbackFromJudge({claim:true,supporting_quotes:[1,2,3],reasoning_words:"",strength_note:"",next_step:"y"},strong),null);
 });
 
-test("Spot the Lie hint: a one-paragraph clue highlights three lines around the answer; several paragraphs highlight the paragraph", async()=>{
+test("Spot the Lie hint: a miss names the detail, two misses name the paragraph, and no line is ever highlighted", async()=>{
   const {tryLine,hintFor,isHighlighted,evidenceSentences,isTruthLine}=await import("../lib/lies.ts");
   const {parseSourcePassages}=await import("../lib/source-passages.ts");
   const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
@@ -1092,13 +1092,12 @@ test("Spot the Lie hint: a one-paragraph clue highlights three lines around the 
   const lie=world.scenes[0].lie!,evidence=evidenceOf(0);
   assert.equal(evidence.length,1);
   let r=tryLine(lie,"not this line",0,evidence);assert.equal(r.result==="miss"&&r.highlight,undefined,"no highlight after one miss");
+  assert.ok(r.result==="miss"&&!r.message.includes("¶"));
   r=tryLine(lie,"not this line either",1,evidence);
   const lines=evidenceSentences(evidence[0].text);
-  assert.ok(r.result==="miss"&&r.highlight&&"lines" in r.highlight);
-  const lit=lines.filter(t=>isHighlighted(r.result==="miss"?r.highlight:undefined,{text:t,pid:"p069"}));
-  assert.equal(lit.length,3,"three lines, not the whole paragraph");
-  assert.deepEqual(lit,lines.slice(1,4),"the answer with one line on each side");
-  assert.ok(isTruthLine(lie,lit[1]));
+  assert.ok(r.result==="miss"&&r.highlight===undefined,"never a highlight");
+  assert.match(r.result==="miss"?r.message:"",/Look again in ¶69\./);
+  assert.ok(isTruthLine(lie,lines[2]));void isHighlighted;
   // At the edge of a paragraph it still shows three lines.
   const first={...lie,truth_line:lines[0]};assert.deepEqual(hintFor(first,evidence),{lines:lines.slice(0,3)});
   const last={...lie,truth_line:lines.at(-1)!};assert.deepEqual(hintFor(last,evidence),{lines:lines.slice(-3)});
@@ -1664,4 +1663,676 @@ test("saved proofs: older quotes are upgraded to their exact evidence line, or m
   assert.deepEqual(ev.cluesToReprove(world,[],r.answers),[],"nothing is marked before the story loads");
   // Running it again changes nothing.
   assert.equal(ev.upgradeSavedProofs(world,passages,r.answers,r.evidence).changed,false);
+});
+
+// ---------- Story Mode ----------
+async function storyKit(){
+  const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
+  const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  const passages=parseSourcePassages(await readFile(new URL("../worlds/sleepy-hollow/source.md",import.meta.url),"utf8"));
+  const sm=await import("../lib/story-mode.ts");const ev=await import("../lib/evidence-check.ts");const {evidenceSentences}=await import("../lib/lies.ts");
+  const scene=world.scenes[0],c=scene.story_mode!;
+  const line=(pid:string,i:number)=>evidenceSentences(passages.find(p=>p.id===pid)!.text)[i];
+  return {world,passages,sm,ev,scene,c,line};
+}
+const onTime={elapsedMs:5000,grace:false};
+
+test("story mode content: authored, validated, anchored in scene 1's evidence lines", async()=>{
+  const {world,passages,sm,scene,c,ev}=await storyKit();
+  assert.deepEqual(sm.storyModeProblems(world,passages),[]);
+  assert.equal(c.confront.character_id,"brom-bones","Brom Bones is available in scene 1");
+  assert.match(c.confront.line,/\byou\b/i);
+  for(const a of c.confront.actions)for(const s of a.supports)assert.ok(sm.sceneEvidence(world,passages,scene,s),`${a.id} support is an evidence line`);
+  for(const t of c.call.theories)assert.ok(t.supports.length>=2&&t.supports.every(s=>sm.sceneEvidence(world,passages,scene,s)));
+  assert.deepEqual(c.call.theories.map(t=>t.id),world.verdict!.theories.map(t=>t.id),"same theories as the Final Verdict");
+  const all=JSON.stringify(c);assert.ok(!all.includes("—"),"no em dashes");
+  // A support line that isn't evidence, or a missing confrontation "you", is caught.
+  const bad=structuredClone(world);bad.scenes[0].story_mode!.confront.actions[0].supports=["He flew to the moon."];bad.scenes[0].story_mode!.confront.line="He was there.";
+  const p=sm.storyModeProblems(bad,passages).join(" | ");assert.match(p,/not one of this scene's evidence lines/);assert.match(p,/speaks to the student/);
+  void ev;
+});
+
+test("story mode scoring: rounds pay for proof, and speed is small and only on valid proof", async()=>{
+  const {world,passages,sm,scene,c,line}=await storyKit();
+  const score=(input:Parameters<typeof sm.scoreRound>[3],t=onTime,set:import("../lib/story-mode.ts").TimeSetting="1",pouch:string[]=[])=>sm.scoreRound(world,passages,scene,input,t,set,pouch);
+  // Round 1: 100 per line that answers the focus question, at most 3, duplicates once.
+  const r1=score({kind:"read",pouch:[line("p068",5),line("p068",5),"Not in the story at all.",line("p070",2),line("p069",0)]});
+  assert.equal(r1.base,100,"only the first 3 count: the same answer line twice (once) and one made up");assert.equal(r1.coinsEarned,1);
+  assert.equal(score({kind:"read",pouch:[line("p068",5),line("p069",1),line("p069",2)]}).base,300);
+  // Round 2: 500 for proof that backs the move, 100 for the move alone, speed only with valid proof.
+  const hat=c.confront.actions[0];
+  const r2=score({kind:"confront",actionId:hat.id,proof:hat.supports[0]},{elapsedMs:0,grace:false});
+  assert.equal(r2.base,500);assert.equal(r2.speed,100);assert.equal(r2.valid,true);
+  const wrong=score({kind:"confront",actionId:hat.id,proof:line("p070",2)});assert.deepEqual([wrong.base,wrong.speed,wrong.valid],[100,0,false],"a real line that doesn't back this move");
+  assert.equal(score({kind:"confront",actionId:hat.id,proof:""}).base,100);
+  // Round 3: 600 with a sound explanation, 300 for the line alone, nothing for a wrong line.
+  const truth=line("p069",2);
+  assert.equal(score({kind:"lie",line:truth,explanation:"Hans said the pitch-pipe was brand-new, but the story says it was broken."}).base,600);
+  assert.equal(score({kind:"lie",line:truth,explanation:"Because."}).base,300);
+  const miss=score({kind:"lie",line:line("p069",0),explanation:"Hans lied about the pitch-pipe being new."},{elapsedMs:0,grace:false});assert.deepEqual([miss.base,miss.speed],[0,0]);
+  // Round 4: 200 per valid pinned pouch line, plus 200 when both support the theory.
+  const pouch=[line("p068",5),line("p069",0),line("p070",2)];
+  assert.equal(score({kind:"call",theoryId:"brom-prank",pins:[line("p068",5),line("p069",0)]},onTime,"1",pouch).base,600);
+  assert.equal(score({kind:"call",theoryId:"ran-away",pins:[line("p068",5),line("p070",2)]},onTime,"1",pouch).base,400,"valid lines that don't support the theory");
+  assert.equal(score({kind:"call",theoryId:"brom-prank",pins:[line("p068",5),line("p069",5)]},onTime,"1",pouch).base,200,"pins must come from the pouch");
+  // Reading carefully always pays more than answering fast.
+  assert.ok(sm.POINTS.speedMax<sm.POINTS.readLine*1.01&&sm.POINTS.speedMax<sm.POINTS.confrontProof-sm.POINTS.confrontAction);
+});
+
+test("story mode timeouts: proof in the grace period earns half and no speed bonus", async()=>{
+  const {world,passages,sm,scene,c,line}=await storyKit();
+  const grace={elapsedMs:65000,grace:true};
+  const hat=c.confront.actions[0];
+  const r=sm.scoreRound(world,passages,scene,{kind:"confront",actionId:hat.id,proof:hat.supports[0]},grace,"1");
+  assert.deepEqual([r.base,r.speed,r.valid],[250,0,true]);
+  assert.equal(sm.scoreRound(world,passages,scene,{kind:"read",pouch:[line("p068",5)]},grace,"1").base,50);
+  assert.equal(sm.GRACE_SECONDS,20);
+});
+
+test("story mode streaks, coins and power-ups", async()=>{
+  const {sm}=await storyKit();
+  const ok=(base:number,coins=1,speed=0)=>({kind:"read" as const,base,speed,valid:true,coinsEarned:coins,detail:"",choice:"",proof:[]});
+  const bad={kind:"read" as const,base:100,speed:0,valid:false,coinsEarned:0,detail:"",choice:"",proof:[]};
+  let s=sm.newRun();
+  s=sm.applyRound(s,ok(100));assert.deepEqual([s.rounds[0].multiplier,s.total,s.streak],[1,100,1]);
+  s=sm.applyRound(s,ok(100));assert.deepEqual([s.rounds[1].multiplier,s.total],[1.2,220]);
+  s=sm.applyRound(s,ok(100));assert.equal(s.rounds[2].multiplier,1.5);
+  s=sm.applyRound(s,ok(100));assert.equal(s.rounds[3].multiplier,1.5,"capped at x1.5");
+  assert.equal(s.bestStreak,4);assert.equal(s.coins,4);
+  s=sm.applyRound(s,bad);assert.deepEqual([s.streak,s.rounds[4].multiplier,s.bestStreak],[0,1,4],"an invalid round resets the streak");
+  // Power-ups cost coins and last one round.
+  let r=sm.newRun();r={...r,coins:3};
+  assert.equal(sm.buy({...r,coins:1},"lantern"),"You need 2 coins for Lantern.");
+  const lit=sm.buy(r,"lantern") as typeof r;assert.deepEqual([lit.coins,lit.lantern],[1,true]);
+  const after=sm.applyRound(lit,ok(100,0));assert.equal(after.lantern,false,"the Lantern lights one round");
+  assert.equal((sm.buy({...r,coins:1},"second-look") as typeof r).coins,0);
+  const dd=sm.buy(r,"double-down") as typeof r;assert.deepEqual([dd.coins,dd.doubleDown],[0,true]);
+  const won=sm.applyRound(dd,ok(500,1,80));assert.deepEqual([won.rounds[0].points,won.rounds[0].doubled],[1160,true],"(500+80) doubled");
+  const lost=sm.applyRound(dd,{...bad,speed:40});assert.deepEqual([lost.rounds[0].points,lost.rounds[0].speed,lost.doubleDown],[100,0,false],"no proof: no doubling, speed lost");
+  // The trust meter and the pouch are saved on the run.
+  const t=sm.applyRound(sm.newRun(),ok(500),{trust:{characterId:"brom-bones",delta:-1},pouch:["a","b","a","c","d"]});
+  assert.deepEqual(t.trust,{"brom-bones":-1});assert.deepEqual(t.pouch,["a","b","c"]);
+});
+
+test("story mode extended time: the timer stretches and the speed bonus is measured against the student's own time", async()=>{
+  const {sm}=await storyKit();
+  assert.equal(sm.phaseSeconds(60,"1"),60);assert.equal(sm.phaseSeconds(60,"1.5"),90);assert.equal(sm.phaseSeconds(60,"2"),120);assert.equal(sm.phaseSeconds(60,"untimed"),null);
+  // Answering at the same share of your own time earns the same bonus.
+  assert.equal(sm.speedBonus(30000,60,"1"),50);assert.equal(sm.speedBonus(60000,60,"2"),50);assert.equal(sm.speedBonus(45000,60,"1.5"),50);
+  assert.equal(sm.speedBonus(120000,60,"untimed"),0);assert.equal(sm.speedBonus(60000,60,"untimed"),50);
+  assert.equal(sm.speedBonus(-5,60,"1"),0);
+  // Screen readers hear the time at 30, 10 and 5 seconds, never every second.
+  assert.equal(sm.timeAnnouncement(31,30),"30 seconds left");assert.equal(sm.timeAnnouncement(30,29),"");assert.equal(sm.timeAnnouncement(11,9),"10 seconds left");assert.equal(sm.timeAnnouncement(6,5),"5 seconds left");
+});
+
+test("story mode leaderboard: students see the top 5 and their own rank, never the full list", async()=>{
+  const {sm}=await storyKit();
+  const rows=["Ana R","Ben T","Cy L","Di M","Ed K","Flo P","Gus Q","Hal Z"].map((n,i)=>({id:`s${i}`,name:sm.boardName(n),score:1000-i*100}));
+  const me=sm.studentBoard(rows,"s6",9);
+  assert.equal(me.top.length,5);assert.deepEqual(me.top.map(r=>r.name),["Ana R.","Ben T.","Cy L.","Di M.","Ed K."]);
+  assert.deepEqual(me.me,{rank:7,score:400,movement:2},"+2 spots");
+  assert.ok(!JSON.stringify(me).includes("Flo")&&!JSON.stringify(me).includes("Hal"),"no one outside the top 5 but me");
+  assert.equal(sm.studentBoard(rows,"s1").top.find(r=>r.me)?.name,"Ben T.");
+  assert.equal(sm.boardName("  rosa   maria  p "),"rosa P.");assert.equal(sm.boardName("Jo"),"Jo");
+  // Class pulse: percentages and the strongest line on each side, never student writing.
+  const pulse=sm.classPulse([{choice:"a",valid:true,proof:["L1"]},{choice:"a",valid:true,proof:["L1"]},{choice:"a",valid:false,proof:["L2"]},{choice:"b",valid:true,proof:["L3"]}],[{key:"a",label:"A"},{key:"b",label:"B"},{key:"c",label:"C"}]);
+  assert.deepEqual(pulse.map(p=>[p.key,p.pct,p.strongest]),[["a",75,"L1"],["b",25,"L3"],["c",0,""]]);
+});
+
+test("story mode server: one run per player, rounds in order, late answers forced to half, boards and pulse", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {world,passages,scene,c,line}=await storyKit();
+  const {memoryStoryStore}=await import("../lib/story-store.ts");const srv=await import("../lib/story-server.ts");
+  const store=memoryStoryStore({runs:[],rounds:[]});
+  const who=(i:number)=>({scope:"class" as const,classId:"c1",worldId:world.id,studentId:`st${i}`,nickname:["Ana Ruiz","Ben Tate","Cy Lu","Di Moss","Ed Kim","Flo Park","Gus Quinn"][i],timeSetting:"1" as const,leaderboard:"individual" as const});
+  // Two starts at once still make one run.
+  const [a,b]=await Promise.all([srv.startRun(store,world,scene,who(0)),srv.startRun(store,world,scene,who(0))]);
+  assert.equal((a as {id:string}).id,(b as {id:string}).id);
+  let run=a as import("../lib/story-store.ts").StoryRun;
+  const play=async(body:Parameters<typeof srv.playRound>[5])=>{const r=await srv.playRound(store,world,passages,scene,run,body);if(r.run)run=r.run;return r};
+  assert.deepEqual(await play({round:2,input:{kind:"confront",actionId:"x",proof:""},elapsedMs:0,grace:false,relaxed:false}),{error:"That round is already scored."},"rounds go in order");
+  const r1=await play({round:1,input:{kind:"read",pouch:[line("p068",5),line("p069",1),line("p069",2)]},elapsedMs:30000,grace:false,relaxed:false});
+  assert.equal(r1.record?.points,300);assert.deepEqual(run.state.pouch.length,3);
+  // A proof sent 70 seconds into a 60-second phase counts as late, whatever the client says.
+  const hat=c.confront.actions[0];
+  const r2=await play({round:2,input:{kind:"confront",actionId:hat.id,proof:hat.supports[0]},elapsedMs:70000,grace:false,relaxed:false});
+  assert.ok("record" in r2);if("record" in r2){assert.equal(r2.record!.base,250);assert.equal(r2.record!.speed,0);assert.equal(r2.reaction?.trust,hat.trust)}
+  assert.equal(run.state.trust["brom-bones"],hat.trust);
+  // Relaxed: the same 70 seconds is on time with 2x.
+  const other=(await srv.startRun(store,world,scene,who(1))) as import("../lib/story-store.ts").StoryRun;
+  const s2=await srv.playRound(store,world,passages,scene,other,{round:1,input:{kind:"read",pouch:[line("p068",5)]},elapsedMs:1000,grace:false,relaxed:true});
+  {const s3=await srv.playRound(store,world,passages,scene,s2.run!,{round:2,input:{kind:"confront",actionId:hat.id,proof:hat.supports[0]},elapsedMs:70000,grace:false,relaxed:true});assert.equal(s3.record?.base,500);assert.ok((s3.record?.speed??0)>0)}
+  // Seven students: each sees the top 5 and their own rank; the teacher sees everyone.
+  for(let i=2;i<7;i++){const r=(await srv.startRun(store,world,scene,who(i))) as import("../lib/story-store.ts").StoryRun;await srv.playRound(store,world,passages,scene,r,{round:1,input:{kind:"read",pouch:[line("p068",5),line("p069",0)].slice(0,i%2+1)},elapsedMs:1000,grace:false,relaxed:false})}
+  const board=await srv.boardFor(store,run,"individual",null);
+  assert.equal(board!.top.length,5);assert.equal(board!.players,7);assert.ok(board!.me);
+  assert.ok(board!.top.every(r=>/^[A-Z][a-z]+ [A-Z]\.$/.test(r.name)),"first name and last initial");
+  assert.equal(await srv.boardFor(store,run,"off",null),null);
+  const squads=new Map([["st0","Squad Lantern"],["st1","Squad Lantern"],["st2","Squad Quill"]]);
+  const sq=await srv.boardFor(store,run,"squad",null,squads);assert.equal(sq!.kind,"squad");assert.deepEqual(sq!.top.map(t=>t.name).sort(),["Squad Lantern","Squad Quill"]);
+  const teacher=await srv.teacherBoard(store,"c1",world,scene);assert.equal(teacher.length,7);assert.equal(teacher[0].rank,1);assert.ok(teacher.find(t=>t.nickname==="Ana Ruiz")!.rounds.length===2);
+  const pulse=await srv.pulseFor(store,run,scene,2);assert.equal(pulse.find(p=>p.key===hat.id)!.pct,100);assert.ok(pulse.find(p=>p.key===hat.id)!.strongest.includes("pumpkin"));
+  // Starting over keeps the best score and clears the rounds.
+  const again=(await srv.startRun(store,world,scene,who(0),true)) as import("../lib/story-store.ts").StoryRun;
+  assert.equal(again.state.round,0);assert.equal(again.bestTotal,run.bestTotal);
+});
+
+test("story mode live: shared rounds, each player scored with the solo rules, top 5 on the board, answers never on phones", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {line,c,scene}=await storyKit();
+  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"STORY1",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const ids:string[]=[];
+  for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven","Agent Quill","Constable Ember","Detective Comet","Agent Flint"]){const r=await server.join(store,s,{nickname:n,studentId:null});ids.push(r.player!.id)}
+  let st=(await server.loadState(store,s.id))!;await server.hostAct(store,st,{action:"squads.auto"});st=(await server.loadState(store,s.id))!;
+  assert.equal(await server.hostAct(store,st,{action:"round.start",type:"story"}),null);st=(await server.loadState(store,s.id))!;
+  const act=async(pid:string,input:unknown,deps={judgeAllowed:async()=>false})=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,pid,{kind:"story",payload:{input}},deps)};
+  // Phones get the controls but never the answers.
+  const pub=JSON.stringify(server.playerView(st,ids[0]).round);
+  assert.ok(pub.includes(c.read.focus),"the focus question is on the phone");assert.ok(!pub.includes("supports"));assert.ok(!pub.includes("answers"),"the answer list stays on the server");
+  for(const [k,pid] of ids.entries())assert.equal(await act(pid,{kind:"read",pouch:k<4?[line("p068",5),line("p069",0),line("p070",2)]:[line("p068",5)]}),null);
+  assert.equal(await act(ids[0],{kind:"read",pouch:[]}),"You've already answered this round.");
+  st=(await server.loadState(store,s.id))!;assert.equal(server.hostView(st).storyAnswered,7);
+  await server.hostAct(store,st,{action:"round.stage"});st=(await server.loadState(store,s.id))!;
+  const board=server.hostView(st).storyBoard!;assert.equal(board.top.length,5);assert.equal(board.players,7);
+  const me=server.playerView(st,ids[6]).story!;assert.equal(me.last?.points,100);assert.ok(me.board.me&&me.board.top.length<=5);
+  // Round 2: the move and its proof; the Witness stand shows the speaker.
+  await server.hostAct(store,st,{action:"round.stage"});st=(await server.loadState(store,s.id))!;
+  assert.equal(server.witnessView(st).story?.character.id,c.confront.character_id);
+  const hat=c.confront.actions[0];
+  assert.equal(await act(ids[0],{kind:"confront",actionId:hat.id,proof:hat.supports[0]}),null);
+  st=(await server.loadState(store,s.id))!;
+  const rec=st.responses.find(r=>r.kind==="story"&&r.playerId===ids[0]&&(r.payload as {step:number}).step===1)!.payload.record as {points:number;multiplier:number};
+  assert.ok(rec.points>=600&&rec.multiplier===1.2,"500 proof plus speed, x1.2 for a second valid round");
+  // Extended time: a step that's over for everyone else is still open for a 2x student.
+  const late=new Date(Date.now()-100000).toISOString();
+  const round=st.session.rounds[st.session.roundIndex] as import("../lib/live/story.ts").LiveStoryRound;
+  await store.updateSession(s.id,{rounds:[{...round,stepStartedAt:late}]});
+  assert.equal(await act(ids[1],{kind:"confront",actionId:hat.id,proof:hat.supports[0]}),null,"100 seconds in: inside 90 + 20 grace");
+  await store.updateSession(s.id,{rounds:[{...round,stepStartedAt:new Date(Date.now()-150000).toISOString()}]});
+  assert.equal(await act(ids[2],{kind:"confront",actionId:hat.id,proof:hat.supports[0]}),"Time's up for this round.");
+  assert.equal(await act(ids[3],{kind:"confront",actionId:hat.id,proof:hat.supports[0]},{judgeAllowed:async()=>false,timeSetting:"2"} as never),null,"150 seconds is inside a 2x student's 180");
+  // Squads: the class can rank squads instead.
+  const {liveStoryBoard}=await import("../lib/live/story.ts");
+  st=(await server.loadState(store,s.id))!;
+  const sq=liveStoryBoard(st.responses,st.session.roundIndex,st.players,st.squads,true);assert.equal(sq.kind,"squad");assert.equal(sq.rows.length,st.squads.length);
+  void scene;
+});
+
+test("story mode round 1 focus question: only lines on the authored answer list score, others get a note", async()=>{
+  const {world,passages,sm,scene,c,line}=await storyKit();
+  assert.match(c.read.focus,/belongings were left behind/);
+  // The answer list: exact evidence lines from the reading.
+  for(const a of c.read.answers){const l=sm.sceneEvidence(world,passages,scene,a);assert.ok(l&&l.text===a&&c.read.chunks.includes(l.pid),a.slice(0,40))}
+  assert.ok(c.read.answers.length>=3);
+  const score=(pouch:string[])=>sm.scoreRound(world,passages,scene,{kind:"read",pouch},onTime,"1");
+  // Three lines from the list: full score, no note.
+  const full=score([line("p069",1),line("p069",2),line("p069",3)]);
+  assert.deepEqual([full.base,full.valid,full.coinsEarned,full.note,full.offFocus],[300,true,3,undefined,[]]);
+  // Three true lines that don't answer the question: 0, with the note, and they still go in the pouch.
+  const off=score([line("p068",1),line("p070",0),line("p070",3)]);
+  assert.deepEqual([off.base,off.valid,off.coinsEarned,off.note],[0,false,0,"True to the story, but it doesn't answer the question."]);
+  assert.equal(off.offFocus!.length,3);assert.equal(off.proof.length,3,"kept in the pouch for later rounds");
+  assert.equal(off.detail,"0 of 3 lines answer the question");
+  const mixed=score([line("p068",5),line("p070",2),"Made up."]);
+  assert.deepEqual([mixed.base,mixed.offFocus!.length,mixed.detail],[100,1,"1 of 3 lines answer the question"]);
+  // validate:worlds: an answer that isn't copied exactly, or isn't in the reading, is caught.
+  const bad=structuredClone(world);const r=bad.scenes[0].story_mode!.read;
+  r.answers=[r.answers[0].replace("hat","cap"),r.answers[1],line("p011",0)??"x"];
+  const p=sm.storyModeProblems(bad,passages).join(" | ");
+  assert.match(p,/not copied exactly/);assert.match(p,/at least 3 different answer lines/);
+  const dash=structuredClone(world);dash.scenes[0].story_mode!.read.focus="Tap 3 lines — any";assert.match(sm.storyModeProblems(dash,passages).join(" "),/em dashes/);
+});
+
+test("story mode squads: silent members count as 0, absent members are left out", async()=>{
+  const {squadMembersCounted,storySquadScores,sessionScores}=await import("../lib/live/engine.ts");
+  const {liveStoryBoard}=await import("../lib/live/story.ts");
+  const srv=await import("../lib/story-server.ts");
+  const players=["a","b","c","d"].map((id,i)=>({id,nickname:`P${id}`,squadId:i<3?"s1":"s2",studentId:`st-${id}`,joinedAt:""}));
+  const squads=[{id:"s1",name:"Squad Lantern",position:0},{id:"s2",name:"Squad Quill",position:1}];
+  const row=(playerId:string,squadId:string,points:number)=>({id:playerId,sessionId:"x",roundIndex:0,squadId,playerId,role:null,kind:"story" as const,payload:{step:0,record:{points}},flagged:false,createdAt:""});
+  const responses=[row("a","s1",300),row("d","s2",200)];
+  // Squad Lantern: a answered 300, b and c silent: 300 / 3.
+  assert.deepEqual(storySquadScores(squads,responses,0,players).map(s=>s.points),[100,200]);
+  // c marked absent: 300 / 2.
+  assert.deepEqual(storySquadScores(squads,responses,0,players,["c"]).map(s=>s.points),[150,200]);
+  // An absent mark on someone who answered after all doesn't drop their points.
+  assert.deepEqual(storySquadScores(squads,responses,0,players,["a","c"]).map(s=>s.points),[150,200]);
+  assert.equal(squadMembersCounted("s1",players,["b","c"],responses).size,1);
+  // The live board uses the same rule.
+  const b=liveStoryBoard(responses as never,0,players,squads,true,["c"]);
+  assert.deepEqual(b.rows.map(r=>[r.name,r.score]),[["Squad Quill",200],["Squad Lantern",150]]);
+  assert.deepEqual(liveStoryBoard(responses as never,0,players,squads,true).rows.map(r=>r.score),[200,100]);
+  // Session totals count Story Mode rounds the same way.
+  const {world}=await storyKit();
+  const session={id:"x",code:"X",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"reveal",paused:false,roundIndex:0,rounds:[{type:"story",sceneId:"empty-schoolhouse",step:3,showing:"board",stepStartedAt:"",squadsOn:true}],roundStartedAt:null,createdAt:"",expiresAt:""};
+  assert.deepEqual(sessionScores(world,session as never,squads,responses,players,["c"]).map(s=>[s.name,s.points]),[["Squad Quill",200],["Squad Lantern",150]]);
+  // Solo class board in squad mode: every member counts (0 if they haven't played), absent members left out.
+  const map=new Map([["st-a","Squad Lantern"],["st-b","Squad Lantern"],["st-c","Squad Lantern"],["st-d","Squad Quill"]]);
+  const scores=new Map([["st-a",900],["st-d",400]]);
+  assert.deepEqual(srv.squadAverages(map,scores).map(r=>[r.name,r.score]),[["Squad Lantern",300],["Squad Quill",400]]);
+  assert.deepEqual(srv.squadAverages(map,scores,["st-b","st-c"]).map(r=>[r.name,r.score]),[["Squad Lantern",900],["Squad Quill",400]]);
+});
+
+test("mark absent: the teacher marks a student absent for today from the class page or the live host screen", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {getClassroomStore,absentDay}=await import("../lib/classroom/store.ts");
+  const store=getClassroomStore()!;
+  const t=await store.ensureTeacher("test:absent","absent@example.com");
+  const cls=await store.createClass(t.id,{name:"Period 3",worldId:"sleepy-hollow",grade:7});
+  const kid=(await store.createStudent(cls.id,"Ana Ruiz","h1")) as {id:string},kid2=(await store.createStudent(cls.id,"Ben Tate","h2")) as {id:string};
+  const today=absentDay();
+  await store.setStudentAbsent(kid.id,true);
+  assert.deepEqual(await store.getAbsentOn(cls.id,today),[kid.id]);
+  await store.setStudentAbsent(kid.id,false);assert.deepEqual(await store.getAbsentOn(cls.id,today),[]);
+  // One row per absence: a new day's mark doesn't erase an earlier one.
+  await store.setStudentAbsent(kid.id,true,"2026-10-20");await store.setStudentAbsent(kid.id,true,"2026-10-21");await store.setStudentAbsent(kid.id,true,"2026-10-21");
+  assert.deepEqual(await store.getAbsentOn(cls.id,"2026-10-20"),[kid.id]);assert.deepEqual(await store.getAbsentOn(cls.id,"2026-10-21"),[kid.id]);
+  // New York date: 11 pm Eastern on the 23rd is the 24th in UTC.
+  assert.equal(absentDay(new Date("2026-10-24T03:00:00Z")),"2026-10-23");assert.equal(absentDay(new Date("2026-10-24T15:00:00Z")),"2026-10-24");
+  // Live: the host marks a class student absent; the live state leaves them out.
+  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");
+  const live=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await live.createSession({code:"ABSNT1",teacherId:t.id,classId:cls.id,demo:false,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const p1=(await server.join(live,s,{nickname:"Ana Ruiz",studentId:kid.id})).player!,p2=(await server.join(live,s,{nickname:"Ben Tate",studentId:kid2.id})).player!;
+  const guest=(await server.join(live,s,{nickname:"Visitor",studentId:null})).player!;
+  let st=(await server.loadState(live,s.id))!;
+  assert.equal(await server.hostAct(live,st,{action:"player.absent",playerId:p2.id,absent:true}),null);
+  st=(await server.loadState(live,s.id))!;
+  assert.deepEqual(st.absent,[p2.id]);assert.deepEqual(await store.getAbsentOn(cls.id,absentDay(new Date(s.createdAt))),[kid2.id],"the class page sees the same mark");
+  // An older session uses its own day's absences, so later marks don't change its totals.
+  const old=await live.createSession({code:"ABSNT0",teacherId:t.id,classId:cls.id,demo:false,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  await live.updateSession(old.id,{createdAt:"2026-10-20T14:00:00.000Z"} as never);
+  const oldKid=(await server.join(live,old,{nickname:"Ana Ruiz",studentId:kid.id})).player!;
+  const oldSt=(await server.loadState(live,old.id))!;
+  assert.equal(oldSt.session.createdAt.slice(0,10),"2026-10-20");assert.deepEqual(oldSt.absent,[oldKid.id],"absent on the 20th, when that session ran");
+  assert.deepEqual(server.hostView(st).roster.map(r=>[r.nickname,r.canMark,r.absent]),[["Ana Ruiz",true,false],["Ben Tate",true,true],["Visitor",false,false]]);
+  assert.match((await server.hostAct(live,st,{action:"player.absent",playerId:guest.id,absent:true}))??"",/Only students in your class/);
+  void p1;
+});
+
+test("story mode: Catch the lie opens a demo run at round 3; Brom's trust is saved with progress", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {world,passages,scene,c}=await storyKit();
+  const {memoryStoryStore}=await import("../lib/story-store.ts");const srv=await import("../lib/story-server.ts");
+  const store=memoryStoryStore({runs:[],rounds:[]});
+  const demo={scope:"demo" as const,sandboxId:crypto.randomUUID()};
+  const run=(await srv.startRun(store,world,scene,demo,false,"lie")) as import("../lib/story-store.ts").StoryRun;
+  assert.deepEqual([run.state.round,run.state.skipped,run.total],[2,2,0]);
+  assert.deepEqual(await srv.playRound(store,world,passages,scene,run,{round:1,input:{kind:"read",pouch:[]},elapsedMs:0,grace:false,relaxed:false}),{error:"That round is already scored."});
+  const lie=await srv.playRound(store,world,passages,scene,run,{round:3,input:{kind:"lie",line:scene.lie!.truth_line,explanation:"Hans said the pitch-pipe was brand-new, but the story says it was broken."},elapsedMs:10000,grace:false,relaxed:false});
+  assert.ok(lie.record&&lie.record.base===600);
+  // Opening it again resumes; a class student can't skip.
+  assert.equal(((await srv.startRun(store,world,scene,demo,false,"lie")) as {state:{round:number}}).state.round,3);
+  const cls=(await srv.startRun(store,world,scene,{scope:"class",classId:"c9",worldId:world.id,studentId:"s9",nickname:"Kim Lee",timeSetting:"1",leaderboard:"individual"},false,"lie")) as {state:{round:number}};
+  assert.equal(cls.state.round,0);
+  // Brom's trust: on the server run and in the student's saved progress.
+  const hat=c.confront.actions[0];
+  const fresh=(await srv.startRun(store,world,scene,{scope:"demo",sandboxId:crypto.randomUUID()})) as import("../lib/story-store.ts").StoryRun;
+  const r1=await srv.playRound(store,world,passages,scene,fresh,{round:1,input:{kind:"read",pouch:[]},elapsedMs:0,grace:false,relaxed:false});
+  const r2=await srv.playRound(store,world,passages,scene,r1.run!,{round:2,input:{kind:"confront",actionId:hat.id,proof:hat.supports[0]},elapsedMs:0,grace:false,relaxed:false});
+  assert.equal(r2.run!.state.trust["brom-bones"],hat.trust);
+  assert.equal((await store.getRun(fresh.id))!.state.trust["brom-bones"],hat.trust,"saved on the server run");
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
+  const saved=StudentProgressSchema.parse({v:1,worldId:"sleepy-hollow",scene:0,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],storyFrames:{},story:{"empty-schoolhouse":{runId:fresh.id,total:r2.run!.total,bestStreak:1,trust:r2.run!.state.trust,pouch:[],cleared:false}},updatedAt:new Date().toISOString()});
+  assert.equal(saved.story!["empty-schoolhouse"].trust["brom-bones"],hat.trust,"and in saved progress");
+});
+
+// ---------- The clue game (lib/clue-game.ts) ----------
+test("clue game content: one off claim per Sleepy Hollow clue, traits and correcting lines copied exactly", async()=>{
+  const {world,passages,line}=await storyKit();
+  const cg=await import("../lib/clue-game.ts");const {evidenceSentences}=await import("../lib/lies.ts");
+  assert.deepEqual(cg.clueGameProblems(world,passages),[]);
+  for(const sc of world.scenes)for(const c of sc.artifacts){
+    assert.ok(c.off_claim,`${c.id} has an off claim`);
+    const o=c.off_claim!;
+    assert.ok(evidenceSentences(passages.find(p=>p.id===o.paragraph)!.text).includes(o.line),`${c.id} line is exact`);
+    assert.ok(c.source_anchor.includes(o.paragraph)&&sc.available_characters.includes(o.character_id));
+    assert.ok(!o.claim.includes("—"));
+  }
+  for(const ch of world.characters){assert.ok((ch.traits?.length??0)>=2&&(ch.traits?.length??0)<=3,ch.id);for(const t of ch.traits!)assert.ok(evidenceSentences(passages.find(p=>p.id===t.paragraph)!.text).includes(t.line),t.name)}
+  // validate:worlds catches an edited line, a line from outside the clue, a non-speaking character and an em dash.
+  const bad=structuredClone(world);const a=bad.scenes[0].artifacts[0];
+  a.off_claim={...a.off_claim!,line:a.off_claim!.line.replace("low","small"),claim:"It was big — really big."};
+  bad.scenes[0].artifacts[1].off_claim={...bad.scenes[0].artifacts[1].off_claim!,character_id:"ichabod-crane",paragraph:"p068",line:line("p068",0)};
+  bad.characters[0].traits![0].line="Hans liked books.";
+  const p=cg.clueGameProblems(bad,passages).join(" | ");
+  assert.match(p,/not copied exactly from p011/);assert.match(p,/no em dashes/);assert.match(p,/must be a speaking character/);assert.match(p,/clue's own paragraphs/);assert.match(p,/trait .*not copied exactly/);
+});
+
+test("reading panel text: display cleanup only, paragraph numbers, and proof checks that point back to the passage", async()=>{
+  const {world,passages,line}=await storyKit();
+  const cg=await import("../lib/clue-game.ts");
+  assert.equal(cg.displayLine("getting out,--an idea\nmost probably"),"getting out,—an idea most probably");
+  assert.equal(cg.displayLine("a dog's-\nears book"),"a dog's-ears book");
+  assert.equal(cg.paragraphLabel("p028"),"¶28");
+  const clue=world.scenes[0].artifacts.find(a=>a.id==="ichabods-own-books")!;
+  assert.deepEqual(cg.checkProof(world,passages,clue,line("p069",4)),{ok:true});
+  const wrong=cg.checkProof(world,passages,clue,line("p068",1));
+  assert.ok(!wrong.ok&&/¶69/.test(wrong.hint)&&!wrong.hint.includes("flames"),"names the paragraph, never the line");
+  // The panel shows the clue's paragraphs plus neighbours from the scene's reading, so not every line answers it.
+  const panel=cg.cluePanel(world,passages,world.scenes[0],clue).map(p=>p.id);
+  assert.ok(panel.includes("p069")&&panel.length>1);
+  // Character cards are spoiler-safe: in scene 1 Brom shows only the trait from the reading so far.
+  const brom=world.characters.find(c=>c.id==="brom-bones")!;
+  const early=cg.characterCard(world,passages,brom,0),later=cg.characterCard(world,passages,brom,1);
+  assert.deepEqual([early.traits.length,early.locked],[1,2]);assert.deepEqual([later.traits.length,later.locked],[3,0]);
+});
+
+test("clue game scoring: right proofs earn once, streaks build, a wrong proof ends the streak; off claims land on turn 1 or 2", async()=>{
+  const {world}=await storyKit();
+  const cg=await import("../lib/clue-game.ts");
+  let r=cg.earn(undefined,"proof","a");assert.deepEqual([r.points,r.coins,r.game.streak],[100,1,1]);
+  r=cg.earn(r.game,"offClaim","a");assert.deepEqual([r.points,r.coins,r.game.streak],[360,2,2],"x1.2 for the second in a row");
+  r=cg.earn(r.game,"proof","b");assert.equal(r.points,150,"x1.5 from the third");
+  assert.equal(cg.earn(r.game,"proof","b").points,0,"the same award counts once");
+  const m=cg.miss(r.game);assert.deepEqual([m.streak,m.points,m.bestStreak],[0,r.game.points,3]);
+  const clue=world.scenes[0].artifacts[2];
+  for(const seed of ["a","b","c","d"]){const t=cg.offClaimTurn(seed,clue.id);assert.ok(t>=1&&t<=3);assert.equal(cg.offClaimTurn(seed,clue.id),t)}
+  assert.equal(new Set(Array.from({length:30},(_,i)=>cg.offClaimTurn(`s${i}`,clue.id))).size,3,"unpredictable: any of the first three answers");
+  assert.ok(cg.correctsOffClaim(clue,clue.off_claim!.line));assert.ok(!cg.correctsOffClaim(clue,"Something else."));
+  assert.equal(cg.offClaimFor(clue,clue.off_claim!.character_id)?.claim,clue.off_claim!.claim);
+  const {offClaimInstruction,ANSWER_STYLE}=await import("../lib/llm.ts");
+  assert.match(offClaimInstruction("He kept the books."),/as if it were true: "He kept the books\."/);
+  assert.match(ANSWER_STYLE,/Never retell or summarize/);assert.match(ANSWER_STYLE,/no dialect/);
+  const {capSentences}=await import("../lib/llm.ts");
+  assert.equal(capSentences("One. Two! Three? Four. Five."),"One. Two! Three?");
+  assert.equal(capSentences("I think he ran. Folks talk. The valley is odd. I kept his books on the schoolhouse shelf.","I kept his books on the schoolhouse shelf. Waste not, want not."),"I think he ran. Folks talk. I kept his books on the schoolhouse shelf. Waste not, want not.","a cut never drops the off claim");
+  assert.equal(capSentences("I kept his books on the shelf. Waste not. Read the book. Then argue.","I kept his books on the schoolhouse shelf. Waste not, want not."),"I kept his books on the shelf. Waste not. Read the book.","the claim was kept in its own words");
+});
+
+test("rival: the right line wins, speed only breaks a tie, a wrong tap locks out for 3 seconds; the computer uses authored lines", async()=>{
+  const {world,passages}=await storyKit();
+  const cg=await import("../lib/clue-game.ts");const {lineWords,evidenceSentences}=await import("../lib/lies.ts");
+  assert.equal(cg.rivalOutcome(9000,null),"you","only you found it");
+  assert.equal(cg.rivalOutcome(null,4000),"rival");
+  assert.equal(cg.rivalOutcome(9000,4000),"rival","both right: the faster one");
+  assert.equal(cg.rivalOutcome(4000,4000),"tie");assert.equal(cg.rivalOutcome(null,null),"none");
+  assert.equal(cg.RIVAL_LOCKOUT_MS,3000);
+  for(const sc of world.scenes)for(const clue of sc.artifacts){
+    const panel=cg.cluePanel(world,passages,sc,clue),plan=cg.computerRivalPlan(clue,panel)!;
+    const lines=panel.flatMap(p=>evidenceSentences(p.text));
+    assert.ok(cg.sameLine(plan.target,clue.off_claim!.line));
+    assert.ok(plan.correctMs>=6000&&plan.correctMs<=25000+cg.RIVAL_LOCKOUT_MS);
+    if(plan.wrong){assert.ok(!cg.sameLine(plan.wrong.line,plan.target));assert.ok(lines.some(l=>lineWords(l)===lineWords(plan.wrong!.line)),"a line from the panel");assert.ok(plan.wrong.atMs<plan.correctMs)}
+  }
+});
+
+test("squads: jobs, chunks, computer teammates never pin the answer, and vote ties", async()=>{
+  const {world,passages}=await storyKit();
+  const cg=await import("../lib/clue-game.ts");const {matchEvidence}=await import("../lib/evidence-check.ts");
+  assert.deepEqual([...cg.squadJobs(["a","b","c","d"]).values()],["reader","fact-checker","connector","reader"]);
+  assert.deepEqual(cg.squadChunks(["p068","p069","p070"],3),[["p068"],["p069"],["p070"]]);
+  assert.deepEqual(cg.squadChunks(["p068","p069","p070"],2),[["p068","p069"],["p070"]]);
+  for(const job of Object.values(cg.SQUAD_JOBS))assert.ok(job.does.length>10);
+  for(const sc of world.scenes)for(const clue of sc.artifacts){
+    const panel=cg.cluePanel(world,passages,sc,clue);
+    for(const l of cg.computerPins(world,passages,clue,panel)){assert.equal(matchEvidence(world,passages,l,{clueId:clue.id}),null,clue.id);assert.ok(!cg.sameLine(l,clue.off_claim!.line))}
+  }
+  const pins=[{line:"A.",reactions:1},{line:"B.",reactions:2},{line:"C.",reactions:2}];
+  assert.equal(cg.voteWinner(pins,[{voter:"x",line:"A."},{voter:"y",line:"A."},{voter:"z",line:"B."}],"z"),"A.","most votes");
+  assert.equal(cg.voteWinner(pins,[{voter:"x",line:"A."},{voter:"y",line:"B."}],"y"),"B.","tie: most reactions");
+  assert.equal(cg.voteWinner(pins,[{voter:"x",line:"B."},{voter:"fc",line:"C."}],"fc"),"C.","still tied: the Fact-checker's vote");
+  assert.equal(cg.voteWinner([],[],null),null);
+});
+
+test("live squads read together: pins with names, screened reactions, a vote, and all of it in the Evidence view", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {line,c}=await storyKit();
+  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");const {liveRoundEvidence}=await import("../lib/live/evidence.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"READ01",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const ids:string[]=[];for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven"]){ids.push((await server.join(store,s,{nickname:n,studentId:null})).player!.id);await new Promise(r=>setTimeout(r,5))}
+  let st=(await server.loadState(store,s.id))!;await server.hostAct(store,st,{action:"squads.auto"});st=(await server.loadState(store,s.id))!;
+  const sq=await store.replaceSquads(s.id,["Squad Lantern"]);await store.setSquads(s.id,ids.map(playerId=>({playerId,squadId:sq[0].id})));
+  st=(await server.loadState(store,s.id))!;await server.hostAct(store,st,{action:"round.start",type:"story",squads:true} as never);
+  const act=async(pid:string,kind:string,payload:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,pid,{kind:kind as never,payload},{judgeAllowed:async()=>false})};
+  st=(await server.loadState(store,s.id))!;
+  const view0=server.playerView(st,ids[0]).story!.reading!;
+  assert.deepEqual(view0.members.map(m=>m.job),["reader","fact-checker","connector"]);
+  assert.deepEqual(view0.myChunk,["p068"]);assert.deepEqual(server.playerView(st,ids[1]).story!.reading!.myChunk,["p069"]);
+  assert.equal(await act(ids[0],"story_pin",{line:line("p068",5)}),null);
+  assert.equal(await act(ids[0],"story_pin",{line:"Not in the reading."}),"Pick a line from the reading.");
+  assert.equal(await act(ids[1],"story_pin",{line:line("p069",2)}),null);
+  assert.equal(await act(ids[1],"story_react",{line:line("p068",5),stem:"proves",body:"someone rode fast to the bridge."}),null);
+  assert.match((await act(ids[2],"story_react",{line:line("p068",5),stem:"disagree",body:"where do you live, Ben?"}))??"",/saved for your teacher/);
+  st=(await server.loadState(store,s.id))!;
+  const v1=server.playerView(st,ids[1]).story!.reading!;
+  assert.deepEqual(v1.pins.map(p=>[p.by,p.mine]),[["Detective Owl",false],["Inspector Fox",true]]);
+  assert.equal(v1.reactions.length,1,"a flagged reaction never reaches teammates");
+  assert.equal(server.playerView(st,ids[2]).story!.reading!.reactions.length,2,"the writer still sees their own");
+  // The vote: one each, so the tie goes to the line with the most reactions.
+  await act(ids[0],"story_vote",{line:line("p069",2)});await act(ids[1],"story_vote",{line:line("p068",5)});
+  st=(await server.loadState(store,s.id))!;
+  const v2=server.playerView(st,ids[2]).story!.reading!;
+  assert.ok(v2.winner&&v2.winner.startsWith("In one part of the road"),"tied 1 to 1: the reacted line wins");
+  assert.equal(v2.everyoneVoted,false);
+  const ev=liveRoundEvidence({session:st.session,world:st.world,squads:st.squads,players:st.players,responses:st.responses});
+  const acts=ev[0].squads[0].members.flatMap(m=>m.actions).join(" | ");
+  assert.match(acts,/Round 1: pinned "In one part of the road/);assert.match(acts,/Round 1: reacted: This proves… someone rode fast/);assert.match(acts,/reacted \(flagged\)/);assert.match(acts,/Round 1: voted for "They consisted/);
+  void c;
+});
+
+test("saved progress keeps clue game points, marks and flags, and the Evidence view shows them", async()=>{
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");const {buildEvidence}=await import("../lib/classroom/evidence.ts");
+  const {world}=await storyKit();
+  const p=StudentProgressSchema.parse({v:1,worldId:"sleepy-hollow",scene:0,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],storyFrames:{},updatedAt:"2026-10-24T12:00:00Z",
+    game:{points:460,coins:3,streak:2,bestStreak:2,rivalWins:1,rivalLosses:0,earned:["proof:a","offClaim:a"]},
+    marks:{"p069#2":{tag:"word",pid:"p069",text:"They consisted of two shirts and a half.",clueId:"ichabods-belongings",at:"2026-10-24T12:00:00Z"}},
+    claimFlags:[{clueId:"ichabods-own-books",characterId:"hans-van-ripper",answer:"I kept his books.",line:"These magic books…",pid:"p069",matched:true,at:"x"},{clueId:"empty-schoolhouse",characterId:"brom-bones",answer:"It had a bell.",line:"It was most ingeniously secured…",pid:"p011",matched:false,at:"y"}],missionSeen:["empty-schoolhouse"]});
+  assert.equal(p.game!.points,460);assert.equal(p.marks!["p069#2"].tag,"word");
+  const e=buildEvidence(world,[{id:"s1",nickname:"Ana Ruiz",answers:{},marks:p.marks,claimFlags:p.claimFlags}]);
+  assert.deepEqual(e.students[0].marks,[{tag:"Word to know",paragraph:"¶69",text:"They consisted of two shirts and a half."}]);
+  assert.deepEqual(e.students[0].claimFlags.map(f=>[f.clue,f.character,f.matched]),[["Ichabod's own books and the unfinished poem","Hans Van Ripper",true],["The empty schoolhouse","Brom Bones",false]]);
+});
+
+test("live squads read together in every round: jobs move round by round, pins and votes belong to their round", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {line}=await storyKit();
+  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");const {liveRoundEvidence}=await import("../lib/live/evidence.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"READ02",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const ids:string[]=[];for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven"]){ids.push((await server.join(store,s,{nickname:n,studentId:null})).player!.id);await new Promise(r=>setTimeout(r,5))}
+  const sq=await store.replaceSquads(s.id,["Squad Lantern"]);await store.setSquads(s.id,ids.map(playerId=>({playerId,squadId:sq[0].id})));
+  let st=(await server.loadState(store,s.id))!;await server.hostAct(store,st,{action:"round.start",type:"story",squads:true} as never);
+  const host=async(a:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;return server.hostAct(store,st,a as never)};
+  const act=async(pid:string,kind:string,payload:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,pid,{kind:kind as never,payload},{judgeAllowed:async()=>false})};
+  const view=async(pid:string)=>{st=(await server.loadState(store,s.id))!;return server.playerView(st,pid).story!.reading!};
+  assert.equal(await act(ids[0],"story_pin",{line:line("p068",5)}),null,"round 1");
+  // Round 2: the confrontation. Jobs have moved on; round 1's pin isn't carried over.
+  await host({action:"round.stage"});await host({action:"round.stage"});
+  let v=await view(ids[0]);
+  assert.deepEqual(v.members.map(m=>m.job),["connector","reader","fact-checker"]);
+  assert.equal(v.pins.length,0,"pins belong to their round");
+  assert.equal(await act(ids[1],"story_pin",{line:line("p070",2)}),null);
+  assert.equal(await act(ids[0],"story_react",{line:line("p070",2),stem:"proves",body:"the town blamed the Hessian."}),null);
+  assert.equal(await act(ids[2],"story_vote",{line:line("p070",2)}),null);
+  v=await view(ids[0]);assert.equal(v.pins.length,1);assert.equal(v.reactions.length,1);assert.equal(v.votes[0].votes,1);
+  // Round 3: Catch the lie reads the testimony's clue, so a line from elsewhere is refused.
+  await host({action:"round.stage"});await host({action:"round.stage"});
+  assert.equal(await act(ids[1],"story_pin",{line:line("p068",5)}),"Pick a line from the reading.");
+  assert.equal(await act(ids[1],"story_pin",{line:line("p069",2)}),null);
+  v=await view(ids[2]);assert.deepEqual(v.myChunk,["p069"]);assert.equal(v.pins[0].by,"Inspector Fox");
+  // Round 4.
+  await host({action:"round.stage"});await host({action:"round.stage"});
+  assert.equal(await act(ids[2],"story_pin",{line:line("p069",1)}),null);
+  v=await view(ids[0]);assert.deepEqual(v.members.map(m=>m.job),["reader","fact-checker","connector"],"round 4: back where round 1 started");
+  const acts=liveRoundEvidence({session:st.session,world:st.world,squads:st.squads,players:st.players,responses:st.responses})[0].squads[0].members.flatMap(m=>m.actions).join(" | ");
+  for(const r of [1,2,3,4])assert.match(acts,new RegExp(`Round ${r}: pinned`));
+  assert.match(acts,/Round 2: reacted: This proves… the town blamed/);assert.match(acts,/Round 2: voted for/);
+});
+
+test("tappable lines never end mid-sentence, in every story, and stay exact slices of the source", async()=>{
+  const {evidenceSentences}=await import("../lib/lies.ts");const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  assert.deepEqual(evidenceSentences("and (unskilful rider that he was!)\nhe had much ado to keep his seat."),["and (unskilful rider that he was!)\nhe had much ado to keep his seat."]);
+  assert.deepEqual(evidenceSentences("I said, “How do, Mrs. Wright, it’s cold, ain’t it?” “Ain’t he home?” says I."),["I said, “How do, Mrs. Wright, it’s cold, ain’t it?”","“Ain’t he home?” says I."]);
+  assert.deepEqual(evidenceSentences("the protection of St. Nicholas when they crossed. Next."),["the protection of St. Nicholas when they crossed.","Next."]);
+  assert.deepEqual(evidenceSentences("myself.” D. K."),["myself.”","D. K."]);
+  assert.deepEqual(evidenceSentences("[_They all look at the rocker._] Then."),["[_They all look at the rocker._]","Then."]);
+  for(const w of ["sleepy-hollow","tell-tale-heart","trifles"]){
+    const ps=parseSourcePassages(await readFile(new URL(`../worlds/${w}/source.md`,import.meta.url),"utf8"));
+    for(const p of ps){const ls=evidenceSentences(p.text);ls.forEach((l,i)=>{
+      assert.ok(p.text.includes(l),`${w} ${p.id}: an exact slice`);
+      const body=l.replace(/^[“"‘'(\[_—–\-\s]+/,"");
+      if(i>0)assert.ok(!/^[a-z]/.test(body),`${w} ${p.id} line ${i} starts mid-sentence: ${l.slice(0,40)}`);
+      assert.ok(!/(?:^|\s)(Mr|Mrs|St|Dr|MRS)\.$/.test(l)||i===ls.length-1&&/^MRS\.$/.test(l)===false,`${w} ${p.id} line ${i} ends on a title`);
+      assert.ok(/[A-Za-z0-9]/.test(l)||ls.length===1,`${w} ${p.id} line ${i} is only punctuation (a whole-paragraph section break is fine)`);
+    })}
+  }
+});
+
+test("off claims accept their alternative correcting lines (#6 and #12), and #5 uses Ichabod's appetite", async()=>{
+  const {world,passages}=await storyKit();const cg=await import("../lib/clue-game.ts");
+  const clue=(id:string)=>world.scenes.flatMap(s=>s.artifacts).find(a=>a.id===id)!;
+  assert.match(clue("party-feast").off_claim!.line,/did ample justice to every dainty/);
+  assert.ok(cg.checkProof(world,passages,clue("party-feast"),clue("party-feast").off_claim!.line).ok,"the feast clue includes ¶44");
+  assert.ok(cg.correctsOffClaim(clue("broms-corner"),clue("broms-corner").off_claim!.also![0].line));
+  assert.match(clue("broms-corner").off_claim!.also![0].line.replace(/\s+/g," "),/smoked out his singing school/);
+  assert.ok(cg.correctsOffClaim(clue("hurled-head"),clue("hurled-head").off_claim!.also![0].line));
+  assert.match(clue("fallen-saddle").off_claim!.line.replace(/\s+/g," "),/\(unskilful rider that he was!\) he had much ado/);
+});
+
+test("freeze rules: earned by 3 right proofs in a row, hold one, one per round, not the same opponent twice, timers pause", async()=>{
+  const fz=await import("../lib/freeze.ts");const cg=await import("../lib/clue-game.ts");
+  assert.deepEqual([1,2,3,4,5,6].map(n=>fz.earnsFreeze(n,false)),[false,false,true,false,false,true]);
+  assert.equal(fz.earnsFreeze(3,true),false,"hold at most one");
+  const base={holding:true,usedThisRound:false,target:"q2",teammate:false,shielded:false,last:null,round:2};
+  assert.deepEqual(fz.canFreeze(base),{ok:true});
+  assert.match((fz.canFreeze({...base,holding:false}) as {reason:string}).reason,/3 right proofs in a row/);
+  assert.match((fz.canFreeze({...base,teammate:true}) as {reason:string}).reason,/Never your own team/);
+  assert.match((fz.canFreeze({...base,usedThisRound:true}) as {reason:string}).reason,/One Freeze per round/);
+  assert.match((fz.canFreeze({...base,shielded:true}) as {reason:string}).reason,/Shielded/);
+  assert.match((fz.canFreeze({...base,last:{target:"q2",round:1}}) as {reason:string}).reason,/twice in a row/);
+  assert.deepEqual(fz.canFreeze({...base,last:{target:"q2",round:0}}),{ok:true},"a round in between is fine");
+  assert.equal(fz.frozenMs([1000],0,10000),5000);assert.equal(fz.frozenMs([1000],0,3000),2000,"still frozen: counts so far");
+  assert.equal(fz.freezeLeft(1000,3500),3);assert.equal(fz.freezeLeft(null,0),0);
+  // Rival play: the third right proof in a row earns one, never in solo, never while holding one.
+  let g=cg.newClueGame();for(const k of ["a","b","c"]){const r=cg.earn(g,"proof",k);g=cg.withFreeze(r.game,true,r.points>0)}
+  assert.equal(g.freezeHeld,true);
+  let solo=cg.newClueGame();for(const k of ["a","b","c"]){const r=cg.earn(solo,"proof",k);solo=cg.withFreeze(r.game,false,r.points>0)}
+  assert.equal(!!solo.freezeHeld,false,"solo play has no freezes");
+});
+
+test("live freezes: host toggle, squads only, never teammates, holds the other squad's lock-in but not their reading, logged", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {line}=await storyKit();
+  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");const {liveRoundEvidence}=await import("../lib/live/evidence.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"FRZ001",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const ids:string[]=[];for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven","Agent Quill"]){ids.push((await server.join(store,s,{nickname:n,studentId:null})).player!.id);await new Promise(r=>setTimeout(r,5))}
+  const sq=await store.replaceSquads(s.id,["Squad Lantern","Squad Quill"]);
+  await store.setSquads(s.id,[{playerId:ids[0],squadId:sq[0].id},{playerId:ids[1],squadId:sq[0].id},{playerId:ids[2],squadId:sq[1].id},{playerId:ids[3],squadId:sq[1].id}]);
+  let st=(await server.loadState(store,s.id))!;
+  // Freezes need squads: asking for freezes without squads leaves them off.
+  await server.hostAct(store,st,{action:"round.start",type:"story",squads:false,freezes:true} as never);
+  st=(await server.loadState(store,s.id))!;assert.equal((st.session.rounds[0] as {freezesOn?:boolean}).freezesOn,false);
+  await store.updateSession(s.id,{rounds:[{...(st.session.rounds[0] as object),squadsOn:true,freezesOn:true} as never]});
+  const act=async(pid:string,kind:string,payload:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,pid,{kind:kind as never,payload},{judgeAllowed:async()=>false})};
+  // No Freeze yet.
+  assert.match((await act(ids[0],"story_freeze",{targetSquadId:sq[1].id}))??"",/3 right proofs in a row/);
+  // Owl has 3 right proofs in a row (from earlier steps of this round).
+  for(const step of [0,1,2])await store.addResponse(s.id,{roundIndex:0,squadId:sq[0].id,playerId:ids[0],role:null,kind:"story",payload:{step:step+10,record:{round:step+1,points:100,valid:true,streak:step+1,multiplier:1,doubled:false,base:100,speed:0,coinsEarned:1,detail:"",choice:"",proof:[],kind:"read"}},flagged:false});
+  st=(await server.loadState(store,s.id))!;
+  const v=server.playerView(st,ids[0]).story!.freeze!;
+  assert.equal(v.holding,true);assert.deepEqual(v.targets.map(t=>[t.name,t.ok]),[["Squad Quill",true]],"never your own squad");
+  assert.match((await act(ids[0],"story_freeze",{targetSquadId:sq[0].id}))??"",/own team/);
+  assert.equal(await act(ids[0],"story_freeze",{targetSquadId:sq[1].id}),null);
+  // Quill's lock-in waits; their pins still work; Owl's Freeze is spent.
+  assert.match((await act(ids[2],"story",{input:{kind:"read",pouch:[line("p068",5)]}}))??"",/frozen for \d more seconds/);
+  assert.equal(await act(ids[2],"story_pin",{line:line("p068",5)}),null);
+  st=(await server.loadState(store,s.id))!;
+  const q=server.playerView(st,ids[2]).story!.freeze!;assert.ok(q.frozen&&q.frozen.by==="Squad Lantern");assert.equal(q.shielded,true);
+  assert.equal(server.playerView(st,ids[0]).story!.freeze!.holding,false);
+  // Once the 5 seconds pass, they lock in; the frozen time didn't count against them.
+  await store.updateSession(s.id,{rounds:[{...(st.session.rounds[0] as object),stepStartedAt:new Date(Date.now()-7000).toISOString()} as never]});
+  st=(await server.loadState(store,s.id))!;
+  const {answerStep}=await import("../lib/live/story.ts");
+  const r=answerStep(st.world,st.passages!,st.world.scenes[0],st.session.rounds[0] as never,st.responses,0,ids[3],{kind:"read",pouch:[line("p068",5)]},Date.now()+6000,"1",sq[1].id);
+  assert.ok(typeof r!=="string");
+  const ev=liveRoundEvidence({session:st.session,world:st.world,squads:st.squads,players:st.players,responses:st.responses});
+  assert.match(ev[0].freezes!.join(" "),/Detective Owl \(Squad Lantern\) froze Squad Quill · Story Mode round 1 · \d+:\d\d:\d\d [AP]M/);
+});
+
+test("rival freezes are logged for the teacher", async()=>{
+  const {buildEvidence}=await import("../lib/classroom/evidence.ts");const {world}=await storyKit();
+  const e=buildEvidence(world,[{id:"s1",nickname:"Ana Ruiz",answers:{},freezes:[{target:"The Lantern Ghost",clueId:"empty-schoolhouse",at:"2026-10-24T15:04:05Z"}]}]);
+  assert.deepEqual(e.students[0].freezes,["Ana Ruiz froze The Lantern Ghost · The empty schoolhouse · 11:04:05 AM"]);
+});
+
+test("Your Turn content: one activity per angle option, every scored line exact, validated", async()=>{
+  const {world,passages}=await storyKit();const yt=await import("../lib/your-turn.ts");
+  assert.deepEqual(yt.yourTurnProblems(world,passages),[]);
+  assert.deepEqual(Object.keys(world.your_turn!.activities).sort(),[...yt.ANGLE_OPTION_IDS].sort(),"every option of all three questions");
+  assert.equal(world.your_turn!.activities.loyalty.kind,"talk");assert.equal(world.your_turn!.activities.loyalty.character_id,"hans-van-ripper");
+  assert.equal(world.your_turn!.activities.winning.kind,"debate");
+  for(const a of Object.values(world.your_turn!.activities))assert.ok(a.minutes>=5&&a.minutes<=7);
+  const bad=structuredClone(world);const u=bad.your_turn!.activities.unfairness;
+  u.exchanges![0].accept[0].line=u.exchanges![0].accept[0].line.replace("harried","bothered");u.title="Call out — what's unfair";
+  bad.your_turn!.activities["always-right"]={...u};
+  (bad.your_turn!.activities.winning.sides as Record<string,unknown>)["aliens"]=bad.your_turn!.activities.winning.sides!["ran-away"];
+  const p=yt.yourTurnProblems(bad,passages).join(" | ");
+  assert.match(p,/not copied exactly/);assert.match(p,/no em dashes/);assert.match(p,/always-right: not a "What's your angle\?" option/);assert.match(p,/side aliens is not a Final Verdict theory/);
+});
+
+test("Your Turn: two activities from the angle, answers checked against authored lines, 2 or 3 cited sentences", async()=>{
+  const {world,passages,line}=await storyKit();const yt=await import("../lib/your-turn.ts");
+  assert.deepEqual(yt.yourTurnChoices(world,{firedUpBy:"money",lane:"fashion",style:"rival"}),["money","fashion"]);
+  assert.deepEqual(yt.yourTurnChoices(world,{style:"rival"}),["rival"]);
+  assert.deepEqual(yt.yourTurnChoices(world,null),["solo"],"skipped the angle: the cold case file");
+  const fashion=world.your_turn!.activities.fashion;
+  const suit=fashion.items!.find(i=>i.id==="suit")!,bow=fashion.items!.find(i=>i.id==="bow")!;
+  assert.deepEqual(yt.checkAnswer(suit.accept,suit.accept[0].line),{ok:true});
+  const miss=yt.checkAnswer(suit.accept,line("p010",0));assert.ok(!miss.ok&&/¶36/.test(miss.hint));
+  const decoy=yt.checkAnswer(bow.accept,line("p036",0));assert.ok(!decoy.ok&&/doesn't support/.test(decoy.hint),"a decoy piece the story doesn't support");
+  const cite=[line("p036",0)];
+  assert.deepEqual(yt.checkWriting(passages,"He wore his only suit.",cite),{ok:false,error:"Write 2 or 3 sentences."});
+  assert.deepEqual(yt.checkWriting(passages,"One. Two. Three. Four.",cite),{ok:false,error:"Write 2 or 3 sentences."});
+  assert.match((yt.checkWriting(passages,"He wore a rusty suit. It was his only one.",[]) as {error:string}).error,/Cite at least one line/);
+  assert.match((yt.checkWriting(passages,"He wore a rusty suit. It was his only one.",["Ichabod wore a tuxedo."]) as {error:string}).error,/Cite at least one line/);
+  const ok=yt.checkWriting(passages,"He wore a rusty suit. It was his only one.",cite);assert.ok(ok.ok);
+  assert.match((yt.checkWriting(passages,"He wore a suit. Where do you live?",cite) as {error:string}).error,/private information/,"screened like character questions");
+});
+
+test("Your Turn live: the host starts it for everyone; each phone saves one of its own activities to the student's progress", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {line}=await storyKit();
+  const {getClassroomStore}=await import("../lib/classroom/store.ts");const cls_=getClassroomStore()!;
+  const t=await cls_.ensureTeacher("test:yt","yt@example.com");const cls=await cls_.createClass(t.id,{name:"Period 5",worldId:"sleepy-hollow",grade:7});
+  const kid=(await cls_.createStudent(cls.id,"Rosa Park","h")) as {id:string};
+  await cls_.saveProgress(kid.id,{v:1,worldId:"sleepy-hollow",scene:3,submitted:true,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],storyFrames:{},angle:{firedUpBy:"loyalty",lane:"fashion"},updatedAt:new Date().toISOString()});
+  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"YT0001",teacherId:t.id,classId:cls.id,demo:false,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:0,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const p=(await server.join(store,s,{nickname:"Rosa Park",studentId:kid.id})).player!;await store.updateSession(s.id,{status:"ended"});
+  let st=(await server.loadState(store,s.id))!;
+  assert.equal(server.playerView(st,p.id).yourTurn,null,"not until the host starts it");
+  assert.equal(await server.hostAct(store,st,{action:"yourturn.start"}),null,"even after the session has ended");
+  st=(await server.loadState(store,s.id))!;
+  assert.deepEqual(server.playerView(st,p.id).yourTurn,{choices:["loyalty","fashion"],done:[]});
+  assert.deepEqual(server.hostView(st).yourTurn,{started:true,saved:0});
+  const act=async(payload:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,p.id,{kind:"your_turn",payload},{judgeAllowed:async()=>false})};
+  assert.match((await act({activity:"money",writing:"A. B.",cited:[]}))??"",/one of your two/);
+  assert.match((await act({activity:"fashion",writing:"He wore his only suit.",cited:[line("p036",0)]}))??"",/2 or 3 sentences/);
+  assert.equal(await act({activity:"fashion",writing:"Ichabod only had one suit. It was rusty black.",cited:[line("p036",0)],results:[{label:"Rusty black suit",line:line("p036",0),ok:true},{label:"Fake",line:"Not in the story.",ok:true}]}),null);
+  const saved=(await cls_.getProgress(kid.id))!.yourTurn!;
+  assert.equal(saved.length,1);assert.equal(saved[0].title,"Style Ichabod for the party");assert.equal(saved[0].results.length,1,"only real lines are kept");
+  st=(await server.loadState(store,s.id))!;assert.deepEqual(server.playerView(st,p.id).yourTurn!.done,["Style Ichabod for the party"]);
+  const {loadClassEvidence}=await import("../lib/classroom/evidence-server.ts");const {evidenceCsv}=await import("../lib/classroom/evidence.ts");
+  const ev=(await loadClassEvidence(cls_,t.id,cls.id))!;
+  const y=ev.students.find(x=>x.nickname==="Rosa Park")!.yourTurn[0];
+  assert.deepEqual([y.title,y.heldUp,y.writing],["Style Ichabod for the party","1 of 1","Ichabod only had one suit. It was rusty black."]);
+  assert.match(evidenceCsv(ev),/Your Turn,Rosa Park,Style Ichabod for the party,1 of 1,Ichabod only had one suit/);
+});
+
+test("Story Mode needs no access code for public demo visitors (usage caps stay)", async()=>{
+  const prev=process.env.CLASSROOM_DEV_STORE;delete process.env.CLASSROOM_DEV_STORE;
+  try{
+    const {storyIdentity}=await import("../lib/story-api.ts");
+    const id="11111111-2222-4333-8444-555555555555";
+    const req={headers:new Headers(),cookies:{get:()=>undefined}} as never;
+    assert.deepEqual(await storyIdentity(req,id),{scope:"demo",sandboxId:id},"no cookie, no code");
+    assert.deepEqual(await storyIdentity(req,"not-a-sandbox"),{error:"Start the demo again.",status:400});
+    const srv=await import("../lib/story-server.ts");assert.equal(srv.MAX_RESTARTS,20,"the per-day restart cap is unchanged");
+  }finally{if(prev!==undefined)process.env.CLASSROOM_DEV_STORE=prev}
 });

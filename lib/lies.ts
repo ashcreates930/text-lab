@@ -10,9 +10,27 @@ export type Lie = NonNullable<WorldPack["scenes"][number]["lie"]>;
 // A student's result on a scene's lie, saved in progress (progress.lies[sceneId]).
 export type LieRecord = { clue_id: string; caught: boolean; misses: number; caught_at?: string };
 
-// The evidence lines a paragraph is split into, exactly as the clue screen shows them.
+// The evidence lines a paragraph is split into, exactly as the clue screen shows them. A line never ends mid-sentence:
+// a piece that starts in lowercase (after any quote, bracket or dash) continues the one before ("(unskilful rider that he
+// was!) he had much ado…", "“Ain’t he home?” says I."); a title ("Mrs.", "Mr.", "St.") keeps its name; initials stay
+// together ("D. K."); and a lone stage-direction mark ("_") joins the line it closes. Each line is still an exact slice
+// of the source, so authored lines can be checked against it.
+const TITLE = /(?:^|[\s(“"‘'—-])(?:Mr|Mrs|Ms|Dr|St|Messrs|Mme|Jr|Sr|MR|MRS|DR|ST)\.\s*$/;
 export function evidenceSentences(text: string) {
-  return (text.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g) ?? [text]).map((s) => s.trim()).filter(Boolean);
+  const pieces = text.match(/[^.!?]+[.!?]+["”’)_\]]*\s*|[^.!?]+$/g) ?? [text];
+  const lines: string[] = [];
+  for (const piece of pieces) {
+    const prev = lines[lines.length - 1];
+    const body = piece.trim().replace(/^[“"‘'(\[_—–\-\s]+/, "");
+    const join = prev !== undefined && (
+      /^[a-z]/.test(body) ||
+      !/[A-Za-z0-9]/.test(piece) ||
+      TITLE.test(prev) ||
+      (/^[A-Z]\.\s*$/.test(prev.trim().split(/\s+/).pop() ?? "") && /^[A-Z]\.\s*$/.test(piece.trim()))
+    );
+    if (join) lines[lines.length - 1] = prev + piece; else lines.push(piece);
+  }
+  return lines.map((s) => s.trim()).filter(Boolean);
 }
 // Compare lines by their words: line breaks, spacing, curly quotes and stage-direction marks don't matter.
 export const lineWords = (text: string) =>
@@ -41,12 +59,12 @@ export function hintFor(lie: Lie, evidence?: SourcePassage[]): LieHighlight {
 }
 export const isHighlighted = (h: LieHighlight | undefined, line: { text: string; pid: string }) =>
   !!h && ("paragraph" in h ? h.paragraph === line.pid : h.lines.includes(line.text));
-// One tap on an evidence line. A miss names the detail to look for; after two misses the right paragraph is gently
-// highlighted (see hintFor), never the exact line alone.
-export function tryLine(lie: Lie, tapped: string, misses: number, evidence?: SourcePassage[]): LieAttempt {
+// One tap on an evidence line. A miss names the detail to look for; after two misses it also names the paragraph to
+// look in. Nothing is highlighted: the right line is never lit up before the student taps it.
+export function tryLine(lie: Lie, tapped: string, misses: number, _evidence?: SourcePassage[]): LieAttempt {
   if (isTruthLine(lie, tapped)) return { result: "caught", misses };
   const next = misses + 1;
-  return { result: "miss", misses: next, message: `Not quite. Look for a line about ${lie.topic}.`, ...(next >= 2 ? { highlight: hintFor(lie, evidence) } : {}) };
+  return { result: "miss", misses: next, message: `Not quite. Look for a line about ${lie.topic}.${next >= 2 ? ` Look again in ¶${Number(lie.truth_paragraph.slice(1))}.` : ""}` };
 }
 
 // The testimony split so the false sentence can be struck through once the lie is caught.

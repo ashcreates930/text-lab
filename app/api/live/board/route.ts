@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   for (const s of sessions.filter((x) => new Date(x.createdAt).getTime() >= weekAgo)) {
     const st = await loadState(store, s.id);
     if (!st || !s.classId) continue;
-    entries.push({ classId: s.classId, className: names.get(s.classId) ?? "Class", createdAt: s.createdAt, points: sessionScores(st.world, st.session, st.squads, st.responses).reduce((n, x) => n + x.points, 0) });
+    entries.push({ classId: s.classId, className: names.get(s.classId) ?? "Class", createdAt: s.createdAt, points: sessionScores(st.world, st.session, st.squads, st.responses, st.players, st.absent).reduce((n, x) => n + x.points, 0) });
   }
   return NextResponse.json({ board: classBoard(entries) });
 }

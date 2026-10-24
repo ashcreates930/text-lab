@@ -57,6 +57,22 @@ export const StudentProgressSchema = z.object({
   // Students in the story: "What's your angle?" (three choices only) and whether the role intro card was seen.
   angle: AngleSchema.optional(),
   roleIntroSeen: z.boolean().optional(),
+  // The clue game (lib/clue-game.ts): points, coins and streak; lines the student marked; and "Something's off" flags.
+  game: z.object({ points: z.number().int().min(0).max(1000000), coins: z.number().int().min(0).max(100000), streak: z.number().int().min(0).max(1000), bestStreak: z.number().int().min(0).max(1000), rivalWins: z.number().int().min(0).max(1000), rivalLosses: z.number().int().min(0).max(1000), earned: z.array(text(200)).max(500),
+    freezeHeld: z.boolean().optional(), races: z.number().int().min(0).max(10000).optional(), lastFreeze: z.object({ target: text(80), round: z.number().int().min(0).max(10000) }).optional(),
+    freezeLog: z.array(z.object({ target: text(80), clueId: id, at: text(40) })).max(200).optional() }).optional(),
+  marks: z.record(text(20), z.object({ tag: z.enum(["clue", "word", "question"]), pid: text(12), text: text(1500), clueId: id.optional(), at: text(40) })).optional(),
+  claimFlags: z.array(z.object({ clueId: id, characterId: id, answer: text(1200), line: text(1500), pid: text(12), matched: z.boolean(), at: text(40) })).max(200).optional(),
+  // Your Turn: each finished activity, with its results and the closing 2 or 3 cited sentences.
+  yourTurn: z.array(z.object({ activity: id, title: text(120), results: z.array(z.object({ label: text(200), line: text(1500), ok: z.boolean() })).max(12), writing: text(900), cited: z.array(text(1500)).max(5), at: text(40) })).max(30).optional(),
+  // How the student plays (solo, rival or squad) and the scenes whose mission screen they have seen.
+  missionSeen: z.array(id).max(50).optional(),
+  // Story Mode, per scene (scene id -> run summary): the score, the Evidence pouch and trust with the characters the
+  // student met (character id -> trust, as on the server run). Older saves don't have it.
+  story: z.record(id, z.object({
+    runId: text(80), total: z.number().int().min(0).max(100000), bestStreak: z.number().int().min(0).max(10),
+    trust: z.record(id, z.number().int().min(-12).max(12)), pouch: z.array(text(1500)).max(3), cleared: z.boolean(),
+  })).optional(),
   updatedAt: text(40),
 });
 export type StudentProgress = z.infer<typeof StudentProgressSchema>;

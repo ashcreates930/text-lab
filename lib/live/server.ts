@@ -5,7 +5,13 @@ import type { WorldPack } from "../world-schema.ts";
 import { readPassages, readWorld } from "../classroom/worlds.ts";
 import { NOT_EVIDENCE, matchEvidence } from "../evidence-check.ts";
 import type { SourcePassage } from "../source-passages.ts";
-import { memoryModeEnabled } from "../classroom/store.ts";
+import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, myStepRecord, playerState, publicStory, readingAction, squadReading, stepKind, type LiveStoryRound } from "./story.ts";
+import { screenMessage } from "../safety.ts";
+import { checkWriting, yourTurnChoices, type YourTurnEntry } from "../your-turn.ts";
+import { evidenceSentences, lineWords } from "../lies.ts";
+import { AngleSchema, type Angle } from "../student-role.ts";
+import { studentBoard, type RoundInput, type TimeSetting } from "../story-mode.ts";
+import { absentDay, getClassroomStore, memoryModeEnabled } from "../classroom/store.ts";
 import { screenArgument, judgeWithRubric } from "../verdict-server.ts";
 import { getLieBankStore } from "../lie-bank-store.ts";
 import { asLie, type PlantedLie } from "../planted-lies.ts";
@@ -50,14 +56,38 @@ export async function broadcast(sessionId: string) {
 
 // ---------- Loading ----------
 // bank: the class's approved planted lies for this story (class sessions only).
-export type LiveState = { session: StoredSession; world: WorldPack; squads: Awaited<ReturnType<LiveStore["listSquads"]>>; players: LivePlayer[]; responses: LiveResponse[]; bank?: PlantedLie[]; passages?: SourcePassage[] };
+// absent: player ids whose students were marked absent on the session's day (left out of Story Mode squad averages).
+// angles: class students' "What's your angle?" answers, loaded once the host starts Your Turn.
+export type LiveState = { session: StoredSession; world: WorldPack; squads: Awaited<ReturnType<LiveStore["listSquads"]>>; players: LivePlayer[]; responses: LiveResponse[]; bank?: PlantedLie[]; passages?: SourcePassage[]; absent?: string[]; angles?: Record<string, Angle> };
 export async function loadState(store: LiveStore, sessionId: string): Promise<LiveState | null> {
   const session = await store.getSession(sessionId);
   if (!session) return null;
   const world = await readWorld(session.worldId);
   if (!world) return null;
-  const [squads, players, responses, bank, passages] = await Promise.all([store.listSquads(sessionId), store.listPlayers(sessionId), store.listResponses(sessionId), loadBank(session), readPassages(session.worldId)]);
-  return { session, world, squads, players, responses, bank, passages };
+  const [squads, players, responses, bank, passages, absentStudents] = await Promise.all([store.listSquads(sessionId), store.listPlayers(sessionId), store.listResponses(sessionId), loadBank(session), readPassages(session.worldId), loadAbsent(session)]);
+  const away = new Set(absentStudents);
+  const angles = responses.some((r) => r.kind === "your_turn_start") ? await loadAngles(players) : undefined;
+  return { session, world, squads, players, responses, bank, passages, absent: players.filter((p) => p.studentId && away.has(p.studentId)).map((p) => p.id), ...(angles ? { angles } : {}) };
+}
+// Your Turn: each class student's angle, from their saved progress (player id -> angle).
+async function loadAngles(players: LivePlayer[]) {
+  const classes = getClassroomStore();
+  const out: Record<string, Angle> = {};
+  if (!classes) return out;
+  await Promise.all(players.filter((p) => p.studentId).map(async (p) => { const a = AngleSchema.safeParse((await classes.getProgress(p.studentId!).catch(() => null))?.angle); if (a.success) out[p.id] = a.data; }));
+  return out;
+}
+// What a player sees once the host starts Your Turn: their two activities and what they've already saved.
+function yourTurnView(st: LiveState, playerId: string) {
+  if (!st.responses.some((r) => r.kind === "your_turn_start") || !st.world.your_turn) return null;
+  return { choices: yourTurnChoices(st.world, st.angles?.[playerId]), done: st.responses.filter((r) => r.kind === "your_turn" && r.playerId === playerId).map((r) => String(r.payload.title ?? "")) };
+}
+// Students marked absent on the day the session was held (New York date), so an old session's totals don't change
+// with later marks. None before the absent migration runs, or for a session without a class.
+async function loadAbsent(session: StoredSession) {
+  const classes = session.classId ? getClassroomStore() : null;
+  if (!classes || !session.classId) return [];
+  return classes.getAbsentOn(session.classId, absentDay(new Date(session.createdAt))).catch(() => []);
 }
 async function loadBank(session: StoredSession) {
   const lies = session.classId ? getLieBankStore() : null;
@@ -83,6 +113,7 @@ function objectionMine(reveal: { type: string; sustained?: boolean; scores?: { s
 function revealFor(st: LiveState) {
   const round = currentRound(st), i = st.session.roundIndex;
   if (!round) return null;
+  if (round.type === "story") { const b = liveStoryBoard(st.responses, i, st.players, st.squads, round.squadsOn, st.absent); return { type: "story" as const, kind: b.kind, top: b.rows.slice(0, 5).map((r, k) => ({ rank: k + 1, name: r.name, score: r.score })), players: b.rows.length }; }
   if (round.type === "lie") {
     const lie = lieOf(st, round)!;
     return { type: "lie" as const, truthLine: lie.truth_line, explanation: lie.explanation, falseClaim: lie.false_claim,
@@ -99,9 +130,11 @@ function squadSummary(st: LiveState, squadId: string) {
   const progress = squadProgress(round, st.responses, squadId, st.session.roundIndex);
   return { ids, roles, progress };
 }
+const storyScene = (st: LiveState, round: LiveStoryRound) => st.world.scenes.find((s) => s.id === round.sceneId && s.story_mode);
 const publicRound = (st: LiveState) => {
   const round = currentRound(st);
   if (!round) return null;
+  if (round.type === "story") { const scene = storyScene(st, round); return scene ? publicStory(st.world, st.passages ?? [], scene, round) : null; }
   if (round.type === "lie") {
     const lie = lieOf(st, round)!, scene = st.world.scenes.find((s) => s.id === round.sceneId)!, clue = scene.artifacts.find((a) => a.id === lie.clue_id)!;
     const who = st.world.characters.find((c) => c.id === lie.character_id)!;
@@ -132,24 +165,40 @@ export function hostView(st: LiveState) {
       votes: round?.type === "verdict" || round?.type === "objection" ? new Set(st.responses.filter((r) => r.roundIndex === st.session.roundIndex && (r.kind === "vote" || r.kind === "counter_vote")).map((r) => r.playerId)).size : 0 },
     votes: round?.type === "verdict" ? tallyVotes(st.world, st.responses, st.session.roundIndex) : null,
     reveal: st.session.status === "reveal" ? revealFor(st) : null,
-    scores: sessionScores(st.world, st.session, st.squads, st.responses),
+    scores: sessionScores(st.world, st.session, st.squads, st.responses, st.players, st.absent),
     flagged,
     canObjection: hasVerdictPins(st) && st.squads.filter((s) => members(st, s.id).length).length >= 2,
     witnessToken: witnessToken(st.session.id),
     lieBank: (st.bank ?? []).map((l) => ({ id: l.id, label: `${st.world.characters.find((c) => c.id === l.characterId)?.name ?? "A character"}: ${l.sentence}` })),
     writerSquadId: writerOf(round),
+    // Story Mode: the scenes that have it, how many players answered this step, and the top 5 at the reveal.
+    storyScenes: st.world.scenes.map((sc, k) => ({ sceneId: sc.id, label: `Scene ${k + 1}`, on: !!sc.story_mode })).filter((x) => x.on),
+    // Your Turn: started for everyone, and how many have saved theirs.
+    yourTurn: st.world.your_turn ? { started: st.responses.some((r) => r.kind === "your_turn_start"), saved: new Set(st.responses.filter((r) => r.kind === "your_turn").map((r) => r.playerId)).size } : null,
+    storyAnswered: round?.type === "story" ? answeredStep(st.responses, st.session.roundIndex, round.step) : 0,
+    // Who's here: class students can be marked absent for the session's day (left out of squad averages).
+    roster: st.players.map((p) => ({ id: p.id, nickname: p.nickname, canMark: !!p.studentId && !!st.session.classId, absent: (st.absent ?? []).includes(p.id) })),
+    storyBoard: round?.type === "story" ? (() => { const b = liveStoryBoard(st.responses, st.session.roundIndex, st.players, st.squads, round.squadsOn, st.absent); return { kind: b.kind, top: b.rows.slice(0, 5).map((r, k) => ({ rank: k + 1, name: r.name, score: r.score })), players: b.rows.length }; })() : null,
     lieScenes: st.world.scenes.filter((s) => s.lie).map((s, i) => ({ sceneId: s.id, label: `Scene ${st.world.scenes.indexOf(s) + 1}: ${s.lie!.topic}` , index: i })),
   };
 }
 
 // What the Witness stand phone shows: the testifying character and their line during Spot the Lie, and when the host
 // last asked it to play.
+function storyWitness(st: LiveState, round: LiveStoryRound) {
+  const scene = storyScene(st, round), kind = stepKind(round.step);
+  const speak = scene && round.showing === "round" && st.session.status === "round" ? (kind === "confront" ? { id: scene.story_mode!.confront.character_id, line: scene.story_mode!.confront.line } : kind === "lie" && scene.lie ? { id: scene.lie.character_id, line: scene.lie.testimony } : null) : null;
+  const who = speak ? st.world.characters.find((c) => c.id === speak.id) : undefined;
+  return { story: who && speak ? { character: { id: who.id, name: who.name, portrait: who.portrait, hologram: who.hologram }, line: speak.line } : null };
+}
 export function witnessView(st: LiveState) {
   const round = currentRound(st), lie = lieOf(st, round);
   const who = lie ? st.world.characters.find((c) => c.id === lie.character_id) : undefined;
   const cue = [...st.responses].reverse().find((r) => r.roundIndex === st.session.roundIndex && r.kind === "witness");
   return {
     session: { id: st.session.id, title: st.world.title, worldId: st.session.worldId, status: st.session.status },
+    // Story Mode: the character who confronts the student (round 2) or testifies (round 3) takes the stand.
+    ...(round?.type === "story" ? storyWitness(st, round) : {}),
     witness: st.session.status === "round" && lie && who ? { character: { id: who.id, name: who.name, portrait: who.portrait, hologram: who.hologram }, line: lie.testimony } : null,
     playKey: cue ? `${st.session.roundIndex}:${cue.id}` : null,
   };
@@ -169,8 +218,17 @@ export function playerView(st: LiveState, playerId: string) {
   const plantedByMySquad = !!squad && writerOf(round) === squad.id;
   const answering = !!squad && roundTakesSquadAnswers(round) && !plantedByMySquad && (round?.type !== "objection" || round.objectSquadId === squad.id);
   const reveal = st.session.status === "reveal" ? revealFor(st) : null;
+  // Story Mode: this player's own answers, points and place (the top 5 and their own rank, never the full list).
+  const story = round?.type === "story" ? (() => {
+    const state = playerState(st.responses, i, me.id), board = liveStoryBoard(st.responses, i, st.players, st.squads, round.squadsOn, st.absent);
+    const view = studentBoard(board.rows, board.kind === "squad" ? me.squadId : me.id);
+    const scene = storyScene(st, round);
+    const reading = scene && me.squadId && round.showing === "round" ? squadReading(scene, round, st.responses, i, st.players, me.squadId, me.id, st.absent) : null;
+    const freeze = round.showing === "round" ? freezeView(round, st.responses, i, st.squads, st.players, me.id, Date.now()) : null;
+    return { reading, freeze, answered: !!myStepRecord(st.responses, i, round.step, me.id), last: round.showing === "board" || st.session.status !== "round" ? myStepRecord(st.responses, i, round.step, me.id) : null, total: state.total, pouch: state.pouch, board: view, boardKind: board.kind };
+  })() : null;
   return {
-    session: sessionInfo(st), round: publicRound(st), purpose: round ? squadPurpose(round.type) : "",
+    session: sessionInfo(st), round: publicRound(st), purpose: round ? squadPurpose(round.type) : "", story, yourTurn: yourTurnView(st, me.id),
     me: { id: me.id, nickname: me.nickname },
     squad: squad && summary ? { id: squad.id, name: squad.name, members: summary.ids.map((pid) => ({ id: pid, nickname: st.players.find((x) => x.id === pid)!.nickname, roles: rolesOf(summary.roles, pid) })) } : null,
     myRoles, roleInfo: ROLE_INFO, answering, plantedByMySquad,
@@ -178,7 +236,7 @@ export function playerView(st: LiveState, playerId: string) {
     myVote, myCounterVote,
     squadTheory: squad && round?.type === "verdict" ? squadMajority(st, squad.id) : null,
     reveal: reveal && squad ? { ...reveal, mine: "squads" in reveal ? (reveal.squads as { squadId: string }[]).find((x) => x.squadId === squad.id) ?? null : objectionMine(reveal, squad.id) } : reveal,
-    score: squad ? sessionScores(st.world, st.session, st.squads, st.responses).find((s) => s.squadId === squad.id)?.points ?? 0 : 0,
+    score: squad ? sessionScores(st.world, st.session, st.squads, st.responses, st.players, st.absent).find((s) => s.squadId === squad.id)?.points ?? 0 : 0,
   };
 }
 function squadMajority(st: LiveState, squadId: string) {
@@ -195,13 +253,14 @@ function hasVerdictPins(st: LiveState) {
 // ---------- Host actions ----------
 export type HostAction =
   | { action: "squads.auto" } | { action: "squads.move"; playerId: string; squadId: string | null }
-  | { action: "round.start"; type: RoundType; sceneId?: string; plantedId?: string } | { action: "round.stage" } | { action: "round.reveal" }
-  | { action: "pause" } | { action: "resume" } | { action: "end" } | { action: "witness.play" }
+  | { action: "round.start"; type: RoundType; sceneId?: string; plantedId?: string; squads?: boolean; freezes?: boolean } | { action: "round.stage" } | { action: "round.reveal" }
+  | { action: "pause" } | { action: "resume" } | { action: "end" } | { action: "witness.play" } | { action: "player.absent"; playerId: string; absent: boolean } | { action: "yourturn.start" }
   | { action: "override"; key: "sound"; squadId: string; value: boolean } | { action: "override"; key: "objection"; value: boolean };
 
 export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): Promise<string | null> {
   const s = st.session, round = currentRound(st);
-  if (s.status === "ended") return "This live round has ended.";
+  // Your Turn can start after the game, even once the session has ended.
+  if (s.status === "ended" && a.action !== "yourturn.start") return "This live round has ended.";
   switch (a.action) {
     case "squads.auto": {
       const groups = buildSquads(st.players.map((p) => p.id));
@@ -229,6 +288,10 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
         const scene = st.world.scenes.find((x) => x.id === a.sceneId && x.lie) ?? st.world.scenes.find((x) => x.lie && !used.has(x.id)) ?? st.world.scenes.find((x) => x.lie);
         if (!scene) return "This story has no Spot the Lie testimony.";
         next = { type: "lie", sceneId: scene.id };
+      } else if (a.type === "story") {
+        const scene = st.world.scenes.find((x) => x.id === a.sceneId && x.story_mode) ?? st.world.scenes.find((x) => x.story_mode);
+        if (!scene) return "This story has no Story Mode yet.";
+        next = { type: "story", sceneId: scene.id, step: 0, showing: "round", stepStartedAt: new Date().toISOString(), squadsOn: a.squads === true, freezesOn: a.squads === true && a.freezes === true };
       } else if (a.type === "verdict") {
         if (!st.world.verdict) return "This story has no verdict question.";
         next = { type: "verdict", stage: "vote" };
@@ -243,14 +306,33 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
     case "round.stage": {
       if (round?.type === "verdict" && round.stage === "vote") return set(store, st, { ...round, stage: "argue" });
       if (round?.type === "objection" && round.stage === "counter") return set(store, st, { ...round, stage: "vote" });
+      // Story Mode: a round, then its leaderboard reveal, then the next round. After round 4's board, Reveal finishes.
+      if (round?.type === "story" && round.showing === "round") return set(store, st, { ...round, showing: "board" });
+      if (round?.type === "story" && round.step < 3) return set(store, st, { ...round, step: round.step + 1, showing: "round", stepStartedAt: new Date().toISOString() });
       return "This round has no next step.";
     }
     case "round.reveal": if (s.status !== "round") return "No round to reveal."; await store.updateSession(s.id, { status: "reveal" }); return null;
     case "pause": await store.updateSession(s.id, { paused: true }); return null;
     case "resume": await store.updateSession(s.id, { paused: false }); return null;
     case "end": await store.updateSession(s.id, { status: "ended", paused: false }); return null;
+    case "yourturn.start": {
+      if (!st.world.your_turn) return "This story has no Your Turn activities yet.";
+      if (st.responses.some((r) => r.kind === "your_turn_start")) return null;
+      await store.addResponse(s.id, { roundIndex: s.roundIndex, squadId: null, playerId: null, role: "host", kind: "your_turn_start", payload: {}, flagged: false });
+      return null;
+    }
+    case "player.absent": {
+      const p = st.players.find((x) => x.id === a.playerId);
+      const classes = getClassroomStore();
+      if (!p?.studentId || !s.classId || !classes) return "Only students in your class can be marked absent.";
+      const roster = await classes.listStudents(s.classId);
+      if (!roster.some((x) => x.id === p.studentId)) return "Only students in your class can be marked absent.";
+      try { await classes.setStudentAbsent(p.studentId, a.absent === true, absentDay(new Date(s.createdAt))); } catch { return "Marking absent needs the latest database update. Ask your admin to run the absent migration."; }
+      return null;
+    }
     case "witness.play": {
-      if (s.status !== "round" || round?.type !== "lie") return "The Witness stand plays during Spot the Lie.";
+      const storySpeaks = round?.type === "story" && round.showing === "round" && (stepKind(round.step) === "confront" || stepKind(round.step) === "lie");
+      if (s.status !== "round" || (round?.type !== "lie" && !storySpeaks)) return "The Witness stand plays during Spot the Lie.";
       await store.addResponse(s.id, { roundIndex: s.roundIndex, squadId: null, playerId: null, role: "host", kind: "witness", payload: {}, flagged: false });
       return null;
     }
@@ -283,18 +365,51 @@ function objectionPairing(st: LiveState) {
 export type PlayerAction = { kind: ResponseKind; payload: Record<string, unknown> };
 const textKinds: ResponseKind[] = ["explain", "argument"];
 // Returns an error for the player, or null. judge: runs the existing verdict judge (capped per session by the caller).
-export async function playerAct(store: LiveStore, st: LiveState, playerId: string, act: PlayerAction, deps: { judgeAllowed: () => Promise<boolean> }): Promise<string | null> {
+// timeSetting: the player's own Story Mode time (a class student's extra time).
+export async function playerAct(store: LiveStore, st: LiveState, playerId: string, act: PlayerAction, deps: { judgeAllowed: () => Promise<boolean>; timeSetting?: TimeSetting }): Promise<string | null> {
   const s = st.session, round = currentRound(st), i = s.roundIndex;
-  if (s.status !== "round") return "Wait for the next round.";
-  if (s.paused) return "The round is paused.";
   const me = st.players.find((p) => p.id === playerId);
   if (!me) return "Please join again.";
+  // Your Turn works whatever the round is doing, once the host has started it.
+  if (act.kind === "your_turn") return saveYourTurn(store, st, me, act.payload);
+  if (s.status !== "round") return "Wait for the next round.";
+  if (s.paused) return "The round is paused.";
   if (act.kind === "vote") {
     if (!(round?.type === "verdict" && round.stage === "vote")) return "Voting is closed.";
     const theoryId = String(act.payload.theoryId ?? "");
     if (!st.world.verdict?.theories.some((t) => t.id === theoryId)) return "Pick one of the theories.";
     await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: "vote", payload: { theoryId }, flagged: false });
     return null;
+  }
+  if (act.kind === "story") {
+    if (round?.type !== "story") return "This isn't a Story Mode round.";
+    const scene = storyScene(st, round);
+    if (!scene) return "This scene has no Story Mode.";
+    const r = answerStep(st.world, st.passages ?? [], scene, round, st.responses, i, playerId, act.payload.input as RoundInput, Date.now(), deps.timeSetting ?? "1", me.squadId);
+    if (typeof r === "string") return r;
+    await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: "story", payload: { step: round.step, record: r.record, ...(act.payload.input && (act.payload.input as RoundInput).kind === "lie" ? { explanation: String((act.payload.input as { explanation?: string }).explanation ?? "").slice(0, 400) } : {}) }, flagged: false });
+    return null;
+  }
+  // Freeze: hold another squad's lock-in for 5 seconds (host toggle, squads only).
+  if (act.kind === "story_freeze") {
+    if (round?.type !== "story") return "This isn't a Story Mode round.";
+    const r = freezeAction(round, st.responses, i, st.squads, st.players, playerId, act.payload.targetSquadId, Date.now());
+    if (typeof r === "string") return r;
+    await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: "story_freeze", payload: r.payload, flagged: false });
+    return null;
+  }
+  // Reading together: pins, reactions and votes in a live Story Mode squad (round 1, squads on).
+  if (act.kind === "story_pin" || act.kind === "story_react" || act.kind === "story_vote") {
+    if (round?.type !== "story" || !round.squadsOn || round.showing !== "round") return "Reading together works in Story Mode rounds with squads.";
+    if (!me.squadId) return "Join a squad first.";
+    const scene = storyScene(st, round);
+    if (!scene) return "This scene has no Story Mode.";
+    const r = readingAction(scene, st.passages ?? [], act.kind, act.payload, round.step);
+    if (typeof r === "string") return r;
+    // Reactions go through the same safety filter as character questions; a flagged one is kept for the teacher only.
+    const flagged = act.kind === "story_react" && screenMessage(String(r.payload.body)).action !== "allow";
+    await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: act.kind, payload: r.payload, flagged });
+    return flagged ? "That reaction is saved for your teacher to see. Try different words for your squad." : null;
   }
   if (act.kind === "counter_vote") {
     if (!(round?.type === "objection" && round.stage === "vote")) return "Voting is closed.";
@@ -366,3 +481,27 @@ export async function join(store: LiveStore, session: StoredSession, input: { ni
   return { player: p } as const;
 }
 
+
+// ---------- Your Turn (after the game, started by the host) ----------
+// Checks a player's finished activity (one of their two, 2 or 3 sentences citing an exact line, screened), keeps it
+// for the session, and saves it with a class student's progress for the Evidence view.
+async function saveYourTurn(store: LiveStore, st: LiveState, me: LivePlayer, payload: Record<string, unknown>): Promise<string | null> {
+  const view = yourTurnView(st, me.id);
+  if (!view) return "Your teacher hasn't started Your Turn yet.";
+  const activity = String(payload.activity ?? "");
+  if (!view.choices.includes(activity)) return "Pick one of your two activities.";
+  const passages = st.passages ?? [];
+  const w = checkWriting(passages, String(payload.writing ?? ""), Array.isArray(payload.cited) ? payload.cited.map(String) : []);
+  if (!w.ok) return w.error;
+  const lines = passages.flatMap((p) => evidenceSentences(p.text));
+  const results = (Array.isArray(payload.results) ? payload.results : []).slice(0, 12).map((r) => r as { label?: unknown; line?: unknown; ok?: unknown }).map((r) => ({ label: String(r.label ?? "").slice(0, 200), line: lines.find((l) => lineWords(l) === lineWords(String(r.line ?? ""))) ?? "", ok: r.ok === true })).filter((r) => r.line);
+  const entry: YourTurnEntry = { activity, title: st.world.your_turn!.activities[activity].title, results, writing: String(payload.writing).trim().replace(/\s+/g, " ").slice(0, 900), cited: w.cited, at: new Date().toISOString() };
+  await store.addResponse(st.session.id, { roundIndex: st.session.roundIndex, squadId: me.squadId, playerId: me.id, role: null, kind: "your_turn", payload: entry as unknown as Record<string, unknown>, flagged: false });
+  const classes = me.studentId ? getClassroomStore() : null;
+  if (classes && me.studentId) {
+    const p = await classes.getProgress(me.studentId).catch(() => null);
+    const base = p && p.worldId === st.world.id ? p : { v: 1 as const, worldId: st.world.id, scene: 0, submitted: false, readerProgress: {}, artifactAnswers: {}, savedTextEvidence: [], storyFrames: {}, updatedAt: entry.at };
+    await classes.saveProgress(me.studentId, { ...base, yourTurn: [...(base.yourTurn ?? []), entry].slice(-30), updatedAt: entry.at }).catch(() => {});
+  }
+  return null;
+}
