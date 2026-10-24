@@ -10,9 +10,27 @@ export type Lie = NonNullable<WorldPack["scenes"][number]["lie"]>;
 // A student's result on a scene's lie, saved in progress (progress.lies[sceneId]).
 export type LieRecord = { clue_id: string; caught: boolean; misses: number; caught_at?: string };
 
-// The evidence lines a paragraph is split into, exactly as the clue screen shows them.
+// The evidence lines a paragraph is split into, exactly as the clue screen shows them. A line never ends mid-sentence:
+// a piece that starts in lowercase (after any quote, bracket or dash) continues the one before ("(unskilful rider that he
+// was!) he had much ado…", "“Ain’t he home?” says I."); a title ("Mrs.", "Mr.", "St.") keeps its name; initials stay
+// together ("D. K."); and a lone stage-direction mark ("_") joins the line it closes. Each line is still an exact slice
+// of the source, so authored lines can be checked against it.
+const TITLE = /(?:^|[\s(“"‘'—-])(?:Mr|Mrs|Ms|Dr|St|Messrs|Mme|Jr|Sr|MR|MRS|DR|ST)\.\s*$/;
 export function evidenceSentences(text: string) {
-  return (text.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g) ?? [text]).map((s) => s.trim()).filter(Boolean);
+  const pieces = text.match(/[^.!?]+[.!?]+["”’)_\]]*\s*|[^.!?]+$/g) ?? [text];
+  const lines: string[] = [];
+  for (const piece of pieces) {
+    const prev = lines[lines.length - 1];
+    const body = piece.trim().replace(/^[“"‘'(\[_—–\-\s]+/, "");
+    const join = prev !== undefined && (
+      /^[a-z]/.test(body) ||
+      !/[A-Za-z0-9]/.test(piece) ||
+      TITLE.test(prev) ||
+      (/^[A-Z]\.\s*$/.test(prev.trim().split(/\s+/).pop() ?? "") && /^[A-Z]\.\s*$/.test(piece.trim()))
+    );
+    if (join) lines[lines.length - 1] = prev + piece; else lines.push(piece);
+  }
+  return lines.map((s) => s.trim()).filter(Boolean);
 }
 // Compare lines by their words: line breaks, spacing, curly quotes and stage-direction marks don't matter.
 export const lineWords = (text: string) =>

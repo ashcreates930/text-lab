@@ -920,6 +920,7 @@
             "height": 28
           },
           "source_anchor": [
+            "p044",
             "p045"
           ],
           "unlock_condition": null,
@@ -1003,8 +1004,8 @@
           "off_claim": {
             "character_id": "brom-bones",
             "claim": "The schoolmaster ate like a bird at the party and hardly touched a thing.",
-            "paragraph": "p045",
-            "line": "He was a kind and thankful creature, whose heart dilated in proportion\nas his skin was filled with good cheer, and whose spirits rose with\neating, as some men’s do with drink."
+            "paragraph": "p044",
+            "line": "Happily, Ichabod Crane was not in so great a hurry as his historian, but\ndid ample justice to every dainty."
           }
         },
         {
@@ -1104,7 +1105,13 @@
             "character_id": "brom-bones",
             "claim": "I never played a single trick on that schoolmaster. Not my style.",
             "paragraph": "p033",
-            "line": "There was\nsomething extremely provoking in this obstinately pacific system; it\nleft Brom no alternative but to draw upon the funds of rustic waggery in\nhis disposition, and to play off boorish practical jokes upon his rival."
+            "line": "There was\nsomething extremely provoking in this obstinately pacific system; it\nleft Brom no alternative but to draw upon the funds of rustic waggery in\nhis disposition, and to play off boorish practical jokes upon his rival.",
+            "also": [
+              {
+                "paragraph": "p033",
+                "line": "They harried his hitherto peaceful domains; smoked\nout his singing school by stopping up the chimney; broke into the\nschoolhouse at night, in spite of its formidable fastenings of withe\nand window stakes, and turned everything topsy-turvy, so that the poor\nschoolmaster began to think all the witches in the country held\ntheir meetings there."
+              }
+            ]
           }
         },
         {
@@ -1667,7 +1674,7 @@
             "character_id": "hans-van-ripper",
             "claim": "He lost my everyday saddle, the old worn one. Small matter.",
             "paragraph": "p066",
-            "line": "For a moment the terror of Hans Van\nRipper’s wrath passed across his mind,--for it was his Sunday saddle;\nbut this was no time for petty fears; the goblin was hard on his\nhaunches; and (unskilful rider that he was!)"
+            "line": "For a moment the terror of Hans Van\nRipper’s wrath passed across his mind,--for it was his Sunday saddle;\nbut this was no time for petty fears; the goblin was hard on his\nhaunches; and (unskilful rider that he was!) he had much ado to maintain\nhis seat; sometimes slipping on one side, sometimes on another, and\nsometimes jolted on the high ridge of his horse’s backbone, with a\nviolence that he verily feared would cleave him asunder."
           }
         },
         {
@@ -1767,7 +1774,13 @@
             "character_id": "brom-bones",
             "claim": "The rider threw that head at him before he ever reached the bridge.",
             "paragraph": "p067",
-            "line": "Another convulsive kick in the ribs, and\nold Gunpowder sprang upon the bridge; he thundered over the resounding\nplanks; he gained the opposite side; and now Ichabod cast a look behind\nto see if his pursuer should vanish, according to rule, in a flash of\nfire and brimstone."
+            "line": "Another convulsive kick in the ribs, and\nold Gunpowder sprang upon the bridge; he thundered over the resounding\nplanks; he gained the opposite side; and now Ichabod cast a look behind\nto see if his pursuer should vanish, according to rule, in a flash of\nfire and brimstone.",
+            "also": [
+              {
+                "paragraph": "p067",
+                "line": "Just then he saw the goblin rising in his stirrups,\nand in the very act of hurling his head at him."
+              }
+            ]
           }
         }
       ],

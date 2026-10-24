@@ -4,7 +4,8 @@ const artifactQuestion = z.object({id:z.enum(["notice","interpret","craft"]),lab
 const position = z.object({x:z.number(),y:z.number(),width:z.number().min(4.4),height:z.number().min(6.8)}).superRefine((box,ctx)=>{if(box.x<0||box.y<0||box.x+box.width>100||box.y+box.height>100)ctx.addIssue({code:'custom',message:'Artifact hotspot must fit inside its scene',path:['x']})});
 // Off claim (lib/clue-game.ts): once per clue, the character says something slightly wrong; line is the exact story line
 // that corrects it. The AI only delivers the claim in the character's voice.
-const offClaim=z.object({character_id:z.string(),claim:z.string().min(1),paragraph:z.string().regex(/^p\d{3}$/),line:z.string().min(1)});
+// also: other lines that correct it just as well (each accepted).
+const offClaim=z.object({character_id:z.string(),claim:z.string().min(1),paragraph:z.string().regex(/^p\d{3}$/),line:z.string().min(1),also:z.array(z.object({paragraph:z.string().regex(/^p\d{3}$/),line:z.string().min(1)})).optional()});
 const artifact = z.object({off_claim:offClaim.optional(),id:z.string(),name:z.string(),scene_id:z.string(),evidence_type:z.enum(["observed","claimed","reported"]),secondary_evidence_type:z.enum(["observed","claimed","reported"]).optional(),position,image:z.string().optional(),closeup_image:z.string().optional(),source_anchor:z.array(z.string()),unlock_condition:z.string().nullable(),questions:z.array(artifactQuestion).length(3)});
 // Spot the Lie: once per scene, a character testifies with one false claim that one line of the story disproves.
 const lie=z.object({clue_id:z.string(),character_id:z.string(),testimony:z.string(),false_claim:z.string(),truth_paragraph:z.string().regex(/^p\d{3}$/),truth_line:z.string(),explanation:z.string(),topic:z.string()});

@@ -67,7 +67,9 @@ export function offClaimTurn(seed: string, clueId: string) {
   return 1 + (h % 3);
 }
 export const offClaimFor = (clue: Clue, characterId: string) => (clue.off_claim?.character_id === characterId ? clue.off_claim : undefined);
-export const correctsOffClaim = (clue: Clue, line: string) => !!clue.off_claim && sameLine(clue.off_claim.line, line);
+// The authored correcting line, or any of its accepted alternatives.
+export const offClaimLines = (clue: Clue) => (clue.off_claim ? [clue.off_claim, ...(clue.off_claim.also ?? [])] : []);
+export const correctsOffClaim = (clue: Clue, line: string) => offClaimLines(clue).some((o) => sameLine(o.line, line));
 
 // ---------- Points, coins and streaks (saved with progress) ----------
 export const CLUE_POINTS = { proof: 100, offClaim: 300, lie: 300, rivalWin: 100 } as const;
@@ -110,7 +112,7 @@ export function computerRivalPlan(clue: Clue, panel: SourcePassage[]) {
   const correctMs = Math.min(25000, 6000 + wordsBefore * 250);
   let h = 0;
   for (const ch of clue.id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  const decoy = h % 3 === 0 ? lines.find((l) => !sameLine(l, target)) : undefined;
+  const decoy = h % 3 === 0 ? lines.find((l) => !correctsOffClaim(clue, l)) : undefined;
   return decoy ? { target, wrong: { line: decoy, atMs: Math.round(correctMs / 2) }, correctMs: correctMs + RIVAL_LOCKOUT_MS } : { target, wrong: null, correctMs };
 }
 
@@ -147,7 +149,7 @@ export function voteWinner(pins: { line: string; reactions: number }[], votes: {
 // Demo squads: computer teammates pin authored lines from their own chunks, never a line that answers the clue, so the
 // student always finds the proof first.
 export function computerPins(world: WorldPack, passages: SourcePassage[], clue: Clue, chunk: SourcePassage[]) {
-  return chunk.flatMap((p) => evidenceSentences(p.text)).filter((l) => !matchEvidence(world, passages, l, { clueId: clue.id }) && !(clue.off_claim && sameLine(clue.off_claim.line, l))).slice(0, 1);
+  return chunk.flatMap((p) => evidenceSentences(p.text)).filter((l) => !matchEvidence(world, passages, l, { clueId: clue.id }) && !correctsOffClaim(clue, l)).slice(0, 1);
 }
 
 // ---------- validate:worlds ----------
@@ -165,10 +167,12 @@ export function clueGameProblems(world: WorldPack, passages: SourcePassage[]): s
     if (!o) continue;
     const where = `${world.id}/${clue.id} off_claim`;
     if (!world.characters.some((c) => c.id === o.character_id) || !scene.available_characters.includes(o.character_id)) problems.push(`${where}: ${o.character_id} must be a speaking character in this scene`);
-    if (!exact(o.paragraph, o.line)) problems.push(`${where}: the correcting line is not copied exactly from ${o.paragraph}`);
-    if (!clue.source_anchor.includes(o.paragraph)) problems.push(`${where}: the correcting line must come from the clue's own paragraphs`);
+    for (const c of offClaimLines(clue)) {
+      if (!exact(c.paragraph, c.line)) problems.push(`${where}: the correcting line is not copied exactly from ${c.paragraph}`);
+      if (!clue.source_anchor.includes(c.paragraph)) problems.push(`${where}: the correcting line must come from the clue's own paragraphs`);
+    }
     if (dash.test(o.claim)) problems.push(`${where}: no em dashes in the claim`);
-    if (scene.lie?.clue_id === clue.id && sameLine(scene.lie.truth_line, o.line)) problems.push(`${where}: use a different line from the Spot the Lie truth line`);
+    if (scene.lie?.clue_id === clue.id && offClaimLines(clue).some((c) => sameLine(scene.lie!.truth_line, c.line))) problems.push(`${where}: use a different line from the Spot the Lie truth line`);
   }
   for (const n of [world.computer_players?.rival.name ?? "", ...(world.computer_players?.teammates ?? [])]) if (dash.test(n)) problems.push(`${world.id} computer player "${n}": no em dashes`);
   return problems;

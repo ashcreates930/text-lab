@@ -2044,7 +2044,7 @@ test("clue game scoring: right proofs earn once, streaks build, a wrong proof en
 
 test("rival: the right line wins, speed only breaks a tie, a wrong tap locks out for 3 seconds; the computer uses authored lines", async()=>{
   const {world,passages}=await storyKit();
-  const cg=await import("../lib/clue-game.ts");const {lineWords}=await import("../lib/lies.ts");
+  const cg=await import("../lib/clue-game.ts");const {lineWords,evidenceSentences}=await import("../lib/lies.ts");
   assert.equal(cg.rivalOutcome(9000,null),"you","only you found it");
   assert.equal(cg.rivalOutcome(null,4000),"rival");
   assert.equal(cg.rivalOutcome(9000,4000),"rival","both right: the faster one");
@@ -2052,7 +2052,7 @@ test("rival: the right line wins, speed only breaks a tie, a wrong tap locks out
   assert.equal(cg.RIVAL_LOCKOUT_MS,3000);
   for(const sc of world.scenes)for(const clue of sc.artifacts){
     const panel=cg.cluePanel(world,passages,sc,clue),plan=cg.computerRivalPlan(clue,panel)!;
-    const lines=panel.flatMap(p=>(p.text.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g)??[]).map(x=>x.trim()));
+    const lines=panel.flatMap(p=>evidenceSentences(p.text));
     assert.ok(cg.sameLine(plan.target,clue.off_claim!.line));
     assert.ok(plan.correctMs>=6000&&plan.correctMs<=25000+cg.RIVAL_LOCKOUT_MS);
     if(plan.wrong){assert.ok(!cg.sameLine(plan.wrong.line,plan.target));assert.ok(lines.some(l=>lineWords(l)===lineWords(plan.wrong!.line)),"a line from the panel");assert.ok(plan.wrong.atMs<plan.correctMs)}
@@ -2161,4 +2161,34 @@ test("live squads read together in every round: jobs move round by round, pins a
   const acts=liveRoundEvidence({session:st.session,world:st.world,squads:st.squads,players:st.players,responses:st.responses})[0].squads[0].members.flatMap(m=>m.actions).join(" | ");
   for(const r of [1,2,3,4])assert.match(acts,new RegExp(`Round ${r}: pinned`));
   assert.match(acts,/Round 2: reacted: This proves… the town blamed/);assert.match(acts,/Round 2: voted for/);
+});
+
+test("tappable lines never end mid-sentence, in every story, and stay exact slices of the source", async()=>{
+  const {evidenceSentences}=await import("../lib/lies.ts");const {parseSourcePassages}=await import("../lib/source-passages.ts");
+  assert.deepEqual(evidenceSentences("and (unskilful rider that he was!)\nhe had much ado to keep his seat."),["and (unskilful rider that he was!)\nhe had much ado to keep his seat."]);
+  assert.deepEqual(evidenceSentences("I said, “How do, Mrs. Wright, it’s cold, ain’t it?” “Ain’t he home?” says I."),["I said, “How do, Mrs. Wright, it’s cold, ain’t it?”","“Ain’t he home?” says I."]);
+  assert.deepEqual(evidenceSentences("the protection of St. Nicholas when they crossed. Next."),["the protection of St. Nicholas when they crossed.","Next."]);
+  assert.deepEqual(evidenceSentences("myself.” D. K."),["myself.”","D. K."]);
+  assert.deepEqual(evidenceSentences("[_They all look at the rocker._] Then."),["[_They all look at the rocker._]","Then."]);
+  for(const w of ["sleepy-hollow","tell-tale-heart","trifles"]){
+    const ps=parseSourcePassages(await readFile(new URL(`../worlds/${w}/source.md`,import.meta.url),"utf8"));
+    for(const p of ps){const ls=evidenceSentences(p.text);ls.forEach((l,i)=>{
+      assert.ok(p.text.includes(l),`${w} ${p.id}: an exact slice`);
+      const body=l.replace(/^[“"‘'(\[_—–\-\s]+/,"");
+      if(i>0)assert.ok(!/^[a-z]/.test(body),`${w} ${p.id} line ${i} starts mid-sentence: ${l.slice(0,40)}`);
+      assert.ok(!/(?:^|\s)(Mr|Mrs|St|Dr|MRS)\.$/.test(l)||i===ls.length-1&&/^MRS\.$/.test(l)===false,`${w} ${p.id} line ${i} ends on a title`);
+      assert.ok(/[A-Za-z0-9]/.test(l)||ls.length===1,`${w} ${p.id} line ${i} is only punctuation (a whole-paragraph section break is fine)`);
+    })}
+  }
+});
+
+test("off claims accept their alternative correcting lines (#6 and #12), and #5 uses Ichabod's appetite", async()=>{
+  const {world,passages}=await storyKit();const cg=await import("../lib/clue-game.ts");
+  const clue=(id:string)=>world.scenes.flatMap(s=>s.artifacts).find(a=>a.id===id)!;
+  assert.match(clue("party-feast").off_claim!.line,/did ample justice to every dainty/);
+  assert.ok(cg.checkProof(world,passages,clue("party-feast"),clue("party-feast").off_claim!.line).ok,"the feast clue includes ¶44");
+  assert.ok(cg.correctsOffClaim(clue("broms-corner"),clue("broms-corner").off_claim!.also![0].line));
+  assert.match(clue("broms-corner").off_claim!.also![0].line.replace(/\s+/g," "),/smoked out his singing school/);
+  assert.ok(cg.correctsOffClaim(clue("hurled-head"),clue("hurled-head").off_claim!.also![0].line));
+  assert.match(clue("fallen-saddle").off_claim!.line.replace(/\s+/g," "),/\(unskilful rider that he was!\) he had much ado/);
 });
