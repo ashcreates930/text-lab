@@ -403,3 +403,198 @@ Rules (lib/freeze.ts): earned only by reading (one for every 3 right proofs in a
 | Rival race | ❄ Three right proofs in a row: you earned a Freeze. Use it in your next face-off. · ❄ Freeze (rival) · ❄ (rival) is frozen: Ns · You froze (rival) for 5 seconds. It can't tap; you can. · ❄ Freeze ready · (reason) |
 | Face-off | ❄ You have a Freeze: pause (rival)'s taps for 5 seconds once this face-off. |
 | Evidence | ❄ Freezes this round · (student) (squad) froze (squad) · Story Mode round N · time · ❄ Freezes used · (student) froze (rival) · (clue) · time |
+
+## Your Turn: The Legend of Sleepy Hollow
+
+After the game, the student picks one of the two activities that match their "What's your angle?" answers (what fires them up, then their lane, then how they play; a student who skipped gets the cold case file). In live class the teacher starts it for everyone from the host screen. Characters may answer in their own voice, but anything scored is an authored line below. Every activity ends with 2 or 3 sentences citing at least one exact line, screened like character questions, and saved to the Evidence view.
+
+### Call out what's unfair (unfairness, talk, 6 minutes)
+
+Brom Bones thinks he played fair with Ichabod. Answer each claim with a line from the story.
+
+| Brom Bones says | Lines that answer it |
+| --- | --- |
+| A few jokes on the schoolmaster? Harmless fun. Name one that wasn't. | ¶33 “They harried his hitherto peaceful domains; smoked out his singing school by stopping up the chimney; broke into the schoolhouse at night, in spite of its formidable fastenings of withe and window stakes, and turned everything topsy-turvy, so that the poor schoolmaster began to think all the witches in the country held their meetings there.” or ¶33 “But what was still more annoying, Brom took all opportunities of turning him into ridicule in presence of his mistress, and had a scoundrel dog whom he taught to whine in the most ludicrous manner, and introduced as a rival of Ichabod’s, to instruct her in psalmody.” |
+| He could have stood up to me man to man. He chose not to, so whatever happened is on him. | ¶33 “Brom, who had a degree of rough chivalry in his nature, would fain have carried matters to open warfare and have settled their pretensions to the lady, according to the mode of those most concise and simple reasoners, the knights-errant of yore,—by single combat; but Ichabod was too conscious of the superior might of his adversary to enter the lists against him; he had overheard a boast of Bones, that he would “double the schoolmaster up, and lay him on a shelf of his own schoolhouse;” and he was too wary to give him an opportunity.” |
+| Nobody in the valley ever pointed a finger at me for anything. | ¶28 “The neighbors looked upon him with a mixture of awe, admiration, and good-will; and, when any madcap prank or rustic brawl occurred in the vicinity, always shook their heads, and warranted Brom Bones was at the bottom of it.” |
+| Katrina chose me fair and square. There was nothing hidden about it. | ¶71 “Brom Bones, too, who, shortly after his rival’s disappearance conducted the blooming Katrina in triumph to the altar, was observed to look exceedingly knowing whenever the story of Ichabod was related, and always burst into a hearty laugh at the mention of the pumpkin; which led some to suspect that he knew more about the matter than he chose to tell.” |
+
+Writing prompt: Was Brom fair to Ichabod? Write 2 or 3 sentences and cite at least one line.
+
+### Prove them wrong about Ichabod (underestimated, talk, 6 minutes)
+
+Brom says the schoolmaster was good for nothing. Show him what the story says Ichabod could do.
+
+| Brom Bones says | Lines that answer it |
+| --- | --- |
+| He couldn't even earn his keep. A schoolmaster's pay feeds nobody. | ¶14 “He assisted the farmers occasionally in the lighter labors of their farms, helped to make hay, mended the fences, took the horses to water, drove the cows from pasture, and cut wood for the winter fire.” or ¶15 “In addition to his other vocations, he was the singing-master of the neighborhood, and picked up many bright shillings by instructing the young folks in psalmody.” |
+| Nobody in the valley thought much of him. | ¶16 “Our man of letters, therefore, was peculiarly happy in the smiles of all the country damsels.” or ¶16 “The schoolmaster is generally a man of some importance in the female circle of a rural neighborhood; being considered a kind of idle, gentlemanlike personage, of vastly superior taste and accomplishments to the rough country swains, and, indeed, inferior in learning only to the parson.” |
+| I bet he was cruel to those children. | ¶12 “I would not have it imagined, however, that he was one of those cruel potentates of the school who joy in the smart of their subjects; on the contrary, he administered justice with discrimination rather than severity; taking the burden off the backs of the weak, and laying it on those of the strong.” |
+| He never did one thing worth remembering. | ¶71 “It is true, an old farmer, who had been down to New York on a visit several years after, and from whom this account of the ghostly adventure was received, brought home the intelligence that Ichabod Crane was still alive; that he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress; that he had changed his quarters to a distant part of the country; had kept school and studied law at the same time; had been admitted to the bar; turned politician; electioneered; written for the newspapers; and finally had been made a justice of the Ten Pound Court.” |
+
+Writing prompt: Was Ichabod underestimated? Write 2 or 3 sentences and cite at least one line.
+
+### Was anyone loyal to Ichabod? (loyalty, talk, 6 minutes)
+
+Talk it over with Hans Van Ripper: was anyone in the valley loyal to Ichabod? Answer each of his claims with a line.
+
+| Hans Van Ripper says | Lines that answer it |
+| --- | --- |
+| I gave him a roof and looked after his things when he was gone. That's loyalty enough. | ¶69 “These magic books and the poetic scrawl were forthwith consigned to the flames by Hans Van Ripper; who, from that time forward, determined to send his children no more to school, observing that he never knew any good come of this same reading and writing.” |
+| The whole town kept looking for him for months. | ¶70 “As he was a bachelor, and in nobody’s debt, nobody troubled his head any more about him; the school was removed to a different quarter of the hollow, and another pedagogue reigned in his stead.” |
+| At least his old horse never let him down. | ¶68 “The next morning the old horse was found without his saddle, and with the bridle under his feet, soberly cropping the grass at his master’s gate.” |
+| And Katrina stood by him to the very end. | ¶57 “Something, however, I fear me, must have gone wrong, for he certainly sallied forth, after no very great interval, with an air quite desolate and chapfallen.” or ¶71 “Brom Bones, too, who, shortly after his rival’s disappearance conducted the blooming Katrina in triumph to the altar, was observed to look exceedingly knowing whenever the story of Ichabod was related, and always burst into a hearty laugh at the mention of the pumpkin; which led some to suspect that he knew more about the matter than he chose to tell.” |
+
+Writing prompt: Was anyone loyal to Ichabod? Write 2 or 3 sentences and cite at least one line.
+
+### Win the debate (winning, debate, 7 minutes)
+
+Pick your side. A character argues the other one. Win each round with a line that holds up.
+
+Student's side: The Headless Horseman. Hans Van Ripper argues against it.
+
+| Claim | Lines that answer it |
+| --- | --- |
+| A ghost? Nonsense. Ghosts don't trample saddles in the dirt. | ¶64 “On mounting a rising ground, which brought the figure of his fellow-traveller in relief against the sky, gigantic in height, and muffled in a cloak, Ichabod was horror-struck on perceiving that he was headless!—but his horror was still more increased on observing that the head, which should have rested on his shoulders, was carried before him on the pommel of his saddle!” or ¶67 “Just then he saw the goblin rising in his stirrups, and in the very act of hurling his head at him.” |
+| That so-called head was a pumpkin, found smashed by the brook. | ¶64 “On mounting a rising ground, which brought the figure of his fellow-traveller in relief against the sky, gigantic in height, and muffled in a cloak, Ichabod was horror-struck on perceiving that he was headless!—but his horror was still more increased on observing that the head, which should have rested on his shoulders, was carried before him on the pommel of his saddle!” |
+| A farmer from New York says he's alive and well. | ¶72 “The old country wives, however, who are the best judges of these matters, maintain to this day that Ichabod was spirited away by supernatural means; and it is a favorite story often told about the neighborhood round the winter evening fire.” |
+| Nobody sensible believes in that goblin anymore. | ¶72 “The bridge became more than ever an object of superstitious awe; and that may be the reason why the road has been altered of late years, so as to approach the church by the border of the millpond.” or ¶70 “The stories of Brouwer, of Bones, and a whole budget of others were called to mind; and when they had diligently considered them all, and compared them with the symptoms of the present case, they shook their heads, and came to the conclusion that Ichabod had been carried off by the Galloping Hessian.” |
+
+Student's side: He ran away. Brom Bones argues against it.
+
+| Claim | Lines that answer it |
+| --- | --- |
+| The whole valley agreed at church: the Galloping Hessian carried him off. | ¶71 “It is true, an old farmer, who had been down to New York on a visit several years after, and from whom this account of the ghostly adventure was received, brought home the intelligence that Ichabod Crane was still alive; that he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress; that he had changed his quarters to a distant part of the country; had kept school and studied law at the same time; had been admitted to the bar; turned politician; electioneered; written for the newspapers; and finally had been made a justice of the Ten Pound Court.” |
+| A man who runs away takes his things. His bundle stayed right here. | ¶69 “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.” |
+| Nobody living could hurl a head like that rider did. | ¶68 “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.” |
+| If he were alive, somebody would have seen him. | ¶71 “It is true, an old farmer, who had been down to New York on a visit several years after, and from whom this account of the ghostly adventure was received, brought home the intelligence that Ichabod Crane was still alive; that he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress; that he had changed his quarters to a distant part of the country; had kept school and studied law at the same time; had been admitted to the bar; turned politician; electioneered; written for the newspapers; and finally had been made a justice of the Ten Pound Court.” |
+
+Student's side: Brom's prank. Brom Bones argues against it.
+
+| Claim | Lines that answer it |
+| --- | --- |
+| Me, play a trick? Folks know I'm an honest fellow. | ¶28 “The neighbors looked upon him with a mixture of awe, admiration, and good-will; and, when any madcap prank or rustic brawl occurred in the vicinity, always shook their heads, and warranted Brom Bones was at the bottom of it.” |
+| That was a real head he saw, not some vegetable. | ¶68 “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.” |
+| I don't know a thing about that night. | ¶71 “Brom Bones, too, who, shortly after his rival’s disappearance conducted the blooming Katrina in triumph to the altar, was observed to look exceedingly knowing whenever the story of Ichabod was related, and always burst into a hearty laugh at the mention of the pumpkin; which led some to suspect that he knew more about the matter than he chose to tell.” |
+| I never had any reason to scare him off. | ¶33 “There was something extremely provoking in this obstinately pacific system; it left Brom no alternative but to draw upon the funds of rustic waggery in his disposition, and to play off boorish practical jokes upon his rival.” or ¶71 “Brom Bones, too, who, shortly after his rival’s disappearance conducted the blooming Katrina in triumph to the altar, was observed to look exceedingly knowing whenever the story of Ichabod was related, and always burst into a hearty laugh at the mention of the pumpkin; which led some to suspect that he knew more about the matter than he chose to tell.” |
+
+Writing prompt: Who won the debate, and why? Write 2 or 3 sentences and cite at least one line.
+
+### Advise Ichabod about the farm (money, pick, 6 minutes)
+
+Ichabod dreams of the Van Tassel farm. Pick 3 cards for your advice, with at least one thing he wants and one thing it costs him, and back each with a line.
+
+| Piece | Lines that back it |
+| --- | --- |
+| Sell the farm for cash and wild land (What he wants) | ¶25 “As the enraptured Ichabod fancied all this, and as he rolled his great green eyes over the fat meadow lands, the rich fields of wheat, of rye, of buckwheat, and Indian corn, and the orchards burdened with ruddy fruit, which surrounded the warm tenement of Van Tassel, his heart yearned after the damsel who was to inherit these domains, and his imagination expanded with the idea, how they might be readily turned into cash, and the money invested in immense tracts of wild land, and shingle palaces in the wilderness.” |
+| Move west with Katrina and the children (What he wants) | ¶25 “Nay, his busy fancy already realized his hopes, and presented to him the blooming Katrina, with a whole family of children, mounted on the top of a wagon loaded with household trumpery, with pots and kettles dangling beneath; and he beheld himself bestriding a pacing mare, with a colt at her heels, setting out for Kentucky, Tennessee,—or the Lord knows where!” |
+| Eat like a king all winter (What he wants) | ¶24 “The pedagogue’s mouth watered as he looked upon this sumptuous promise of luxurious winter fare.” or ¶24 “In his devouring mind’s eye, he pictured to himself every roasting-pig running about with a pudding in his belly, and an apple in his mouth; the pigeons were snugly put to bed in a comfortable pie, and tucked in with a coverlet of crust; the geese were swimming in their own gravy; and the ducks pairing cosily in dishes, like snug married couples, with a decent competency of onion sauce.” |
+| Win the heiress, win the farm (What he wants) | ¶27 “From the moment Ichabod laid his eyes upon these regions of delight, the peace of his mind was at an end, and his only study was how to gain the affections of the peerless daughter of Van Tassel.” |
+| Turn his back on the schoolhouse (What it costs him) | ¶45 “Then, he thought, how soon he’d turn his back upon the old schoolhouse; snap his fingers in the face of Hans Van Ripper, and every other niggardly patron, and kick any itinerant pedagogue out of doors that should dare to call him comrade!” |
+| Take on a powerful rival (What it costs him) | ¶28 “Among these, the most formidable was a burly, roaring, roystering blade, of the name of Abraham, or, according to the Dutch abbreviation, Brom Van Brunt, the hero of the country round, which rang with his feats of strength and hardihood.” |
+| Win over a country coquette (What it costs him) | ¶27 “Ichabod, on the contrary, had to win his way to the heart of a country coquette, beset with a labyrinth of whims and caprices, which were forever presenting new difficulties and impediments; and he had to encounter a host of fearful adversaries of real flesh and blood, the numerous rustic admirers, who beset every portal to her heart, keeping a watchful and angry eye upon each other, but ready to fly out in the common cause against any new competitor.” |
+| Farm the land himself for years (What he wants) | Decoy: the story doesn't support it |
+| Katrina already promised to marry him (What it costs him) | Decoy: the story doesn't support it |
+
+Writing prompt: What is your advice to Ichabod? Write 2 or 3 sentences and cite at least one line.
+
+### Instant replay: the chase (sports, order, 6 minutes)
+
+Call the chase play by play. Tap the moments in the order they happen, then back each one with a line.
+
+| Piece (in order) | Lines that back it |
+| --- | --- |
+| The rider appears by the bridge | ¶62 “In the dark shadow of the grove, on the margin of the brook, he beheld something huge, misshapen and towering.” or ¶63 “He appeared to be a horseman of large dimensions, and mounted on a black horse of powerful frame.” |
+| The saddle slips away | ¶66 “As yet the panic of the steed had given his unskilful rider an apparent advantage in the chase, but just as he had got half way through the hollow, the girths of the saddle gave way, and he felt it slipping from under him.” or ¶66 “He seized it by the pommel, and endeavored to hold it firm, but in vain; and had just time to save himself by clasping old Gunpowder round the neck, when the saddle fell to the earth, and he heard it trampled under foot by his pursuer.” |
+| Gunpowder crosses the church bridge | ¶67 “Another convulsive kick in the ribs, and old Gunpowder sprang upon the bridge; he thundered over the resounding planks; he gained the opposite side; and now Ichabod cast a look behind to see if his pursuer should vanish, according to rule, in a flash of fire and brimstone.” |
+| The head is hurled | ¶67 “Just then he saw the goblin rising in his stirrups, and in the very act of hurling his head at him.” or ¶67 “It encountered his cranium with a tremendous crash,—he was tumbled headlong into the dust, and Gunpowder, the black steed, and the goblin rider, passed by like a whirlwind.” |
+
+Writing prompt: Call the play that mattered most. Write 2 or 3 sentences and cite at least one line.
+
+### Liner notes for a ballad (music, lines, 5 minutes)
+
+You're writing a ballad about Ichabod's ride home. Pick the 3 lines from the story your song needs most.
+
+Any 3 lines from ¶58, ¶59, ¶60, ¶63, ¶64, ¶67.
+
+Writing prompt: Liner notes: why do these lines belong in your song? Write 2 or 3 sentences and cite at least one line.
+
+### Design the road-home level (gaming, pick, 6 minutes)
+
+Build the level for Ichabod's ride home. Pick 3 checkpoints that are really in the story, and prove each danger with a line.
+
+| Piece | Lines that back it |
+| --- | --- |
+| Major André's tree | ¶59 “In the centre of the road stood an enormous tulip-tree, which towered like a giant above all the other trees of the neighborhood, and formed a kind of landmark.” or ¶59 “It was connected with the tragical story of the unfortunate André, who had been taken prisoner hard by; and was universally known by the name of Major André’s tree.” |
+| The bridge at Wiley's Swamp | ¶61 “About two hundred yards from the tree, a small brook crossed the road, and ran into a marshy and thickly-wooded glen, known by the name of Wiley’s Swamp.” or ¶61 “To pass this bridge was the severest trial.” |
+| The sandy hollow where the saddle fell | ¶65 “This road leads through a sandy hollow shaded by trees for about a quarter of a mile, where it crosses the bridge famous in goblin story; and just beyond swells the green knoll on which stands the whitewashed church.” or ¶66 “As yet the panic of the steed had given his unskilful rider an apparent advantage in the chase, but just as he had got half way through the hollow, the girths of the saddle gave way, and he felt it slipping from under him.” |
+| The church bridge | ¶67 ““If I can but reach that bridge,” thought Ichabod, “I am safe.”” |
+| The old mill | Decoy: the story doesn't support it |
+| A haunted cave | Decoy: the story doesn't support it |
+
+Writing prompt: Which checkpoint is the boss level, and why? Write 2 or 3 sentences and cite at least one line.
+
+### Style Ichabod for the party (fashion, pick, 6 minutes)
+
+Style Ichabod for the Van Tassel party from this closet. Pick 3 pieces and back each with a line that describes him. The story decides, not you.
+
+| Piece | Lines that back it |
+| --- | --- |
+| 🧥 Rusty black suit | ¶36 “The gallant Ichabod now spent at least an extra half hour at his toilet, brushing and furbishing up his best, and indeed only suit of rusty black, and arranging his locks by a bit of broken looking-glass that hung up in the schoolhouse.” |
+| 👔 Sleeves that are too short | ¶10 “He was tall, but exceedingly lank, with narrow shoulders, long arms and legs, hands that dangled a mile out of his sleeves, feet that might have served for shovels, and his whole frame most loosely hung together.” |
+| 🎩 Small wool hat | ¶37 “A small wool hat rested on the top of his nose, for so his scanty strip of forehead might be called, and the skirts of his black coat fluttered out almost to the horses tail.” |
+| 🪞 A broken looking-glass | ¶36 “The gallant Ichabod now spent at least an extra half hour at his toilet, brushing and furbishing up his best, and indeed only suit of rusty black, and arranging his locks by a bit of broken looking-glass that hung up in the schoolhouse.” |
+| 🐴 A borrowed plow-horse | ¶36 “The animal he bestrode was a broken-down plow-horse, that had outlived almost everything but its viciousness.” or ¶36 “That he might make his appearance before his mistress in the true style of a cavalier, he borrowed a horse from the farmer with whom he was domiciliated, a choleric old Dutchman of the name of Hans Van Ripper, and, thus gallantly mounted, issued forth like a knight-errant in quest of adventures.” |
+| 🎀 A fancy silk bow | Decoy: the story doesn't support it |
+| 👢 Shiny new boots | Decoy: the story doesn't support it |
+
+Writing prompt: Describe your look for Ichabod. Write 2 or 3 sentences and cite at least one line.
+
+### Fact-check the feed (social-media, factcheck, 5 minutes)
+
+Three villagers posted about the missing schoolmaster. One post is false. Find it and prove it with a line.
+
+| Post | |
+| --- | --- |
+| @HollowNews: Schoolmaster missing! His hat and a smashed pumpkin were found by the brook. | True |
+| @VanRipperFarm: Went through his bundle: two shirts and a half, a rusty razor, a broken pitch-pipe. | True |
+| @ValleyGossip: They pulled the schoolmaster's body out of the brook this morning. | False. Disproved by ¶69 “The brook was searched, but the body of the schoolmaster was not to be discovered.” |
+
+Writing prompt: Write your own post about what happened. 2 or 3 sentences, and cite at least one line.
+
+### Cold case file (solo, exhibits, 5 minutes)
+
+Close the case on paper. Pick your 3 strongest exhibits: lines from the story you proved.
+
+3 lines the student proved (or from ¶68, ¶69, ¶70, ¶71).
+
+Writing prompt: Sum up the case. Write 2 or 3 sentences and cite at least one line.
+
+### Squad report (squad, exhibits, 5 minutes)
+
+Write your squad's report. Pick 3 lines your squad would put in front of the town.
+
+3 lines the student proved (or from ¶68, ¶69, ¶70, ¶71).
+
+Writing prompt: Your squad's report to the town. Write 2 or 3 sentences and cite at least one line.
+
+### Rebuttal (rival, talk, 5 minutes)
+
+The Lantern Ghost has a theory, and it's wrong. Knock down each claim with a line.
+
+| The Lantern Ghost (computer rival) says | Lines that answer it |
+| --- | --- |
+| Ichabod drowned in the brook. Case closed. | ¶69 “The brook was searched, but the body of the schoolmaster was not to be discovered.” |
+| He left his money behind, so he never meant to leave. | ¶69 “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.” |
+| Nobody ever heard from him again. | ¶71 “It is true, an old farmer, who had been down to New York on a visit several years after, and from whom this account of the ghostly adventure was received, brought home the intelligence that Ichabod Crane was still alive; that he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress; that he had changed his quarters to a distant part of the country; had kept school and studied law at the same time; had been admitted to the bar; turned politician; electioneered; written for the newspapers; and finally had been made a justice of the Ten Pound Court.” |
+| Children still learn in his old schoolhouse. | ¶72 “The schoolhouse being deserted soon fell to decay, and was reported to be haunted by the ghost of the unfortunate pedagogue and the plowboy, loitering homeward of a still summer evening, has often fancied his voice at a distance, chanting a melancholy psalm tune among the tranquil solitudes of Sleepy Hollow.” |
+
+Writing prompt: Sum up why the Lantern Ghost was wrong. Write 2 or 3 sentences and cite at least one line.
+
+| Screen | Text |
+| --- | --- |
+| Case closed card | 5 to 7 minutes · Your Turn · One more trip into the story, picked from your answers to "What's your angle?": (activity) or (activity). · Start Your Turn / Do another |
+| Picker | Your Turn · 5 to 7 minutes · Pick your activity · Chosen from your answers to "What's your angle?". Both send you back into the story. · Not now |
+| Answers | That holds up. · True to the story, maybe, but it doesn't answer that. Look again in ¶N. · The story doesn't support this one. · Not yet. What happens before that? · Move on · Answer with this line |
+| Writing | Write it up · Lines you cite · Tap a line in the story below to cite it. · Your 2 or 3 sentences · Write 2 or 3 sentences. · Cite at least one line from the story: tap it in the passage. · Save for my teacher · Saved for your teacher |
+| Host | Your Turn · A 5 to 7 minute activity on every phone, picked from each student's angle answers. Every one ends with 2 or 3 sentences citing the story, saved to Evidence. · Start Your Turn for everyone · Your Turn is on. N of N saved so far. |

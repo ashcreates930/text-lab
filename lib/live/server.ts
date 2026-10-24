@@ -7,6 +7,9 @@ import { NOT_EVIDENCE, matchEvidence } from "../evidence-check.ts";
 import type { SourcePassage } from "../source-passages.ts";
 import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, myStepRecord, playerState, publicStory, readingAction, squadReading, stepKind, type LiveStoryRound } from "./story.ts";
 import { screenMessage } from "../safety.ts";
+import { checkWriting, yourTurnChoices, type YourTurnEntry } from "../your-turn.ts";
+import { evidenceSentences, lineWords } from "../lies.ts";
+import { AngleSchema, type Angle } from "../student-role.ts";
 import { studentBoard, type RoundInput, type TimeSetting } from "../story-mode.ts";
 import { absentDay, getClassroomStore, memoryModeEnabled } from "../classroom/store.ts";
 import { screenArgument, judgeWithRubric } from "../verdict-server.ts";
@@ -54,7 +57,8 @@ export async function broadcast(sessionId: string) {
 // ---------- Loading ----------
 // bank: the class's approved planted lies for this story (class sessions only).
 // absent: player ids whose students were marked absent on the session's day (left out of Story Mode squad averages).
-export type LiveState = { session: StoredSession; world: WorldPack; squads: Awaited<ReturnType<LiveStore["listSquads"]>>; players: LivePlayer[]; responses: LiveResponse[]; bank?: PlantedLie[]; passages?: SourcePassage[]; absent?: string[] };
+// angles: class students' "What's your angle?" answers, loaded once the host starts Your Turn.
+export type LiveState = { session: StoredSession; world: WorldPack; squads: Awaited<ReturnType<LiveStore["listSquads"]>>; players: LivePlayer[]; responses: LiveResponse[]; bank?: PlantedLie[]; passages?: SourcePassage[]; absent?: string[]; angles?: Record<string, Angle> };
 export async function loadState(store: LiveStore, sessionId: string): Promise<LiveState | null> {
   const session = await store.getSession(sessionId);
   if (!session) return null;
@@ -62,7 +66,21 @@ export async function loadState(store: LiveStore, sessionId: string): Promise<Li
   if (!world) return null;
   const [squads, players, responses, bank, passages, absentStudents] = await Promise.all([store.listSquads(sessionId), store.listPlayers(sessionId), store.listResponses(sessionId), loadBank(session), readPassages(session.worldId), loadAbsent(session)]);
   const away = new Set(absentStudents);
-  return { session, world, squads, players, responses, bank, passages, absent: players.filter((p) => p.studentId && away.has(p.studentId)).map((p) => p.id) };
+  const angles = responses.some((r) => r.kind === "your_turn_start") ? await loadAngles(players) : undefined;
+  return { session, world, squads, players, responses, bank, passages, absent: players.filter((p) => p.studentId && away.has(p.studentId)).map((p) => p.id), ...(angles ? { angles } : {}) };
+}
+// Your Turn: each class student's angle, from their saved progress (player id -> angle).
+async function loadAngles(players: LivePlayer[]) {
+  const classes = getClassroomStore();
+  const out: Record<string, Angle> = {};
+  if (!classes) return out;
+  await Promise.all(players.filter((p) => p.studentId).map(async (p) => { const a = AngleSchema.safeParse((await classes.getProgress(p.studentId!).catch(() => null))?.angle); if (a.success) out[p.id] = a.data; }));
+  return out;
+}
+// What a player sees once the host starts Your Turn: their two activities and what they've already saved.
+function yourTurnView(st: LiveState, playerId: string) {
+  if (!st.responses.some((r) => r.kind === "your_turn_start") || !st.world.your_turn) return null;
+  return { choices: yourTurnChoices(st.world, st.angles?.[playerId]), done: st.responses.filter((r) => r.kind === "your_turn" && r.playerId === playerId).map((r) => String(r.payload.title ?? "")) };
 }
 // Students marked absent on the day the session was held (New York date), so an old session's totals don't change
 // with later marks. None before the absent migration runs, or for a session without a class.
@@ -155,6 +173,8 @@ export function hostView(st: LiveState) {
     writerSquadId: writerOf(round),
     // Story Mode: the scenes that have it, how many players answered this step, and the top 5 at the reveal.
     storyScenes: st.world.scenes.map((sc, k) => ({ sceneId: sc.id, label: `Scene ${k + 1}`, on: !!sc.story_mode })).filter((x) => x.on),
+    // Your Turn: started for everyone, and how many have saved theirs.
+    yourTurn: st.world.your_turn ? { started: st.responses.some((r) => r.kind === "your_turn_start"), saved: new Set(st.responses.filter((r) => r.kind === "your_turn").map((r) => r.playerId)).size } : null,
     storyAnswered: round?.type === "story" ? answeredStep(st.responses, st.session.roundIndex, round.step) : 0,
     // Who's here: class students can be marked absent for the session's day (left out of squad averages).
     roster: st.players.map((p) => ({ id: p.id, nickname: p.nickname, canMark: !!p.studentId && !!st.session.classId, absent: (st.absent ?? []).includes(p.id) })),
@@ -208,7 +228,7 @@ export function playerView(st: LiveState, playerId: string) {
     return { reading, freeze, answered: !!myStepRecord(st.responses, i, round.step, me.id), last: round.showing === "board" || st.session.status !== "round" ? myStepRecord(st.responses, i, round.step, me.id) : null, total: state.total, pouch: state.pouch, board: view, boardKind: board.kind };
   })() : null;
   return {
-    session: sessionInfo(st), round: publicRound(st), purpose: round ? squadPurpose(round.type) : "", story,
+    session: sessionInfo(st), round: publicRound(st), purpose: round ? squadPurpose(round.type) : "", story, yourTurn: yourTurnView(st, me.id),
     me: { id: me.id, nickname: me.nickname },
     squad: squad && summary ? { id: squad.id, name: squad.name, members: summary.ids.map((pid) => ({ id: pid, nickname: st.players.find((x) => x.id === pid)!.nickname, roles: rolesOf(summary.roles, pid) })) } : null,
     myRoles, roleInfo: ROLE_INFO, answering, plantedByMySquad,
@@ -234,12 +254,13 @@ function hasVerdictPins(st: LiveState) {
 export type HostAction =
   | { action: "squads.auto" } | { action: "squads.move"; playerId: string; squadId: string | null }
   | { action: "round.start"; type: RoundType; sceneId?: string; plantedId?: string; squads?: boolean; freezes?: boolean } | { action: "round.stage" } | { action: "round.reveal" }
-  | { action: "pause" } | { action: "resume" } | { action: "end" } | { action: "witness.play" } | { action: "player.absent"; playerId: string; absent: boolean }
+  | { action: "pause" } | { action: "resume" } | { action: "end" } | { action: "witness.play" } | { action: "player.absent"; playerId: string; absent: boolean } | { action: "yourturn.start" }
   | { action: "override"; key: "sound"; squadId: string; value: boolean } | { action: "override"; key: "objection"; value: boolean };
 
 export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): Promise<string | null> {
   const s = st.session, round = currentRound(st);
-  if (s.status === "ended") return "This live round has ended.";
+  // Your Turn can start after the game, even once the session has ended.
+  if (s.status === "ended" && a.action !== "yourturn.start") return "This live round has ended.";
   switch (a.action) {
     case "squads.auto": {
       const groups = buildSquads(st.players.map((p) => p.id));
@@ -294,6 +315,12 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
     case "pause": await store.updateSession(s.id, { paused: true }); return null;
     case "resume": await store.updateSession(s.id, { paused: false }); return null;
     case "end": await store.updateSession(s.id, { status: "ended", paused: false }); return null;
+    case "yourturn.start": {
+      if (!st.world.your_turn) return "This story has no Your Turn activities yet.";
+      if (st.responses.some((r) => r.kind === "your_turn_start")) return null;
+      await store.addResponse(s.id, { roundIndex: s.roundIndex, squadId: null, playerId: null, role: "host", kind: "your_turn_start", payload: {}, flagged: false });
+      return null;
+    }
     case "player.absent": {
       const p = st.players.find((x) => x.id === a.playerId);
       const classes = getClassroomStore();
@@ -341,10 +368,12 @@ const textKinds: ResponseKind[] = ["explain", "argument"];
 // timeSetting: the player's own Story Mode time (a class student's extra time).
 export async function playerAct(store: LiveStore, st: LiveState, playerId: string, act: PlayerAction, deps: { judgeAllowed: () => Promise<boolean>; timeSetting?: TimeSetting }): Promise<string | null> {
   const s = st.session, round = currentRound(st), i = s.roundIndex;
-  if (s.status !== "round") return "Wait for the next round.";
-  if (s.paused) return "The round is paused.";
   const me = st.players.find((p) => p.id === playerId);
   if (!me) return "Please join again.";
+  // Your Turn works whatever the round is doing, once the host has started it.
+  if (act.kind === "your_turn") return saveYourTurn(store, st, me, act.payload);
+  if (s.status !== "round") return "Wait for the next round.";
+  if (s.paused) return "The round is paused.";
   if (act.kind === "vote") {
     if (!(round?.type === "verdict" && round.stage === "vote")) return "Voting is closed.";
     const theoryId = String(act.payload.theoryId ?? "");
@@ -452,3 +481,27 @@ export async function join(store: LiveStore, session: StoredSession, input: { ni
   return { player: p } as const;
 }
 
+
+// ---------- Your Turn (after the game, started by the host) ----------
+// Checks a player's finished activity (one of their two, 2 or 3 sentences citing an exact line, screened), keeps it
+// for the session, and saves it with a class student's progress for the Evidence view.
+async function saveYourTurn(store: LiveStore, st: LiveState, me: LivePlayer, payload: Record<string, unknown>): Promise<string | null> {
+  const view = yourTurnView(st, me.id);
+  if (!view) return "Your teacher hasn't started Your Turn yet.";
+  const activity = String(payload.activity ?? "");
+  if (!view.choices.includes(activity)) return "Pick one of your two activities.";
+  const passages = st.passages ?? [];
+  const w = checkWriting(passages, String(payload.writing ?? ""), Array.isArray(payload.cited) ? payload.cited.map(String) : []);
+  if (!w.ok) return w.error;
+  const lines = passages.flatMap((p) => evidenceSentences(p.text));
+  const results = (Array.isArray(payload.results) ? payload.results : []).slice(0, 12).map((r) => r as { label?: unknown; line?: unknown; ok?: unknown }).map((r) => ({ label: String(r.label ?? "").slice(0, 200), line: lines.find((l) => lineWords(l) === lineWords(String(r.line ?? ""))) ?? "", ok: r.ok === true })).filter((r) => r.line);
+  const entry: YourTurnEntry = { activity, title: st.world.your_turn!.activities[activity].title, results, writing: String(payload.writing).trim().replace(/\s+/g, " ").slice(0, 900), cited: w.cited, at: new Date().toISOString() };
+  await store.addResponse(st.session.id, { roundIndex: st.session.roundIndex, squadId: me.squadId, playerId: me.id, role: null, kind: "your_turn", payload: entry as unknown as Record<string, unknown>, flagged: false });
+  const classes = me.studentId ? getClassroomStore() : null;
+  if (classes && me.studentId) {
+    const p = await classes.getProgress(me.studentId).catch(() => null);
+    const base = p && p.worldId === st.world.id ? p : { v: 1 as const, worldId: st.world.id, scene: 0, submitted: false, readerProgress: {}, artifactAnswers: {}, savedTextEvidence: [], storyFrames: {}, updatedAt: entry.at };
+    await classes.saveProgress(me.studentId, { ...base, yourTurn: [...(base.yourTurn ?? []), entry].slice(-30), updatedAt: entry.at }).catch(() => {});
+  }
+  return null;
+}

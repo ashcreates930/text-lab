@@ -31,6 +31,8 @@ import {RoleIntro} from "./role-intro";
 import {StoryMode} from "./story-mode";
 import {ClueScreen} from "./clue-screen";
 import {MissionScreen,playMode} from "./mode-screens";
+import {YourTurn} from "./your-turn";
+import {yourTurnChoices} from "@/lib/your-turn";
 import {REPROVE,REPROVE_VERDICT,cluesToReprove,upgradeSavedProofs} from "@/lib/evidence-check";
 import {DEFAULT_PERSONAL,choiceFrame,partName,type StoryPersonalSettings} from "@/lib/student-role";
 
@@ -76,7 +78,7 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  if(!world||!world.roles.some(r=>r.id===demo.role))return <div className="case-ui grid min-h-[60vh] place-items-center"><p className="text-[15px] text-[#6B6457]">Opening the story…</p></div>;
  const sceneIndex=Math.min(demo.scene,world.scenes.length-1),scene=world.scenes[sceneIndex],role=world.roles.find(r=>r.id===demo.role)!;
  const finished=demo.submitted;
- if(finished)return <CaseSummary world={world} demo={demo} passages={passages} onAnotherStory={onAnotherStory} personal={personal??DEFAULT_PERSONAL}/>;
+ if(finished)return <CaseSummary world={world} demo={demo} passages={passages} onAnotherStory={onAnotherStory} personal={personal??DEFAULT_PERSONAL} setDemo={setDemo}/>;
  // The role card and "What's your angle?" come once, before the first clue (after saved progress has loaded).
  const introDue=!!personal&&(!demo.classAuth||demo.classProgressLoaded)&&!demo.roleIntroSeen&&(!demo.classAuth||!Object.keys(demo.artifactAnswers).length)&&((personal.rolesOn&&!!world.student_role)||personal.anglesOn);
  if(introDue&&personal)return <RoleIntro world={world} settings={personal} onDone={angle=>setDemo(d=>({...d,roleIntroSeen:true,...(angle?{angle}:{}),scene:d.scene===0&&!storyJump&&personal.rolesOn&&world.student_role?Math.max(0,world.scenes.findIndex(s=>s.id===world.student_role!.start_scene)):d.scene}))}/>;
@@ -197,7 +199,11 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onO
  </div>;
 }
 
-export function CaseSummary({world,demo,passages=[],onAnotherStory,personal=DEFAULT_PERSONAL}:{world:WorldPack;demo:Demo;passages?:SourcePassage[];onAnotherStory:()=>void;personal?:StoryPersonalSettings}){
+export function CaseSummary({world,demo,passages=[],onAnotherStory,personal=DEFAULT_PERSONAL,setDemo}:{world:WorldPack;demo:Demo;passages?:SourcePassage[];onAnotherStory:()=>void;personal?:StoryPersonalSettings;setDemo?:React.Dispatch<React.SetStateAction<Demo>>}){
+ // Your Turn: a personal activity after the game, from the student's angle answers.
+ const [yourTurn,setYourTurn]=useState(false);
+ const ytChoices=world.your_turn?yourTurnChoices(world,demo.angle):[];
+ const ytDone=(demo.yourTurn??[]).filter(e=>ytChoices.includes(e.activity));
  const role=world.roles.find(r=>r.id===demo.role);
  const items=world.scenes.flatMap(s=>s.artifacts).filter(a=>isDone(demo,a.id));
  const caught=items.filter(a=>demo.artifactAnswers[a.id]?.craft==="contradicts").length;
@@ -206,6 +212,7 @@ export function CaseSummary({world,demo,passages=[],onAnotherStory,personal=DEFA
  const storyboard=storyboardSoFar(world,passages,demo.storyFrames,world.scenes.length-1);
  const verdict=verdictFor(demo.verdict,world.id);
  const date=new Date().toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"});
+ if(yourTurn&&setDemo)return <YourTurn world={world} passages={passages} choices={ytChoices} theory={verdictFor(demo.verdict,world.id)?.theory_id??null} proven={Object.values(demo.artifactAnswers).map(a=>a.notice).filter(Boolean)} ai={{sandboxId:demo.id,classToken:demo.classAuth?.token,sceneId:world.scenes[world.scenes.length-1].id}} onSave={e=>{setDemo(d=>({...d,yourTurn:[...(d.yourTurn??[]),e].slice(-30)}))}} onClose={()=>{setYourTurn(false);setTimeout(()=>focusScreenTop(),0)}}/>;
  return <div className="case-ui mx-auto max-w-3xl px-4 pb-24 pt-10 md:px-8">
   <div className="relative overflow-hidden rounded-3xl bg-[#FFFDF8] shadow-[0_10px_40px_-14px_rgba(42,38,32,.35)] print:shadow-none">
    <div className="flex items-center justify-between gap-4 bg-[#2A2620] px-6 py-3 text-[13px] font-semibold uppercase tracking-[.14em] text-[#F3C9B2] print:bg-white print:text-black"><span>Case file · {world.title}</span><span className="hidden sm:inline">{date}</span></div>
@@ -218,6 +225,7 @@ export function CaseSummary({world,demo,passages=[],onAnotherStory,personal=DEFA
     <div aria-hidden className="case-stamp case-stamp-page justify-self-center">Case closed</div>
    </div>
   </div>
+  {ytChoices.length>0&&setDemo&&<section aria-labelledby="yt-card-h" className="mt-6 rounded-3xl bg-[#2A2620] p-5 text-[#FFFDF8] print:hidden"><p className="text-[12px] font-bold uppercase tracking-wide text-[#F3C9B2]">5 to 7 minutes</p><h2 id="yt-card-h" className="text-[22px] font-bold">Your Turn</h2><p className="mt-1 text-[15px] text-[#E8DDCB]">One more trip into the story, picked from your answers to "What's your angle?": {ytChoices.map(c=>world.your_turn!.activities[c].title).join(" or ")}.</p>{ytDone.length>0&&<p className="mt-1 text-[14px] text-[#F3C9B2]">Done: {ytDone.map(e=>e.title).join(", ")}</p>}<button type="button" onClick={()=>setYourTurn(true)} className="case-primary mt-3">{ytDone.length?"Do another":"Start Your Turn"} <ArrowRight size={18}/></button></section>}
   {chosen.length>0&&<ul className="mt-6 space-y-2 rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)] print:shadow-none">{chosen.map(c=><li key={c.sceneId} className="text-[16px] text-[#2A2620]"><span className="font-semibold">You chose:</span> {c.label}</li>)}</ul>}
   {/* On screen: the case board. On paper: the clean list below, so it fits the page. */}
   <div className="mt-6 print:hidden"><h2 className="mb-3 text-[22px] font-bold">Your case board</h2><CaseBoard world={world} answers={demo.artifactAnswers} storyboard={storyboard} top={verdict&&<VerdictPanel world={world} verdict={verdict}/>}/></div>

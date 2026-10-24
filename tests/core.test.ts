@@ -2259,3 +2259,68 @@ test("rival freezes are logged for the teacher", async()=>{
   const e=buildEvidence(world,[{id:"s1",nickname:"Ana Ruiz",answers:{},freezes:[{target:"The Lantern Ghost",clueId:"empty-schoolhouse",at:"2026-10-24T15:04:05Z"}]}]);
   assert.deepEqual(e.students[0].freezes,["Ana Ruiz froze The Lantern Ghost · The empty schoolhouse · 11:04:05 AM"]);
 });
+
+test("Your Turn content: one activity per angle option, every scored line exact, validated", async()=>{
+  const {world,passages}=await storyKit();const yt=await import("../lib/your-turn.ts");
+  assert.deepEqual(yt.yourTurnProblems(world,passages),[]);
+  assert.deepEqual(Object.keys(world.your_turn!.activities).sort(),[...yt.ANGLE_OPTION_IDS].sort(),"every option of all three questions");
+  assert.equal(world.your_turn!.activities.loyalty.kind,"talk");assert.equal(world.your_turn!.activities.loyalty.character_id,"hans-van-ripper");
+  assert.equal(world.your_turn!.activities.winning.kind,"debate");
+  for(const a of Object.values(world.your_turn!.activities))assert.ok(a.minutes>=5&&a.minutes<=7);
+  const bad=structuredClone(world);const u=bad.your_turn!.activities.unfairness;
+  u.exchanges![0].accept[0].line=u.exchanges![0].accept[0].line.replace("harried","bothered");u.title="Call out — what's unfair";
+  bad.your_turn!.activities["always-right"]={...u};
+  (bad.your_turn!.activities.winning.sides as Record<string,unknown>)["aliens"]=bad.your_turn!.activities.winning.sides!["ran-away"];
+  const p=yt.yourTurnProblems(bad,passages).join(" | ");
+  assert.match(p,/not copied exactly/);assert.match(p,/no em dashes/);assert.match(p,/always-right: not a "What's your angle\?" option/);assert.match(p,/side aliens is not a Final Verdict theory/);
+});
+
+test("Your Turn: two activities from the angle, answers checked against authored lines, 2 or 3 cited sentences", async()=>{
+  const {world,passages,line}=await storyKit();const yt=await import("../lib/your-turn.ts");
+  assert.deepEqual(yt.yourTurnChoices(world,{firedUpBy:"money",lane:"fashion",style:"rival"}),["money","fashion"]);
+  assert.deepEqual(yt.yourTurnChoices(world,{style:"rival"}),["rival"]);
+  assert.deepEqual(yt.yourTurnChoices(world,null),["solo"],"skipped the angle: the cold case file");
+  const fashion=world.your_turn!.activities.fashion;
+  const suit=fashion.items!.find(i=>i.id==="suit")!,bow=fashion.items!.find(i=>i.id==="bow")!;
+  assert.deepEqual(yt.checkAnswer(suit.accept,suit.accept[0].line),{ok:true});
+  const miss=yt.checkAnswer(suit.accept,line("p010",0));assert.ok(!miss.ok&&/¶36/.test(miss.hint));
+  const decoy=yt.checkAnswer(bow.accept,line("p036",0));assert.ok(!decoy.ok&&/doesn't support/.test(decoy.hint),"a decoy piece the story doesn't support");
+  const cite=[line("p036",0)];
+  assert.deepEqual(yt.checkWriting(passages,"He wore his only suit.",cite),{ok:false,error:"Write 2 or 3 sentences."});
+  assert.deepEqual(yt.checkWriting(passages,"One. Two. Three. Four.",cite),{ok:false,error:"Write 2 or 3 sentences."});
+  assert.match((yt.checkWriting(passages,"He wore a rusty suit. It was his only one.",[]) as {error:string}).error,/Cite at least one line/);
+  assert.match((yt.checkWriting(passages,"He wore a rusty suit. It was his only one.",["Ichabod wore a tuxedo."]) as {error:string}).error,/Cite at least one line/);
+  const ok=yt.checkWriting(passages,"He wore a rusty suit. It was his only one.",cite);assert.ok(ok.ok);
+  assert.match((yt.checkWriting(passages,"He wore a suit. Where do you live?",cite) as {error:string}).error,/private information/,"screened like character questions");
+});
+
+test("Your Turn live: the host starts it for everyone; each phone saves one of its own activities to the student's progress", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {line}=await storyKit();
+  const {getClassroomStore}=await import("../lib/classroom/store.ts");const cls_=getClassroomStore()!;
+  const t=await cls_.ensureTeacher("test:yt","yt@example.com");const cls=await cls_.createClass(t.id,{name:"Period 5",worldId:"sleepy-hollow",grade:7});
+  const kid=(await cls_.createStudent(cls.id,"Rosa Park","h")) as {id:string};
+  await cls_.saveProgress(kid.id,{v:1,worldId:"sleepy-hollow",scene:3,submitted:true,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],storyFrames:{},angle:{firedUpBy:"loyalty",lane:"fashion"},updatedAt:new Date().toISOString()});
+  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"YT0001",teacherId:t.id,classId:cls.id,demo:false,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:0,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const p=(await server.join(store,s,{nickname:"Rosa Park",studentId:kid.id})).player!;await store.updateSession(s.id,{status:"ended"});
+  let st=(await server.loadState(store,s.id))!;
+  assert.equal(server.playerView(st,p.id).yourTurn,null,"not until the host starts it");
+  assert.equal(await server.hostAct(store,st,{action:"yourturn.start"}),null,"even after the session has ended");
+  st=(await server.loadState(store,s.id))!;
+  assert.deepEqual(server.playerView(st,p.id).yourTurn,{choices:["loyalty","fashion"],done:[]});
+  assert.deepEqual(server.hostView(st).yourTurn,{started:true,saved:0});
+  const act=async(payload:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,p.id,{kind:"your_turn",payload},{judgeAllowed:async()=>false})};
+  assert.match((await act({activity:"money",writing:"A. B.",cited:[]}))??"",/one of your two/);
+  assert.match((await act({activity:"fashion",writing:"He wore his only suit.",cited:[line("p036",0)]}))??"",/2 or 3 sentences/);
+  assert.equal(await act({activity:"fashion",writing:"Ichabod only had one suit. It was rusty black.",cited:[line("p036",0)],results:[{label:"Rusty black suit",line:line("p036",0),ok:true},{label:"Fake",line:"Not in the story.",ok:true}]}),null);
+  const saved=(await cls_.getProgress(kid.id))!.yourTurn!;
+  assert.equal(saved.length,1);assert.equal(saved[0].title,"Style Ichabod for the party");assert.equal(saved[0].results.length,1,"only real lines are kept");
+  st=(await server.loadState(store,s.id))!;assert.deepEqual(server.playerView(st,p.id).yourTurn!.done,["Style Ichabod for the party"]);
+  const {loadClassEvidence}=await import("../lib/classroom/evidence-server.ts");const {evidenceCsv}=await import("../lib/classroom/evidence.ts");
+  const ev=(await loadClassEvidence(cls_,t.id,cls.id))!;
+  const y=ev.students.find(x=>x.nickname==="Rosa Park")!.yourTurn[0];
+  assert.deepEqual([y.title,y.heldUp,y.writing],["Style Ichabod for the party","1 of 1","Ichabod only had one suit. It was rusty black."]);
+  assert.match(evidenceCsv(ev),/Your Turn,Rosa Park,Style Ichabod for the party,1 of 1,Ichabod only had one suit/);
+});

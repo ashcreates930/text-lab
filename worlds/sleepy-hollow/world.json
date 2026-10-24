@@ -4209,5 +4209,815 @@
       "Lantern Scout",
       "Hollow Scout"
     ]
+  },
+  "your_turn": {
+    "activities": {
+      "unfairness": {
+        "title": "Call out what's unfair",
+        "minutes": 6,
+        "kind": "talk",
+        "character_id": "brom-bones",
+        "paragraphs": [
+          "p028",
+          "p033",
+          "p071"
+        ],
+        "intro": "Brom Bones thinks he played fair with Ichabod. Answer each claim with a line from the story.",
+        "exchanges": [
+          {
+            "say": "A few jokes on the schoolmaster? Harmless fun. Name one that wasn't.",
+            "accept": [
+              {
+                "paragraph": "p033",
+                "line": "They harried his hitherto peaceful domains; smoked\nout his singing school by stopping up the chimney; broke into the\nschoolhouse at night, in spite of its formidable fastenings of withe\nand window stakes, and turned everything topsy-turvy, so that the poor\nschoolmaster began to think all the witches in the country held\ntheir meetings there."
+              },
+              {
+                "paragraph": "p033",
+                "line": "But what was still more annoying, Brom took all\nopportunities of turning him into ridicule in presence of his mistress,\nand had a scoundrel dog whom he taught to whine in the most ludicrous\nmanner, and introduced as a rival of Ichabod’s, to instruct her in\npsalmody."
+              }
+            ]
+          },
+          {
+            "say": "He could have stood up to me man to man. He chose not to, so whatever happened is on him.",
+            "accept": [
+              {
+                "paragraph": "p033",
+                "line": "Brom, who had a degree of rough chivalry in his nature, would fain have\ncarried matters to open warfare and have settled their pretensions\nto the lady, according to the mode of those most concise and simple\nreasoners, the knights-errant of yore,--by single combat; but Ichabod\nwas too conscious of the superior might of his adversary to enter the\nlists against him; he had overheard a boast of Bones, that he would\n“double the schoolmaster up, and lay him on a shelf of his own\nschoolhouse;” and he was too wary to give him an opportunity."
+              }
+            ]
+          },
+          {
+            "say": "Nobody in the valley ever pointed a finger at me for anything.",
+            "accept": [
+              {
+                "paragraph": "p028",
+                "line": "The neighbors looked upon him with a mixture\nof awe, admiration, and good-will; and, when any madcap prank or rustic\nbrawl occurred in the vicinity, always shook their heads, and warranted\nBrom Bones was at the bottom of it."
+              }
+            ]
+          },
+          {
+            "say": "Katrina chose me fair and square. There was nothing hidden about it.",
+            "accept": [
+              {
+                "paragraph": "p071",
+                "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
+              }
+            ]
+          }
+        ],
+        "write": "Was Brom fair to Ichabod? Write 2 or 3 sentences and cite at least one line."
+      },
+      "underestimated": {
+        "title": "Prove them wrong about Ichabod",
+        "minutes": 6,
+        "kind": "talk",
+        "character_id": "brom-bones",
+        "paragraphs": [
+          "p012",
+          "p014",
+          "p015",
+          "p016",
+          "p071"
+        ],
+        "intro": "Brom says the schoolmaster was good for nothing. Show him what the story says Ichabod could do.",
+        "exchanges": [
+          {
+            "say": "He couldn't even earn his keep. A schoolmaster's pay feeds nobody.",
+            "accept": [
+              {
+                "paragraph": "p014",
+                "line": "He assisted the farmers\noccasionally in the lighter labors of their farms, helped to make\nhay, mended the fences, took the horses to water, drove the cows from\npasture, and cut wood for the winter fire."
+              },
+              {
+                "paragraph": "p015",
+                "line": "In addition to his other vocations, he was the singing-master of the\nneighborhood, and picked up many bright shillings by instructing the\nyoung folks in psalmody."
+              }
+            ]
+          },
+          {
+            "say": "Nobody in the valley thought much of him.",
+            "accept": [
+              {
+                "paragraph": "p016",
+                "line": "Our man of letters, therefore, was peculiarly happy in the\nsmiles of all the country damsels."
+              },
+              {
+                "paragraph": "p016",
+                "line": "The schoolmaster is generally a man of some importance in the female\ncircle of a rural neighborhood; being considered a kind of idle,\ngentlemanlike personage, of vastly superior taste and accomplishments to\nthe rough country swains, and, indeed, inferior in learning only to the\nparson."
+              }
+            ]
+          },
+          {
+            "say": "I bet he was cruel to those children.",
+            "accept": [
+              {
+                "paragraph": "p012",
+                "line": "I would not have it imagined, however, that he was one of those cruel\npotentates of the school who joy in the smart of their subjects; on\nthe contrary, he administered justice with discrimination rather than\nseverity; taking the burden off the backs of the weak, and laying it on\nthose of the strong."
+              }
+            ]
+          },
+          {
+            "say": "He never did one thing worth remembering.",
+            "accept": [
+              {
+                "paragraph": "p071",
+                "line": "It is true, an old farmer, who had been down to New York on a visit\nseveral years after, and from whom this account of the ghostly adventure\nwas received, brought home the intelligence that Ichabod Crane was still\nalive; that he had left the neighborhood partly through fear of the\ngoblin and Hans Van Ripper, and partly in mortification at having been\nsuddenly dismissed by the heiress; that he had changed his quarters to a\ndistant part of the country; had kept school and studied law at the same\ntime; had been admitted to the bar; turned politician; electioneered;\nwritten for the newspapers; and finally had been made a justice of\nthe Ten Pound Court."
+              }
+            ]
+          }
+        ],
+        "write": "Was Ichabod underestimated? Write 2 or 3 sentences and cite at least one line."
+      },
+      "loyalty": {
+        "title": "Was anyone loyal to Ichabod?",
+        "minutes": 6,
+        "kind": "talk",
+        "character_id": "hans-van-ripper",
+        "paragraphs": [
+          "p057",
+          "p068",
+          "p069",
+          "p070",
+          "p071"
+        ],
+        "intro": "Talk it over with Hans Van Ripper: was anyone in the valley loyal to Ichabod? Answer each of his claims with a line.",
+        "exchanges": [
+          {
+            "say": "I gave him a roof and looked after his things when he was gone. That's loyalty enough.",
+            "accept": [
+              {
+                "paragraph": "p069",
+                "line": "These magic books and the poetic scrawl were forthwith consigned to the\nflames by Hans Van Ripper; who, from that time forward, determined to\nsend his children no more to school, observing that he never knew\nany good come of this same reading and writing."
+              }
+            ]
+          },
+          {
+            "say": "The whole town kept looking for him for months.",
+            "accept": [
+              {
+                "paragraph": "p070",
+                "line": "As he was a bachelor, and in nobody’s\ndebt, nobody troubled his head any more about him; the school was\nremoved to a different quarter of the hollow, and another pedagogue\nreigned in his stead."
+              }
+            ]
+          },
+          {
+            "say": "At least his old horse never let him down.",
+            "accept": [
+              {
+                "paragraph": "p068",
+                "line": "The next morning the old horse was found without his saddle, and with\nthe bridle under his feet, soberly cropping the grass at his master’s\ngate."
+              }
+            ]
+          },
+          {
+            "say": "And Katrina stood by him to the very end.",
+            "accept": [
+              {
+                "paragraph": "p057",
+                "line": "Something, however, I fear me, must have gone wrong, for he certainly\nsallied forth, after no very great interval, with an air quite desolate\nand chapfallen."
+              },
+              {
+                "paragraph": "p071",
+                "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
+              }
+            ]
+          }
+        ],
+        "write": "Was anyone loyal to Ichabod? Write 2 or 3 sentences and cite at least one line."
+      },
+      "winning": {
+        "title": "Win the debate",
+        "minutes": 7,
+        "kind": "debate",
+        "paragraphs": [
+          "p028",
+          "p033",
+          "p064",
+          "p067",
+          "p068",
+          "p069",
+          "p070",
+          "p071",
+          "p072"
+        ],
+        "intro": "Pick your side. A character argues the other one. Win each round with a line that holds up.",
+        "sides": {
+          "the-horseman": {
+            "character_id": "hans-van-ripper",
+            "exchanges": [
+              {
+                "say": "A ghost? Nonsense. Ghosts don't trample saddles in the dirt.",
+                "accept": [
+                  {
+                    "paragraph": "p064",
+                    "line": "On mounting a rising\nground, which brought the figure of his fellow-traveller in relief\nagainst the sky, gigantic in height, and muffled in a cloak, Ichabod was\nhorror-struck on perceiving that he was headless!--but his horror was\nstill more increased on observing that the head, which should have\nrested on his shoulders, was carried before him on the pommel of his\nsaddle!"
+                  },
+                  {
+                    "paragraph": "p067",
+                    "line": "Just then he saw the goblin rising in his stirrups,\nand in the very act of hurling his head at him."
+                  }
+                ]
+              },
+              {
+                "say": "That so-called head was a pumpkin, found smashed by the brook.",
+                "accept": [
+                  {
+                    "paragraph": "p064",
+                    "line": "On mounting a rising\nground, which brought the figure of his fellow-traveller in relief\nagainst the sky, gigantic in height, and muffled in a cloak, Ichabod was\nhorror-struck on perceiving that he was headless!--but his horror was\nstill more increased on observing that the head, which should have\nrested on his shoulders, was carried before him on the pommel of his\nsaddle!"
+                  }
+                ]
+              },
+              {
+                "say": "A farmer from New York says he's alive and well.",
+                "accept": [
+                  {
+                    "paragraph": "p072",
+                    "line": "The old country wives, however, who are the best judges of these\nmatters, maintain to this day that Ichabod was spirited away by\nsupernatural means; and it is a favorite story often told about the\nneighborhood round the winter evening fire."
+                  }
+                ]
+              },
+              {
+                "say": "Nobody sensible believes in that goblin anymore.",
+                "accept": [
+                  {
+                    "paragraph": "p072",
+                    "line": "The bridge became more than\never an object of superstitious awe; and that may be the reason why the\nroad has been altered of late years, so as to approach the church by\nthe border of the millpond."
+                  },
+                  {
+                    "paragraph": "p070",
+                    "line": "The stories of Brouwer, of Bones, and a whole budget of\nothers were called to mind; and when they had diligently considered them\nall, and compared them with the symptoms of the present case, they shook\ntheir heads, and came to the conclusion that Ichabod had been carried\noff by the Galloping Hessian."
+                  }
+                ]
+              }
+            ]
+          },
+          "ran-away": {
+            "character_id": "brom-bones",
+            "exchanges": [
+              {
+                "say": "The whole valley agreed at church: the Galloping Hessian carried him off.",
+                "accept": [
+                  {
+                    "paragraph": "p071",
+                    "line": "It is true, an old farmer, who had been down to New York on a visit\nseveral years after, and from whom this account of the ghostly adventure\nwas received, brought home the intelligence that Ichabod Crane was still\nalive; that he had left the neighborhood partly through fear of the\ngoblin and Hans Van Ripper, and partly in mortification at having been\nsuddenly dismissed by the heiress; that he had changed his quarters to a\ndistant part of the country; had kept school and studied law at the same\ntime; had been admitted to the bar; turned politician; electioneered;\nwritten for the newspapers; and finally had been made a justice of\nthe Ten Pound Court."
+                  }
+                ]
+              },
+              {
+                "say": "A man who runs away takes his things. His bundle stayed right here.",
+                "accept": [
+                  {
+                    "paragraph": "p069",
+                    "line": "Whatever money the\nschoolmaster possessed, and he had received his quarter’s pay but a\nday or two before, he must have had about his person at the time of his\ndisappearance."
+                  }
+                ]
+              },
+              {
+                "say": "Nobody living could hurl a head like that rider did.",
+                "accept": [
+                  {
+                    "paragraph": "p068",
+                    "line": "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin."
+                  }
+                ]
+              },
+              {
+                "say": "If he were alive, somebody would have seen him.",
+                "accept": [
+                  {
+                    "paragraph": "p071",
+                    "line": "It is true, an old farmer, who had been down to New York on a visit\nseveral years after, and from whom this account of the ghostly adventure\nwas received, brought home the intelligence that Ichabod Crane was still\nalive; that he had left the neighborhood partly through fear of the\ngoblin and Hans Van Ripper, and partly in mortification at having been\nsuddenly dismissed by the heiress; that he had changed his quarters to a\ndistant part of the country; had kept school and studied law at the same\ntime; had been admitted to the bar; turned politician; electioneered;\nwritten for the newspapers; and finally had been made a justice of\nthe Ten Pound Court."
+                  }
+                ]
+              }
+            ]
+          },
+          "brom-prank": {
+            "character_id": "brom-bones",
+            "exchanges": [
+              {
+                "say": "Me, play a trick? Folks know I'm an honest fellow.",
+                "accept": [
+                  {
+                    "paragraph": "p028",
+                    "line": "The neighbors looked upon him with a mixture\nof awe, admiration, and good-will; and, when any madcap prank or rustic\nbrawl occurred in the vicinity, always shook their heads, and warranted\nBrom Bones was at the bottom of it."
+                  }
+                ]
+              },
+              {
+                "say": "That was a real head he saw, not some vegetable.",
+                "accept": [
+                  {
+                    "paragraph": "p068",
+                    "line": "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin."
+                  }
+                ]
+              },
+              {
+                "say": "I don't know a thing about that night.",
+                "accept": [
+                  {
+                    "paragraph": "p071",
+                    "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
+                  }
+                ]
+              },
+              {
+                "say": "I never had any reason to scare him off.",
+                "accept": [
+                  {
+                    "paragraph": "p033",
+                    "line": "There was\nsomething extremely provoking in this obstinately pacific system; it\nleft Brom no alternative but to draw upon the funds of rustic waggery in\nhis disposition, and to play off boorish practical jokes upon his rival."
+                  },
+                  {
+                    "paragraph": "p071",
+                    "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "write": "Who won the debate, and why? Write 2 or 3 sentences and cite at least one line."
+      },
+      "money": {
+        "title": "Advise Ichabod about the farm",
+        "minutes": 6,
+        "kind": "pick",
+        "need": 3,
+        "paragraphs": [
+          "p024",
+          "p025",
+          "p027",
+          "p028",
+          "p045"
+        ],
+        "intro": "Ichabod dreams of the Van Tassel farm. Pick 3 cards for your advice, with at least one thing he wants and one thing it costs him, and back each with a line.",
+        "groups": {
+          "want": "What he wants",
+          "cost": "What it costs him"
+        },
+        "items": [
+          {
+            "id": "cash",
+            "label": "Sell the farm for cash and wild land",
+            "group": "want",
+            "accept": [
+              {
+                "paragraph": "p025",
+                "line": "As the enraptured Ichabod fancied all this, and as he rolled his great\ngreen eyes over the fat meadow lands, the rich fields of wheat, of rye,\nof buckwheat, and Indian corn, and the orchards burdened with ruddy\nfruit, which surrounded the warm tenement of Van Tassel, his heart\nyearned after the damsel who was to inherit these domains, and his\nimagination expanded with the idea, how they might be readily turned\ninto cash, and the money invested in immense tracts of wild land, and\nshingle palaces in the wilderness."
+              }
+            ]
+          },
+          {
+            "id": "family",
+            "label": "Move west with Katrina and the children",
+            "group": "want",
+            "accept": [
+              {
+                "paragraph": "p025",
+                "line": "Nay, his busy fancy already realized\nhis hopes, and presented to him the blooming Katrina, with a whole\nfamily of children, mounted on the top of a wagon loaded with household\ntrumpery, with pots and kettles dangling beneath; and he beheld himself\nbestriding a pacing mare, with a colt at her heels, setting out for\nKentucky, Tennessee,--or the Lord knows where!"
+              }
+            ]
+          },
+          {
+            "id": "feasts",
+            "label": "Eat like a king all winter",
+            "group": "want",
+            "accept": [
+              {
+                "paragraph": "p024",
+                "line": "The pedagogue’s mouth watered as he looked upon this sumptuous promise\nof luxurious winter fare."
+              },
+              {
+                "paragraph": "p024",
+                "line": "In his devouring mind’s eye, he pictured to\nhimself every roasting-pig running about with a pudding in his belly,\nand an apple in his mouth; the pigeons were snugly put to bed in a\ncomfortable pie, and tucked in with a coverlet of crust; the geese were\nswimming in their own gravy; and the ducks pairing cosily in dishes,\nlike snug married couples, with a decent competency of onion sauce."
+              }
+            ]
+          },
+          {
+            "id": "heiress",
+            "label": "Win the heiress, win the farm",
+            "group": "want",
+            "accept": [
+              {
+                "paragraph": "p027",
+                "line": "From the moment Ichabod laid his eyes upon these regions of delight, the\npeace of his mind was at an end, and his only study was how to gain the\naffections of the peerless daughter of Van Tassel."
+              }
+            ]
+          },
+          {
+            "id": "school",
+            "label": "Turn his back on the schoolhouse",
+            "group": "cost",
+            "accept": [
+              {
+                "paragraph": "p045",
+                "line": "Then, he thought, how soon he’d turn his back upon the old\nschoolhouse; snap his fingers in the face of Hans Van Ripper, and every\nother niggardly patron, and kick any itinerant pedagogue out of doors\nthat should dare to call him comrade!"
+              }
+            ]
+          },
+          {
+            "id": "rival",
+            "label": "Take on a powerful rival",
+            "group": "cost",
+            "accept": [
+              {
+                "paragraph": "p028",
+                "line": "Among these, the most formidable was a burly, roaring, roystering blade,\nof the name of Abraham, or, according to the Dutch abbreviation, Brom\nVan Brunt, the hero of the country round, which rang with his feats of\nstrength and hardihood."
+              }
+            ]
+          },
+          {
+            "id": "whims",
+            "label": "Win over a country coquette",
+            "group": "cost",
+            "accept": [
+              {
+                "paragraph": "p027",
+                "line": "Ichabod, on the contrary, had to win his way to\nthe heart of a country coquette, beset with a labyrinth of whims\nand caprices, which were forever presenting new difficulties and\nimpediments; and he had to encounter a host of fearful adversaries of\nreal flesh and blood, the numerous rustic admirers, who beset every\nportal to her heart, keeping a watchful and angry eye upon each other,\nbut ready to fly out in the common cause against any new competitor."
+              }
+            ]
+          },
+          {
+            "id": "farmer",
+            "label": "Farm the land himself for years",
+            "group": "want",
+            "accept": []
+          },
+          {
+            "id": "promise",
+            "label": "Katrina already promised to marry him",
+            "group": "cost",
+            "accept": []
+          }
+        ],
+        "write": "What is your advice to Ichabod? Write 2 or 3 sentences and cite at least one line."
+      },
+      "sports": {
+        "title": "Instant replay: the chase",
+        "minutes": 6,
+        "kind": "order",
+        "paragraphs": [
+          "p062",
+          "p063",
+          "p064",
+          "p066",
+          "p067"
+        ],
+        "intro": "Call the chase play by play. Tap the moments in the order they happen, then back each one with a line.",
+        "items": [
+          {
+            "id": "appears",
+            "label": "The rider appears by the bridge",
+            "accept": [
+              {
+                "paragraph": "p062",
+                "line": "In the dark shadow of the grove, on the margin\nof the brook, he beheld something huge, misshapen and towering."
+              },
+              {
+                "paragraph": "p063",
+                "line": "He\nappeared to be a horseman of large dimensions, and mounted on a black\nhorse of powerful frame."
+              }
+            ]
+          },
+          {
+            "id": "saddle",
+            "label": "The saddle slips away",
+            "accept": [
+              {
+                "paragraph": "p066",
+                "line": "As yet the panic of the steed had given his unskilful rider an apparent\nadvantage in the chase, but just as he had got half way through the\nhollow, the girths of the saddle gave way, and he felt it slipping from\nunder him."
+              },
+              {
+                "paragraph": "p066",
+                "line": "He seized it by the pommel, and endeavored to hold it firm,\nbut in vain; and had just time to save himself by clasping old Gunpowder\nround the neck, when the saddle fell to the earth, and he heard it\ntrampled under foot by his pursuer."
+              }
+            ]
+          },
+          {
+            "id": "bridge",
+            "label": "Gunpowder crosses the church bridge",
+            "accept": [
+              {
+                "paragraph": "p067",
+                "line": "Another convulsive kick in the ribs, and\nold Gunpowder sprang upon the bridge; he thundered over the resounding\nplanks; he gained the opposite side; and now Ichabod cast a look behind\nto see if his pursuer should vanish, according to rule, in a flash of\nfire and brimstone."
+              }
+            ]
+          },
+          {
+            "id": "head",
+            "label": "The head is hurled",
+            "accept": [
+              {
+                "paragraph": "p067",
+                "line": "Just then he saw the goblin rising in his stirrups,\nand in the very act of hurling his head at him."
+              },
+              {
+                "paragraph": "p067",
+                "line": "It encountered his cranium\nwith a tremendous crash,--he was tumbled headlong into the dust, and\nGunpowder, the black steed, and the goblin rider, passed by like a\nwhirlwind."
+              }
+            ]
+          }
+        ],
+        "write": "Call the play that mattered most. Write 2 or 3 sentences and cite at least one line."
+      },
+      "music": {
+        "title": "Liner notes for a ballad",
+        "minutes": 5,
+        "kind": "lines",
+        "need": 3,
+        "paragraphs": [
+          "p058",
+          "p059",
+          "p060",
+          "p063",
+          "p064",
+          "p067"
+        ],
+        "intro": "You're writing a ballad about Ichabod's ride home. Pick the 3 lines from the story your song needs most.",
+        "write": "Liner notes: why do these lines belong in your song? Write 2 or 3 sentences and cite at least one line."
+      },
+      "gaming": {
+        "title": "Design the road-home level",
+        "minutes": 6,
+        "kind": "pick",
+        "need": 3,
+        "paragraphs": [
+          "p059",
+          "p060",
+          "p061",
+          "p065",
+          "p066",
+          "p067"
+        ],
+        "intro": "Build the level for Ichabod's ride home. Pick 3 checkpoints that are really in the story, and prove each danger with a line.",
+        "items": [
+          {
+            "id": "tree",
+            "label": "Major André's tree",
+            "accept": [
+              {
+                "paragraph": "p059",
+                "line": "In the centre of the road\nstood an enormous tulip-tree, which towered like a giant above all the\nother trees of the neighborhood, and formed a kind of landmark."
+              },
+              {
+                "paragraph": "p059",
+                "line": "It was connected with the tragical story of the unfortunate\nAndré, who had been taken prisoner hard by; and was universally known\nby the name of Major André’s tree."
+              }
+            ]
+          },
+          {
+            "id": "swamp",
+            "label": "The bridge at Wiley's Swamp",
+            "accept": [
+              {
+                "paragraph": "p061",
+                "line": "About two hundred yards from the tree, a small brook crossed the road,\nand ran into a marshy and thickly-wooded glen, known by the name of\nWiley’s Swamp."
+              },
+              {
+                "paragraph": "p061",
+                "line": "To pass this bridge was the severest\ntrial."
+              }
+            ]
+          },
+          {
+            "id": "hollow",
+            "label": "The sandy hollow where the saddle fell",
+            "accept": [
+              {
+                "paragraph": "p065",
+                "line": "This\nroad leads through a sandy hollow shaded by trees for about a quarter\nof a mile, where it crosses the bridge famous in goblin story; and just\nbeyond swells the green knoll on which stands the whitewashed church."
+              },
+              {
+                "paragraph": "p066",
+                "line": "As yet the panic of the steed had given his unskilful rider an apparent\nadvantage in the chase, but just as he had got half way through the\nhollow, the girths of the saddle gave way, and he felt it slipping from\nunder him."
+              }
+            ]
+          },
+          {
+            "id": "church",
+            "label": "The church bridge",
+            "accept": [
+              {
+                "paragraph": "p067",
+                "line": "“If I can\nbut reach that bridge,” thought Ichabod, “I am safe.”"
+              }
+            ]
+          },
+          {
+            "id": "mill",
+            "label": "The old mill",
+            "accept": []
+          },
+          {
+            "id": "cave",
+            "label": "A haunted cave",
+            "accept": []
+          }
+        ],
+        "write": "Which checkpoint is the boss level, and why? Write 2 or 3 sentences and cite at least one line."
+      },
+      "fashion": {
+        "title": "Style Ichabod for the party",
+        "minutes": 6,
+        "kind": "pick",
+        "need": 3,
+        "paragraphs": [
+          "p010",
+          "p036",
+          "p037"
+        ],
+        "intro": "Style Ichabod for the Van Tassel party from this closet. Pick 3 pieces and back each with a line that describes him. The story decides, not you.",
+        "items": [
+          {
+            "id": "suit",
+            "label": "Rusty black suit",
+            "icon": "🧥",
+            "accept": [
+              {
+                "paragraph": "p036",
+                "line": "The gallant Ichabod now spent at least an extra half hour at his toilet,\nbrushing and furbishing up his best, and indeed only suit of rusty\nblack, and arranging his locks by a bit of broken looking-glass that\nhung up in the schoolhouse."
+              }
+            ]
+          },
+          {
+            "id": "sleeves",
+            "label": "Sleeves that are too short",
+            "icon": "👔",
+            "accept": [
+              {
+                "paragraph": "p010",
+                "line": "He was tall,\nbut exceedingly lank, with narrow shoulders, long arms and legs, hands\nthat dangled a mile out of his sleeves, feet that might have served for\nshovels, and his whole frame most loosely hung together."
+              }
+            ]
+          },
+          {
+            "id": "hat",
+            "label": "Small wool hat",
+            "icon": "🎩",
+            "accept": [
+              {
+                "paragraph": "p037",
+                "line": "A\nsmall wool hat rested on the top of his nose, for so his scanty strip of\nforehead might be called, and the skirts of his black coat fluttered out\nalmost to the horses tail."
+              }
+            ]
+          },
+          {
+            "id": "mirror",
+            "label": "A broken looking-glass",
+            "icon": "🪞",
+            "accept": [
+              {
+                "paragraph": "p036",
+                "line": "The gallant Ichabod now spent at least an extra half hour at his toilet,\nbrushing and furbishing up his best, and indeed only suit of rusty\nblack, and arranging his locks by a bit of broken looking-glass that\nhung up in the schoolhouse."
+              }
+            ]
+          },
+          {
+            "id": "horse",
+            "label": "A borrowed plow-horse",
+            "icon": "🐴",
+            "accept": [
+              {
+                "paragraph": "p036",
+                "line": "The animal he bestrode was\na broken-down plow-horse, that had outlived almost everything but its\nviciousness."
+              },
+              {
+                "paragraph": "p036",
+                "line": "That he might make his appearance before his\nmistress in the true style of a cavalier, he borrowed a horse from the\nfarmer with whom he was domiciliated, a choleric old Dutchman of the\nname of Hans Van Ripper, and, thus gallantly mounted, issued forth like\na knight-errant in quest of adventures."
+              }
+            ]
+          },
+          {
+            "id": "bow",
+            "label": "A fancy silk bow",
+            "icon": "🎀",
+            "accept": []
+          },
+          {
+            "id": "boots",
+            "label": "Shiny new boots",
+            "icon": "👢",
+            "accept": []
+          }
+        ],
+        "write": "Describe your look for Ichabod. Write 2 or 3 sentences and cite at least one line."
+      },
+      "social-media": {
+        "title": "Fact-check the feed",
+        "minutes": 5,
+        "kind": "factcheck",
+        "paragraphs": [
+          "p068",
+          "p069",
+          "p070"
+        ],
+        "intro": "Three villagers posted about the missing schoolmaster. One post is false. Find it and prove it with a line.",
+        "posts": [
+          {
+            "author": "@HollowNews",
+            "text": "Schoolmaster missing! His hat and a smashed pumpkin were found by the brook.",
+            "false": false
+          },
+          {
+            "author": "@VanRipperFarm",
+            "text": "Went through his bundle: two shirts and a half, a rusty razor, a broken pitch-pipe.",
+            "false": false
+          },
+          {
+            "author": "@ValleyGossip",
+            "text": "They pulled the schoolmaster's body out of the brook this morning.",
+            "false": true,
+            "accept": [
+              {
+                "paragraph": "p069",
+                "line": "The brook was searched, but the body of the schoolmaster was not to\nbe discovered."
+              }
+            ]
+          }
+        ],
+        "write": "Write your own post about what happened. 2 or 3 sentences, and cite at least one line."
+      },
+      "solo": {
+        "title": "Cold case file",
+        "minutes": 5,
+        "kind": "exhibits",
+        "need": 3,
+        "paragraphs": [
+          "p068",
+          "p069",
+          "p070",
+          "p071"
+        ],
+        "intro": "Close the case on paper. Pick your 3 strongest exhibits: lines from the story you proved.",
+        "write": "Sum up the case. Write 2 or 3 sentences and cite at least one line."
+      },
+      "squad": {
+        "title": "Squad report",
+        "minutes": 5,
+        "kind": "exhibits",
+        "need": 3,
+        "paragraphs": [
+          "p068",
+          "p069",
+          "p070",
+          "p071"
+        ],
+        "intro": "Write your squad's report. Pick 3 lines your squad would put in front of the town.",
+        "write": "Your squad's report to the town. Write 2 or 3 sentences and cite at least one line."
+      },
+      "rival": {
+        "title": "Rebuttal",
+        "minutes": 5,
+        "kind": "talk",
+        "character_id": null,
+        "paragraphs": [
+          "p069",
+          "p071",
+          "p072"
+        ],
+        "intro": "The Lantern Ghost has a theory, and it's wrong. Knock down each claim with a line.",
+        "exchanges": [
+          {
+            "say": "Ichabod drowned in the brook. Case closed.",
+            "accept": [
+              {
+                "paragraph": "p069",
+                "line": "The brook was searched, but the body of the schoolmaster was not to\nbe discovered."
+              }
+            ]
+          },
+          {
+            "say": "He left his money behind, so he never meant to leave.",
+            "accept": [
+              {
+                "paragraph": "p069",
+                "line": "Whatever money the\nschoolmaster possessed, and he had received his quarter’s pay but a\nday or two before, he must have had about his person at the time of his\ndisappearance."
+              }
+            ]
+          },
+          {
+            "say": "Nobody ever heard from him again.",
+            "accept": [
+              {
+                "paragraph": "p071",
+                "line": "It is true, an old farmer, who had been down to New York on a visit\nseveral years after, and from whom this account of the ghostly adventure\nwas received, brought home the intelligence that Ichabod Crane was still\nalive; that he had left the neighborhood partly through fear of the\ngoblin and Hans Van Ripper, and partly in mortification at having been\nsuddenly dismissed by the heiress; that he had changed his quarters to a\ndistant part of the country; had kept school and studied law at the same\ntime; had been admitted to the bar; turned politician; electioneered;\nwritten for the newspapers; and finally had been made a justice of\nthe Ten Pound Court."
+              }
+            ]
+          },
+          {
+            "say": "Children still learn in his old schoolhouse.",
+            "accept": [
+              {
+                "paragraph": "p072",
+                "line": "The schoolhouse being deserted soon fell to\ndecay, and was reported to be haunted by the ghost of the unfortunate\npedagogue and the plowboy, loitering homeward of a still summer evening,\nhas often fancied his voice at a distance, chanting a melancholy psalm\ntune among the tranquil solitudes of Sleepy Hollow."
+              }
+            ]
+          }
+        ],
+        "write": "Sum up why the Lantern Ghost was wrong. Write 2 or 3 sentences and cite at least one line."
+      }
+    }
   }
 }

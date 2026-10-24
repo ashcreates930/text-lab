@@ -63,6 +63,8 @@ export const StudentProgressSchema = z.object({
     freezeLog: z.array(z.object({ target: text(80), clueId: id, at: text(40) })).max(200).optional() }).optional(),
   marks: z.record(text(20), z.object({ tag: z.enum(["clue", "word", "question"]), pid: text(12), text: text(1500), clueId: id.optional(), at: text(40) })).optional(),
   claimFlags: z.array(z.object({ clueId: id, characterId: id, answer: text(1200), line: text(1500), pid: text(12), matched: z.boolean(), at: text(40) })).max(200).optional(),
+  // Your Turn: each finished activity, with its results and the closing 2 or 3 cited sentences.
+  yourTurn: z.array(z.object({ activity: id, title: text(120), results: z.array(z.object({ label: text(200), line: text(1500), ok: z.boolean() })).max(12), writing: text(900), cited: z.array(text(1500)).max(5), at: text(40) })).max(30).optional(),
   // How the student plays (solo, rival or squad) and the scenes whose mission screen they have seen.
   missionSeen: z.array(id).max(50).optional(),
   // Story Mode, per scene (scene id -> run summary): the score, the Evidence pouch and trust with the characters the

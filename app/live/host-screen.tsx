@@ -44,6 +44,7 @@ const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|nul
   {s.status==="round"&&round&&<LiveRound state={state} act={act} sessionId={sessionId}/>}
   {s.status==="reveal"&&round&&<Reveal state={state} act={act}/>}
   {(s.status==="reveal"||s.status==="lobby")&&state.squads.some(q=>q.members.length)&&<RoundPicker state={state} act={act} first={s.status==="lobby"}/>}
+  {(s.status==="reveal"||s.status==="ended")&&state.yourTurn&&<YourTurnHost yourTurn={state.yourTurn} players={state.counters.players} act={act}/>}
   {s.status!=="lobby"&&<Scoreboard state={state}/>}
   {s.status!=="ended"&&s.status!=="lobby"&&<p className="mt-8 text-[18px] text-[#F3C9B2]">Join at {joinUrl.replace(/^https?:\/\//,"")}</p>}
  </Shell>;
@@ -301,4 +302,15 @@ function AbsentList({roster,act}:{roster:View["roster"];act:(b:Record<string,unk
 function WitnessLink({sessionId,token}:{sessionId:string;token:string}){
  const [open,setOpen]=useState(false);const url=typeof window!=="undefined"?`${window.location.origin}/live/witness/${sessionId}#${token}`:"";
  return <div className="mt-4"><button type="button" onClick={()=>setOpen(v=>!v)} aria-expanded={open} className="host-btn-secondary"><Sparkles size={20}/>{open?"Hide the Witness stand code":"Witness stand code"}</button>{open&&<div className="mt-3 flex flex-wrap items-center gap-4 rounded-2xl bg-[#1E1A15] p-4"><Qr url={url} label="QR code for the Witness stand phone"/><p className="max-w-xs text-[16px] text-[#E8DDCB]">Scan with the phone under the hologram pyramid. The speaker in rounds 2 and 3 appears there.</p></div>}</div>;
+}
+
+// Your Turn: after the game, the teacher starts a personal activity on every phone (each student's own, from their
+// "What's your angle?" answers). Each one ends with 2 or 3 cited sentences, saved to the Evidence view.
+function YourTurnHost({yourTurn,players,act}:{yourTurn:{started:boolean;saved:number};players:number;act:(b:Record<string,unknown>)=>void}){
+ return <section aria-labelledby="yt-host-h" className="mt-6 rounded-3xl bg-[#2E2821] p-6">
+  <h2 id="yt-host-h" className="text-[clamp(22px,2.2vw,32px)] font-bold">Your Turn</h2>
+  {yourTurn.started?<p className="mt-2 text-[20px]">Your Turn is on. {yourTurn.saved} of {players} saved so far.</p>
+  :<><p className="mt-2 max-w-3xl text-[18px] text-[#E8DDCB]">A 5 to 7 minute activity on every phone, picked from each student's angle answers. Every one ends with 2 or 3 sentences citing the story, saved to Evidence.</p>
+   <button type="button" onClick={()=>act({action:"yourturn.start"})} className="host-btn mt-4">Start Your Turn for everyone</button></>}
+ </section>;
 }

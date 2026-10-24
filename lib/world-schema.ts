@@ -6,6 +6,15 @@ const position = z.object({x:z.number(),y:z.number(),width:z.number().min(4.4),h
 // that corrects it. The AI only delivers the claim in the character's voice.
 // also: other lines that correct it just as well (each accepted).
 const offClaim=z.object({character_id:z.string(),claim:z.string().min(1),paragraph:z.string().regex(/^p\d{3}$/),line:z.string().min(1),also:z.array(z.object({paragraph:z.string().regex(/^p\d{3}$/),line:z.string().min(1)})).optional()});
+// Your Turn activities: talk (a character's claims, each answered with a line), debate (one side per Final Verdict
+// theory), pick and order (authored pieces, each backed by a line; pieces with no lines are decoys), lines (any lines),
+// factcheck (posts, one false), exhibits (the student's own proven lines). Every one ends with the write prompt.
+const ytLine=z.object({paragraph:z.string().regex(/^p\d{3}$/),line:z.string().min(1)});
+const ytExchange=z.object({say:z.string().min(1),accept:z.array(ytLine)});
+const yourTurnActivity=z.object({title:z.string().min(1),minutes:z.number().int(),kind:z.enum(["talk","debate","pick","order","lines","factcheck","exhibits"]),intro:z.string().min(1),paragraphs:z.array(z.string().regex(/^p\d{3}$/)).min(1),write:z.string().min(1),
+ character_id:z.string().nullable().optional(),exchanges:z.array(ytExchange).optional(),sides:z.record(z.string(),z.object({character_id:z.string(),exchanges:z.array(ytExchange)})).optional(),
+ need:z.number().int().min(1).max(5).optional(),groups:z.record(z.string(),z.string()).optional(),items:z.array(z.object({id:z.string(),label:z.string().min(1),icon:z.string().optional(),group:z.string().optional(),accept:z.array(ytLine)})).optional(),
+ posts:z.array(z.object({author:z.string(),text:z.string().min(1),false:z.boolean(),accept:z.array(ytLine).optional()})).optional()});
 const artifact = z.object({off_claim:offClaim.optional(),id:z.string(),name:z.string(),scene_id:z.string(),evidence_type:z.enum(["observed","claimed","reported"]),secondary_evidence_type:z.enum(["observed","claimed","reported"]).optional(),position,image:z.string().optional(),closeup_image:z.string().optional(),source_anchor:z.array(z.string()),unlock_condition:z.string().nullable(),questions:z.array(artifactQuestion).length(3)});
 // Spot the Lie: once per scene, a character testifies with one false claim that one line of the story disproves.
 const lie=z.object({clue_id:z.string(),character_id:z.string(),testimony:z.string(),false_claim:z.string(),truth_paragraph:z.string().regex(/^p\d{3}$/),truth_line:z.string(),explanation:z.string(),topic:z.string()});
@@ -37,6 +46,8 @@ export const WorldPackSchema = z.object({
   adaptations:z.array(z.object({grade:z.number(),glossary:z.enum(["open","on_request"]),hints:z.boolean(),sentence_starters:z.boolean(),description:z.string()})).min(1),
   benchmarks:z.array(z.object({code:z.string(),description:z.string()})),
   roles:z.array(role),
+  // Your Turn (lib/your-turn.ts): one activity per "What's your angle?" option, after the game.
+  your_turn:z.object({activities:z.record(z.string(),yourTurnActivity)}).optional(),
   // Demo rival and squad modes: the computer players' names (clearly labeled as computer players on screen).
   computer_players:z.object({rival:z.object({name:z.string().min(1),emblem:z.enum(["lantern","rider"])}),teammates:z.array(z.string().min(1)).min(2).max(3)}).optional(),
   // Students in the story: the part the student plays (see lib/student-role.ts). never: people the student must never be.
