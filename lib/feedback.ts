@@ -13,6 +13,20 @@ export const startChoices: Choice<"this_month" | "this_semester" | "next_school_
 export const payerChoices: Choice<"myself" | "school" | "district" | "grant" | "not_sure"> = [["myself", "Myself"], ["school", "My school"], ["district", "My district"], ["grant", "A grant or other funding"], ["not_sure", "Not sure"]];
 export const approverChoices: Choice<"yes" | "helps_decide" | "no"> = [["yes", "Yes"], ["helps_decide", "I help decide"], ["no", "No"]];
 export const yesMaybeNo: Choice<"yes" | "maybe" | "no"> = [["yes", "Yes"], ["maybe", "Maybe"], ["no", "No"]];
+// "How did you hear about Text Lab?" (required). Saved as heard_from with every entry.
+export const heardChoices: Choice<"fellowship" | "womens-group" | "homeschool" | "mentor-network" | "social-media" | "other"> = [["fellowship", "Fellowship cohort"], ["womens-group", "Women's group"], ["homeschool", "Homeschool group"], ["mentor-network", "Mentor or educator network"], ["social-media", "Social media"], ["other", "Other"]];
+export type HeardFrom = (typeof heardChoices)[number][0];
+// Old ?ref= links still work: a recognizable ref preselects the matching answer (the person can change it).
+export function heardFromRef(ref: string | null | undefined): HeardFrom | undefined {
+  const r = (ref ?? "").toLowerCase();
+  if (!r) return undefined;
+  if (/fellow|cohort/.test(r)) return "fellowship";
+  if (/women|womens/.test(r)) return "womens-group";
+  if (/homeschool|home-school/.test(r)) return "homeschool";
+  if (/mentor|educator|teacher|network/.test(r)) return "mentor-network";
+  if (/social|instagram|insta|facebook|fb|linkedin|tiktok|twitter|threads|youtube|^x$/.test(r)) return "social-media";
+  return undefined;
+}
 export const states = ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","District of Columbia","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Puerto Rico","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming","Outside the United States"] as const;
 export const label = <T extends string>(list: Choice<T>, v: string | null | undefined) => list.find(([k]) => k === v)?.[1] ?? "";
 const keys = <T extends string>(list: Choice<T>) => list.map(([k]) => k) as [T, ...T[]];
@@ -59,6 +73,7 @@ export const SubmissionSchema = z.object({
   feedback: FeedbackSchema.optional(),
   waitlist: WaitlistSchema.optional(),
   source: z.string().regex(SOURCE_RE).optional(),
+  heardFrom: z.enum(keys(heardChoices), { errorMap: () => ({ message: "Tell us how you heard about Text Lab." }) }),
   website: z.string().max(200).optional(), // honeypot: people never see this field
 }).refine((s) => s.waitlist || (s.feedback && Object.values(s.feedback).some((v) => v !== undefined)), { message: "Add some feedback or join the waitlist." });
 export type Submission = z.infer<typeof SubmissionSchema>;

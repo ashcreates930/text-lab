@@ -5,6 +5,18 @@ import { clientAddress, hashClientAddress } from "@/lib/demo-access";
 
 const RATE_LIMIT = 8, RATE_WINDOW_SECONDS = 600;
 
+// Until the heard_from migration (202610250001) runs, the column doesn't exist: save the entry without it rather than
+// lose it, and log why on the server.
+async function insertKeepingEntry<R extends { error: { message: string; code?: string } | null }>(table: string, row: Record<string, unknown>, run: (r: Record<string, unknown>) => PromiseLike<R>): Promise<R> {
+  const first = await run(row);
+  if (first.error && /heard_from/.test(first.error.message)) {
+    console.error(`${table}: heard_from isn't in the database yet (run 202610250001_heard_from.sql); saved the entry without it.`);
+    const { heard_from: _h, ...rest } = row;
+    return run(rest);
+  }
+  return first;
+}
+
 // One submission from the feedback and waitlist form: feedback, a waitlist entry, or both (linked).
 export async function POST(request: Request) {
   const parsed = SubmissionSchema.safeParse(await request.json().catch(() => null));
@@ -12,7 +24,7 @@ export async function POST(request: Request) {
     const issue = parsed.error.issues[0];
     return NextResponse.json({ error: issue?.message && !issue.message.startsWith("Invalid") ? issue.message : "Check the form and try again.", field: issue?.path.join(".") }, { status: 400 });
   }
-  const { feedback, waitlist, source, website } = parsed.data;
+  const { feedback, waitlist, source, heardFrom, website } = parsed.data;
   // Honeypot: a hidden field only bots fill in.
   if (website) return NextResponse.json({ error: "Your entry could not be sent." }, { status: 400 });
   const db = getServiceSupabase();
@@ -28,9 +40,9 @@ export async function POST(request: Request) {
       name: waitlist.name, email: waitlist.email.toLowerCase(), role: waitlist.role ?? null, organization: waitlist.organization ?? null, state: waitlist.state ?? null,
       plan: waitlist.plan, intent: waitlist.intent, price_named: waitlist.intent === "lower_price" ? waitlist.priceNamed ?? null : null, price_period: waitlist.intent === "lower_price" ? waitlist.pricePeriod ?? null : null,
       start_when: waitlist.start ?? null, payer: waitlist.payer ?? null, approver: waitlist.approver ?? null, loi: waitlist.loi ?? null, pilot_commit: waitlist.pilotCommit ?? null,
-      students: waitlist.students ?? null, lock_founding_price: waitlist.lockFoundingPrice, wants_updates: waitlist.wantsUpdates, source: source ?? null,
+      students: waitlist.students ?? null, lock_founding_price: waitlist.lockFoundingPrice, wants_updates: waitlist.wantsUpdates, source: source ?? null, heard_from: heardFrom,
     };
-    const inserted = await db.from("waitlist").insert(row).select("id").single();
+    const inserted = await insertKeepingEntry("waitlist", row, (r) => db.from("waitlist").insert(r).select("id").single());
     if (inserted.error?.code === "23505") {
       duplicate = true;
       const existing = await db.from("waitlist").select("id").eq("email_normalized", row.email).eq("plan", row.plan).maybeSingle();
@@ -39,10 +51,10 @@ export async function POST(request: Request) {
     else waitlistId = inserted.data.id;
   }
   if (hasFeedback(feedback)) {
-    const { error } = await db.from("feedback_entries").insert({
+    const { error } = await insertKeepingEntry("feedback_entries", {
       side_tried: feedback!.side ?? null, ease: feedback!.ease ?? null, one_screen: feedback!.oneScreen ?? null, would_use: feedback!.wouldUse ?? null,
-      change_text: feedback!.change ?? null, broken_text: feedback!.broken ?? null, device: feedback!.device ?? null, source: source ?? null, waitlist_id: waitlistId,
-    });
+      change_text: feedback!.change ?? null, broken_text: feedback!.broken ?? null, device: feedback!.device ?? null, source: source ?? null, waitlist_id: waitlistId, heard_from: heardFrom,
+    }, (r) => db.from("feedback_entries").insert(r));
     if (error) { console.error("Feedback insert failed:", error.message); return NextResponse.json({ error: "We couldn't save your feedback. Please try again." }, { status: 500 }); }
   }
   return NextResponse.json({ ok: true, joined: !!waitlist && !duplicate, duplicate, feedback: hasFeedback(feedback) }, { status: 201 });

@@ -20,3 +20,6 @@ outputs/
 # Generated from worlds/ by npm run sync:worlds (runs before every build)
 public/worlds/*/world.json
 public/worlds/index.json
+
+# Supabase CLI cache
+supabase/.temp/

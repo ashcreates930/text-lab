@@ -4,7 +4,7 @@
 import {useEffect,useId,useRef,useState} from "react";
 import {ArrowLeft,ArrowRight,Check,Star,X} from "lucide-react";
 import {planById,plans,type PlanId} from "@/config/pricing";
-import {FeedbackSchema,WaitlistSchema,approvalPlans,deviceChoices,intentChoices,oneScreenChoices,payerChoices,roleChoices,sideChoices,startChoices,states,wouldUseChoices,yesMaybeNo,approverChoices,SOURCE_RE} from "@/lib/feedback";
+import {heardChoices,heardFromRef,FeedbackSchema,WaitlistSchema,approvalPlans,deviceChoices,intentChoices,oneScreenChoices,payerChoices,roleChoices,sideChoices,startChoices,states,wouldUseChoices,yesMaybeNo,approverChoices,SOURCE_RE} from "@/lib/feedback";
 
 export type FormOpen={step:1|2;plan?:PlanId;join:boolean}|null;
 const REF_KEY="textlab-ref";
@@ -30,6 +30,8 @@ export function FeedbackForm({open,onClose}:{open:NonNullable<FormOpen>;onClose:
  const [step,setStep]=useState<1|2>(open.step);
  const [fb,setFb]=useState<{side?:string;ease?:number;oneScreen?:string;wouldUse?:string;change:string;broken:string;device?:string}>({change:"",broken:""});
  const [join,setJoin]=useState(open.join);
+ // How did you hear about Text Lab? Required; an old ?ref= link preselects the matching answer.
+ const [heard,setHeard]=useState<string|undefined>(()=>heardFromRef(currentRef()));
  const [w,setW]=useState<{plan:PlanId;intent?:string;priceNamed:string;pricePeriod?:string;start?:string;payer?:string;approver?:string;loi?:string;pilotCommit?:string;students:string;lockFoundingPrice:boolean;name:string;email:string;role?:string;organization:string;state?:string;wantsUpdates:boolean}>({plan:open.plan??"individual",priceNamed:"",students:"",lockFoundingPrice:false,name:"",email:"",organization:"",wantsUpdates:false});
  const [honeypot,setHoneypot]=useState(""),[errors,setErrors]=useState<Record<string,string>>({}),[busy,setBusy]=useState(false),[result,setResult]=useState<{joined:boolean;duplicate:boolean;email:string}|null>(null),[failure,setFailure]=useState("");
  const heading=useRef<HTMLHeadingElement>(null),card=useRef<HTMLDivElement>(null);
@@ -43,6 +45,7 @@ export function FeedbackForm({open,onClose}:{open:NonNullable<FormOpen>;onClose:
  async function submit(e:React.FormEvent){
   e.preventDefault();if(busy)return;setFailure("");
   const feedback=feedbackPayload();
+  if(!heard){setErrors({heard:"Tell us how you heard about Text Lab."});requestAnimationFrame(()=>card.current?.querySelector<HTMLElement>('[data-heard] input')?.focus());return}
   let waitlist;
   if(join){
    const parsed=WaitlistSchema.safeParse({plan:w.plan,intent:w.intent,priceNamed:w.intent==="lower_price"&&w.priceNamed!==""?Number(w.priceNamed):undefined,pricePeriod:w.intent==="lower_price"?w.pricePeriod:undefined,start:w.start,payer:w.payer,approver:approvalPlans.includes(w.plan)?w.approver:undefined,loi:approvalPlans.includes(w.plan)?w.loi:undefined,pilotCommit:w.plan==="pilot"?w.pilotCommit:undefined,students:w.students?Number(w.students):undefined,lockFoundingPrice:w.lockFoundingPrice,name:w.name,email:w.email,role:w.role,organization:w.organization,state:w.state,wantsUpdates:w.wantsUpdates});
@@ -54,7 +57,7 @@ export function FeedbackForm({open,onClose}:{open:NonNullable<FormOpen>;onClose:
    waitlist=parsed.data!;
   }else if(!Object.values(feedback).some(v=>v!==undefined)){setFailure("Add some feedback in Step 1, or check “Add me to the waitlist”.");return}
   setBusy(true);
-  try{const r=await fetch("/api/feedback",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({feedback,waitlist,source:currentRef(),website:honeypot})});const j=await r.json().catch(()=>({}));if(!r.ok){setFailure(j.error||"We couldn't send that. Please try again.");return}setResult({joined:!!waitlist,duplicate:!!j.duplicate,email:waitlist?.email??""})}
+  try{const r=await fetch("/api/feedback",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({feedback,waitlist,source:currentRef(),heardFrom:heard,website:honeypot})});const j=await r.json().catch(()=>({}));if(!r.ok){setFailure(j.error||"We couldn't send that. Please try again.");return}setResult({joined:!!waitlist,duplicate:!!j.duplicate,email:waitlist?.email??""})}
   catch{setFailure("We couldn't reach TextLab. Check your connection and try again.")}
   finally{setBusy(false)}
  }
@@ -81,6 +84,7 @@ export function FeedbackForm({open,onClose}:{open:NonNullable<FormOpen>;onClose:
      <div className="flex flex-wrap items-center justify-between gap-3"><button type="button" onClick={()=>setStep(2)} className="min-h-11 text-[16px] font-semibold text-[#8A3B23] underline underline-offset-4">Skip to waitlist</button><button type="button" onClick={()=>setStep(2)} className="case-primary">Next <ArrowRight size={18}/></button></div>
     </>:<>
      {open.step===2&&<button type="button" onClick={()=>setStep(1)} className="min-h-11 text-[15px] font-semibold text-[#8A3B23] underline underline-offset-4">Leave feedback too</button>}
+     <div data-heard><Choices legend="How did you hear about Text Lab?" required options={heardChoices} value={heard} onChange={v=>{setHeard(v);setErrors(e=>{const {heard:_h,...rest}=e;return rest})}} error={errors.heard}/></div>
      {open.step===1&&<button type="button" onClick={()=>setStep(1)} className="inline-flex min-h-11 items-center gap-2 text-[15px] text-[#6B6457]"><ArrowLeft size={16}/> Back to feedback</button>}
      <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[#E4DCCB] p-4"><input type="checkbox" checked={join} onChange={e=>{setJoin(e.target.checked);setErrors({})}} className="mt-1 h-5 w-5 accent-[#A0472C]"/><span className="text-[17px] font-semibold">Add me to the waitlist</span></label>
      {join&&<>
