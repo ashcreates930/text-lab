@@ -203,7 +203,24 @@
       ],
       "voice_id": "pqHfZKP75CvOlQylNhV4",
       "portrait": "/worlds/sleepy-hollow/characters/hans-van-ripper.png",
-      "hologram": "/worlds/sleepy-hollow/holograms/hans-van-ripper.png"
+      "hologram": "/worlds/sleepy-hollow/holograms/hans-van-ripper.png",
+      "traits": [
+        {
+          "name": "Ichabod's landlord, in charge of his things",
+          "paragraph": "p069",
+          "line": "Hans Van Ripper as executor of his estate, examined the\nbundle which contained all his worldly effects."
+        },
+        {
+          "name": "Worries about his saddle",
+          "paragraph": "p068",
+          "line": "Hans\nVan Ripper now began to feel some uneasiness about the fate of poor\nIchabod, and his saddle."
+        },
+        {
+          "name": "Has no use for books",
+          "paragraph": "p069",
+          "line": "These magic books and the poetic scrawl were forthwith consigned to the\nflames by Hans Van Ripper; who, from that time forward, determined to\nsend his children no more to school, observing that he never knew\nany good come of this same reading and writing."
+        }
+      ]
     },
     {
       "id": "brom-bones",
@@ -222,7 +239,24 @@
       ],
       "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
       "portrait": "/worlds/sleepy-hollow/characters/brom-bones.png",
-      "hologram": "/worlds/sleepy-hollow/holograms/brom-bones.png"
+      "hologram": "/worlds/sleepy-hollow/holograms/brom-bones.png",
+      "traits": [
+        {
+          "name": "Part of the town's ghost stories",
+          "paragraph": "p070",
+          "line": "The stories of Brouwer, of Bones, and a whole budget of\nothers were called to mind; and when they had diligently considered them\nall, and compared them with the symptoms of the present case, they shook\ntheir heads, and came to the conclusion that Ichabod had been carried\noff by the Galloping Hessian."
+        },
+        {
+          "name": "Famous for his strength",
+          "paragraph": "p028",
+          "line": "Among these, the most formidable was a burly, roaring, roystering blade,\nof the name of Abraham, or, according to the Dutch abbreviation, Brom\nVan Brunt, the hero of the country round, which rang with his feats of\nstrength and hardihood."
+        },
+        {
+          "name": "Blamed for every prank",
+          "paragraph": "p028",
+          "line": "The neighbors looked upon him with a mixture\nof awe, admiration, and good-will; and, when any madcap prank or rustic\nbrawl occurred in the vicinity, always shook their heads, and warranted\nBrom Bones was at the bottom of it."
+        }
+      ]
     }
   ],
   "glossary": [
@@ -415,7 +449,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "brom-bones",
+            "claim": "That schoolhouse was a fine big place, with plenty of rooms for all his scholars.",
+            "paragraph": "p011",
+            "line": "His schoolhouse was a low building of one large room, rudely constructed\nof logs; the windows partly glazed, and partly patched with leaves of\nold copybooks."
+          }
         },
         {
           "id": "ichabods-belongings",
@@ -508,7 +548,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "hans-van-ripper",
+            "claim": "He left every coin of his quarter's pay behind in that bundle.",
+            "paragraph": "p069",
+            "line": "Whatever money the\nschoolmaster possessed, and he had received his quarter’s pay but a\nday or two before, he must have had about his person at the time of his\ndisappearance."
+          }
         },
         {
           "id": "ichabods-own-books",
@@ -601,7 +647,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "hans-van-ripper",
+            "claim": "I kept his books on the schoolhouse shelf. Waste not, want not.",
+            "paragraph": "p069",
+            "line": "These magic books and the poetic scrawl were forthwith consigned to the\nflames by Hans Van Ripper; who, from that time forward, determined to\nsend his children no more to school, observing that he never knew\nany good come of this same reading and writing."
+          }
         },
         {
           "id": "searchers-report",
@@ -695,7 +747,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "brom-bones",
+            "claim": "They found his saddle hanging neatly on the bridge rail.",
+            "paragraph": "p068",
+            "line": "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin."
+          }
         }
       ],
       "reading": [
@@ -941,7 +999,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "brom-bones",
+            "claim": "The schoolmaster ate like a bird at the party and hardly touched a thing.",
+            "paragraph": "p045",
+            "line": "He was a kind and thankful creature, whose heart dilated in proportion\nas his skin was filled with good cheer, and whose spirits rose with\neating, as some men’s do with drink."
+          }
         },
         {
           "id": "broms-corner",
@@ -1035,7 +1099,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "brom-bones",
+            "claim": "I never played a single trick on that schoolmaster. Not my style.",
+            "paragraph": "p033",
+            "line": "There was\nsomething extremely provoking in this obstinately pacific system; it\nleft Brom no alternative but to draw upon the funds of rustic waggery in\nhis disposition, and to play off boorish practical jokes upon his rival."
+          }
         },
         {
           "id": "broms-race-tale",
@@ -1129,7 +1199,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "brom-bones",
+            "claim": "The schoolmaster laughed my story off. It didn't scare him one bit.",
+            "paragraph": "p056",
+            "line": "All these tales, told in that drowsy undertone with which men talk in\nthe dark, the countenances of the listeners only now and then receiving\na casual gleam from the glare of a pipe, sank deep in the mind of\nIchabod."
+          }
         },
         {
           "id": "private-talk",
@@ -1222,7 +1298,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "brom-bones",
+            "claim": "He came out of Katrina's house grinning, sure he had won her.",
+            "paragraph": "p057",
+            "line": "Something, however, I fear me, must have gone wrong, for he certainly\nsallied forth, after no very great interval, with an air quite desolate\nand chapfallen."
+          }
         }
       ],
       "reading": [
@@ -1379,7 +1461,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "brom-bones",
+            "claim": "That old tree is a skinny thing. You'd ride right past it without noticing.",
+            "paragraph": "p059",
+            "line": "In the centre of the road\nstood an enormous tulip-tree, which towered like a giant above all the\nother trees of the neighborhood, and formed a kind of landmark."
+          }
         },
         {
           "id": "shadowy-rider",
@@ -1474,7 +1562,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "brom-bones",
+            "claim": "That rider chatted with him the whole way, friendly as a neighbor.",
+            "paragraph": "p064",
+            "line": "There was something in the moody and\ndogged silence of this pertinacious companion that was mysterious and\nappalling."
+          }
         },
         {
           "id": "fallen-saddle",
@@ -1568,7 +1662,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "hans-van-ripper",
+            "claim": "He lost my everyday saddle, the old worn one. Small matter.",
+            "paragraph": "p066",
+            "line": "For a moment the terror of Hans Van\nRipper’s wrath passed across his mind,--for it was his Sunday saddle;\nbut this was no time for petty fears; the goblin was hard on his\nhaunches; and (unskilful rider that he was!)"
+          }
         },
         {
           "id": "hurled-head",
@@ -1662,7 +1762,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "brom-bones",
+            "claim": "The rider threw that head at him before he ever reached the bridge.",
+            "paragraph": "p067",
+            "line": "Another convulsive kick in the ribs, and\nold Gunpowder sprang upon the bridge; he thundered over the resounding\nplanks; he gained the opposite side; and now Ichabod cast a look behind\nto see if his pursuer should vanish, according to rule, in a flash of\nfire and brimstone."
+          }
         }
       ],
       "reading": [
@@ -1797,7 +1903,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "hans-van-ripper",
+            "claim": "Nobody ever heard one word about him again. Not one.",
+            "paragraph": "p071",
+            "line": "It is true, an old farmer, who had been down to New York on a visit\nseveral years after, and from whom this account of the ghostly adventure\nwas received, brought home the intelligence that Ichabod Crane was still\nalive; that he had left the neighborhood partly through fear of the\ngoblin and Hans Van Ripper, and partly in mortification at having been\nsuddenly dismissed by the heiress; that he had changed his quarters to a\ndistant part of the country; had kept school and studied law at the same\ntime; had been admitted to the bar; turned politician; electioneered;\nwritten for the newspapers; and finally had been made a justice of\nthe Ten Pound Court."
+          }
         },
         {
           "id": "broms-knowing-look",
@@ -1890,7 +2002,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "brom-bones",
+            "claim": "I never laugh about that pumpkin business. It's no joke to me.",
+            "paragraph": "p071",
+            "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
+          }
         },
         {
           "id": "old-wives-tale",
@@ -1983,7 +2101,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "hans-van-ripper",
+            "claim": "They fixed up the old schoolhouse, and children still learn there today.",
+            "paragraph": "p072",
+            "line": "The schoolhouse being deserted soon fell to\ndecay, and was reported to be haunted by the ghost of the unfortunate\npedagogue and the plowboy, loitering homeward of a still summer evening,\nhas often fancied his voice at a distance, chanting a melancholy psalm\ntune among the tranquil solitudes of Sleepy Hollow."
+          }
         },
         {
           "id": "storytellers-doubt",
@@ -2078,7 +2202,13 @@
                 "point of view"
               ]
             }
-          ]
+          ],
+          "off_claim": {
+            "character_id": "hans-van-ripper",
+            "claim": "I hear the man who told this tale swore every word of it was true.",
+            "paragraph": "p081",
+            "line": "“Faith, sir,” replied the story-teller, “as to that matter, I don’t\nbelieve one-half of it myself.”"
+          }
         }
       ],
       "reading": [
@@ -4055,6 +4185,16 @@
         "name": "He ran away",
         "description": "Frightened and turned down by Katrina, Ichabod left on his own and started a new life far away."
       }
+    ]
+  },
+  "computer_players": {
+    "rival": {
+      "name": "The Lantern Ghost",
+      "emblem": "lantern"
+    },
+    "teammates": [
+      "Lantern Scout",
+      "Hollow Scout"
     ]
   }
 }

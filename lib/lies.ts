@@ -41,12 +41,12 @@ export function hintFor(lie: Lie, evidence?: SourcePassage[]): LieHighlight {
 }
 export const isHighlighted = (h: LieHighlight | undefined, line: { text: string; pid: string }) =>
   !!h && ("paragraph" in h ? h.paragraph === line.pid : h.lines.includes(line.text));
-// One tap on an evidence line. A miss names the detail to look for; after two misses the right paragraph is gently
-// highlighted (see hintFor), never the exact line alone.
-export function tryLine(lie: Lie, tapped: string, misses: number, evidence?: SourcePassage[]): LieAttempt {
+// One tap on an evidence line. A miss names the detail to look for; after two misses it also names the paragraph to
+// look in. Nothing is highlighted: the right line is never lit up before the student taps it.
+export function tryLine(lie: Lie, tapped: string, misses: number, _evidence?: SourcePassage[]): LieAttempt {
   if (isTruthLine(lie, tapped)) return { result: "caught", misses };
   const next = misses + 1;
-  return { result: "miss", misses: next, message: `Not quite. Look for a line about ${lie.topic}.`, ...(next >= 2 ? { highlight: hintFor(lie, evidence) } : {}) };
+  return { result: "miss", misses: next, message: `Not quite. Look for a line about ${lie.topic}.${next >= 2 ? ` Look again in ¶${Number(lie.truth_paragraph.slice(1))}.` : ""}` };
 }
 
 // The testimony split so the false sentence can be struck through once the lie is caught.

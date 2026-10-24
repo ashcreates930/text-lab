@@ -34,7 +34,8 @@ export type LiveSession = {
 export type LiveSquad = { id: string; name: string; position: number };
 export type LivePlayer = { id: string; nickname: string; squadId: string | null; studentId: string | null; joinedAt: string };
 // witness: the host asked the Witness stand phone to play the testimony (Hologram mode).
-export type ResponseKind = "pin" | "explain" | "approve" | "object" | "submit" | "vote" | "pins" | "argument" | "judged" | "counter_vote" | "override" | "witness" | "story";
+// story_pin / story_react / story_vote: reading together in a live Story Mode squad (lib/live/story.ts squadReading).
+export type ResponseKind = "pin" | "explain" | "approve" | "object" | "submit" | "vote" | "pins" | "argument" | "judged" | "counter_vote" | "override" | "witness" | "story" | "story_pin" | "story_react" | "story_vote";
 export type LiveResponse = {
   id: string; roundIndex: number; squadId: string | null; playerId: string | null; role: Role | "host" | "system" | null;
   kind: ResponseKind; payload: Record<string, unknown>; flagged: boolean; createdAt: string;

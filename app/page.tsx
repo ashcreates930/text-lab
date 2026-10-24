@@ -65,6 +65,8 @@ export type Demo = {
   // Story Mode results per scene (score, best streak, trust, pouch), and whether an adult switched to the Case file view.
   story?:Record<string,{runId:string;total:number;bestStreak:number;trust:Record<string,number>;pouch:string[];cleared:boolean}>; caseFileView?:boolean;
   storyFrames?:Record<string,{kind:"add_detail"|"student";description:string;quote:string;saved_at:string;image?:string;check?:{ok:boolean;notes:string[]}}>;
+  // The clue game: points, coins and streak; marked lines; "Something's off" flags; scenes whose mission screen was seen.
+  game?:import("@/lib/clue-game").ClueGame; marks?:Record<string,import("@/lib/clue-game").LineMark>; claimFlags?:import("@/lib/clue-game").ClaimFlag[]; missionSeen?:string[];
 };
 type ScreenSnapshot = { insideTheTextScreen: true; sequence: number; view: View; demo: Demo };
 const newDemo = (preset: string,worldId="tell-tale-heart"): Demo => ({

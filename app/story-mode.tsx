@@ -11,9 +11,10 @@ import type {SourcePassage} from "@/lib/source-passages";
 import type {Demo} from "./page";
 import {COUNTDOWN_SECONDS,GRACE_SECONDS,POUCH_MAX,POWER_UPS,ROUNDS,ROUND_NAMES,SECONDS,lanternParagraph,phaseSeconds,timeAnnouncement,type PowerUp,type RoundInput,type RoundKind,type RoundRecord,type RunState,type Scene,type TimeSetting} from "@/lib/story-mode";
 import {contentNotes} from "@/lib/content-notes";
-import {tryLine,type LieHighlight} from "@/lib/lies";
+import {tryLine} from "@/lib/lies";
 import {narrationFile} from "@/lib/narration";
-import {EvidenceLines} from "./evidence-lines";
+import {ReadingPanel} from "./reading-panel";
+import {paragraphLabel} from "@/lib/clue-game";
 import {ContentNote} from "./content-note";
 import {AmbientPlayer,Portrait,useCharacterVoice,useSoundPref} from "./game-feel";
 import {browserNarration,soundChannel} from "./sound-player";
@@ -206,7 +207,7 @@ function ReadRound({world,scene,passages,setting,sound,onSubmit}:{world:WorldPac
   <Pouch pouch={pouch} onRemove={t=>tap({text:t})} full={full}/>
   <div className="case-art mt-4 aspect-[16/6] rounded-2xl" role="img" aria-label="The scene" style={{backgroundImage:`url('${scene.background_image}')`}}/>
   <div className="mt-4 space-y-4">{chunks.slice(0,shown).map((p,i)=>i===shown-1&&noteOpen?<div key={p.id}><ContentNote text={notes.get(p.id)!}/><button type="button" onClick={()=>setNoteSeen(s=>({...s,[p.id]:true}))} className="case-secondary mt-3">Continue reading</button></div>
-   :<div key={p.id} className="rounded-3xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="mb-2 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Part {i+1} of {chunks.length}</p><EvidenceLines passages={[p]} picked={undefined} onPick={tap} className="space-y-2" highlight={{lines:pouch}}/></div>)}</div>
+   :<div key={p.id} className="rounded-3xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="mb-1 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Part {i+1} of {chunks.length}</p><ReadingPanel passages={[p]} kept={pouch} onTap={tap} className="shadow-none"/></div>)}</div>
   <div className="mt-5 flex flex-wrap justify-end gap-3">
    {shown<chunks.length&&<button type="button" onClick={()=>setShown(n=>n+1)} disabled={noteOpen} className="case-secondary">Next part <ArrowRight size={18}/></button>}
    <button type="button" onClick={()=>send(t.elapsed,t.grace)} className="case-primary">{pouch.length?`I'm done: lock in ${pouch.length} line${pouch.length===1?"":"s"}`:"I'm done reading"}</button>
@@ -257,8 +258,8 @@ function ConfrontRound({world,scene,passages,run,setting,sound,sandboxId,onSubmi
    <TimerBar t={proofT} seconds={proofSeconds}/>
    <h2 className="mt-5 text-[18px] font-bold">Back it up with one line</h2>
    <Pouch pouch={run.state.pouch} picked={proof?[proof]:[]} onPick={t=>setProof(t)}/>
-   <details className="mt-3 rounded-2xl bg-[#FFFDF8] p-3 ring-1 ring-[#E4DCCB]" open={!run.state.pouch.length||!!lantern}><summary className="cursor-pointer text-[15px] font-semibold text-[#8A3B23]">Or pick a line from the passage{lantern?" (your Lantern is lit)":""}</summary>
-    <EvidenceLines passages={chunks} picked={proof||undefined} onPick={l=>setProof(l.text)} className="mt-2 max-h-[45vh] space-y-2 overflow-y-auto pr-1" highlight={lantern?{paragraph:lantern}:undefined}/></details>
+   <details className="mt-3 rounded-2xl bg-[#FFFDF8] p-3 ring-1 ring-[#E4DCCB]" open={!run.state.pouch.length||!!lantern}><summary className="cursor-pointer text-[15px] font-semibold text-[#8A3B23]">Or pick a line from the passage{lantern?` (your Lantern points to ${paragraphLabel(lantern)})`:""}</summary>
+    <ReadingPanel className="mt-2 max-h-[45vh] shadow-none" passages={chunks} kept={proof?[proof]:[]} onTap={l=>setProof(l.text)}/></details>
    <div className="mt-5 flex justify-end"><button type="button" disabled={!proof} onClick={()=>send(proofT.elapsed,proofT.grace)} className="case-primary disabled:opacity-40">Back it up <ArrowRight size={18}/></button></div>
    <p className="mt-2 text-right text-[14px] text-[#6B6457]"><button type="button" onClick={()=>send(proofT.elapsed,proofT.grace,action,"")} className="underline underline-offset-4">Go without proof</button></p>
   </>}
@@ -270,20 +271,19 @@ function LieRound({world,scene,passages,run,setting,sound,sandboxId,onSubmit}:{w
  const source=useMemo(()=>passages.filter(p=>clue.source_anchor.includes(p.id)),[passages,clue.source_anchor]);
  const seconds=phaseSeconds(SECONDS.lie,setting);
  const [line,setLine]=useState(""),[misses,setMisses]=useState(0),[message,setMessage]=useState(""),[caught,setCaught]=useState(false),[explain,setExplain]=useState("");
- const [highlight,setHighlight]=useState<LieHighlight|undefined>(()=>run.state.lantern?{paragraph:lie.truth_paragraph}:undefined);
  const sent=useRef(false);
  const send=(e:number,g:boolean)=>{if(sent.current)return;sent.current=true;onSubmit({kind:"lie",line,explanation:explain},e,g)};
  const lineRef=useRef(line);lineRef.current=line;const exRef=useRef(explain);exRef.current=explain;
  const t=useRoundTimer(seconds,false,()=>{if(sent.current)return;sent.current=true;onSubmit({kind:"lie",line:lineRef.current,explanation:exRef.current},(seconds!+GRACE_SECONDS)*1000,true)});
- // The existing hint rules: a miss names the detail to look for; after two misses the right paragraph lights up.
- function pick(l:{text:string}){if(caught)return;const r=tryLine(lie,l.text,misses,source);if(r.result==="caught"){setLine(l.text);setCaught(true);setMessage("");cue(sound,"chime")}else{setMisses(r.misses);setMessage(r.message);if(r.highlight)setHighlight(r.highlight)}}
+ // The hint rules: a miss names the detail to look for; after two misses, the paragraph. No line is ever highlighted.
+ function pick(l:{text:string}){if(caught)return;const r=tryLine(lie,l.text,misses,source);if(r.result==="caught"){setLine(l.text);setCaught(true);setMessage("");cue(sound,"chime")}else{setMisses(r.misses);setMessage(r.message)}}
  return <section className="mt-4" aria-labelledby="play-h">
   <h1 id="play-h" className="text-[24px] font-bold">Catch the lie</h1>
   <Speaker world={world} characterId={lie.character_id} line={lie.testimony} sound={sound} sandboxId={sandboxId} label="Testimony"/>
   <TimerBar t={t} seconds={seconds}/>
   <p className="mt-4 text-[16px] font-semibold">One thing is false. Tap the line in the story that proves it.</p>
-  <div aria-live="polite">{message&&<p className="mt-2 rounded-2xl bg-[#FBF1EB] px-4 py-3 text-[16px]">{message}{highlight?" The lines to look in are highlighted.":""}</p>}{caught&&<p className="mt-2 rounded-2xl bg-[#A0472C] px-4 py-3 text-[16px] font-semibold text-white">Lie caught. Now say why in one sentence.</p>}</div>
-  <div className="mt-3 rounded-3xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><EvidenceLines passages={source} picked={line||undefined} onPick={pick} className="max-h-[45vh] space-y-2 overflow-y-auto pr-1" highlight={caught?undefined:highlight}/></div>
+  <div aria-live="polite">{run.state.lantern&&!caught&&!message&&<p className="mt-2 rounded-2xl bg-[#FBEFD2] px-4 py-3 text-[16px]">Your Lantern points to {paragraphLabel(lie.truth_paragraph)}.</p>}{message&&<p className="mt-2 rounded-2xl bg-[#FBF1EB] px-4 py-3 text-[16px]">{message}</p>}{caught&&<p className="mt-2 rounded-2xl bg-[#A0472C] px-4 py-3 text-[16px] font-semibold text-white">Lie caught. Now say why in one sentence.</p>}</div>
+  <ReadingPanel className="mt-3 max-h-[45vh]" passages={source} kept={line?[line]:[]} results={caught?[{line,ok:true}]:[]} onTap={pick}/>
   {caught&&<><label htmlFor="lie-why" className="mt-4 block text-[16px] font-semibold">Why does this line prove it false?</label><textarea id="lie-why" value={explain} onChange={e=>setExplain(e.target.value)} rows={2} maxLength={400} className="mt-2 w-full rounded-2xl border border-[#E4DCCB] bg-[#FFFDF8] px-4 py-3 text-[17px]" placeholder={`${world.characters.find(c=>c.id===lie.character_id)?.name??"They"} said… but the story says…`}/></>}
   <div className="mt-5 flex flex-wrap justify-end gap-3">{!caught&&<button type="button" onClick={()=>send(t.elapsed,t.grace)} className="case-secondary">I'm stuck, move on</button>}<button type="button" disabled={!caught} onClick={()=>send(t.elapsed,t.grace)} className="case-primary disabled:opacity-40">Submit <ArrowRight size={18}/></button></div>
  </section>;

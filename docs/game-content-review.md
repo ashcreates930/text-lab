@@ -318,3 +318,75 @@ Authored in `worlds/sleepy-hollow/world.json` (`scenes[0].story_mode`), checked 
 | Purpose line | Play the scene together: read, answer, catch the lie and make your call. |
 | Phone | Story Mode · Round N of 4 · (name) · N seconds left · (round 1: the focus question) · Lock in N lines · Your pouch is full. Tap a kept line to take it out. · What do you do? · Back it up with one line · Or pick a line from the passage · Back it up · Go without proof · Tap the line that proves it false · Lie caught. Now say why in one sentence. · Why does it prove it false? · Submit / I'm stuck, move on · Pin 2 lines from your pouch · Make my call · Locked in. · Eyes on the board. Your points show at the leaderboard. · No answer this round · (round 1 note) True to the story, but it doesn't answer the question. · N points · you're #N of N / your squad is #N of N · up N · Eyes on the board for the top 5. · Story Mode complete |
 | Errors | That isn't this round. · You've already answered this round. · Time's up for this round. · This story has no Story Mode yet. |
+
+## The clue screen: The Legend of Sleepy Hollow
+
+Authored in `worlds/sleepy-hollow/world.json` and checked by `validate:worlds` (lib/clue-game.ts). Lines are copied exactly from the story; Irving's "--" shows as a dash on screen only. Characters deliver an off claim in their own voice on their first or second answer about a clue (picked per student); students catch it with "Something's off" and the line that corrects it.
+
+### Off claims (one per clue)
+
+| Scene | Clue | Who | Off claim | The line that corrects it |
+| --- | --- | --- | --- | --- |
+| 1 | The empty schoolhouse | Brom Bones | That schoolhouse was a fine big place, with plenty of rooms for all his scholars. | ¶11 “His schoolhouse was a low building of one large room, rudely constructed of logs; the windows partly glazed, and partly patched with leaves of old copybooks.” |
+| 1 | Ichabod's belongings | Hans Van Ripper | He left every coin of his quarter's pay behind in that bundle. | ¶69 “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.” |
+| 1 | Ichabod's own books and the unfinished poem | Hans Van Ripper | I kept his books on the schoolhouse shelf. Waste not, want not. | ¶69 “These magic books and the poetic scrawl were forthwith consigned to the flames by Hans Van Ripper; who, from that time forward, determined to send his children no more to school, observing that he never knew any good come of this same reading and writing.” |
+| 1 | The searchers' report | Brom Bones | They found his saddle hanging neatly on the bridge rail. | ¶68 “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.” |
+| 2 | The Van Tassel feast | Brom Bones | The schoolmaster ate like a bird at the party and hardly touched a thing. | ¶45 “He was a kind and thankful creature, whose heart dilated in proportion as his skin was filled with good cheer, and whose spirits rose with eating, as some men’s do with drink.” |
+| 2 | Brom Bones, the brooding rival | Brom Bones | I never played a single trick on that schoolmaster. Not my style. | ¶33 “There was something extremely provoking in this obstinately pacific system; it left Brom no alternative but to draw upon the funds of rustic waggery in his disposition, and to play off boorish practical jokes upon his rival.” |
+| 2 | Brom's tale of racing the Horseman | Brom Bones | The schoolmaster laughed my story off. It didn't scare him one bit. | ¶56 “All these tales, told in that drowsy undertone with which men talk in the dark, the countenances of the listeners only now and then receiving a casual gleam from the glare of a pipe, sank deep in the mind of Ichabod.” |
+| 2 | Ichabod's private talk with Katrina | Brom Bones | He came out of Katrina's house grinning, sure he had won her. | ¶57 “Something, however, I fear me, must have gone wrong, for he certainly sallied forth, after no very great interval, with an air quite desolate and chapfallen.” |
+| 3 | Major André's tree | Brom Bones | That old tree is a skinny thing. You'd ride right past it without noticing. | ¶59 “In the centre of the road stood an enormous tulip-tree, which towered like a giant above all the other trees of the neighborhood, and formed a kind of landmark.” |
+| 3 | The shadowy rider | Brom Bones | That rider chatted with him the whole way, friendly as a neighbor. | ¶64 “There was something in the moody and dogged silence of this pertinacious companion that was mysterious and appalling.” |
+| 3 | Hans Van Ripper's saddle | Hans Van Ripper | He lost my everyday saddle, the old worn one. Small matter. | ¶66 “For a moment the terror of Hans Van Ripper’s wrath passed across his mind,—for it was his Sunday saddle; but this was no time for petty fears; the goblin was hard on his haunches; and (unskilful rider that he was!)” |
+| 3 | The head hurled at the bridge | Brom Bones | The rider threw that head at him before he ever reached the bridge. | ¶67 “Another convulsive kick in the ribs, and old Gunpowder sprang upon the bridge; he thundered over the resounding planks; he gained the opposite side; and now Ichabod cast a look behind to see if his pursuer should vanish, according to rule, in a flash of fire and brimstone.” |
+| 4 | The report from New York | Hans Van Ripper | Nobody ever heard one word about him again. Not one. | ¶71 “It is true, an old farmer, who had been down to New York on a visit several years after, and from whom this account of the ghostly adventure was received, brought home the intelligence that Ichabod Crane was still alive; that he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress; that he had changed his quarters to a distant part of the country; had kept school and studied law at the same time; had been admitted to the bar; turned politician; electioneered; written for the newspapers; and finally had been made a justice of the Ten Pound Court.” |
+| 4 | Brom's laugh at the pumpkin | Brom Bones | I never laugh about that pumpkin business. It's no joke to me. | ¶71 “Brom Bones, too, who, shortly after his rival’s disappearance conducted the blooming Katrina in triumph to the altar, was observed to look exceedingly knowing whenever the story of Ichabod was related, and always burst into a hearty laugh at the mention of the pumpkin; which led some to suspect that he knew more about the matter than he chose to tell.” |
+| 4 | The old wives' ghost story | Hans Van Ripper | They fixed up the old schoolhouse, and children still learn there today. | ¶72 “The schoolhouse being deserted soon fell to decay, and was reported to be haunted by the ghost of the unfortunate pedagogue and the plowboy, loitering homeward of a still summer evening, has often fancied his voice at a distance, chanting a melancholy psalm tune among the tranquil solitudes of Sleepy Hollow.” |
+| 4 | The storyteller's doubt | Hans Van Ripper | I hear the man who told this tale swore every word of it was true. | ¶81 ““Faith, sir,” replied the story-teller, “as to that matter, I don’t believe one-half of it myself.”” |
+
+### Character cards (traits unlock as the student reaches each paragraph)
+
+| Character | Role | Trait | Line from the story |
+| --- | --- | --- | --- |
+| Hans Van Ripper | A practical farmer and Ichabod’s former host. | Ichabod's landlord, in charge of his things | ¶69 “Hans Van Ripper as executor of his estate, examined the bundle which contained all his worldly effects.” |
+| Hans Van Ripper | A practical farmer and Ichabod’s former host. | Worries about his saddle | ¶68 “Hans Van Ripper now began to feel some uneasiness about the fate of poor Ichabod, and his saddle.” |
+| Hans Van Ripper | A practical farmer and Ichabod’s former host. | Has no use for books | ¶69 “These magic books and the poetic scrawl were forthwith consigned to the flames by Hans Van Ripper; who, from that time forward, determined to send his children no more to school, observing that he never knew any good come of this same reading and writing.” |
+| Brom Bones | Abraham Van Brunt, known as Brom Bones: the boldest rider around Sleepy Hollow, Ichabod's rival for Katrina Van Tassel, and later her husband. | Part of the town's ghost stories | ¶70 “The stories of Brouwer, of Bones, and a whole budget of others were called to mind; and when they had diligently considered them all, and compared them with the symptoms of the present case, they shook their heads, and came to the conclusion that Ichabod had been carried off by the Galloping Hessian.” |
+| Brom Bones | Abraham Van Brunt, known as Brom Bones: the boldest rider around Sleepy Hollow, Ichabod's rival for Katrina Van Tassel, and later her husband. | Famous for his strength | ¶28 “Among these, the most formidable was a burly, roaring, roystering blade, of the name of Abraham, or, according to the Dutch abbreviation, Brom Van Brunt, the hero of the country round, which rang with his feats of strength and hardihood.” |
+| Brom Bones | Abraham Van Brunt, known as Brom Bones: the boldest rider around Sleepy Hollow, Ichabod's rival for Katrina Van Tassel, and later her husband. | Blamed for every prank | ¶28 “The neighbors looked upon him with a mixture of awe, admiration, and good-will; and, when any madcap prank or rustic brawl occurred in the vicinity, always shook their heads, and warranted Brom Bones was at the bottom of it.” |
+
+### Computer players (demo rival and squad modes, always labeled)
+
+| Part | Name |
+| --- | --- |
+| Computer rival (lantern emblem) | The Lantern Ghost |
+| Computer teammates | Lantern Scout, Hollow Scout |
+
+### How characters answer (all stories)
+
+Characters answer in their own voice with an opinion, memory or claim in two or three short sentences, never a summary of the passage, and end by sending the student to the text ("Read what the book says about the windows, then tell me I'm wrong."). Plain standard English, no dialect. Only the off claim above may go beyond the passages.
+
+### Clue screen wording (all stories)
+
+| Where | Text |
+| --- | --- |
+| Task line | Tap the line that proves or disproves (character), then Prove it. · One thing (character) said is false. Tap the line that proves it, then Prove it. · Proven. Now explain what it shows. |
+| Right line | That's the proof. +N points, +N coins. Streak N! · Lie caught. You proved (character) wrong. |
+| Wrong line | Not that one. This clue is about (clue). Look again in ¶N. · Not quite. Look for a line about (topic). Look again in ¶N. (after two misses) |
+| Something's off | Something's off · Tap the line that shows what (character) got wrong, then Check. · You caught (character)'s mistake. +N points, +N coins. · Saved for your teacher to look at. No points either way. |
+| Mark-up | Mark this line · Clue · Word to know · Question · Keep in my pouch / Take out of my pouch · Done |
+| Character card | What the story shows · One more trait unlocks later in the story. · Hologram · Ask (name) |
+| Pouch | Evidence pouch · N of 3 |
+
+### Mode screens (all stories)
+
+| Where | Text |
+| --- | --- |
+| Solo mission | Solo · (role badge) · Mission: (goal) · Coins · Streak · correct proofs in a row · (first name)'s trust · Wary / Friendly · Next stop · Go to scene N |
+| Rival face-off | Face-off · Same claim, same passage. The right line wins the point; speed only breaks a tie. A wrong tap locks you out for 3 seconds. · You · VS · (rival) · Computer rival · I'm ready · 3, 2, 1 · Points come from the right line, never from speed alone. |
+| Rival race | Race: tap the line that proves (character) wrong. · (rival) (computer rival) is reading… · (rival) tapped a wrong line and is locked out. · Locked out: Ns · You win the point! · (rival) found it first. Keep going: find the line yourself to prove the clue. |
+| Squad huddle | Your squad · Each of you reads a different part. Pins light up on everyone's screen. · Squad progress · Ready / Answering / Absent · Computer teammate · Your job: (job). (instructions) · Read your part |
+| Squad jobs | Reader: Pin the key line from your part of the passage. · Fact-checker: Test the character's claim against the pinned lines. React with "This proves…" or "I disagree because…". · Connector: Link a pinned line to an earlier clue with a "This connects to…" reaction. |
+| Reactions | This proves… · I disagree because… · This connects to… · finish the sentence (80 characters) · Add my reaction · That reaction is saved for your teacher to see. Try different words for your squad. |
+| Squad vote | Vote: best proof · Ties go to the line with the most reactions, then the Fact-checker's vote. · N votes · leading · Lock in the squad's pick · Vote before you lock in |
+| Teacher Evidence | Marked lines and flagged answers · Caught the mistake / Needs your review · Pinned "…" · Reacted: (stem) (ending) · Voted for "…" |

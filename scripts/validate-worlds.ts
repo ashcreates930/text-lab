@@ -5,6 +5,7 @@ import { lieProblems } from "../lib/lies.ts";
 import { hologramPngProblem } from "../lib/hologram.ts";
 import { studentRoleProblems } from "../lib/student-role.ts";
 import { storyModeProblems } from "../lib/story-mode.ts";
+import { clueGameProblems } from "../lib/clue-game.ts";
 import { inflateSync } from "node:zlib";
 import { cluesByPage, sentenceKey, pagePassages, pageUnits, isSpeakerLine } from "../lib/storybook.ts";
 // Every playable and preview world must pass; coming-soon folders hold metadata only.
@@ -51,7 +52,7 @@ for(const folder of await readdir(root,{withFileTypes:true})){
   const result=WorldPackSchema.safeParse(pack);
   if(!result.success){failed=true;console.error(`Invalid world pack: ${folder.name}`);console.error(result.error.format());continue}
   let source:string;try{source=await readFile(new URL(`${folder.name}/source.md`,root),"utf8")}catch{failed=true;console.error(`Missing source.md: ${folder.name}`);continue}
-  const problems=[...storybookProblems(result.data,source),...lieProblems(result.data,parseSourcePassages(source)),...studentRoleProblems(result.data),...storyModeProblems(result.data,parseSourcePassages(source))];
+  const problems=[...storybookProblems(result.data,source),...lieProblems(result.data,parseSourcePassages(source)),...studentRoleProblems(result.data),...storyModeProblems(result.data,parseSourcePassages(source)),...clueGameProblems(result.data,parseSourcePassages(source))];
   // Hologram mode: every hologram listed must exist under public/ as a transparent PNG.
   for(const c of result.data.characters){if(!c.hologram)continue;let png:Buffer;try{png=await readFile(new URL(`../public${c.hologram}`,import.meta.url))}catch{problems.push(`${c.id} hologram ${c.hologram} is missing`);continue}const issue=await hologramPngProblem(png,d=>inflateSync(d));if(issue)problems.push(`${c.id} hologram ${c.hologram} ${issue}`)}
   for(const scene of result.data.scenes)for(const clue of scene.artifacts){const owner=clueOwners.get(clue.id);if(owner&&owner!==result.data.id)problems.push(`clue id ${clue.id} is also used by ${owner}; clue ids must be unique across stories`);clueOwners.set(clue.id,result.data.id)}

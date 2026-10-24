@@ -956,7 +956,7 @@ test("Spot the Lie: every scene's lie passes validation, and broken lies are cau
   assert.match(lieProblems(w,passages).join(" | "),/content note/);
 });
 
-test("Spot the Lie: the right line catches it; a wrong line names the topic; two misses highlight the paragraph", async()=>{
+test("Spot the Lie: the right line catches it; a wrong line names the topic; two misses name the paragraph", async()=>{
   const {tryLine,testimonyParts,isTruthLine}=await import("../lib/lies.ts");
   const {world}=await storyWorld("sleepy-hollow");
   const lie=world.scenes[0].lie!;
@@ -965,7 +965,7 @@ test("Spot the Lie: the right line catches it; a wrong line names the topic; two
   assert.deepEqual(r,{result:"miss",misses:1,message:"Not quite. Look for a line about what was in Ichabod's bundle."});
   r=tryLine(lie,"Hans Van Ripper as executor of his estate, examined the bundle which contained all his worldly effects.",r.misses);
   assert.equal(r.result,"miss");
-  assert.deepEqual(r.result==="miss"&&r.highlight,{paragraph:"p069"},"without the clue evidence, the paragraph is highlighted");
+  assert.deepEqual(r,{result:"miss",misses:2,message:"Not quite. Look for a line about what was in Ichabod's bundle. Look again in ¶69."},"the paragraph is named, never highlighted");
   // The line as the clue screen shows it, with the source's line breaks, still matches.
   const tapped="They consisted of two shirts and a half; two stocks for the neck; a pair or\ntwo of worsted stockings; an old pair of corduroy small-clothes; a rusty\nrazor; a book of psalm tunes full of dog's-ears; and a broken pitch-pipe.";
   assert.equal(isTruthLine(lie,tapped),true);
@@ -1082,7 +1082,7 @@ test("Final Verdict: the case strength comes from the rubric, checked against th
   assert.equal(feedbackFromJudge({claim:true,supporting_quotes:[1,2,3],reasoning_words:"",strength_note:"",next_step:"y"},strong),null);
 });
 
-test("Spot the Lie hint: a one-paragraph clue highlights three lines around the answer; several paragraphs highlight the paragraph", async()=>{
+test("Spot the Lie hint: a miss names the detail, two misses name the paragraph, and no line is ever highlighted", async()=>{
   const {tryLine,hintFor,isHighlighted,evidenceSentences,isTruthLine}=await import("../lib/lies.ts");
   const {parseSourcePassages}=await import("../lib/source-passages.ts");
   const world=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/sleepy-hollow/world.json",import.meta.url),"utf8")));
@@ -1092,13 +1092,12 @@ test("Spot the Lie hint: a one-paragraph clue highlights three lines around the 
   const lie=world.scenes[0].lie!,evidence=evidenceOf(0);
   assert.equal(evidence.length,1);
   let r=tryLine(lie,"not this line",0,evidence);assert.equal(r.result==="miss"&&r.highlight,undefined,"no highlight after one miss");
+  assert.ok(r.result==="miss"&&!r.message.includes("¶"));
   r=tryLine(lie,"not this line either",1,evidence);
   const lines=evidenceSentences(evidence[0].text);
-  assert.ok(r.result==="miss"&&r.highlight&&"lines" in r.highlight);
-  const lit=lines.filter(t=>isHighlighted(r.result==="miss"?r.highlight:undefined,{text:t,pid:"p069"}));
-  assert.equal(lit.length,3,"three lines, not the whole paragraph");
-  assert.deepEqual(lit,lines.slice(1,4),"the answer with one line on each side");
-  assert.ok(isTruthLine(lie,lit[1]));
+  assert.ok(r.result==="miss"&&r.highlight===undefined,"never a highlight");
+  assert.match(r.result==="miss"?r.message:"",/Look again in ¶69\./);
+  assert.ok(isTruthLine(lie,lines[2]));void isHighlighted;
   // At the edge of a paragraph it still shows three lines.
   const first={...lie,truth_line:lines[0]};assert.deepEqual(hintFor(first,evidence),{lines:lines.slice(0,3)});
   const last={...lie,truth_line:lines.at(-1)!};assert.deepEqual(hintFor(last,evidence),{lines:lines.slice(-3)});
@@ -1978,4 +1977,148 @@ test("story mode: Catch the lie opens a demo run at round 3; Brom's trust is sav
   const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
   const saved=StudentProgressSchema.parse({v:1,worldId:"sleepy-hollow",scene:0,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],storyFrames:{},story:{"empty-schoolhouse":{runId:fresh.id,total:r2.run!.total,bestStreak:1,trust:r2.run!.state.trust,pouch:[],cleared:false}},updatedAt:new Date().toISOString()});
   assert.equal(saved.story!["empty-schoolhouse"].trust["brom-bones"],hat.trust,"and in saved progress");
+});
+
+// ---------- The clue game (lib/clue-game.ts) ----------
+test("clue game content: one off claim per Sleepy Hollow clue, traits and correcting lines copied exactly", async()=>{
+  const {world,passages,line}=await storyKit();
+  const cg=await import("../lib/clue-game.ts");const {evidenceSentences}=await import("../lib/lies.ts");
+  assert.deepEqual(cg.clueGameProblems(world,passages),[]);
+  for(const sc of world.scenes)for(const c of sc.artifacts){
+    assert.ok(c.off_claim,`${c.id} has an off claim`);
+    const o=c.off_claim!;
+    assert.ok(evidenceSentences(passages.find(p=>p.id===o.paragraph)!.text).includes(o.line),`${c.id} line is exact`);
+    assert.ok(c.source_anchor.includes(o.paragraph)&&sc.available_characters.includes(o.character_id));
+    assert.ok(!o.claim.includes("—"));
+  }
+  for(const ch of world.characters){assert.ok((ch.traits?.length??0)>=2&&(ch.traits?.length??0)<=3,ch.id);for(const t of ch.traits!)assert.ok(evidenceSentences(passages.find(p=>p.id===t.paragraph)!.text).includes(t.line),t.name)}
+  // validate:worlds catches an edited line, a line from outside the clue, a non-speaking character and an em dash.
+  const bad=structuredClone(world);const a=bad.scenes[0].artifacts[0];
+  a.off_claim={...a.off_claim!,line:a.off_claim!.line.replace("low","small"),claim:"It was big — really big."};
+  bad.scenes[0].artifacts[1].off_claim={...bad.scenes[0].artifacts[1].off_claim!,character_id:"ichabod-crane",paragraph:"p068",line:line("p068",0)};
+  bad.characters[0].traits![0].line="Hans liked books.";
+  const p=cg.clueGameProblems(bad,passages).join(" | ");
+  assert.match(p,/not copied exactly from p011/);assert.match(p,/no em dashes/);assert.match(p,/must be a speaking character/);assert.match(p,/clue's own paragraphs/);assert.match(p,/trait .*not copied exactly/);
+});
+
+test("reading panel text: display cleanup only, paragraph numbers, and proof checks that point back to the passage", async()=>{
+  const {world,passages,line}=await storyKit();
+  const cg=await import("../lib/clue-game.ts");
+  assert.equal(cg.displayLine("getting out,--an idea\nmost probably"),"getting out,—an idea most probably");
+  assert.equal(cg.displayLine("a dog's-\nears book"),"a dog's-ears book");
+  assert.equal(cg.paragraphLabel("p028"),"¶28");
+  const clue=world.scenes[0].artifacts.find(a=>a.id==="ichabods-own-books")!;
+  assert.deepEqual(cg.checkProof(world,passages,clue,line("p069",4)),{ok:true});
+  const wrong=cg.checkProof(world,passages,clue,line("p068",1));
+  assert.ok(!wrong.ok&&/¶69/.test(wrong.hint)&&!wrong.hint.includes("flames"),"names the paragraph, never the line");
+  // The panel shows the clue's paragraphs plus neighbours from the scene's reading, so not every line answers it.
+  const panel=cg.cluePanel(world,passages,world.scenes[0],clue).map(p=>p.id);
+  assert.ok(panel.includes("p069")&&panel.length>1);
+  // Character cards are spoiler-safe: in scene 1 Brom shows only the trait from the reading so far.
+  const brom=world.characters.find(c=>c.id==="brom-bones")!;
+  const early=cg.characterCard(world,passages,brom,0),later=cg.characterCard(world,passages,brom,1);
+  assert.deepEqual([early.traits.length,early.locked],[1,2]);assert.deepEqual([later.traits.length,later.locked],[3,0]);
+});
+
+test("clue game scoring: right proofs earn once, streaks build, a wrong proof ends the streak; off claims land on turn 1 or 2", async()=>{
+  const {world}=await storyKit();
+  const cg=await import("../lib/clue-game.ts");
+  let r=cg.earn(undefined,"proof","a");assert.deepEqual([r.points,r.coins,r.game.streak],[100,1,1]);
+  r=cg.earn(r.game,"offClaim","a");assert.deepEqual([r.points,r.coins,r.game.streak],[360,2,2],"x1.2 for the second in a row");
+  r=cg.earn(r.game,"proof","b");assert.equal(r.points,150,"x1.5 from the third");
+  assert.equal(cg.earn(r.game,"proof","b").points,0,"the same award counts once");
+  const m=cg.miss(r.game);assert.deepEqual([m.streak,m.points,m.bestStreak],[0,r.game.points,3]);
+  const clue=world.scenes[0].artifacts[2];
+  for(const seed of ["a","b","c","d"]){const t=cg.offClaimTurn(seed,clue.id);assert.ok(t===1||t===2);assert.equal(cg.offClaimTurn(seed,clue.id),t)}
+  assert.ok(new Set(["s1","s2","s3","s4","s5","s6"].map(x=>cg.offClaimTurn(x,clue.id))).size===2,"unpredictable: both turns happen");
+  assert.ok(cg.correctsOffClaim(clue,clue.off_claim!.line));assert.ok(!cg.correctsOffClaim(clue,"Something else."));
+  assert.equal(cg.offClaimFor(clue,clue.off_claim!.character_id)?.claim,clue.off_claim!.claim);
+  const {offClaimInstruction,ANSWER_STYLE}=await import("../lib/llm.ts");
+  assert.match(offClaimInstruction("He kept the books."),/as if it were true: "He kept the books\."/);
+  assert.match(ANSWER_STYLE,/Never retell or summarize/);assert.match(ANSWER_STYLE,/no dialect/);
+});
+
+test("rival: the right line wins, speed only breaks a tie, a wrong tap locks out for 3 seconds; the computer uses authored lines", async()=>{
+  const {world,passages}=await storyKit();
+  const cg=await import("../lib/clue-game.ts");const {lineWords}=await import("../lib/lies.ts");
+  assert.equal(cg.rivalOutcome(9000,null),"you","only you found it");
+  assert.equal(cg.rivalOutcome(null,4000),"rival");
+  assert.equal(cg.rivalOutcome(9000,4000),"rival","both right: the faster one");
+  assert.equal(cg.rivalOutcome(4000,4000),"tie");assert.equal(cg.rivalOutcome(null,null),"none");
+  assert.equal(cg.RIVAL_LOCKOUT_MS,3000);
+  for(const sc of world.scenes)for(const clue of sc.artifacts){
+    const panel=cg.cluePanel(world,passages,sc,clue),plan=cg.computerRivalPlan(clue,panel)!;
+    const lines=panel.flatMap(p=>(p.text.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g)??[]).map(x=>x.trim()));
+    assert.ok(cg.sameLine(plan.target,clue.off_claim!.line));
+    assert.ok(plan.correctMs>=6000&&plan.correctMs<=25000+cg.RIVAL_LOCKOUT_MS);
+    if(plan.wrong){assert.ok(!cg.sameLine(plan.wrong.line,plan.target));assert.ok(lines.some(l=>lineWords(l)===lineWords(plan.wrong!.line)),"a line from the panel");assert.ok(plan.wrong.atMs<plan.correctMs)}
+  }
+});
+
+test("squads: jobs, chunks, computer teammates never pin the answer, and vote ties", async()=>{
+  const {world,passages}=await storyKit();
+  const cg=await import("../lib/clue-game.ts");const {matchEvidence}=await import("../lib/evidence-check.ts");
+  assert.deepEqual([...cg.squadJobs(["a","b","c","d"]).values()],["reader","fact-checker","connector","reader"]);
+  assert.deepEqual(cg.squadChunks(["p068","p069","p070"],3),[["p068"],["p069"],["p070"]]);
+  assert.deepEqual(cg.squadChunks(["p068","p069","p070"],2),[["p068","p069"],["p070"]]);
+  for(const job of Object.values(cg.SQUAD_JOBS))assert.ok(job.does.length>10);
+  for(const sc of world.scenes)for(const clue of sc.artifacts){
+    const panel=cg.cluePanel(world,passages,sc,clue);
+    for(const l of cg.computerPins(world,passages,clue,panel)){assert.equal(matchEvidence(world,passages,l,{clueId:clue.id}),null,clue.id);assert.ok(!cg.sameLine(l,clue.off_claim!.line))}
+  }
+  const pins=[{line:"A.",reactions:1},{line:"B.",reactions:2},{line:"C.",reactions:2}];
+  assert.equal(cg.voteWinner(pins,[{voter:"x",line:"A."},{voter:"y",line:"A."},{voter:"z",line:"B."}],"z"),"A.","most votes");
+  assert.equal(cg.voteWinner(pins,[{voter:"x",line:"A."},{voter:"y",line:"B."}],"y"),"B.","tie: most reactions");
+  assert.equal(cg.voteWinner(pins,[{voter:"x",line:"B."},{voter:"fc",line:"C."}],"fc"),"C.","still tied: the Fact-checker's vote");
+  assert.equal(cg.voteWinner([],[],null),null);
+});
+
+test("live squads read together: pins with names, screened reactions, a vote, and all of it in the Evidence view", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {line,c}=await storyKit();
+  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");const {liveRoundEvidence}=await import("../lib/live/evidence.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"READ01",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const ids:string[]=[];for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven"]){ids.push((await server.join(store,s,{nickname:n,studentId:null})).player!.id);await new Promise(r=>setTimeout(r,5))}
+  let st=(await server.loadState(store,s.id))!;await server.hostAct(store,st,{action:"squads.auto"});st=(await server.loadState(store,s.id))!;
+  const sq=await store.replaceSquads(s.id,["Squad Lantern"]);await store.setSquads(s.id,ids.map(playerId=>({playerId,squadId:sq[0].id})));
+  st=(await server.loadState(store,s.id))!;await server.hostAct(store,st,{action:"round.start",type:"story",squads:true} as never);
+  const act=async(pid:string,kind:string,payload:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,pid,{kind:kind as never,payload},{judgeAllowed:async()=>false})};
+  st=(await server.loadState(store,s.id))!;
+  const view0=server.playerView(st,ids[0]).story!.reading!;
+  assert.deepEqual(view0.members.map(m=>m.job),["reader","fact-checker","connector"]);
+  assert.deepEqual(view0.myChunk,["p068"]);assert.deepEqual(server.playerView(st,ids[1]).story!.reading!.myChunk,["p069"]);
+  assert.equal(await act(ids[0],"story_pin",{line:line("p068",5)}),null);
+  assert.equal(await act(ids[0],"story_pin",{line:"Not in the reading."}),"Pick a line from the reading.");
+  assert.equal(await act(ids[1],"story_pin",{line:line("p069",2)}),null);
+  assert.equal(await act(ids[1],"story_react",{line:line("p068",5),stem:"proves",body:"someone rode fast to the bridge."}),null);
+  assert.match((await act(ids[2],"story_react",{line:line("p068",5),stem:"disagree",body:"where do you live, Ben?"}))??"",/saved for your teacher/);
+  st=(await server.loadState(store,s.id))!;
+  const v1=server.playerView(st,ids[1]).story!.reading!;
+  assert.deepEqual(v1.pins.map(p=>[p.by,p.mine]),[["Detective Owl",false],["Inspector Fox",true]]);
+  assert.equal(v1.reactions.length,1,"a flagged reaction never reaches teammates");
+  assert.equal(server.playerView(st,ids[2]).story!.reading!.reactions.length,2,"the writer still sees their own");
+  // The vote: one each, so the tie goes to the line with the most reactions.
+  await act(ids[0],"story_vote",{line:line("p069",2)});await act(ids[1],"story_vote",{line:line("p068",5)});
+  st=(await server.loadState(store,s.id))!;
+  const v2=server.playerView(st,ids[2]).story!.reading!;
+  assert.ok(v2.winner&&v2.winner.startsWith("In one part of the road"),"tied 1 to 1: the reacted line wins");
+  assert.equal(v2.everyoneVoted,false);
+  const ev=liveRoundEvidence({session:st.session,world:st.world,squads:st.squads,players:st.players,responses:st.responses});
+  const acts=ev[0].squads[0].members.flatMap(m=>m.actions).join(" | ");
+  assert.match(acts,/Pinned "In one part of the road/);assert.match(acts,/Reacted: This proves… someone rode fast/);assert.match(acts,/Reacted \(flagged\)/);assert.match(acts,/Voted for "They consisted/);
+  void c;
+});
+
+test("saved progress keeps clue game points, marks and flags, and the Evidence view shows them", async()=>{
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");const {buildEvidence}=await import("../lib/classroom/evidence.ts");
+  const {world}=await storyKit();
+  const p=StudentProgressSchema.parse({v:1,worldId:"sleepy-hollow",scene:0,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],storyFrames:{},updatedAt:"2026-10-24T12:00:00Z",
+    game:{points:460,coins:3,streak:2,bestStreak:2,rivalWins:1,rivalLosses:0,earned:["proof:a","offClaim:a"]},
+    marks:{"p069#2":{tag:"word",pid:"p069",text:"They consisted of two shirts and a half.",clueId:"ichabods-belongings",at:"2026-10-24T12:00:00Z"}},
+    claimFlags:[{clueId:"ichabods-own-books",characterId:"hans-van-ripper",answer:"I kept his books.",line:"These magic books…",pid:"p069",matched:true,at:"x"},{clueId:"empty-schoolhouse",characterId:"brom-bones",answer:"It had a bell.",line:"It was most ingeniously secured…",pid:"p011",matched:false,at:"y"}],missionSeen:["empty-schoolhouse"]});
+  assert.equal(p.game!.points,460);assert.equal(p.marks!["p069#2"].tag,"word");
+  const e=buildEvidence(world,[{id:"s1",nickname:"Ana Ruiz",answers:{},marks:p.marks,claimFlags:p.claimFlags}]);
+  assert.deepEqual(e.students[0].marks,[{tag:"Word to know",paragraph:"¶69",text:"They consisted of two shirts and a half."}]);
+  assert.deepEqual(e.students[0].claimFlags.map(f=>[f.clue,f.character,f.matched]),[["Ichabod's own books and the unfinished poem","Hans Van Ripper",true],["The empty schoolhouse","Brom Bones",false]]);
 });

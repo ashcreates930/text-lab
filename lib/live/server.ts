@@ -5,7 +5,8 @@ import type { WorldPack } from "../world-schema.ts";
 import { readPassages, readWorld } from "../classroom/worlds.ts";
 import { NOT_EVIDENCE, matchEvidence } from "../evidence-check.ts";
 import type { SourcePassage } from "../source-passages.ts";
-import { answerStep, answeredStep, liveStoryBoard, myStepRecord, playerState, publicStory, stepKind, type LiveStoryRound } from "./story.ts";
+import { answerStep, answeredStep, liveStoryBoard, myStepRecord, playerState, publicStory, readingAction, squadReading, stepKind, type LiveStoryRound } from "./story.ts";
+import { screenMessage } from "../safety.ts";
 import { studentBoard, type RoundInput, type TimeSetting } from "../story-mode.ts";
 import { absentDay, getClassroomStore, memoryModeEnabled } from "../classroom/store.ts";
 import { screenArgument, judgeWithRubric } from "../verdict-server.ts";
@@ -201,7 +202,9 @@ export function playerView(st: LiveState, playerId: string) {
   const story = round?.type === "story" ? (() => {
     const state = playerState(st.responses, i, me.id), board = liveStoryBoard(st.responses, i, st.players, st.squads, round.squadsOn, st.absent);
     const view = studentBoard(board.rows, board.kind === "squad" ? me.squadId : me.id);
-    return { answered: !!myStepRecord(st.responses, i, round.step, me.id), last: round.showing === "board" || st.session.status !== "round" ? myStepRecord(st.responses, i, round.step, me.id) : null, total: state.total, pouch: state.pouch, board: view, boardKind: board.kind };
+    const scene = storyScene(st, round);
+    const reading = scene && me.squadId && round.showing === "round" ? squadReading(scene, round, st.responses, i, st.players, me.squadId, me.id, st.absent) : null;
+    return { reading, answered: !!myStepRecord(st.responses, i, round.step, me.id), last: round.showing === "board" || st.session.status !== "round" ? myStepRecord(st.responses, i, round.step, me.id) : null, total: state.total, pouch: state.pouch, board: view, boardKind: board.kind };
   })() : null;
   return {
     session: sessionInfo(st), round: publicRound(st), purpose: round ? squadPurpose(round.type) : "", story,
@@ -356,6 +359,19 @@ export async function playerAct(store: LiveStore, st: LiveState, playerId: strin
     if (typeof r === "string") return r;
     await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: "story", payload: { step: round.step, record: r.record, ...(act.payload.input && (act.payload.input as RoundInput).kind === "lie" ? { explanation: String((act.payload.input as { explanation?: string }).explanation ?? "").slice(0, 400) } : {}) }, flagged: false });
     return null;
+  }
+  // Reading together: pins, reactions and votes in a live Story Mode squad (round 1, squads on).
+  if (act.kind === "story_pin" || act.kind === "story_react" || act.kind === "story_vote") {
+    if (round?.type !== "story" || !round.squadsOn || round.step !== 0 || round.showing !== "round") return "Reading together is in round 1 with squads.";
+    if (!me.squadId) return "Join a squad first.";
+    const scene = storyScene(st, round);
+    if (!scene) return "This scene has no Story Mode.";
+    const r = readingAction(scene, st.passages ?? [], act.kind, act.payload);
+    if (typeof r === "string") return r;
+    // Reactions go through the same safety filter as character questions; a flagged one is kept for the teacher only.
+    const flagged = act.kind === "story_react" && screenMessage(String(r.payload.body)).action !== "allow";
+    await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: act.kind, payload: r.payload, flagged });
+    return flagged ? "That reaction is saved for your teacher to see. Try different words for your squad." : null;
   }
   if (act.kind === "counter_vote") {
     if (!(round?.type === "objection" && round.stage === "vote")) return "Voting is closed.";

@@ -11,7 +11,13 @@ export type SavedFrameInput = { description?: string; quote?: string; image?: st
 // Spot the Lie results (scene id -> result) and the Final Verdict, as saved in students.progress (fields this view reads).
 export type SavedLieInput = { clue_id?: string; caught?: boolean };
 export type SavedVerdictInput = { world_id?: string; theory_id?: string; pinned?: { clue_id: string; quote: string }[]; argument?: string; feedback?: { strength?: string } | null };
-export type EvidenceStudentInput = { id: string; nickname: string; answers: Record<string, SavedAnswer> | null; frames?: Record<string, SavedFrameInput> | null; lies?: Record<string, SavedLieInput> | null; verdict?: SavedVerdictInput | null };
+export type SavedMarkInput = { tag?: string; text?: string; pid?: string };
+export type SavedFlagInput = { clueId?: string; characterId?: string; answer?: string; line?: string; matched?: boolean };
+export type EvidenceStudentInput = { id: string; nickname: string; answers: Record<string, SavedAnswer> | null; frames?: Record<string, SavedFrameInput> | null; lies?: Record<string, SavedLieInput> | null; verdict?: SavedVerdictInput | null; marks?: Record<string, SavedMarkInput> | null; claimFlags?: SavedFlagInput[] | null };
+// Marked lines (clue, word to know, question) and "Something's off" flags. A matched flag caught the clue's off claim;
+// the others wait for the teacher's review.
+export type EvidenceMark = { tag: string; paragraph: string; text: string };
+export type EvidenceFlag = { clue: string; character: string; answer: string; line: string; matched: boolean };
 // The Final Verdict for one student: their theory, the judge's case strength (null when saved without feedback), the three
 // pinned quotes and their closing argument.
 export type EvidenceVerdict = { theory: string; strength: string | null; pinned: { clue: string; quote: string }[]; argument: string };
@@ -27,7 +33,7 @@ export type EvidenceCell = { proven: boolean; quote: string; explanation: string
 export type EvidenceClue = { id: string; name: string; sceneId: string };
 // lie: the scene's Spot the Lie clue and the character who testified, when the scene has one.
 export type EvidenceScene = { id: string; title: string; characters: string[]; clues: EvidenceClue[]; lie?: { clueId: string; character: string } };
-export type EvidenceStudent = { id: string; nickname: string; started: boolean; proven: number; provedWrong: number; needsHelp: boolean; cells: Record<string, EvidenceCell>; storyboard: StoryboardFrame[]; liesCaught: Record<string, boolean>; verdict: EvidenceVerdict | null };
+export type EvidenceStudent = { id: string; nickname: string; started: boolean; proven: number; provedWrong: number; needsHelp: boolean; cells: Record<string, EvidenceCell>; storyboard: StoryboardFrame[]; liesCaught: Record<string, boolean>; verdict: EvidenceVerdict | null; marks: EvidenceMark[]; claimFlags: EvidenceFlag[] };
 export type ClassEvidence = {
   story: { id: string; title: string };
   scenes: EvidenceScene[];
@@ -97,7 +103,10 @@ export function buildEvidence(world: WorldPack, students: EvidenceStudentInput[]
     const v = s.verdict && s.verdict.world_id === world.id ? s.verdict : null;
     const theory = v && world.verdict?.theories.find((t) => t.id === v.theory_id);
     const verdict: EvidenceVerdict | null = v && theory ? { theory: theory.name, strength: v.feedback?.strength ?? null, pinned: (v.pinned ?? []).map((p) => ({ clue: clueNames.get(p.clue_id) ?? "Evidence", quote: p.quote })), argument: v.argument ?? "" } : null;
-    return { id: s.id, nickname: s.nickname, started, proven, provedWrong, needsHelp: started && proven === 0, cells, storyboard, liesCaught, verdict };
+    const TAGS: Record<string, string> = { clue: "Clue", word: "Word to know", question: "Question" };
+    const marks: EvidenceMark[] = Object.values(s.marks ?? {}).filter((m) => m?.text && m.tag && TAGS[m.tag]).map((m) => ({ tag: TAGS[m.tag!], paragraph: m.pid ? `¶${Number(m.pid.slice(1))}` : "", text: m.text!.replace(/\s+/g, " ").trim() }));
+    const claimFlags: EvidenceFlag[] = (s.claimFlags ?? []).filter((f) => f?.clueId && f.line).map((f) => ({ clue: clueNames.get(f.clueId!) ?? "A clue", character: names.get(f.characterId ?? "") ?? "A character", answer: f.answer ?? "", line: f.line!.replace(/\s+/g, " ").trim(), matched: !!f.matched }));
+    return { id: s.id, nickname: s.nickname, started, proven, provedWrong, needsHelp: started && proven === 0, cells, storyboard, liesCaught, verdict, marks, claimFlags };
   });
   const joined = rows.length;
   return {

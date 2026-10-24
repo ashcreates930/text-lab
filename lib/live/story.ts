@@ -6,6 +6,8 @@ import type { WorldPack } from "../world-schema.ts";
 import type { SourcePassage } from "../source-passages.ts";
 import { GRACE_SECONDS, ROUNDS, SECONDS, applyRound, boardName, newRun, pulseChoice, rankRows, scoreRound, speedBonus, type RoundInput, type RoundKind, type RoundRecord, type RunState, type Scene, type TimeSetting } from "../story-mode.ts";
 import { squadMembersCounted, type LivePlayer, type LiveResponse } from "./engine.ts";
+import { evidenceSentences, lineWords } from "../lies.ts";
+import { REACTION_MAX, REACTION_STEMS, SQUAD_JOBS, squadChunks, squadJobs, voteWinner, type ReactionStem, type SquadJob } from "../clue-game.ts";
 
 export type LiveStoryRound = { type: "story"; sceneId: string; step: number; showing: "round" | "board"; stepStartedAt: string; squadsOn: boolean };
 // Seconds per step, shared by everyone. Round 2's choice and proof run as one 90-second step live.
@@ -76,3 +78,59 @@ export function publicStory(world: WorldPack, passages: SourcePassage[], scene: 
     call: kind === "call" ? { question: c.call.question, theories: c.call.theories.map((t) => ({ id: t.id, name: t.name, description: t.description })) } : null,
   };
 }
+
+// ---------- Reading together (round 1 with squads on) ----------
+// Each present member gets a job (Reader, Fact-checker, Connector, in join order) and a different chunk of the reading.
+// A kept line is a pin that lights up on teammates' phones with the pinner's name; teammates react with a sentence stem
+// and a short ending (screened like character questions; flagged ones reach only the teacher); the squad votes on its
+// best proof line before locking in. Ties: most reactions, then the Fact-checker's vote (clue-game voteWinner).
+const rowsOf = (responses: LiveResponse[], roundIndex: number, squadId: string, kind: LiveResponse["kind"]) => responses.filter((r) => r.roundIndex === roundIndex && r.squadId === squadId && r.kind === kind && r.payload.step === 0).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+export function squadReading(scene: Scene, round: LiveStoryRound, responses: LiveResponse[], roundIndex: number, players: LivePlayer[], squadId: string, meId: string, absent: string[] = []) {
+  if (!round.squadsOn || round.step !== 0) return null;
+  const away = new Set(absent);
+  const all = players.filter((p) => p.squadId === squadId).sort((a, b) => a.joinedAt.localeCompare(b.joinedAt));
+  const present = all.filter((p) => !away.has(p.id));
+  const jobs = squadJobs(present.map((p) => p.id));
+  const chunks = squadChunks(scene.story_mode!.read.chunks, present.length);
+  const chunkOf = new Map(present.map((p, i) => [p.id, chunks[i] ?? []] as const));
+  const name = (id: string | null) => players.find((p) => p.id === id)?.nickname ?? "A teammate";
+  // Pins: the latest pin or unpin per player and line.
+  const pinState = new Map<string, { line: string; by: string; byId: string; at: string }>();
+  for (const r of rowsOf(responses, roundIndex, squadId, "story_pin")) { const line = String(r.payload.line ?? ""), k = `${r.playerId}|${lineWords(line)}`; if (r.payload.remove) pinState.delete(k); else pinState.set(k, { line, by: name(r.playerId), byId: r.playerId ?? "", at: r.createdAt }); }
+  const pins = [...pinState.values()];
+  const reactions = rowsOf(responses, roundIndex, squadId, "story_react").filter((r) => !r.flagged || r.playerId === meId).map((r) => ({ line: String(r.payload.line ?? ""), by: name(r.playerId), stem: String(r.payload.stemText ?? ""), body: String(r.payload.body ?? ""), flagged: r.flagged }));
+  const latestVote = new Map<string, string>();
+  for (const r of rowsOf(responses, roundIndex, squadId, "story_vote")) if (r.playerId) latestVote.set(r.playerId, String(r.payload.line ?? ""));
+  const votes = [...latestVote.entries()].map(([voter, line]) => ({ voter, line }));
+  const unique = pins.filter((p, i) => pins.findIndex((q) => lineWords(q.line) === lineWords(p.line)) === i);
+  const reactCount = (line: string) => reactions.filter((x) => !x.flagged && lineWords(x.line) === lineWords(line)).length;
+  const factChecker = present.find((p) => jobs.get(p.id) === "fact-checker")?.id ?? null;
+  const answered = new Set(responses.filter((r) => r.roundIndex === roundIndex && r.kind === "story" && r.payload.step === 0).map((r) => r.playerId));
+  const busy = new Set([...pins.map((p) => p.byId), ...votes.map((v) => v.voter), ...rowsOf(responses, roundIndex, squadId, "story_react").map((r) => r.playerId ?? "")]);
+  return {
+    myJob: jobs.get(meId) ?? null, myChunk: chunkOf.get(meId) ?? [],
+    members: all.map((p) => ({ id: p.id, name: p.nickname, me: p.id === meId, job: jobs.get(p.id) ?? null, part: chunkOf.get(p.id) ?? [], status: away.has(p.id) ? ("absent" as const) : answered.has(p.id) ? ("ready" as const) : busy.has(p.id) ? ("answering" as const) : ("ready" as const) })),
+    pins: pins.map(({ line, by, byId }) => ({ line, by, mine: byId === meId })),
+    reactions: reactions.map(({ line, by, stem, body }) => ({ line, by, stem, body })),
+    votes: unique.map((p) => ({ line: p.line, votes: votes.filter((v) => lineWords(v.line) === lineWords(p.line)).length, reactions: reactCount(p.line) })),
+    myVote: latestVote.get(meId) ?? null,
+    winner: voteWinner(unique.map((p) => ({ line: p.line, reactions: reactCount(p.line) })), votes, factChecker),
+    everyoneVoted: present.length > 0 && present.every((p) => latestVote.has(p.id)),
+  };
+}
+// Checks one reading-together action and returns what to store, or an error. The line must be one of the reading's
+// lines; a reaction's ending is at most 80 characters.
+export function readingAction(scene: Scene, passages: SourcePassage[], kind: "story_pin" | "story_react" | "story_vote", payload: Record<string, unknown>): { payload: Record<string, unknown> } | string {
+  const lines = scene.story_mode!.read.chunks.flatMap((id) => evidenceSentences(passages.find((p) => p.id === id)?.text ?? ""));
+  const line = lines.find((l) => lineWords(l) === lineWords(String(payload.line ?? "")));
+  if (!line) return "Pick a line from the reading.";
+  if (kind === "story_pin") return { payload: { step: 0, line, ...(payload.remove === true ? { remove: true } : {}) } };
+  if (kind === "story_vote") return { payload: { step: 0, line } };
+  const stem = String(payload.stem ?? "") as ReactionStem;
+  if (!(stem in REACTION_STEMS)) return "Pick a sentence starter.";
+  const body = String(payload.body ?? "").trim().replace(/\s+/g, " ");
+  if (!body) return "Finish the sentence.";
+  if (body.length > REACTION_MAX) return `Keep it to ${REACTION_MAX} characters.`;
+  return { payload: { step: 0, line, stem, stemText: REACTION_STEMS[stem], body } };
+}
+export const JOB_TEXT: Record<SquadJob, { name: string; does: string }> = SQUAD_JOBS;

@@ -148,3 +148,7 @@ h1[tabindex="-1"]:focus{outline:none}
 .host-btn:disabled{opacity:.4;cursor:not-allowed}
 .host-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:52px;border-radius:16px;background:#2E2821;color:#FFFDF8;padding:0 18px;font-size:18px;font-weight:600;border:2px solid #5A4F42}
 .host-btn-secondary:hover{background:#3A332B}
+
+/* Full-screen game screens (the clue screen) fill the space under the header; the page footer steps aside so the page
+   itself never scrolls. */
+main:has([data-fill-screen]) > footer { display: none; }

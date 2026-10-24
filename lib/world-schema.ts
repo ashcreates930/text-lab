@@ -2,7 +2,10 @@ import { z } from "zod";
 const choice = z.object({ id:z.string(), label:z.string(), consequence_narration:z.string(), next_scene_id:z.string(), unlocks:z.array(z.string()) });
 const artifactQuestion = z.object({id:z.enum(["notice","interpret","craft"]),label:z.enum(["NOTICE","INTERPRET","CRAFT"]),dok_level:z.number(),skill:z.string(),benchmark:z.object({code:z.string(),description:z.string()}),prompt_by_role:z.record(z.string(),z.string()),prompt_by_role_plain:z.record(z.string(),z.string()).optional(),requires_text_evidence:z.boolean(),requires_claim_link:z.boolean(),technique_options:z.array(z.string())}).superRefine((question,ctx)=>{if(question.id!=='craft'&&!question.prompt_by_role_plain)ctx.addIssue({code:'custom',message:'NOTICE and INTERPRET require plain-language role prompts',path:['prompt_by_role_plain']})});
 const position = z.object({x:z.number(),y:z.number(),width:z.number().min(4.4),height:z.number().min(6.8)}).superRefine((box,ctx)=>{if(box.x<0||box.y<0||box.x+box.width>100||box.y+box.height>100)ctx.addIssue({code:'custom',message:'Artifact hotspot must fit inside its scene',path:['x']})});
-const artifact = z.object({id:z.string(),name:z.string(),scene_id:z.string(),evidence_type:z.enum(["observed","claimed","reported"]),secondary_evidence_type:z.enum(["observed","claimed","reported"]).optional(),position,image:z.string().optional(),closeup_image:z.string().optional(),source_anchor:z.array(z.string()),unlock_condition:z.string().nullable(),questions:z.array(artifactQuestion).length(3)});
+// Off claim (lib/clue-game.ts): once per clue, the character says something slightly wrong; line is the exact story line
+// that corrects it. The AI only delivers the claim in the character's voice.
+const offClaim=z.object({character_id:z.string(),claim:z.string().min(1),paragraph:z.string().regex(/^p\d{3}$/),line:z.string().min(1)});
+const artifact = z.object({off_claim:offClaim.optional(),id:z.string(),name:z.string(),scene_id:z.string(),evidence_type:z.enum(["observed","claimed","reported"]),secondary_evidence_type:z.enum(["observed","claimed","reported"]).optional(),position,image:z.string().optional(),closeup_image:z.string().optional(),source_anchor:z.array(z.string()),unlock_condition:z.string().nullable(),questions:z.array(artifactQuestion).length(3)});
 // Spot the Lie: once per scene, a character testifies with one false claim that one line of the story disproves.
 const lie=z.object({clue_id:z.string(),character_id:z.string(),testimony:z.string(),false_claim:z.string(),truth_paragraph:z.string().regex(/^p\d{3}$/),truth_line:z.string(),explanation:z.string(),topic:z.string()});
 // The Final Verdict: the question the student answers after the last scene, with three theories the text can support.
@@ -33,9 +36,11 @@ export const WorldPackSchema = z.object({
   adaptations:z.array(z.object({grade:z.number(),glossary:z.enum(["open","on_request"]),hints:z.boolean(),sentence_starters:z.boolean(),description:z.string()})).min(1),
   benchmarks:z.array(z.object({code:z.string(),description:z.string()})),
   roles:z.array(role),
+  // Demo rival and squad modes: the computer players' names (clearly labeled as computer players on screen).
+  computer_players:z.object({rival:z.object({name:z.string().min(1),emblem:z.enum(["lantern","rider"])}),teammates:z.array(z.string().min(1)).min(2).max(3)}).optional(),
   // Students in the story: the part the student plays (see lib/student-role.ts). never: people the student must never be.
   student_role:z.object({name:z.string(),setup:z.string(),start_scene:z.string(),intro:z.string(),never:z.array(z.string()).optional()}).optional(),
-  characters:z.array(z.object({id:z.string(),name:z.string(),gender:z.string(),description:z.string(),personality:z.string(),knowledge_limits:z.string(),speech_style:z.string(),never_reveal:z.array(z.string()),voice_id:z.string(),portrait:z.string().optional(),hologram:z.string().regex(/^\/worlds\/[a-z0-9-]+\/holograms\/[a-z0-9-]+\.png$/).optional()})),
+  characters:z.array(z.object({id:z.string(),name:z.string(),gender:z.string(),description:z.string(),personality:z.string(),knowledge_limits:z.string(),speech_style:z.string(),never_reveal:z.array(z.string()),voice_id:z.string(),portrait:z.string().optional(),traits:z.array(z.object({name:z.string().min(1),paragraph:z.string().regex(/^p\d{3}$/),line:z.string().min(1)})).min(2).max(3).optional(),hologram:z.string().regex(/^\/worlds\/[a-z0-9-]+\/holograms\/[a-z0-9-]+\.png$/).optional()})),
   glossary:z.array(z.object({term:z.string(),student_friendly_definition:z.string(),part_of_speech:z.string().optional(),definition:z.string().optional(),plain_definition:z.string().optional(),example_sentence:z.string().optional(),text_sentence:z.string().optional()})),
   scenes:z.array(scene),
   storybook:storybook.optional(),
