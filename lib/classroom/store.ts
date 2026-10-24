@@ -30,10 +30,11 @@ export interface ClassroomStore {
   // Extra time per student for Story Mode (1.5x, 2x or untimed). Students without a setting have normal time.
   setStudentTime(studentId: string, setting: TimeSettingValue): Promise<void>;
   getStudentTimes(classId: string): Promise<Record<string, TimeSettingValue>>;
-  // Marked absent by the teacher for today (the live host screen or the class page). Absent students are left out of
-  // squad averages; everyone else in a squad counts, with 0 if they didn't answer.
-  setStudentAbsent(studentId: string, absent: boolean): Promise<void>;
-  getAbsentToday(classId: string): Promise<string[]>;
+  // Absences, one per student per day (America/New_York date), marked from the live host screen or the class page.
+  // Absent students are left out of squad averages; everyone else in a squad counts, with 0 if they didn't answer.
+  // Past days keep their absences, so recalculated session totals stay the same.
+  setStudentAbsent(studentId: string, absent: boolean, day?: string): Promise<void>;
+  getAbsentOn(classId: string, day: string): Promise<string[]>;
   findActiveClassByCode(code: string): Promise<ClassRow | null>;
   getClassById(classId: string): Promise<ClassRow | null>;
   listStudents(classId: string): Promise<StudentRow[]>;
@@ -81,8 +82,15 @@ function supabaseStore(db: SupabaseClient): ClassroomStore {
     async setPreviewEnabled(classId, enabled) { must(await db.from("sessions").update({ preview_enabled: enabled }).eq("id", classId)); },
     async setStorySettings(classId, s) { must(await db.from("sessions").update({ ...(s.leaderboard ? { leaderboard_mode: s.leaderboard } : {}), ...(s.storyModeOn !== undefined ? { story_mode_on: s.storyModeOn } : {}) }).eq("id", classId)); },
     async setStudentTime(studentId, setting) { must(await db.from("students").update({ time_setting: setting }).eq("id", studentId)); },
-    async setStudentAbsent(studentId, absent) { must(await db.from("students").update({ absent_on: absent ? absentDay() : null }).eq("id", studentId)); },
-    async getAbsentToday(classId) { const res = await db.from("students").select("id").eq("session_id", classId).eq("absent_on", absentDay()); if (res.error) throw new Error(res.error.message); return (res.data as { id: string }[]).map((r) => r.id); },
+    async setStudentAbsent(studentId, absent, day = absentDay()) {
+      if (absent) must(await db.from("student_absences").upsert({ student_id: studentId, day }, { onConflict: "student_id,day", ignoreDuplicates: true }));
+      else must(await db.from("student_absences").delete().eq("student_id", studentId).eq("day", day));
+    },
+    async getAbsentOn(classId, day) {
+      const ids = (must(await db.from("students").select("id").eq("session_id", classId)) as { id: string }[]).map((r) => r.id);
+      if (!ids.length) return [];
+      return (must(await db.from("student_absences").select("student_id").eq("day", day).in("student_id", ids)) as { student_id: string }[]).map((r) => r.student_id);
+    },
     async getStudentTimes(classId) { const res = await db.from("students").select("id,time_setting").eq("session_id", classId); if (res.error) return {}; return Object.fromEntries((res.data as { id: string; time_setting: TimeSettingValue }[]).map((r) => [r.id, r.time_setting])); },
     async setPersonalSettings(classId, s) { must(await db.from("sessions").update({ ...(s.rolesOn !== undefined ? { roles_enabled: s.rolesOn } : {}), ...(s.anglesOn !== undefined ? { angles_enabled: s.anglesOn } : {}) }).eq("id", classId)); },
     async findActiveClassByCode(code) { return must(await db.from("sessions").select("*").eq("class_code", code.toUpperCase()).eq("status", "active").maybeSingle()) as ClassRow | null; },
@@ -115,7 +123,7 @@ function supabaseStore(db: SupabaseClient): ClassroomStore {
 }
 
 type Memory = { teachers: { id: string; auth: string }[]; classes: ClassRow[]; students: (StudentRow & { hash: string })[]; progress?: Record<string, StudentProgress>; assignments: AssignmentRow[]; completions: CompletionRow[]; analyses: AnalysisRow[]; responses: ResponseRow[] };
-const g = globalThis as unknown as { __ittMemory?: Memory };
+const g = globalThis as unknown as { __ittMemory?: Memory; __ittAbsences?: { studentId: string; day: string }[] };
 function memoryStore(): ClassroomStore {
   const m = (g.__ittMemory ??= { teachers: [], classes: [], students: [], assignments: [], completions: [], analyses: [], responses: [] });
   const id = () => crypto.randomUUID(), now = () => new Date().toISOString();
@@ -128,8 +136,8 @@ function memoryStore(): ClassroomStore {
     async setPreviewEnabled(classId, enabled) { const c = m.classes.find((x) => x.id === classId); if (c) c.preview_enabled = enabled; },
     async setStorySettings(classId, s) { const c = m.classes.find((x) => x.id === classId); if (!c) return; if (s.leaderboard) c.leaderboard_mode = s.leaderboard; if (s.storyModeOn !== undefined) c.story_mode_on = s.storyModeOn; },
     async setStudentTime(studentId, setting) { const s = m.students.find((x) => x.id === studentId) as (typeof m.students)[number] & { time_setting?: TimeSettingValue } | undefined; if (s) s.time_setting = setting; },
-    async setStudentAbsent(studentId, absent) { const s = m.students.find((x) => x.id === studentId) as (typeof m.students)[number] & { absent_on?: string | null } | undefined; if (s) s.absent_on = absent ? absentDay() : null; },
-    async getAbsentToday(classId) { return (m.students as ((typeof m.students)[number] & { absent_on?: string | null })[]).filter((s) => s.session_id === classId && s.absent_on === absentDay()).map((s) => s.id); },
+    async setStudentAbsent(studentId, absent, day = absentDay()) { const a = (g.__ittAbsences ??= []).filter((x) => !(x.studentId === studentId && x.day === day)); if (absent) a.push({ studentId, day }); g.__ittAbsences = a; },
+    async getAbsentOn(classId, day) { const mine = new Set(m.students.filter((s) => s.session_id === classId).map((s) => s.id)); return (g.__ittAbsences ?? []).filter((x) => x.day === day && mine.has(x.studentId)).map((x) => x.studentId); },
     async getStudentTimes(classId) { return Object.fromEntries((m.students as ((typeof m.students)[number] & { time_setting?: TimeSettingValue })[]).filter((s) => s.session_id === classId && s.time_setting).map((s) => [s.id, s.time_setting!])); },
     async setPersonalSettings(classId, s) { const c = m.classes.find((x) => x.id === classId); if (!c) return; if (s.rolesOn !== undefined) c.roles_enabled = s.rolesOn; if (s.anglesOn !== undefined) c.angles_enabled = s.anglesOn; },
     async findActiveClassByCode(code) { return m.classes.find((c) => c.class_code === code.toUpperCase() && c.status === "active") ?? null; },
@@ -162,5 +170,5 @@ export function getClassroomStore(): ClassroomStore | null {
   return memoryModeEnabled() ? memoryStore() : null;
 }
 
-// "Absent" lasts for the day it was marked (UTC date), so nobody stays absent by mistake.
-export const absentDay = (now = new Date()) => now.toISOString().slice(0, 10);
+// The school day an absence belongs to: the date in America/New_York (YYYY-MM-DD).
+export const absentDay = (now = new Date()) => new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" }).format(now);

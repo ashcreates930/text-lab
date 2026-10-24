@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { isFailure, teacherFromRequest } from "@/lib/classroom/auth";
 import { readWorld } from "@/lib/classroom/worlds";
+import { absentDay } from "@/lib/classroom/store";
 
 type Params = { params: Promise<{ id: string }> };
 export async function GET(request: Request, { params }: Params) {
@@ -10,7 +11,7 @@ export async function GET(request: Request, { params }: Params) {
   const cls = await ctx.store.getClass(ctx.teacherId, (await params).id);
   if (!cls) return NextResponse.json({ error: "Class not found." }, { status: 404 });
   const [students, assignments, analysis, world] = await Promise.all([ctx.store.listStudents(cls.id), ctx.store.listAssignments(cls.id), ctx.store.getActiveAnalysis(cls.id), readWorld(cls.world_id)]);
-  const [completions, studentTimes, absent] = await Promise.all([ctx.store.listCompletions(students.map((s) => s.id)), ctx.store.getStudentTimes(cls.id).catch(() => ({})), ctx.store.getAbsentToday(cls.id).catch(() => [] as string[])]);
+  const [completions, studentTimes, absent] = await Promise.all([ctx.store.listCompletions(students.map((s) => s.id)), ctx.store.getStudentTimes(cls.id).catch(() => ({})), ctx.store.getAbsentOn(cls.id, absentDay()).catch(() => [] as string[])]);
   return NextResponse.json({
     class: cls, students, studentTimes, absent, assignments, completions, activeAnalysisId: analysis?.id ?? null,
     world: world ? { id: world.id, title: world.title, teacherPreviewRequired: world.teacher_preview_required === true, scenes: world.scenes.map((s) => ({ id: s.id, clues: s.artifacts.length })), roles: world.roles.map((r) => ({ id: r.id, name: r.name })) } : null,

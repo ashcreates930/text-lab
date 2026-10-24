@@ -1923,10 +1923,15 @@ test("mark absent: the teacher marks a student absent for today from the class p
   const t=await store.ensureTeacher("test:absent","absent@example.com");
   const cls=await store.createClass(t.id,{name:"Period 3",worldId:"sleepy-hollow",grade:7});
   const kid=(await store.createStudent(cls.id,"Ana Ruiz","h1")) as {id:string},kid2=(await store.createStudent(cls.id,"Ben Tate","h2")) as {id:string};
+  const today=absentDay();
   await store.setStudentAbsent(kid.id,true);
-  assert.deepEqual(await store.getAbsentToday(cls.id),[kid.id]);
-  await store.setStudentAbsent(kid.id,false);assert.deepEqual(await store.getAbsentToday(cls.id),[]);
-  assert.equal(absentDay(new Date("2026-10-24T15:00:00Z")),"2026-10-24");
+  assert.deepEqual(await store.getAbsentOn(cls.id,today),[kid.id]);
+  await store.setStudentAbsent(kid.id,false);assert.deepEqual(await store.getAbsentOn(cls.id,today),[]);
+  // One row per absence: a new day's mark doesn't erase an earlier one.
+  await store.setStudentAbsent(kid.id,true,"2026-10-20");await store.setStudentAbsent(kid.id,true,"2026-10-21");await store.setStudentAbsent(kid.id,true,"2026-10-21");
+  assert.deepEqual(await store.getAbsentOn(cls.id,"2026-10-20"),[kid.id]);assert.deepEqual(await store.getAbsentOn(cls.id,"2026-10-21"),[kid.id]);
+  // New York date: 11 pm Eastern on the 23rd is the 24th in UTC.
+  assert.equal(absentDay(new Date("2026-10-24T03:00:00Z")),"2026-10-23");assert.equal(absentDay(new Date("2026-10-24T15:00:00Z")),"2026-10-24");
   // Live: the host marks a class student absent; the live state leaves them out.
   const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");
   const live=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
@@ -1936,7 +1941,13 @@ test("mark absent: the teacher marks a student absent for today from the class p
   let st=(await server.loadState(live,s.id))!;
   assert.equal(await server.hostAct(live,st,{action:"player.absent",playerId:p2.id,absent:true}),null);
   st=(await server.loadState(live,s.id))!;
-  assert.deepEqual(st.absent,[p2.id]);assert.deepEqual(await store.getAbsentToday(cls.id),[kid2.id],"the class page sees the same mark");
+  assert.deepEqual(st.absent,[p2.id]);assert.deepEqual(await store.getAbsentOn(cls.id,absentDay(new Date(s.createdAt))),[kid2.id],"the class page sees the same mark");
+  // An older session uses its own day's absences, so later marks don't change its totals.
+  const old=await live.createSession({code:"ABSNT0",teacherId:t.id,classId:cls.id,demo:false,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  await live.updateSession(old.id,{createdAt:"2026-10-20T14:00:00.000Z"} as never);
+  const oldKid=(await server.join(live,old,{nickname:"Ana Ruiz",studentId:kid.id})).player!;
+  const oldSt=(await server.loadState(live,old.id))!;
+  assert.equal(oldSt.session.createdAt.slice(0,10),"2026-10-20");assert.deepEqual(oldSt.absent,[oldKid.id],"absent on the 20th, when that session ran");
   assert.deepEqual(server.hostView(st).roster.map(r=>[r.nickname,r.canMark,r.absent]),[["Ana Ruiz",true,false],["Ben Tate",true,true],["Visitor",false,false]]);
   assert.match((await server.hostAct(live,st,{action:"player.absent",playerId:guest.id,absent:true}))??"",/Only students in your class/);
   void p1;

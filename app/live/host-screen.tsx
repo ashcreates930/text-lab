@@ -256,7 +256,7 @@ function useCountdown(startedAt:string,seconds:number){
  return left;
 }
 function StoryTop({top,kind,players}:{top:{rank:number;name:string;score:number}[];kind:"individual"|"squad";players:number}){
- return <div className="mt-4 rounded-3xl bg-[#2E2821] p-6"><p className="text-[18px] font-semibold uppercase tracking-wide text-[#F3C9B2]">{kind==="squad"?"Squads":"Top 5"} · {players} {kind==="squad"?"squads":"players"}</p>
+ return <div className="mt-4 rounded-3xl bg-[#2E2821] p-6"><p className="text-[18px] font-semibold uppercase tracking-wide text-[#F3C9B2]">{kind==="squad"?"Squads":"Top 5"} · {players} {kind==="squad"?(players===1?"squad":"squads"):(players===1?"player":"players")}</p>
   <ol className="mt-3 space-y-2">{top.map(r=><li key={r.rank} className="flex items-center justify-between rounded-2xl bg-[#1E1A15] px-5 py-3 text-[clamp(20px,2vw,32px)]"><span className="flex items-center gap-4"><span className="w-8 text-right font-bold tabular-nums">{r.rank}</span><span className="font-semibold">{r.name}</span></span><span className="font-bold tabular-nums">{r.score}</span></li>)}</ol>
   {!top.length&&<p className="mt-3 text-[20px]">No answers yet.</p>}</div>;
 }

@@ -200,7 +200,7 @@ function StoryPersonalPanel({classId,rolesOn,anglesOn,storyModeOn,leaderboard,on
 }
 
 // Absent today: left out of Story Mode squad averages (everyone else in a squad counts, with 0 if they didn't answer).
-// The same mark as "Mark absent" on the live host screen; it clears itself the next day.
+// The same mark as "Mark absent" on the live host screen. Each day (New York date) is its own absence.
 function StudentAbsent({classId,studentId,name,absent,onChange}:{classId:string;studentId:string;name:string;absent:boolean;onChange:()=>void}){
  const [error,setError]=useState(""),[busy,setBusy]=useState(false);
  async function toggle(){setError("");setBusy(true);const r=await teacherFetch(`/api/teacher/classes/${classId}`,{method:"PATCH",body:JSON.stringify({absent:{studentId,absent:!absent}})});setBusy(false);if(!r.ok)setError(r.body.error||"Could not save that.");onChange()}

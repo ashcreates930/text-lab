@@ -7,7 +7,7 @@ import { NOT_EVIDENCE, matchEvidence } from "../evidence-check.ts";
 import type { SourcePassage } from "../source-passages.ts";
 import { answerStep, answeredStep, liveStoryBoard, myStepRecord, playerState, publicStory, stepKind, type LiveStoryRound } from "./story.ts";
 import { studentBoard, type RoundInput, type TimeSetting } from "../story-mode.ts";
-import { getClassroomStore, memoryModeEnabled } from "../classroom/store.ts";
+import { absentDay, getClassroomStore, memoryModeEnabled } from "../classroom/store.ts";
 import { screenArgument, judgeWithRubric } from "../verdict-server.ts";
 import { getLieBankStore } from "../lie-bank-store.ts";
 import { asLie, type PlantedLie } from "../planted-lies.ts";
@@ -52,7 +52,7 @@ export async function broadcast(sessionId: string) {
 
 // ---------- Loading ----------
 // bank: the class's approved planted lies for this story (class sessions only).
-// absent: player ids whose students the teacher marked absent today (left out of Story Mode squad averages).
+// absent: player ids whose students were marked absent on the session's day (left out of Story Mode squad averages).
 export type LiveState = { session: StoredSession; world: WorldPack; squads: Awaited<ReturnType<LiveStore["listSquads"]>>; players: LivePlayer[]; responses: LiveResponse[]; bank?: PlantedLie[]; passages?: SourcePassage[]; absent?: string[] };
 export async function loadState(store: LiveStore, sessionId: string): Promise<LiveState | null> {
   const session = await store.getSession(sessionId);
@@ -63,11 +63,12 @@ export async function loadState(store: LiveStore, sessionId: string): Promise<Li
   const away = new Set(absentStudents);
   return { session, world, squads, players, responses, bank, passages, absent: players.filter((p) => p.studentId && away.has(p.studentId)).map((p) => p.id) };
 }
-// Students marked absent today (none before the absent migration runs, or for a session without a class).
+// Students marked absent on the day the session was held (New York date), so an old session's totals don't change
+// with later marks. None before the absent migration runs, or for a session without a class.
 async function loadAbsent(session: StoredSession) {
   const classes = session.classId ? getClassroomStore() : null;
   if (!classes || !session.classId) return [];
-  return classes.getAbsentToday(session.classId).catch(() => []);
+  return classes.getAbsentOn(session.classId, absentDay(new Date(session.createdAt))).catch(() => []);
 }
 async function loadBank(session: StoredSession) {
   const lies = session.classId ? getLieBankStore() : null;
@@ -154,7 +155,7 @@ export function hostView(st: LiveState) {
     // Story Mode: the scenes that have it, how many players answered this step, and the top 5 at the reveal.
     storyScenes: st.world.scenes.map((sc, k) => ({ sceneId: sc.id, label: `Scene ${k + 1}`, on: !!sc.story_mode })).filter((x) => x.on),
     storyAnswered: round?.type === "story" ? answeredStep(st.responses, st.session.roundIndex, round.step) : 0,
-    // Who's here: class students can be marked absent (left out of squad averages for today).
+    // Who's here: class students can be marked absent for the session's day (left out of squad averages).
     roster: st.players.map((p) => ({ id: p.id, nickname: p.nickname, canMark: !!p.studentId && !!st.session.classId, absent: (st.absent ?? []).includes(p.id) })),
     storyBoard: round?.type === "story" ? (() => { const b = liveStoryBoard(st.responses, st.session.roundIndex, st.players, st.squads, round.squadsOn, st.absent); return { kind: b.kind, top: b.rows.slice(0, 5).map((r, k) => ({ rank: k + 1, name: r.name, score: r.score })), players: b.rows.length }; })() : null,
     lieScenes: st.world.scenes.filter((s) => s.lie).map((s, i) => ({ sceneId: s.id, label: `Scene ${st.world.scenes.indexOf(s) + 1}: ${s.lie!.topic}` , index: i })),
@@ -295,7 +296,7 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
       if (!p?.studentId || !s.classId || !classes) return "Only students in your class can be marked absent.";
       const roster = await classes.listStudents(s.classId);
       if (!roster.some((x) => x.id === p.studentId)) return "Only students in your class can be marked absent.";
-      try { await classes.setStudentAbsent(p.studentId, a.absent === true); } catch { return "Marking absent needs the latest database update. Ask your admin to run the absent migration."; }
+      try { await classes.setStudentAbsent(p.studentId, a.absent === true, absentDay(new Date(s.createdAt))); } catch { return "Marking absent needs the latest database update. Ask your admin to run the absent migration."; }
       return null;
     }
     case "witness.play": {
