@@ -71,7 +71,7 @@ function supabaseStoryStore(db: SupabaseClient): StoryStore {
       return (must(await q.order("best_total", { ascending: false }).limit(1000)) as RunRow[]).map(fromRun);
     },
     async addRound(r) {
-      must(await db.from("story_round_scores").insert({ run_id: r.runId, round: r.round, kind: r.kind, choice: r.choice, proof: r.proof, explanation: r.explanation, valid: r.valid, base: r.base, speed: r.speed, multiplier: r.multiplier, doubled: r.doubled, grace: r.grace, points: r.points, elapsed_ms: r.elapsedMs }));
+      must(await db.from("story_round_scores").insert({ run_id: r.runId, round: r.round, kind: r.kind, choice: r.choice, proof: r.proof, explanation: r.explanation, valid: r.valid, base: Math.round(r.base), speed: Math.round(r.speed), multiplier: r.multiplier, doubled: r.doubled, grace: r.grace, points: Math.round(r.points), elapsed_ms: Math.round(r.elapsedMs) }));
     },
     async listRounds(ids) {
       if (!ids.length) return [];

@@ -2351,3 +2351,16 @@ test("Story Mode needs no access code for public demo visitors (usage caps stay)
     const srv=await import("../lib/story-server.ts");assert.equal(srv.MAX_RESTARTS,20,"the per-day restart cap is unchanged");
   }finally{if(prev!==undefined)process.env.CLASSROOM_DEV_STORE=prev}
 });
+
+test("story mode round 1: saddle lines are near misses, and a fractional timer is saved as whole milliseconds", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {world,passages,scene,c,line}=await storyKit();
+  assert.ok(c.read.answers.every(a=>!/saddle/.test(a)||/hat of the\s+unfortunate Ichabod/.test(a)),"the saddle was Hans Van Ripper's");
+  const {memoryStoryStore}=await import("../lib/story-store.ts");const srv=await import("../lib/story-server.ts");
+  const mem={runs:[] as unknown[],rounds:[] as {elapsedMs:number}[]};const store=memoryStoryStore(mem as never);
+  const run=(await srv.startRun(store,world,scene,{scope:"class" as const,classId:"c9",worldId:world.id,studentId:"st9",nickname:"Ana Ruiz",timeSetting:"1" as const,leaderboard:"individual" as const})) as import("../lib/story-store.ts").StoryRun;
+  const r=await srv.playRound(store,world,passages,scene,run,{round:1,input:{kind:"read",pouch:[line("p068",5),line("p068",0),line("p069",1)]},elapsedMs:22001.300000000745,grace:false,relaxed:false});
+  assert.equal(r.record?.points,200);
+  assert.deepEqual(Object.values(r.record?.nearMiss??{}),["Whose saddle was it? Check ¶66."]);
+  assert.ok(Number.isInteger(mem.rounds[0].elapsedMs),"elapsed_ms is an integer column");
+});

@@ -792,6 +792,16 @@
             "They consisted of two\nshirts and a half; two stocks for the neck; a pair or two of worsted\nstockings; an old pair of corduroy small-clothes; a rusty razor; a book\nof psalm tunes full of dog’s-ears; and a broken pitch-pipe.",
             "As to the\nbooks and furniture of the schoolhouse, they belonged to the community,\nexcepting Cotton Mather’s “History of Witchcraft,” a “New England\nAlmanac,” and a book of dreams and fortune-telling; in which last was\na sheet of foolscap much scribbled and blotted in several fruitless\nattempts to make a copy of verses in honor of the heiress of Van Tassel."
           ],
+          "near_misses": [
+            {
+              "line": "The next morning the old horse was found without his saddle, and with\nthe bridle under his feet, soberly cropping the grass at his master’s\ngate.",
+              "hint": "Whose saddle was it? Check ¶66."
+            },
+            {
+              "line": "Hans\nVan Ripper now began to feel some uneasiness about the fate of poor\nIchabod, and his saddle.",
+              "hint": "Whose saddle was it? Check ¶66."
+            }
+          ],
           "prompt": "Listen, then tap the lines that answer the question. Your Evidence pouch holds 3."
         },
         "confront": {
