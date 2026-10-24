@@ -6,7 +6,7 @@ import { Wordmark } from "./wordmark";
 import { openDemoRoom } from "./live/entry";
 import { copyTransform, faceClip, hologramLayout } from "@/lib/hologram";
 
-export function Landing({ brand, onStart, onCatchLie, onPreset, onJoin, onWaitlist, onPricing, onLessons, onClassroom, onApproach }: any) {
+export function Landing({ brand, onStart, onCatchLie, onPreset, onJoin, onWaitlist, onPricing, onLessons, onClassroom, onApproach, onFeedback }: any) {
   const stories=[["The Legend of Sleepy Hollow","Washington Irving","Grades 6 to 8"],["The Tell-Tale Heart","Edgar Allan Poe","Grades 8 to 12"],["Trifles","Susan Glaspell","Grades 9 to 11"]];
   const steps=[["01","Open a clue","Students step into a scene from the story and pick a clue to examine."],["02","Question, then prove","They ask a character what happened. Characters can be wrong, so students tap the line in the text that backs them up or proves them wrong."],["03","Spot the Lie","In every scene one character tells a lie on purpose. Students catch it with the one line from the story that disproves it."],["04","The Final Verdict","Students pin three proven clues, defend their theory in a short argument, and get feedback on the strength of their case."],["05","Play live in squads","Teachers run live rounds on the board. Squads of 3 or 4 share roles and earn points for evidence and reasoning, not speed."]];
   const audiences:[string,string,string,string[],[string,()=>void]][]=[
@@ -16,7 +16,7 @@ export function Landing({ brand, onStart, onCatchLie, onPreset, onJoin, onWaitli
     ["SCHOOLS AND DISTRICTS","AI literacy inside ELA","Students learn that AI is a resource, not the source, by checking every AI answer against the text.",["School and district plans with an admin view","Professional development for teachers","Built by a practicing English teacher"],["See plans",onPricing]],
   ];
   return <div className="case-ui">
-    <nav className="flex h-[70px] items-center justify-between px-5 md:px-14"><a className="text-2xl" href="#top"><Wordmark/></a><div className="hidden items-center gap-7 text-[14px] font-medium text-[#4A4438] lg:flex"><a href="#how" className="hover:text-[#A0472C]">How it works</a><a href="#who" className="hover:text-[#A0472C]">Who it's for</a><button onClick={onLessons} className="hover:text-[#A0472C]">Mini lessons</button><button onClick={onPricing} className="hover:text-[#A0472C]">Pricing</button><button onClick={onClassroom} className="hover:text-[#A0472C]">Teacher sign in</button></div><button className="case-primary !min-h-11 !px-5 !text-[15px]" onClick={onStart}>Try the demo <ArrowRight size={16}/></button></nav>
+    <nav className="flex h-[70px] items-center justify-between px-5 md:px-14"><a className="text-2xl" href="#top"><Wordmark/></a><div className="hidden items-center gap-7 text-[14px] font-medium text-[#4A4438] lg:flex"><a href="#how" className="hover:text-[#A0472C]">How it works</a><a href="#who" className="hover:text-[#A0472C]">Who it's for</a><button onClick={onLessons} className="hover:text-[#A0472C]">Mini lessons</button><button onClick={onPricing} className="hover:text-[#A0472C]">Pricing</button><button onClick={onClassroom} className="hover:text-[#A0472C]">Teacher sign in</button></div><div className="flex items-center gap-2"><button type="button" onClick={onFeedback} className="min-h-11 rounded-full px-3 text-[14px] font-semibold text-[#8A3B23] underline-offset-4 hover:underline">Give feedback</button><button className="case-primary !min-h-11 !px-5 !text-[15px]" onClick={onStart}>Try the demo <ArrowRight size={16}/></button></div></nav>
 
     <section id="top" className="mx-auto grid max-w-7xl items-center gap-12 px-5 pb-16 pt-8 md:grid-cols-[1fr_1.05fr] md:px-14 md:pb-24 md:pt-14">
       <div>
@@ -72,7 +72,7 @@ export function Landing({ brand, onStart, onCatchLie, onPreset, onJoin, onWaitli
       <div className="mt-8 flex flex-wrap justify-center gap-3"><button onClick={onStart} className="case-primary">Try a case now <ArrowRight size={18}/></button><button onClick={onApproach} className="case-secondary">Read our approach</button></div>
     </div></section>
 
-    <footer className="flex flex-wrap justify-between gap-4 border-t border-[#E4DCCB] px-5 py-7 text-[13px] text-[#6B6457] md:px-14"><span>{brand.organization} · {brand.principle}.</span><div className="flex flex-wrap gap-5"><button onClick={onApproach}>Our approach</button><button onClick={onPricing}>Pricing</button><button onClick={onWaitlist}>Join the waitlist</button></div></footer>
+    <footer className="flex flex-wrap justify-between gap-4 border-t border-[#E4DCCB] px-5 py-7 text-[13px] text-[#6B6457] md:px-14"><span>{brand.organization} · {brand.principle}.</span><div className="flex flex-wrap gap-5"><button onClick={onApproach}>Our approach</button><button onClick={onPricing}>Pricing</button><button onClick={onWaitlist}>Join the waitlist</button><button onClick={onFeedback}>Give feedback</button></div></footer>
   </div>;
 }
 

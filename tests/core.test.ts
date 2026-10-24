@@ -545,15 +545,30 @@ test("Pitch tab math matches a hand calculation", async()=>{
 
 test("feedback form validation: feedback alone needs no email; the waitlist needs a valid email and student count", async()=>{
   const {SubmissionSchema}=await import("../lib/feedback.ts");
-  assert.equal(SubmissionSchema.safeParse({feedback:{ease:4,change:"More stories"}}).success,true);
-  assert.equal(SubmissionSchema.safeParse({feedback:{}}).success,false,"empty feedback alone is rejected");
+  assert.equal(SubmissionSchema.safeParse({heardFrom:"fellowship",feedback:{ease:4,change:"More stories"}}).success,true);
+  assert.equal(SubmissionSchema.safeParse({heardFrom:"fellowship",feedback:{}}).success,false,"empty feedback alone is rejected");
   const w={plan:"school",intent:"likely",lockFoundingPrice:false,wantsUpdates:false,name:"Pat Lee",email:"pat@example.test",students:300};
-  assert.equal(SubmissionSchema.safeParse({waitlist:w,source:"fellows"}).success,true);
-  assert.equal(SubmissionSchema.safeParse({waitlist:{...w,email:"pat@"}}).success,false,"invalid email");
-  assert.equal(SubmissionSchema.safeParse({waitlist:{...w,students:undefined}}).success,false,"school needs a student count");
-  assert.equal(SubmissionSchema.safeParse({waitlist:{...w,plan:"explorer",students:undefined}}).success,true,"explorer does not");
-  assert.equal(SubmissionSchema.safeParse({waitlist:{...w,intent:undefined}}).success,false,"intent is required");
-  assert.equal(SubmissionSchema.safeParse({waitlist:w,source:"Bad Ref!"}).success,false,"ref values are slugs only");
+  assert.equal(SubmissionSchema.safeParse({heardFrom:"fellowship",waitlist:w,source:"fellows"}).success,true);
+  assert.equal(SubmissionSchema.safeParse({heardFrom:"fellowship",waitlist:{...w,email:"pat@"}}).success,false,"invalid email");
+  assert.equal(SubmissionSchema.safeParse({heardFrom:"fellowship",waitlist:{...w,students:undefined}}).success,false,"school needs a student count");
+  assert.equal(SubmissionSchema.safeParse({heardFrom:"fellowship",waitlist:{...w,plan:"explorer",students:undefined}}).success,true,"explorer does not");
+  assert.equal(SubmissionSchema.safeParse({heardFrom:"fellowship",waitlist:{...w,intent:undefined}}).success,false,"intent is required");
+  assert.equal(SubmissionSchema.safeParse({heardFrom:"fellowship",waitlist:w,source:"Bad Ref!"}).success,false,"ref values are slugs only");
+  assert.equal(SubmissionSchema.safeParse({waitlist:w}).success,false,"how they heard about Text Lab is required");
+  assert.equal(SubmissionSchema.safeParse({heardFrom:"radio",feedback:{ease:4}}).success,false,"only the listed answers");
+});
+
+test("how did you hear: old ?ref= links preselect the matching answer", async()=>{
+  const {heardFromRef,heardChoices}=await import("../lib/feedback.ts");
+  assert.deepEqual(heardChoices.map(c=>c[1]),["Fellowship cohort","Women's group","Homeschool group","Mentor or educator network","Social media","Other"]);
+  assert.equal(heardFromRef("fellows"),"fellowship");
+  assert.equal(heardFromRef("womens-group"),"womens-group");
+  assert.equal(heardFromRef("homeschool-coop"),"homeschool");
+  assert.equal(heardFromRef("educators"),"mentor-network");
+  assert.equal(heardFromRef("instagram"),"social-media");
+  assert.equal(heardFromRef("x"),"social-media");
+  assert.equal(heardFromRef("newsletter"),undefined,"an unknown ref leaves the question unanswered");
+  assert.equal(heardFromRef(null),undefined);
 });
 
 test("game layer: ambient loops have no seam and every track is brought to the same level", async()=>{
