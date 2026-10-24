@@ -13,7 +13,7 @@ import type {Demo} from "./page";
 import {useClueSteps,evidenceLabel,CLASS_AI_OFF,type Clue,type Scene} from "./clue-steps";
 import {contentNotes} from "@/lib/content-notes";
 import {lieFor,tryLine,testimonyParts,lineWords} from "@/lib/lies";
-import {inSentence,REACTION_MAX,REACTION_STEMS,RIVAL_LOCKOUT_MS,RIVAL_SECONDS,SQUAD_JOBS,checkProof,cluePanel,computerPins,computerRivalPlan,correctsOffClaim,displayLine,earn,markKey,miss,newClueGame,paragraphLabel,rivalOutcome,squadJobs,voteWinner,type ClaimFlag,type MarkTag,type ReactionStem} from "@/lib/clue-game";
+import {withFreeze,inSentence,REACTION_MAX,REACTION_STEMS,RIVAL_LOCKOUT_MS,RIVAL_SECONDS,SQUAD_JOBS,checkProof,cluePanel,computerPins,computerRivalPlan,correctsOffClaim,displayLine,earn,markKey,miss,newClueGame,paragraphLabel,rivalOutcome,squadJobs,voteWinner,type ClaimFlag,type MarkTag,type ReactionStem} from "@/lib/clue-game";
 import {screenMessage} from "@/lib/safety";
 import {squadName} from "@/lib/live/engine";
 import {voiceButtonFor} from "@/lib/voice-control";
@@ -24,6 +24,7 @@ import {Portrait,SoundToggle,useCharacterVoice,useSoundPref} from "./game-feel";
 import {HologramView} from "./hologram-view";
 import {focusScreenTop} from "./screen-focus";
 import {playStamp} from "./case-game";
+import {FREEZE_MS,canFreeze,freezeLeft} from "@/lib/freeze";
 
 type Info={solves:boolean;factCheck:boolean};
 type Props={world:WorldPack;scene:Scene;sceneIndex:number;clue:Clue;roleId:string;demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];onClose:(saved:boolean,info?:Info)=>void};
@@ -82,7 +83,9 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
  useEffect(()=>{if(!lie||!liar||testified.current||!voicesOn||lieCaught)return;const t=setTimeout(()=>{testified.current=true;playRef.current(lie.testimony,liar.id)},200);return()=>clearTimeout(t)},[lie,liar,voicesOn,lieCaught]);
  useEffect(()=>()=>voice.stop(),[voice]);
 
- const award=useCallback((kind:"proof"|"offClaim"|"lie"|"rivalWin",key:string)=>{const r=earn(demo.game,kind,key);setDemo(d=>({...d,game:earn(d.game,kind,key).game}));return r},[demo.game,setDemo]);
+ const rival=mode==="rival";
+ const award=useCallback((kind:"proof"|"offClaim"|"lie"|"rivalWin",key:string)=>{const r=earn(demo.game,kind,key);const gotFreeze=withFreeze(r.game,rival,r.points>0).freezeHeld&&!r.game.freezeHeld;setDemo(d=>{const x=earn(d.game,kind,key);return {...d,game:withFreeze(x.game,rival,x.points>0)}});if(gotFreeze)setTimeout(()=>setFreezeNote(true),0);return r},[demo.game,setDemo,rival]);
+ const [freezeNote,setFreezeNote]=useState(false);
  const say=(m:Message)=>setMessage(m);
  // ---- The one tap: keep (or take back) a line; the last one kept is the proof to check ----
  function tap(l:PanelLine){
@@ -121,7 +124,11 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
  }
  // ---- Rival race (computer rival, authored plan) ----
  const plan=useMemo(()=>race?computerRivalPlan(clue,panel):null,[race,clue,panel]);
- const [raceState,setRaceState]=useState<{start:number;you:number|null;rival:number|null;lockUntil:number;rivalNote:string;done:boolean;outcome?:string}|null>(()=>race?{start:Date.now(),you:null,rival:null,lockUntil:0,rivalNote:"",done:false}:null);
+ // rivalDelay: how long the computer rival has been frozen (its clock pauses); raceNo: this race's number, for the
+ // "not twice in a row" rule.
+ const [raceState,setRaceState]=useState<{start:number;you:number|null;rival:number|null;lockUntil:number;rivalNote:string;done:boolean;outcome?:string;rivalDelay:number;frozenAt:number|null;raceNo:number}|null>(()=>race?{start:Date.now(),you:null,rival:null,lockUntil:0,rivalNote:"",done:false,rivalDelay:0,frozenAt:null,raceNo:(demo.game?.races??0)+1}:null);
+ const counted=useRef(false);
+ useEffect(()=>{if(!raceState||counted.current)return;counted.current=true;const n=raceState.raceNo;setDemo(d=>({...d,game:{...(d.game??newClueGame()),races:Math.max(d.game?.races??0,n)}}))},[raceState,setDemo]);
  const [now,setNow]=useState(Date.now());
  useEffect(()=>{if(!raceState||raceState.done)return;const t=setInterval(()=>setNow(Date.now()),250);return()=>clearInterval(t)},[raceState]);
  const rivalName=world.computer_players?.rival.name??"Computer rival";
@@ -132,11 +139,20 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
   else if(o==="rival"){setDemo(d=>{const g=d.game??newClueGame();return {...d,game:{...g,rivalLosses:g.rivalLosses+1,earned:[...g.earned,`rivalLoss:${clue.id}`]}}});say({kind:"info",text:`${rivalName} found it first. Keep going: find the line yourself to prove the clue.`})}
   else say({kind:"info",text:"Time's up. Find the line yourself to prove the clue."});
  },[award,clue.id,rivalName,setDemo]);
- useEffect(()=>{if(!raceState||raceState.done||!plan)return;const t0=raceState.start;const timers:number[]=[];
+ useEffect(()=>{if(!raceState||raceState.done||!plan)return;const t0=raceState.start+raceState.rivalDelay;const timers:number[]=[];
   if(plan.wrong)timers.push(window.setTimeout(()=>setRaceState(r=>r&&!r.done?{...r,rivalNote:`${rivalName} tapped a wrong line and is locked out.`}:r),Math.max(0,t0+plan.wrong.atMs-Date.now())));
   timers.push(window.setTimeout(()=>setRaceState(r=>{if(!r||r.done)return r;setTimeout(()=>finishRace(null,plan.correctMs),0);return r}),Math.max(0,t0+plan.correctMs-Date.now())));
   timers.push(window.setTimeout(()=>setRaceState(r=>{if(!r||r.done)return r;setTimeout(()=>finishRace(null,null),0);return r}),Math.max(0,t0+RIVAL_SECONDS*1000-Date.now())));
-  return()=>timers.forEach(clearTimeout)},[raceState?.start,raceState?.done,plan,rivalName,finishRace]);// eslint-disable-line react-hooks/exhaustive-deps
+  return()=>timers.forEach(clearTimeout)},[raceState?.start,raceState?.done,raceState?.rivalDelay,plan,rivalName,finishRace]);// eslint-disable-line react-hooks/exhaustive-deps
+ // Freeze the computer rival: its taps and clock pause for 5 seconds; it is shielded for the rest of the race.
+ const freezeCheck=raceState&&!raceState.done?canFreeze({holding:!!game.freezeHeld,usedThisRound:raceState.frozenAt!==null,target:"computer",teammate:false,shielded:raceState.frozenAt!==null,last:game.lastFreeze??null,round:raceState.raceNo}):null;
+ function freezeRival(){
+  if(!raceState||!freezeCheck?.ok)return;
+  const at=Date.now();
+  setRaceState(r=>r?{...r,frozenAt:at,rivalDelay:r.rivalDelay+FREEZE_MS}:r);
+  setDemo(d=>{const g=d.game??newClueGame();return {...d,game:{...g,freezeHeld:false,lastFreeze:{target:"computer",round:raceState.raceNo},freezeLog:[...(g.freezeLog??[]),{target:rivalName,clueId:clue.id,at:new Date(at).toISOString()}].slice(-200)}}});
+  say({kind:"info",text:`You froze ${rivalName} for 5 seconds. It can't tap; you can.`});
+ }
  function raceTap(l:PanelLine){
   if(!raceState||raceState.done||!plan||Date.now()<raceState.lockUntil)return;
   const ms=Date.now()-raceState.start;
@@ -144,8 +160,8 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
    // The catch, the proof and the point, applied in order so the streak counts each one.
    const proofOk=checkProof(world,passages,clue,l.text).ok;
    const kinds:("offClaim"|"proof"|"rivalWin")[]=["offClaim",...(proofOk?["proof" as const]:[]),"rivalWin"];
-   const apply=(g:typeof demo.game)=>kinds.reduce((acc,k)=>{const r=earn(acc.game,k,clue.id);return {game:r.game,points:acc.points+r.points,coins:acc.coins+r.coins}},{game:g??newClueGame(),points:0,coins:0});
-   const total=apply(demo.game);
+   const apply=(g:typeof demo.game)=>kinds.reduce((acc,k)=>{const r=earn(acc.game,k,clue.id);return {game:withFreeze(r.game,rival,r.points>0),points:acc.points+r.points,coins:acc.coins+r.coins}},{game:g??newClueGame(),points:0,coins:0});
+   const total=apply(demo.game);if(total.game.freezeHeld&&!demo.game?.freezeHeld)setFreezeNote(true);
    setDemo(d=>({...d,game:apply(d.game).game}));
    if(proofOk){s.setProof({text:l.text,pid:l.pid});s.setStance("contradicts");setProven(true)}
    setRaceState(r=>r?{...r,you:ms,done:true,outcome:"you"}:r);playStamp(0);
@@ -191,7 +207,8 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
   <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-2 px-3 pb-3 pt-2 md:flex-row md:gap-4 md:px-6">
    {/* Side column (top on phones): banner, the character's claim, the task */}
    <div className="flex shrink-0 flex-col gap-2 md:order-2 md:w-[400px] md:min-h-0 md:overflow-y-auto">
-    {raceState&&<RaceBar state={raceState} now={now} rivalName={rivalName} emblem={world.computer_players?.rival.emblem??"lantern"} locked={locked} game={game}/>}
+    {raceState&&<RaceBar state={raceState} now={now} rivalName={rivalName} emblem={world.computer_players?.rival.emblem??"lantern"} locked={locked} game={game} freeze={freezeCheck} onFreeze={freezeRival}/>}
+    {freezeNote&&rival&&<p role="status" className="rounded-2xl border-2 border-[#9CC3E0] bg-[#E8F2FA] px-3 py-2 text-[13px] font-semibold text-[#2F5D80]">❄ Three right proofs in a row: you earned a Freeze. Use it in your next face-off.</p>}
     {squadSoloToday(demo)&&<p className="rounded-2xl bg-[#F4E1D6] px-3 py-1.5 text-[13px] font-semibold text-[#8A3B23]">{SQUAD_SOLO_NOTE}</p>}
     {squad&&<p className="rounded-2xl bg-[#F4E1D6] px-3 py-2 text-[13px] leading-5"><b>Reader:</b> {SQUAD_JOBS.reader.does} Your part: {squad.mine.map(x=>paragraphLabel(x.id)).join(", ")}.</p>}
     {/* The claim */}
@@ -264,13 +281,16 @@ function Bubble({who,label,children,actions,onCard,speaking}:{who:WorldPack["cha
  </div>;
 }
 
-function RaceBar({state,now,rivalName,emblem,locked,game}:{state:{start:number;you:number|null;rival:number|null;lockUntil:number;rivalNote:string;done:boolean;outcome?:string};now:number;rivalName:string;emblem:"lantern"|"rider";locked:boolean;game:{rivalWins:number;rivalLosses:number}}){
+function RaceBar({state,now,rivalName,emblem,locked,game,freeze,onFreeze}:{state:{start:number;you:number|null;rival:number|null;lockUntil:number;rivalNote:string;done:boolean;outcome?:string;frozenAt:number|null};now:number;rivalName:string;emblem:"lantern"|"rider";locked:boolean;game:{rivalWins:number;rivalLosses:number;freezeHeld?:boolean};freeze:{ok:boolean;reason?:string}|null;onFreeze:()=>void}){
+ const frozenLeft=freezeLeft(state.frozenAt,now);
  const left=Math.max(0,Math.ceil(RIVAL_SECONDS-(now-state.start)/1000)),wait=Math.max(0,Math.ceil((state.lockUntil-now)/1000));
  const share=state.done?(state.outcome==="you"?0.8:state.outcome==="rival"?0.2:0.5):Math.min(0.85,Math.max(0.15,0.5+(state.you!==null?0.3:0)-(state.rival!==null?0.3:0)));
  return <div className="rounded-2xl bg-[#FFFDF8] p-2.5 shadow-[0_2px_10px_-6px_rgba(42,38,32,.3)]">
   <div className="flex items-center justify-between text-[13px] font-bold"><span className="text-[#8A3B23]">You</span><span className="tabular-nums text-[#6B6457]" aria-label={`${left} seconds left`}>{state.done?"Done":`${left}s`}</span><span className="flex items-center gap-1.5 text-[#3E5F86]">{rivalName}<span className="overflow-hidden rounded-full"><RivalEmblem kind={emblem} size={22}/></span></span></div>
   <TugBar share={share} you={game.rivalWins} them={game.rivalLosses} label="Face-off"/>
-  <p className="mt-1 text-[12px] text-[#6B6457]" aria-live="polite">{locked?`Locked out: ${wait}s`:state.rivalNote||`${rivalName} (computer rival) is reading…`}</p>
+  <p className="mt-1 text-[12px] text-[#6B6457]" aria-live="polite">{locked?`Locked out: ${wait}s`:frozenLeft>0?`❄ ${rivalName} is frozen: ${frozenLeft}s`:state.rivalNote||`${rivalName} (computer rival) is reading…`}</p>
+  {!state.done&&game.freezeHeld&&(freeze?.ok?<button type="button" onClick={onFreeze} className="mt-1.5 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full border-2 border-[#9CC3E0] bg-[#E8F2FA] text-[14px] font-bold text-[#2F5D80]">❄ Freeze {rivalName}</button>
+   :<p className="mt-1 text-[12px] font-semibold text-[#2F5D80]">❄ Freeze ready · {freeze?.reason}</p>)}
  </div>;
 }
 

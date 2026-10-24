@@ -2,11 +2,13 @@
 // student did in their role. Built from the response rows (each one records the player and the role they acted in).
 // Flagged writing is shown here, marked, because this view is the teacher's only; it never reaches the host screen.
 import type { WorldPack } from "../world-schema.ts";
+import { freezeLine } from "../freeze.ts";
 import { ROLE_INFO, objectionResult, roundLie, scoreLieRound, scoreVerdictRound, storySquadScores, type LivePlayer, type LiveResponse, type LiveSession, type LiveSquad, type Role } from "./engine.ts";
 
 export type LiveMemberEvidence = { nickname: string; studentId: string | null; actions: string[] };
 export type LiveSquadEvidence = { name: string; members: LiveMemberEvidence[]; answer: string; explanation: string; flagged: boolean; result: string; points: number };
-export type LiveRoundEvidence = { sessionId: string; date: string; number: number; type: string; prompt: string; squads: LiveSquadEvidence[] };
+// freezes: every Freeze in the round (who, whom, when), so a teacher can spot a squad being targeted.
+export type LiveRoundEvidence = { sessionId: string; date: string; number: number; type: string; prompt: string; squads: LiveSquadEvidence[]; freezes?: string[] };
 export type LiveSessionInput = { session: LiveSession; world: WorldPack; squads: LiveSquad[]; players: LivePlayer[]; responses: LiveResponse[]; absent?: string[] };
 
 const TYPE_NAMES = { lie: "Live Spot the Lie", verdict: "Verdict Vote", objection: "Objection!", story: "Story Mode" } as const;
@@ -26,6 +28,7 @@ function actionLine(r: LiveResponse, world: WorldPack) {
     case "counter_vote": return `Voted ${r.payload.sustain ? "sustained" : "overruled"}`;
     case "story_pin": return r.payload.remove ? "" : `Round ${Number(r.payload.step) + 1}: pinned "${text(r, "line").replace(/\s+/g, " ")}"`;
     case "story_react": return `Round ${Number(r.payload.step) + 1}: reacted${r.flagged ? " (flagged)" : ""}: ${text(r, "stemText")} ${text(r, "body")}`;
+    case "story_freeze": return `Round ${Number(r.payload.step) + 1}: froze ${text(r, "targetName")}`;
     case "story_vote": return `Round ${Number(r.payload.step) + 1}: voted for "${text(r, "line").replace(/\s+/g, " ")}"`;
     case "story": { const rec = r.payload.record as { round?: number; points?: number; detail?: string; proof?: string[] } | undefined; return `Story Mode round ${rec?.round ?? Number(r.payload.step) + 1}: ${rec?.points ?? 0} pts${rec?.detail ? ` (${rec.detail})` : ""}${rec?.proof?.length ? `, proof: ${rec.proof.map((p) => `"${p.replace(/\s+/g, " ")}"`).join(" | ")}` : ""}`; }
     default: return "";
@@ -79,7 +82,8 @@ export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] 
         }),
       }];
     });
-    out.push({ sessionId: session.id, date, number: i + 1, type: TYPE_NAMES[round.type], prompt, squads: squadRows });
+    const freezes = rows.filter((r) => r.kind === "story_freeze").map((r) => freezeLine({ by: `${players.find((p) => p.id === r.playerId)?.nickname ?? "A player"} (${squads.find((q) => q.id === r.squadId)?.name ?? "a squad"})`, target: text(r, "targetName"), at: r.createdAt, where: `Story Mode round ${Number(r.payload.step) + 1}` }));
+    out.push({ sessionId: session.id, date, number: i + 1, type: TYPE_NAMES[round.type], prompt, squads: squadRows, ...(freezes.length ? { freezes } : {}) });
   });
   return out;
 }

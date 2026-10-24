@@ -245,10 +245,12 @@ function Scoreboard({state}:{state:View}){
 // ---------- Story Mode, live ----------
 const STEP_NAMES=["Read and notice","Something happens to you","Catch the lie","Make your call"];
 function StoryPick({state,act}:{state:View;act:(b:Record<string,unknown>)=>void}){
- const [squads,setSquads]=useState(false);
+ const [squads,setSquads]=useState(false),[freezes,setFreezes]=useState(false);
  return <div className="rounded-2xl bg-[#1E1A15] p-4 md:col-span-3"><p className="flex items-center gap-2 text-[22px] font-bold"><Sparkles size={22}/> Story Mode</p><p className="mt-1 text-[16px] text-[#E8DDCB]">Everyone plays the scene at once: four timed rounds on the board, controls on their phones, and a leaderboard between rounds.</p>
-  <label className="mt-3 inline-flex min-h-11 items-center gap-3 text-[16px]"><input type="checkbox" checked={squads} onChange={e=>setSquads(e.target.checked)} className="h-5 w-5 accent-[#A0472C]"/>Rank squads instead of players</label>
-  <button type="button" onClick={()=>act({action:"round.start",type:"story",sceneId:state.storyScenes[0].sceneId,squads})} className="host-btn mt-3 w-full">Start<span className="sr-only"> Story Mode</span></button></div>;
+  <label className="mt-3 flex min-h-11 items-center gap-3 text-[16px]"><input type="checkbox" checked={squads} onChange={e=>{setSquads(e.target.checked);if(!e.target.checked)setFreezes(false)}} className="h-5 w-5 accent-[#A0472C]"/>Rank squads instead of players</label>
+  {/* Freezes: off by default, squads only. Earned by 3 right proofs in a row; holds another squad's lock-in for 5 seconds. */}
+  <label className={`mt-1 flex min-h-11 items-start gap-3 text-[16px] ${squads?"":"opacity-50"}`}><input type="checkbox" role="switch" checked={freezes} disabled={!squads} onChange={e=>setFreezes(e.target.checked)} className="mt-1 h-5 w-5 accent-[#A0472C]"/><span><b>❄ Freezes</b><span className="block text-[14px] text-[#E8DDCB]">Off by default. A student earns one with 3 right proofs in a row. It holds another squad's lock-in for 5 seconds; reading and pins keep working. Never teammates. Every freeze is logged in Evidence.</span></span></label>
+  <button type="button" onClick={()=>act({action:"round.start",type:"story",sceneId:state.storyScenes[0].sceneId,squads,freezes:squads&&freezes})} className="host-btn mt-3 w-full">Start<span className="sr-only"> Story Mode</span></button></div>;
 }
 function useCountdown(startedAt:string,seconds:number){
  const [left,setLeft]=useState(seconds);

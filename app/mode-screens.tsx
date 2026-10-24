@@ -106,6 +106,7 @@ export function FaceOff({world,demo,clueName,onGo}:{world:WorldPack;demo:Demo;cl
    <div className="w-32 text-center"><span className="mx-auto block h-[84px] w-[84px] overflow-hidden rounded-full border-4 border-white shadow-lg"><RivalEmblem kind={rival.emblem}/></span><p className="mt-2 text-[15px] font-bold leading-tight">{rival.name}</p><p className="text-[12px] font-semibold text-[#6B6457]">Computer rival · {g.rivalLosses} win{g.rivalLosses===1?"":"s"}</p></div>
   </div>
   <TugBar share={share} you={g.rivalWins} them={g.rivalLosses} label="Wins this story"/>
+  {g.freezeHeld&&<p className="mt-3 rounded-2xl border-2 border-[#9CC3E0] bg-[#E8F2FA] px-4 py-2 text-center text-[14px] font-bold text-[#2F5D80]">❄ You have a Freeze: pause {rival.name}'s taps for 5 seconds once this face-off.</p>}
   <div className="mt-6 flex flex-1 items-center justify-center">{count===null
    ?<button type="button" onClick={()=>setCount(3)} className="case-primary min-h-[56px] px-10 text-[18px]">I'm ready</button>
    :<p className="grid h-32 w-32 place-items-center rounded-full bg-[#2A2620] text-[64px] font-bold tabular-nums text-white shadow-[0_0_0_8px_#F4E1D6]" aria-live="assertive">{Math.max(1,count)}</p>}</div>

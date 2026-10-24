@@ -22,7 +22,7 @@ export async function loadClassEvidence(store: ClassroomStore, teacherId: string
     const p = progress[i];
     // Only progress for this class's story counts; a student with no saved progress has not started.
     const mine = p && p.worldId === cls.world_id;
-    return { id: s.id, nickname: s.nickname, answers: mine ? p.artifactAnswers : null, frames: mine ? p.storyFrames : null, lies: mine ? p.lies ?? null : null, verdict: mine ? p.verdict ?? null : null, marks: mine ? p.marks ?? null : null, claimFlags: mine ? p.claimFlags ?? null : null };
+    return { id: s.id, nickname: s.nickname, answers: mine ? p.artifactAnswers : null, frames: mine ? p.storyFrames : null, lies: mine ? p.lies ?? null : null, verdict: mine ? p.verdict ?? null : null, marks: mine ? p.marks ?? null : null, claimFlags: mine ? p.claimFlags ?? null : null, freezes: mine ? p.game?.freezeLog ?? null : null };
   }), cls.grade);
   const live = await loadLiveRounds(cls.id);
   // Story Mode boards for the scenes that have it (none until the migration runs).

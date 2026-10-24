@@ -58,7 +58,9 @@ export const StudentProgressSchema = z.object({
   angle: AngleSchema.optional(),
   roleIntroSeen: z.boolean().optional(),
   // The clue game (lib/clue-game.ts): points, coins and streak; lines the student marked; and "Something's off" flags.
-  game: z.object({ points: z.number().int().min(0).max(1000000), coins: z.number().int().min(0).max(100000), streak: z.number().int().min(0).max(1000), bestStreak: z.number().int().min(0).max(1000), rivalWins: z.number().int().min(0).max(1000), rivalLosses: z.number().int().min(0).max(1000), earned: z.array(text(200)).max(500) }).optional(),
+  game: z.object({ points: z.number().int().min(0).max(1000000), coins: z.number().int().min(0).max(100000), streak: z.number().int().min(0).max(1000), bestStreak: z.number().int().min(0).max(1000), rivalWins: z.number().int().min(0).max(1000), rivalLosses: z.number().int().min(0).max(1000), earned: z.array(text(200)).max(500),
+    freezeHeld: z.boolean().optional(), races: z.number().int().min(0).max(10000).optional(), lastFreeze: z.object({ target: text(80), round: z.number().int().min(0).max(10000) }).optional(),
+    freezeLog: z.array(z.object({ target: text(80), clueId: id, at: text(40) })).max(200).optional() }).optional(),
   marks: z.record(text(20), z.object({ tag: z.enum(["clue", "word", "question"]), pid: text(12), text: text(1500), clueId: id.optional(), at: text(40) })).optional(),
   claimFlags: z.array(z.object({ clueId: id, characterId: id, answer: text(1200), line: text(1500), pid: text(12), matched: z.boolean(), at: text(40) })).max(200).optional(),
   // How the student plays (solo, rival or squad) and the scenes whose mission screen they have seen.

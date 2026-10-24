@@ -82,7 +82,7 @@ export function EvidenceView({evidence,sample=false,className}:{evidence:ClassEv
     </table>
    </div>
   </>}
-  {evidence.students.some(st=>st.marks?.length||st.claimFlags?.length)?<MarksAndFlags students={evidence.students}/>:null}
+  {evidence.students.some(st=>st.marks?.length||st.claimFlags?.length||st.freezes?.length)?<MarksAndFlags students={evidence.students}/>:null}
   {evidence.storyMode?.some(s=>s.rows.length)?<StoryBoards boards={evidence.storyMode}/>:null}
   {evidence.live?.length?<LiveRounds rounds={evidence.live}/>:null}
   {selected&&<DetailPanel evidence={evidence} selected={selected} onClose={close}/>}
@@ -162,6 +162,7 @@ function LiveRounds({rounds}:{rounds:LiveRoundEvidence[]}){
   <p className="max-w-2xl text-[15px] leading-6 text-[#4A4438]">Squads score together. Each student's role actions show who pinned, wrote, checked and submitted.</p>
   {rounds.map(r=><details key={`${r.sessionId}-${r.number}`} className="rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
    <summary className="cursor-pointer text-[17px] font-semibold text-[#2A2620]">{r.date} · Round {r.number} · {r.type}<span className="mt-1 block text-[14px] font-normal text-[#6B6457]">{r.prompt}</span></summary>
+   {r.freezes?.length?<div className="mt-3 rounded-2xl bg-[#E8F2FA] p-3"><p className="text-[13px] font-bold uppercase tracking-wide text-[#2F5D80]">❄ Freezes this round</p><ul className="mt-1 space-y-1 text-[14px] text-[#2A2620]">{r.freezes.map((f,i)=><li key={i}>{f}</li>)}</ul></div>:null}
    <ul className="mt-4 grid gap-3 md:grid-cols-2">{r.squads.map(sq=><li key={sq.name} className="rounded-2xl border border-[#E4DCCB] p-4">
     <p className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-[16px] font-bold text-[#2A2620]">{sq.name}</span><span className="text-[14px] font-semibold tabular-nums text-[#8A3B23]">{sq.points} pts · {sq.result}</span></p>
     {sq.answer&&<p className="mt-2 text-[15px] italic leading-6 text-[#2A2620]">“{sq.answer}”</p>}
@@ -195,9 +196,10 @@ function MarksAndFlags({students}:{students:EvidenceStudent[]}){
  return <section aria-labelledby="marks-h" className="space-y-3">
   <h3 id="marks-h" className="flex items-center gap-2 text-[22px] font-bold text-[#2A2620]"><Flag size={20} className="text-[#A0472C]"/>Marked lines and flagged answers</h3>
   <p className="max-w-2xl text-[15px] leading-6 text-[#4A4438]">Lines students tagged while reading, and character answers they said were off. Flags that didn't match a planted mistake are here for you to review.</p>
-  <ul className="grid gap-3 md:grid-cols-2">{students.filter(st=>st.marks?.length||st.claimFlags?.length).map(st=><li key={st.id} className="rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
+  <ul className="grid gap-3 md:grid-cols-2">{students.filter(st=>st.marks?.length||st.claimFlags?.length||st.freezes?.length).map(st=><li key={st.id} className="rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
    <p className="text-[17px] font-bold text-[#2A2620]">{st.nickname}</p>
    {st.marks.length>0&&<ul className="mt-2 space-y-2 text-[15px] leading-6">{st.marks.map((m,i)=><li key={i}><span className="mr-2 rounded-full bg-[#EFE8D8] px-2 py-0.5 text-[12px] font-bold text-[#2A2620]">{m.tag}</span><span className="text-[13px] font-semibold text-[#6B6457]">{m.paragraph}</span><span className="mt-1 block font-serif italic text-[#2A2620]">“{m.text}”</span></li>)}</ul>}
+   {st.freezes?.length>0&&<div className="mt-3"><p className="text-[13px] font-bold uppercase tracking-wide text-[#2F5D80]">❄ Freezes used</p><ul className="mt-1 space-y-1 text-[14px] text-[#2A2620]">{st.freezes.map((f,i)=><li key={i}>{f}</li>)}</ul></div>}
    {st.claimFlags.length>0&&<ul className="mt-3 space-y-2 text-[15px] leading-6">{st.claimFlags.map((f,i)=><li key={i} className="rounded-2xl border border-[#E4DCCB] p-3"><p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">{f.clue} · {f.character} · {f.matched?"Caught the mistake":"Needs your review"}</p><p className="mt-1 text-[#4A4438]">{f.character} said: {f.answer}</p><p className="mt-1 font-serif italic text-[#2A2620]">Student's line: “{f.line}”</p></li>)}</ul>}
   </li>)}</ul>
  </section>;

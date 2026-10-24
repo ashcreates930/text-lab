@@ -8,6 +8,7 @@ import { paragraphNumber, readingPortions } from "./source-passages.ts";
 import { evidenceSentences, lineWords } from "./lies.ts";
 import { matchEvidence } from "./evidence-check.ts";
 import { streakMultiplier } from "./story-mode.ts";
+import { earnsFreeze } from "./freeze.ts";
 
 type Scene = WorldPack["scenes"][number];
 type Clue = Scene["artifacts"][number];
@@ -75,7 +76,8 @@ export const correctsOffClaim = (clue: Clue, line: string) => offClaimLines(clue
 export const CLUE_POINTS = { proof: 100, offClaim: 300, lie: 300, rivalWin: 100 } as const;
 export const CLUE_COINS = { proof: 1, offClaim: 2, lie: 2, rivalWin: 1 } as const;
 export type EarnKind = keyof typeof CLUE_POINTS;
-export type ClueGame = { points: number; coins: number; streak: number; bestStreak: number; rivalWins: number; rivalLosses: number; earned: string[] };
+// Rival play also keeps Freeze state (lib/freeze.ts): whether one is held, races played, the last freeze, and a log.
+export type ClueGame = { points: number; coins: number; streak: number; bestStreak: number; rivalWins: number; rivalLosses: number; earned: string[]; freezeHeld?: boolean; races?: number; lastFreeze?: { target: string; round: number }; freezeLog?: { target: string; clueId: string; at: string }[] };
 export const newClueGame = (): ClueGame => ({ points: 0, coins: 0, streak: 0, bestStreak: 0, rivalWins: 0, rivalLosses: 0, earned: [] });
 // A correct proof. Each award counts once (key: kind and clue), so proving the same clue again earns nothing new.
 // Consecutive correct proofs build the streak: x1.2 for the second, x1.5 from the third (the Story Mode rule).
@@ -85,6 +87,10 @@ export function earn(game: ClueGame | undefined, kind: EarnKind, key: string) {
   const multiplier = streakMultiplier(g.streak);
   const points = Math.round(CLUE_POINTS[kind] * multiplier), coins = CLUE_COINS[kind], streak = g.streak + 1;
   return { game: { ...g, points: g.points + points, coins: g.coins + coins, streak, bestStreak: Math.max(g.bestStreak, streak), earned: [...g.earned, id], ...(kind === "rivalWin" ? { rivalWins: g.rivalWins + 1 } : {}) }, points, coins };
+}
+// Rival play: a proof that brings the streak to 3, 6, 9… earns a Freeze (hold at most one).
+export function withFreeze(game: ClueGame, rival: boolean, streakGrew: boolean): ClueGame {
+  return rival && streakGrew && earnsFreeze(game.streak, !!game.freezeHeld) ? { ...game, freezeHeld: true } : game;
 }
 // A wrong line submitted as proof ends the streak (no points lost).
 export const miss = (game: ClueGame | undefined): ClueGame => ({ ...(game ?? newClueGame()), streak: 0 });

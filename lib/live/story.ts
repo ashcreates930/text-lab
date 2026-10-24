@@ -7,9 +7,11 @@ import type { SourcePassage } from "../source-passages.ts";
 import { GRACE_SECONDS, ROUNDS, SECONDS, applyRound, boardName, newRun, pulseChoice, rankRows, scoreRound, speedBonus, type RoundInput, type RoundKind, type RoundRecord, type RunState, type Scene, type TimeSetting } from "../story-mode.ts";
 import { squadMembersCounted, type LivePlayer, type LiveResponse } from "./engine.ts";
 import { evidenceSentences, lineWords } from "../lies.ts";
+import { FREEZE_MS, canFreeze, earnsFreeze, frozenMs } from "../freeze.ts";
 import { REACTION_MAX, REACTION_STEMS, SQUAD_JOBS, squadChunks, squadJobs, voteWinner, type ReactionStem, type SquadJob } from "../clue-game.ts";
 
-export type LiveStoryRound = { type: "story"; sceneId: string; step: number; showing: "round" | "board"; stepStartedAt: string; squadsOn: boolean };
+// freezesOn: the host turned Freezes on (squads only; off by default).
+export type LiveStoryRound = { type: "story"; sceneId: string; step: number; showing: "round" | "board"; stepStartedAt: string; squadsOn: boolean; freezesOn?: boolean };
 // Seconds per step, shared by everyone. Round 2's choice and proof run as one 90-second step live.
 export const LIVE_STORY_SECONDS: Record<RoundKind, number> = { read: SECONDS.read, confront: SECONDS.choice + SECONDS.proof, lie: SECONDS.lie, call: SECONDS.call };
 export const stepKind = (step: number) => ROUNDS[step];
@@ -24,8 +26,11 @@ export function playerState(responses: LiveResponse[], roundIndex: number, playe
   return s;
 }
 // Scores one player's answer for the current step. setting: the player's own time (the teacher's extra time).
-export function answerStep(world: WorldPack, passages: SourcePassage[], scene: Scene, round: LiveStoryRound, responses: LiveResponse[], roundIndex: number, playerId: string, input: RoundInput, nowMs: number, setting: TimeSetting): { record: RoundRecord } | string {
+// squadId: the player's squad; while another squad's Freeze holds it, lock-in waits, and the frozen time doesn't count.
+export function answerStep(world: WorldPack, passages: SourcePassage[], scene: Scene, round: LiveStoryRound, responses: LiveResponse[], roundIndex: number, playerId: string, input: RoundInput, nowMs: number, setting: TimeSetting, squadId: string | null = null): { record: RoundRecord } | string {
   if (round.showing !== "round") return "Eyes on the board.";
+  const held = squadId ? squadFrozenUntil(responses, roundIndex, round.step, squadId) : 0;
+  if (held > nowMs) return `Your squad's lock-in is frozen for ${Math.ceil((held - nowMs) / 1000)} more seconds. Keep reading.`;
   const kind = stepKind(round.step);
   if (!kind || input.kind !== kind) return "That isn't this round.";
   const state = playerState(responses, roundIndex, playerId);
@@ -33,7 +38,10 @@ export function answerStep(world: WorldPack, passages: SourcePassage[], scene: S
   // A player who missed earlier steps joins in where the class is.
   const base = { ...state, round: round.step };
   const limit = LIVE_STORY_SECONDS[kind] * (setting === "untimed" ? Infinity : Number(setting));
-  const elapsedMs = Math.max(0, nowMs - new Date(round.stepStartedAt).getTime());
+  const started = new Date(round.stepStartedAt).getTime();
+  // The timer pauses while the squad is frozen, so a freeze never costs reading time.
+  const paused = squadId ? frozenMs(freezeStarts(responses, roundIndex, round.step, squadId), started, nowMs) : 0;
+  const elapsedMs = Math.max(0, nowMs - started - paused);
   if (elapsedMs > (limit + GRACE_SECONDS) * 1000) return "Time's up for this round.";
   const grace = elapsedMs > limit * 1000;
   const score = scoreRound(world, passages, scene, input, { elapsedMs, grace }, setting, state.pouch);
@@ -142,3 +150,56 @@ export function readingAction(scene: Scene, passages: SourcePassage[], kind: "st
   return { payload: { step, line, stem, stemText: REACTION_STEMS[stem], body } };
 }
 export const JOB_TEXT: Record<SquadJob, { name: string; does: string }> = SQUAD_JOBS;
+
+// ---------- Freezes (squad vs squad, host toggle) ----------
+const freezeRows = (responses: LiveResponse[], roundIndex: number) => responses.filter((r) => r.roundIndex === roundIndex && r.kind === "story_freeze").sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+// When freezes on this squad started, this step.
+export const freezeStarts = (responses: LiveResponse[], roundIndex: number, step: number, squadId: string) => freezeRows(responses, roundIndex).filter((r) => r.payload.step === step && r.payload.targetSquadId === squadId).map((r) => new Date(r.createdAt).getTime());
+export const squadFrozenUntil = (responses: LiveResponse[], roundIndex: number, step: number, squadId: string) => Math.max(0, ...freezeStarts(responses, roundIndex, step, squadId).map((t) => t + FREEZE_MS));
+// Whether a player holds a Freeze: earned when their streak of correct proofs reaches 3, 6, 9…, spent when used.
+export function holdsFreeze(responses: LiveResponse[], roundIndex: number, playerId: string) {
+  const events = [
+    ...storyRows(responses, roundIndex).filter((r) => r.playerId === playerId).map((r) => ({ at: r.createdAt, earn: r.payload.record.valid ? r.payload.record.streak : 0 })),
+    ...freezeRows(responses, roundIndex).filter((r) => r.playerId === playerId).map((r) => ({ at: r.createdAt, earn: -1 })),
+  ].sort((a, b) => a.at.localeCompare(b.at));
+  let holding = false;
+  for (const e of events) { if (e.earn === -1) holding = false; else if (earnsFreeze(e.earn, holding)) holding = true; }
+  return holding;
+}
+// What a player sees about freezes this step: whether they hold one, which squads they could freeze (and why not),
+// and whether their own squad is frozen right now.
+export function freezeView(round: LiveStoryRound, responses: LiveResponse[], roundIndex: number, squads: { id: string; name: string }[], players: LivePlayer[], meId: string, nowMs: number) {
+  const me = players.find((p) => p.id === meId);
+  if (!round.freezesOn || !round.squadsOn || !me?.squadId) return null;
+  const rows = freezeRows(responses, roundIndex);
+  const mine = rows.filter((r) => r.playerId === meId);
+  const last = mine.at(-1);
+  const holding = holdsFreeze(responses, roundIndex, meId);
+  const usedThisRound = mine.some((r) => r.payload.step === round.step);
+  const targets = squads.filter((q) => q.id !== me.squadId && players.some((p) => p.squadId === q.id)).map((q) => {
+    const check = canFreeze({ holding, usedThisRound, target: q.id, teammate: false, shielded: rows.some((r) => r.payload.step === round.step && r.payload.targetSquadId === q.id), last: last ? { target: String(last.payload.targetSquadId), round: Number(last.payload.step) } : null, round: round.step });
+    return { squadId: q.id, name: q.name, ok: check.ok, reason: check.ok ? "" : check.reason };
+  });
+  const until = squadFrozenUntil(responses, roundIndex, round.step, me.squadId);
+  const by = rows.filter((r) => r.payload.step === round.step && r.payload.targetSquadId === me.squadId).at(-1);
+  const byName = by ? squads.find((q) => q.id === by.squadId)?.name ?? "Another squad" : "";
+  return {
+    holding, usedThisRound, targets,
+    frozen: until > nowMs ? { until: new Date(until).toISOString(), by: byName } : null,
+    shielded: !!by,
+    pausedMs: frozenMs(freezeStarts(responses, roundIndex, round.step, me.squadId), new Date(round.stepStartedAt).getTime(), nowMs),
+  };
+}
+// Checks a freeze: the host turned freezes on, squads are on, the player holds one, and the target is fair game.
+export function freezeAction(round: LiveStoryRound, responses: LiveResponse[], roundIndex: number, squads: { id: string; name: string }[], players: LivePlayer[], meId: string, targetSquadId: unknown, nowMs: number): { payload: Record<string, unknown> } | string {
+  if (!round.freezesOn || !round.squadsOn) return "Freezes are off for this round.";
+  if (round.showing !== "round") return "Wait for the round to start.";
+  const v = freezeView(round, responses, roundIndex, squads, players, meId, nowMs);
+  const me = players.find((p) => p.id === meId);
+  if (!v || !me) return "Join a squad first.";
+  if (targetSquadId === me.squadId) return "Never your own team.";
+  const t = v.targets.find((x) => x.squadId === targetSquadId);
+  if (!t) return "Pick another squad.";
+  if (!t.ok) return t.reason;
+  return { payload: { step: round.step, targetSquadId: t.squadId, targetName: t.name } };
+}

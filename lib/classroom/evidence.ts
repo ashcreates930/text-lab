@@ -3,6 +3,7 @@
 // (students.progress) and the class story's world pack. Shared by the teacher API, the sample classroom, and tests.
 import type { WorldPack } from "../world-schema.ts";
 import type { LiveRoundEvidence } from "../live/evidence.ts";
+import { freezeLine } from "../freeze.ts";
 
 // What a saved answer looks like in students.progress.artifactAnswers (only the fields this view reads).
 export type SavedAnswer = { notice?: string; interpret?: string; craft?: string; character?: string };
@@ -13,7 +14,8 @@ export type SavedLieInput = { clue_id?: string; caught?: boolean };
 export type SavedVerdictInput = { world_id?: string; theory_id?: string; pinned?: { clue_id: string; quote: string }[]; argument?: string; feedback?: { strength?: string } | null };
 export type SavedMarkInput = { tag?: string; text?: string; pid?: string };
 export type SavedFlagInput = { clueId?: string; characterId?: string; answer?: string; line?: string; matched?: boolean };
-export type EvidenceStudentInput = { id: string; nickname: string; answers: Record<string, SavedAnswer> | null; frames?: Record<string, SavedFrameInput> | null; lies?: Record<string, SavedLieInput> | null; verdict?: SavedVerdictInput | null; marks?: Record<string, SavedMarkInput> | null; claimFlags?: SavedFlagInput[] | null };
+export type SavedFreezeInput = { target?: string; clueId?: string; at?: string };
+export type EvidenceStudentInput = { id: string; nickname: string; answers: Record<string, SavedAnswer> | null; frames?: Record<string, SavedFrameInput> | null; lies?: Record<string, SavedLieInput> | null; verdict?: SavedVerdictInput | null; marks?: Record<string, SavedMarkInput> | null; claimFlags?: SavedFlagInput[] | null; freezes?: SavedFreezeInput[] | null };
 // Marked lines (clue, word to know, question) and "Something's off" flags. A matched flag caught the clue's off claim;
 // the others wait for the teacher's review.
 export type EvidenceMark = { tag: string; paragraph: string; text: string };
@@ -33,7 +35,7 @@ export type EvidenceCell = { proven: boolean; quote: string; explanation: string
 export type EvidenceClue = { id: string; name: string; sceneId: string };
 // lie: the scene's Spot the Lie clue and the character who testified, when the scene has one.
 export type EvidenceScene = { id: string; title: string; characters: string[]; clues: EvidenceClue[]; lie?: { clueId: string; character: string } };
-export type EvidenceStudent = { id: string; nickname: string; started: boolean; proven: number; provedWrong: number; needsHelp: boolean; cells: Record<string, EvidenceCell>; storyboard: StoryboardFrame[]; liesCaught: Record<string, boolean>; verdict: EvidenceVerdict | null; marks: EvidenceMark[]; claimFlags: EvidenceFlag[] };
+export type EvidenceStudent = { id: string; nickname: string; started: boolean; proven: number; provedWrong: number; needsHelp: boolean; cells: Record<string, EvidenceCell>; storyboard: StoryboardFrame[]; liesCaught: Record<string, boolean>; verdict: EvidenceVerdict | null; marks: EvidenceMark[]; claimFlags: EvidenceFlag[]; freezes: string[] };
 export type ClassEvidence = {
   story: { id: string; title: string };
   scenes: EvidenceScene[];
@@ -106,7 +108,9 @@ export function buildEvidence(world: WorldPack, students: EvidenceStudentInput[]
     const TAGS: Record<string, string> = { clue: "Clue", word: "Word to know", question: "Question" };
     const marks: EvidenceMark[] = Object.values(s.marks ?? {}).filter((m) => m?.text && m.tag && TAGS[m.tag]).map((m) => ({ tag: TAGS[m.tag!], paragraph: m.pid ? `¶${Number(m.pid.slice(1))}` : "", text: m.text!.replace(/\s+/g, " ").trim() }));
     const claimFlags: EvidenceFlag[] = (s.claimFlags ?? []).filter((f) => f?.clueId && f.line).map((f) => ({ clue: clueNames.get(f.clueId!) ?? "A clue", character: names.get(f.characterId ?? "") ?? "A character", answer: f.answer ?? "", line: f.line!.replace(/\s+/g, " ").trim(), matched: !!f.matched }));
-    return { id: s.id, nickname: s.nickname, started, proven, provedWrong, needsHelp: started && proven === 0, cells, storyboard, liesCaught, verdict, marks, claimFlags };
+    // Freezes this student used in rival play (who, whom, when).
+    const freezes = (s.freezes ?? []).filter((f) => f?.target && f.at).map((f) => freezeLine({ by: s.nickname, target: f.target!, at: f.at!, where: clueNames.get(f.clueId ?? "") ?? "a face-off" }));
+    return { id: s.id, nickname: s.nickname, started, proven, provedWrong, needsHelp: started && proven === 0, cells, storyboard, liesCaught, verdict, marks, claimFlags, freezes };
   });
   const joined = rows.length;
   return {

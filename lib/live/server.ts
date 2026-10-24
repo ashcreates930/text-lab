@@ -5,7 +5,7 @@ import type { WorldPack } from "../world-schema.ts";
 import { readPassages, readWorld } from "../classroom/worlds.ts";
 import { NOT_EVIDENCE, matchEvidence } from "../evidence-check.ts";
 import type { SourcePassage } from "../source-passages.ts";
-import { answerStep, answeredStep, liveStoryBoard, myStepRecord, playerState, publicStory, readingAction, squadReading, stepKind, type LiveStoryRound } from "./story.ts";
+import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, myStepRecord, playerState, publicStory, readingAction, squadReading, stepKind, type LiveStoryRound } from "./story.ts";
 import { screenMessage } from "../safety.ts";
 import { studentBoard, type RoundInput, type TimeSetting } from "../story-mode.ts";
 import { absentDay, getClassroomStore, memoryModeEnabled } from "../classroom/store.ts";
@@ -204,7 +204,8 @@ export function playerView(st: LiveState, playerId: string) {
     const view = studentBoard(board.rows, board.kind === "squad" ? me.squadId : me.id);
     const scene = storyScene(st, round);
     const reading = scene && me.squadId && round.showing === "round" ? squadReading(scene, round, st.responses, i, st.players, me.squadId, me.id, st.absent) : null;
-    return { reading, answered: !!myStepRecord(st.responses, i, round.step, me.id), last: round.showing === "board" || st.session.status !== "round" ? myStepRecord(st.responses, i, round.step, me.id) : null, total: state.total, pouch: state.pouch, board: view, boardKind: board.kind };
+    const freeze = round.showing === "round" ? freezeView(round, st.responses, i, st.squads, st.players, me.id, Date.now()) : null;
+    return { reading, freeze, answered: !!myStepRecord(st.responses, i, round.step, me.id), last: round.showing === "board" || st.session.status !== "round" ? myStepRecord(st.responses, i, round.step, me.id) : null, total: state.total, pouch: state.pouch, board: view, boardKind: board.kind };
   })() : null;
   return {
     session: sessionInfo(st), round: publicRound(st), purpose: round ? squadPurpose(round.type) : "", story,
@@ -232,7 +233,7 @@ function hasVerdictPins(st: LiveState) {
 // ---------- Host actions ----------
 export type HostAction =
   | { action: "squads.auto" } | { action: "squads.move"; playerId: string; squadId: string | null }
-  | { action: "round.start"; type: RoundType; sceneId?: string; plantedId?: string; squads?: boolean } | { action: "round.stage" } | { action: "round.reveal" }
+  | { action: "round.start"; type: RoundType; sceneId?: string; plantedId?: string; squads?: boolean; freezes?: boolean } | { action: "round.stage" } | { action: "round.reveal" }
   | { action: "pause" } | { action: "resume" } | { action: "end" } | { action: "witness.play" } | { action: "player.absent"; playerId: string; absent: boolean }
   | { action: "override"; key: "sound"; squadId: string; value: boolean } | { action: "override"; key: "objection"; value: boolean };
 
@@ -269,7 +270,7 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
       } else if (a.type === "story") {
         const scene = st.world.scenes.find((x) => x.id === a.sceneId && x.story_mode) ?? st.world.scenes.find((x) => x.story_mode);
         if (!scene) return "This story has no Story Mode yet.";
-        next = { type: "story", sceneId: scene.id, step: 0, showing: "round", stepStartedAt: new Date().toISOString(), squadsOn: a.squads === true };
+        next = { type: "story", sceneId: scene.id, step: 0, showing: "round", stepStartedAt: new Date().toISOString(), squadsOn: a.squads === true, freezesOn: a.squads === true && a.freezes === true };
       } else if (a.type === "verdict") {
         if (!st.world.verdict) return "This story has no verdict question.";
         next = { type: "verdict", stage: "vote" };
@@ -355,9 +356,17 @@ export async function playerAct(store: LiveStore, st: LiveState, playerId: strin
     if (round?.type !== "story") return "This isn't a Story Mode round.";
     const scene = storyScene(st, round);
     if (!scene) return "This scene has no Story Mode.";
-    const r = answerStep(st.world, st.passages ?? [], scene, round, st.responses, i, playerId, act.payload.input as RoundInput, Date.now(), deps.timeSetting ?? "1");
+    const r = answerStep(st.world, st.passages ?? [], scene, round, st.responses, i, playerId, act.payload.input as RoundInput, Date.now(), deps.timeSetting ?? "1", me.squadId);
     if (typeof r === "string") return r;
     await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: "story", payload: { step: round.step, record: r.record, ...(act.payload.input && (act.payload.input as RoundInput).kind === "lie" ? { explanation: String((act.payload.input as { explanation?: string }).explanation ?? "").slice(0, 400) } : {}) }, flagged: false });
+    return null;
+  }
+  // Freeze: hold another squad's lock-in for 5 seconds (host toggle, squads only).
+  if (act.kind === "story_freeze") {
+    if (round?.type !== "story") return "This isn't a Story Mode round.";
+    const r = freezeAction(round, st.responses, i, st.squads, st.players, playerId, act.payload.targetSquadId, Date.now());
+    if (typeof r === "string") return r;
+    await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: "story_freeze", payload: r.payload, flagged: false });
     return null;
   }
   // Reading together: pins, reactions and votes in a live Story Mode squad (round 1, squads on).

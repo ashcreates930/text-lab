@@ -390,3 +390,16 @@ Characters answer in their own voice with an opinion, memory or claim in two or 
 | Reactions | This proves… · I disagree because… · This connects to… · finish the sentence (80 characters) · Add my reaction · That reaction is saved for your teacher to see. Try different words for your squad. |
 | Squad vote | Vote: best proof · Ties go to the line with the most reactions, then the Fact-checker's vote. · N votes · leading · Lock in the squad's pick · Vote before you lock in |
 | Teacher Evidence | Marked lines and flagged answers · Caught the mistake / Needs your review · Pinned "…" · Reacted: (stem) (ending) · Voted for "…" |
+
+## Freeze (rival and squad-vs-squad play)
+
+Rules (lib/freeze.ts): earned only by reading (one for every 3 right proofs in a row, never bought, hold one); one per player per round; not the same opponent twice in a row; a frozen player or squad is shielded for the rest of the round; never against teammates; the frozen side's timer pauses. Demo and class rival play: always on, and the computer rival never freezes anyone. Live class: squads only, host toggle, off by default. Solo play: none. Every freeze is logged in the Evidence view (who, whom, when).
+
+| Where | Text |
+| --- | --- |
+| Host (Story Mode picker) | ❄ Freezes · Off by default. A student earns one with 3 right proofs in a row. It holds another squad's lock-in for 5 seconds; reading and pins keep working. Never teammates. Every freeze is logged in Evidence. |
+| Phone, holding one | ❄ You have a Freeze · Hold another squad's lock-in for 5 seconds. Use it once this round. · ❄ Freeze · One Freeze per round. · Shielded this round. · Not twice in a row. · Never your own team. |
+| Phone, frozen | Lock-in held: N seconds · (squad) froze your squad's lock-in. Pins, reactions and votes still work, and your timer is paused. · ❄ Lock in (in N seconds) · 🛡 Your squad is shielded for the rest of this round · Screen reader: "… froze your squad's lock-in for N seconds. Keep reading; your timer is paused." then "Your squad can lock in again." |
+| Rival race | ❄ Three right proofs in a row: you earned a Freeze. Use it in your next face-off. · ❄ Freeze (rival) · ❄ (rival) is frozen: Ns · You froze (rival) for 5 seconds. It can't tap; you can. · ❄ Freeze ready · (reason) |
+| Face-off | ❄ You have a Freeze: pause (rival)'s taps for 5 seconds once this face-off. |
+| Evidence | ❄ Freezes this round · (student) (squad) froze (squad) · Story Mode round N · time · ❄ Freezes used · (student) froze (rival) · (clue) · time |

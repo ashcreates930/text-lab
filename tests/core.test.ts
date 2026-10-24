@@ -2192,3 +2192,70 @@ test("off claims accept their alternative correcting lines (#6 and #12), and #5 
   assert.ok(cg.correctsOffClaim(clue("hurled-head"),clue("hurled-head").off_claim!.also![0].line));
   assert.match(clue("fallen-saddle").off_claim!.line.replace(/\s+/g," "),/\(unskilful rider that he was!\) he had much ado/);
 });
+
+test("freeze rules: earned by 3 right proofs in a row, hold one, one per round, not the same opponent twice, timers pause", async()=>{
+  const fz=await import("../lib/freeze.ts");const cg=await import("../lib/clue-game.ts");
+  assert.deepEqual([1,2,3,4,5,6].map(n=>fz.earnsFreeze(n,false)),[false,false,true,false,false,true]);
+  assert.equal(fz.earnsFreeze(3,true),false,"hold at most one");
+  const base={holding:true,usedThisRound:false,target:"q2",teammate:false,shielded:false,last:null,round:2};
+  assert.deepEqual(fz.canFreeze(base),{ok:true});
+  assert.match((fz.canFreeze({...base,holding:false}) as {reason:string}).reason,/3 right proofs in a row/);
+  assert.match((fz.canFreeze({...base,teammate:true}) as {reason:string}).reason,/Never your own team/);
+  assert.match((fz.canFreeze({...base,usedThisRound:true}) as {reason:string}).reason,/One Freeze per round/);
+  assert.match((fz.canFreeze({...base,shielded:true}) as {reason:string}).reason,/Shielded/);
+  assert.match((fz.canFreeze({...base,last:{target:"q2",round:1}}) as {reason:string}).reason,/twice in a row/);
+  assert.deepEqual(fz.canFreeze({...base,last:{target:"q2",round:0}}),{ok:true},"a round in between is fine");
+  assert.equal(fz.frozenMs([1000],0,10000),5000);assert.equal(fz.frozenMs([1000],0,3000),2000,"still frozen: counts so far");
+  assert.equal(fz.freezeLeft(1000,3500),3);assert.equal(fz.freezeLeft(null,0),0);
+  // Rival play: the third right proof in a row earns one, never in solo, never while holding one.
+  let g=cg.newClueGame();for(const k of ["a","b","c"]){const r=cg.earn(g,"proof",k);g=cg.withFreeze(r.game,true,r.points>0)}
+  assert.equal(g.freezeHeld,true);
+  let solo=cg.newClueGame();for(const k of ["a","b","c"]){const r=cg.earn(solo,"proof",k);solo=cg.withFreeze(r.game,false,r.points>0)}
+  assert.equal(!!solo.freezeHeld,false,"solo play has no freezes");
+});
+
+test("live freezes: host toggle, squads only, never teammates, holds the other squad's lock-in but not their reading, logged", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {line}=await storyKit();
+  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");const {liveRoundEvidence}=await import("../lib/live/evidence.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"FRZ001",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const ids:string[]=[];for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven","Agent Quill"]){ids.push((await server.join(store,s,{nickname:n,studentId:null})).player!.id);await new Promise(r=>setTimeout(r,5))}
+  const sq=await store.replaceSquads(s.id,["Squad Lantern","Squad Quill"]);
+  await store.setSquads(s.id,[{playerId:ids[0],squadId:sq[0].id},{playerId:ids[1],squadId:sq[0].id},{playerId:ids[2],squadId:sq[1].id},{playerId:ids[3],squadId:sq[1].id}]);
+  let st=(await server.loadState(store,s.id))!;
+  // Freezes need squads: asking for freezes without squads leaves them off.
+  await server.hostAct(store,st,{action:"round.start",type:"story",squads:false,freezes:true} as never);
+  st=(await server.loadState(store,s.id))!;assert.equal((st.session.rounds[0] as {freezesOn?:boolean}).freezesOn,false);
+  await store.updateSession(s.id,{rounds:[{...(st.session.rounds[0] as object),squadsOn:true,freezesOn:true} as never]});
+  const act=async(pid:string,kind:string,payload:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,pid,{kind:kind as never,payload},{judgeAllowed:async()=>false})};
+  // No Freeze yet.
+  assert.match((await act(ids[0],"story_freeze",{targetSquadId:sq[1].id}))??"",/3 right proofs in a row/);
+  // Owl has 3 right proofs in a row (from earlier steps of this round).
+  for(const step of [0,1,2])await store.addResponse(s.id,{roundIndex:0,squadId:sq[0].id,playerId:ids[0],role:null,kind:"story",payload:{step:step+10,record:{round:step+1,points:100,valid:true,streak:step+1,multiplier:1,doubled:false,base:100,speed:0,coinsEarned:1,detail:"",choice:"",proof:[],kind:"read"}},flagged:false});
+  st=(await server.loadState(store,s.id))!;
+  const v=server.playerView(st,ids[0]).story!.freeze!;
+  assert.equal(v.holding,true);assert.deepEqual(v.targets.map(t=>[t.name,t.ok]),[["Squad Quill",true]],"never your own squad");
+  assert.match((await act(ids[0],"story_freeze",{targetSquadId:sq[0].id}))??"",/own team/);
+  assert.equal(await act(ids[0],"story_freeze",{targetSquadId:sq[1].id}),null);
+  // Quill's lock-in waits; their pins still work; Owl's Freeze is spent.
+  assert.match((await act(ids[2],"story",{input:{kind:"read",pouch:[line("p068",5)]}}))??"",/frozen for \d more seconds/);
+  assert.equal(await act(ids[2],"story_pin",{line:line("p068",5)}),null);
+  st=(await server.loadState(store,s.id))!;
+  const q=server.playerView(st,ids[2]).story!.freeze!;assert.ok(q.frozen&&q.frozen.by==="Squad Lantern");assert.equal(q.shielded,true);
+  assert.equal(server.playerView(st,ids[0]).story!.freeze!.holding,false);
+  // Once the 5 seconds pass, they lock in; the frozen time didn't count against them.
+  await store.updateSession(s.id,{rounds:[{...(st.session.rounds[0] as object),stepStartedAt:new Date(Date.now()-7000).toISOString()} as never]});
+  st=(await server.loadState(store,s.id))!;
+  const {answerStep}=await import("../lib/live/story.ts");
+  const r=answerStep(st.world,st.passages!,st.world.scenes[0],st.session.rounds[0] as never,st.responses,0,ids[3],{kind:"read",pouch:[line("p068",5)]},Date.now()+6000,"1",sq[1].id);
+  assert.ok(typeof r!=="string");
+  const ev=liveRoundEvidence({session:st.session,world:st.world,squads:st.squads,players:st.players,responses:st.responses});
+  assert.match(ev[0].freezes!.join(" "),/Detective Owl \(Squad Lantern\) froze Squad Quill · Story Mode round 1 · \d+:\d\d:\d\d [AP]M/);
+});
+
+test("rival freezes are logged for the teacher", async()=>{
+  const {buildEvidence}=await import("../lib/classroom/evidence.ts");const {world}=await storyKit();
+  const e=buildEvidence(world,[{id:"s1",nickname:"Ana Ruiz",answers:{},freezes:[{target:"The Lantern Ghost",clueId:"empty-schoolhouse",at:"2026-10-24T15:04:05Z"}]}]);
+  assert.deepEqual(e.students[0].freezes,["Ana Ruiz froze The Lantern Ghost · The empty schoolhouse · 11:04:05 AM"]);
+});
