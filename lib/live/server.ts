@@ -7,7 +7,7 @@ import { NOT_EVIDENCE, matchEvidence } from "../evidence-check.ts";
 import type { SourcePassage } from "../source-passages.ts";
 import { answerStep, answeredStep, liveStoryBoard, myStepRecord, playerState, publicStory, stepKind, type LiveStoryRound } from "./story.ts";
 import { studentBoard, type RoundInput, type TimeSetting } from "../story-mode.ts";
-import { memoryModeEnabled } from "../classroom/store.ts";
+import { getClassroomStore, memoryModeEnabled } from "../classroom/store.ts";
 import { screenArgument, judgeWithRubric } from "../verdict-server.ts";
 import { getLieBankStore } from "../lie-bank-store.ts";
 import { asLie, type PlantedLie } from "../planted-lies.ts";
@@ -52,14 +52,22 @@ export async function broadcast(sessionId: string) {
 
 // ---------- Loading ----------
 // bank: the class's approved planted lies for this story (class sessions only).
-export type LiveState = { session: StoredSession; world: WorldPack; squads: Awaited<ReturnType<LiveStore["listSquads"]>>; players: LivePlayer[]; responses: LiveResponse[]; bank?: PlantedLie[]; passages?: SourcePassage[] };
+// absent: player ids whose students the teacher marked absent today (left out of Story Mode squad averages).
+export type LiveState = { session: StoredSession; world: WorldPack; squads: Awaited<ReturnType<LiveStore["listSquads"]>>; players: LivePlayer[]; responses: LiveResponse[]; bank?: PlantedLie[]; passages?: SourcePassage[]; absent?: string[] };
 export async function loadState(store: LiveStore, sessionId: string): Promise<LiveState | null> {
   const session = await store.getSession(sessionId);
   if (!session) return null;
   const world = await readWorld(session.worldId);
   if (!world) return null;
-  const [squads, players, responses, bank, passages] = await Promise.all([store.listSquads(sessionId), store.listPlayers(sessionId), store.listResponses(sessionId), loadBank(session), readPassages(session.worldId)]);
-  return { session, world, squads, players, responses, bank, passages };
+  const [squads, players, responses, bank, passages, absentStudents] = await Promise.all([store.listSquads(sessionId), store.listPlayers(sessionId), store.listResponses(sessionId), loadBank(session), readPassages(session.worldId), loadAbsent(session)]);
+  const away = new Set(absentStudents);
+  return { session, world, squads, players, responses, bank, passages, absent: players.filter((p) => p.studentId && away.has(p.studentId)).map((p) => p.id) };
+}
+// Students marked absent today (none before the absent migration runs, or for a session without a class).
+async function loadAbsent(session: StoredSession) {
+  const classes = session.classId ? getClassroomStore() : null;
+  if (!classes || !session.classId) return [];
+  return classes.getAbsentToday(session.classId).catch(() => []);
 }
 async function loadBank(session: StoredSession) {
   const lies = session.classId ? getLieBankStore() : null;
@@ -85,7 +93,7 @@ function objectionMine(reveal: { type: string; sustained?: boolean; scores?: { s
 function revealFor(st: LiveState) {
   const round = currentRound(st), i = st.session.roundIndex;
   if (!round) return null;
-  if (round.type === "story") { const b = liveStoryBoard(st.responses, i, st.players, st.squads, round.squadsOn); return { type: "story" as const, kind: b.kind, top: b.rows.slice(0, 5).map((r, k) => ({ rank: k + 1, name: r.name, score: r.score })), players: b.rows.length }; }
+  if (round.type === "story") { const b = liveStoryBoard(st.responses, i, st.players, st.squads, round.squadsOn, st.absent); return { type: "story" as const, kind: b.kind, top: b.rows.slice(0, 5).map((r, k) => ({ rank: k + 1, name: r.name, score: r.score })), players: b.rows.length }; }
   if (round.type === "lie") {
     const lie = lieOf(st, round)!;
     return { type: "lie" as const, truthLine: lie.truth_line, explanation: lie.explanation, falseClaim: lie.false_claim,
@@ -137,7 +145,7 @@ export function hostView(st: LiveState) {
       votes: round?.type === "verdict" || round?.type === "objection" ? new Set(st.responses.filter((r) => r.roundIndex === st.session.roundIndex && (r.kind === "vote" || r.kind === "counter_vote")).map((r) => r.playerId)).size : 0 },
     votes: round?.type === "verdict" ? tallyVotes(st.world, st.responses, st.session.roundIndex) : null,
     reveal: st.session.status === "reveal" ? revealFor(st) : null,
-    scores: sessionScores(st.world, st.session, st.squads, st.responses),
+    scores: sessionScores(st.world, st.session, st.squads, st.responses, st.players, st.absent),
     flagged,
     canObjection: hasVerdictPins(st) && st.squads.filter((s) => members(st, s.id).length).length >= 2,
     witnessToken: witnessToken(st.session.id),
@@ -146,7 +154,9 @@ export function hostView(st: LiveState) {
     // Story Mode: the scenes that have it, how many players answered this step, and the top 5 at the reveal.
     storyScenes: st.world.scenes.map((sc, k) => ({ sceneId: sc.id, label: `Scene ${k + 1}`, on: !!sc.story_mode })).filter((x) => x.on),
     storyAnswered: round?.type === "story" ? answeredStep(st.responses, st.session.roundIndex, round.step) : 0,
-    storyBoard: round?.type === "story" ? (() => { const b = liveStoryBoard(st.responses, st.session.roundIndex, st.players, st.squads, round.squadsOn); return { kind: b.kind, top: b.rows.slice(0, 5).map((r, k) => ({ rank: k + 1, name: r.name, score: r.score })), players: b.rows.length }; })() : null,
+    // Who's here: class students can be marked absent (left out of squad averages for today).
+    roster: st.players.map((p) => ({ id: p.id, nickname: p.nickname, canMark: !!p.studentId && !!st.session.classId, absent: (st.absent ?? []).includes(p.id) })),
+    storyBoard: round?.type === "story" ? (() => { const b = liveStoryBoard(st.responses, st.session.roundIndex, st.players, st.squads, round.squadsOn, st.absent); return { kind: b.kind, top: b.rows.slice(0, 5).map((r, k) => ({ rank: k + 1, name: r.name, score: r.score })), players: b.rows.length }; })() : null,
     lieScenes: st.world.scenes.filter((s) => s.lie).map((s, i) => ({ sceneId: s.id, label: `Scene ${st.world.scenes.indexOf(s) + 1}: ${s.lie!.topic}` , index: i })),
   };
 }
@@ -188,7 +198,7 @@ export function playerView(st: LiveState, playerId: string) {
   const reveal = st.session.status === "reveal" ? revealFor(st) : null;
   // Story Mode: this player's own answers, points and place (the top 5 and their own rank, never the full list).
   const story = round?.type === "story" ? (() => {
-    const state = playerState(st.responses, i, me.id), board = liveStoryBoard(st.responses, i, st.players, st.squads, round.squadsOn);
+    const state = playerState(st.responses, i, me.id), board = liveStoryBoard(st.responses, i, st.players, st.squads, round.squadsOn, st.absent);
     const view = studentBoard(board.rows, board.kind === "squad" ? me.squadId : me.id);
     return { answered: !!myStepRecord(st.responses, i, round.step, me.id), last: round.showing === "board" || st.session.status !== "round" ? myStepRecord(st.responses, i, round.step, me.id) : null, total: state.total, pouch: state.pouch, board: view, boardKind: board.kind };
   })() : null;
@@ -201,7 +211,7 @@ export function playerView(st: LiveState, playerId: string) {
     myVote, myCounterVote,
     squadTheory: squad && round?.type === "verdict" ? squadMajority(st, squad.id) : null,
     reveal: reveal && squad ? { ...reveal, mine: "squads" in reveal ? (reveal.squads as { squadId: string }[]).find((x) => x.squadId === squad.id) ?? null : objectionMine(reveal, squad.id) } : reveal,
-    score: squad ? sessionScores(st.world, st.session, st.squads, st.responses).find((s) => s.squadId === squad.id)?.points ?? 0 : 0,
+    score: squad ? sessionScores(st.world, st.session, st.squads, st.responses, st.players, st.absent).find((s) => s.squadId === squad.id)?.points ?? 0 : 0,
   };
 }
 function squadMajority(st: LiveState, squadId: string) {
@@ -219,7 +229,7 @@ function hasVerdictPins(st: LiveState) {
 export type HostAction =
   | { action: "squads.auto" } | { action: "squads.move"; playerId: string; squadId: string | null }
   | { action: "round.start"; type: RoundType; sceneId?: string; plantedId?: string; squads?: boolean } | { action: "round.stage" } | { action: "round.reveal" }
-  | { action: "pause" } | { action: "resume" } | { action: "end" } | { action: "witness.play" }
+  | { action: "pause" } | { action: "resume" } | { action: "end" } | { action: "witness.play" } | { action: "player.absent"; playerId: string; absent: boolean }
   | { action: "override"; key: "sound"; squadId: string; value: boolean } | { action: "override"; key: "objection"; value: boolean };
 
 export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): Promise<string | null> {
@@ -279,6 +289,15 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
     case "pause": await store.updateSession(s.id, { paused: true }); return null;
     case "resume": await store.updateSession(s.id, { paused: false }); return null;
     case "end": await store.updateSession(s.id, { status: "ended", paused: false }); return null;
+    case "player.absent": {
+      const p = st.players.find((x) => x.id === a.playerId);
+      const classes = getClassroomStore();
+      if (!p?.studentId || !s.classId || !classes) return "Only students in your class can be marked absent.";
+      const roster = await classes.listStudents(s.classId);
+      if (!roster.some((x) => x.id === p.studentId)) return "Only students in your class can be marked absent.";
+      try { await classes.setStudentAbsent(p.studentId, a.absent === true); } catch { return "Marking absent needs the latest database update. Ask your admin to run the absent migration."; }
+      return null;
+    }
     case "witness.play": {
       const storySpeaks = round?.type === "story" && round.showing === "round" && (stepKind(round.step) === "confront" || stepKind(round.step) === "lie");
       if (s.status !== "round" || (round?.type !== "lie" && !storySpeaks)) return "The Witness stand plays during Spot the Lie.";

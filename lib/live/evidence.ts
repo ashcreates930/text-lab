@@ -7,7 +7,7 @@ import { ROLE_INFO, objectionResult, roundLie, scoreLieRound, scoreVerdictRound,
 export type LiveMemberEvidence = { nickname: string; studentId: string | null; actions: string[] };
 export type LiveSquadEvidence = { name: string; members: LiveMemberEvidence[]; answer: string; explanation: string; flagged: boolean; result: string; points: number };
 export type LiveRoundEvidence = { sessionId: string; date: string; number: number; type: string; prompt: string; squads: LiveSquadEvidence[] };
-export type LiveSessionInput = { session: LiveSession; world: WorldPack; squads: LiveSquad[]; players: LivePlayer[]; responses: LiveResponse[] };
+export type LiveSessionInput = { session: LiveSession; world: WorldPack; squads: LiveSquad[]; players: LivePlayer[]; responses: LiveResponse[]; absent?: string[] };
 
 const TYPE_NAMES = { lie: "Live Spot the Lie", verdict: "Verdict Vote", objection: "Objection!", story: "Story Mode" } as const;
 const text = (r: LiveResponse | undefined, key: string) => (r ? String(r.payload[key] ?? "") : "");
@@ -24,13 +24,13 @@ function actionLine(r: LiveResponse, world: WorldPack) {
     case "submit": return `${role}submitted`;
     case "vote": return `Voted: ${world.verdict?.theories.find((t) => t.id === r.payload.theoryId)?.name ?? "a theory"}`;
     case "counter_vote": return `Voted ${r.payload.sustain ? "sustained" : "overruled"}`;
-    case "story": { const rec = r.payload.record as { round?: number; points?: number; detail?: string; proof?: string[] } | undefined; return `Story Mode round ${rec?.round ?? Number(r.payload.step) + 1}: ${rec?.points ?? 0} pts${rec?.detail ? ` (${rec.detail})` : ""}${rec?.proof?.length ? `, proof: ${rec.proof.map((p) => `"${p.replace(/s+/g, " ")}"`).join(" | ")}` : ""}`; }
+    case "story": { const rec = r.payload.record as { round?: number; points?: number; detail?: string; proof?: string[] } | undefined; return `Story Mode round ${rec?.round ?? Number(r.payload.step) + 1}: ${rec?.points ?? 0} pts${rec?.detail ? ` (${rec.detail})` : ""}${rec?.proof?.length ? `, proof: ${rec.proof.map((p) => `"${p.replace(/\s+/g, " ")}"`).join(" | ")}` : ""}`; }
     default: return "";
   }
 }
 
 export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] {
-  const { session, world, squads, players, responses } = input;
+  const { session, world, squads, players, responses, absent = [] } = input;
   const date = session.createdAt.slice(0, 10);
   const out: LiveRoundEvidence[] = [];
   session.rounds.forEach((round, i) => {
@@ -49,7 +49,7 @@ export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] 
       for (const s of scoreVerdictRound(squads, responses, i)) results.set(s.squadId, { result: s.theoryId ? `${world.verdict?.theories.find((t) => t.id === s.theoryId)?.name ?? s.theoryId} · ${s.detail}` : s.detail, points: s.points });
     } else if (round.type === "story") {
       prompt = `Story Mode · ${world.scenes.find((sc) => sc.id === round.sceneId)?.story_mode?.call.question ?? round.sceneId}`;
-      for (const s of storySquadScores(squads, responses, i)) results.set(s.squadId, { result: `Members' average: ${s.points}`, points: s.points });
+      for (const s of storySquadScores(squads, responses, i, players, absent)) results.set(s.squadId, { result: `Members' average: ${s.points}`, points: s.points });
     } else {
       const o = objectionResult(round, responses, i);
       const defend = squads.find((s) => s.id === round.defendSquadId)?.name ?? "A squad";

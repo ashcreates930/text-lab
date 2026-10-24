@@ -57,6 +57,12 @@ export const StudentProgressSchema = z.object({
   // Students in the story: "What's your angle?" (three choices only) and whether the role intro card was seen.
   angle: AngleSchema.optional(),
   roleIntroSeen: z.boolean().optional(),
+  // Story Mode, per scene (scene id -> run summary): the score, the Evidence pouch and trust with the characters the
+  // student met (character id -> trust, as on the server run). Older saves don't have it.
+  story: z.record(id, z.object({
+    runId: text(80), total: z.number().int().min(0).max(100000), bestStreak: z.number().int().min(0).max(10),
+    trust: z.record(id, z.number().int().min(-12).max(12)), pouch: z.array(text(1500)).max(3), cleared: z.boolean(),
+  })).optional(),
   updatedAt: text(40),
 });
 export type StudentProgress = z.infer<typeof StudentProgressSchema>;

@@ -5,7 +5,7 @@
 import type { WorldPack } from "../world-schema.ts";
 import type { SourcePassage } from "../source-passages.ts";
 import { GRACE_SECONDS, ROUNDS, SECONDS, applyRound, boardName, newRun, pulseChoice, rankRows, scoreRound, speedBonus, type RoundInput, type RoundKind, type RoundRecord, type RunState, type Scene, type TimeSetting } from "../story-mode.ts";
-import type { LivePlayer, LiveResponse } from "./engine.ts";
+import { squadMembersCounted, type LivePlayer, type LiveResponse } from "./engine.ts";
 
 export type LiveStoryRound = { type: "story"; sceneId: string; step: number; showing: "round" | "board"; stepStartedAt: string; squadsOn: boolean };
 // Seconds per step, shared by everyone. Round 2's choice and proof run as one 90-second step live.
@@ -42,11 +42,17 @@ export function answerStep(world: WorldPack, passages: SourcePassage[], scene: S
 }
 
 // The board: top 5 individually (first name and last initial for class students), or squads by members' average.
-export function liveStoryBoard(responses: LiveResponse[], roundIndex: number, players: LivePlayer[], squads: { id: string; name: string }[], squadsOn: boolean) {
+// Squads: every member counts (0 if silent) except members marked absent; the same rule as storySquadScores.
+export function liveStoryBoard(responses: LiveResponse[], roundIndex: number, players: LivePlayer[], squads: { id: string; name: string }[], squadsOn: boolean, absent: string[] = []) {
+  const rows0 = storyRows(responses, roundIndex);
   const totals = new Map<string, number>();
-  for (const r of storyRows(responses, roundIndex)) if (r.playerId) totals.set(r.playerId, (totals.get(r.playerId) ?? 0) + r.payload.record.points);
+  for (const r of rows0) if (r.playerId) totals.set(r.playerId, (totals.get(r.playerId) ?? 0) + r.payload.record.points);
   if (squadsOn) {
-    const rows = squads.map((s) => { const ids = players.filter((p) => p.squadId === s.id).map((p) => p.id); const xs = ids.map((id) => totals.get(id) ?? 0); return { id: s.id, name: s.name, score: xs.length ? Math.round(xs.reduce((a, b) => a + b, 0) / xs.length) : 0 }; }).filter((r) => players.some((p) => p.squadId === r.id));
+    const rows = squads.map((s) => {
+      const counted = squadMembersCounted(s.id, players, absent, rows0);
+      const sum = rows0.filter((r) => r.squadId === s.id).reduce((n, r) => n + r.payload.record.points, 0);
+      return { id: s.id, name: s.name, score: counted.size ? Math.round(sum / counted.size) : 0, members: counted.size };
+    }).filter((r) => r.members > 0).map(({ members: _m, ...r }) => r);
     return { kind: "squad" as const, rows: rankRows(rows) };
   }
   const rows = players.map((p) => ({ id: p.id, name: p.studentId ? boardName(p.nickname) : p.nickname, score: totals.get(p.id) ?? 0 }));
@@ -64,7 +70,7 @@ export function publicStory(world: WorldPack, passages: SourcePassage[], scene: 
   return {
     type: "story" as const, sceneId: scene.id, step: round.step, kind, showing: round.showing, stepStartedAt: round.stepStartedAt, seconds: kind ? LIVE_STORY_SECONDS[kind] : 0, squadsOn: round.squadsOn,
     intro: c.intro, image: scene.background_image,
-    read: kind === "read" ? { prompt: c.read.prompt, chunks: c.read.chunks.map((id) => ({ id, text: passages.find((p) => p.id === id)?.text ?? "" })) } : null,
+    read: kind === "read" ? { prompt: c.read.prompt, focus: c.read.focus, chunks: c.read.chunks.map((id) => ({ id, text: passages.find((p) => p.id === id)?.text ?? "" })) } : null,
     confront: kind === "confront" ? { speaker: who(c.confront.character_id), line: c.confront.line, actions: c.confront.actions.map((a) => ({ id: a.id, label: a.label })), chunks: c.read.chunks } : null,
     lie: kind === "lie" && lie ? { speaker: who(lie.character_id), testimony: lie.testimony, evidence: clue?.source_anchor ?? [], clueId: lie.clue_id } : null,
     call: kind === "call" ? { question: c.call.question, theories: c.call.theories.map((t) => ({ id: t.id, name: t.name, description: t.description })) } : null,

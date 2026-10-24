@@ -10,9 +10,9 @@ import {tryLine,type LieHighlight} from "@/lib/lies";
 import {EvidenceLines} from "../evidence-lines";
 
 const STEP_NAMES=["Read and notice","Something happens to you","Catch the lie","Make your call"];
-type Rec={round:number;points:number;detail:string;streak:number;multiplier:number;grace?:boolean}|null;
+type Rec={round:number;points:number;detail:string;streak:number;multiplier:number;grace?:boolean;note?:string}|null;
 type StoryView={answered:boolean;last:Rec;total:number;pouch:string[];board:{top:{rank:number;name:string;score:number;me:boolean}[];me:{rank:number;score:number;movement:number}|null;players:number};boardKind:"individual"|"squad"};
-type StoryRound={type:"story";step:number;kind?:string;showing:"round"|"board";stepStartedAt:string;seconds:number;read:{prompt:string;chunks:{id:string;text:string}[]}|null;confront:{actions:{id:string;label:string}[];chunks:string[]}|null;lie:{evidence:string[];clueId:string}|null;call:{question:string;theories:{id:string;name:string;description:string}[]}|null};
+type StoryRound={type:"story";step:number;kind?:string;showing:"round"|"board";stepStartedAt:string;seconds:number;read:{prompt:string;focus:string;chunks:{id:string;text:string}[]}|null;confront:{actions:{id:string;label:string}[];chunks:string[]}|null;lie:{evidence:string[];clueId:string}|null;call:{question:string;theories:{id:string;name:string;description:string}[]}|null};
 const key=(t:string)=>t.replace(/\s+/g," ").trim();
 
 export function PlayerStory({round,story,act,world,passages,sceneId}:{round:StoryRound;story:StoryView;act:(k:string,p?:Record<string,unknown>)=>void;world:WorldPack|null;passages:SourcePassage[];sceneId:string}){
@@ -21,13 +21,13 @@ export function PlayerStory({round,story,act,world,passages,sceneId}:{round:Stor
  const head=<p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Story Mode · Round {round.step+1} of 4 · {STEP_NAMES[round.step]}</p>;
  if(round.showing==="board"){
   const me=story.board.me;
-  return <section className="mt-5">{head}<h1 className="mt-1 text-[30px] font-bold tabular-nums">{story.last?`+${story.last.points}`:"No answer this round"}</h1>{story.last&&<p className="mt-1 text-[16px]">{story.last.detail}{story.last.multiplier>1?` · streak x${story.last.multiplier}`:""}{story.last.grace?" · half points after time":""}</p>}
+  return <section className="mt-5">{head}<h1 className="mt-1 text-[30px] font-bold tabular-nums">{story.last?`+${story.last.points}`:"No answer this round"}</h1>{story.last&&<p className="mt-1 text-[16px]">{story.last.detail}{story.last.multiplier>1?` · streak x${story.last.multiplier}`:""}{story.last.grace?" · half points after time":""}</p>}{story.last?.note&&<p className="mt-2 rounded-2xl bg-[#FBF1EB] px-4 py-3 text-[16px]">{story.last.note}</p>}
    <p className="mt-4 flex items-center gap-2 rounded-2xl bg-[#2A2620] px-4 py-3 text-[18px] text-white"><Trophy size={18}/>{story.total} points{me?` · ${story.boardKind==="squad"?"your squad is ":"you're "}#${me.rank} of ${story.board.players}`:""}{me&&me.movement>0?` · up ${me.movement}`:""}</p>
    <p className="mt-3 text-[16px] text-[#6B6457]">Eyes on the board for the top 5.</p></section>;
  }
  if(story.answered)return <section className="mt-5">{head}<h1 className="mt-1 text-[26px] font-bold">Locked in.</h1><p className="mt-2 text-[17px]">Eyes on the board. Your points show at the leaderboard.</p></section>;
  const timer=<p className={`mt-2 text-[15px] font-semibold tabular-nums ${left===0?"text-[#A33B20]":"text-[#4A4438]"}`} aria-live={left===30||left===10||left===5?"polite":"off"}>{left>0?`${left} seconds left`:"Time! You can still add proof for half points"}</p>;
- if(round.kind==="read"&&round.read)return <ReadControls head={head} timer={timer} chunks={round.read.chunks} prompt={round.read.prompt} onSend={pouch=>act("story",{input:{kind:"read",pouch}})}/>;
+ if(round.kind==="read"&&round.read)return <ReadControls head={head} timer={timer} chunks={round.read.chunks} prompt={round.read.prompt} focus={round.read.focus} onSend={pouch=>act("story",{input:{kind:"read",pouch}})}/>;
  if(round.kind==="confront"&&round.confront)return <ConfrontControls head={head} timer={timer} actions={round.confront.actions} chunks={passages.filter(p=>round.confront!.chunks.includes(p.id))} pouch={story.pouch} onSend={(actionId,proof)=>act("story",{input:{kind:"confront",actionId,proof}})}/>;
  if(round.kind==="lie"&&round.lie)return <LieControls head={head} timer={timer} world={world} sceneId={sceneId} evidence={passages.filter(p=>round.lie!.evidence.includes(p.id))} onSend={(line,explanation)=>act("story",{input:{kind:"lie",line,explanation}})}/>;
  if(round.kind==="call"&&round.call)return <CallControls head={head} timer={timer} call={round.call} pouch={story.pouch} onSend={(theoryId,pins)=>act("story",{input:{kind:"call",theoryId,pins}})}/>;
@@ -39,10 +39,10 @@ function PouchView({pouch,picked,onPick}:{pouch:string[];picked?:string[];onPick
   {!pouch.length&&<p className="mt-1 text-[14px] text-[#6B6457]">Empty.</p>}
   <ul className="mt-2 space-y-2">{pouch.map(t=>{const on=!!picked?.some(x=>key(x)===key(t));return <li key={t}>{onPick?<button type="button" aria-pressed={on} onClick={()=>onPick(t)} className={`w-full rounded-xl px-3 py-2 text-left font-serif text-[15px] leading-6 ${on?"bg-[#A0472C] text-white":"bg-[#FFFDF8] ring-1 ring-[#E4DCCB]"}`}>“{key(t)}”</button>:<p className="font-serif text-[15px] leading-6">“{key(t)}”</p>}</li>})}</ul></div>;
 }
-function ReadControls({head,timer,chunks,prompt,onSend}:{head:React.ReactNode;timer:React.ReactNode;chunks:{id:string;text:string}[];prompt:string;onSend:(p:string[])=>void}){
+function ReadControls({head,timer,chunks,prompt,focus,onSend}:{head:React.ReactNode;timer:React.ReactNode;chunks:{id:string;text:string}[];prompt:string;focus:string;onSend:(p:string[])=>void}){
  const [pouch,setPouch]=useState<string[]>([]),[full,setFull]=useState(false);
  const tap=(l:{text:string})=>{setFull(false);setPouch(p=>p.some(x=>key(x)===key(l.text))?p.filter(x=>key(x)!==key(l.text)):p.length>=3?(setFull(true),p):[...p,l.text])};
- return <section className="mt-5">{head}<h1 className="mt-1 text-[24px] font-bold">Keep the lines that matter</h1><p className="mt-1 text-[16px]">{prompt}</p>{timer}
+ return <section className="mt-5">{head}<h1 className="mt-1 text-[24px] font-bold">{focus}</h1><p className="mt-1 text-[16px]">{prompt}</p>{timer}
   <PouchView pouch={pouch}/>{full&&<p className="mt-2 text-[14px] font-semibold text-[#A33B20]">Your pouch is full. Tap a kept line to take it out.</p>}
   <div className="mt-3"><EvidenceLines passages={chunks} picked={undefined} onPick={tap} highlight={{lines:pouch}} className="max-h-[50vh] space-y-2 overflow-y-auto pr-1"/></div>
   <button type="button" onClick={()=>onSend(pouch)} className="case-primary mt-4 w-full">Lock in {pouch.length} line{pouch.length===1?"":"s"} <ArrowRight size={18}/></button></section>;

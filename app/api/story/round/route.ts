@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getStoryStore } from "@/lib/story-store";
 import { boardFor, boardTopic, broadcastBoard, playRound, publicRun, pulseFor } from "@/lib/story-server";
-import { classSquads, isIdentityError, loadStory, ownsRun, storyIdentity } from "@/lib/story-api";
+import { absentToday, classSquads, isIdentityError, loadStory, ownsRun, storyIdentity } from "@/lib/story-api";
 
 // Scores one Story Mode round on the server and answers with the result, the leaderboard and the class pulse.
 export async function POST(request: NextRequest) {
@@ -19,7 +19,8 @@ export async function POST(request: NextRequest) {
   if ("error" in result) return NextResponse.json({ error: result.error }, { status: 409 });
   const mode = who.scope === "class" ? who.leaderboard : "individual";
   const squads = who.scope === "class" && mode === "squad" ? await classSquads(who.classId) : undefined;
-  const [board, pulse] = await Promise.all([boardFor(store, result.run, mode, typeof body.previousRank === "number" ? body.previousRank : null, squads), pulseFor(store, result.run, story.scene, result.record.round)]);
+  const absent = who.scope === "class" && squads ? await absentToday(who.classId) : [];
+  const [board, pulse] = await Promise.all([boardFor(store, result.run, mode, typeof body.previousRank === "number" ? body.previousRank : null, squads, absent), pulseFor(store, result.run, story.scene, result.record.round)]);
   await broadcastBoard(boardTopic(result.run));
   return NextResponse.json({ record: result.record, reaction: result.reaction, run: publicRun(result.run), board, pulse });
 }

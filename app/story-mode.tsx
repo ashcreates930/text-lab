@@ -31,7 +31,10 @@ type Stage="loading"|"ready"|"countdown"|"play"|"results"|"cleared"|"error";
 function cue(on:boolean,name:"tick"|"chime"|"streak"|"reveal"){if(!on)return;try{const a=new Audio(`/sounds/story/${name}.mp3`);a.volume=0.35;a.play().catch(()=>{})}catch{}}
 const reducedMotion=()=>typeof window!=="undefined"&&!!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleared,onCaseFile}:{world:WorldPack;scene:Scene;sceneIndex:number;passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onCleared:()=>void;onCaseFile?:()=>void}){
+// startAt: open at a later round ("Catch the lie" on the home page); onJumped: called once the run has opened there.
+// onUnavailable: Story Mode's tables aren't set up (or the server can't reach them), so the scene opens in the Case
+// file view instead, with no error screen.
+export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleared,onCaseFile,startAt,onJumped,onUnavailable}:{world:WorldPack;scene:Scene;sceneIndex:number;passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onCleared:()=>void;onCaseFile?:()=>void;startAt?:RoundKind;onJumped?:()=>void;onUnavailable:()=>void}){
  const content=scene.story_mode!;
  const headers=useMemo(()=>({"Content-Type":"application/json",...(demo.classAuth?{"x-class-token":demo.classAuth.token}:{})}),[demo.classAuth]);
  const [run,setRun]=useState<PublicRun|null>(null),[mode,setMode]=useState<"individual"|"squad"|"off">("individual");
@@ -44,11 +47,20 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
  // A new stage is a new screen: top of the page, focus on its heading.
  const screen=`${stage}:${round}`,shown=useRef("");
  useLayoutEffect(()=>{if(shown.current===screen)return;const first=!shown.current;shown.current=screen;if(!first||stage!=="loading")focusScreenTop()},[screen,stage]);
- const post=useCallback(async(path:string,body:Record<string,unknown>)=>{const r=await fetch(path,{method:"POST",headers,body:JSON.stringify({sandboxId:demo.id,...body})});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error??"Something went wrong. Try again.");return j},[headers,demo.id]);
+ const post=useCallback(async(path:string,body:Record<string,unknown>)=>{const r=await fetch(path,{method:"POST",headers,body:JSON.stringify({sandboxId:demo.id,...body})});const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error??"Something went wrong. Try again."),{status:r.status});return j},[headers,demo.id]);
+ // Read once per start, so clearing the jump afterwards doesn't start the run again.
+ const jump=useRef(startAt);jump.current=startAt;
+ const callbacks=useRef({onJumped,onUnavailable});callbacks.current={onJumped,onUnavailable};
  const start=useCallback(async(restart=false)=>{
   setStage("loading");setError("");
-  try{const j=await post("/api/story/run",{worldId:world.id,sceneId:scene.id,restart});setRun(j.run);setMode(j.leaderboard);setResult(null);setStage(j.run.finished?"cleared":"ready")}
-  catch(e){setError((e as Error).message);setStage("error")}
+  try{const j=await post("/api/story/run",{worldId:world.id,sceneId:scene.id,restart,...(jump.current&&!restart?{startAt:jump.current}:{})});
+   if(j.unavailable){callbacks.current.onUnavailable();return}
+   if(jump.current)callbacks.current.onJumped?.();
+   setRun(j.run);setMode(j.leaderboard);setResult(null);setStage(j.run.finished?"cleared":"ready")}
+  catch(e){const status=(e as {status?:number}).status;
+   // No answer, or a server error: open the Case file view rather than an error screen. A 4xx says what to do.
+   if(!status||status>=500){callbacks.current.onUnavailable();return}
+   setError((e as Error).message);setStage("error")}
  },[post,world.id,scene.id]);
  useEffect(()=>{start()},[start]);
  const setting:TimeSetting=run?(relaxed&&(run.timeSetting==="1"||run.timeSetting==="1.5")?"2":run.timeSetting):"1";
@@ -94,14 +106,15 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
 }
 
 // ---------- Ready card: what this round is, power-ups, Relaxed timer, Start ----------
-const ROUND_HELP:Record<RoundKind,string>={read:"Listen to the story and tap the lines that matter. Your Evidence pouch holds 3, so choose carefully.",confront:"Someone confronts you. Pick what you do, then back it up with one line from your pouch or the passage.",lie:"A witness gives testimony. One thing is false. Tap the line that proves it, then say why in one sentence.",call:"Answer the big question. Pick a theory and pin 2 lines from your pouch that support it."};
+const ROUND_HELP:Record<RoundKind,string>={read:"Listen to the story and tap the lines that answer the question. Your Evidence pouch holds 3, so choose carefully.",confront:"Someone confronts you. Pick what you do, then back it up with one line from your pouch or the passage.",lie:"A witness gives testimony. One thing is false. Tap the line that proves it, then say why in one sentence.",call:"Answer the big question. Pick a theory and pin 2 lines from your pouch that support it."};
 function ReadyCard({world,scene,kind,round,run,relaxed,setRelaxed,canRelax,onBuy,onStart,onCaseFile}:{world:WorldPack;scene:Scene;kind:RoundKind;round:number;run:PublicRun;relaxed:boolean;setRelaxed:(v:boolean)=>void;canRelax:boolean;onBuy:(p:PowerUp)=>void;onStart:()=>void;onCaseFile?:()=>void}){
  const role=world.student_role;const s=run.state;
  const usable=(p:PowerUp)=>p==="lantern"?kind==="confront"||kind==="lie":p==="second-look"?kind!=="read":true;
  return <section className="mt-5" aria-labelledby="ready-h">
-  {round===0&&<div className="overflow-hidden rounded-3xl bg-[#2A2620] text-[#FFFDF8]"><div className="case-art aspect-[16/7]" role="img" aria-label={`The scene: ${scene.id.replace(/-/g," ")}`} style={{backgroundImage:`url('${scene.background_image}')`}}/><div className="p-5">{role&&<p className="text-[13px] font-semibold uppercase tracking-wide text-[#F3C9B2]">You are {role.name.replace(/^The /,"the ")}</p>}<p className="mt-1 text-[17px] leading-7">{scene.story_mode!.intro}</p></div></div>}
+  {round===(s.skipped??0)&&<div className="overflow-hidden rounded-3xl bg-[#2A2620] text-[#FFFDF8]"><div className="case-art aspect-[16/7]" role="img" aria-label={`The scene: ${scene.id.replace(/-/g," ")}`} style={{backgroundImage:`url('${scene.background_image}')`}}/><div className="p-5">{role&&<p className="text-[13px] font-semibold uppercase tracking-wide text-[#F3C9B2]">You are {role.name.replace(/^The /,"the ")}</p>}<p className="mt-1 text-[17px] leading-7">{scene.story_mode!.intro}</p>{round>0&&<p className="mt-2 text-[15px] text-[#F3C9B2]">You're starting at round {round+1}. Play the whole scene any time with "Play this scene again" at the end.</p>}</div></div>}
   <p className="mt-5 text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Round {round+1} of {ROUNDS.length}</p>
   <h1 id="ready-h" className="mt-1 text-[30px] font-bold leading-tight">{ROUND_NAMES[kind]}</h1>
+  {kind==="read"&&<Focus text={scene.story_mode!.read.focus}/>}
   <p className="mt-2 text-[17px] leading-7 text-[#4A4438]">{ROUND_HELP[kind]}</p>
   {round>0&&<div className="mt-5 rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]">
    <h2 className="flex items-center gap-2 text-[18px] font-bold"><Coins size={18} className="text-[#A0472C]"/>Power-ups <span className="text-[15px] font-normal text-[#6B6457]">· {s.coins} coin{s.coins===1?"":"s"}</span></h2>
@@ -114,6 +127,11 @@ function ReadyCard({world,scene,kind,round,run,relaxed,setRelaxed,canRelax,onBuy
   </div>
   {onCaseFile&&<p className="mt-6 text-[14px] text-[#6B6457]">Teachers: <button type="button" onClick={onCaseFile} className="font-semibold text-[#8A3B23] underline underline-offset-4">open the Case file view</button> instead.</p>}
  </section>;
+}
+
+// Round 1's focus question, on the ready card and above the passage.
+function Focus({text}:{text:string}){
+ return <p className="mt-3 rounded-2xl bg-[#2A2620] px-4 py-3 text-[18px] font-semibold leading-7 text-[#FFFDF8]"><span className="block text-[13px] font-semibold uppercase tracking-wide text-[#F3C9B2]">Your question</span>{text}</p>;
 }
 
 // ---------- 3-second countdown ----------
@@ -182,7 +200,8 @@ function ReadRound({world,scene,passages,setting,sound,onSubmit}:{world:WorldPac
  function tap(line:{text:string}){const k=lineKey(line.text);setFull(false);setPouch(p=>p.some(x=>lineKey(x)===k)?p.filter(x=>lineKey(x)!==k):p.length>=POUCH_MAX?(setFull(true),p):[...p,line.text])}
  return <section className="mt-4" aria-labelledby="play-h">
   <h1 id="play-h" className="text-[24px] font-bold">Read and notice</h1>
-  <p className="mt-1 text-[16px] text-[#4A4438]">{c.read.prompt}</p>
+  <Focus text={c.read.focus}/>
+  <p className="mt-2 text-[16px] text-[#4A4438]">{c.read.prompt}</p>
   <TimerBar t={t} seconds={seconds}/>
   <Pouch pouch={pouch} onRemove={t=>tap({text:t})} full={full}/>
   <div className="case-art mt-4 aspect-[16/6] rounded-2xl" role="img" aria-label="The scene" style={{backgroundImage:`url('${scene.background_image}')`}}/>
@@ -318,6 +337,7 @@ function Results({world,scene,result,mode,run,headers,sandboxId,onNext}:{world:W
   <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Round {r.round} · {ROUND_NAMES[r.kind]}</p>
   <h1 id="res-h" className="mt-1 text-[40px] font-bold leading-none tabular-nums">+{r.points}</h1>
   <p className="mt-2 text-[17px]">{r.detail}{r.grace?" · half points after time":""}</p>
+  {r.note&&<p className="mt-2 rounded-2xl bg-[#FBF1EB] px-4 py-3 text-[16px]">{r.note}</p>}
   <ul className="mt-3 flex flex-wrap gap-2 text-[14px] font-semibold">
    <li className="rounded-full bg-[#EFE8D8] px-3 py-1">Proof {r.base}</li>
    {r.speed>0&&<li className="rounded-full bg-[#EFE8D8] px-3 py-1">Speed +{r.speed}</li>}
@@ -328,7 +348,7 @@ function Results({world,scene,result,mode,run,headers,sandboxId,onNext}:{world:W
   <p className="mt-3 flex items-center gap-2 text-[16px]"><Flame size={18} className={r.streak?"text-[#A0472C]":"text-[#C9B9A0]"}/>{r.streak>=1?`Streak: ${r.streak} round${r.streak===1?"":"s"} in a row with proof`:"Streak reset. Back your next answer with a line from the story."}</p>
   {result.reaction&&<div className="mt-4 rounded-3xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="text-[17px] leading-7">{result.reaction.line}</p>
    <TrustMeter name={whoName} value={trust} change={result.reaction.trust}/></div>}
-  {r.proof.length>0&&<div className="mt-4"><p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Your proof</p>{r.proof.map(p=><blockquote key={p} className="mt-2 border-l-4 border-[#A0472C] pl-3 font-serif text-[15px] italic leading-6">“{p.replace(/\s+/g," ")}”</blockquote>)}</div>}
+  {r.proof.length>0&&<div className="mt-4"><p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">{r.kind==="read"?"Your pouch":"Your proof"}</p>{r.proof.map(p=>{const off=!!r.offFocus?.includes(p);return <blockquote key={p} className={`mt-2 border-l-4 pl-3 font-serif text-[15px] italic leading-6 ${off?"border-[#C9B9A0] text-[#6B6457]":"border-[#A0472C]"}`}>“{p.replace(/\s+/g," ")}”{r.kind==="read"&&<span className="mt-0.5 block font-sans text-[13px] font-semibold not-italic">{off?"0 points: true to the story, but it doesn't answer the question":"+100: answers the question"}</span>}</blockquote>})}</div>}
   <BoardView board={board} mode={mode}/>
   {result.pulse.length>0&&<section className="mt-5 rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]" aria-labelledby="pulse-h">
    <h2 id="pulse-h" className="text-[18px] font-bold">{run.scope==="class"?"Class pulse":"Today's players"}</h2>

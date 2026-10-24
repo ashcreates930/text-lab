@@ -53,10 +53,12 @@ export type RoundInput =
   | { kind: "lie"; line: string; explanation: string }
   | { kind: "call"; theoryId: string; pins: string[] };
 // grace: scored in the 20 seconds after time ran out (half points, no speed bonus).
-export type RoundScore = { kind: RoundKind; base: number; speed: number; valid: boolean; coinsEarned: number; detail: string; choice: string; proof: string[]; grace?: boolean };
+// offFocus (round 1): pouch lines that are true to the story but do not answer the focus question (0 points each).
+export type RoundScore = { kind: RoundKind; base: number; speed: number; valid: boolean; coinsEarned: number; detail: string; choice: string; proof: string[]; grace?: boolean; note?: string; offFocus?: string[] };
 
 export const POINTS = { readLine: 100, confrontProof: 500, confrontAction: 100, lieFull: 600, lieLine: 300, callLine: 200, callSupports: 200, speedMax: 100 };
 export const POUCH_MAX = 3;
+export const OFF_FOCUS_NOTE = "True to the story, but it doesn't answer the question.";
 const same = (a: string, b: string) => lineWords(a) === lineWords(b);
 const sceneClueIds = (scene: Scene) => scene.artifacts.map((a) => a.id);
 // A real evidence line for one of this scene's clues, as the world file has it, or null.
@@ -70,9 +72,13 @@ function scoreInput(world: WorldPack, passages: SourcePassage[], scene: Scene, i
   const half = (n: number) => (timing.grace ? Math.round(n / 2) : n);
   const fast = (base: number) => (timing.grace ? 0 : speedBonus(timing.elapsedMs, base, setting));
   if (input.kind === "read") {
-    // Up to 3 lines; each real evidence line for this scene earns 100. Duplicates count once.
+    // Up to 3 lines. Each line on the focus question's authored answer list earns 100; any other evidence line is true
+    // to the story but earns 0 (it still goes in the pouch for later rounds). Duplicates count once.
     const lines = [...new Map(input.pouch.slice(0, POUCH_MAX).map((q) => sceneEvidence(world, passages, scene, q)).filter(Boolean).map((l) => [l!.text, l!])).values()];
-    return { kind: "read", base: half(lines.length * POINTS.readLine), speed: 0, valid: lines.length > 0, coinsEarned: lines.length, detail: `${lines.length} of ${Math.min(POUCH_MAX, input.pouch.length)} pouch lines are evidence`, choice: "", proof: lines.map((l) => l.text) };
+    const answers = lines.filter((l) => content.read.answers.some((a) => same(a, l.text)));
+    const offFocus = lines.filter((l) => !answers.includes(l)).map((l) => l.text);
+    const tapped = Math.min(POUCH_MAX, input.pouch.length);
+    return { kind: "read", base: half(answers.length * POINTS.readLine), speed: 0, valid: answers.length > 0, coinsEarned: answers.length, detail: `${answers.length} of ${tapped} line${tapped === 1 ? "" : "s"} answer the question`, choice: "", proof: lines.map((l) => l.text), offFocus, ...(offFocus.length ? { note: OFF_FOCUS_NOTE } : {}) };
   }
   if (input.kind === "confront") {
     const action = content.confront.actions.find((a) => a.id === input.actionId);
@@ -107,7 +113,8 @@ export const POWER_UPS: Record<PowerUp, { name: string; cost: number; what: stri
   "double-down": { name: "Double down", cost: 3, what: "Doubles the next round's points if your proof is valid. Lose your speed bonus if it isn't." },
 };
 export type RoundRecord = RoundScore & { round: number; multiplier: number; doubled: boolean; points: number; streak: number };
-export type RunState = { round: number; total: number; streak: number; bestStreak: number; coins: number; pouch: string[]; trust: Record<string, number>; lantern: boolean; doubleDown: boolean; rounds: RoundRecord[]; restarts?: number };
+// skipped: rounds jumped over at the start (the home page's "Catch the lie" opens at round 3); they score nothing.
+export type RunState = { round: number; total: number; streak: number; bestStreak: number; coins: number; pouch: string[]; trust: Record<string, number>; lantern: boolean; doubleDown: boolean; rounds: RoundRecord[]; restarts?: number; skipped?: number };
 export const newRun = (): RunState => ({ round: 0, total: 0, streak: 0, bestStreak: 0, coins: 0, pouch: [], trust: {}, lantern: false, doubleDown: false, rounds: [] });
 // Consecutive rounds with valid proof: the 2nd in a row x1.2, the 3rd and on x1.5 (the cap).
 export const streakMultiplier = (streakBefore: number) => (streakBefore >= 2 ? 1.5 : streakBefore === 1 ? 1.2 : 1);
@@ -166,7 +173,7 @@ export function classPulse(rows: PulseRow[], options: { key: string; label: stri
 // The sides of each round, for the pulse.
 export function pulseOptions(scene: Scene, round: RoundKind) {
   const c = scene.story_mode!;
-  if (round === "read") return [{ key: "found", label: "Found evidence" }, { key: "missed", label: "No evidence yet" }];
+  if (round === "read") return [{ key: "found", label: "Answered the question" }, { key: "missed", label: "Not yet" }];
   if (round === "confront") return c.confront.actions.map((a) => ({ key: a.id, label: a.label }));
   if (round === "lie") return [{ key: "caught", label: "Caught the lie" }, { key: "missed", label: "Missed it" }];
   return c.call.theories.map((t) => ({ key: t.id, label: t.name }));
@@ -205,7 +212,7 @@ export function storyModeProblems(world: WorldPack, passages: SourcePassage[]): 
     const c = scene.story_mode;
     if (!c) continue;
     const where = `${world.id}/${scene.id} story_mode`;
-    const texts = [c.intro, c.read.prompt, c.confront.line, ...c.confront.actions.flatMap((a) => [a.label, a.reaction]), c.call.question, ...c.call.theories.flatMap((t) => [t.name, t.description])];
+    const texts = [c.intro, c.read.prompt, c.read.focus, c.confront.line, ...c.confront.actions.flatMap((a) => [a.label, a.reaction]), c.call.question, ...c.call.theories.flatMap((t) => [t.name, t.description])];
     if (texts.some((t) => dash.test(t))) problems.push(`${where}: no em dashes in player-facing text`);
     if (!scene.lie) problems.push(`${where}: round 3 needs the scene's Spot the Lie testimony`);
     for (const pid of c.read.chunks) {
@@ -213,6 +220,15 @@ export function storyModeProblems(world: WorldPack, passages: SourcePassage[]): 
       if (notes.has(pid)) problems.push(`${where}: chunk ${pid} has a content note; Story Mode reading avoids those`);
     }
     if (!evidenceLines(world, passages, sceneClueIds(scene)).some((l) => c.read.chunks.includes(l.pid))) problems.push(`${where}: the reading has no evidence lines to find`);
+    // The focus question's answers: exact evidence lines from the reading, all different, at least the pouch's 3.
+    const answerTexts = new Set<string>();
+    for (const a of c.read.answers) {
+      const l = sceneEvidence(world, passages, scene, a);
+      if (!l || l.text !== a) problems.push(`${where}: read answer "${a.replace(/\s+/g, " ").slice(0, 60)}" is not copied exactly from one of this scene's evidence lines`);
+      else if (!c.read.chunks.includes(l.pid)) problems.push(`${where}: read answer from ${l.pid} is not in the reading`);
+      else answerTexts.add(l.text);
+    }
+    if (answerTexts.size < POUCH_MAX) problems.push(`${where}: the focus question needs at least ${POUCH_MAX} different answer lines`);
     const who = c.confront.character_id;
     if (!scene.available_characters.includes(who) || !world.characters.some((x) => x.id === who)) problems.push(`${where}: ${who} must be a speaking character in this scene`);
     if (!/\byou\b/i.test(c.confront.line)) problems.push(`${where}: the confrontation speaks to the student ("you")`);

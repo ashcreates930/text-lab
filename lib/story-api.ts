@@ -5,7 +5,7 @@ import { isFailure, studentFromRequest } from "./classroom/auth.ts";
 import { storySettings } from "./classroom/store.ts";
 import { readPassages, readWorld } from "./classroom/worlds.ts";
 import { DEMO_ACCESS_COOKIE, verifyDemoAccessToken } from "./demo-access.ts";
-import { memoryModeEnabled } from "./classroom/store.ts";
+import { getClassroomStore, memoryModeEnabled } from "./classroom/store.ts";
 import { getLiveStore } from "./live/store.ts";
 import type { Identity } from "./story-server.ts";
 import type { StoryRun } from "./story-store.ts";
@@ -38,6 +38,10 @@ export async function loadStory(worldId: unknown, sceneId: unknown) {
 
 export const ownsRun = (who: Identity, run: StoryRun) => (who.scope === "class" ? run.scope === "class" && run.studentId === who.studentId && run.classId === who.classId : run.scope === "demo" && run.playerKey === who.sandboxId);
 
+// Students the teacher marked absent today (none before the absent migration runs).
+export async function absentToday(classId: string) {
+  return (await getClassroomStore()?.getAbsentToday(classId).catch(() => [] as string[])) ?? [];
+}
 // The class's squads, from its most recent live round: student id -> squad name.
 export async function classSquads(classId: string) {
   const live = getLiveStore();

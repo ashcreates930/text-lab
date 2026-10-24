@@ -270,6 +270,7 @@ function StoryHost({state,round,act,sessionId}:{state:View;round:Extract<NonNull
   {!board&&<div aria-hidden className="mt-3 h-3 overflow-hidden rounded-full bg-[#2E2821]"><div className="h-full rounded-full bg-[#A0472C]" style={{width:`${Math.max(0,left/round.seconds)*100}%`}}/></div>}
   {board?<><h2 className="mt-5 text-[28px] font-bold">Leaderboard</h2>{state.storyBoard&&<StoryTop top={state.storyBoard.top} kind={state.storyBoard.kind} players={state.storyBoard.players}/>}</>
   :<>
+   {round.read&&<p className="mt-4 rounded-2xl bg-[#A0472C] px-6 py-4 text-[clamp(22px,2.2vw,36px)] font-bold">{round.read.focus}</p>}
    {round.read&&<div className="mt-4 grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]"><div className="case-art aspect-[4/3] w-full rounded-3xl" role="img" aria-label="The scene" style={{backgroundImage:`url('${round.image}')`}}/><div className="space-y-4 rounded-3xl bg-[#2E2821] p-6">{round.read.chunks.map(c=><p key={c.id} className="font-serif text-[clamp(18px,1.6vw,26px)] leading-snug">{c.text.replace(/\s+/g," ")}</p>)}</div></div>}
    {speaker&&<div className="mt-4 flex flex-col gap-5 rounded-3xl bg-[#2E2821] p-6 md:flex-row md:items-center">{speaker.portrait&&<img src={speaker.portrait} alt="" className="h-40 w-40 shrink-0 rounded-full object-cover"/>}<div><p className="text-[18px] font-semibold uppercase tracking-wide text-[#F3C9B2]">{round.confront?"Confronts the class":"Testimony"} · {speaker.name}</p><p className="mt-2 font-serif text-[clamp(22px,2.2vw,36px)] leading-snug">“{line}”</p>
     {round.confront&&<ul className="mt-4 grid gap-2 md:grid-cols-3">{round.confront.actions.map(a=><li key={a.id} className="rounded-2xl bg-[#1E1A15] p-4 text-[20px]">{a.label}</li>)}</ul>}
@@ -282,8 +283,18 @@ function StoryHost({state,round,act,sessionId}:{state:View;round:Extract<NonNull
    {board&&step<3&&<button type="button" onClick={()=>act({action:"round.stage"})} className="host-btn">Start round {step+2}: {STEP_NAMES[step+1]}</button>}
    {board&&step===3&&<button type="button" onClick={()=>act({action:"round.reveal"})} className="host-btn">Finish Story Mode</button>}
   </div>
+  <AbsentList roster={state.roster} act={act}/>
   <WitnessLink sessionId={sessionId} token={state.witnessToken}/>
  </div>;
+}
+// Mark absent: absent students are left out of their squad's average for today. Everyone else counts, 0 if silent.
+function AbsentList({roster,act}:{roster:View["roster"];act:(b:Record<string,unknown>)=>void}){
+ const marks=roster.filter(p=>p.canMark);
+ if(!marks.length)return null;
+ const away=marks.filter(p=>p.absent).length;
+ return <details className="mt-4 rounded-2xl bg-[#1E1A15] p-4"><summary className="cursor-pointer text-[18px] font-semibold">Mark absent{away?` · ${away} absent`:""}</summary>
+  <p className="mt-2 text-[16px] text-[#E8DDCB]">Squads score their members' average. Silent members count as 0; students marked absent are left out.</p>
+  <ul className="mt-3 flex flex-wrap gap-2">{marks.map(p=><li key={p.id}><button type="button" aria-pressed={p.absent} onClick={()=>act({action:"player.absent",playerId:p.id,absent:!p.absent})} className={`min-h-11 rounded-full px-4 text-[16px] font-semibold ${p.absent?"bg-[#F3C9B2] text-black":"bg-[#2E2821] text-white"}`}>{p.nickname}{p.absent?": absent":""}<span className="sr-only">{p.absent?", tap to mark here":", tap to mark absent"}</span></button></li>)}</ul></details>;
 }
 function WitnessLink({sessionId,token}:{sessionId:string;token:string}){
  const [open,setOpen]=useState(false);const url=typeof window!=="undefined"?`${window.location.origin}/live/witness/${sessionId}#${token}`:"";

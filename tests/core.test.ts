@@ -1696,10 +1696,10 @@ test("story mode content: authored, validated, anchored in scene 1's evidence li
 test("story mode scoring: rounds pay for proof, and speed is small and only on valid proof", async()=>{
   const {world,passages,sm,scene,c,line}=await storyKit();
   const score=(input:Parameters<typeof sm.scoreRound>[3],t=onTime,set:import("../lib/story-mode.ts").TimeSetting="1",pouch:string[]=[])=>sm.scoreRound(world,passages,scene,input,t,set,pouch);
-  // Round 1: 100 per evidence line, at most 3, duplicates once.
+  // Round 1: 100 per line that answers the focus question, at most 3, duplicates once.
   const r1=score({kind:"read",pouch:[line("p068",5),line("p068",5),"Not in the story at all.",line("p070",2),line("p069",0)]});
-  assert.equal(r1.base,100,"only the first 3 count: the same evidence line twice (once) and one made up");assert.equal(r1.coinsEarned,1);
-  assert.equal(score({kind:"read",pouch:[line("p068",5),line("p070",2),line("p069",5)]}).base,300);
+  assert.equal(r1.base,100,"only the first 3 count: the same answer line twice (once) and one made up");assert.equal(r1.coinsEarned,1);
+  assert.equal(score({kind:"read",pouch:[line("p068",5),line("p069",1),line("p069",2)]}).base,300);
   // Round 2: 500 for proof that backs the move, 100 for the move alone, speed only with valid proof.
   const hat=c.confront.actions[0];
   const r2=score({kind:"confront",actionId:hat.id,proof:hat.supports[0]},{elapsedMs:0,grace:false});
@@ -1792,7 +1792,7 @@ test("story mode server: one run per player, rounds in order, late answers force
   let run=a as import("../lib/story-store.ts").StoryRun;
   const play=async(body:Parameters<typeof srv.playRound>[5])=>{const r=await srv.playRound(store,world,passages,scene,run,body);if(r.run)run=r.run;return r};
   assert.deepEqual(await play({round:2,input:{kind:"confront",actionId:"x",proof:""},elapsedMs:0,grace:false,relaxed:false}),{error:"That round is already scored."},"rounds go in order");
-  const r1=await play({round:1,input:{kind:"read",pouch:[line("p068",5),line("p069",0),line("p070",2)]},elapsedMs:30000,grace:false,relaxed:false});
+  const r1=await play({round:1,input:{kind:"read",pouch:[line("p068",5),line("p069",1),line("p069",2)]},elapsedMs:30000,grace:false,relaxed:false});
   assert.equal(r1.record?.points,300);assert.deepEqual(run.state.pouch.length,3);
   // A proof sent 70 seconds into a 60-second phase counts as late, whatever the client says.
   const hat=c.confront.actions[0];
@@ -1831,7 +1831,7 @@ test("story mode live: shared rounds, each player scored with the solo rules, to
   const act=async(pid:string,input:unknown,deps={judgeAllowed:async()=>false})=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,pid,{kind:"story",payload:{input}},deps)};
   // Phones get the controls but never the answers.
   const pub=JSON.stringify(server.playerView(st,ids[0]).round);
-  assert.ok(pub.includes("Tap the lines that matter"));assert.ok(!pub.includes("supports"));
+  assert.ok(pub.includes(c.read.focus),"the focus question is on the phone");assert.ok(!pub.includes("supports"));assert.ok(!pub.includes("answers"),"the answer list stays on the server");
   for(const [k,pid] of ids.entries())assert.equal(await act(pid,{kind:"read",pouch:k<4?[line("p068",5),line("p069",0),line("p070",2)]:[line("p068",5)]}),null);
   assert.equal(await act(ids[0],{kind:"read",pouch:[]}),"You've already answered this round.");
   st=(await server.loadState(store,s.id))!;assert.equal(server.hostView(st).storyAnswered,7);
@@ -1859,4 +1859,112 @@ test("story mode live: shared rounds, each player scored with the solo rules, to
   st=(await server.loadState(store,s.id))!;
   const sq=liveStoryBoard(st.responses,st.session.roundIndex,st.players,st.squads,true);assert.equal(sq.kind,"squad");assert.equal(sq.rows.length,st.squads.length);
   void scene;
+});
+
+test("story mode round 1 focus question: only lines on the authored answer list score, others get a note", async()=>{
+  const {world,passages,sm,scene,c,line}=await storyKit();
+  assert.match(c.read.focus,/belongings were left behind/);
+  // The answer list: exact evidence lines from the reading.
+  for(const a of c.read.answers){const l=sm.sceneEvidence(world,passages,scene,a);assert.ok(l&&l.text===a&&c.read.chunks.includes(l.pid),a.slice(0,40))}
+  assert.ok(c.read.answers.length>=3);
+  const score=(pouch:string[])=>sm.scoreRound(world,passages,scene,{kind:"read",pouch},onTime,"1");
+  // Three lines from the list: full score, no note.
+  const full=score([line("p069",1),line("p069",2),line("p069",3)]);
+  assert.deepEqual([full.base,full.valid,full.coinsEarned,full.note,full.offFocus],[300,true,3,undefined,[]]);
+  // Three true lines that don't answer the question: 0, with the note, and they still go in the pouch.
+  const off=score([line("p068",1),line("p070",0),line("p070",3)]);
+  assert.deepEqual([off.base,off.valid,off.coinsEarned,off.note],[0,false,0,"True to the story, but it doesn't answer the question."]);
+  assert.equal(off.offFocus!.length,3);assert.equal(off.proof.length,3,"kept in the pouch for later rounds");
+  assert.equal(off.detail,"0 of 3 lines answer the question");
+  const mixed=score([line("p068",5),line("p070",2),"Made up."]);
+  assert.deepEqual([mixed.base,mixed.offFocus!.length,mixed.detail],[100,1,"1 of 3 lines answer the question"]);
+  // validate:worlds: an answer that isn't copied exactly, or isn't in the reading, is caught.
+  const bad=structuredClone(world);const r=bad.scenes[0].story_mode!.read;
+  r.answers=[r.answers[0].replace("hat","cap"),r.answers[1],line("p011",0)??"x"];
+  const p=sm.storyModeProblems(bad,passages).join(" | ");
+  assert.match(p,/not copied exactly/);assert.match(p,/at least 3 different answer lines/);
+  const dash=structuredClone(world);dash.scenes[0].story_mode!.read.focus="Tap 3 lines — any";assert.match(sm.storyModeProblems(dash,passages).join(" "),/em dashes/);
+});
+
+test("story mode squads: silent members count as 0, absent members are left out", async()=>{
+  const {squadMembersCounted,storySquadScores,sessionScores}=await import("../lib/live/engine.ts");
+  const {liveStoryBoard}=await import("../lib/live/story.ts");
+  const srv=await import("../lib/story-server.ts");
+  const players=["a","b","c","d"].map((id,i)=>({id,nickname:`P${id}`,squadId:i<3?"s1":"s2",studentId:`st-${id}`,joinedAt:""}));
+  const squads=[{id:"s1",name:"Squad Lantern",position:0},{id:"s2",name:"Squad Quill",position:1}];
+  const row=(playerId:string,squadId:string,points:number)=>({id:playerId,sessionId:"x",roundIndex:0,squadId,playerId,role:null,kind:"story" as const,payload:{step:0,record:{points}},flagged:false,createdAt:""});
+  const responses=[row("a","s1",300),row("d","s2",200)];
+  // Squad Lantern: a answered 300, b and c silent: 300 / 3.
+  assert.deepEqual(storySquadScores(squads,responses,0,players).map(s=>s.points),[100,200]);
+  // c marked absent: 300 / 2.
+  assert.deepEqual(storySquadScores(squads,responses,0,players,["c"]).map(s=>s.points),[150,200]);
+  // An absent mark on someone who answered after all doesn't drop their points.
+  assert.deepEqual(storySquadScores(squads,responses,0,players,["a","c"]).map(s=>s.points),[150,200]);
+  assert.equal(squadMembersCounted("s1",players,["b","c"],responses).size,1);
+  // The live board uses the same rule.
+  const b=liveStoryBoard(responses as never,0,players,squads,true,["c"]);
+  assert.deepEqual(b.rows.map(r=>[r.name,r.score]),[["Squad Quill",200],["Squad Lantern",150]]);
+  assert.deepEqual(liveStoryBoard(responses as never,0,players,squads,true).rows.map(r=>r.score),[200,100]);
+  // Session totals count Story Mode rounds the same way.
+  const {world}=await storyKit();
+  const session={id:"x",code:"X",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"reveal",paused:false,roundIndex:0,rounds:[{type:"story",sceneId:"empty-schoolhouse",step:3,showing:"board",stepStartedAt:"",squadsOn:true}],roundStartedAt:null,createdAt:"",expiresAt:""};
+  assert.deepEqual(sessionScores(world,session as never,squads,responses,players,["c"]).map(s=>[s.name,s.points]),[["Squad Quill",200],["Squad Lantern",150]]);
+  // Solo class board in squad mode: every member counts (0 if they haven't played), absent members left out.
+  const map=new Map([["st-a","Squad Lantern"],["st-b","Squad Lantern"],["st-c","Squad Lantern"],["st-d","Squad Quill"]]);
+  const scores=new Map([["st-a",900],["st-d",400]]);
+  assert.deepEqual(srv.squadAverages(map,scores).map(r=>[r.name,r.score]),[["Squad Lantern",300],["Squad Quill",400]]);
+  assert.deepEqual(srv.squadAverages(map,scores,["st-b","st-c"]).map(r=>[r.name,r.score]),[["Squad Lantern",900],["Squad Quill",400]]);
+});
+
+test("mark absent: the teacher marks a student absent for today from the class page or the live host screen", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {getClassroomStore,absentDay}=await import("../lib/classroom/store.ts");
+  const store=getClassroomStore()!;
+  const t=await store.ensureTeacher("test:absent","absent@example.com");
+  const cls=await store.createClass(t.id,{name:"Period 3",worldId:"sleepy-hollow",grade:7});
+  const kid=(await store.createStudent(cls.id,"Ana Ruiz","h1")) as {id:string},kid2=(await store.createStudent(cls.id,"Ben Tate","h2")) as {id:string};
+  await store.setStudentAbsent(kid.id,true);
+  assert.deepEqual(await store.getAbsentToday(cls.id),[kid.id]);
+  await store.setStudentAbsent(kid.id,false);assert.deepEqual(await store.getAbsentToday(cls.id),[]);
+  assert.equal(absentDay(new Date("2026-10-24T15:00:00Z")),"2026-10-24");
+  // Live: the host marks a class student absent; the live state leaves them out.
+  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");
+  const live=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await live.createSession({code:"ABSNT1",teacherId:t.id,classId:cls.id,demo:false,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const p1=(await server.join(live,s,{nickname:"Ana Ruiz",studentId:kid.id})).player!,p2=(await server.join(live,s,{nickname:"Ben Tate",studentId:kid2.id})).player!;
+  const guest=(await server.join(live,s,{nickname:"Visitor",studentId:null})).player!;
+  let st=(await server.loadState(live,s.id))!;
+  assert.equal(await server.hostAct(live,st,{action:"player.absent",playerId:p2.id,absent:true}),null);
+  st=(await server.loadState(live,s.id))!;
+  assert.deepEqual(st.absent,[p2.id]);assert.deepEqual(await store.getAbsentToday(cls.id),[kid2.id],"the class page sees the same mark");
+  assert.deepEqual(server.hostView(st).roster.map(r=>[r.nickname,r.canMark,r.absent]),[["Ana Ruiz",true,false],["Ben Tate",true,true],["Visitor",false,false]]);
+  assert.match((await server.hostAct(live,st,{action:"player.absent",playerId:guest.id,absent:true}))??"",/Only students in your class/);
+  void p1;
+});
+
+test("story mode: Catch the lie opens a demo run at round 3; Brom's trust is saved with progress", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {world,passages,scene,c}=await storyKit();
+  const {memoryStoryStore}=await import("../lib/story-store.ts");const srv=await import("../lib/story-server.ts");
+  const store=memoryStoryStore({runs:[],rounds:[]});
+  const demo={scope:"demo" as const,sandboxId:crypto.randomUUID()};
+  const run=(await srv.startRun(store,world,scene,demo,false,"lie")) as import("../lib/story-store.ts").StoryRun;
+  assert.deepEqual([run.state.round,run.state.skipped,run.total],[2,2,0]);
+  assert.deepEqual(await srv.playRound(store,world,passages,scene,run,{round:1,input:{kind:"read",pouch:[]},elapsedMs:0,grace:false,relaxed:false}),{error:"That round is already scored."});
+  const lie=await srv.playRound(store,world,passages,scene,run,{round:3,input:{kind:"lie",line:scene.lie!.truth_line,explanation:"Hans said the pitch-pipe was brand-new, but the story says it was broken."},elapsedMs:10000,grace:false,relaxed:false});
+  assert.ok(lie.record&&lie.record.base===600);
+  // Opening it again resumes; a class student can't skip.
+  assert.equal(((await srv.startRun(store,world,scene,demo,false,"lie")) as {state:{round:number}}).state.round,3);
+  const cls=(await srv.startRun(store,world,scene,{scope:"class",classId:"c9",worldId:world.id,studentId:"s9",nickname:"Kim Lee",timeSetting:"1",leaderboard:"individual"},false,"lie")) as {state:{round:number}};
+  assert.equal(cls.state.round,0);
+  // Brom's trust: on the server run and in the student's saved progress.
+  const hat=c.confront.actions[0];
+  const fresh=(await srv.startRun(store,world,scene,{scope:"demo",sandboxId:crypto.randomUUID()})) as import("../lib/story-store.ts").StoryRun;
+  const r1=await srv.playRound(store,world,passages,scene,fresh,{round:1,input:{kind:"read",pouch:[]},elapsedMs:0,grace:false,relaxed:false});
+  const r2=await srv.playRound(store,world,passages,scene,r1.run!,{round:2,input:{kind:"confront",actionId:hat.id,proof:hat.supports[0]},elapsedMs:0,grace:false,relaxed:false});
+  assert.equal(r2.run!.state.trust["brom-bones"],hat.trust);
+  assert.equal((await store.getRun(fresh.id))!.state.trust["brom-bones"],hat.trust,"saved on the server run");
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
+  const saved=StudentProgressSchema.parse({v:1,worldId:"sleepy-hollow",scene:0,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],storyFrames:{},story:{"empty-schoolhouse":{runId:fresh.id,total:r2.run!.total,bestStreak:1,trust:r2.run!.state.trust,pouch:[],cleared:false}},updatedAt:new Date().toISOString()});
+  assert.equal(saved.story!["empty-schoolhouse"].trust["brom-bones"],hat.trust,"and in saved progress");
 });

@@ -5,7 +5,7 @@ import type { SourcePassage } from "./source-passages.ts";
 import { nicknameChoices } from "./live/engine.ts";
 import {
   GRACE_SECONDS, ROUNDS, SECONDS, TIME_SETTINGS, applyRound, boardName, buy, classPulse, newRun, phaseSeconds, pulseChoice, pulseOptions, rankRows, scoreRound, studentBoard,
-  type PowerUp, type RoundInput, type RunState, type Scene, type TimeSetting,
+  type PowerUp, type RoundInput, type RoundKind, type RunState, type Scene, type TimeSetting,
 } from "./story-mode.ts";
 import { storyDay, type StoryRun, type StoryStore } from "./story-store.ts";
 
@@ -24,7 +24,23 @@ function demoNickname(sandboxId: string, taken: string[]) {
   return nicknameChoices(seed, taken, 1)[0] ?? `Detective ${sandboxId.slice(0, 4)}`;
 }
 
-export async function startRun(store: StoryStore, world: WorldPack, scene: Scene, who: Identity, restart = false): Promise<StoryRun | string> {
+// startAt: open at a later round (demo visitors only, from the home page's "Catch the lie"). Earlier rounds are skipped
+// and score nothing; a cleared run starts over first.
+export async function startRun(store: StoryStore, world: WorldPack, scene: Scene, who: Identity, restart = false, startAt?: RoundKind): Promise<StoryRun | string> {
+  const run = await openRun(store, world, scene, who, restart);
+  if (typeof run === "string" || !startAt || who.scope !== "demo") return run;
+  return skipTo(store, world, scene, who, run, ROUNDS.indexOf(startAt));
+}
+async function skipTo(store: StoryStore, world: WorldPack, scene: Scene, who: Identity, run: StoryRun, index: number): Promise<StoryRun | string> {
+  if (index <= 0) return run;
+  let from = run;
+  if (run.finished) { const again = await openRun(store, world, scene, who, true); if (typeof again === "string") return again; from = again; }
+  if (from.state.round >= index) return from;
+  const state: RunState = { ...from.state, round: index, skipped: index - from.state.round + (from.state.skipped ?? 0) };
+  await store.saveRun(from.id, { state });
+  return { ...from, state };
+}
+async function openRun(store: StoryStore, world: WorldPack, scene: Scene, who: Identity, restart: boolean): Promise<StoryRun | string> {
   if (!scene.story_mode) return "This scene has no Story Mode.";
   const day = storyDay();
   const key = who.scope === "class"
@@ -99,21 +115,30 @@ export async function buyPowerUp(store: StoryStore, run: StoryRun, p: PowerUp) {
 }
 
 // The board this player's scope shares: their class (by student or by squad), or today's demo visitors.
-// squads: student id -> squad name (the class's latest live round), for the squad leaderboard.
-export async function boardFor(store: StoryStore, run: StoryRun, mode: LeaderboardMode, previousRank: number | null, squads?: Map<string, string>) {
+// squads: student id -> squad name (the class's latest live round), for the squad leaderboard; absent: student ids the
+// teacher marked absent today.
+export async function boardFor(store: StoryStore, run: StoryRun, mode: LeaderboardMode, previousRank: number | null, squads?: Map<string, string>, absent: string[] = []) {
   if (mode === "off") return null;
   const runs = await store.listRuns(run.scope === "class" ? { scope: "class", classId: run.classId, worldId: run.worldId, sceneId: run.sceneId } : { scope: "demo", worldId: run.worldId, sceneId: run.sceneId, day: run.day });
   const score = (r: StoryRun) => Math.max(r.bestTotal, r.total);
   if (mode === "squad" && run.scope === "class" && squads) {
-    // Squads rank by their members' average, so a squad of 3 isn't behind a squad of 4.
-    const by = new Map<string, number[]>();
-    for (const r of runs) { const sq = r.studentId ? squads.get(r.studentId) : undefined; if (sq) by.set(sq, [...(by.get(sq) ?? []), score(r)]); }
-    const rows = [...by.entries()].map(([name, xs]) => ({ id: name, name, score: Math.round(xs.reduce((a, b) => a + b, 0) / xs.length) }));
+    // Squads rank by their members' average, so a squad of 3 isn't behind a squad of 4. Every member counts (0 if they
+    // haven't played); members marked absent today are left out unless they played.
+    const rows = squadAverages(squads, new Map(runs.filter((r) => r.studentId).map((r) => [r.studentId!, score(r)])), absent);
     const mine = run.studentId ? squads.get(run.studentId) ?? null : null;
     return { kind: "squad" as const, ...studentBoard(rows, mine, previousRank) };
   }
   const rows = runs.map((r) => ({ id: r.playerKey, name: r.scope === "class" ? boardName(r.nickname) : r.nickname, score: score(r) }));
   return { kind: "individual" as const, ...studentBoard(rows, run.playerKey, previousRank) };
+}
+export function squadAverages(squads: Map<string, string>, scores: Map<string, number>, absent: string[] = []) {
+  const away = new Set(absent), by = new Map<string, number[]>();
+  for (const [studentId, sq] of squads) {
+    const played = scores.has(studentId);
+    if (away.has(studentId) && !played) continue;
+    by.set(sq, [...(by.get(sq) ?? []), scores.get(studentId) ?? 0]);
+  }
+  return [...by.entries()].map(([name, xs]) => ({ id: name, name, score: Math.round(xs.reduce((a, b) => a + b, 0) / xs.length) }));
 }
 // The teacher's full board (Evidence view and CSV): every student, ranked, with each round.
 export async function teacherBoard(store: StoryStore, classId: string, world: WorldPack, scene: Scene) {

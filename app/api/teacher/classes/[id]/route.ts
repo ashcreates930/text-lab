@@ -10,16 +10,17 @@ export async function GET(request: Request, { params }: Params) {
   const cls = await ctx.store.getClass(ctx.teacherId, (await params).id);
   if (!cls) return NextResponse.json({ error: "Class not found." }, { status: 404 });
   const [students, assignments, analysis, world] = await Promise.all([ctx.store.listStudents(cls.id), ctx.store.listAssignments(cls.id), ctx.store.getActiveAnalysis(cls.id), readWorld(cls.world_id)]);
-  const [completions, studentTimes] = await Promise.all([ctx.store.listCompletions(students.map((s) => s.id)), ctx.store.getStudentTimes(cls.id).catch(() => ({}))]);
+  const [completions, studentTimes, absent] = await Promise.all([ctx.store.listCompletions(students.map((s) => s.id)), ctx.store.getStudentTimes(cls.id).catch(() => ({})), ctx.store.getAbsentToday(cls.id).catch(() => [] as string[])]);
   return NextResponse.json({
-    class: cls, students, studentTimes, assignments, completions, activeAnalysisId: analysis?.id ?? null,
+    class: cls, students, studentTimes, absent, assignments, completions, activeAnalysisId: analysis?.id ?? null,
     world: world ? { id: world.id, title: world.title, teacherPreviewRequired: world.teacher_preview_required === true, scenes: world.scenes.map((s) => ({ id: s.id, clues: s.artifacts.length })), roles: world.roles.map((r) => ({ id: r.id, name: r.name })) } : null,
   });
 }
 
 // previewEnabled: the story's content-note preview; rolesOn / anglesOn: students in the story (roles and "What's your angle?").
 // leaderboard / storyModeOn: Story Mode's class leaderboard and whether scenes use it; studentTime: one student's extra time.
-const Patch = z.object({ previewEnabled: z.boolean().optional(), rolesOn: z.boolean().optional(), anglesOn: z.boolean().optional(), leaderboard: z.enum(["individual", "squad", "off"]).optional(), storyModeOn: z.boolean().optional(), studentTime: z.object({ studentId: z.string().uuid(), setting: z.enum(["1", "1.5", "2", "untimed"]) }).optional() }).refine((x) => Object.values(x).some((v) => v !== undefined));
+// absent: mark one student absent for today (left out of Story Mode squad averages).
+const Patch = z.object({ previewEnabled: z.boolean().optional(), rolesOn: z.boolean().optional(), anglesOn: z.boolean().optional(), leaderboard: z.enum(["individual", "squad", "off"]).optional(), storyModeOn: z.boolean().optional(), studentTime: z.object({ studentId: z.string().uuid(), setting: z.enum(["1", "1.5", "2", "untimed"]) }).optional(), absent: z.object({ studentId: z.string().uuid(), absent: z.boolean() }).optional() }).refine((x) => Object.values(x).some((v) => v !== undefined));
 export async function PATCH(request: Request, { params }: Params) {
   const ctx = await teacherFromRequest(request);
   if (isFailure(ctx)) return NextResponse.json({ error: ctx.error }, { status: ctx.status });
@@ -40,5 +41,11 @@ export async function PATCH(request: Request, { params }: Params) {
       await ctx.store.setStudentTime(input.data.studentTime.studentId, input.data.studentTime.setting);
     }
   } catch { return NextResponse.json({ error: "Run the 202610200001 migration to change Story Mode settings." }, { status: 503 }); }
+  if (input.data.absent) {
+    const students = await ctx.store.listStudents(cls.id);
+    if (!students.some((s) => s.id === input.data.absent!.studentId)) return NextResponse.json({ error: "Student not found." }, { status: 404 });
+    try { await ctx.store.setStudentAbsent(input.data.absent.studentId, input.data.absent.absent); }
+    catch { return NextResponse.json({ error: "Run the 202610240001 migration to mark students absent." }, { status: 503 }); }
+  }
   return NextResponse.json({ ok: true });
 }

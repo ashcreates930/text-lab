@@ -70,7 +70,7 @@ function ClassList({email,classes,onOpen,onCreated,onSignOut}:{email:string;clas
  </div>;
 }
 
-type Detail={studentTimes?:Record<string,string>;class:{id:string;name:string|null;class_code:string;grade:number;preview_enabled:boolean;roles_enabled?:boolean;angles_enabled?:boolean;leaderboard_mode?:"individual"|"squad"|"off";story_mode_on?:boolean};students:{id:string;nickname:string}[];assignments:{lesson_id:string;due_date:string|null}[];completions:{student_id:string;lesson_id:string;first_try_correct:number;total:number}[];activeAnalysisId:string|null;world:{title:string;teacherPreviewRequired:boolean;scenes:{id:string;clues:number}[];roles:{id:string;name:string}[]}|null};
+type Detail={studentTimes?:Record<string,string>;absent?:string[];class:{id:string;name:string|null;class_code:string;grade:number;preview_enabled:boolean;roles_enabled?:boolean;angles_enabled?:boolean;leaderboard_mode?:"individual"|"squad"|"off";story_mode_on?:boolean};students:{id:string;nickname:string}[];assignments:{lesson_id:string;due_date:string|null}[];completions:{student_id:string;lesson_id:string;first_try_correct:number;total:number}[];activeAnalysisId:string|null;world:{title:string;teacherPreviewRequired:boolean;scenes:{id:string;clues:number}[];roles:{id:string;name:string}[]}|null};
 
 // QR code for the class link, drawn as SVG in the browser. Projected on the board, students scan it to join.
 function JoinQr({url}:{url:string}){
@@ -98,7 +98,7 @@ function ClassDetail({classId,onPresent}:{classId:string;onPresent:()=>void}){
   {tab==="lies"&&<LieBankTab classId={classId} fetcher={teacherFetch}/>}
   {tab==="live"&&<LivePlanner classId={classId} detail={data} onStarted={onPresent}/>}
   {tab==="lessons"&&<AssignLessons classId={classId} detail={data} onChange={load}/>}
-  {tab==="students"&&<div className="panel p-6"><h2 className="serif text-2xl">Students</h2>{data.students.length===0?<p className="mt-3 text-base text-white/75">No one has joined yet. Share the class code above.</p>:<ul className="mt-4 grid gap-2 md:grid-cols-3">{data.students.map(s=>{const done=data.completions.filter(x=>x.student_id===s.id&&data.assignments.some(a=>a.lesson_id===x.lesson_id)).length;return <li key={s.id} className="border border-white/20 p-3"><p className="text-base font-bold">{s.nickname}</p><p className="text-sm text-white/70">{done} of {data.assignments.length} assigned lessons finished</p><StudentTime classId={classId} studentId={s.id} name={s.nickname} value={data.studentTimes?.[s.id]??"1"} onChange={load}/></li>})}</ul>}</div>}
+  {tab==="students"&&<div className="panel p-6"><h2 className="serif text-2xl">Students</h2>{data.students.length===0?<p className="mt-3 text-base text-white/75">No one has joined yet. Share the class code above.</p>:<ul className="mt-4 grid gap-2 md:grid-cols-3">{data.students.map(s=>{const done=data.completions.filter(x=>x.student_id===s.id&&data.assignments.some(a=>a.lesson_id===x.lesson_id)).length;return <li key={s.id} className="border border-white/20 p-3"><p className="text-base font-bold">{s.nickname}</p><p className="text-sm text-white/70">{done} of {data.assignments.length} assigned lessons finished</p><StudentTime classId={classId} studentId={s.id} name={s.nickname} value={data.studentTimes?.[s.id]??"1"} onChange={load}/><StudentAbsent classId={classId} studentId={s.id} name={s.nickname} absent={!!data.absent?.includes(s.id)} onChange={load}/></li>})}</ul>}</div>}
  </div>;
 }
 
@@ -197,6 +197,15 @@ function StoryPersonalPanel({classId,rolesOn,anglesOn,storyModeOn,leaderboard,on
    <div className="mt-2 flex flex-wrap gap-2">{([["individual","Individual"],["squad","Squads"],["off","Off"]] as const).map(([v,l])=><button key={v} type="button" aria-pressed={leaderboard===v} onClick={()=>leaderboard!==v&&set({leaderboard:v})} className={`min-h-11 rounded-full border px-4 text-sm font-semibold ${leaderboard===v?"border-[#A0472C] bg-[#A0472C] text-white":"border-white/25"}`}>{l}</button>)}</div>
    {leaderboard==="squad"&&<p className="mt-2 text-sm text-white/70">Squads come from your most recent live round.</p>}</fieldset>
   {error&&<p role="alert" className="mt-2 text-sm text-[#F3C9B2]">{error}</p>}</section>;
+}
+
+// Absent today: left out of Story Mode squad averages (everyone else in a squad counts, with 0 if they didn't answer).
+// The same mark as "Mark absent" on the live host screen; it clears itself the next day.
+function StudentAbsent({classId,studentId,name,absent,onChange}:{classId:string;studentId:string;name:string;absent:boolean;onChange:()=>void}){
+ const [error,setError]=useState(""),[busy,setBusy]=useState(false);
+ async function toggle(){setError("");setBusy(true);const r=await teacherFetch(`/api/teacher/classes/${classId}`,{method:"PATCH",body:JSON.stringify({absent:{studentId,absent:!absent}})});setBusy(false);if(!r.ok)setError(r.body.error||"Could not save that.");onChange()}
+ return <div className="mt-2"><button type="button" onClick={toggle} disabled={busy} aria-pressed={absent} aria-label={`Mark ${name} absent today`} className={`min-h-11 rounded-full px-4 text-sm font-semibold ${absent?"bg-[#F3C9B2] text-black":"bg-white/10"}`}>{absent?"Absent today (tap to undo)":"Mark absent"}</button>
+  {error&&<p role="alert" className="mt-1 text-sm text-[#F3C9B2]">{error}</p>}</div>;
 }
 
 // Story Mode extra time for one student: standard, 1.5x, 2x or untimed. They're scored the same, with the speed bonus

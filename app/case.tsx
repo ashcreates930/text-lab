@@ -53,8 +53,11 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  const [personal,setPersonal]=useState<StoryPersonalSettings|null>(demo.classAuth?null:DEFAULT_PERSONAL);
  // Story Mode is on unless the class's teacher switched scenes to the Case file view.
  const [storyModeOn,setStoryModeOn]=useState(true);
+ // Story Mode isn't available (its tables aren't set up): scenes open in the Case file view for everyone this visit.
+ // storyJump: "Catch the lie" opens Story Mode at round 3 on the first scene with a testimony.
+ const [storyUnavailable,setStoryUnavailable]=useState(false),[storyJump,setStoryJump]=useState<{sceneId:string;round:"lie"}|null>(null);
  useEffect(()=>{if(!demo.classAuth)return;fetch("/api/student/class",{headers:{"x-class-token":demo.classAuth.token},cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{setPersonal(j?{rolesOn:j.rolesOn!==false,anglesOn:j.anglesOn!==false}:DEFAULT_PERSONAL);setStoryModeOn(j?.storyModeOn!==false)}).catch(()=>setPersonal(DEFAULT_PERSONAL))},[demo.classAuth]);
- const screen=`${openClue}|${openFrame}|${verdictOpen}|${plantClue}|${!!demo.roleIntroSeen}`,shownScreen=useRef(screen);
+ const screen=`${openClue}|${openFrame}|${verdictOpen}|${plantClue}|${!!demo.roleIntroSeen}|${storyUnavailable}`,shownScreen=useRef(screen);
  useLayoutEffect(()=>{if(shownScreen.current===screen)return;shownScreen.current=screen;focusScreenTop()},[screen]);
  useEffect(()=>{setWorld(null);fetch(`/worlds/${demo.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setError("We couldn't open this story. Refresh the page to try again."));fetch(`/worlds/${demo.worldId}/source.md`).then(r=>r.ok?r.text():"").then(t=>setPassages(parseSourcePassages(t))).catch(()=>setPassages([]))},[demo.worldId]);
  // Students play the scene game. The storybook reader stays in the code, switched off, until we decide to bring it back.
@@ -66,8 +69,9 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  useEffect(()=>{if(!toast)return;const t=setTimeout(()=>setToast(""),4200);return()=>clearTimeout(t)},[toast]);
  // Older saves: once the story and the saved progress have loaded, upgrade each proven clue's line to its exact evidence
  // line (lib/evidence-check.ts) and save that. Clues that can't be upgraded are marked "Re-prove this clue".
- // "Catch the lie": once the story has loaded, go to the first scene with a testimony and open its clue.
- useEffect(()=>{if(!startAtLie||!world)return;const i=world.scenes.findIndex(s=>s.lie);if(i>=0){setDemo(d=>({...d,scene:i}));setOpenClue(world.scenes[i].lie!.clue_id)}onStarted?.()},[startAtLie,world,setDemo,onStarted]);
+ // "Catch the lie": once the story has loaded, go to the first scene with a testimony. If that scene has Story Mode, it
+ // opens at round 3 (Catch the lie) after the role card; otherwise its clue opens.
+ useEffect(()=>{if(!startAtLie||!world)return;const i=world.scenes.findIndex(s=>s.lie);if(i>=0){const sc=world.scenes[i];setDemo(d=>({...d,scene:i,...(sc.story_mode?{caseFileView:false}:{})}));if(sc.story_mode&&storyModeOn&&!storyUnavailable)setStoryJump({sceneId:sc.id,round:"lie"});else setOpenClue(sc.lie!.clue_id)}onStarted?.()},[startAtLie,world,setDemo,onStarted,storyModeOn,storyUnavailable]);
  const upgradedFor=useRef("");
  useEffect(()=>{if(!world||!passages.length||(demo.classAuth&&!demo.classProgressLoaded))return;const key=`${world.id}:${!!demo.classProgressLoaded}`;if(upgradedFor.current===key)return;upgradedFor.current=key;
   setDemo(d=>{const r=upgradeSavedProofs(world,passages,d.artifactAnswers,d.savedTextEvidence);return r.changed?{...d,artifactAnswers:r.answers,savedTextEvidence:r.evidence}:d})},[world,passages,demo.classAuth,demo.classProgressLoaded,setDemo]);
@@ -79,7 +83,7 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  if(finished)return <CaseSummary world={world} demo={demo} passages={passages} onAnotherStory={onAnotherStory} personal={personal??DEFAULT_PERSONAL}/>;
  // The role card and "What's your angle?" come once, before the first clue (after saved progress has loaded).
  const introDue=!!personal&&(!demo.classAuth||demo.classProgressLoaded)&&!demo.roleIntroSeen&&(!demo.classAuth||!Object.keys(demo.artifactAnswers).length)&&((personal.rolesOn&&!!world.student_role)||personal.anglesOn);
- if(introDue&&personal)return <RoleIntro world={world} settings={personal} onDone={angle=>setDemo(d=>({...d,roleIntroSeen:true,...(angle?{angle}:{}),scene:d.scene===0&&personal.rolesOn&&world.student_role?Math.max(0,world.scenes.findIndex(s=>s.id===world.student_role!.start_scene)):d.scene}))}/>;
+ if(introDue&&personal)return <RoleIntro world={world} settings={personal} onDone={angle=>setDemo(d=>({...d,roleIntroSeen:true,...(angle?{angle}:{}),scene:d.scene===0&&!storyJump&&personal.rolesOn&&world.student_role?Math.max(0,world.scenes.findIndex(s=>s.id===world.student_role!.start_scene)):d.scene}))}/>;
  if(STORYBOOK_ON&&world.storybook)return <StorybookReader world={world} role={role} passages={passages} demo={demo} setDemo={setDemo} onExit={onExit} onFeedback={onFeedback}/>;
  const frames=sceneFrames(world,passages,sceneIndex);
  // The scene is solved when every clue is proven and its required frame is saved, whichever comes last.
@@ -100,9 +104,9 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
   if(info?.solves&&sceneSolved(true,frames,demo.storyFrames))celebrateScene()}}/>;
  // Story Mode: scenes with a story_mode block are played as four timed rounds, unless an adult opened the Case file
  // view (demo) or the teacher turned Story Mode off for the class. Then the clue board below is the scene.
- const storyHere=!!scene.story_mode&&storyModeOn&&!demo.caseFileView;
- if(storyHere)return <StoryMode key={scene.id} world={world} scene={scene} sceneIndex={sceneIndex} passages={passages} demo={demo} setDemo={setDemo} onCleared={()=>{setDemo(d=>({...d,scene:Math.min(d.scene+1,world.scenes.length-1),events:[...d.events,"scene_complete"]}))}} onCaseFile={demo.classAuth?undefined:()=>setDemo(d=>({...d,caseFileView:true}))}/>;
- return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} onStoryMode={scene.story_mode&&demo.caseFileView&&!demo.classAuth?()=>setDemo(d=>({...d,caseFileView:false})):undefined} role={role} demo={demo} setDemo={setDemo} passages={passages} frames={frames} onOpenFrame={setOpenFrame} onOpenVerdict={()=>setVerdictOpen(true)} onCloseCase={closeCase} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} onStartOver={demo.classAuth?undefined:onStartOver} onPlantLie={demo.classAuth?setPlantClue:undefined} personal={personal??DEFAULT_PERSONAL} reprove={reprove} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
+ const storyHere=!!scene.story_mode&&storyModeOn&&!demo.caseFileView&&!storyUnavailable;
+ if(storyHere)return <StoryMode key={scene.id} world={world} scene={scene} sceneIndex={sceneIndex} passages={passages} demo={demo} setDemo={setDemo} startAt={storyJump?.sceneId===scene.id?storyJump.round:undefined} onJumped={()=>setStoryJump(null)} onUnavailable={()=>{if(storyJump&&scene.lie)setOpenClue(scene.lie.clue_id);setStoryJump(null);setStoryUnavailable(true)}} onCleared={()=>{setDemo(d=>({...d,scene:Math.min(d.scene+1,world.scenes.length-1),events:[...d.events,"scene_complete"]}))}} onCaseFile={demo.classAuth?undefined:()=>setDemo(d=>({...d,caseFileView:true}))}/>;
+ return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} onStoryMode={scene.story_mode&&demo.caseFileView&&!demo.classAuth&&!storyUnavailable?()=>setDemo(d=>({...d,caseFileView:false})):undefined} role={role} demo={demo} setDemo={setDemo} passages={passages} frames={frames} onOpenFrame={setOpenFrame} onOpenVerdict={()=>setVerdictOpen(true)} onCloseCase={closeCase} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} onStartOver={demo.classAuth?undefined:onStartOver} onPlantLie={demo.classAuth?setPlantClue:undefined} personal={personal??DEFAULT_PERSONAL} reprove={reprove} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
 }
 
 function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onOpenFrame,onOpenVerdict,onCloseCase,onOpenClue,onExit,onStartOver,onStoryMode,onPlantLie,personal,reprove,toast,celebrating,rankUp,justProven,onTutorial}:{onStartOver?:()=>void;onStoryMode?:()=>void;onPlantLie?:(clueId:string)=>void;personal:StoryPersonalSettings;reprove:string[];world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];frames:SceneFrame[];onOpenFrame:(key:string)=>void;onOpenVerdict:()=>void;onCloseCase:()=>void;onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string;onTutorial?:()=>void}){

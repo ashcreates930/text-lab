@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getStoryStore } from "@/lib/story-store";
 import { boardFor } from "@/lib/story-server";
-import { classSquads, isIdentityError, ownsRun, storyIdentity } from "@/lib/story-api";
+import { absentToday, classSquads, isIdentityError, ownsRun, storyIdentity } from "@/lib/story-api";
 
 // The leaderboard as this player sees it: the top 5 and their own rank (refetched when the board's Realtime ping arrives).
 export async function GET(request: NextRequest) {
@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
   if (!run || !ownsRun(who, run)) return NextResponse.json({ error: "Start the scene again." }, { status: 404 });
   const mode = who.scope === "class" ? who.leaderboard : "individual";
   const prev = Number(q.get("previousRank")) || null;
-  const board = await boardFor(store, run, mode, prev, who.scope === "class" && mode === "squad" ? await classSquads(who.classId) : undefined);
+  const squad = who.scope === "class" && mode === "squad";
+  const board = await boardFor(store, run, mode, prev, squad ? await classSquads(who.classId) : undefined, squad ? await absentToday(who.classId) : []);
   return NextResponse.json({ board }, { headers: { "Cache-Control": "no-store" } });
 }

@@ -215,15 +215,16 @@ export function objectionResult(round: Extract<Round, { type: "objection" }>, re
   };
 }
 
-// Points per squad for the whole session.
-export function sessionScores(world: WorldPack, session: LiveSession, squads: LiveSquad[], responses: LiveResponse[]) {
+// Points per squad for the whole session. players and absent (player ids marked absent today) set who counts in a
+// Story Mode squad average.
+export function sessionScores(world: WorldPack, session: LiveSession, squads: LiveSquad[], responses: LiveResponse[], players: LivePlayer[] = [], absent: string[] = []) {
   const total = new Map(squads.map((s) => [s.id, 0]));
   session.rounds.forEach((round, i) => {
     if (i > session.roundIndex || (i === session.roundIndex && session.status === "round")) return; // only rounds that have been revealed count
     let scores: { squadId: string; points: number }[] = [];
     if (round.type === "lie") { const lie = roundLie(world, round); if (lie) scores = scoreLieRound(lie, squads, responses, i, round.planted?.writerSquadId ?? null); }
     else if (round.type === "verdict") scores = scoreVerdictRound(squads, responses, i);
-    else if (round.type === "story") scores = storySquadScores(squads, responses, i);
+    else if (round.type === "story") scores = storySquadScores(squads, responses, i, players, absent);
     else scores = objectionResult(round, responses, i).scores;
     for (const s of scores) total.set(s.squadId, (total.get(s.squadId) ?? 0) + s.points);
   });
@@ -231,13 +232,22 @@ export function sessionScores(world: WorldPack, session: LiveSession, squads: Li
 }
 
 // Story Mode live: each squad earns its members' average score (each answer row holds its points).
-export function storySquadScores(squads: LiveSquad[], responses: LiveResponse[], roundIndex: number) {
+// Every member counts: a member who didn't answer adds 0. Members the teacher marked absent are left out (unless they
+// answered after all). The same rule ranks squads on the live Story Mode board (lib/live/story.ts).
+export function storySquadScores(squads: LiveSquad[], responses: LiveResponse[], roundIndex: number, players: LivePlayer[] = [], absent: string[] = []) {
   return squads.map((s) => {
     const rows = responses.filter((r) => r.roundIndex === roundIndex && r.kind === "story" && r.squadId === s.id);
-    const players = new Set(rows.map((r) => r.playerId));
+    const counted = squadMembersCounted(s.id, players, absent, rows);
     const sum = rows.reduce((n, r) => n + Number((r.payload.record as { points?: number } | undefined)?.points ?? 0), 0);
-    return { squadId: s.id, points: players.size ? Math.round(sum / players.size) : 0 };
+    return { squadId: s.id, points: counted.size ? Math.round(sum / counted.size) : 0 };
   });
+}
+// Who a squad average divides by: present members, plus anyone who answered for the squad.
+export function squadMembersCounted(squadId: string, players: LivePlayer[], absent: string[], answers: { playerId: string | null; squadId: string | null }[]) {
+  const away = new Set(absent);
+  const ids = new Set(players.filter((p) => p.squadId === squadId && !away.has(p.id)).map((p) => p.id));
+  for (const r of answers) if (r.squadId === squadId && r.playerId) ids.add(r.playerId);
+  return ids;
 }
 
 // Period vs. period: squad points added up per class over the last seven days. Classes only, never students.
