@@ -74,7 +74,8 @@ export async function playRound(store: StoryStore, world: WorldPack, passages: S
   // Time: the teacher's extra time, or Relaxed (2x) if the student turned it on, whichever is longer.
   const setting = longerTime(run.timeSetting, body.relaxed ? "2" : "1");
   const limit = phaseSeconds(BASE_SECONDS[body.input.kind], setting);
-  const elapsedMs = Math.max(0, Math.min(Number(body.elapsedMs) || 0, 60 * 60 * 1000));
+  // Whole milliseconds: the browser timer is fractional, and elapsed_ms is an integer column.
+  const elapsedMs = Math.round(Math.max(0, Math.min(Number(body.elapsedMs) || 0, 60 * 60 * 1000)));
   // Late by more than a moment means the grace period, whatever the client says; untimed never has one.
   const grace = limit === null ? false : !!body.grace || elapsedMs > (limit + 1) * 1000;
   if (limit !== null && elapsedMs > (limit + GRACE_SECONDS + 5) * 1000) body = { ...body, input: emptyInput(body.input.kind) };

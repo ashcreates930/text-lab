@@ -54,7 +54,8 @@ export type RoundInput =
   | { kind: "call"; theoryId: string; pins: string[] };
 // grace: scored in the 20 seconds after time ran out (half points, no speed bonus).
 // offFocus (round 1): pouch lines that are true to the story but do not answer the focus question (0 points each).
-export type RoundScore = { kind: RoundKind; base: number; speed: number; valid: boolean; coinsEarned: number; detail: string; choice: string; proof: string[]; grace?: boolean; note?: string; offFocus?: string[] };
+// nearMiss (round 1): the authored hint for each off-focus line that is a near miss, by line.
+export type RoundScore = { kind: RoundKind; base: number; speed: number; valid: boolean; coinsEarned: number; detail: string; choice: string; proof: string[]; grace?: boolean; note?: string; offFocus?: string[]; nearMiss?: Record<string, string> };
 
 export const POINTS = { readLine: 100, confrontProof: 500, confrontAction: 100, lieFull: 600, lieLine: 300, callLine: 200, callSupports: 200, speedMax: 100 };
 export const POUCH_MAX = 3;
@@ -77,8 +78,9 @@ function scoreInput(world: WorldPack, passages: SourcePassage[], scene: Scene, i
     const lines = [...new Map(input.pouch.slice(0, POUCH_MAX).map((q) => sceneEvidence(world, passages, scene, q)).filter(Boolean).map((l) => [l!.text, l!])).values()];
     const answers = lines.filter((l) => content.read.answers.some((a) => same(a, l.text)));
     const offFocus = lines.filter((l) => !answers.includes(l)).map((l) => l.text);
+    const nearMiss = Object.fromEntries(offFocus.flatMap((t) => { const n = content.read.near_misses?.find((m) => same(m.line, t)); return n ? [[t, n.hint]] : []; }));
     const tapped = Math.min(POUCH_MAX, input.pouch.length);
-    return { kind: "read", base: half(answers.length * POINTS.readLine), speed: 0, valid: answers.length > 0, coinsEarned: answers.length, detail: `${answers.length} of ${tapped} line${tapped === 1 ? "" : "s"} answer the question`, choice: "", proof: lines.map((l) => l.text), offFocus, ...(offFocus.length ? { note: OFF_FOCUS_NOTE } : {}) };
+    return { kind: "read", base: half(answers.length * POINTS.readLine), speed: 0, valid: answers.length > 0, coinsEarned: answers.length, detail: `${answers.length} of ${tapped} line${tapped === 1 ? "" : "s"} answer the question`, choice: "", proof: lines.map((l) => l.text), offFocus, ...(Object.keys(nearMiss).length ? { nearMiss } : {}), ...(offFocus.length ? { note: OFF_FOCUS_NOTE } : {}) };
   }
   if (input.kind === "confront") {
     const action = content.confront.actions.find((a) => a.id === input.actionId);
@@ -212,7 +214,7 @@ export function storyModeProblems(world: WorldPack, passages: SourcePassage[]): 
     const c = scene.story_mode;
     if (!c) continue;
     const where = `${world.id}/${scene.id} story_mode`;
-    const texts = [c.intro, c.read.prompt, c.read.focus, c.confront.line, ...c.confront.actions.flatMap((a) => [a.label, a.reaction]), c.call.question, ...c.call.theories.flatMap((t) => [t.name, t.description])];
+    const texts = [c.intro, c.read.prompt, c.read.focus, ...(c.read.near_misses ?? []).map((n) => n.hint), c.confront.line, ...c.confront.actions.flatMap((a) => [a.label, a.reaction]), c.call.question, ...c.call.theories.flatMap((t) => [t.name, t.description])];
     if (texts.some((t) => dash.test(t))) problems.push(`${where}: no em dashes in player-facing text`);
     if (!scene.lie) problems.push(`${where}: round 3 needs the scene's Spot the Lie testimony`);
     for (const pid of c.read.chunks) {
@@ -229,6 +231,14 @@ export function storyModeProblems(world: WorldPack, passages: SourcePassage[]): 
       else answerTexts.add(l.text);
     }
     if (answerTexts.size < POUCH_MAX) problems.push(`${where}: the focus question needs at least ${POUCH_MAX} different answer lines`);
+    // Near misses: exact lines from the reading that are not answers, each with a hint naming a paragraph.
+    for (const n of c.read.near_misses ?? []) {
+      const l = sceneEvidence(world, passages, scene, n.line);
+      if (!l || l.text !== n.line) problems.push(`${where}: near miss "${n.line.replace(/\s+/g, " ").slice(0, 60)}" is not copied exactly from one of this scene's evidence lines`);
+      else if (!c.read.chunks.includes(l.pid)) problems.push(`${where}: near miss from ${l.pid} is not in the reading`);
+      else if (answerTexts.has(l.text)) problems.push(`${where}: a near miss is also an answer`);
+      if (!/¶\d+/.test(n.hint)) problems.push(`${where}: a near miss hint names a paragraph (¶)`);
+    }
     const who = c.confront.character_id;
     if (!scene.available_characters.includes(who) || !world.characters.some((x) => x.id === who)) problems.push(`${where}: ${who} must be a speaking character in this scene`);
     if (!/\byou\b/i.test(c.confront.line)) problems.push(`${where}: the confrontation speaks to the student ("you")`);
