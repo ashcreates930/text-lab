@@ -18,7 +18,10 @@ export async function storyIdentity(request: NextRequest, sandboxId: unknown): P
     const cls = await ctx.store.getClassById(ctx.student.session_id);
     if (!cls) return { error: "Your class is no longer available.", status: 404 };
     const times = await ctx.store.getStudentTimes(cls.id).catch(() => ({} as Record<string, TimeSetting>));
-    return { scope: "class", classId: cls.id, worldId: cls.world_id, studentId: ctx.student.id, nickname: ctx.student.nickname, timeSetting: times[ctx.student.id] ?? "1", leaderboard: storySettings(cls).leaderboard };
+    // seat: the student's place in the class roster, so neighbors get different questions.
+    const roster = await ctx.store.listStudents(cls.id).catch(() => []);
+    const seat = roster.findIndex((x) => x.id === ctx.student.id);
+    return { scope: "class", classId: cls.id, worldId: cls.world_id, studentId: ctx.student.id, nickname: ctx.student.nickname, timeSetting: times[ctx.student.id] ?? "1", leaderboard: storySettings(cls).leaderboard, seat: seat >= 0 ? seat : null };
   }
   if (typeof sandboxId !== "string" || !UUID.test(sandboxId)) return { error: "Start the demo again.", status: 400 };
   // Public demo visitors need no access code, like the rest of the demo. Their runs are capped per sandbox and day

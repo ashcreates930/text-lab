@@ -10,7 +10,8 @@
 //   the Prove it step is still required, for 0 points ("shown answer").
 // - Exact words: lines over 25 words need the authored phrase marked, with 2 words of tolerance at each edge.
 // - Prove it: pick from 4 authored choices, or finish "This proves ___ because ___" (saved for the teacher, never scored).
-// - Speed flags, for the teacher only: a line locked in within 4 seconds of opening the passage, or more than 4 swaps.
+// - Speed flags, for the teacher only: a line tapped within 4 seconds of opening the passage, or more than 4 swaps
+//   before locking in.
 import type { WorldPack } from "./world-schema.ts";
 import type { SourcePassage } from "./source-passages.ts";
 import { evidenceSentences, lineWords } from "./lies.ts";
@@ -112,7 +113,7 @@ export function clueBank(world: WorldPack, passages: SourcePassage[], clue: Clue
   const lines = passages.filter((p) => clue.source_anchor.includes(p.id)).flatMap((p) => evidenceSentences(p.text));
   return [{ id: "notice", ladder: "locate", question: prompt, answers: lines.map((line) => ({ line })), near_misses: [], prove: null }];
 }
-export const answerFor = (q: BankQuestion, line: string) => q.answers.find((a) => same(a.line, line));
+export const answerFor = (q: { answers: BankAnswer[] }, line: string) => q.answers.find((a) => same(a.line, line));
 export const nearMissFor = (q: { near_misses?: { line: string; hint: string }[] }, line: string) => q.near_misses?.find((n) => same(n.line, line));
 // The paragraph of an answer line, from the clue's panel or the whole story.
 export function pidOf(passages: SourcePassage[], line: string) {
@@ -133,12 +134,12 @@ export function levelFor(total: number, max: number) {
 export const levelPoints = (max: number) => LEVELS.map((l) => ({ ...l, points: Math.ceil((l.pct / 100) * max) }));
 
 // ---------- Speed flags (teacher only) ----------
-export const FAST_LOCK_MS = 4000, MAX_SWAPS = 4;
+export const FAST_TAP_MS = 4000, MAX_SWAPS = 4;
 export type SpeedFlag = "fast" | "swaps";
-export function speedFlags(firstLockMs: number | null | undefined, swaps: number | null | undefined): SpeedFlag[] {
-  return [...(typeof firstLockMs === "number" && firstLockMs >= 0 && firstLockMs < FAST_LOCK_MS ? ["fast" as const] : []), ...((swaps ?? 0) > MAX_SWAPS ? ["swaps" as const] : [])];
+export function speedFlags(firstTapMs: number | null | undefined, swaps: number | null | undefined): SpeedFlag[] {
+  return [...(typeof firstTapMs === "number" && firstTapMs >= 0 && firstTapMs < FAST_TAP_MS ? ["fast" as const] : []), ...((swaps ?? 0) > MAX_SWAPS ? ["swaps" as const] : [])];
 }
-export const SPEED_FLAG_TEXT: Record<SpeedFlag, string> = { fast: "Locked in within 4 seconds of opening the passage", swaps: "More than 4 swaps before locking in" };
+export const SPEED_FLAG_TEXT: Record<SpeedFlag, string> = { fast: "Tapped a line within 4 seconds of opening the passage", swaps: "More than 4 swaps before locking in" };
 
 // ---------- Paraphrase check (by word root) ----------
 // Common words and story names never count as a shared key word.

@@ -10,7 +10,8 @@ export type StoryRun = {
   worldId: string; sceneId: string; day: string; state: RunState; total: number; bestTotal: number; bestStreak: number; finished: boolean;
   timeSetting: TimeSetting; createdAt: string; updatedAt: string;
 };
-export type StoryRound = RoundRecord & { id: string; runId: string; explanation: string; grace: boolean; elapsedMs: number; createdAt: string };
+// A stored round score. Tries, shown answers and speed flags are kept in the run's saved state, not in this row.
+export type StoryRound = Omit<RoundRecord, "tries" | "wrong" | "shown" | "qid" | "explanation"> & Partial<Pick<RoundRecord, "tries" | "wrong" | "shown" | "qid">> & { id: string; runId: string; explanation: string; grace: boolean; elapsedMs: number; createdAt: string };
 export type RunKey = { scope: "class" | "demo"; classId: string | null; studentId: string | null; playerKey: string; worldId: string; sceneId: string; day: string };
 export type RunFilter = { scope: "class" | "demo"; classId?: string | null; worldId: string; sceneId: string; day?: string };
 

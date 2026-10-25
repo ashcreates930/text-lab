@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getStoryStore } from "@/lib/story-store";
-import { publicRun, startRun } from "@/lib/story-server";
+import { publicRun, resumeRound, startRun } from "@/lib/story-server";
 import { ROUNDS, type RoundKind } from "@/lib/story-mode";
 import { isIdentityError, loadStory, storyIdentity } from "@/lib/story-api";
 import { DEMO_ACCESS_COOKIE, DEMO_ACCESS_MAX_AGE, createDemoAccessToken, demoAccessConfigured, verifyDemoAccessToken } from "@/lib/demo-access";
@@ -27,7 +27,8 @@ export async function POST(request: NextRequest) {
   try { run = await startRun(store, story.world, story.scene, who, body.restart === true, startAt); }
   catch (e) { return unavailable(e); }
   if (typeof run === "string") return NextResponse.json({ error: run }, { status: 429 });
-  const response = NextResponse.json({ run: publicRun(run), leaderboard: who.scope === "class" ? who.leaderboard : "individual" });
+  // resume: the round in progress (its try number and step), so a reload picks up where the student was.
+  const response = NextResponse.json({ run: publicRun(run), resume: resumeRound(story.scene, run), leaderboard: who.scope === "class" ? who.leaderboard : "individual" });
   // A demo visitor without the device cookie gets one here, as /api/access does, so the usage caps keep counting them.
   if (who.scope === "demo" && demoAccessConfigured() && !(await verifyDemoAccessToken(request.cookies.get(DEMO_ACCESS_COOKIE)?.value)))
     response.cookies.set(DEMO_ACCESS_COOKIE, await createDemoAccessToken(), { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: DEMO_ACCESS_MAX_AGE });

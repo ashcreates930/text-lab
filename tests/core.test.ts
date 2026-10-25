@@ -1692,213 +1692,248 @@ async function storyKit(){
 }
 const onTime={elapsedMs:5000,grace:false};
 
-test("story mode content: authored, validated, anchored in scene 1's evidence lines", async()=>{
-  const {world,passages,sm,scene,c,ev}=await storyKit();
+test("story mode content: four banks, validated, anchored in scene 1's evidence lines", async()=>{
+  const {world,passages,sm,scene,c}=await storyKit();
   assert.deepEqual(sm.storyModeProblems(world,passages),[]);
-  assert.equal(c.confront.character_id,"brom-bones","Brom Bones is available in scene 1");
-  assert.match(c.confront.line,/\byou\b/i);
-  for(const a of c.confront.actions)for(const s of a.supports)assert.ok(sm.sceneEvidence(world,passages,scene,s),`${a.id} support is an evidence line`);
-  for(const t of c.call.theories)assert.ok(t.supports.length>=2&&t.supports.every(s=>sm.sceneEvidence(world,passages,scene,s)));
-  assert.deepEqual(c.call.theories.map(t=>t.id),world.verdict!.theories.map(t=>t.id),"same theories as the Final Verdict");
-  const all=JSON.stringify(c);assert.ok(!all.includes("—"),"no em dashes");
-  // A support line that isn't evidence, or a missing confrontation "you", is caught.
-  const bad=structuredClone(world);bad.scenes[0].story_mode!.confront.actions[0].supports=["He flew to the moon."];bad.scenes[0].story_mode!.confront.line="He was there.";
-  const p=sm.storyModeProblems(bad,passages).join(" | ");assert.match(p,/not one of this scene's evidence lines/);assert.match(p,/speaks to the student/);
-  void ev;
+  assert.deepEqual([c.read.bank.length,c.infer.bank.length,sm.sceneLies(scene).length,c.call.bank.length],[3,3,3,3],"3 questions per round");
+  assert.equal(c.infer.character_id,"brom-bones","Brom Bones asks in round 2");
+  assert.deepEqual(c.call.bank[0].theories.map(t=>t.id),world.verdict!.theories.map(t=>t.id),"the first case question uses the Final Verdict's theories");
+  assert.ok(!JSON.stringify(c).includes("—"),"no em dashes");
+  // validate:worlds catches an answer that isn't exact and a question that gives its answer away.
+  const bad=structuredClone(world);const b=bad.scenes[0].story_mode!;
+  b.infer.bank[0].answers[0].line=b.infer.bank[0].answers[0].line.replace("pumpkin","squash");
+  b.read.bank[0].focus="Tap 3 lines about the bundle he left";
+  const p=sm.storyModeProblems(bad,passages).join(" | ");
+  assert.match(p,/not copied exactly/);assert.match(p,/shares key words with its answers \(bundl/);
 });
 
-test("story mode scoring: rounds pay for proof, and speed is small and only on valid proof", async()=>{
-  const {world,passages,sm,scene,c,line}=await storyKit();
-  const score=(input:Parameters<typeof sm.scoreRound>[3],t=onTime,set:import("../lib/story-mode.ts").TimeSetting="1",pouch:string[]=[])=>sm.scoreRound(world,passages,scene,input,t,set,pouch);
-  // Round 1: 100 per line that answers the focus question, at most 3, duplicates once.
-  const r1=score({kind:"read",pouch:[line("p068",5),line("p068",5),"Not in the story at all.",line("p070",2),line("p069",0)]});
-  assert.equal(r1.base,100,"only the first 3 count: the same answer line twice (once) and one made up");assert.equal(r1.coinsEarned,1);
-  assert.equal(score({kind:"read",pouch:[line("p068",5),line("p069",1),line("p069",2)]}).base,300);
-  // Round 2: 500 for proof that backs the move, 100 for the move alone, speed only with valid proof.
-  const hat=c.confront.actions[0];
-  const r2=score({kind:"confront",actionId:hat.id,proof:hat.supports[0]},{elapsedMs:0,grace:false});
-  assert.equal(r2.base,500);assert.equal(r2.speed,100);assert.equal(r2.valid,true);
-  const wrong=score({kind:"confront",actionId:hat.id,proof:line("p070",2)});assert.deepEqual([wrong.base,wrong.speed,wrong.valid],[100,0,false],"a real line that doesn't back this move");
-  assert.equal(score({kind:"confront",actionId:hat.id,proof:""}).base,100);
-  // Round 3: 600 with a sound explanation, 300 for the line alone, nothing for a wrong line.
-  const truth=line("p069",2);
-  assert.equal(score({kind:"lie",line:truth,explanation:"Hans said the pitch-pipe was brand-new, but the story says it was broken."}).base,600);
-  assert.equal(score({kind:"lie",line:truth,explanation:"Because."}).base,300);
-  const miss=score({kind:"lie",line:line("p069",0),explanation:"Hans lied about the pitch-pipe being new."},{elapsedMs:0,grace:false});assert.deepEqual([miss.base,miss.speed],[0,0]);
-  // Round 4: 200 per valid pinned pouch line, plus 200 when both support the theory.
-  const pouch=[line("p068",5),line("p069",0),line("p070",2)];
-  assert.equal(score({kind:"call",theoryId:"brom-prank",pins:[line("p068",5),line("p069",0)]},onTime,"1",pouch).base,600);
-  assert.equal(score({kind:"call",theoryId:"ran-away",pins:[line("p068",5),line("p070",2)]},onTime,"1",pouch).base,400,"valid lines that don't support the theory");
-  assert.equal(score({kind:"call",theoryId:"brom-prank",pins:[line("p068",5),line("p069",5)]},onTime,"1",pouch).base,200,"pins must come from the pouch");
-  // Reading carefully always pays more than answering fast.
-  assert.ok(sm.POINTS.speedMax<sm.POINTS.readLine*1.01&&sm.POINTS.speedMax<sm.POINTS.confrontProof-sm.POINTS.confrontAction);
+test("fair play rules: word roots, exact words, hints, question picks, goal levels and speed flags", async()=>{
+  const fp=await import("../lib/fair-play.ts");const {passages,line,world}=await storyKit();
+  // Word roots: "belongings" and "belonged" are the same word; names never count.
+  assert.equal(fp.wordRoot("belongings"),fp.wordRoot("belonged"));
+  const names=fp.nameWords(world);
+  assert.deepEqual(fp.sharedRoots("Which belongings did he leave?",[line("p069",3)],names),[fp.wordRoot("belonged")]);
+  assert.deepEqual(fp.sharedRoots("What did Ichabod own?",[line("p069",2)],names),[],"a name in both is fine");
+  assert.deepEqual(fp.sharedRoots("What was found on the stream bank?",[line("p068",5)],names,["found","bank"]),[],"reviewed exceptions");
+  // Exact words: Irving's "--" stands alone; 2 words of tolerance at each edge, not 3.
+  const l=line("p067",9),r=fp.phraseRange(l,"he was tumbled headlong into the dust")!;
+  assert.ok(r);assert.equal(fp.lineTokens(l).slice(r[0],r[1]+1).join(" "),"he was tumbled headlong into the dust,");
+  assert.equal(fp.phraseMatches(l,"he was tumbled headlong into the dust",[r[0]-2,r[1]+2]),true);
+  assert.equal(fp.phraseMatches(l,"he was tumbled headlong into the dust",[r[0]+3,r[1]]),false);
+  assert.equal(fp.needsPhrase(line("p068",5)),true);assert.equal(fp.needsPhrase(line("p069",1)),false);
+  // Tries: full, half, none; wrong lines cost 25, never below 0.
+  assert.deepEqual([1,2,3,4].map(fp.tryFactor),[1,0.5,0,0]);
+  assert.equal(fp.afterWrongLines(100,2),50);assert.equal(fp.afterWrongLines(40,3),0);
+  // Hints: try 2 names the paragraph; try 3 names the part of it. The line itself never appears.
+  const target={pid:"p069",line:line("p069",5)};
+  assert.equal(fp.missHint(2,target,passages),"Not that one. Look again in ¶69.");
+  assert.equal(fp.missHint(3,target,passages),"Look in the last part of ¶69.");
+  assert.equal(fp.missHint(2,target,passages,"Whose saddle was it? Check ¶66."),"Whose saddle was it? Check ¶66.");
+  // Picks: a replay gets an unseen question; neighbors in the roster get different ones; a squad chunk is respected.
+  const bank=[{id:"a",pids:["p1"]},{id:"b",pids:["p2"]},{id:"c",pids:["p3"]}];
+  assert.equal(fp.pickQuestion(bank,{seed:"x",seen:["a","b"]}).id,"c");
+  assert.notEqual(fp.pickQuestion(bank,{seed:"x",seat:0}).id,fp.pickQuestion(bank,{seed:"x",seat:1}).id);
+  assert.equal(fp.pickQuestion(bank,{seed:"x",chunk:["p2"],answerPids:q=>q.pids}).id,"b");
+  // Goal levels at 40%, 70% and 90%.
+  assert.deepEqual([399,400,700,900,1000].map(t=>fp.levelFor(t,1000)?.id??null),[null,"opened","built","cracked","cracked"]);
+  // Speed flags (teacher only): a tap within 4 seconds, more than 4 swaps.
+  assert.deepEqual(fp.speedFlags(3000,5),["fast","swaps"]);assert.deepEqual(fp.speedFlags(9000,4),[]);
+  // Prove it: a stable shuffle with all four; a typed proof needs both blanks.
+  const p={right:"R",wrong:["W1","W2","W3"]};
+  assert.deepEqual(fp.proveChoices(p,"s").slice().sort(),["R","W1","W2","W3"]);assert.deepEqual(fp.proveChoices(p,"s"),fp.proveChoices(p,"s"));
+  assert.equal(fp.typedProof("he left","his pay was gone"),"This proves he left because his pay was gone");assert.equal(fp.typedProof("x",""),"");
 });
 
-test("story mode timeouts: proof in the grace period earns half and no speed bonus", async()=>{
-  const {world,passages,sm,scene,c,line}=await storyKit();
-  const grace={elapsedMs:65000,grace:true};
-  const hat=c.confront.actions[0];
-  const r=sm.scoreRound(world,passages,scene,{kind:"confront",actionId:hat.id,proof:hat.supports[0]},grace,"1");
-  assert.deepEqual([r.base,r.speed,r.valid],[250,0,true]);
-  assert.equal(sm.scoreRound(world,passages,scene,{kind:"read",pouch:[line("p068",5)]},grace,"1").base,50);
-  assert.equal(sm.GRACE_SECONDS,20);
+const PICKS={read:"left-behind",confront:"person",lie:"lie",call:"what-happened"} as const;
+test("story mode round 1, locate: lines lock as they're found, Not yet in between, the rest shown after three misses", async()=>{
+  const {world,passages,sm,scene,line}=await storyKit();
+  const go=(a:import("../lib/story-mode.ts").Attempt,pouch:string[],extra={})=>sm.attemptRound(world,passages,scene,PICKS,a,{kind:"read",pouch,...extra},{seed:"t"});
+  // All three on the first try: 300.
+  const full=go(sm.newAttempt(),[line("p068",5),line("p069",1),line("p069",2)]);
+  assert.ok(full.status==="done");if(full.status==="done")assert.deepEqual([full.score.base,full.score.valid,full.score.tries],[300,true,0]);
+  // Two right and a saddle line: Not yet, try 2, with the saddle hint; the two right lines stay locked.
+  const t1=go(sm.newAttempt(),[line("p068",5),line("p069",1),line("p068",0)]);
+  assert.ok(t1.status==="notYet");if(t1.status!=="notYet")return;
+  assert.equal(t1.tryNo,2);assert.match(t1.hint,/Whose saddle was it\? Check ¶66\./);assert.match(t1.hint,/One more line to find/);
+  assert.equal(t1.attempt.locked.length,2);
+  // The third line on try 2: 100 + 100 + 50, minus 25 for the wrong line.
+  const t2=go(t1.attempt,[line("p068",5),line("p069",1),line("p069",3)]);
+  assert.ok(t2.status==="done");if(t2.status==="done")assert.deepEqual([t2.score.base,t2.score.valid,t2.score.wrong],[225,true,1]);
+  // Three misses: the rest are shown, the round isn't valid, and the pouch still gets the answer lines.
+  let a=sm.newAttempt();for(let i=0;i<2;i++){const r=go(a,[line("p070",0)]);assert.ok(r.status==="notYet");if(r.status==="notYet")a=r.attempt}
+  const last=go(a,[line("p070",0)]);
+  assert.ok(last.status==="done");if(last.status==="done"){assert.deepEqual([last.score.base,last.score.valid,last.score.shown],[0,false,true]);assert.equal(last.shown!.length,3);assert.equal(last.score.proof.length,3)}
+  // Speed flags ride along for the teacher: a tap 2 seconds in, 6 swaps.
+  const flagged=go(sm.newAttempt(),[line("p068",5),line("p069",1),line("p069",2)],{firstTapMs:2000,swaps:6});
+  if(flagged.status==="done")assert.deepEqual(flagged.score.flags,["fast","swaps"]);
 });
 
-test("story mode streaks, coins and power-ups", async()=>{
+test("story mode round 2, infer: the line, its exact words, then Prove it; Brom's trust falls on each miss", async()=>{
+  const {world,passages,sm,scene,line}=await storyKit();const fp=await import("../lib/fair-play.ts");
+  const q=sm.inferQ(scene,PICKS),answer=q.answers[0];
+  const go=(a:import("../lib/story-mode.ts").Attempt,input:Omit<Extract<import("../lib/story-mode.ts").RoundInput,{kind:"confront"}>,"kind">)=>sm.attemptRound(world,passages,scene,PICKS,a,{kind:"confront",...input},{seed:"t"});
+  // A wrong line: Not yet, trust down.
+  const m1=go(sm.newAttempt(),{line:line("p070",2)});
+  assert.ok(m1.status==="notYet");if(m1.status!=="notYet")return;
+  assert.equal(m1.attempt.trust,-1);assert.match(m1.hint,/That's what the town believed/);
+  // The right line (over 25 words): mark the words next.
+  const s1=go(m1.attempt,{line:answer.line});assert.ok(s1.status==="next"&&s1.step==="phrase");if(s1.status!=="next")return;
+  const range=fp.phraseRange(answer.line,answer.phrase!)!;
+  const m2=go(s1.attempt,{line:answer.line,marked:[0,5]});assert.ok(m2.status==="notYet");if(m2.status!=="notYet")return;assert.match(m2.hint,/mark only the words/);
+  const s2=go(m2.attempt,{line:answer.line,marked:range});assert.ok(s2.status==="next"&&s2.step==="prove"&&s2.choices!.length===4);if(s2.status!=="next")return;
+  // A wrong choice is a miss: that's three, so the answer is shown and Prove it still comes.
+  const shown=go(s2.attempt,{line:answer.line,prove:{choice:q.prove.wrong[0]}});
+  assert.ok(shown.status==="next"&&shown.step==="prove"&&shown.shown?.length===1);if(shown.status!=="next")return;
+  const done=go(shown.attempt,{line:answer.line,prove:{choice:q.prove.right}});
+  assert.ok(done.status==="done");if(done.status==="done")assert.deepEqual([done.score.base,done.score.valid,done.score.shown],[0,false,true]);
+  // First try, right words, right choice: 400. A typed proof is accepted and saved, never scored as text.
+  const a=go(sm.newAttempt(),{line:answer.line});if(a.status!=="next")return assert.fail("phrase step");
+  const b=go(a.attempt,{line:answer.line,marked:range});if(b.status!=="next")return assert.fail("prove step");
+  const c1=go(b.attempt,{line:answer.line,prove:{choice:q.prove.right}});assert.ok(c1.status==="done"&&c1.score.base===400&&c1.score.valid);
+  const c2=go(b.attempt,{line:answer.line,prove:{proves:"someone was there",because:"a ghost wouldn't leave a pumpkin"}});
+  assert.ok(c2.status==="done"&&c2.score.typed==="This proves someone was there because a ghost wouldn't leave a pumpkin");
+});
+
+test("story mode rounds 3 and 4: the lie's line then why; a case needs two supporting lines", async()=>{
+  const {world,passages,sm,scene,line}=await storyKit();
+  const lie=(a:import("../lib/story-mode.ts").Attempt,l:string,explanation?:string)=>sm.attemptRound(world,passages,scene,PICKS,a,{kind:"lie",line:l,explanation},{seed:"t"});
+  const hit=lie(sm.newAttempt(),scene.lie!.truth_line);assert.ok(hit.status==="next"&&hit.step==="explain");if(hit.status!=="next")return;
+  const sound=lie(hit.attempt,scene.lie!.truth_line,"Hans said the pitch-pipe was brand-new, but the story says it was broken.");
+  assert.ok(sound.status==="done"&&sound.score.base===600);
+  assert.ok(lie(hit.attempt,scene.lie!.truth_line,"").status==="invalid","say why first");
+  const miss=lie(sm.newAttempt(),line("p069",0));assert.ok(miss.status==="notYet"&&/Look again in ¶69/.test(miss.hint));
+  const call=(a:import("../lib/story-mode.ts").Attempt,theoryId:string,pins:string[],extra={})=>sm.attemptRound(world,passages,scene,PICKS,a,{kind:"call",theoryId,pins,...extra},{seed:"t"});
+  const th=sm.callQ(scene,PICKS).theories[0];
+  const right=call(sm.newAttempt(),th.id,th.supports.slice(0,2));assert.ok(right.status==="done"&&right.score.base===600&&right.score.choice===`what-happened|${th.id}`);
+  const wrong=call(sm.newAttempt(),th.id,[line("p068",1),line("p068",2)]);assert.ok(wrong.status==="notYet");
+  // A try whose time ran out with nothing locked in is a miss, not an error.
+  assert.equal(call(sm.newAttempt(),"",[],{timeout:true}).status,"notYet");
+  assert.equal(call(sm.newAttempt(),"",[]).status,"invalid");
+});
+
+test("story mode points: streaks, Double down (doubled, or the bet comes off), coins, and the points possible", async()=>{
   const {sm}=await storyKit();
-  const ok=(base:number,coins=1,speed=0)=>({kind:"read" as const,base,speed,valid:true,coinsEarned:coins,detail:"",choice:"",proof:[]});
-  const bad={kind:"read" as const,base:100,speed:0,valid:false,coinsEarned:0,detail:"",choice:"",proof:[]};
+  const score=(base:number,valid=true,kind:import("../lib/story-mode.ts").RoundKind="read")=>({kind,base,speed:0,valid,coinsEarned:valid?1:0,detail:"",choice:"",proof:[],tries:0,wrong:0,shown:!valid,qid:"q"});
   let s=sm.newRun();
-  s=sm.applyRound(s,ok(100));assert.deepEqual([s.rounds[0].multiplier,s.total,s.streak],[1,100,1]);
-  s=sm.applyRound(s,ok(100));assert.deepEqual([s.rounds[1].multiplier,s.total],[1.2,220]);
-  s=sm.applyRound(s,ok(100));assert.equal(s.rounds[2].multiplier,1.5);
-  s=sm.applyRound(s,ok(100));assert.equal(s.rounds[3].multiplier,1.5,"capped at x1.5");
-  assert.equal(s.bestStreak,4);assert.equal(s.coins,4);
-  s=sm.applyRound(s,bad);assert.deepEqual([s.streak,s.rounds[4].multiplier,s.bestStreak],[0,1,4],"an invalid round resets the streak");
+  s=sm.applyRound(s,score(100));assert.deepEqual([s.rounds[0].multiplier,s.total,s.streak],[1,100,1]);
+  s=sm.applyRound(s,score(100));assert.deepEqual([s.rounds[1].multiplier,s.total],[1.2,220]);
+  s=sm.applyRound(s,score(100));assert.equal(s.rounds[2].multiplier,1.5);
+  s=sm.applyRound(s,score(100,false));assert.deepEqual([s.streak,s.rounds[3].multiplier,s.bestStreak],[0,1,3],"an invalid round resets the streak");
   // Power-ups cost coins and last one round.
   let r=sm.newRun();r={...r,coins:3};
   assert.equal(sm.buy({...r,coins:1},"lantern"),"You need 2 coins for Lantern.");
   const lit=sm.buy(r,"lantern") as typeof r;assert.deepEqual([lit.coins,lit.lantern],[1,true]);
-  const after=sm.applyRound(lit,ok(100,0));assert.equal(after.lantern,false,"the Lantern lights one round");
-  assert.equal((sm.buy({...r,coins:1},"second-look") as typeof r).coins,0);
-  const dd=sm.buy(r,"double-down") as typeof r;assert.deepEqual([dd.coins,dd.doubleDown],[0,true]);
-  const won=sm.applyRound(dd,ok(500,1,80));assert.deepEqual([won.rounds[0].points,won.rounds[0].doubled],[1160,true],"(500+80) doubled");
-  const lost=sm.applyRound(dd,{...bad,speed:40});assert.deepEqual([lost.rounds[0].points,lost.rounds[0].speed,lost.doubleDown],[100,0,false],"no proof: no doubling, speed lost");
-  // The trust meter and the pouch are saved on the run.
-  const t=sm.applyRound(sm.newRun(),ok(500),{trust:{characterId:"brom-bones",delta:-1},pouch:["a","b","a","c","d"]});
+  assert.equal(sm.applyRound(lit,score(100)).lantern,false,"the Lantern lights one round");
+  assert.match(sm.POWER_UPS.lantern.what,/Names the paragraph/);assert.match(sm.POWER_UPS["double-down"].what,/you lose the points you bet/);
+  // Double down: valid doubles; invalid takes the round's most off the total (never below 0).
+  const dd={...(sm.buy(r,"double-down") as typeof r),total:900};
+  const won=sm.applyRound(dd,score(400,true,"confront"));assert.deepEqual([won.rounds[0].points,won.rounds[0].doubled,won.total],[800,true,1700]);
+  const lost=sm.applyRound(dd,score(0,false,"lie"));assert.deepEqual([lost.rounds[0].lost,lost.total],[600,300]);
+  assert.equal(sm.applyRound({...dd,total:100},score(0,false,"lie")).total,0);
+  // The points possible: every round right on the first try, no power-ups.
+  assert.equal(sm.maxPoints(),300+Math.round(400*1.2)+Math.round(600*1.5)+Math.round(600*1.5));
+  assert.equal(sm.maxPoints(2),600+Math.round(600*1.2),"starting at round 3");
+  // Trust and the pouch are saved on the run.
+  const t=sm.applyRound(sm.newRun(),score(500),{trust:{characterId:"brom-bones",delta:-1},pouch:["a","b","a","c","d"]});
   assert.deepEqual(t.trust,{"brom-bones":-1});assert.deepEqual(t.pouch,["a","b","c"]);
+  // Time: the timer stretches; screen readers hear 30, 10 and 5 seconds only.
+  assert.equal(sm.phaseSeconds(60,"1.5"),90);assert.equal(sm.phaseSeconds(60,"untimed"),null);
+  assert.equal(sm.timeAnnouncement(31,30),"30 seconds left");assert.equal(sm.timeAnnouncement(30,29),"");
 });
 
-test("story mode extended time: the timer stretches and the speed bonus is measured against the student's own time", async()=>{
-  const {sm}=await storyKit();
-  assert.equal(sm.phaseSeconds(60,"1"),60);assert.equal(sm.phaseSeconds(60,"1.5"),90);assert.equal(sm.phaseSeconds(60,"2"),120);assert.equal(sm.phaseSeconds(60,"untimed"),null);
-  // Answering at the same share of your own time earns the same bonus.
-  assert.equal(sm.speedBonus(30000,60,"1"),50);assert.equal(sm.speedBonus(60000,60,"2"),50);assert.equal(sm.speedBonus(45000,60,"1.5"),50);
-  assert.equal(sm.speedBonus(120000,60,"untimed"),0);assert.equal(sm.speedBonus(60000,60,"untimed"),50);
-  assert.equal(sm.speedBonus(-5,60,"1"),0);
-  // Screen readers hear the time at 30, 10 and 5 seconds, never every second.
-  assert.equal(sm.timeAnnouncement(31,30),"30 seconds left");assert.equal(sm.timeAnnouncement(30,29),"");assert.equal(sm.timeAnnouncement(11,9),"10 seconds left");assert.equal(sm.timeAnnouncement(6,5),"5 seconds left");
-});
-
-test("story mode leaderboard: students see the top 5 and their own rank, never the full list", async()=>{
+test("story mode leaderboard: students see the top 5 and their own rank; the pulse waits for 5 players", async()=>{
   const {sm}=await storyKit();
   const rows=["Ana R","Ben T","Cy L","Di M","Ed K","Flo P","Gus Q","Hal Z"].map((n,i)=>({id:`s${i}`,name:sm.boardName(n),score:1000-i*100}));
   const me=sm.studentBoard(rows,"s6",9);
-  assert.equal(me.top.length,5);assert.deepEqual(me.top.map(r=>r.name),["Ana R.","Ben T.","Cy L.","Di M.","Ed K."]);
-  assert.deepEqual(me.me,{rank:7,score:400,movement:2},"+2 spots");
+  assert.equal(me.top.length,5);assert.deepEqual(me.me,{rank:7,score:400,movement:2},"+2 spots");
   assert.ok(!JSON.stringify(me).includes("Flo")&&!JSON.stringify(me).includes("Hal"),"no one outside the top 5 but me");
-  assert.equal(sm.studentBoard(rows,"s1").top.find(r=>r.me)?.name,"Ben T.");
-  assert.equal(sm.boardName("  rosa   maria  p "),"rosa P.");assert.equal(sm.boardName("Jo"),"Jo");
-  // Class pulse: percentages and the strongest line on each side, never student writing.
-  const pulse=sm.classPulse([{choice:"a",valid:true,proof:["L1"]},{choice:"a",valid:true,proof:["L1"]},{choice:"a",valid:false,proof:["L2"]},{choice:"b",valid:true,proof:["L3"]}],[{key:"a",label:"A"},{key:"b",label:"B"},{key:"c",label:"C"}]);
-  assert.deepEqual(pulse.map(p=>[p.key,p.pct,p.strongest]),[["a",75,"L1"],["b",25,"L3"],["c",0,""]]);
+  assert.equal(sm.boardName("  rosa   maria  p "),"rosa P.");
+  const opts=[{key:"a",label:"A"},{key:"b",label:"B"}];
+  const four=[{choice:"a",valid:true,proof:["L1"]},{choice:"a",valid:true,proof:["L1"]},{choice:"b",valid:true,proof:["L3"]},{choice:"a",valid:false,proof:["L2"]}];
+  assert.deepEqual(sm.classPulse(four,opts),[],"one player never shows as 100%");
+  const five=[...four,{choice:"b",valid:true,proof:["L3"]}];
+  assert.deepEqual(sm.classPulse(five,opts).map(p=>[p.key,p.pct,p.strongest]),[["a",60,"L1"],["b",40,"L3"]]);
 });
 
-test("story mode server: one run per player, rounds in order, late answers forced to half, boards and pulse", async()=>{
+test("story mode server: questions picked per run, Not yet saves nothing, late first tries score half, boards", async()=>{
   process.env.CLASSROOM_DEV_STORE="memory";
-  const {world,passages,scene,c,line}=await storyKit();
+  const {world,passages,scene,line,sm}=await storyKit();
   const {memoryStoryStore}=await import("../lib/story-store.ts");const srv=await import("../lib/story-server.ts");
   const store=memoryStoryStore({runs:[],rounds:[]});
-  const who=(i:number)=>({scope:"class" as const,classId:"c1",worldId:world.id,studentId:`st${i}`,nickname:["Ana Ruiz","Ben Tate","Cy Lu","Di Moss","Ed Kim","Flo Park","Gus Quinn"][i],timeSetting:"1" as const,leaderboard:"individual" as const});
-  // Two starts at once still make one run.
+  const who=(i:number)=>({scope:"class" as const,classId:"c1",worldId:world.id,studentId:`st${i}`,nickname:["Ana Ruiz","Ben Tate","Cy Lu","Di Moss","Ed Kim","Flo Park","Gus Quinn"][i],timeSetting:"1" as const,leaderboard:"individual" as const,seat:i});
   const [a,b]=await Promise.all([srv.startRun(store,world,scene,who(0)),srv.startRun(store,world,scene,who(0))]);
-  assert.equal((a as {id:string}).id,(b as {id:string}).id);
+  assert.equal((a as {id:string}).id,(b as {id:string}).id,"two starts at once make one run");
   let run=a as import("../lib/story-store.ts").StoryRun;
+  assert.ok(run.state.picks,"questions are picked when the run starts");
+  const neighbor=(await srv.startRun(store,world,scene,who(1))) as import("../lib/story-store.ts").StoryRun;
+  assert.notEqual(neighbor.state.picks!.read,run.state.picks!.read,"the student beside you gets a different question");
   const play=async(body:Parameters<typeof srv.playRound>[5])=>{const r=await srv.playRound(store,world,passages,scene,run,body);if(r.run)run=r.run;return r};
-  assert.deepEqual(await play({round:2,input:{kind:"confront",actionId:"x",proof:""},elapsedMs:0,grace:false,relaxed:false}),{error:"That round is already scored."},"rounds go in order");
-  const r1=await play({round:1,input:{kind:"read",pouch:[line("p068",5),line("p069",1),line("p069",2)]},elapsedMs:30000,grace:false,relaxed:false});
-  assert.equal(r1.record?.points,300);assert.deepEqual(run.state.pouch.length,3);
-  // A proof sent 70 seconds into a 60-second phase counts as late, whatever the client says.
-  const hat=c.confront.actions[0];
-  const r2=await play({round:2,input:{kind:"confront",actionId:hat.id,proof:hat.supports[0]},elapsedMs:70000,grace:false,relaxed:false});
-  assert.ok("record" in r2);if("record" in r2){assert.equal(r2.record!.base,250);assert.equal(r2.record!.speed,0);assert.equal(r2.reaction?.trust,hat.trust)}
-  assert.equal(run.state.trust["brom-bones"],hat.trust);
-  // Relaxed: the same 70 seconds is on time with 2x.
-  const other=(await srv.startRun(store,world,scene,who(1))) as import("../lib/story-store.ts").StoryRun;
-  const s2=await srv.playRound(store,world,passages,scene,other,{round:1,input:{kind:"read",pouch:[line("p068",5)]},elapsedMs:1000,grace:false,relaxed:true});
-  {const s3=await srv.playRound(store,world,passages,scene,s2.run!,{round:2,input:{kind:"confront",actionId:hat.id,proof:hat.supports[0]},elapsedMs:70000,grace:false,relaxed:true});assert.equal(s3.record?.base,500);assert.ok((s3.record?.speed??0)>0)}
-  // Seven students: each sees the top 5 and their own rank; the teacher sees everyone.
-  for(let i=2;i<7;i++){const r=(await srv.startRun(store,world,scene,who(i))) as import("../lib/story-store.ts").StoryRun;await srv.playRound(store,world,passages,scene,r,{round:1,input:{kind:"read",pouch:[line("p068",5),line("p069",0)].slice(0,i%2+1)},elapsedMs:1000,grace:false,relaxed:false})}
+  assert.deepEqual(await play({round:2,input:{kind:"confront",line:""},elapsedMs:0,grace:false,relaxed:false}),{error:"That round is already scored."},"rounds go in order");
+  const q=sm.readQ(scene,run.state.picks);
+  // A miss: Not yet, nothing scored, and the client never sees the answers.
+  const miss=await play({round:1,input:{kind:"read",pouch:[q.answers[0],line("p070",0)]},elapsedMs:30000,grace:false,relaxed:false});
+  assert.ok("notYet" in miss&&miss.notYet&&miss.notYet.tryNo===2);assert.equal(run.state.round,0);
+  assert.ok(!JSON.stringify(srv.publicRun(run)).includes("attempt"),"the round in progress stays on the server");
+  assert.equal(srv.resumeRound(scene,run)!.tryNo,2,"a reload picks up at try 2");
+  const done=await play({round:1,input:{kind:"read",pouch:q.answers.slice(0,3)},elapsedMs:5000,grace:false,relaxed:false});
+  assert.ok("record" in done&&done.record);if(!("record" in done)||!done.record)return;
+  assert.equal(done.record.points,afterWrong(100+50+50,1),"first line on try 1, the other two on try 2, one wrong line");assert.equal(run.state.round,1);
+  // Round 2, first try at 100 seconds of a 90-second round: half points.
+  const iq=sm.inferQ(scene,run.state.picks),ans=iq.answers[0];
+  const fp=await import("../lib/fair-play.ts");
+  const s1=await play({round:2,input:{kind:"confront",line:ans.line},elapsedMs:100000,grace:false,relaxed:false});
+  if(fp.needsPhrase(ans.line))await play({round:2,input:{kind:"confront",line:ans.line,marked:fp.phraseRange(ans.line,ans.phrase!)!},elapsedMs:0,grace:false,relaxed:false});
+  void s1;
+  const r2=await play({round:2,input:{kind:"confront",line:ans.line,prove:{choice:iq.prove.right}},elapsedMs:0,grace:false,relaxed:false});
+  assert.ok("record" in r2&&r2.record);if("record" in r2&&r2.record){assert.equal(r2.record.base,200,"late first try: half of 400");assert.equal(r2.reaction?.trust,1)}
+  assert.equal(run.state.trust["brom-bones"],1);
+  // Seven students: each sees the top 5 and their own rank; the teacher sees everyone, with tries and shown answers.
+  for(let i=2;i<7;i++){const r=(await srv.startRun(store,world,scene,who(i))) as import("../lib/story-store.ts").StoryRun;const rq=sm.readQ(scene,r.state.picks);await srv.playRound(store,world,passages,scene,r,{round:1,input:{kind:"read",pouch:rq.answers.slice(0,3)},elapsedMs:1000,grace:false,relaxed:false})}
   const board=await srv.boardFor(store,run,"individual",null);
-  assert.equal(board!.top.length,5);assert.equal(board!.players,7);assert.ok(board!.me);
-  assert.ok(board!.top.every(r=>/^[A-Z][a-z]+ [A-Z]\.$/.test(r.name)),"first name and last initial");
-  assert.equal(await srv.boardFor(store,run,"off",null),null);
-  const squads=new Map([["st0","Squad Lantern"],["st1","Squad Lantern"],["st2","Squad Quill"]]);
-  const sq=await srv.boardFor(store,run,"squad",null,squads);assert.equal(sq!.kind,"squad");assert.deepEqual(sq!.top.map(t=>t.name).sort(),["Squad Lantern","Squad Quill"]);
-  const teacher=await srv.teacherBoard(store,"c1",world,scene);assert.equal(teacher.length,7);assert.equal(teacher[0].rank,1);assert.ok(teacher.find(t=>t.nickname==="Ana Ruiz")!.rounds.length===2);
-  const pulse=await srv.pulseFor(store,run,scene,2);assert.equal(pulse.find(p=>p.key===hat.id)!.pct,100);assert.ok(pulse.find(p=>p.key===hat.id)!.strongest.includes("pumpkin"));
-  // Starting over keeps the best score and clears the rounds.
+  assert.equal(board!.top.length,5);assert.equal(board!.players,7);
+  const teacher=await srv.teacherBoard(store,"c1",world,scene);const ana=teacher.find(t=>t.nickname==="Ana Ruiz")!;
+  assert.equal(ana.rounds[0].tries,1);assert.equal(ana.max,sm.maxPoints());
+  const pulse=await srv.pulseFor(store,run,scene,1) as {pulse:unknown[];answered:number};assert.equal(pulse.answered,6);assert.equal(pulse.pulse.length,2);
+  // Playing again keeps the best score and gives questions not seen yet.
   const again=(await srv.startRun(store,world,scene,who(0),true)) as import("../lib/story-store.ts").StoryRun;
-  assert.equal(again.state.round,0);assert.equal(again.bestTotal,run.bestTotal);
+  assert.equal(again.state.round,0);assert.equal(again.bestTotal,run.bestTotal);assert.notEqual(again.state.picks!.read,run.state.picks!.read);
 });
+const afterWrong=(p:number,w:number)=>Math.max(0,p-25*w);
 
-test("story mode live: shared rounds, each player scored with the solo rules, top 5 on the board, answers never on phones", async()=>{
+test("story mode live: shared questions, retries until the timer, the answer revealed on the board", async()=>{
   process.env.CLASSROOM_DEV_STORE="memory";
-  const {line,c,scene}=await storyKit();
-  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");
+  const {line,scene,sm}=await storyKit();
+  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");const ls=await import("../lib/live/story.ts");
   const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
   const s=await store.createSession({code:"STORY1",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
   const ids:string[]=[];
-  for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven","Agent Quill","Constable Ember","Detective Comet","Agent Flint"]){const r=await server.join(store,s,{nickname:n,studentId:null});ids.push(r.player!.id)}
+  for(const n of ["Detective Owl","Inspector Fox","Sleuth Raven"]){const r=await server.join(store,s,{nickname:n,studentId:null});ids.push(r.player!.id)}
   let st=(await server.loadState(store,s.id))!;await server.hostAct(store,st,{action:"squads.auto"});st=(await server.loadState(store,s.id))!;
   assert.equal(await server.hostAct(store,st,{action:"round.start",type:"story"}),null);st=(await server.loadState(store,s.id))!;
   const act=async(pid:string,input:unknown,deps={judgeAllowed:async()=>false})=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,pid,{kind:"story",payload:{input}},deps)};
-  // Phones get the controls but never the answers.
+  const picks=ls.livePicks(scene),q=sm.readQ(scene,picks);
   const pub=JSON.stringify(server.playerView(st,ids[0]).round);
-  assert.ok(pub.includes(c.read.focus),"the focus question is on the phone");assert.ok(!pub.includes("supports"));assert.ok(!pub.includes("answers"),"the answer list stays on the server");
-  for(const [k,pid] of ids.entries())assert.equal(await act(pid,{kind:"read",pouch:k<4?[line("p068",5),line("p069",0),line("p070",2)]:[line("p068",5)]}),null);
-  assert.equal(await act(ids[0],{kind:"read",pouch:[]}),"You've already answered this round.");
-  st=(await server.loadState(store,s.id))!;assert.equal(server.hostView(st).storyAnswered,7);
-  await server.hostAct(store,st,{action:"round.stage"});st=(await server.loadState(store,s.id))!;
-  const board=server.hostView(st).storyBoard!;assert.equal(board.top.length,5);assert.equal(board.players,7);
-  const me=server.playerView(st,ids[6]).story!;assert.equal(me.last?.points,100);assert.ok(me.board.me&&me.board.top.length<=5);
-  // Round 2: the move and its proof; the Witness stand shows the speaker.
-  await server.hostAct(store,st,{action:"round.stage"});st=(await server.loadState(store,s.id))!;
-  assert.equal(server.witnessView(st).story?.character.id,c.confront.character_id);
-  const hat=c.confront.actions[0];
-  assert.equal(await act(ids[0],{kind:"confront",actionId:hat.id,proof:hat.supports[0]}),null);
+  assert.ok(pub.includes(q.focus),"the shared focus question");assert.ok(!pub.includes("answers")&&!pub.includes("supports"),"answers stay on the server");
+  // A miss is a try: the phone shows Not yet; retrying until right scores the round.
+  assert.equal(await act(ids[0],{kind:"read",pouch:[q.answers[0],line("p070",0)]}),null);
   st=(await server.loadState(store,s.id))!;
-  const rec=st.responses.find(r=>r.kind==="story"&&r.playerId===ids[0]&&(r.payload as {step:number}).step===1)!.payload.record as {points:number;multiplier:number};
-  assert.ok(rec.points>=600&&rec.multiplier===1.2,"500 proof plus speed, x1.2 for a second valid round");
-  // Extended time: a step that's over for everyone else is still open for a 2x student.
-  const late=new Date(Date.now()-100000).toISOString();
+  const v=server.playerView(st,ids[0]).story!;assert.equal(v.answered,false);assert.equal(v.try?.notYet?.tryNo,2);assert.deepEqual(v.try?.locked,[q.answers[0]]);
+  assert.equal(await act(ids[0],{kind:"read",pouch:q.answers.slice(0,3)}),null);
+  assert.equal(await act(ids[1],{kind:"read",pouch:q.answers.slice(0,3)}),null);
+  st=(await server.loadState(store,s.id))!;assert.equal(server.hostView(st).storyAnswered,2,"a student still trying never holds up the round");
+  // The board: the lines that prove it, then the leaderboard.
+  await server.hostAct(store,st,{action:"round.stage"});st=(await server.loadState(store,s.id))!;
+  const board=server.hostView(st).round as {reveal?:string[]};assert.deepEqual(board.reveal,q.answers.slice(0,3));
+  assert.equal(server.playerView(st,ids[1]).story!.last?.points,300);
+  // Round 2: Brom asks on the board and the Witness stand.
+  await server.hostAct(store,st,{action:"round.stage"});st=(await server.loadState(store,s.id))!;
+  assert.equal(server.witnessView(st).story?.character.id,"brom-bones");
+  // Time's up after the round and its grace.
   const round=st.session.rounds[st.session.roundIndex] as import("../lib/live/story.ts").LiveStoryRound;
-  await store.updateSession(s.id,{rounds:[{...round,stepStartedAt:late}]});
-  assert.equal(await act(ids[1],{kind:"confront",actionId:hat.id,proof:hat.supports[0]}),null,"100 seconds in: inside 90 + 20 grace");
   await store.updateSession(s.id,{rounds:[{...round,stepStartedAt:new Date(Date.now()-150000).toISOString()}]});
-  assert.equal(await act(ids[2],{kind:"confront",actionId:hat.id,proof:hat.supports[0]}),"Time's up for this round.");
-  assert.equal(await act(ids[3],{kind:"confront",actionId:hat.id,proof:hat.supports[0]},{judgeAllowed:async()=>false,timeSetting:"2"} as never),null,"150 seconds is inside a 2x student's 180");
-  // Squads: the class can rank squads instead.
-  const {liveStoryBoard}=await import("../lib/live/story.ts");
-  st=(await server.loadState(store,s.id))!;
-  const sq=liveStoryBoard(st.responses,st.session.roundIndex,st.players,st.squads,true);assert.equal(sq.kind,"squad");assert.equal(sq.rows.length,st.squads.length);
-  void scene;
+  assert.equal(await act(ids[2],{kind:"confront",line:line("p068",5)}),"Time's up for this round.");
 });
 
-test("story mode round 1 focus question: only lines on the authored answer list score, others get a note", async()=>{
-  const {world,passages,sm,scene,c,line}=await storyKit();
-  assert.match(c.read.focus,/belongings were left behind/);
-  // The answer list: exact evidence lines from the reading.
-  for(const a of c.read.answers){const l=sm.sceneEvidence(world,passages,scene,a);assert.ok(l&&l.text===a&&c.read.chunks.includes(l.pid),a.slice(0,40))}
-  assert.ok(c.read.answers.length>=3);
-  const score=(pouch:string[])=>sm.scoreRound(world,passages,scene,{kind:"read",pouch},onTime,"1");
-  // Three lines from the list: full score, no note.
-  const full=score([line("p069",1),line("p069",2),line("p069",3)]);
-  assert.deepEqual([full.base,full.valid,full.coinsEarned,full.note,full.offFocus],[300,true,3,undefined,[]]);
-  // Three true lines that don't answer the question: 0, with the note, and they still go in the pouch.
-  const off=score([line("p068",1),line("p070",0),line("p070",3)]);
-  assert.deepEqual([off.base,off.valid,off.coinsEarned,off.note],[0,false,0,"True to the story, but it doesn't answer the question."]);
-  assert.equal(off.offFocus!.length,3);assert.equal(off.proof.length,3,"kept in the pouch for later rounds");
-  assert.equal(off.detail,"0 of 3 lines answer the question");
-  const mixed=score([line("p068",5),line("p070",2),"Made up."]);
-  assert.deepEqual([mixed.base,mixed.offFocus!.length,mixed.detail],[100,1,"1 of 3 lines answer the question"]);
-  // validate:worlds: an answer that isn't copied exactly, or isn't in the reading, is caught.
-  const bad=structuredClone(world);const r=bad.scenes[0].story_mode!.read;
-  r.answers=[r.answers[0].replace("hat","cap"),r.answers[1],line("p011",0)??"x"];
-  const p=sm.storyModeProblems(bad,passages).join(" | ");
-  assert.match(p,/not copied exactly/);assert.match(p,/at least 3 different answer lines/);
-  const dash=structuredClone(world);dash.scenes[0].story_mode!.read.focus="Tap 3 lines — any";assert.match(sm.storyModeProblems(dash,passages).join(" "),/em dashes/);
-});
 
 test("story mode squads: silent members count as 0, absent members are left out", async()=>{
   const {squadMembersCounted,storySquadScores,sessionScores}=await import("../lib/live/engine.ts");
@@ -1967,31 +2002,31 @@ test("mark absent: the teacher marks a student absent for today from the class p
   void p1;
 });
 
-test("story mode: Catch the lie opens a demo run at round 3; Brom's trust is saved with progress", async()=>{
+test("story mode: Catch the lie opens a demo run at round 3; Brom's trust and the goal level are saved with progress", async()=>{
   process.env.CLASSROOM_DEV_STORE="memory";
-  const {world,passages,scene,c}=await storyKit();
+  const {world,passages,scene,sm,line}=await storyKit();
   const {memoryStoryStore}=await import("../lib/story-store.ts");const srv=await import("../lib/story-server.ts");
   const store=memoryStoryStore({runs:[],rounds:[]});
   const demo={scope:"demo" as const,sandboxId:crypto.randomUUID()};
   const run=(await srv.startRun(store,world,scene,demo,false,"lie")) as import("../lib/story-store.ts").StoryRun;
   assert.deepEqual([run.state.round,run.state.skipped,run.total],[2,2,0]);
-  assert.deepEqual(await srv.playRound(store,world,passages,scene,run,{round:1,input:{kind:"read",pouch:[]},elapsedMs:0,grace:false,relaxed:false}),{error:"That round is already scored."});
-  const lie=await srv.playRound(store,world,passages,scene,run,{round:3,input:{kind:"lie",line:scene.lie!.truth_line,explanation:"Hans said the pitch-pipe was brand-new, but the story says it was broken."},elapsedMs:10000,grace:false,relaxed:false});
-  assert.ok(lie.record&&lie.record.base===600);
-  // Opening it again resumes; a class student can't skip.
-  assert.equal(((await srv.startRun(store,world,scene,demo,false,"lie")) as {state:{round:number}}).state.round,3);
+  assert.equal(srv.publicRun(run).goal.max,sm.maxPoints(2),"the points possible count only the rounds played");
+  const lie=sm.lieOf(scene,run.state.picks);
+  const hit=await srv.playRound(store,world,passages,scene,run,{round:3,input:{kind:"lie",line:lie.truth_line},elapsedMs:10000,grace:false,relaxed:false});
+  assert.ok("step" in hit&&hit.step?.name==="explain");
+  // A class student can't skip.
   const cls=(await srv.startRun(store,world,scene,{scope:"class",classId:"c9",worldId:world.id,studentId:"s9",nickname:"Kim Lee",timeSetting:"1",leaderboard:"individual"},false,"lie")) as {state:{round:number}};
   assert.equal(cls.state.round,0);
-  // Brom's trust: on the server run and in the student's saved progress.
-  const hat=c.confront.actions[0];
+  // Brom's trust goes down on a miss, on the server run.
   const fresh=(await srv.startRun(store,world,scene,{scope:"demo",sandboxId:crypto.randomUUID()})) as import("../lib/story-store.ts").StoryRun;
-  const r1=await srv.playRound(store,world,passages,scene,fresh,{round:1,input:{kind:"read",pouch:[]},elapsedMs:0,grace:false,relaxed:false});
-  const r2=await srv.playRound(store,world,passages,scene,r1.run!,{round:2,input:{kind:"confront",actionId:hat.id,proof:hat.supports[0]},elapsedMs:0,grace:false,relaxed:false});
-  assert.equal(r2.run!.state.trust["brom-bones"],hat.trust);
-  assert.equal((await store.getRun(fresh.id))!.state.trust["brom-bones"],hat.trust,"saved on the server run");
+  const q=sm.readQ(scene,fresh.state.picks);
+  const r1=await srv.playRound(store,world,passages,scene,fresh,{round:1,input:{kind:"read",pouch:q.answers.slice(0,3)},elapsedMs:0,grace:false,relaxed:false});
+  const r2=await srv.playRound(store,world,passages,scene,r1.run!,{round:2,input:{kind:"confront",line:line("p068",1)},elapsedMs:0,grace:false,relaxed:false});
+  assert.ok("notYet" in r2&&r2.reaction&&r2.reaction.trust===-1);
+  assert.equal((await store.getRun(fresh.id))!.state.trust["brom-bones"],-1,"saved on the server run");
   const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
-  const saved=StudentProgressSchema.parse({v:1,worldId:"sleepy-hollow",scene:0,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],storyFrames:{},story:{"empty-schoolhouse":{runId:fresh.id,total:r2.run!.total,bestStreak:1,trust:r2.run!.state.trust,pouch:[],cleared:false}},updatedAt:new Date().toISOString()});
-  assert.equal(saved.story!["empty-schoolhouse"].trust["brom-bones"],hat.trust,"and in saved progress");
+  const saved=StudentProgressSchema.parse({v:1,worldId:"sleepy-hollow",scene:0,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],storyFrames:{},story:{"empty-schoolhouse":{runId:fresh.id,total:300,bestStreak:1,trust:{"brom-bones":-1},pouch:[],cleared:true,max:2580,level:"opened"}},updatedAt:new Date().toISOString()});
+  assert.equal(saved.story!["empty-schoolhouse"].level,"opened","the goal level is saved with progress");
 });
 
 // ---------- The clue game (lib/clue-game.ts) ----------
@@ -2352,15 +2387,13 @@ test("Story Mode needs no access code for public demo visitors (usage caps stay)
   }finally{if(prev!==undefined)process.env.CLASSROOM_DEV_STORE=prev}
 });
 
-test("story mode round 1: saddle lines are near misses, and a fractional timer is saved as whole milliseconds", async()=>{
+test("story mode: a fractional browser timer is saved as whole milliseconds", async()=>{
   process.env.CLASSROOM_DEV_STORE="memory";
-  const {world,passages,scene,c,line}=await storyKit();
-  assert.ok(c.read.answers.every(a=>!/saddle/.test(a)||/hat of the\s+unfortunate Ichabod/.test(a)),"the saddle was Hans Van Ripper's");
+  const {world,passages,scene,sm}=await storyKit();
   const {memoryStoryStore}=await import("../lib/story-store.ts");const srv=await import("../lib/story-server.ts");
   const mem={runs:[] as unknown[],rounds:[] as {elapsedMs:number}[]};const store=memoryStoryStore(mem as never);
   const run=(await srv.startRun(store,world,scene,{scope:"class" as const,classId:"c9",worldId:world.id,studentId:"st9",nickname:"Ana Ruiz",timeSetting:"1" as const,leaderboard:"individual" as const})) as import("../lib/story-store.ts").StoryRun;
-  const r=await srv.playRound(store,world,passages,scene,run,{round:1,input:{kind:"read",pouch:[line("p068",5),line("p068",0),line("p069",1)]},elapsedMs:22001.300000000745,grace:false,relaxed:false});
-  assert.equal(r.record?.points,200);
-  assert.deepEqual(Object.values(r.record?.nearMiss??{}),["Whose saddle was it? Check ¶66."]);
+  const q=sm.readQ(scene,run.state.picks);
+  await srv.playRound(store,world,passages,scene,run,{round:1,input:{kind:"read",pouch:q.answers.slice(0,3)},elapsedMs:22001.300000000745,grace:false,relaxed:false});
   assert.ok(Number.isInteger(mem.rounds[0].elapsedMs),"elapsed_ms is an integer column");
 });

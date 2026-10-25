@@ -6,6 +6,7 @@
 // (theory and case strength); selecting it opens their pinned quotes and closing argument.
 // Used for real classes (app/classroom.tsx) and the sample classroom (app/teacher-demo.tsx).
 import {useEffect,useMemo,useRef,useState} from "react";
+import {LEVELS,SPEED_FLAG_TEXT} from "@/lib/fair-play";
 import {AlertTriangle,Check,Download,Flag,Gavel,MessageCircle,Radio,ShieldCheck,X} from "lucide-react";
 import type {LiveRoundEvidence} from "@/lib/live/evidence";
 import {evidenceCsv,evidenceDetail,type ClassEvidence,type EvidenceClue,type EvidenceStudent} from "@/lib/classroom/evidence";
@@ -175,8 +176,9 @@ function LiveRounds({rounds}:{rounds:LiveRoundEvidence[]}){
 }
 
 // Story Mode: the full class leaderboard per scene (teachers only; students see the top 5 and their own rank), with
-// each student's points and proof per round.
-const ROUND_LABEL=["Read and notice","Something happens to you","Catch the lie","Make your call"];
+// each student's goal level, and per round their points, tries, proof, shown answers, typed proofs and speed flags.
+// Speed flags are for the teacher only: students never see them.
+const ROUND_LABEL=["Locate","Infer","Catch the lie","Build the case"];
 function StoryBoards({boards}:{boards:NonNullable<ClassEvidence["storyMode"]>}){
  return <section aria-labelledby="story-boards-h" className="space-y-3">
   <h3 id="story-boards-h" className="flex items-center gap-2 text-[22px] font-bold text-[#2A2620]"><Gavel size={20} className="text-[#A0472C]"/>Story Mode leaderboard</h3>
@@ -184,8 +186,8 @@ function StoryBoards({boards}:{boards:NonNullable<ClassEvidence["storyMode"]>}){
   {boards.filter(b=>b.rows.length).map(b=><div key={b.sceneId} className="rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
    <p className="text-[14px] font-bold uppercase tracking-wide text-[#8A3B23]">{b.sceneTitle}</p>
    <ol className="mt-3 space-y-2">{b.rows.map(r=><li key={r.nickname+r.rank}><details className="rounded-2xl border border-[#E4DCCB] px-4 py-3">
-    <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-2 text-[16px]"><span className="flex items-center gap-3"><span className="w-7 text-right font-bold tabular-nums">{r.rank}</span><span className="font-semibold">{r.nickname}</span>{r.timeSetting!=="1"&&<span className="rounded-full bg-[#EFE8D8] px-2 py-0.5 text-[12px] font-semibold">{r.timeSetting==="untimed"?"Untimed":r.timeSetting+"x time"}</span>}{!r.finished&&<span className="text-[13px] text-[#8B8478]">in progress</span>}</span><span className="tabular-nums">{r.score} pts · best streak {r.bestStreak}</span></summary>
-    <ul className="mt-3 space-y-2 text-[14px] leading-6 text-[#4A4438]">{r.rounds.map(x=><li key={x.round}><b>Round {x.round}, {ROUND_LABEL[x.round-1]}:</b> {x.points} pts{x.grace?" (late, half points)":""}{x.choice&&x.round!==1?<> · {x.choice}</>:null}{x.proof.map(p=><span key={p} className="mt-1 block font-serif italic">“{p.replace(/\s+/g," ")}”</span>)}{x.explanation&&<span className="mt-1 block">Explanation: {x.explanation}</span>}</li>)}</ul>
+    <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-2 text-[16px]"><span className="flex items-center gap-3"><span className="w-7 text-right font-bold tabular-nums">{r.rank}</span><span className="font-semibold">{r.nickname}</span>{r.timeSetting!=="1"&&<span className="rounded-full bg-[#EFE8D8] px-2 py-0.5 text-[12px] font-semibold">{r.timeSetting==="untimed"?"Untimed":r.timeSetting+"x time"}</span>}{!r.finished&&<span className="text-[13px] text-[#8B8478]">in progress</span>}</span><span className="tabular-nums">{r.score}{r.max?` / ${r.max}`:""} pts{r.level?` · ${LEVELS.find(l=>l.id===r.level)?.name??""}`:""} · best streak {r.bestStreak}{r.rounds.some(x=>x.flags?.length)?" · ⚑ speed flag":""}</span></summary>
+    <ul className="mt-3 space-y-2 text-[14px] leading-6 text-[#4A4438]">{r.rounds.map(x=><li key={x.round}><b>Round {x.round}, {ROUND_LABEL[x.round-1]}:</b> {x.points} pts{x.grace?" (late, half points)":""}{x.shown?" · shown answer":x.tries?` · right on try ${x.tries+1}`:""}{x.choice&&x.round!==1&&!["found","missed","caught"].includes(x.choice)?<> · {x.choice}</>:null}{x.flags?.map(f=><span key={f} className="ml-2 inline-flex rounded-full bg-[#FFF4D6] px-2 py-0.5 text-[12px] font-bold text-[#6B4A00]">⚑ {SPEED_FLAG_TEXT[f as keyof typeof SPEED_FLAG_TEXT]??f}</span>)}{x.typed&&<span className="mt-1 block">Typed proof: {x.typed}</span>}{x.proof.map(p=><span key={p} className="mt-1 block font-serif italic">“{p.replace(/\s+/g," ")}”</span>)}{x.explanation&&<span className="mt-1 block">Explanation: {x.explanation}</span>}</li>)}</ul>
    </details></li>)}</ol>
   </div>)}
  </section>;

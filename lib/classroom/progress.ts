@@ -72,6 +72,8 @@ export const StudentProgressSchema = z.object({
   story: z.record(id, z.object({
     runId: text(80), total: z.number().int().min(0).max(100000), bestStreak: z.number().int().min(0).max(10),
     trust: z.record(id, z.number().int().min(-12).max(12)), pouch: z.array(text(1500)).max(3), cleared: z.boolean(),
+    // The points possible for the student's questions and the goal level reached (lib/fair-play.ts).
+    max: z.number().int().min(0).max(100000).optional(), level: z.enum(["opened", "built", "cracked"]).nullable().optional(),
   })).optional(),
   updatedAt: text(40),
 });

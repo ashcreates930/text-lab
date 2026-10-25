@@ -1,42 +1,38 @@
-// Story Mode: a scene played from inside the story as four timed, scored rounds (read and notice, something happens to
-// you, catch the lie, make your call), with streaks, Lantern coins, power-ups, a class pulse and a top-5 leaderboard.
-// All content comes from the scene's `story_mode` block in the world file (never generated live). These are the pure
-// rules, shared by the server (which scores every round), the screens, the live version, the validator and the tests.
-// Reading carefully always pays more than answering fast: a speed bonus is at most 100 and only on valid proof, while
-// valid proof is worth 100 to 600.
+// Story Mode: a scene played from inside the story as four rounds that climb a ladder: locate (round 1), infer (round 2),
+// catch the lie (round 3) and build the case (round 4), with streaks, Lantern coins, power-ups, a class pulse and a
+// top-5 leaderboard. Each round's question comes from an authored bank in the scene's `story_mode` block (never
+// generated live). These are the pure rules, shared by the server (which scores every try), the screens, the live
+// version, the validator and the tests.
+//
+// Points come from evidence, never speed: full points on the first try, half on the second, none after (lib/fair-play.ts),
+// and each wrong line costs 25. A miss gets a "Not yet" with a hint (try 2 names the paragraph, try 3 the part of it);
+// after three misses the answer is shown and the round still asks for its proof step, for 0 points.
 import type { WorldPack } from "./world-schema.ts";
 import type { SourcePassage } from "./source-passages.ts";
 import { contentNotes } from "./content-notes.ts";
-import { isTruthLine, lineWords, type Lie } from "./lies.ts";
+import { isTruthLine, lieProblems, lineWords, type Lie } from "./lies.ts";
 import { evidenceLines, matchEvidence } from "./evidence-check.ts";
 import { soundExplanation } from "./live/engine.ts";
+import { MAX_TRIES, afterWrongLines, answerFor, missHint, nameWords, nearMissFor, needsPhrase, phraseMatches, phraseRange, pickQuestion, proveChoices, proveRight, questionProblems, speedFlags, tryFactor, typedProof, type SpeedFlag } from "./fair-play.ts";
 
 export type Scene = WorldPack["scenes"][number];
 export type StoryContent = NonNullable<Scene["story_mode"]>;
+// Round ids are stored with each scored round; round 2 ("confront") is the infer round, where a character asks.
 export type RoundKind = "read" | "confront" | "lie" | "call";
 export const ROUNDS: RoundKind[] = ["read", "confront", "lie", "call"];
-export const ROUND_NAMES: Record<RoundKind, string> = { read: "Read and notice", confront: "Something happens to you", lie: "Catch the lie", call: "Make your call" };
+export const ROUND_NAMES: Record<RoundKind, string> = { read: "Locate", confront: "Infer", lie: "Catch the lie", call: "Build the case" };
 
 // ---------- Time ----------
-// Seconds per phase at normal speed. Round 2 has a choice phase and a proof phase.
-export const SECONDS = { read: 120, choice: 30, proof: 60, lie: 60, call: 90 } as const;
-export const GRACE_SECONDS = 20; // after "Time!", proof still counts for half points
+// Seconds per round at normal speed; each retry after a "Not yet" gets a fresh 30 (scaled by the student's time).
+export const SECONDS = { read: 120, confront: 90, lie: 60, call: 90, retry: 30 } as const;
+export const GRACE_SECONDS = 20; // after "Time!", the first try still counts for half points
 export const COUNTDOWN_SECONDS = 3;
 // Extra time: the teacher sets 1.5x, 2x or untimed per student; solo and demo players can pick Relaxed (2x).
 export type TimeSetting = "1" | "1.5" | "2" | "untimed";
 export const TIME_SETTINGS: TimeSetting[] = ["1", "1.5", "2", "untimed"];
-// null: no time limit (untimed). The speed bonus for an untimed student is measured against double time.
+// null: no time limit (untimed).
 export function phaseSeconds(base: number, setting: TimeSetting): number | null {
   return setting === "untimed" ? null : base * Number(setting);
-}
-export function speedWindow(base: number, setting: TimeSetting) {
-  return base * (setting === "untimed" ? 2 : Number(setting));
-}
-// Speed bonus, up to 100, measured against the student's own time. Never during the grace period.
-export function speedBonus(elapsedMs: number, base: number, setting: TimeSetting, max = 100) {
-  const window = speedWindow(base, setting) * 1000;
-  if (!(elapsedMs >= 0) || elapsedMs >= window) return 0;
-  return Math.round(max * (1 - elapsedMs / window));
 }
 // What the screen reader hears: only at 30, 10 and 5 seconds left, never every second.
 export const ANNOUNCE_AT = [30, 10, 5];
@@ -45,81 +41,187 @@ export function timeAnnouncement(prevLeft: number, left: number) {
   return hit ? `${hit} seconds left` : "";
 }
 
-// ---------- Inputs and scoring ----------
-export type Timing = { elapsedMs: number; grace: boolean };
-export type RoundInput =
-  | { kind: "read"; pouch: string[] }
-  | { kind: "confront"; actionId: string; proof: string }
-  | { kind: "lie"; line: string; explanation: string }
-  | { kind: "call"; theoryId: string; pins: string[] };
-// grace: scored in the 20 seconds after time ran out (half points, no speed bonus).
-// offFocus (round 1): pouch lines that are true to the story but do not answer the focus question (0 points each).
-// nearMiss (round 1): the authored hint for each off-focus line that is a near miss, by line.
-export type RoundScore = { kind: RoundKind; base: number; speed: number; valid: boolean; coinsEarned: number; detail: string; choice: string; proof: string[]; grace?: boolean; note?: string; offFocus?: string[]; nearMiss?: Record<string, string> };
-
-export const POINTS = { readLine: 100, confrontProof: 500, confrontAction: 100, lieFull: 600, lieLine: 300, callLine: 200, callSupports: 200, speedMax: 100 };
+// ---------- Points ----------
+// The most a round is worth (first try, no wrong lines, no power-ups), before the streak multiplier.
+export const POINTS = { readLine: 100, infer: 400, lieLine: 400, lieExplain: 200, callLine: 200, callSupports: 200 };
+export const ROUND_MAX: Record<RoundKind, number> = { read: 3 * POINTS.readLine, confront: POINTS.infer, lie: POINTS.lieLine + POINTS.lieExplain, call: 2 * POINTS.callLine + POINTS.callSupports };
 export const POUCH_MAX = 3;
-export const OFF_FOCUS_NOTE = "True to the story, but it doesn't answer the question.";
+// Consecutive rounds with valid proof: the 2nd in a row x1.2, the 3rd and on x1.5 (the cap).
+export const streakMultiplier = (streakBefore: number) => (streakBefore >= 2 ? 1.5 : streakBefore === 1 ? 1.2 : 1);
+// The points possible for this student's scene: every round they play answered right on the first try, with no
+// power-ups. Rounds skipped at the start (the home page's "Catch the lie") don't count.
+export function maxPoints(fromRound = 0) {
+  let total = 0, streak = 0;
+  for (const kind of ROUNDS.slice(fromRound)) { total += Math.round(ROUND_MAX[kind] * streakMultiplier(streak)); streak++; }
+  return total;
+}
+
+// ---------- The questions a student gets ----------
+// One per round, picked at the start of a run from the scene's banks: not one they've seen on a replay; in class, by
+// roster seat so neighbors differ.
+export type Picks = Record<RoundKind, string>;
+export const sceneLies = (scene: Scene): (Lie & { id: string })[] => [...(scene.lie ? [{ ...scene.lie, id: "lie" }] : []), ...(scene.story_mode?.lies ?? [])];
+export function pickRound(scene: Scene, o: { seed: string; seen?: string[]; seat?: number | null }): Picks {
+  const c = scene.story_mode!;
+  const pick = <T extends { id: string }>(kind: RoundKind, bank: T[]) => pickQuestion(bank, { seed: `${o.seed}:${kind}`, seen: o.seen?.filter((s) => s.startsWith(`${kind}:`)).map((s) => s.slice(kind.length + 1)), seat: o.seat }).id;
+  return { read: pick("read", c.read.bank), confront: pick("confront", c.infer.bank), lie: pick("lie", sceneLies(scene)), call: pick("call", c.call.bank) };
+}
+const byId = <T extends { id: string }>(bank: T[], id: string | undefined) => bank.find((q) => q.id === id) ?? bank[0];
+export const readQ = (scene: Scene, picks?: Partial<Picks>) => byId(scene.story_mode!.read.bank, picks?.read);
+export const inferQ = (scene: Scene, picks?: Partial<Picks>) => byId(scene.story_mode!.infer.bank, picks?.confront);
+export const lieOf = (scene: Scene, picks?: Partial<Picks>) => byId(sceneLies(scene), picks?.lie);
+export const callQ = (scene: Scene, picks?: Partial<Picks>) => byId(scene.story_mode!.call.bank, picks?.call);
+
+// ---------- Tries ----------
+// A round in progress, held on the server: misses so far, wrong lines, round 1's locked lines (and the try each was
+// found on), the accepted line for rounds 2 and 3, whether its exact words are marked, and whether the answer was shown.
+// late: the first try came in after time (its round scores half, whatever step it ends on).
+export type Attempt = { tries: number; wrong: number; locked: { line: string; tryNo: number }[]; line?: string; phraseOk?: boolean; shown?: boolean; trust?: number; firstTapMs?: number; swaps?: number; late?: boolean };
+export const newAttempt = (): Attempt => ({ tries: 0, wrong: 0, locked: [] });
+// firstTapMs / swaps: from the client, for the teacher's speed flags only (never scored). timeout: the try's time ran
+// out, so whatever is there (even nothing) is locked in as the try.
+type Meta = { firstTapMs?: number; swaps?: number; timeout?: boolean };
+export type RoundInput =
+  | ({ kind: "read"; pouch: string[] } & Meta)
+  | ({ kind: "confront"; line: string; marked?: [number, number]; prove?: { choice?: string; proves?: string; because?: string } } & Meta)
+  | ({ kind: "lie"; line: string; explanation?: string } & Meta)
+  | ({ kind: "call"; theoryId: string; pins: string[] } & Meta);
+export type Timing = { elapsedMs: number; grace: boolean };
+// shown: the answer was shown after three misses (0 points); typed: a typed "This proves… because…" (never scored);
+// flags: speed flags for the teacher; qid: the bank question the student got.
+export type RoundScore = { kind: RoundKind; base: number; speed: number; valid: boolean; coinsEarned: number; detail: string; choice: string; proof: string[]; grace?: boolean; tries: number; wrong: number; shown: boolean; qid: string; typed?: string; flags?: SpeedFlag[]; explanation?: string };
+export type AttemptResult =
+  | { status: "notYet"; attempt: Attempt; tryNo: number; hint: string }
+  | { status: "next"; attempt: Attempt; step: "phrase" | "prove" | "explain"; choices?: string[]; shown?: string[]; phrase?: [number, number] }
+  | { status: "done"; attempt: Attempt; score: RoundScore; shown?: string[] }
+  | { status: "invalid"; message: string };
+
 const same = (a: string, b: string) => lineWords(a) === lineWords(b);
 const sceneClueIds = (scene: Scene) => scene.artifacts.map((a) => a.id);
 // A real evidence line for one of this scene's clues, as the world file has it, or null.
 export const sceneEvidence = (world: WorldPack, passages: SourcePassage[], scene: Scene, quote: string) => matchEvidence(world, passages, quote, { clueIds: sceneClueIds(scene) });
+const pidOfLine = (world: WorldPack, passages: SourcePassage[], scene: Scene, line: string) => sceneEvidence(world, passages, scene, line)?.pid ?? "";
 
-export function scoreRound(world: WorldPack, passages: SourcePassage[], scene: Scene, input: RoundInput, timing: Timing, setting: TimeSetting, pouch: string[] = []): RoundScore {
-  return { ...scoreInput(world, passages, scene, input, timing, setting, pouch), grace: timing.grace };
-}
-function scoreInput(world: WorldPack, passages: SourcePassage[], scene: Scene, input: RoundInput, timing: Timing, setting: TimeSetting, pouch: string[]): RoundScore {
-  const content = scene.story_mode!;
-  const half = (n: number) => (timing.grace ? Math.round(n / 2) : n);
-  const fast = (base: number) => (timing.grace ? 0 : speedBonus(timing.elapsedMs, base, setting));
+// One try at the current round. maxTries: 3 solo (then the answer is shown); live classes retry until the timer ends.
+// seed: makes the Prove it order stable for this student.
+export function attemptRound(world: WorldPack, passages: SourcePassage[], scene: Scene, picks: Partial<Picks>, attempt: Attempt, input: RoundInput, o: { maxTries?: number; seed: string; pouch?: string[] }): AttemptResult {
+  const maxTries = o.maxTries ?? MAX_TRIES;
+  const a: Attempt = { ...attempt, locked: [...attempt.locked], ...(attempt.firstTapMs === undefined && typeof input.firstTapMs === "number" ? { firstTapMs: Math.max(0, Math.round(input.firstTapMs)) } : {}), swaps: Math.max(attempt.swaps ?? 0, Math.round(Number(input.swaps) || 0)) };
+  const miss = (wrongLines: number) => ({ ...a, tries: a.tries + 1, wrong: a.wrong + wrongLines });
+  const flags = () => speedFlags(a.firstTapMs, a.swaps);
   if (input.kind === "read") {
-    // Up to 3 lines. Each line on the focus question's authored answer list earns 100; any other evidence line is true
-    // to the story but earns 0 (it still goes in the pouch for later rounds). Duplicates count once.
-    const lines = [...new Map(input.pouch.slice(0, POUCH_MAX).map((q) => sceneEvidence(world, passages, scene, q)).filter(Boolean).map((l) => [l!.text, l!])).values()];
-    const answers = lines.filter((l) => content.read.answers.some((a) => same(a, l.text)));
-    const offFocus = lines.filter((l) => !answers.includes(l)).map((l) => l.text);
-    const nearMiss = Object.fromEntries(offFocus.flatMap((t) => { const n = content.read.near_misses?.find((m) => same(m.line, t)); return n ? [[t, n.hint]] : []; }));
-    const tapped = Math.min(POUCH_MAX, input.pouch.length);
-    return { kind: "read", base: half(answers.length * POINTS.readLine), speed: 0, valid: answers.length > 0, coinsEarned: answers.length, detail: `${answers.length} of ${tapped} line${tapped === 1 ? "" : "s"} answer the question`, choice: "", proof: lines.map((l) => l.text), offFocus, ...(Object.keys(nearMiss).length ? { nearMiss } : {}), ...(offFocus.length ? { note: OFF_FOCUS_NOTE } : {}) };
+    const q = readQ(scene, picks);
+    const lines = [...new Map(input.pouch.slice(0, POUCH_MAX).map((t) => sceneEvidence(world, passages, scene, t)).filter(Boolean).map((l) => [l!.text, l!])).values()];
+    const fresh = lines.filter((l) => !a.locked.some((k) => same(k.line, l.text)));
+    const tryNo = a.tries + 1;
+    const right = fresh.filter((l) => q.answers.some((x) => same(x, l.text))), wrong = fresh.filter((l) => !q.answers.some((x) => same(x, l.text)));
+    const next: Attempt = { ...a, locked: [...a.locked, ...right.map((l) => ({ line: l.text, tryNo }))].slice(0, POUCH_MAX) };
+    const finish = (at: Attempt, shown: string[]) => {
+      const base = afterWrongLines(at.locked.reduce((n, k) => n + POINTS.readLine * tryFactor(k.tryNo), 0), at.wrong);
+      const proof = [...at.locked.map((k) => k.line), ...shown].slice(0, POUCH_MAX);
+      return { status: "done" as const, attempt: at, shown: shown.length ? shown : undefined, score: { kind: "read" as const, base, speed: 0, valid: !shown.length, coinsEarned: at.locked.length, detail: shown.length ? `You found ${at.locked.length} of ${POUCH_MAX}. Here are the rest.` : `All ${POUCH_MAX} lines answer the question`, choice: "", proof, tries: at.tries, wrong: at.wrong, shown: shown.length > 0, qid: q.id, flags: flags() } };
+    };
+    if (next.locked.length >= POUCH_MAX) return finish({ ...next, wrong: a.wrong + wrong.length }, []);
+    const missed = { ...miss(wrong.length), locked: next.locked };
+    if (missed.tries >= maxTries) {
+      const rest = q.answers.filter((x) => !missed.locked.some((k) => same(k.line, x))).slice(0, POUCH_MAX - missed.locked.length);
+      return finish({ ...missed, shown: true }, rest);
+    }
+    const open = q.answers.find((x) => !missed.locked.some((k) => same(k.line, x)))!;
+    const near = wrong.map((l) => nearMissFor(q, l.text)).find(Boolean);
+    return { status: "notYet", attempt: missed, tryNo: missed.tries + 1, hint: notYetRead(missed, missHint(missed.tries + 1, { pid: pidOfLine(world, passages, scene, open), line: open }, passages, near?.hint)) };
   }
   if (input.kind === "confront") {
-    const action = content.confront.actions.find((a) => a.id === input.actionId);
-    if (!action) return { kind: "confront", base: 0, speed: 0, valid: false, coinsEarned: 0, detail: "No action chosen", choice: "", proof: [] };
-    // The proof must be a real evidence line that the authored mapping says supports this action.
-    const line = sceneEvidence(world, passages, scene, input.proof);
-    const valid = !!line && action.supports.some((s) => same(s, line.text));
-    return valid
-      ? { kind: "confront", base: half(POINTS.confrontProof), speed: fast(SECONDS.proof), valid, coinsEarned: 1, detail: "Your proof backs your move", choice: action.id, proof: [line!.text] }
-      : { kind: "confront", base: half(POINTS.confrontAction), speed: 0, valid, coinsEarned: 0, detail: line ? "That line doesn't back this move" : "No proof from the story", choice: action.id, proof: line ? [line.text] : [] };
+    const q = inferQ(scene, picks);
+    const choices = () => proveChoices(q.prove, `${o.seed}:${q.id}`);
+    const answer = q.answers[0];
+    const toShown = (at: Attempt) => ({ status: "next" as const, attempt: { ...at, shown: true, line: at.line ?? answer.line }, step: "prove" as const, choices: choices(), shown: [at.line ?? answer.line], ...(answerFor(q, at.line ?? answer.line)?.phrase ? { phrase: phraseRange(at.line ?? answer.line, answerFor(q, at.line ?? answer.line)!.phrase!) ?? undefined } : {}) });
+    if (!a.line) {
+      const hit = answerFor(q, input.line);
+      if (hit) return { status: "next", attempt: { ...a, line: hit.line }, step: needsPhrase(hit.line) && hit.phrase ? "phrase" : "prove", ...(needsPhrase(hit.line) && hit.phrase ? {} : { choices: choices() }) };
+      const real = !!sceneEvidence(world, passages, scene, input.line);
+      if (!real && !input.timeout) return { status: "invalid", message: "Tap a line in the story." };
+      const m = { ...miss(real ? 1 : 0), trust: (a.trust ?? 0) - 1 };
+      if (m.tries >= maxTries) return toShown(m);
+      const near = nearMissFor(q, input.line);
+      return { status: "notYet", attempt: m, tryNo: m.tries + 1, hint: missHint(m.tries + 1, { pid: pidOfLine(world, passages, scene, answer.line), line: answer.line }, passages, near?.hint) };
+    }
+    const hit = answerFor(q, a.line)!;
+    if (needsPhrase(hit.line) && hit.phrase && !a.phraseOk && !a.shown) {
+      if (input.marked && phraseMatches(hit.line, hit.phrase, input.marked)) return { status: "next", attempt: { ...a, phraseOk: true }, step: "prove", choices: choices() };
+      const m = { ...miss(0), trust: (a.trust ?? 0) - 1 };
+      if (m.tries >= maxTries) return toShown(m);
+      return { status: "notYet", attempt: m, tryNo: m.tries + 1, hint: "Right line. Now mark only the words that prove it." };
+    }
+    const typed = typedProof(input.prove?.proves ?? "", input.prove?.because ?? "");
+    if (typed || (input.prove?.choice && proveRight(q.prove, input.prove.choice))) {
+      const base = a.shown ? 0 : afterWrongLines(POINTS.infer * tryFactor(a.tries + 1), a.wrong);
+      return { status: "done", attempt: { ...a, trust: (a.trust ?? 0) + (a.shown ? 0 : 1) }, score: { kind: "confront", base, speed: 0, valid: !a.shown, coinsEarned: a.shown ? 0 : 1, detail: a.shown ? "Shown answer" : "Your proof holds up", choice: a.shown ? "missed" : "found", proof: [hit.line], tries: a.tries, wrong: a.wrong, shown: !!a.shown, qid: q.id, ...(typed ? { typed } : {}), flags: flags() } };
+    }
+    if (!input.prove?.choice) return { status: "invalid", message: "Pick what the line proves, or finish the sentence." };
+    // A wrong choice is a miss; after the answer is shown, it is simply "Not yet" until the right one.
+    const m = a.shown ? a : { ...miss(0), trust: (a.trust ?? 0) - 1 };
+    if (!a.shown && m.tries >= maxTries) return toShown(m);
+    return { status: "notYet", attempt: m, tryNo: m.tries + 1, hint: "Not quite. Read the line again: what does it actually show?" };
   }
   if (input.kind === "lie") {
-    const lie = scene.lie as Lie;
-    const correct = !!sceneEvidence(world, passages, scene, input.line) && isTruthLine(lie, input.line);
-    const sound = correct && soundExplanation(input.explanation, lie);
-    const base = !correct ? 0 : sound ? POINTS.lieFull : POINTS.lieLine;
-    return { kind: "lie", base: half(base), speed: correct ? fast(SECONDS.lie) : 0, valid: correct, coinsEarned: correct ? 1 : 0, detail: !correct ? "Not the line that disproves it" : sound ? "Right line, sound explanation" : "Right line", choice: correct ? "caught" : "missed", proof: correct ? [lie.truth_line] : [] };
+    const lie = lieOf(scene, picks);
+    const toShown = (at: Attempt) => ({ status: "next" as const, attempt: { ...at, shown: true, line: lie.truth_line }, step: "explain" as const, shown: [lie.truth_line] });
+    if (!a.line) {
+      if (sceneEvidence(world, passages, scene, input.line) && isTruthLine(lie, input.line)) return { status: "next", attempt: { ...a, line: lie.truth_line }, step: "explain" };
+      const real = !!sceneEvidence(world, passages, scene, input.line);
+      if (!real && !input.timeout) return { status: "invalid", message: "Tap a line in the story." };
+      const m = miss(real ? 1 : 0);
+      if (m.tries >= maxTries) return toShown(m);
+      return { status: "notYet", attempt: m, tryNo: m.tries + 1, hint: m.tries + 1 <= 2 ? `Not quite. Look for a line about ${lie.topic}. Look again in ¶${Number(lie.truth_paragraph.slice(1))}.` : missHint(3, { pid: lie.truth_paragraph, line: lie.truth_line }, passages) };
+    }
+    const explanation = (input.explanation ?? "").trim().slice(0, 400);
+    if (!explanation) return { status: "invalid", message: "Say why in one sentence." };
+    const sound = !a.shown && soundExplanation(explanation, lie);
+    const base = a.shown ? 0 : afterWrongLines(POINTS.lieLine * tryFactor(a.tries + 1) + (sound ? POINTS.lieExplain : 0), a.wrong);
+    return { status: "done", attempt: a, score: { kind: "lie", base, speed: 0, valid: !a.shown, coinsEarned: a.shown ? 0 : 1, detail: a.shown ? "Shown answer" : sound ? "Right line, sound explanation" : "Right line", choice: a.shown ? "missed" : "caught", proof: [lie.truth_line], tries: a.tries, wrong: a.wrong, shown: !!a.shown, qid: lie.id, explanation, flags: flags() } };
   }
-  const theory = content.call.theories.find((t) => t.id === input.theoryId);
-  // Pins come from the pouch only, two different lines.
-  const pins = [...new Set(input.pins.filter((p) => pouch.some((q) => same(p, q))).map((p) => sceneEvidence(world, passages, scene, p)?.text).filter(Boolean) as string[])].slice(0, 2);
-  const both = !!theory && pins.length === 2 && pins.every((p) => theory.supports.some((s) => same(s, p)));
-  const base = theory ? pins.length * POINTS.callLine + (both ? POINTS.callSupports : 0) : 0;
-  return { kind: "call", base: half(base), speed: 0, valid: !!theory && pins.length > 0, coinsEarned: theory ? pins.length : 0, detail: !theory ? "No theory chosen" : both ? "Both lines support your theory" : `${pins.length} valid line${pins.length === 1 ? "" : "s"} pinned`, choice: theory?.id ?? "", proof: pins };
+  // Build the case: a theory and two lines that support it, from the pouch or the reading.
+  const q = callQ(scene, picks);
+  const theory = q.theories.find((t) => t.id === input.theoryId);
+  if (!theory && !input.timeout) return { status: "invalid", message: "Pick a theory first." };
+  const reading = new Set(scene.story_mode!.read.chunks);
+  const pins = [...new Set(input.pins.map((p) => sceneEvidence(world, passages, scene, p)).filter((l) => l && (reading.has(l.pid) || (o.pouch ?? []).some((x) => same(x, l.text)))).map((l) => l!.text))].slice(0, 2);
+  if (pins.length < 2 && !input.timeout) return { status: "invalid", message: "Pin 2 lines that support your theory." };
+  const supporting = theory ? pins.filter((p) => theory.supports.some((s) => same(s, p))) : [];
+  const supports = theory?.supports ?? q.theories[0].supports;
+  const done = (at: Attempt, shown: string[]) => {
+    const base = at.shown ? 0 : afterWrongLines((2 * POINTS.callLine + POINTS.callSupports) * tryFactor(at.tries + 1), at.wrong);
+    return { status: "done" as const, attempt: at, shown: shown.length ? shown : undefined, score: { kind: "call" as const, base, speed: 0, valid: !at.shown, coinsEarned: at.shown ? 0 : 2, detail: at.shown ? "Shown answer" : "Both lines support your theory", choice: theory ? `${q.id}|${theory.id}` : "", proof: at.shown ? supports.slice(0, 2) : pins, tries: at.tries, wrong: at.wrong, shown: !!at.shown, qid: q.id, flags: flags() } };
+  };
+  if (supporting.length === 2) return done(a, []);
+  const m = miss(pins.length - supporting.length);
+  if (m.tries >= maxTries) return done({ ...m, shown: true }, supports.slice(0, 2));
+  const open = supports.find((s) => !supporting.some((p) => same(p, s)))!;
+  return { status: "notYet", attempt: m, tryNo: m.tries + 1, hint: missHint(m.tries + 1, { pid: pidOfLine(world, passages, scene, open), line: open }, passages) };
 }
+function notYetRead(a: Attempt, hint: string) {
+  const left = POUCH_MAX - a.locked.length;
+  return `${a.locked.length ? `${a.locked.length} of ${POUCH_MAX} found. ` : ""}${hint} ${left === 1 ? "One more line to find." : `${left} more lines to find.`}`;
+}
+// The Prove it step again, for a reloaded screen: the choices for this student's infer question.
+export const inferChoices = (scene: Scene, picks: Partial<Picks>, seed: string) => { const q = inferQ(scene, picks); return proveChoices(q.prove, `${seed}:${q.id}`); };
 
 // ---------- The game layer: streaks, coins, power-ups ----------
 export type PowerUp = "lantern" | "second-look" | "double-down";
 export const POWER_UPS: Record<PowerUp, { name: string; cost: number; what: string }> = {
-  lantern: { name: "Lantern", cost: 2, what: "Highlights the paragraph that holds a correct line." },
+  lantern: { name: "Lantern", cost: 2, what: "Names the paragraph that holds a correct line." },
   "second-look": { name: "Second look", cost: 1, what: "Replays the last part of the reading." },
-  "double-down": { name: "Double down", cost: 3, what: "Doubles the next round's points if your proof is valid. Lose your speed bonus if it isn't." },
+  "double-down": { name: "Double down", cost: 3, what: "Doubles the next round's points if your proof is valid. If it isn't, you lose the points you bet." },
 };
-export type RoundRecord = RoundScore & { round: number; multiplier: number; doubled: boolean; points: number; streak: number };
-// skipped: rounds jumped over at the start (the home page's "Catch the lie" opens at round 3); they score nothing.
-export type RunState = { round: number; total: number; streak: number; bestStreak: number; coins: number; pouch: string[]; trust: Record<string, number>; lantern: boolean; doubleDown: boolean; rounds: RoundRecord[]; restarts?: number; skipped?: number };
+// bet: with Double down, the points at stake (the round's most); lost: what an invalid round took off the total.
+export type RoundRecord = RoundScore & { round: number; multiplier: number; doubled: boolean; points: number; streak: number; bet?: number; lost?: number };
+// skipped: rounds jumped over at the start (the home page's "Catch the lie"); they score nothing and don't count toward
+// the points possible. picks: this run's questions; seen: questions from earlier runs (kept through "Play again");
+// attempt: the round in progress.
+export type RunState = { round: number; total: number; streak: number; bestStreak: number; coins: number; pouch: string[]; trust: Record<string, number>; lantern: boolean; doubleDown: boolean; rounds: RoundRecord[]; restarts?: number; skipped?: number; picks?: Picks; seen?: string[]; attempt?: Attempt | null };
 export const newRun = (): RunState => ({ round: 0, total: 0, streak: 0, bestStreak: 0, coins: 0, pouch: [], trust: {}, lantern: false, doubleDown: false, rounds: [] });
-// Consecutive rounds with valid proof: the 2nd in a row x1.2, the 3rd and on x1.5 (the cap).
-export const streakMultiplier = (streakBefore: number) => (streakBefore >= 2 ? 1.5 : streakBefore === 1 ? 1.2 : 1);
+export const runMax = (s: Pick<RunState, "skipped">) => maxPoints(s.skipped ?? 0);
 
 export function buy(state: RunState, p: PowerUp): RunState | string {
   const cost = POWER_UPS[p].cost;
@@ -129,41 +231,44 @@ export function buy(state: RunState, p: PowerUp): RunState | string {
   return { ...state, coins: state.coins - cost, ...(p === "lantern" ? { lantern: true } : {}), ...(p === "double-down" ? { doubleDown: true } : {}) };
 }
 
-// Applies one scored round to the run: streak multiplier, double down, coins, the pouch (round 1) and trust (round 2).
+// Applies one scored round to the run: streak multiplier, Double down (twice the points on valid proof; otherwise the
+// bet, the round's most, comes off the total, never below 0), coins, the pouch (round 1) and trust (round 2).
 export function applyRound(state: RunState, score: RoundScore, extra: { pouch?: string[]; trust?: { characterId: string; delta: number } } = {}): RunState {
+  const kind = score.kind;
   const streak = score.valid ? state.streak + 1 : 0;
   const multiplier = score.valid ? streakMultiplier(state.streak) : 1;
   const doubled = state.doubleDown && score.valid;
-  // Double down on an invalid round: the speed bonus is lost (it already is, since speed needs valid proof).
-  const speed = state.doubleDown && !score.valid ? 0 : score.speed;
-  const points = Math.round((score.base + speed) * multiplier * (doubled ? 2 : 1));
-  const record: RoundRecord = { ...score, speed, round: state.round + 1, multiplier, doubled, points, streak };
+  const earned = Math.round(score.base * multiplier * (doubled ? 2 : 1));
+  const bet = state.doubleDown ? ROUND_MAX[kind] : undefined;
+  const lost = state.doubleDown && !score.valid ? Math.min(state.total, ROUND_MAX[kind]) : 0;
+  const record: RoundRecord = { ...score, speed: 0, round: state.round + 1, multiplier, doubled, points: earned, streak, ...(bet ? { bet } : {}), ...(lost ? { lost } : {}) };
   const trust = extra.trust ? { ...state.trust, [extra.trust.characterId]: (state.trust[extra.trust.characterId] ?? 0) + extra.trust.delta } : state.trust;
   return {
-    ...state, round: state.round + 1, total: state.total + points, streak, bestStreak: Math.max(state.bestStreak, streak),
-    coins: state.coins + score.coinsEarned, lantern: false, doubleDown: false, rounds: [...state.rounds, record], trust,
+    ...state, round: state.round + 1, total: state.total + earned - lost, streak, bestStreak: Math.max(state.bestStreak, streak),
+    coins: state.coins + score.coinsEarned, lantern: false, doubleDown: false, rounds: [...state.rounds, record], trust, attempt: null,
     pouch: extra.pouch ? [...new Set(extra.pouch)].slice(0, POUCH_MAX) : state.pouch,
   };
 }
 
 // Where the Lantern points: the paragraph that holds a correct line for the coming round.
-export function lanternParagraph(world: WorldPack, passages: SourcePassage[], scene: Scene, round: RoundKind, actionId?: string) {
-  const content = scene.story_mode!;
-  const pidOf = (line: string) => sceneEvidence(world, passages, scene, line)?.pid ?? null;
-  if (round === "confront") {
-    const action = content.confront.actions.find((a) => a.id === actionId) ?? content.confront.actions[0];
-    return pidOf(action.supports[0]);
-  }
-  if (round === "lie") return scene.lie?.truth_paragraph ?? null;
-  return null;
+export function lanternParagraph(world: WorldPack, passages: SourcePassage[], scene: Scene, round: RoundKind, picks?: Partial<Picks>, locked: string[] = []) {
+  const pid = (line: string) => sceneEvidence(world, passages, scene, line)?.pid ?? null;
+  if (round === "read") { const open = readQ(scene, picks).answers.find((x) => !locked.some((l) => same(l, x))); return open ? pid(open) : null; }
+  if (round === "confront") return pid(inferQ(scene, picks).answers[0].line);
+  if (round === "lie") return lieOf(scene, picks).truth_paragraph;
+  const supports = callQ(scene, picks).theories.flatMap((t) => t.supports).map(pid).filter(Boolean) as string[];
+  return supports.sort((a, b) => supports.filter((x) => x === b).length - supports.filter((x) => x === a).length)[0] ?? null;
 }
 
 // ---------- Class pulse (anonymized) ----------
-// How everyone split on a round's choice, as percentages, plus the strongest proof line on each side: the line from
-// the story most often used as valid proof. Student-written text never appears here.
+// How everyone split on a round, as percentages, plus the strongest proof line on each side: the line from the story
+// most often used as valid proof. Shown only once 5 players have answered, so one player never shows as 100%.
+// Student-written text never appears here.
+export const PULSE_MIN_PLAYERS = 5;
 export type PulseRow = { choice: string; valid: boolean; proof: string[] };
 export function classPulse(rows: PulseRow[], options: { key: string; label: string }[]) {
   const total = rows.length;
+  if (total < PULSE_MIN_PLAYERS) return [];
   return options.map((o) => {
     const mine = rows.filter((r) => r.choice === o.key);
     const counts = new Map<string, number>();
@@ -172,13 +277,12 @@ export function classPulse(rows: PulseRow[], options: { key: string; label: stri
     return { key: o.key, label: o.label, pct: total ? Math.round((mine.length / total) * 100) : 0, strongest };
   });
 }
-// The sides of each round, for the pulse.
-export function pulseOptions(scene: Scene, round: RoundKind) {
-  const c = scene.story_mode!;
-  if (round === "read") return [{ key: "found", label: "Answered the question" }, { key: "missed", label: "Not yet" }];
-  if (round === "confront") return c.confront.actions.map((a) => ({ key: a.id, label: a.label }));
+// The sides of each round, for the pulse. Round 4 compares players who got the same case question.
+export function pulseOptions(scene: Scene, round: RoundKind, picks?: Partial<Picks>) {
+  if (round === "read" || round === "confront") return [{ key: "found", label: "Found it" }, { key: "missed", label: "Not yet" }];
   if (round === "lie") return [{ key: "caught", label: "Caught the lie" }, { key: "missed", label: "Missed it" }];
-  return c.call.theories.map((t) => ({ key: t.id, label: t.name }));
+  const q = callQ(scene, picks);
+  return q.theories.map((t) => ({ key: `${q.id}|${t.id}`, label: t.name }));
 }
 export const pulseChoice = (r: RoundScore) => (r.kind === "read" ? (r.valid ? "found" : "missed") : r.choice);
 
@@ -209,52 +313,42 @@ export function boardName(nickname: string) {
 export function storyModeProblems(world: WorldPack, passages: SourcePassage[]): string[] {
   const problems: string[] = [];
   const notes = contentNotes(world);
+  const names = nameWords(world);
   const dash = /—/;
   for (const scene of world.scenes) {
     const c = scene.story_mode;
     if (!c) continue;
     const where = `${world.id}/${scene.id} story_mode`;
-    const texts = [c.intro, c.read.prompt, c.read.focus, ...(c.read.near_misses ?? []).map((n) => n.hint), c.confront.line, ...c.confront.actions.flatMap((a) => [a.label, a.reaction]), c.call.question, ...c.call.theories.flatMap((t) => [t.name, t.description])];
+    const reading = new Set(c.read.chunks);
+    const inReading = (line: string) => { const l = sceneEvidence(world, passages, scene, line); return l && reading.has(l.pid) ? { text: l.text, pid: l.pid } : null; };
+    const texts = [c.intro, c.read.prompt, c.infer.reaction.right, c.infer.reaction.wrong, ...c.read.bank.flatMap((q) => [q.focus, ...q.near_misses.map((n) => n.hint)]), ...c.infer.bank.flatMap((q) => [q.question, ...q.near_misses.map((n) => n.hint), q.prove.right, ...q.prove.wrong]), ...c.call.bank.flatMap((q) => [q.question, ...q.theories.flatMap((t) => [t.name, t.description])])];
     if (texts.some((t) => dash.test(t))) problems.push(`${where}: no em dashes in player-facing text`);
     if (!scene.lie) problems.push(`${where}: round 3 needs the scene's Spot the Lie testimony`);
     for (const pid of c.read.chunks) {
       if (!passages.some((p) => p.id === pid)) problems.push(`${where}: chunk ${pid} is not a paragraph`);
       if (notes.has(pid)) problems.push(`${where}: chunk ${pid} has a content note; Story Mode reading avoids those`);
     }
-    if (!evidenceLines(world, passages, sceneClueIds(scene)).some((l) => c.read.chunks.includes(l.pid))) problems.push(`${where}: the reading has no evidence lines to find`);
-    // The focus question's answers: exact evidence lines from the reading, all different, at least the pouch's 3.
-    const answerTexts = new Set<string>();
-    for (const a of c.read.answers) {
-      const l = sceneEvidence(world, passages, scene, a);
-      if (!l || l.text !== a) problems.push(`${where}: read answer "${a.replace(/\s+/g, " ").slice(0, 60)}" is not copied exactly from one of this scene's evidence lines`);
-      else if (!c.read.chunks.includes(l.pid)) problems.push(`${where}: read answer from ${l.pid} is not in the reading`);
-      else answerTexts.add(l.text);
+    if (!evidenceLines(world, passages, sceneClueIds(scene)).some((l) => reading.has(l.pid))) problems.push(`${where}: the reading has no evidence lines to find`);
+    const banks: [string, { id: string }[]][] = [["read", c.read.bank], ["infer", c.infer.bank], ["lie", sceneLies(scene)], ["call", c.call.bank]];
+    for (const [name, bank] of banks) {
+      if (bank.length < 3 || bank.length > 4) problems.push(`${where}: the ${name} round needs 3 or 4 questions`);
+      if (new Set(bank.map((q) => q.id)).size !== bank.length) problems.push(`${where}: ${name} question ids must differ`);
     }
-    if (answerTexts.size < POUCH_MAX) problems.push(`${where}: the focus question needs at least ${POUCH_MAX} different answer lines`);
-    // Near misses: exact lines from the reading that are not answers, each with a hint naming a paragraph.
-    for (const n of c.read.near_misses ?? []) {
-      const l = sceneEvidence(world, passages, scene, n.line);
-      if (!l || l.text !== n.line) problems.push(`${where}: near miss "${n.line.replace(/\s+/g, " ").slice(0, 60)}" is not copied exactly from one of this scene's evidence lines`);
-      else if (!c.read.chunks.includes(l.pid)) problems.push(`${where}: near miss from ${l.pid} is not in the reading`);
-      else if (answerTexts.has(l.text)) problems.push(`${where}: a near miss is also an answer`);
-      if (!/¶\d+/.test(n.hint)) problems.push(`${where}: a near miss hint names a paragraph (¶)`);
+    // Round 1: exact lines from the reading, at least the pouch's 3; no shared key words.
+    for (const q of c.read.bank) {
+      problems.push(...questionProblems(`${where}/read/${q.id}`, { focus: q.focus, answers: q.answers, near_misses: q.near_misses }, names, inReading, (l) => inReading(l)?.pid ?? null, false));
+      if (new Set(q.answers.map(lineWords)).size < POUCH_MAX) problems.push(`${where}/read/${q.id}: needs at least ${POUCH_MAX} different answer lines`);
     }
-    const who = c.confront.character_id;
+    // Round 2: a speaking character asks; one exact line, its exact words when long, and Prove it.
+    const who = c.infer.character_id;
     if (!scene.available_characters.includes(who) || !world.characters.some((x) => x.id === who)) problems.push(`${where}: ${who} must be a speaking character in this scene`);
-    if (!/\byou\b/i.test(c.confront.line)) problems.push(`${where}: the confrontation speaks to the student ("you")`);
-    const ids = new Set<string>();
-    for (const a of c.confront.actions) {
-      if (ids.has(a.id)) problems.push(`${where}: action id ${a.id} is used twice`);
-      ids.add(a.id);
-      for (const s of a.supports) if (!sceneEvidence(world, passages, scene, s)) problems.push(`${where}: action ${a.id} supports a line that is not one of this scene's evidence lines`);
-    }
-    // Every supporting line has to be reachable: in the reading the student hears, or in the passage shown for proof.
-    const readable = new Set(c.read.chunks);
-    for (const a of c.confront.actions) for (const s of a.supports) { const l = sceneEvidence(world, passages, scene, s); if (l && !readable.has(l.pid)) problems.push(`${where}: action ${a.id} needs a line from ${l.pid}, which the reading doesn't include`); }
-    const tids = new Set(c.call.theories.map((t) => t.id));
-    if (tids.size !== 3) problems.push(`${where}: the three theories need different ids`);
-    for (const t of c.call.theories) {
-      for (const s of t.supports) { const l = sceneEvidence(world, passages, scene, s); if (!l) problems.push(`${where}: theory ${t.id} supports a line that is not one of this scene's evidence lines`); else if (!readable.has(l.pid)) problems.push(`${where}: theory ${t.id} needs a line from ${l.pid}, which the reading doesn't include`); }
+    for (const q of c.infer.bank) problems.push(...questionProblems(`${where}/infer/${q.id}`, q, names, inReading, (l) => inReading(l)?.pid ?? null));
+    // Round 3: every lie follows the Spot the Lie rules.
+    for (const l of c.lies) problems.push(...lieProblems({ ...world, scenes: [{ ...scene, lie: l }] }, passages).map((p) => p.replace(" lie:", ` lie ${l.id}:`)));
+    // Round 4: three theories, each backed by lines from the reading.
+    for (const q of c.call.bank) {
+      if (new Set(q.theories.map((t) => t.id)).size !== 3) problems.push(`${where}/call/${q.id}: the three theories need different ids`);
+      for (const t of q.theories) for (const s of t.supports) if (!inReading(s)) problems.push(`${where}/call/${q.id}: theory ${t.id} needs an exact line from the reading`);
     }
   }
   return problems;

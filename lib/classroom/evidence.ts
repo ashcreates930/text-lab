@@ -4,6 +4,7 @@
 import type { WorldPack } from "../world-schema.ts";
 import type { LiveRoundEvidence } from "../live/evidence.ts";
 import { freezeLine } from "../freeze.ts";
+import { LEVELS, SPEED_FLAG_TEXT } from "../fair-play.ts";
 
 // What a saved answer looks like in students.progress.artifactAnswers (only the fields this view reads).
 export type SavedAnswer = { notice?: string; interpret?: string; craft?: string; character?: string };
@@ -48,7 +49,10 @@ export type ClassEvidence = {
   // Live rounds the class played: each squad's answer and result, and what each student did in their role.
   live?: LiveRoundEvidence[];
   // Story Mode: every student ranked per scene, with each round's points and proof (teachers only).
-  storyMode?: { sceneId: string; sceneTitle: string; rows: { rank: number; nickname: string; score: number; bestStreak: number; finished: boolean; timeSetting: string; rounds: { round: number; kind: string; points: number; valid: boolean; choice: string; proof: string[]; explanation: string; grace: boolean }[] }[] }[];
+  // Story Mode (teachers only): max and level are the points possible and the goal level reached; per round, tries (misses
+  // before the right answer), shown (the answer was shown after three misses, 0 points), typed (a typed "This proves…
+  // because…") and flags (speed flags: never shown to students).
+  storyMode?: { sceneId: string; sceneTitle: string; rows: { rank: number; nickname: string; score: number; bestStreak: number; finished: boolean; timeSetting: string; max?: number; level?: string | null; rounds: { round: number; kind: string; points: number; valid: boolean; choice: string; proof: string[]; explanation: string; grace: boolean; tries?: number; shown?: boolean; typed?: string | null; flags?: string[] }[] }[] }[];
   summary: { joined: number; totalClues: number; averageProven: number; provedWrongStudents: number; needsHelp: number; anyProven: boolean };
 };
 
@@ -168,11 +172,13 @@ export function evidenceCsv(e: ClassEvidence) {
   }
   // Story Mode: one row per student per scene, with each round's points and proof.
   if (e.storyMode?.some((s) => s.rows.length)) {
-    lines.push("", ["Story Mode scene", "Rank", "Student", "Score", "Best streak", "Time", "Round 1 points", "Round 1 proof", "Round 2 points", "Round 2 move", "Round 2 proof", "Round 3 points", "Round 3 line", "Round 3 explanation", "Round 4 points", "Round 4 theory", "Round 4 proof"].join(","));
+    lines.push("", ["Story Mode scene", "Rank", "Student", "Score", "Points possible", "Goal level", "Best streak", "Time", "Round 1 points", "Round 1 proof", "Round 2 points", "Round 2 answer", "Round 2 proof", "Round 3 points", "Round 3 line", "Round 3 explanation", "Round 4 points", "Round 4 theory", "Round 4 proof", "Shown answers", "Speed flags"].join(","));
     for (const sc of e.storyMode) for (const r of sc.rows) {
       const rd = (n: number) => r.rounds.find((x) => x.round === n);
       const pts = (n: number) => (rd(n) ? `${rd(n)!.points}${rd(n)!.grace ? " (late, half)" : ""}` : "");
-      lines.push([sc.sceneTitle, String(r.rank), r.nickname, String(r.score), String(r.bestStreak), r.timeSetting === "1" ? "Standard" : r.timeSetting === "untimed" ? "Untimed" : `${r.timeSetting}x`, pts(1), (rd(1)?.proof ?? []).join(" | "), pts(2), rd(2)?.choice ?? "", (rd(2)?.proof ?? []).join(" | "), pts(3), (rd(3)?.proof ?? []).join(" | "), rd(3)?.explanation ?? "", pts(4), rd(4)?.choice ?? "", (rd(4)?.proof ?? []).join(" | ")].map(cell).join(","));
+      const shownRounds = r.rounds.filter((x) => x.shown).map((x) => `Round ${x.round}`).join(" | ");
+      const flagged = r.rounds.filter((x) => x.flags?.length).map((x) => `Round ${x.round}: ${x.flags!.map((f) => SPEED_FLAG_TEXT[f as keyof typeof SPEED_FLAG_TEXT] ?? f).join("; ")}`).join(" | ");
+      lines.push([sc.sceneTitle, String(r.rank), r.nickname, String(r.score), r.max ? String(r.max) : "", LEVELS.find((l) => l.id === r.level)?.name ?? "", String(r.bestStreak), r.timeSetting === "1" ? "Standard" : r.timeSetting === "untimed" ? "Untimed" : `${r.timeSetting}x`, pts(1), (rd(1)?.proof ?? []).join(" | "), pts(2), rd(2)?.typed ?? rd(2)?.choice ?? "", (rd(2)?.proof ?? []).join(" | "), pts(3), (rd(3)?.proof ?? []).join(" | "), rd(3)?.explanation ?? "", pts(4), rd(4)?.choice ?? "", (rd(4)?.proof ?? []).join(" | "), shownRounds, flagged].map(cell).join(","));
     }
   }
   // Live rounds: a second table, one row per student per round (squads score together; no individual ranking).

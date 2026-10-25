@@ -244,7 +244,7 @@ function Scoreboard({state}:{state:View}){
 }
 
 // ---------- Story Mode, live ----------
-const STEP_NAMES=["Read and notice","Something happens to you","Catch the lie","Make your call"];
+const STEP_NAMES=["Locate","Infer","Catch the lie","Build the case"];
 function StoryPick({state,act}:{state:View;act:(b:Record<string,unknown>)=>void}){
  const [squads,setSquads]=useState(false),[freezes,setFreezes]=useState(false);
  return <div className="rounded-2xl bg-[#1E1A15] p-4 md:col-span-3"><p className="flex items-center gap-2 text-[22px] font-bold"><Sparkles size={22}/> Story Mode</p><p className="mt-1 text-[16px] text-[#E8DDCB]">Everyone plays the scene at once: four timed rounds on the board, controls on their phones, and a leaderboard between rounds.</p>
@@ -271,12 +271,11 @@ function StoryHost({state,round,act,sessionId}:{state:View;round:Extract<NonNull
   <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-[clamp(22px,2.2vw,34px)] font-bold">Round {step+1} of 4 · {STEP_NAMES[step]}</p>
    {!board&&<p className="rounded-2xl bg-[#2E2821] px-5 py-2 text-[clamp(22px,2.2vw,34px)] font-bold tabular-nums" aria-label={`${left} seconds left`}>{left>0?`${left}s`:"Time!"}</p>}</div>
   {!board&&<div aria-hidden className="mt-3 h-3 overflow-hidden rounded-full bg-[#2E2821]"><div className="h-full rounded-full bg-[#A0472C]" style={{width:`${Math.max(0,left/round.seconds)*100}%`}}/></div>}
-  {board?<><h2 className="mt-5 text-[28px] font-bold">Leaderboard</h2>{state.storyBoard&&<StoryTop top={state.storyBoard.top} kind={state.storyBoard.kind} players={state.storyBoard.players}/>}</>
+  {board?<>{round.reveal&&round.reveal.length>0&&<section className="mt-5 rounded-3xl bg-[#2E2821] p-6" aria-labelledby="proof-h"><h2 id="proof-h" className="text-[28px] font-bold">The line{round.reveal.length===1?"":"s"} that prove{round.reveal.length===1?"s":""} it</h2><ul className="mt-3 space-y-3">{round.reveal.map(l=><li key={l} className="border-l-4 border-[#F3C9B2] pl-4 font-serif text-[clamp(18px,1.6vw,26px)] leading-snug">{l.replace(/s+/g," ")}</li>)}</ul></section>}<h2 className="mt-5 text-[28px] font-bold">Leaderboard</h2>{state.storyBoard&&<StoryTop top={state.storyBoard.top} kind={state.storyBoard.kind} players={state.storyBoard.players}/>}</>
   :<>
    {round.read&&<p className="mt-4 rounded-2xl bg-[#A0472C] px-6 py-4 text-[clamp(22px,2.2vw,36px)] font-bold">{round.read.focus}</p>}
    {round.read&&<div className="mt-4 grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]"><div className="case-art aspect-[4/3] w-full rounded-3xl" role="img" aria-label="The scene" style={{backgroundImage:`url('${round.image}')`}}/><div className="space-y-4 rounded-3xl bg-[#2E2821] p-6">{round.read.chunks.map(c=><p key={c.id} className="font-serif text-[clamp(18px,1.6vw,26px)] leading-snug">{c.text.replace(/\s+/g," ")}</p>)}</div></div>}
-   {speaker&&<div className="mt-4 flex flex-col gap-5 rounded-3xl bg-[#2E2821] p-6 md:flex-row md:items-center">{speaker.portrait&&<img src={speaker.portrait} alt="" className="h-40 w-40 shrink-0 rounded-full object-cover"/>}<div><p className="text-[18px] font-semibold uppercase tracking-wide text-[#F3C9B2]">{round.confront?"Confronts the class":"Testimony"} · {speaker.name}</p><p className="mt-2 font-serif text-[clamp(22px,2.2vw,36px)] leading-snug">“{line}”</p>
-    {round.confront&&<ul className="mt-4 grid gap-2 md:grid-cols-3">{round.confront.actions.map(a=><li key={a.id} className="rounded-2xl bg-[#1E1A15] p-4 text-[20px]">{a.label}</li>)}</ul>}
+   {speaker&&<div className="mt-4 flex flex-col gap-5 rounded-3xl bg-[#2E2821] p-6 md:flex-row md:items-center">{speaker.portrait&&<img src={speaker.portrait} alt="" className="h-40 w-40 shrink-0 rounded-full object-cover"/>}<div><p className="text-[18px] font-semibold uppercase tracking-wide text-[#F3C9B2]">{round.confront?"Asks the class":"Testimony"} · {speaker.name}</p><p className="mt-2 font-serif text-[clamp(22px,2.2vw,36px)] leading-snug">“{line}”</p>
     <button type="button" onClick={()=>act({action:"witness.play"})} className="host-btn-secondary mt-4"><Sparkles size={20}/>Play on the Witness stand</button></div></div>}
    {round.call&&<div className="mt-4 rounded-3xl bg-[#2E2821] p-6"><p className="text-[clamp(24px,2.4vw,40px)] font-bold">{round.call.question}</p><ul className="mt-4 grid gap-3 md:grid-cols-3">{round.call.theories.map(t=><li key={t.id} className="rounded-2xl bg-[#1E1A15] p-4"><p className="text-[22px] font-bold">{t.name}</p><p className="mt-1 text-[17px] text-[#E8DDCB]">{t.description}</p></li>)}</ul></div>}
    <p className={`mt-4 ${big}`}>{state.storyAnswered} of {state.counters.players} answered on their phones.</p>

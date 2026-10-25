@@ -27,11 +27,11 @@ export function playMode(demo:Demo):PlayMode{
 const reduced=()=>typeof window!=="undefined"&&!!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 const sceneLabel=(world:WorldPack,i:number)=>sceneTitle(world.scenes[i].id,i,JSON.stringify([world.scenes,world.characters.map(c=>c.name)])).replace(/^Scene \d+ · /,"");
 
-// Trust with the character who confronts the student in Story Mode (the first scene that has one), from saved runs.
+// Trust with the character who asks the student in Story Mode's infer round (the first scene that has one), from saved runs.
 export function trustMeter(world:WorldPack,demo:Demo){
  const sm=world.scenes.find(s=>s.story_mode)?.story_mode;
  if(!sm)return null;
- const who=world.characters.find(c=>c.id===sm.confront.character_id);
+ const who=world.characters.find(c=>c.id===sm.infer.character_id);
  if(!who)return null;
  const value=Object.values(demo.story??{}).reduce((n,r)=>n+(r.trust?.[who.id]??0),0);
  return {name:who.name,value:Math.max(-3,Math.min(3,value))};
