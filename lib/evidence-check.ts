@@ -8,15 +8,23 @@ import { evidenceSentences, lineWords } from "./lies.ts";
 
 export type EvidenceLine = { clueId: string; pid: string; text: string };
 
-// Every tappable line of the given clues (all clues in the story when none are named).
+// Every tappable line of the given clues (all clues in the story when none are named): the lines of each clue's evidence
+// paragraphs, plus its question bank's answer lines (lib/fair-play.ts), which may sit in a paragraph beside them.
 export function evidenceLines(world: WorldPack, passages: SourcePassage[], clueIds?: string[]): EvidenceLine[] {
   const byId = new Map(passages.map((p) => [p.id, p]));
   return world.scenes.flatMap((s) => s.artifacts)
     .filter((a) => !clueIds || clueIds.includes(a.id))
-    .flatMap((a) => a.source_anchor.flatMap((pid) => {
-      const p = byId.get(pid);
-      return p ? evidenceSentences(p.text).map((text) => ({ clueId: a.id, pid, text })) : [];
-    }));
+    .flatMap((a) => {
+      const own = a.source_anchor.flatMap((pid) => {
+        const p = byId.get(pid);
+        return p ? evidenceSentences(p.text).map((text) => ({ clueId: a.id, pid, text })) : [];
+      });
+      const extra = (a.bank ?? []).flatMap((q) => q.answers).filter((x) => !own.some((l) => l.text === x.line)).flatMap((x) => {
+        const p = passages.find((q) => evidenceSentences(q.text).includes(x.line));
+        return p ? [{ clueId: a.id, pid: p.id, text: x.line }] : [];
+      });
+      return [...own, ...extra.filter((l, i) => extra.findIndex((m) => m.text === l.text) === i)];
+    });
 }
 
 // The evidence line a quote is, or null. clueId limits it to that clue's evidence; pid, when given, must match too.
