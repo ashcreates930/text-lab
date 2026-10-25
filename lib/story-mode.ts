@@ -46,7 +46,8 @@ export function timeAnnouncement(prevLeft: number, left: number) {
 export const POINTS = { readLine: 100, infer: 400, lieLine: 400, lieExplain: 200, callLine: 200, callSupports: 200 };
 export const ROUND_MAX: Record<RoundKind, number> = { read: 3 * POINTS.readLine, confront: POINTS.infer, lie: POINTS.lieLine + POINTS.lieExplain, call: 2 * POINTS.callLine + POINTS.callSupports };
 export const POUCH_MAX = 3;
-// Consecutive rounds with valid proof: the 2nd in a row x1.2, the 3rd and on x1.5 (the cap).
+// Consecutive rounds right on the first try: the 2nd in a row x1.2, the 3rd and on x1.5 (the cap). A round that took
+// retries still scores its points but starts the streak over.
 export const streakMultiplier = (streakBefore: number) => (streakBefore >= 2 ? 1.5 : streakBefore === 1 ? 1.2 : 1);
 // The points possible for this student's scene: every round they play answered right on the first try, with no
 // power-ups. Rounds skipped at the start (the home page's "Catch the lie") don't count.
@@ -235,8 +236,9 @@ export function buy(state: RunState, p: PowerUp): RunState | string {
 // bet, the round's most, comes off the total, never below 0), coins, the pouch (round 1) and trust (round 2).
 export function applyRound(state: RunState, score: RoundScore, extra: { pouch?: string[]; trust?: { characterId: string; delta: number } } = {}): RunState {
   const kind = score.kind;
-  const streak = score.valid ? state.streak + 1 : 0;
-  const multiplier = score.valid ? streakMultiplier(state.streak) : 1;
+  const firstTry = score.valid && score.tries === 0 && !score.shown;
+  const streak = firstTry ? state.streak + 1 : 0;
+  const multiplier = firstTry ? streakMultiplier(state.streak) : 1;
   const doubled = state.doubleDown && score.valid;
   const earned = Math.round(score.base * multiplier * (doubled ? 2 : 1));
   const bet = state.doubleDown ? ROUND_MAX[kind] : undefined;

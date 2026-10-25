@@ -41,6 +41,10 @@ const storyMode=z.object({intro:z.string(),
  infer:z.object({character_id:z.string(),reaction:z.object({right:z.string().min(1),wrong:z.string().min(1)}),bank:z.array(storyInfer).min(1)}),
  lies:z.array(lie.extend({id:z.string()})).default([]),
  call:z.object({bank:z.array(storyCall).min(1)})});
+// Story missions (lib/missions.ts): a mission built on a real problem in the text. pieces: exact lines collected when
+// proven in play (lead: the piece's own paraphrased question); payoff: the line revealed after the verdict (keywords:
+// phrases from it that no character reply may use); sealed_clue: the clue that holds the payoff, opened at the verdict.
+const mission=z.object({id:z.string(),title:z.string().min(1),problem:z.string().min(1),sealed_clue:z.string(),payoff:z.object({line:z.string(),keywords:z.array(z.string()).min(1)}),theories:z.array(z.object({id:z.string(),name:z.string(),description:z.string()})).length(3),pieces:z.array(z.object({id:z.string(),scene_id:z.string(),line:z.string(),lead:z.string().min(1),shared_ok:z.array(z.string()).optional()})).min(1)});
 // writing_clue: the clue whose Notice, Interpret and Craft questions are the scene's one writing task (default: the first).
 const scene = z.object({id:z.string(),writing_clue:z.string().optional(),narration:z.string(),summary:z.string().optional(),art_direction:z.string().optional(),reading:z.array(z.object({start:z.string(),end:z.string()})).optional(),reading_note:z.string().optional(),background_image:z.string(),narration_audio:z.string().nullable().optional(),ambient_audio:z.string().nullable(),available_characters:z.array(z.string()),lie:lie.optional(),story_mode:storyMode.optional(),choice_point:z.object({prompt:z.string(),dok_level:z.number(),options:z.array(choice),role_frame:z.string().optional()}).nullable(),dok_task:z.string(),passage_anchors:z.array(z.string()).default([]),artifacts:z.array(artifact).default([])}).superRefine((value,ctx)=>{for(let i=0;i<value.artifacts.length;i++)for(let j=i+1;j<value.artifacts.length;j++){const a=value.artifacts[i].position,b=value.artifacts[j].position;if(a.x<b.x+b.width&&b.x<a.x+a.width&&a.y<b.y+b.height&&b.y<a.y+a.height)ctx.addIssue({code:'custom',message:`Hotspots ${value.artifacts[i].id} and ${value.artifacts[j].id} overlap`,path:['artifacts',j,'position']})}});
 // Storybook reader: pages in reading order, each a contiguous paragraph range of source.md.
@@ -66,7 +70,7 @@ export const WorldPackSchema = z.object({
   benchmarks:z.array(z.object({code:z.string(),description:z.string()})),
   roles:z.array(role),
   // Your Turn (lib/your-turn.ts): one activity per "What's your angle?" option, after the game.
-  your_turn:z.object({activities:z.record(z.string(),yourTurnActivity)}).optional(),
+  your_turn:z.object({activities:z.record(z.string(),yourTurnActivity)}).optional(),missions:z.array(mission).optional(),
   // Demo rival and squad modes: the computer players' names (clearly labeled as computer players on screen).
   computer_players:z.object({rival:z.object({name:z.string().min(1),emblem:z.enum(["lantern","rider"])}),teammates:z.array(z.string().min(1)).min(2).max(3)}).optional(),
   // Students in the story: the part the student plays (see lib/student-role.ts). never: people the student must never be.

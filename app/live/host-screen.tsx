@@ -107,6 +107,7 @@ function RoundPicker({state,act,first}:{state:View;act:(b:Record<string,unknown>
   <h2 id="pick-h" className="text-[24px] font-bold">{first?"Start the first round":"Next round"}</h2>
   <div className="mt-4 grid gap-3 md:grid-cols-3">
    {state.storyScenes.length>0&&<StoryPick state={state} act={act}/>}
+   {state.missions&&<MissionPick state={state} act={act}/>}
    <div className="rounded-2xl bg-[#1E1A15] p-4"><p className="flex items-center gap-2 text-[22px] font-bold"><Search size={22}/> Spot the Lie</p><p className="mt-1 text-[16px] text-[#E8DDCB]">A character testifies. Squads find the line that disproves them.</p>
     <label htmlFor="lie-scene" className="mt-3 block text-[14px] text-[#F3C9B2]">Testimony</label>
     <select id="lie-scene" value={scene} onChange={e=>setScene(e.target.value)} className="mt-1 w-full rounded-xl bg-[#FFFDF8] px-3 py-2 text-[16px] text-[#2A2620]"><optgroup label="From the story">{state.lieScenes.map(l=><option key={l.sceneId} value={l.sceneId}>{l.label}</option>)}</optgroup>
@@ -245,6 +246,18 @@ function Scoreboard({state}:{state:View}){
 
 // ---------- Story Mode, live ----------
 const STEP_NAMES=["Locate","Infer","Catch the lie","Build the case"];
+// Story missions: one mission for the whole class, or let each squad choose; each squad's pieces so far.
+function MissionPick({state,act}:{state:View;act:(b:Record<string,unknown>)=>void}){
+ const m=state.missions!;
+ const label=m.squadsChoose?"Squads choose":m.missionId?m.options.find(o=>o.id===m.missionId)?.title??"":"Off";
+ return <div className="rounded-2xl bg-[#1E1A15] p-4 md:col-span-3"><p className="text-[22px] font-bold">Story missions · {label}</p>
+  <p className="mt-1 text-[16px] text-[#E8DDCB]">Squads collect mission pieces by proving their lines in Story Mode.</p>
+  <div className="mt-3 flex flex-wrap gap-2">{m.options.map(o=><button key={o.id} type="button" aria-pressed={m.missionId===o.id} onClick={()=>act({action:"mission.set",missionId:o.id})} className={`min-h-11 rounded-full px-4 text-[16px] font-semibold ${m.missionId===o.id?"bg-[#F3C9B2] text-black":"bg-[#2E2821] text-white"}`}>Everyone: {o.title}</button>)}
+   <button type="button" aria-pressed={m.squadsChoose} onClick={()=>act({action:"mission.set",squadsChoose:true})} className={`min-h-11 rounded-full px-4 text-[16px] font-semibold ${m.squadsChoose?"bg-[#F3C9B2] text-black":"bg-[#2E2821] text-white"}`}>Let squads choose</button>
+   {(m.missionId||m.squadsChoose)&&<button type="button" onClick={()=>act({action:"mission.set",missionId:null})} className="min-h-11 rounded-full bg-[#2E2821] px-4 text-[16px] text-[#E8DDCB] underline">Turn off</button>}</div>
+  {(m.missionId||m.squadsChoose)&&m.squads.length>0&&<ul className="mt-3 grid gap-2 md:grid-cols-3">{m.squads.map(q=><li key={q.name} className="rounded-xl bg-[#2E2821] px-3 py-2 text-[16px]"><b>{q.name}</b>: {q.mission?`${q.mission.title} · ${q.mission.found} of ${q.mission.total} pieces`:"choosing…"}</li>)}</ul>}
+ </div>;
+}
 function StoryPick({state,act}:{state:View;act:(b:Record<string,unknown>)=>void}){
  const [squads,setSquads]=useState(false),[freezes,setFreezes]=useState(false);
  return <div className="rounded-2xl bg-[#1E1A15] p-4 md:col-span-3"><p className="flex items-center gap-2 text-[22px] font-bold"><Sparkles size={22}/> Story Mode</p><p className="mt-1 text-[16px] text-[#E8DDCB]">Everyone plays the scene at once: four timed rounds on the board, controls on their phones, and a leaderboard between rounds.</p>

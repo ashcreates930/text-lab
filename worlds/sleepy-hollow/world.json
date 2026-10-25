@@ -6506,5 +6506,203 @@
         "write": "Sum up why the Lantern Ghost was wrong. Write 2 or 3 sentences and cite at least one line."
       }
     }
-  }
+  },
+  "missions": [
+    {
+      "id": "find-ichabod",
+      "title": "Find Ichabod",
+      "problem": "Prove what really happened to Ichabod Crane.",
+      "sealed_clue": "new-york-report",
+      "payoff": {
+        "line": "It is true, an old farmer, who had been down to New York on a visit\nseveral years after, and from whom this account of the ghostly adventure\nwas received, brought home the intelligence that Ichabod Crane was still\nalive; that he had left the neighborhood partly through fear of the\ngoblin and Hans Van Ripper, and partly in mortification at having been\nsuddenly dismissed by the heiress; that he had changed his quarters to a\ndistant part of the country; had kept school and studied law at the same\ntime; had been admitted to the bar; turned politician; electioneered;\nwritten for the newspapers; and finally had been made a justice of\nthe Ten Pound Court.",
+        "keywords": [
+          "still alive",
+          "New York",
+          "Ten Pound Court",
+          "admitted to the bar"
+        ]
+      },
+      "theories": [
+        {
+          "id": "left-alive",
+          "name": "He left the valley alive",
+          "description": "He went away on his own and lived on somewhere else."
+        },
+        {
+          "id": "drowned",
+          "name": "He drowned in the brook",
+          "description": "He fell at the bridge and the deep water took him."
+        },
+        {
+          "id": "carried-off",
+          "name": "The Horseman carried him off",
+          "description": "The Galloping Hessian took him away."
+        }
+      ],
+      "pieces": [
+        {
+          "id": "pay",
+          "scene_id": "empty-schoolhouse",
+          "line": "Whatever money the\nschoolmaster possessed, and he had received his quarter’s pay but a\nday or two before, he must have had about his person at the time of his\ndisappearance.",
+          "lead": "Find the line that suggests his wages went wherever he went."
+        },
+        {
+          "id": "no-body",
+          "scene_id": "empty-schoolhouse",
+          "line": "The brook was searched, but the body of the schoolmaster was not to\nbe discovered.",
+          "lead": "Find the line that tells what the hunt in the water turned up."
+        },
+        {
+          "id": "chapfallen",
+          "scene_id": "van-tassel-party",
+          "line": "Something, however, I fear me, must have gone wrong, for he certainly\nsallied forth, after no very great interval, with an air quite desolate\nand chapfallen.",
+          "lead": "Find the line that shows how he looked as he walked out after his talk with Katrina."
+        },
+        {
+          "id": "hans-wrath",
+          "scene_id": "the-road-home",
+          "line": "For a moment the terror of Hans Van\nRipper’s wrath passed across his mind,--for it was his Sunday saddle;\nbut this was no time for petty fears; the goblin was hard on his\nhaunches; and (unskilful rider that he was!) he had much ado to maintain\nhis seat; sometimes slipping on one side, sometimes on another, and\nsometimes jolted on the high ridge of his horse’s backbone, with a\nviolence that he verily feared would cleave him asunder.",
+          "lead": "Find the line that shows whose anger he dreaded during the ride."
+        },
+        {
+          "id": "tumbled",
+          "scene_id": "the-road-home",
+          "line": "It encountered his cranium\nwith a tremendous crash,--he was tumbled headlong into the dust, and\nGunpowder, the black steed, and the goblin rider, passed by like a\nwhirlwind.",
+          "lead": "Find the line that shows what happened to him on the far side of the crossing."
+        }
+      ]
+    },
+    {
+      "id": "unmask-horseman",
+      "title": "Unmask the Horseman",
+      "problem": "Prove whether the rider was a ghost or a person.",
+      "sealed_clue": "broms-knowing-look",
+      "payoff": {
+        "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell.",
+        "keywords": [
+          "hearty laugh",
+          "exceedingly knowing",
+          "knew more about the matter"
+        ]
+      },
+      "theories": [
+        {
+          "id": "ghost",
+          "name": "A real ghost",
+          "description": "The Headless Horseman of the old stories rode that night."
+        },
+        {
+          "id": "brom",
+          "name": "Brom Bones in disguise",
+          "description": "Ichabod's rival played the Horseman to scare him off."
+        },
+        {
+          "id": "other-rider",
+          "name": "Some other rider",
+          "description": "A stranger on the road, not a ghost and not Brom."
+        }
+      ],
+      "pieces": [
+        {
+          "id": "pumpkin",
+          "scene_id": "empty-schoolhouse",
+          "line": "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin.",
+          "lead": "Find the line that names the odd object next to what he left by the stream."
+        },
+        {
+          "id": "jokes",
+          "scene_id": "van-tassel-party",
+          "line": "There was\nsomething extremely provoking in this obstinately pacific system; it\nleft Brom no alternative but to draw upon the funds of rustic waggery in\nhis disposition, and to play off boorish practical jokes upon his rival.",
+          "lead": "Find the line that shows how Brom fought back without a real fight."
+        },
+        {
+          "id": "brag",
+          "scene_id": "van-tassel-party",
+          "line": "He affirmed that on returning one night from the neighboring village of\nSing Sing, he had been overtaken by this midnight trooper; that he had\noffered to race with him for a bowl of punch, and should have won it\ntoo, for Daredevil beat the goblin horse all hollow, but just as they\ncame to the church bridge, the Hessian bolted, and vanished in a flash\nof fire.",
+          "lead": "Find the line where Brom boasts about where his ghostly rival disappeared."
+        },
+        {
+          "id": "big-rider",
+          "scene_id": "the-road-home",
+          "line": "He\nappeared to be a horseman of large dimensions, and mounted on a black\nhorse of powerful frame.",
+          "lead": "Find the line that describes how big the stranger and the animal under him were."
+        },
+        {
+          "id": "thrown",
+          "scene_id": "the-road-home",
+          "line": "Just then he saw the goblin rising in his stirrups,\nand in the very act of hurling his head at him.",
+          "lead": "Find the line where the pursuer throws something at Ichabod."
+        }
+      ]
+    },
+    {
+      "id": "clear-schoolhouse",
+      "title": "Clear the schoolhouse",
+      "problem": "Prove why the valley believes the schoolhouse is haunted.",
+      "sealed_clue": "old-wives-tale",
+      "payoff": {
+        "line": "The schoolhouse being deserted soon fell to\ndecay, and was reported to be haunted by the ghost of the unfortunate\npedagogue and the plowboy, loitering homeward of a still summer evening,\nhas often fancied his voice at a distance, chanting a melancholy psalm\ntune among the tranquil solitudes of Sleepy Hollow.",
+        "keywords": [
+          "fell to decay",
+          "ghost of the unfortunate pedagogue",
+          "melancholy psalm tune"
+        ]
+      },
+      "theories": [
+        {
+          "id": "real-ghost",
+          "name": "A real ghost haunts it",
+          "description": "Ichabod's spirit really stayed behind."
+        },
+        {
+          "id": "stories",
+          "name": "Old stories and fear",
+          "description": "The valley's love of ghost tales made people believe it."
+        },
+        {
+          "id": "pranks",
+          "name": "Pranks made it seem haunted",
+          "description": "Tricks played there made it look like spirits met inside."
+        }
+      ],
+      "pieces": [
+        {
+          "id": "town-decides",
+          "scene_id": "empty-schoolhouse",
+          "line": "The stories of Brouwer, of Bones, and a whole budget of\nothers were called to mind; and when they had diligently considered them\nall, and compared them with the symptoms of the present case, they shook\ntheir heads, and came to the conclusion that Ichabod had been carried\noff by the Galloping Hessian.",
+          "lead": "Find the line that shows how the townspeople explained his disappearance."
+        },
+        {
+          "id": "moved",
+          "scene_id": "empty-schoolhouse",
+          "line": "As he was a bachelor, and in nobody’s\ndebt, nobody troubled his head any more about him; the school was\nremoved to a different quarter of the hollow, and another pedagogue\nreigned in his stead.",
+          "lead": "Find the line that tells where the lessons moved after he was gone."
+        },
+        {
+          "id": "witches",
+          "scene_id": "van-tassel-party",
+          "line": "They harried his hitherto peaceful domains; smoked\nout his singing school by stopping up the chimney; broke into the\nschoolhouse at night, in spite of its formidable fastenings of withe\nand window stakes, and turned everything topsy-turvy, so that the poor\nschoolmaster began to think all the witches in the country held\ntheir meetings there.",
+          "lead": "Find the line that shows what the pranksters did to the building after dark."
+        },
+        {
+          "id": "haunt",
+          "scene_id": "van-tassel-party",
+          "line": "Such was one of the favorite haunts of\nthe Headless Horseman, and the place where he was most frequently\nencountered.",
+          "lead": "Find the line that names the spot the Horseman liked best."
+        },
+        {
+          "id": "superstition",
+          "scene_id": "the-road-home",
+          "line": "The common people regarded it with a\nmixture of respect and superstition, partly out of sympathy for the\nfate of its ill-starred namesake, and partly from the tales of strange\nsights, and doleful lamentations, told concerning it.",
+          "lead": "Find the line that shows how ordinary folks felt about the old landmark."
+        },
+        {
+          "id": "half",
+          "scene_id": "the-towns-verdict",
+          "line": "“Faith, sir,” replied the story-teller, “as to that matter, I don’t\nbelieve one-half of it myself.”",
+          "lead": "Find the line where the man who spun the yarn admits his own doubts."
+        }
+      ]
+    }
+  ]
 }

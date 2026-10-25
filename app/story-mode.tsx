@@ -24,6 +24,8 @@ import {playNarration} from "@/lib/narration";
 import {focusScreenTop} from "./screen-focus";
 import {getBrowserSupabase} from "@/lib/supabase-browser";
 import {NotYet,PhrasePicker,PointsGoal,PointsMeter,ProveIt,useSpeedMeta} from "./fair-play-ui";
+import {collectPieces,missionFor} from "@/lib/missions";
+import {MissionTracker} from "./missions";
 
 type PublicRun={id:string;topic:string;nickname:string;state:RunState;total:number;bestTotal:number;finished:boolean;timeSetting:TimeSetting;scope:"class"|"demo";goal:{max:number;level:string|null}};
 type Board={kind:"individual"|"squad";top:{rank:number;name:string;score:number;me:boolean}[];me:{rank:number;score:number;movement:number}|null;players:number}|null;
@@ -43,7 +45,8 @@ const reducedMotion=()=>typeof window!=="undefined"&&!!window.matchMedia?.("(pre
 // startAt: open at a later round ("Catch the lie" on the home page); onJumped: called once the run has opened there.
 // onUnavailable: Story Mode's tables aren't set up (or the server can't reach them), so the scene opens in the Case
 // file view instead, with no error screen.
-export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleared,onCaseFile,startAt,onJumped,onUnavailable}:{world:WorldPack;scene:Scene;sceneIndex:number;passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onCleared:()=>void;onCaseFile?:()=>void;startAt?:RoundKind;onJumped?:()=>void;onUnavailable:()=>void}){
+// onLeads: this scene has mission leads the student hasn't followed (offered on the cleared screen).
+export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleared,onCaseFile,startAt,onJumped,onUnavailable,onLeads}:{world:WorldPack;scene:Scene;sceneIndex:number;passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onCleared:()=>void;onCaseFile?:()=>void;startAt?:RoundKind;onJumped?:()=>void;onUnavailable:()=>void;onLeads?:()=>void}){
  const content=scene.story_mode!;
  const headers=useMemo(()=>({"Content-Type":"application/json",...(demo.classAuth?{"x-class-token":demo.classAuth.token}:{})}),[demo.classAuth]);
  const [run,setRun]=useState<PublicRun|null>(null),[mode,setMode]=useState<"individual"|"squad"|"off">("individual");
@@ -90,6 +93,9 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
   setTimeout(()=>cue(soundOn,"reveal"),reducedMotion()?0:900);
   // Saved with progress: the run's score, goal, pouch and trust; a caught lie also counts for the scene's lie clue.
   const lie=lieOf(scene,r.run.state.picks);
+  // Mission pieces: the round's proof lines (shown ones marked shown).
+  const shownLines=r.shown??[];
+  setDemo(d=>{const m=missionFor(world,d.mission);const a=collectPieces(m,d.missionPieces,r.record.proof.filter(l=>!shownLines.includes(l)),{via:`story:${r.record.kind}`});const b=collectPieces(m,a??d.missionPieces,shownLines,{shown:true,via:`story:${r.record.kind}`});return a||b?{...d,missionPieces:b??a!}:d});
   setDemo(d=>({...d,story:{...(d.story??{}),[scene.id]:{runId:r.run.id,total:r.run.total,bestStreak:r.run.state.bestStreak,trust:r.run.state.trust,pouch:r.run.state.pouch,cleared:r.run.finished,max:r.run.goal.max,level:(r.run.goal.level as "opened"|"built"|"cracked"|null)}},
    ...(input.kind==="lie"&&r.record.valid&&scene.lie&&lie.clue_id===scene.lie.clue_id?{lies:{...(d.lies??{}),[scene.id]:{clue_id:scene.lie.clue_id,caught:true,misses:r.record.tries,caught_at:new Date().toISOString()}},...(input.explanation?.trim()?{artifactAnswers:{...d.artifactAnswers,[scene.lie.clue_id]:{notice:r.record.proof[0]??input.line,interpret:input.explanation.trim(),craft:"contradicts",technique:"",revisions:d.artifactAnswers[scene.lie.clue_id]?.revisions??[]}}}:{})}:{})}));
   return null;
@@ -114,11 +120,12 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
   {notice&&<p role="alert" className="mt-3 rounded-2xl bg-[#FBF1EB] px-4 py-3 text-[16px]">{notice}</p>}
   {stage==="loading"&&<p className="mt-10 text-center text-[17px] text-[#6B6457]">Opening the scene…</p>}
   {stage==="error"&&<div className="mt-8 rounded-3xl bg-[#FFFDF8] p-6"><h1 className="text-[24px] font-bold">Story Mode can't open right now</h1><p className="mt-2 text-[16px]">{error}</p><div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={()=>start()} className="case-primary">Try again</button>{onCaseFile&&<button type="button" onClick={onCaseFile} className="case-secondary">Open the Case file</button>}</div></div>}
+  {stage==="ready"&&run&&kind&&<MissionTracker world={world} demo={demo}/>}
   {stage==="ready"&&run&&kind&&<ReadyCard world={world} scene={scene} kind={kind} round={round} run={run} relaxed={relaxed} setRelaxed={setRelaxed} canRelax={run.timeSetting==="1"||run.timeSetting==="1.5"} onBuy={buy} onStart={()=>{setNotice("");setStage("countdown")}} onCaseFile={round===0?onCaseFile:undefined}/>}
   {stage==="countdown"&&kind&&<Countdown kind={kind} round={round} sound={soundOn} onDone={()=>setStage("play")}/>}
   {stage==="play"&&run&&kind&&<RoundPlay key={round} world={world} scene={scene} passages={passages} kind={kind} run={run} setting={setting} sound={soundOn} sandboxId={demo.id} resume={resume} send={send} onError={m=>setNotice(m)}/>}
   {stage==="results"&&result&&run&&<Results world={world} scene={scene} result={result} mode={mode} run={run} headers={headers} sandboxId={demo.id} onNext={()=>{setResult(null);setStage(run.finished?"cleared":"ready")}}/>}
-  {stage==="cleared"&&run&&<Cleared run={run} mode={mode} headers={headers} sandboxId={demo.id} onNext={onCleared} onAgain={()=>start(true)}/>}
+  {stage==="cleared"&&run&&<Cleared run={run} mode={mode} headers={headers} sandboxId={demo.id} onNext={onCleared} onAgain={()=>start(true)} onLeads={onLeads}/>}
  </div>;
 }
 
@@ -433,7 +440,7 @@ function Results({world,scene,result,mode,run,headers,sandboxId,onNext}:{world:W
   {ok&&r.points===0?<h1 id="res-h" className="mt-1 text-[32px] font-bold leading-tight">Found it</h1>
    :ok?<h1 id="res-h" className="mt-1 text-[40px] font-bold leading-none tabular-nums">+{r.points}</h1>
    :<h1 id="res-h" className="mt-1 text-[32px] font-bold leading-tight">Here's what proves it</h1>}
-  <p className="mt-2 text-[17px]">{ok&&r.points===0?`${r.detail} on try ${r.tries+1}. Points come on the first two tries; your streak holds.`:ok?`${r.detail}${r.tries?` · found on try ${r.tries+1}`:""}${r.grace?" · half points after time":""}`:r.points>0?`+${r.points} for the lines you found. The rest are shown below.`:"0 points this round. Read the line below: it's the proof."}</p>
+  <p className="mt-2 text-[17px]">{ok&&r.points===0?`${r.detail} on try ${r.tries+1}. Points come on the first two tries.`:ok?`${r.detail}${r.tries?` · found on try ${r.tries+1}`:""}${r.grace?" · half points after time":""}`:r.points>0?`+${r.points} for the lines you found. The rest are shown below.`:"0 points this round. Read the line below: it's the proof."}</p>
   {ok&&<ul className="mt-3 flex flex-wrap gap-2 text-[14px] font-semibold">
    <li className="rounded-full bg-[#EFE8D8] px-3 py-1">Proof {r.base}</li>
    {r.multiplier>1&&<li className="inline-flex items-center gap-1 rounded-full bg-[#A0472C] px-3 py-1 text-white"><Flame size={14}/>Streak x{r.multiplier}</li>}
@@ -441,8 +448,8 @@ function Results({world,scene,result,mode,run,headers,sandboxId,onNext}:{world:W
    {r.coinsEarned>0&&<li className="inline-flex items-center gap-1 rounded-full bg-[#F4E1D6] px-3 py-1 text-[#8A3B23]"><Coins size={14}/>+{r.coinsEarned} coin{r.coinsEarned===1?"":"s"}</li>}
   </ul>}
   {!!r.lost&&<p className="mt-3 rounded-2xl bg-[#FFF4D6] px-4 py-3 text-[16px] font-semibold text-[#3D2E0A]">Double down: you bet {r.bet} and lost {r.lost}.</p>}
-  {ok?<p className="mt-3 flex items-center gap-2 text-[16px]"><Flame size={18} className="text-[#A0472C]"/>Streak: {r.streak} round{r.streak===1?"":"s"} in a row with proof</p>
-   :<p className="mt-3 text-[16px]">Streak reset. Back your next answer with a line from the story.</p>}
+  {r.streak>0?<p className="mt-3 flex items-center gap-2 text-[16px]"><Flame size={18} className="text-[#A0472C]"/>Streak: {r.streak} round{r.streak===1?"":"s"} in a row right on the first try</p>
+   :<p className="mt-3 text-[16px]">Streak reset: streaks count rounds right on the first try.</p>}
   {result.reaction&&<Reacts world={world} who={who} reaction={result.reaction} trust={trust}/>}
   {shownLines.length>0&&(r.kind==="read"||r.kind==="call")&&<div className="mt-4 rounded-3xl border-2 border-[#C98A12] bg-[#FFF4D6] p-4"><p className="text-[16px] font-bold">Shown answer{shownLines.length>1?"s":""}: tap each line to keep it</p>
    <ul className="mt-2 space-y-2">{shownLines.map(l=>{const on=kept.includes(l);return <li key={l}><button type="button" aria-pressed={on} onClick={()=>setKept(k=>on?k.filter(x=>x!==l):[...k,l])} className={`w-full rounded-2xl px-4 py-3 text-left font-serif text-[16px] leading-6 ${on?"bg-[#2A2620] text-white":"bg-[#FFFDF8] ring-1 ring-[#C98A12]"}`}>{on&&<Check size={16} className="mr-1 inline"/>}{displayLine(l)}</button></li>})}</ul></div>}
@@ -464,7 +471,7 @@ function TrustMeter({name,value,change}:{name:string;value:number;change:number}
 }
 
 // ---------- Scene cleared: the total against the points possible, and the goal level reached ----------
-function Cleared({run,mode,headers,sandboxId,onNext,onAgain}:{run:PublicRun;mode:"individual"|"squad"|"off";headers:Record<string,string>;sandboxId:string;onNext:()=>void;onAgain:()=>void}){
+function Cleared({run,mode,headers,sandboxId,onNext,onAgain,onLeads}:{run:PublicRun;mode:"individual"|"squad"|"off";headers:Record<string,string>;sandboxId:string;onNext:()=>void;onAgain:()=>void;onLeads?:()=>void}){
  const [board,setBoard]=useState<Board>(null);
  useEffect(()=>{if(mode==="off")return;fetch(`/api/story/board?runId=${run.id}&sandboxId=${sandboxId}`,{headers,cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>j&&setBoard(j.board)).catch(()=>{})},[run.id,headers,sandboxId,mode]);
  const level=levelFor(run.total,run.goal.max),next=LEVELS.find(l=>run.total<Math.ceil((l.pct/100)*run.goal.max));
@@ -474,6 +481,6 @@ function Cleared({run,mode,headers,sandboxId,onNext,onAgain}:{run:PublicRun;mode
    <dl className="mt-4 grid grid-cols-2 gap-3 text-left sm:grid-cols-3"><div className="rounded-2xl bg-white/10 p-3"><dt className="text-[13px]">Best streak</dt><dd className="text-[22px] font-bold">{run.state.bestStreak}</dd></div><div className="rounded-2xl bg-white/10 p-3"><dt className="text-[13px]">Rank</dt><dd className="text-[22px] font-bold">{board?.me?`#${board.me.rank}`:"·"}</dd></div><div className="rounded-2xl bg-white/10 p-3"><dt className="text-[13px]">Coins left</dt><dd className="text-[22px] font-bold">{run.state.coins}</dd></div></dl></div>
   <div className="mt-5"><h2 className="text-[18px] font-bold">Your Evidence pouch</h2>{run.state.pouch.length?run.state.pouch.map(p=><blockquote key={p} className="mt-2 border-l-4 border-[#A0472C] pl-3 font-serif text-[16px] italic leading-7">“{p.replace(/\s+/g," ")}”</blockquote>):<p className="mt-1 text-[15px] text-[#6B6457]">No lines kept this time.</p>}</div>
   <BoardView board={board} mode={mode}/>
-  <div className="mt-6 flex flex-wrap items-center justify-between gap-3"><button type="button" onClick={onAgain} className="inline-flex min-h-11 items-center gap-2 text-[15px] text-[#6B6457] underline underline-offset-4"><RotateCcw size={16}/>Play this scene again</button><button type="button" onClick={onNext} className="case-primary min-h-[58px] text-[18px]">On to the next scene <ArrowRight size={20}/></button></div>
+  <div className="mt-6 flex flex-wrap items-center justify-between gap-3"><button type="button" onClick={onAgain} className="inline-flex min-h-11 items-center gap-2 text-[15px] text-[#6B6457] underline underline-offset-4"><RotateCcw size={16}/>Play this scene again</button>{onLeads?<button type="button" onClick={onLeads} className="case-primary min-h-[58px] text-[18px]">Follow your mission leads <ArrowRight size={20}/></button>:<button type="button" onClick={onNext} className="case-primary min-h-[58px] text-[18px]">On to the next scene <ArrowRight size={20}/></button>}</div>
  </section>;
 }

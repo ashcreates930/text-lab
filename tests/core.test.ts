@@ -2455,3 +2455,45 @@ test("story mode round intros: name a first-try success, coach after retries, ne
   assert.equal(sm.goalLine(1100,1200),"1,100 / 1,200 · Case Cracked");
   assert.equal(sm.goalLine(1300,1200),"1,300 / 1,200 · Bonus");
 });
+
+test("story missions: pieces collected in play, the payoff sealed until the verdict, verdicts never scored", async()=>{
+  const {world,passages,line}=await storyKit();
+  const ms=await import("../lib/missions.ts");const fp=await import("../lib/fair-play.ts");
+  assert.deepEqual(ms.missionProblems(world,passages),[]);
+  assert.equal(world.missions!.length,3);
+  const m=ms.missionFor(world,"find-ichabod")!;
+  // A piece counts when its line is proven; shown answers count, marked shown; nothing else collects.
+  const a=ms.collectPieces(m,undefined,[line("p069",0),line("p070",0)],{via:"story:read"})!;
+  assert.deepEqual(Object.keys(a),["no-body"]);
+  const b=ms.collectPieces(m,a,[line("p069",5)],{shown:true,via:"lead"})!;
+  assert.equal(b.pay.shown,true);assert.equal(ms.collectPieces(m,b,[line("p069",0)],{via:"x"}),null,"already found");
+  // Sealed: the payoff clue, and no question or near miss in this student's banks points to the payoff line.
+  assert.equal(ms.sealedClue(m),"new-york-report");
+  const brom=world.scenes[3].artifacts.find(c=>c.id==="broms-knowing-look")!;
+  const safe=ms.withoutPayoff(fp.clueBank(world,passages,brom,""),m);
+  assert.ok(safe.every(q=>!q.answers.some(x=>ms.isPayoff(m,x.line))&&!q.near_misses.some(n=>ms.isPayoff(m,n.line))));
+  assert.equal(ms.revealsPayoff(m,"They say he's still\nalive somewhere."),true);assert.equal(ms.revealsPayoff(m,"Look at the bridge."),false);
+  // The verdict: a theory, at least 2 pins, 2 or 3 sentences. Never scored.
+  assert.deepEqual(ms.verdictProblems({theoryId:"left-alive",pinned:["a","b"],writing:"He left. His pay went too."}),[]);
+  assert.deepEqual(ms.verdictProblems({theoryId:"",pinned:["a"],writing:"He left."}),["Pick your theory.","Pin at least 2 lines.","Write 2 or 3 sentences."]);
+  assert.match(ms.verdictNote(5,5),/all 5/);assert.doesNotMatch(ms.verdictNote(1,5),/great|well done/i);
+  // validate:worlds: a lead that gives its line away, or a payoff used in Story Mode, is caught.
+  const bad=structuredClone(world);bad.missions![0].pieces[0].lead="Find the line about the money he possessed.";bad.missions![0].payoff.line=bad.scenes[0].lie!.truth_line;
+  const p=ms.missionProblems(bad,passages).join(" | ");assert.match(p,/shares key words/);assert.match(p,/sealed/);
+  // The scene's next step offers its open mission leads after the clues.
+  const {nextStep}=await import("../lib/next-step.ts");
+  assert.equal(nextStep({clues:[{id:"a",name:"A",done:true,locked:false}],leads:2,writing:{saved:false},last:false,hasChoice:false}).action.label,"Follow your mission leads (2)");
+  // Live: the teacher assigns one mission, or squads choose; a squad's pieces come from its members' proof.
+  const lm=await import("../lib/live/missions.ts");
+  const row=(kind:string,payload:Record<string,unknown>,extra={})=>({id:crypto.randomUUID(),sessionId:"s",roundIndex:0,squadId:null,playerId:null,role:null,kind,payload,flagged:false,createdAt:new Date().toISOString(),...extra}) as never;
+  assert.equal(lm.missionPick(world,[row("mission",{missionId:"find-ichabod",squadsChoose:false})],"q1","unmask-horseman"),"Your teacher picks the mission.");
+  const rs=[row("mission",{missionId:null,squadsChoose:true}),row("mission_pick",{missionId:"find-ichabod"},{squadId:"q1"}),row("story",{step:0,record:{proof:[line("p069",0),line("p069",5)]}},{playerId:"p1",squadId:"q1"})];
+  assert.deepEqual(lm.liveMissionPieces(world,rs,"q1",["p1"]),{id:"find-ichabod",title:"Find Ichabod",problem:m.problem,found:2,total:5});
+});
+
+test("streaks count first-try rounds only", async()=>{
+  const {sm}=await storyKit();const cg=await import("../lib/clue-game.ts");
+  const sc=(tries:number)=>({kind:"read" as const,base:100,speed:0,valid:true,coinsEarned:1,detail:"",choice:"",proof:[],tries,wrong:0,shown:false,qid:"q"});
+  let s=sm.applyRound(sm.newRun(),sc(0));s=sm.applyRound(s,sc(1));assert.deepEqual([s.streak,s.rounds[1].multiplier,s.total],[0,1,200],"the base is already halved by the try; no streak multiplier");
+  const g=cg.earn({...cg.newClueGame(),streak:2},"proof","a",{tries:1});assert.deepEqual([g.game.streak,g.points],[0,50]);
+});

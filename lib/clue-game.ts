@@ -90,9 +90,11 @@ export function earn(game: ClueGame | undefined, kind: EarnKind, key: string, fa
   const g = game ?? newClueGame(), id = `${kind}:${key}`;
   if (g.earned.includes(id)) return { game: g, points: 0, coins: 0 };
   if (fair.shown) return { game: { ...g, streak: 0, earned: [...g.earned, id] }, points: 0, coins: 0 };
-  const multiplier = streakMultiplier(g.streak);
+  // Streaks count first-try finds only: a find after retries scores its points and starts the streak over.
+  const firstTry = !(fair.tries ?? 0);
+  const multiplier = firstTry ? streakMultiplier(g.streak) : 1;
   const base = afterWrongLines(CLUE_POINTS[kind] * tryFactor((fair.tries ?? 0) + 1), fair.wrong ?? 0);
-  const points = Math.round(base * multiplier), coins = CLUE_COINS[kind], streak = g.streak + 1;
+  const points = Math.round(base * multiplier), coins = CLUE_COINS[kind], streak = firstTry ? g.streak + 1 : 0;
   return { game: { ...g, points: g.points + points, coins: g.coins + coins, streak, bestStreak: Math.max(g.bestStreak, streak), earned: [...g.earned, id], ...(kind === "rivalWin" ? { rivalWins: g.rivalWins + 1 } : {}) }, points, coins };
 }
 // Rival play: a proof that brings the streak to 3, 6, 9… earns a Freeze (hold at most one).

@@ -83,6 +83,7 @@ export function EvidenceView({evidence,sample=false,className}:{evidence:ClassEv
     </table>
    </div>
   </>}
+  {evidence.students.some(st=>st.mission)?<Missions students={evidence.students}/>:null}
   {evidence.students.some(st=>st.sceneWriting?.length)?<SceneWritingList students={evidence.students}/>:null}
   {evidence.students.some(st=>st.yourTurn?.length)?<YourTurnWriting students={evidence.students}/>:null}
   {evidence.students.some(st=>st.marks?.length||st.claimFlags?.length||st.freezes?.length)?<MarksAndFlags students={evidence.students}/>:null}
@@ -207,6 +208,19 @@ function MarksAndFlags({students}:{students:EvidenceStudent[]}){
    {st.freezes?.length>0&&<div className="mt-3"><p className="text-[13px] font-bold uppercase tracking-wide text-[#2F5D80]">❄ Freezes used</p><ul className="mt-1 space-y-1 text-[14px] text-[#2A2620]">{st.freezes.map((f,i)=><li key={i}>{f}</li>)}</ul></div>}
    {st.claimFlags.length>0&&<ul className="mt-3 space-y-2 text-[15px] leading-6">{st.claimFlags.map((f,i)=><li key={i} className="rounded-2xl border border-[#E4DCCB] p-3"><p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">{f.clue} · {f.character} · {f.matched?"Caught the mistake":"Needs your review"}</p><p className="mt-1 text-[#4A4438]">{f.character} said: {f.answer}</p><p className="mt-1 font-serif italic text-[#2A2620]">Student's line: “{f.line}”</p></li>)}</ul>}
   </li>)}</ul>
+ </section>;
+}
+
+// Missions: pieces found (shown ones marked), the verdict, and whether it cited the payoff before the reveal.
+function Missions({students}:{students:EvidenceStudent[]}){
+ return <section aria-labelledby="mission-ev-h" className="space-y-3">
+  <h3 id="mission-ev-h" className="flex items-center gap-2 text-[22px] font-bold text-[#2A2620]"><Gavel size={20} className="text-[#A0472C]"/>Missions</h3>
+  <p className="max-w-2xl text-[15px] leading-6 text-[#4A4438]">Each student's mission: the pieces they proved while playing, and their verdict before the text's answer was revealed.</p>
+  <ul className="grid gap-3 md:grid-cols-2">{students.filter(st=>st.mission).map(st=>{const m=st.mission!;return <li key={st.id} className="rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
+   <p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">{st.nickname} · {m.title} · {m.found.length} of {m.total} pieces</p>
+   <ul className="mt-2 space-y-1.5">{m.found.map(p=><li key={p.line} className="font-serif text-[14px] italic leading-5 text-[#2A2620]">“{p.line.replace(/\s+/g," ")}”{p.shown&&<span className="ml-2 rounded-full bg-[#FFF4D6] px-2 py-0.5 font-sans text-[12px] font-bold not-italic text-[#6B4A00]">shown</span>}</li>)}</ul>
+   {m.verdict?<div className="mt-3 border-t border-[#E4DCCB] pt-3"><p className="text-[14px] font-bold">Verdict: {m.verdict.theory}{m.verdict.early&&<span className="ml-2 rounded-full bg-[#E8F2E7] px-2 py-0.5 text-[12px] text-[#2F6B3A]">Found it before the reveal</span>}</p><p className="mt-1 text-[15px] leading-6">{m.verdict.writing}</p></div>:<p className="mt-3 text-[14px] text-[#6B6457]">No verdict yet.</p>}
+  </li>})}</ul>
  </section>;
 }
 

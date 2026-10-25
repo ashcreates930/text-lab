@@ -6,6 +6,7 @@
 // Demo rivals and teammates are computer players, clearly labeled; their choices come only from authored lines.
 // Class students play squads in live rounds with their class, so outside one they play solo.
 import {useEffect,useLayoutEffect,useRef,useState} from "react";
+import {MissionTracker} from "./missions";
 import {ArrowRight,Coins,Flame,Trophy,Check} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import type {Demo} from "./page";
@@ -65,6 +66,7 @@ export function MissionScreen({world,demo,sceneIndex,onGo}:{world:WorldPack;demo
    <ol className="mt-5 flex items-center" aria-label={`Scene ${sceneIndex+1} of ${world.scenes.length}`}>{world.scenes.map((s,i)=><li key={s.id} className={`flex items-center ${i<world.scenes.length-1?"flex-1":""}`}>
     <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border-[3px] text-[14px] font-bold ${i<sceneIndex?"border-[#8B8478] bg-[#6B6457] text-[#E8DDCB]":i===sceneIndex?"border-[#F3C9B2] bg-[#A0472C] text-white shadow-[0_0_0_5px_rgba(160,71,44,.35)]":"border-[#5a5146] bg-[#3a342b] text-[#bdb3a2]"}`} aria-current={i===sceneIndex?"step":undefined}><span className="sr-only">{i<sceneIndex?"Done: ":i===sceneIndex?"Now: ":"Later: "}</span>{i<sceneIndex?<Check size={16} aria-hidden/>:i+1}</span>
     {i<world.scenes.length-1&&<span aria-hidden className={`h-1 flex-1 ${i<sceneIndex?"bg-[#8B8478]":"bg-[#5a5146]"}`}/>}</li>)}</ol>
+   <MissionTracker world={world} demo={demo} dark/>
    <div aria-hidden className="mt-1.5 grid text-[11px] font-semibold text-[#E8DDCB]" style={{gridTemplateColumns:`repeat(${world.scenes.length},minmax(0,1fr))`}}>{world.scenes.map((s,i)=><span key={s.id} className={`leading-tight ${i===0?"text-left":i===world.scenes.length-1?"text-right":"text-center"}`}>{sceneLabel(world,i)}</span>)}</div>
   </section>
   <div className="mt-3 grid grid-cols-2 gap-2">

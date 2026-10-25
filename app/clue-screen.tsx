@@ -18,6 +18,7 @@ import {lieFor,tryLine,testimonyParts,lineWords} from "@/lib/lies";
 import {withFreeze,inSentence,REACTION_MAX,REACTION_STEMS,RIVAL_LOCKOUT_MS,RIVAL_SECONDS,SQUAD_JOBS,checkProof,cluePanel,computerPins,computerRivalPlan,correctsOffClaim,displayLine,earn,markKey,miss,newClueGame,paragraphLabel,rivalOutcome,squadJobs,voteWinner,type ClaimFlag,type MarkTag,type ReactionStem} from "@/lib/clue-game";
 import {MAX_TRIES,answerFor,clueBank,needsPhrase,phraseMatches,phraseRange,pickQuestion,proveChoices,proveRight,speedFlags,typedProof} from "@/lib/fair-play";
 import {NotYet,PhrasePicker,ProveIt,useSpeedMeta} from "./fair-play-ui";
+import {collectPieces,missionFor,withoutPayoff} from "@/lib/missions";
 import {screenMessage} from "@/lib/safety";
 import {squadName} from "@/lib/live/engine";
 import {voiceButtonFor} from "@/lib/voice-control";
@@ -66,7 +67,10 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
  const panel=useMemo(()=>squad?[...squad.mine,...squad.teammates.flatMap(t=>t.chunk)]:cluePanel(world,passages,scene,clue),[squad,world,passages,scene,clue]);
  const prior=demo.artifactAnswers[clue.id];
  // This student's question from the clue's bank: kept once given; new on a replay; by roster seat in class.
- const bank=useMemo(()=>clueBank(world,passages,clue,s.notice),[world,passages,clue,s.notice]);
+ const mission=missionFor(world,demo.mission);
+ const bank=useMemo(()=>withoutPayoff(clueBank(world,passages,clue,s.notice),mission),[world,passages,clue,s.notice,mission]);
+ // A mission piece is collected the moment its line is proven here (marked shown when the answer was shown).
+ const collect=(line:string,shown:boolean)=>setDemo(d=>{const next=collectPieces(missionFor(world,d.mission),d.missionPieces,[line],{shown,via:clue.id});return next?{...d,missionPieces:next}:d});
  const q=useMemo(()=>bank.find(x=>x.id===demo.clueQs?.[clue.id])??pickQuestion(bank,{seed:demo.classAuth?`${world.id}:${clue.id}`:`${demo.id}:${clue.id}`,seen:demo.clueSeen?.[clue.id],seat:demo.classAuth?demo.classSeat??null:null}),[bank,demo.clueQs,demo.clueSeen,demo.classAuth,demo.classSeat,demo.id,world.id,clue.id]);
  useEffect(()=>{if(demo.clueQs?.[clue.id]!==q.id&&!prior?.notice)setDemo(d=>({...d,clueQs:{...(d.clueQs??{}),[clue.id]:q.id}}))},[q.id,clue.id,demo.clueQs,prior?.notice,setDemo]);
  // Tries: misses so far, wrong lines, whether the answer was shown; the accepted line and the step after it.
@@ -113,7 +117,7 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
  // A miss: Not yet with the next try's hint, or after three, the answer shown (the proof step still comes).
  function missed(hint:string,wrongLine:boolean,showLine?:string){
   const t=tries+1;setTries(t);if(wrongLine)setWrong(w=>w+1);setDemo(d=>({...d,game:miss(d.game)}));
-  if(t>=MAX_TRIES&&!shown&&showLine){setShown(true);setAccepted(showLine);setSelected(showLine);setResults(x=>[...x,{line:showLine,ok:true}]);s.setProof({text:showLine,pid:pidOfLine(showLine)});setStage("prove");say({kind:"info",text:"Here is the line that answers it. This clue scores 0, but Prove it still counts."});return}
+  if(t>=MAX_TRIES&&!shown&&showLine){setShown(true);collect(showLine,true);setAccepted(showLine);setSelected(showLine);setResults(x=>[...x,{line:showLine,ok:true}]);s.setProof({text:showLine,pid:pidOfLine(showLine)});setStage("prove");say({kind:"info",text:"Here is the line that answers it. This clue scores 0, but Prove it still counts."});return}
   setNotYet(hint);
  }
  function prove(lineIn?:string){
@@ -121,14 +125,14 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
   if(!line)return;
   if(lie&&!lieCaught){
    const r=tryLine(lie,line,lieMisses);
-   if(r.result==="caught"){setLieCaught(true);setResults(x=>[...x,{line,ok:true}]);s.setProof({text:line,pid:pidOfLine(line)});s.setStance("contradicts");setProven(true);playStamp(0);const g=award("lie",scene.id,{tries:lieMisses,wrong:lieMisses});
+   if(r.result==="caught"){setLieCaught(true);collect(line,false);setResults(x=>[...x,{line,ok:true}]);s.setProof({text:line,pid:pidOfLine(line)});s.setStance("contradicts");setProven(true);playStamp(0);const g=award("lie",scene.id,{tries:lieMisses,wrong:lieMisses});
     setDemo(d=>({...d,lies:{...(d.lies??{}),[scene.id]:{clue_id:clue.id,caught:true,misses:r.misses,caught_at:new Date().toISOString()}}}));setAccepted(line);setStage("prove");say({kind:"win",text:`Lie caught. You proved ${liar?.name??"them"} wrong.${g.points?` +${g.points} points, +${g.coins} coins.`:""}`});return}
    setLieMisses(r.misses);setResults(x=>[...x,{line,ok:false}]);setDemo(d=>({...d,game:miss(d.game),lies:{...(d.lies??{}),[scene.id]:{clue_id:clue.id,caught:false,misses:r.misses}}}));
-   if(r.misses>=MAX_TRIES){setLieCaught(true);setShown(true);setTries(r.misses);setAccepted(lie.truth_line);setSelected(lie.truth_line);setResults(x=>[...x,{line:lie.truth_line,ok:true}]);s.setProof({text:lie.truth_line,pid:lie.truth_paragraph});s.setStance("contradicts");setProven(true);award("lie",scene.id,{shown:true});setStage("prove");say({kind:"info",text:"Here is the line that proves it false. This catch scores 0; now say why."});return}
+   if(r.misses>=MAX_TRIES){setLieCaught(true);setShown(true);collect(lie.truth_line,true);setTries(r.misses);setAccepted(lie.truth_line);setSelected(lie.truth_line);setResults(x=>[...x,{line:lie.truth_line,ok:true}]);s.setProof({text:lie.truth_line,pid:lie.truth_paragraph});s.setStance("contradicts");setProven(true);award("lie",scene.id,{shown:true});setStage("prove");say({kind:"info",text:"Here is the line that proves it false. This catch scores 0; now say why."});return}
    setNotYet(r.message);return;
   }
   const c=checkProof(world,passages,clue,line,q,tries+2);
-  if(c.ok){const hit=answerFor(q,line)??{line};setResults(x=>[...x,{line,ok:true}]);s.setProof({text:hit.line,pid:pidOfLine(hit.line)});setAccepted(hit.line);setStage(needsPhrase(hit.line)&&"phrase" in hit&&hit.phrase?"phrase":"prove");say({kind:"win",text:"Right line. Now prove it."});return}
+  if(c.ok){const hit=answerFor(q,line)??{line};collect(hit.line,false);setResults(x=>[...x,{line,ok:true}]);s.setProof({text:hit.line,pid:pidOfLine(hit.line)});setAccepted(hit.line);setStage(needsPhrase(hit.line)&&"phrase" in hit&&hit.phrase?"phrase":"prove");say({kind:"win",text:"Right line. Now prove it."});return}
   setResults(x=>[...x,{line,ok:false}]);missed(c.hint,true,q.answers[0]?.line);
  }
  function lockPhrase(range:[number,number]){

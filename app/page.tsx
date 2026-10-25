@@ -71,6 +71,8 @@ export type Demo = {
   yourTurn?:import("@/lib/your-turn").YourTurnEntry[];
   // Fair play on the clue screen: each clue's question for this student, questions seen before (kept through Start
   // over), one writing task per scene, and the student's seat in their class roster (so neighbors differ).
+  // Story missions (lib/missions.ts): the chosen mission, pieces found, and the mission verdict.
+  mission?:string; missionPieces?:Record<string,import("@/lib/missions").PieceRecord>; missionVerdict?:import("@/lib/missions").MissionVerdict;
   clueQs?:Record<string,string>; clueSeen?:Record<string,string[]>; sceneWriting?:Record<string,{notice:string;interpret:string;craft:string;technique?:string;saved_at:string}>; classSeat?:number|null;
 };
 type ScreenSnapshot = { insideTheTextScreen: true; sequence: number; view: View; demo: Demo };
