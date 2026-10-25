@@ -66,16 +66,19 @@ async function openRun(store: StoryStore, world: WorldPack, scene: Scene, who: I
     if (restarts > MAX_RESTARTS) return "You've started this scene over many times today. Come back tomorrow for a fresh run.";
     await store.clearRounds(found.id);
     const seen = [...new Set([...(found.state.seen ?? []), ...Object.entries(found.state.picks ?? {}).map(([k, v]) => `${k}:${v}`)])];
-    const state: RunState = { ...newRun(), restarts, seen, picks: picksFor(seen, restarts) };
+    const state: RunState = { ...newRun(), restarts, seen, picks: picksFor(seen, restarts), ...previewTag() };
     await store.saveRun(found.id, { state, total: 0, finished: false, timeSetting });
     return { ...found, state, total: 0, finished: false, timeSetting };
   }
   const nickname = who.scope === "class" ? who.nickname : demoNickname(who.sandboxId, (await store.listRuns({ scope: "demo", worldId: world.id, sceneId: scene.id, day })).map((r) => r.nickname));
   // Two starts at once (a double tap, or two tabs): the database keeps one run per player, so the second insert fails
   // and we return the run that won.
-  try { return await store.createRun({ ...key, nickname, state: { ...newRun(), picks: picksFor([], 0) }, total: 0, bestTotal: 0, bestStreak: 0, finished: false, timeSetting }); }
+  try { return await store.createRun({ ...key, nickname, state: { ...newRun(), picks: picksFor([], 0), ...previewTag() }, total: 0, bestTotal: 0, bestStreak: 0, finished: false, timeSetting }); }
   catch (e) { const winner = await store.findRun(key); if (winner) return winner; throw e; }
 }
+
+// Previews share the production database: their runs are tagged so they can be found and removed before a merge.
+const previewTag = (): Pick<RunState, "env"> => (process.env.VERCEL_ENV === "preview" ? { env: "preview" } : {});
 
 export type RoundBody = { round: number; input: RoundInput; elapsedMs: number; grace: boolean; relaxed: boolean };
 const BASE_SECONDS: Record<RoundInput["kind"], number> = { read: SECONDS.read, confront: SECONDS.confront, lie: SECONDS.lie, call: SECONDS.call };

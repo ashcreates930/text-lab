@@ -2480,6 +2480,15 @@ test("story missions: pieces collected in play, the payoff sealed until the verd
   // validate:worlds: a lead that gives its line away, or a payoff used in Story Mode, is caught.
   const bad=structuredClone(world);bad.missions![0].pieces[0].lead="Find the line about the money he possessed.";bad.missions![0].payoff.line=bad.scenes[0].lie!.truth_line;
   const p=ms.missionProblems(bad,passages).join(" | ");assert.match(p,/shares key words/);assert.match(p,/sealed/);
+  // One question, one thing.
+  const two=structuredClone(world);two.scenes[0].artifacts[0].bank![0].question="Where was it, and what was it made of?";
+  assert.match(fp.bankProblems(two,passages,(sc,c)=>passages.filter(x=>c.source_anchor.includes(x.id))).join(" "),/ask one thing/);
+  // Runs started on a preview are tagged (previews share the production database).
+  process.env.CLASSROOM_DEV_STORE="memory";const {memoryStoryStore}=await import("../lib/story-store.ts");const srv=await import("../lib/story-server.ts");
+  const was=process.env.VERCEL_ENV;process.env.VERCEL_ENV="preview";
+  const run=(await srv.startRun(memoryStoryStore({runs:[],rounds:[]}),world,world.scenes[0],{scope:"demo",sandboxId:crypto.randomUUID()})) as {state:{env?:string}};
+  process.env.VERCEL_ENV=was??"";if(was===undefined)delete process.env.VERCEL_ENV;
+  assert.equal(run.state.env,"preview");
   // The scene's next step offers its open mission leads after the clues.
   const {nextStep}=await import("../lib/next-step.ts");
   assert.equal(nextStep({clues:[{id:"a",name:"A",done:true,locked:false}],leads:2,writing:{saved:false},last:false,hasChoice:false}).action.label,"Follow your mission leads (2)");

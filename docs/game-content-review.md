@@ -669,7 +669,7 @@ Scene writing (Notice, Interpret, Craft): the questions from **The searchers' re
 
 #### Clue: The empty schoolhouse
 
-**Locate. What was Ichabod's classroom built from, and what filled the broken panes?**
+**Locate. How was Ichabod's classroom put together?**
 
 Answers:
 
@@ -690,7 +690,7 @@ Prove it (✓ is right; shuffled on screen):
 3. Ichabod built the school himself.
 4. Children broke the windows playing ball.
 
-**Locate. How did Ichabod close up the room when no one was there, and why would it trap a burglar?**
+**Locate. Why would a burglar have trouble once inside the room?**
 
 Answers:
 
@@ -761,7 +761,7 @@ Prove it (✓ is right; shuffled on screen):
 3. Hans Van Ripper took his clothes.
 4. Ichabod packed his things to run away.
 
-**Locate. Who went through the missing man's things, and what role did he hold?**
+**Locate. What role did Hans take on after the schoolmaster vanished?**
 
 Answers:
 
@@ -845,7 +845,7 @@ Prove it (✓ is right; shuffled on screen):
 3. Hans gave them to Katrina.
 4. Ichabod took them with him.
 
-**Infer. Who was the unfinished poem for, and why does that matter in this case?**
+**Infer. Who was the unfinished poem for?**
 
 Answers:
 
@@ -995,7 +995,7 @@ Right: Brom raises an eyebrow. "Huh. You read closer than most folks around here
 
 Wrong: Brom snorts. "That's not what the story says. Read it again."
 
-**"So, a ghost or a man?" What detail by the stream hints a person was there?**
+**"Ghost or man, I wonder." What detail by the stream hints a person was there?**
 
 Answer:
 
@@ -1016,7 +1016,7 @@ Prove it (✓ is right; shuffled on screen):
 3. Ichabod was carrying a pumpkin for dinner.
 4. The pumpkin proves the Horseman is real.
 
-**"Could he have just packed up and left?" Which line hints he might have gone on his own?**
+**"Maybe he just packed up and left." Which line hints he might have gone on his own?**
 
 Answer:
 
@@ -1037,7 +1037,7 @@ Prove it (✓ is right; shuffled on screen):
 3. He had nothing to take.
 4. Hans paid him to leave.
 
-**"Did the town look hard at the facts?" Which line shows how they reached a verdict?**
+**"I wonder if the town looked hard at the facts." Which line shows how they reached a verdict?**
 
 Answer:
 
@@ -1164,7 +1164,7 @@ Near misses:
 
 Prove it (✓ is right; shuffled on screen):
 
-1. He would quit teaching and look down on people who had hosted him. ✓
+1. He would quit teaching and look down on his former employers. ✓
 2. He would give money to the school.
 3. He would thank Hans for his help.
 4. He would stay a teacher forever.
@@ -1196,7 +1196,7 @@ Prove it (✓ is right; shuffled on screen):
 
 #### Clue: Brom Bones, the brooding rival
 
-**Locate. While the music plays, where is Ichabod's rival, and what is he feeling?**
+**Locate. How did Ichabod's rival feel while the music played?**
 
 Answers:
 
@@ -1265,7 +1265,7 @@ Prove it (✓ is right; shuffled on screen):
 
 #### Clue: Brom's tale of racing the Horseman
 
-**Locate. In Brom's own adventure, what was the bet, and where did the rider disappear?**
+**Locate. In Brom's own adventure, where did the rider disappear?**
 
 Answers:
 
@@ -1468,11 +1468,9 @@ Prove it (✓ is right; shuffled on screen):
 
 #### Clue: The shadowy rider
 
-**Locate. Where did the figure first show itself, and how did it respond when he called out?**
+**Locate. How did the figure respond when Ichabod called out?**
 
 Answers:
-
-> ¶62: “In the dark shadow of the grove, on the margin of the brook, he beheld something huge, misshapen and towering.”
 
 > ¶63: “He received no reply.”
 
@@ -1483,6 +1481,10 @@ Near misses:
 > ¶61: “It was at this identical spot that the unfortunate André was captured, and under the covert of those chestnuts and vines were the sturdy yeomen concealed who surprised him.”
 >
 > Hint: That's the history of the spot. What did he see there? Check ¶62.
+
+> ¶62: “In the dark shadow of the grove, on the margin of the brook, he beheld something huge, misshapen and towering.”
+>
+> Hint: That's where he saw it. How did it reply? Check ¶63.
 
 Prove it (✓ is right; shuffled on screen):
 
@@ -1562,7 +1564,7 @@ Prove it (✓ is right; shuffled on screen):
 3. The saddle was stolen at the party.
 4. The horse ran off with the saddle.
 
-**Locate. Whose was it, and what worry flashed through Ichabod's head?**
+**Locate. What worry flashed through Ichabod's head during the chase?**
 
 Answers:
 
@@ -1633,21 +1635,21 @@ Prove it (✓ is right; shuffled on screen):
 3. He expected to fall in the water.
 4. He expected to meet Katrina.
 
-**Locate. What did the pursuer do instead, and what happened to Ichabod?**
+**Locate. What did the pursuer do instead of vanishing?**
 
 Answers:
 
 > ¶67: “Just then he saw the goblin rising in his stirrups, and in the very act of hurling his head at him.”
-
-> ¶67: “It encountered his cranium with a tremendous crash,—he was tumbled headlong into the dust, and Gunpowder, the black steed, and the goblin rider, passed by like a whirlwind.”
->
-> Proof phrase: *he was tumbled headlong into the dust*
 
 Near misses:
 
 > ¶67: “Just then he heard the black steed panting and blowing close behind him; he even fancied that he felt his hot breath.”
 >
 > Hint: That's the chase. What was thrown? Check ¶67.
+
+> ¶67: “It encountered his cranium with a tremendous crash,—he was tumbled headlong into the dust, and Gunpowder, the black steed, and the goblin rider, passed by like a whirlwind.”
+>
+> Hint: That's what happened to Ichabod. What did the pursuer do? Check ¶67.
 
 Prove it (✓ is right; shuffled on screen):
 
@@ -1672,7 +1674,7 @@ Near misses:
 
 Prove it (✓ is right; shuffled on screen):
 
-1. A smashed pumpkin suggests the "head" was a pumpkin thrown by a living rider. ✓
+1. A smashed pumpkin suggests the "head" could be a pumpkin thrown by a living rider. ✓
 2. A real head was found.
 3. Nothing was found by the brook.
 4. The pumpkin was from the party table.
@@ -1683,7 +1685,7 @@ Scene writing (Notice, Interpret, Craft): the questions from **The storyteller's
 
 #### Clue: The report from New York
 
-**Locate. According to the traveler, did Ichabod survive, and why did he go?**
+**Locate. According to the traveler, why did Ichabod go away?**
 
 Answers:
 
@@ -1980,7 +1982,7 @@ Prove it (✓ is right; shuffled on screen):
 3. He never finished.
 4. He finished at sunset.
 
-**Locate. Who came through the doorway, and what did they say they were?**
+**Locate. What did the visitors say they were?**
 
 Answers:
 
@@ -1999,7 +2001,7 @@ Prove it (✓ is right; shuffled on screen):
 3. The old man came home.
 4. One rude soldier came in.
 
-**Infer. How did he feel about answering, and why is that strange?**
+**Infer. How did he feel about answering?**
 
 Answers:
 
@@ -2172,7 +2174,7 @@ Prove it (✓ is right; shuffled on screen):
 3. He snored at night.
 4. He owed money.
 
-**Infer. What decision did he reach, and why is his reason odd?**
+**Infer. What did he decide to do about the old man?**
 
 Answers:
 
@@ -2736,7 +2738,7 @@ Prove it (✓ is right; shuffled on screen):
 
 #### Clue: The officers’ calm
 
-**Locate. Where did he first think the sound came from, and what did he decide?**
+**Locate. What did he realize about where the sound came from?**
 
 Answers:
 
@@ -2982,7 +2984,7 @@ Prove it (✓ is right; shuffled on screen):
 3. Sell it or give it away.
 4. Burn it or bury it.
 
-**Infer. What is Mrs. Hale changing in the messy part, and why does it matter?**
+**Infer. What is Mrs. Hale doing to the messy part of the sewing?**
 
 Answers:
 
@@ -3066,7 +3068,7 @@ Prove it (✓ is right; shuffled on screen):
 
 #### Clue: The box with the canary
 
-**Locate. Where do they search next?**
+**Locate. Where do the women hunt for quilting supplies to bring to Minnie?**
 
 Answers:
 
@@ -3167,7 +3169,7 @@ Prove it (✓ is right; shuffled on screen):
 3. A teacher.
 4. Always alone.
 
-**Infer. What creature does Mrs. Hale compare Minnie to, and why does it fit?**
+**Infer. What creature does Mrs. Hale compare Minnie to?**
 
 Answers:
 
@@ -3293,7 +3295,7 @@ Prove it (✓ is right; shuffled on screen):
 3. She was angry at Minnie.
 4. She lived far away.
 
-**Infer. What does she regret, and what does that suggest about Minnie's life?**
+**Infer. What does Mrs. Hale regret?**
 
 Answers:
 
@@ -3421,13 +3423,11 @@ Prove it (✓ is right; shuffled on screen):
 3. Moving away.
 4. Buying a bird.
 
-**Infer. What does Mrs. Hale say was the real wrong, and who goes unanswered for it?**
+**Infer. What does Mrs. Hale call the real wrong?**
 
 Answers:
 
 > ¶298: “That was a crime!”
-
-> ¶298: “Who’s going to punish that?”
 
 Near misses:
 
@@ -3854,7 +3854,7 @@ Prove it (✓ is right; shuffled on screen):
 3. Who killed John Wright.
 4. When they'll leave.
 
-**Infer. What does the attorney think they learned, and what does that show about him?**
+**Infer. What does the attorney think the search turned up?**
 
 Answers:
 

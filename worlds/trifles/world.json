@@ -830,7 +830,7 @@
             {
               "id": "fixing",
               "ladder": "infer",
-              "question": "What is Mrs. Hale changing in the messy part, and why does it matter?",
+              "question": "What is Mrs. Hale doing to the messy part of the sewing?",
               "answers": [
                 {
                   "line": "Just pulling out a stitch or two that’s not sewed very\ngood."
@@ -1124,7 +1124,7 @@
             {
               "id": "where",
               "ladder": "locate",
-              "question": "Where do they search next?",
+              "question": "Where do the women hunt for quilting supplies to bring to Minnie?",
               "answers": [
                 {
                   "line": "[_They look in the sewing basket._"
@@ -1405,7 +1405,7 @@
             {
               "id": "like-a-bird",
               "ladder": "infer",
-              "question": "What creature does Mrs. Hale compare Minnie to, and why does it fit?",
+              "question": "What creature does Mrs. Hale compare Minnie to?",
               "answers": [
                 {
                   "line": "She--come to think of it, she was kind of like a bird\nherself--real sweet and pretty, but kind of timid and--fluttery.",
@@ -1754,7 +1754,7 @@
             {
               "id": "regret",
               "ladder": "infer",
-              "question": "What does she regret, and what does that suggest about Minnie's life?",
+              "question": "What does Mrs. Hale regret?",
               "answers": [
                 {
                   "line": "I wish I had come over to see\nMinnie Foster sometimes."
@@ -2165,13 +2165,10 @@
             {
               "id": "real-wrong",
               "ladder": "infer",
-              "question": "What does Mrs. Hale say was the real wrong, and who goes unanswered for it?",
+              "question": "What does Mrs. Hale call the real wrong?",
               "answers": [
                 {
                   "line": "That was a crime!"
-                },
-                {
-                  "line": "Who’s going to\npunish that?"
                 }
               ],
               "near_misses": [
@@ -3414,7 +3411,7 @@
             {
               "id": "found-out",
               "ladder": "infer",
-              "question": "What does the attorney think they learned, and what does that show about him?",
+              "question": "What does the attorney think the search turned up?",
               "answers": [
                 {
                   "line": "Well, Henry, at least we found out that she was not\ngoing to quilt it."

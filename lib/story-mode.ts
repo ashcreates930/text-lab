@@ -220,7 +220,8 @@ export type RoundRecord = RoundScore & { round: number; multiplier: number; doub
 // skipped: rounds jumped over at the start (the home page's "Catch the lie"); they score nothing and don't count toward
 // the points possible. picks: this run's questions; seen: questions from earlier runs (kept through "Play again");
 // attempt: the round in progress.
-export type RunState = { round: number; total: number; streak: number; bestStreak: number; coins: number; pouch: string[]; trust: Record<string, number>; lantern: boolean; doubleDown: boolean; rounds: RoundRecord[]; restarts?: number; skipped?: number; picks?: Picks; seen?: string[]; attempt?: Attempt | null };
+// env: "preview" for runs started on a Vercel preview, so they can be removed from the shared leaderboard.
+export type RunState = { env?: "preview"; round: number; total: number; streak: number; bestStreak: number; coins: number; pouch: string[]; trust: Record<string, number>; lantern: boolean; doubleDown: boolean; rounds: RoundRecord[]; restarts?: number; skipped?: number; picks?: Picks; seen?: string[]; attempt?: Attempt | null };
 export const newRun = (): RunState => ({ round: 0, total: 0, streak: 0, bestStreak: 0, coins: 0, pouch: [], trust: {}, lantern: false, doubleDown: false, rounds: [] });
 export const runMax = (s: Pick<RunState, "skipped">) => maxPoints(s.skipped ?? 0);
 

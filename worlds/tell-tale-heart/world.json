@@ -437,7 +437,7 @@
             {
               "id": "who-came",
               "ladder": "locate",
-              "question": "Who came through the doorway, and what did they say they were?",
+              "question": "What did the visitors say they were?",
               "answers": [
                 {
                   "line": "There entered three men, who introduced themselves, with perfect suavity, as officers of the police."
@@ -461,7 +461,7 @@
             {
               "id": "light-heart",
               "ladder": "infer",
-              "question": "How did he feel about answering, and why is that strange?",
+              "question": "How did he feel about answering?",
               "answers": [
                 {
                   "line": "I went down to open it with a light heart, — for what had I now to fear?"
@@ -996,7 +996,7 @@
             {
               "id": "decision",
               "ladder": "infer",
-              "question": "What decision did he reach, and why is his reason odd?",
+              "question": "What did he decide to do about the old man?",
               "answers": [
                 {
                   "line": "Whenever it fell upon me, my blood ran cold; and so, by degrees — very gradually — I made up my mind to take the life of the old man, and thus rid myself of the eye forever.",
@@ -2666,7 +2666,7 @@
             {
               "id": "not-in-ears",
               "ladder": "locate",
-              "question": "Where did he first think the sound came from, and what did he decide?",
+              "question": "What did he realize about where the sound came from?",
               "answers": [
                 {
                   "line": "The ringing became more distinct: I talked more freely, to get rid of the feeling; but it continued and gained definiteness — until, at length, I found that the noise was not within my ears.",

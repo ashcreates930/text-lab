@@ -473,7 +473,7 @@
             {
               "id": "built",
               "ladder": "locate",
-              "question": "What was Ichabod's classroom built from, and what filled the broken panes?",
+              "question": "How was Ichabod's classroom put together?",
               "answers": [
                 {
                   "line": "His schoolhouse was a low building of one large room, rudely constructed\nof logs; the windows partly glazed, and partly patched with leaves of\nold copybooks.",
@@ -498,7 +498,7 @@
             {
               "id": "locked",
               "ladder": "locate",
-              "question": "How did Ichabod close up the room when no one was there, and why would it trap a burglar?",
+              "question": "Why would a burglar have trouble once inside the room?",
               "answers": [
                 {
                   "line": "It was most ingeniously secured at vacant hours, by a\nwithe twisted in the handle of the door, and stakes set against the\nwindow shutters; so that though a thief might get in with perfect ease,\nhe would find some embarrassment in getting out,--an idea most probably\nborrowed by the architect, Yost Van Houten, from the mystery of an\neelpot.",
@@ -681,7 +681,7 @@
             {
               "id": "executor",
               "ladder": "locate",
-              "question": "Who went through the missing man's things, and what role did he hold?",
+              "question": "What role did Hans take on after the schoolmaster vanished?",
               "answers": [
                 {
                   "line": "Hans Van Ripper as executor of his estate, examined the\nbundle which contained all his worldly effects."
@@ -881,7 +881,7 @@
             {
               "id": "poem",
               "ladder": "infer",
-              "question": "Who was the unfinished poem for, and why does that matter in this case?",
+              "question": "Who was the unfinished poem for?",
               "answers": [
                 {
                   "line": "As to the\nbooks and furniture of the schoolhouse, they belonged to the community,\nexcepting Cotton Mather’s “History of Witchcraft,” a “New England\nAlmanac,” and a book of dreams and fortune-telling; in which last was\na sheet of foolscap much scribbled and blotted in several fruitless\nattempts to make a copy of verses in honor of the heiress of Van Tassel.",
@@ -1180,7 +1180,7 @@
           "bank": [
             {
               "id": "person",
-              "question": "\"So, a ghost or a man?\" What detail by the stream hints a person was there?",
+              "question": "\"Ghost or man, I wonder.\" What detail by the stream hints a person was there?",
               "answers": [
                 {
                   "line": "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin.",
@@ -1204,7 +1204,7 @@
             },
             {
               "id": "own-accord",
-              "question": "\"Could he have just packed up and left?\" Which line hints he might have gone on his own?",
+              "question": "\"Maybe he just packed up and left.\" Which line hints he might have gone on his own?",
               "answers": [
                 {
                   "line": "Whatever money the\nschoolmaster possessed, and he had received his quarter’s pay but a\nday or two before, he must have had about his person at the time of his\ndisappearance.",
@@ -1228,7 +1228,7 @@
             },
             {
               "id": "quick-belief",
-              "question": "\"Did the town look hard at the facts?\" Which line shows how they reached a verdict?",
+              "question": "\"I wonder if the town looked hard at the facts.\" Which line shows how they reached a verdict?",
               "answers": [
                 {
                   "line": "The stories of Brouwer, of Bones, and a whole budget of\nothers were called to mind; and when they had diligently considered them\nall, and compared them with the symptoms of the present case, they shook\ntheir heads, and came to the conclusion that Ichabod had been carried\noff by the Galloping Hessian.",
@@ -1570,7 +1570,7 @@
                 }
               ],
               "prove": {
-                "right": "He would quit teaching and look down on people who had hosted him.",
+                "right": "He would quit teaching and look down on his former employers.",
                 "wrong": [
                   "He would give money to the school.",
                   "He would thank Hans for his help.",
@@ -1718,7 +1718,7 @@
             {
               "id": "during-music",
               "ladder": "locate",
-              "question": "While the music plays, where is Ichabod's rival, and what is he feeling?",
+              "question": "How did Ichabod's rival feel while the music played?",
               "answers": [
                 {
                   "line": "The\nlady of his heart was his partner in the dance, and smiling graciously\nin reply to all his amorous oglings; while Brom Bones, sorely smitten\nwith love and jealousy, sat brooding by himself in one corner.",
@@ -1899,7 +1899,7 @@
             {
               "id": "race",
               "ladder": "locate",
-              "question": "In Brom's own adventure, what was the bet, and where did the rider disappear?",
+              "question": "In Brom's own adventure, where did the rider disappear?",
               "answers": [
                 {
                   "line": "He affirmed that on returning one night from the neighboring village of\nSing Sing, he had been overtaken by this midnight trooper; that he had\noffered to race with him for a bowl of punch, and should have won it\ntoo, for Daredevil beat the goblin horse all hollow, but just as they\ncame to the church bridge, the Hessian bolted, and vanished in a flash\nof fire.",
@@ -2504,11 +2504,8 @@
             {
               "id": "first-seen",
               "ladder": "locate",
-              "question": "Where did the figure first show itself, and how did it respond when he called out?",
+              "question": "How did the figure respond when Ichabod called out?",
               "answers": [
-                {
-                  "line": "In the dark shadow of the grove, on the margin\nof the brook, he beheld something huge, misshapen and towering."
-                },
                 {
                   "line": "He received no reply."
                 },
@@ -2520,6 +2517,10 @@
                 {
                   "line": "It was at this identical spot that the unfortunate André was\ncaptured, and under the covert of those chestnuts and vines were the\nsturdy yeomen concealed who surprised him.",
                   "hint": "That's the history of the spot. What did he see there? Check ¶62."
+                },
+                {
+                  "line": "In the dark shadow of the grove, on the margin\nof the brook, he beheld something huge, misshapen and towering.",
+                  "hint": "That's where he saw it. How did it reply? Check ¶63."
                 }
               ],
               "prove": {
@@ -2720,7 +2721,7 @@
             {
               "id": "whose",
               "ladder": "locate",
-              "question": "Whose was it, and what worry flashed through Ichabod's head?",
+              "question": "What worry flashed through Ichabod's head during the chase?",
               "answers": [
                 {
                   "line": "For a moment the terror of Hans Van\nRipper’s wrath passed across his mind,--for it was his Sunday saddle;\nbut this was no time for petty fears; the goblin was hard on his\nhaunches; and (unskilful rider that he was!) he had much ado to maintain\nhis seat; sometimes slipping on one side, sometimes on another, and\nsometimes jolted on the high ridge of his horse’s backbone, with a\nviolence that he verily feared would cleave him asunder.",
@@ -2910,20 +2911,20 @@
             {
               "id": "instead",
               "ladder": "locate",
-              "question": "What did the pursuer do instead, and what happened to Ichabod?",
+              "question": "What did the pursuer do instead of vanishing?",
               "answers": [
                 {
                   "line": "Just then he saw the goblin rising in his stirrups,\nand in the very act of hurling his head at him."
-                },
-                {
-                  "line": "It encountered his cranium\nwith a tremendous crash,--he was tumbled headlong into the dust, and\nGunpowder, the black steed, and the goblin rider, passed by like a\nwhirlwind.",
-                  "phrase": "he was tumbled headlong into the dust"
                 }
               ],
               "near_misses": [
                 {
                   "line": "Just then he heard\nthe black steed panting and blowing close behind him; he even fancied\nthat he felt his hot breath.",
                   "hint": "That's the chase. What was thrown? Check ¶67."
+                },
+                {
+                  "line": "It encountered his cranium\nwith a tremendous crash,--he was tumbled headlong into the dust, and\nGunpowder, the black steed, and the goblin rider, passed by like a\nwhirlwind.",
+                  "hint": "That's what happened to Ichabod. What did the pursuer do? Check ¶67."
                 }
               ],
               "prove": {
@@ -2952,7 +2953,7 @@
                 }
               ],
               "prove": {
-                "right": "A smashed pumpkin suggests the \"head\" was a pumpkin thrown by a living rider.",
+                "right": "A smashed pumpkin suggests the \"head\" could be a pumpkin thrown by a living rider.",
                 "wrong": [
                   "A real head was found.",
                   "Nothing was found by the brook.",
@@ -3107,7 +3108,7 @@
             {
               "id": "survived",
               "ladder": "locate",
-              "question": "According to the traveler, did Ichabod survive, and why did he go?",
+              "question": "According to the traveler, why did Ichabod go away?",
               "answers": [
                 {
                   "line": "It is true, an old farmer, who had been down to New York on a visit\nseveral years after, and from whom this account of the ghostly adventure\nwas received, brought home the intelligence that Ichabod Crane was still\nalive; that he had left the neighborhood partly through fear of the\ngoblin and Hans Van Ripper, and partly in mortification at having been\nsuddenly dismissed by the heiress; that he had changed his quarters to a\ndistant part of the country; had kept school and studied law at the same\ntime; had been admitted to the bar; turned politician; electioneered;\nwritten for the newspapers; and finally had been made a justice of\nthe Ten Pound Court.",

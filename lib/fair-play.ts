@@ -233,7 +233,10 @@ export function questionProblems(at: string, q: { question?: string; focus?: str
     if (!/¶\d+/.test(n.hint)) problems.push(`${at}: a near miss hint names a paragraph (¶)`);
   }
   if (q.prove && (q.prove.wrong.length !== 3 || new Set([q.prove.right, ...q.prove.wrong]).size !== 4)) problems.push(`${at}: Prove it needs 4 different choices`);
-  const shared = sharedRoots(q.question ?? q.focus ?? "", answers.map((a) => a.line), names, q.shared_ok);
+  // One question, one thing: no "…, and what/why/how…" and no second question mark.
+  const text = q.question ?? q.focus ?? "";
+  if (/,\s+and\s+(what|why|how|where|who|whose|when|which)\b/i.test(text) || (text.match(/\?/g) ?? []).length > 1) problems.push(`${at}: ask one thing per question`);
+  const shared = sharedRoots(text, answers.map((a) => a.line), names, q.shared_ok);
   if (shared.length) problems.push(`${at}: the question shares key words with its answers (${shared.join(", ")}); paraphrase it`);
   return problems;
 }
