@@ -2397,3 +2397,44 @@ test("story mode: a fractional browser timer is saved as whole milliseconds", as
   await srv.playRound(store,world,passages,scene,run,{round:1,input:{kind:"read",pouch:q.answers.slice(0,3)},elapsedMs:22001.300000000745,grace:false,relaxed:false});
   assert.ok(Number.isInteger(mem.rounds[0].elapsedMs),"elapsed_ms is an integer column");
 });
+
+test("fair play on the clue screen: bank questions, first-try points, shown answers, coin-only rival wins, word cards", async()=>{
+  const {world,passages,line}=await storyKit();
+  const cg=await import("../lib/clue-game.ts");const fp=await import("../lib/fair-play.ts");const ev=await import("../lib/evidence-check.ts");
+  const clue=world.scenes[0].artifacts.find(a=>a.id==="empty-schoolhouse")!;
+  const q=clue.bank!.find(x=>x.id==="discipline")!;
+  // A bank answer beside the clue's own paragraph (¶12) is a real proof line for it, so saved proofs stay valid.
+  assert.ok(ev.matchEvidence(world,passages,line("p012",0),{clueId:clue.id}));
+  // checkProof answers the student's own question; a miss names the paragraph, then the part of it.
+  assert.equal(cg.checkProof(world,passages,clue,line("p012",0),q).ok,true);
+  const m2=cg.checkProof(world,passages,clue,line("p011",0),q,2),m3=cg.checkProof(world,passages,clue,line("p011",0),q,3);
+  assert.ok(!m2.ok&&/¶11/.test(m2.hint));assert.ok(!m3.ok&&/part of ¶11/.test(m3.hint));
+  const near=cg.checkProof(world,passages,clue,line("p011",3),q,2);assert.ok(!near.ok&&/How does the narrator judge his punishments\? Check ¶12\./.test(near.hint));
+  // Points: full, half, none; 25 off per wrong line; a shown answer earns nothing and ends the streak.
+  assert.equal(cg.earn(undefined,"proof","a").points,100);
+  assert.equal(cg.earn(undefined,"proof","a",{tries:1,wrong:1}).points,25);
+  assert.equal(cg.earn(undefined,"proof","a",{tries:2,wrong:2}).points,0);
+  const shownGame=cg.earn({...cg.newClueGame(),streak:2},"proof","a",{shown:true});assert.deepEqual([shownGame.points,shownGame.game.streak],[0,0]);
+  // A rival win is a coin, not points.
+  const won=cg.earn(undefined,"rivalWin","a");assert.deepEqual([won.points,won.coins],[0,1]);
+  // Stories without a bank yet: one question that any of the clue's evidence lines answers.
+  const tth=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/tell-tale-heart/world.json",import.meta.url),"utf8")));
+  const c2=tth.scenes[0].artifacts[0];const b2=fp.clueBank(tth,[],c2,"What do you notice?");
+  assert.deepEqual([b2.length,b2[0].question,b2[0].prove],[1,"What do you notice?",null]);
+  // Words to know: the glossary words in the passage on screen.
+  const {wordsToKnow}=fp;
+  assert.deepEqual(wordsToKnow(passages.filter(p=>p.id==="p069"),world.glossary).map(g=>g.term).filter(t=>["executor","consigned","forthwith"].includes(t)),["executor","forthwith","consigned"]);
+  assert.deepEqual(wordsToKnow(passages.filter(p=>p.id==="p012"),world.glossary).map(g=>g.term),["discrimination"]);
+  // One writing task per scene, after its clues.
+  const {nextStep}=await import("../lib/next-step.ts");
+  const done=[{id:"a",name:"A",done:true,locked:false}];
+  assert.equal(nextStep({clues:done,writing:{saved:false},last:false,hasChoice:false}).action.kind,"writing");
+  assert.equal(nextStep({clues:done,writing:{saved:true},last:false,hasChoice:false}).action.kind,"next");
+  // Saved with progress, and in the teacher's view: tries, a shown answer and speed flags.
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
+  const p=StudentProgressSchema.parse({v:1,worldId:"sleepy-hollow",scene:0,submitted:false,readerProgress:{},artifactAnswers:{[clue.id]:{notice:line("p012",0),interpret:"He was strict but fair.",craft:"",technique:"",revisions:[],fair:{qid:"discipline",tries:1,shown:false,flags:["fast"]}}},savedTextEvidence:[],storyFrames:{},clueQs:{[clue.id]:"discipline"},clueSeen:{[clue.id]:["built"]},sceneWriting:{"empty-schoolhouse":{notice:"n",interpret:"i",craft:"c",technique:"pacing",saved_at:"2026-10-25T00:00:00Z"}},updatedAt:new Date().toISOString()});
+  const {buildEvidence,evidenceDetail}=await import("../lib/classroom/evidence.ts");
+  const e=buildEvidence(world,[{id:"s1",nickname:"Ana Ruiz",answers:p.artifactAnswers}],7);
+  assert.deepEqual([e.students[0].cells[clue.id].tries,e.students[0].cells[clue.id].flags],[1,["fast"]]);
+  assert.deepEqual(evidenceDetail(e,"s1",clue.id)!.flags,["Tapped a line within 4 seconds of opening the passage"]);
+});

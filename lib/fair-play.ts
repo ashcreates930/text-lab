@@ -120,6 +120,18 @@ export function pidOf(passages: SourcePassage[], line: string) {
   return passages.find((p) => evidenceSentences(p.text).some((l) => same(l, line)))?.id ?? "";
 }
 
+// ---------- Words to know ----------
+// Word cards above the passage (app/reading-panel.tsx).
+export type GlossaryWord = { term: string; student_friendly_definition: string };
+// The glossary words in these paragraphs, in the order they first appear.
+export function wordsToKnow(passages: SourcePassage[], glossary: GlossaryWord[] = []) {
+  const text = passages.map((p) => p.text).join(" ").replace(/\s+/g, " ").toLowerCase();
+  const letter = (c: string | undefined) => !!c && /[a-zà-ÿ]/.test(c);
+  // A whole-word match: no letter right before or after ("discrimination", not "indiscriminate").
+  const find = (term: string) => { const t = term.toLowerCase(); for (let i = text.indexOf(t); i >= 0; i = text.indexOf(t, i + 1)) if (!letter(text[i - 1]) && !letter(text[i + t.length])) return i; return -1; };
+  return glossary.map((g) => ({ g, at: find(g.term) })).filter((x) => x.at >= 0).sort((a, b) => a.at - b.at).map((x) => x.g);
+}
+
 // ---------- Points goal ----------
 export const LEVELS = [
   { id: "opened", name: "Case Opened", pct: 40 },

@@ -1,9 +1,11 @@
 "use client";
-// The clue screen: the passage is the main panel, always readable, and the scene picture is a small banner. Characters
-// make claims; the student checks them by tapping lines in the story (kept in the Evidence pouch, the same tap as Story
-// Mode) and pressing Prove it. A right line earns points, coins and builds the streak; a wrong one gets a hint back to
-// the passage. "Something's off" flags an answer: if it was the clue's authored off claim and the student taps the line
-// that corrects it, they earn the catch; otherwise the flag waits for the teacher (no points, no penalty).
+// The clue screen: the passage is the main panel, always readable, and the scene picture is a small banner. Each clue
+// asks the student one question from its authored bank (lib/fair-play.ts). They tap the line that answers it (kept in
+// the Evidence pouch, the same tap as Story Mode), mark its exact words when it's long, then Prove it: pick what it
+// shows, or write "This proves… because…". A miss is an amber "Not yet" with a hint (try 2 names the paragraph, try 3
+// the part of it); after three misses the line is shown and Prove it still comes, for 0 points. Points follow the
+// first-try rule. "Something's off" flags an answer: if it was the clue's authored off claim and the student taps the
+// line that corrects it, they earn the catch; otherwise the flag waits for the teacher (no points, no penalty).
 // Rival and squad modes (demo: computer players) race or read together before the same save. Rules: lib/clue-game.ts.
 import {useCallback,useEffect,useMemo,useRef,useState} from "react";
 import {ArrowLeft,ArrowRight,Check,Flag,MessageCircle,Square,Volume2,Vote} from "lucide-react";
@@ -14,6 +16,8 @@ import {useClueSteps,evidenceLabel,CLASS_AI_OFF,type Clue,type Scene} from "./cl
 import {contentNotes} from "@/lib/content-notes";
 import {lieFor,tryLine,testimonyParts,lineWords} from "@/lib/lies";
 import {withFreeze,inSentence,REACTION_MAX,REACTION_STEMS,RIVAL_LOCKOUT_MS,RIVAL_SECONDS,SQUAD_JOBS,checkProof,cluePanel,computerPins,computerRivalPlan,correctsOffClaim,displayLine,earn,markKey,miss,newClueGame,paragraphLabel,rivalOutcome,squadJobs,voteWinner,type ClaimFlag,type MarkTag,type ReactionStem} from "@/lib/clue-game";
+import {MAX_TRIES,answerFor,clueBank,needsPhrase,phraseMatches,phraseRange,pickQuestion,proveChoices,proveRight,speedFlags,typedProof} from "@/lib/fair-play";
+import {NotYet,PhrasePicker,ProveIt,useSpeedMeta} from "./fair-play-ui";
 import {screenMessage} from "@/lib/safety";
 import {squadName} from "@/lib/live/engine";
 import {voiceButtonFor} from "@/lib/voice-control";
@@ -26,7 +30,7 @@ import {focusScreenTop} from "./screen-focus";
 import {playStamp} from "./case-game";
 import {FREEZE_MS,canFreeze,freezeLeft} from "@/lib/freeze";
 
-type Info={solves:boolean;factCheck:boolean};
+type Info={solves:boolean;factCheck:boolean;points?:number};
 type Props={world:WorldPack;scene:Scene;sceneIndex:number;clue:Clue;roleId:string;demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];onClose:(saved:boolean,info?:Info)=>void};
 
 export function ClueScreen(p:Props){
@@ -61,6 +65,14 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
  const notes=useMemo(()=>contentNotes(world),[world]);
  const panel=useMemo(()=>squad?[...squad.mine,...squad.teammates.flatMap(t=>t.chunk)]:cluePanel(world,passages,scene,clue),[squad,world,passages,scene,clue]);
  const prior=demo.artifactAnswers[clue.id];
+ // This student's question from the clue's bank: kept once given; new on a replay; by roster seat in class.
+ const bank=useMemo(()=>clueBank(world,passages,clue,s.notice),[world,passages,clue,s.notice]);
+ const q=useMemo(()=>bank.find(x=>x.id===demo.clueQs?.[clue.id])??pickQuestion(bank,{seed:demo.classAuth?`${world.id}:${clue.id}`:`${demo.id}:${clue.id}`,seen:demo.clueSeen?.[clue.id],seat:demo.classAuth?demo.classSeat??null:null}),[bank,demo.clueQs,demo.clueSeen,demo.classAuth,demo.classSeat,demo.id,world.id,clue.id]);
+ useEffect(()=>{if(demo.clueQs?.[clue.id]!==q.id&&!prior?.notice)setDemo(d=>({...d,clueQs:{...(d.clueQs??{}),[clue.id]:q.id}}))},[q.id,clue.id,demo.clueQs,prior?.notice,setDemo]);
+ // Tries: misses so far, wrong lines, whether the answer was shown; the accepted line and the step after it.
+ const [tries,setTries]=useState(0),[wrong,setWrong]=useState(0),[shown,setShown]=useState(false),[notYet,setNotYet]=useState<string|null>(null);
+ const [stage,setStage]=useState<"line"|"phrase"|"prove">("line"),[accepted,setAccepted]=useState("");
+ const speed=useSpeedMeta();
  const [pouch,setPouch]=useState<string[]>(()=>prior?.notice?[prior.notice]:[]);
  const [selected,setSelected]=useState<string|undefined>(prior?.notice);
  const [results,setResults]=useState<{line:string;ok:boolean}[]>(()=>prior?.notice?[{line:prior.notice,ok:true}]:[]);
@@ -84,33 +96,58 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
  useEffect(()=>()=>voice.stop(),[voice]);
 
  const rival=mode==="rival";
- const award=useCallback((kind:"proof"|"offClaim"|"lie"|"rivalWin",key:string)=>{const r=earn(demo.game,kind,key);const gotFreeze=withFreeze(r.game,rival,r.points>0).freezeHeld&&!r.game.freezeHeld;setDemo(d=>{const x=earn(d.game,kind,key);return {...d,game:withFreeze(x.game,rival,x.points>0)}});if(gotFreeze)setTimeout(()=>setFreezeNote(true),0);return r},[demo.game,setDemo,rival]);
+ const award=useCallback((kind:"proof"|"offClaim"|"lie"|"rivalWin",key:string,fair:{tries?:number;wrong?:number;shown?:boolean}={})=>{const r=earn(demo.game,kind,key,fair);const grew=r.game.streak>(demo.game?.streak??0);const gotFreeze=withFreeze(r.game,rival,grew).freezeHeld&&!r.game.freezeHeld;setDemo(d=>{const x=earn(d.game,kind,key,fair);return {...d,game:withFreeze(x.game,rival,x.game.streak>(d.game?.streak??0))}});if(gotFreeze)setTimeout(()=>setFreezeNote(true),0);return r},[demo.game,setDemo,rival]);
  const [freezeNote,setFreezeNote]=useState(false);
  const say=(m:Message)=>setMessage(m);
  // ---- The one tap: keep (or take back) a line; the last one kept is the proof to check ----
  function tap(l:PanelLine){
   if(raceState&&!raceState.done){raceTap(l);return}
-  if(proven&&!flagging)return;
-  setMessage(null);
+  if((proven||stage!=="line")&&!flagging)return;
+  setMessage(null);speed.tap();
   const k=lineWords(l.text);
-  if(pouch.some(x=>lineWords(x)===k)){setPouch(p=>p.filter(x=>lineWords(x)!==k));if(selected&&lineWords(selected)===k)setSelected(undefined);return}
+  if(pouch.some(x=>lineWords(x)===k)){speed.swap();setPouch(p=>p.filter(x=>lineWords(x)!==k));if(selected&&lineWords(selected)===k)setSelected(undefined);return}
   setPouch(p=>[...p.filter(x=>lineWords(x)!==k),l.text].slice(-3));setSelected(l.text);
  }
- // ---- Prove it ----
- function prove(){
-  if(!selected)return;
-  const line=selected,pid=panel.find(x=>x.text.includes(line.trim().slice(0,30)))?.id??clue.source_anchor[0];
+ // ---- Prove it: the line, its exact words (long lines), then what it shows ----
+ const pidOfLine=(line:string)=>panel.find(x=>x.text.includes(line.trim().slice(0,30)))?.id??clue.source_anchor[0];
+ // A miss: Not yet with the next try's hint, or after three, the answer shown (the proof step still comes).
+ function missed(hint:string,wrongLine:boolean,showLine?:string){
+  const t=tries+1;setTries(t);if(wrongLine)setWrong(w=>w+1);setDemo(d=>({...d,game:miss(d.game)}));
+  if(t>=MAX_TRIES&&!shown&&showLine){setShown(true);setAccepted(showLine);setSelected(showLine);setResults(x=>[...x,{line:showLine,ok:true}]);s.setProof({text:showLine,pid:pidOfLine(showLine)});setStage("prove");say({kind:"info",text:"Here is the line that answers it. This clue scores 0, but Prove it still counts."});return}
+  setNotYet(hint);
+ }
+ function prove(lineIn?:string){
+  const line=lineIn??selected;
+  if(!line)return;
   if(lie&&!lieCaught){
    const r=tryLine(lie,line,lieMisses);
-   if(r.result==="caught"){setLieCaught(true);setResults(x=>[...x,{line,ok:true}]);s.setProof({text:line,pid});s.setStance("contradicts");setProven(true);playStamp(0);const g=award("lie",scene.id);
-    setDemo(d=>({...d,lies:{...(d.lies??{}),[scene.id]:{clue_id:clue.id,caught:true,misses:r.misses,caught_at:new Date().toISOString()}}}));say({kind:"win",text:`Lie caught. You proved ${liar?.name??"them"} wrong.${g.points?` +${g.points} points, +${g.coins} coins.`:""}`});return}
+   if(r.result==="caught"){setLieCaught(true);setResults(x=>[...x,{line,ok:true}]);s.setProof({text:line,pid:pidOfLine(line)});s.setStance("contradicts");setProven(true);playStamp(0);const g=award("lie",scene.id,{tries:lieMisses,wrong:lieMisses});
+    setDemo(d=>({...d,lies:{...(d.lies??{}),[scene.id]:{clue_id:clue.id,caught:true,misses:r.misses,caught_at:new Date().toISOString()}}}));setAccepted(line);setStage("prove");say({kind:"win",text:`Lie caught. You proved ${liar?.name??"them"} wrong.${g.points?` +${g.points} points, +${g.coins} coins.`:""}`});return}
    setLieMisses(r.misses);setResults(x=>[...x,{line,ok:false}]);setDemo(d=>({...d,game:miss(d.game),lies:{...(d.lies??{}),[scene.id]:{clue_id:clue.id,caught:false,misses:r.misses}}}));
-   say({kind:"hint",text:r.message});return;
+   if(r.misses>=MAX_TRIES){setLieCaught(true);setShown(true);setTries(r.misses);setAccepted(lie.truth_line);setSelected(lie.truth_line);setResults(x=>[...x,{line:lie.truth_line,ok:true}]);s.setProof({text:lie.truth_line,pid:lie.truth_paragraph});s.setStance("contradicts");setProven(true);award("lie",scene.id,{shown:true});setStage("prove");say({kind:"info",text:"Here is the line that proves it false. This catch scores 0; now say why."});return}
+   setNotYet(r.message);return;
   }
-  const c=checkProof(world,passages,clue,line);
-  if(c.ok){setResults(x=>[...x,{line,ok:true}]);s.setProof({text:line,pid});setProven(true);const g=award("proof",clue.id);say({kind:"win",text:`That's the proof.${g.points?` +${g.points} points, +${g.coins} coin${g.coins===1?"":"s"}.`:""}${(demo.game?.streak??0)+1>=2&&g.points?` Streak ${(demo.game?.streak??0)+1}!`:""}`});return}
-  setResults(x=>[...x,{line,ok:false}]);setDemo(d=>({...d,game:miss(d.game)}));say({kind:"hint",text:c.hint});
+  const c=checkProof(world,passages,clue,line,q,tries+2);
+  if(c.ok){const hit=answerFor(q,line)??{line};setResults(x=>[...x,{line,ok:true}]);s.setProof({text:hit.line,pid:pidOfLine(hit.line)});setAccepted(hit.line);setStage(needsPhrase(hit.line)&&"phrase" in hit&&hit.phrase?"phrase":"prove");say({kind:"win",text:"Right line. Now prove it."});return}
+  setResults(x=>[...x,{line,ok:false}]);missed(c.hint,true,q.answers[0]?.line);
  }
+ function lockPhrase(range:[number,number]){
+  const hit=answerFor(q,accepted);
+  if(hit?.phrase&&phraseMatches(accepted,hit.phrase,range)){setStage("prove");return}
+  const t=tries+1;
+  if(t>=MAX_TRIES){setTries(t);setShown(true);setStage("prove");return}
+  missed("Right line. Now mark only the words that prove it.",false);
+ }
+ // Prove it: a right choice or a typed answer saves the clue; points follow the try the line was found on.
+ function finishProof(p:{choice?:string;proves?:string;because?:string}){
+  const typed=typedProof(p.proves??"",p.because??"");
+  if(!typed&&q.prove&&!(p.choice&&proveRight(q.prove,p.choice))){if(shown){setNotYet("Not quite. Read the line again: what does it actually show?");return}missed("Not quite. Read the line again: what does it actually show?",false);return}
+  const text=typed||p.choice||"";
+  const g=lie?{points:0}:award("proof",clue.id,{tries,wrong,shown});
+  const info=s.save({explain:text,fair:{qid:q.id,tries,shown,flags:speedFlagsNow()}});
+  if(info)onClose(true,{...info,points:g.points});
+ }
+ const speedFlagsNow=()=>{const m=speed.meta();return speedFlags(m.firstTapMs,m.swaps)};
  // ---- Something's off ----
  function flagCheck(){
   if(!selected)return;
@@ -135,7 +172,7 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
  const finishRace=useCallback((you:number|null,rival:number|null)=>{
   const o=rivalOutcome(you,rival);
   setRaceState(r=>r?{...r,you,rival,done:true,outcome:o}:r);
-  if(o==="you"){const g=award("rivalWin",clue.id);say({kind:"win",text:`You win the point!${g.points?` +${g.points} points.`:""}`})}
+  if(o==="you"){const g=award("rivalWin",clue.id);say({kind:"win",text:`You win the face-off!${g.coins?` +${g.coins} coin.`:""}`})}
   else if(o==="rival"){setDemo(d=>{const g=d.game??newClueGame();return {...d,game:{...g,rivalLosses:g.rivalLosses+1,earned:[...g.earned,`rivalLoss:${clue.id}`]}}});say({kind:"info",text:`${rivalName} found it first. Keep going: find the line yourself to prove the clue.`})}
   else say({kind:"info",text:"Time's up. Find the line yourself to prove the clue."});
  },[award,clue.id,rivalName,setDemo]);
@@ -157,15 +194,13 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
   if(!raceState||raceState.done||!plan||Date.now()<raceState.lockUntil)return;
   const ms=Date.now()-raceState.start;
   if(correctsOffClaim(clue,l.text)){setPouch(p=>[...p.filter(x=>lineWords(x)!==lineWords(l.text)),l.text].slice(-3));setSelected(l.text);setResults(x=>[...x,{line:l.text,ok:true}]);
-   // The catch, the proof and the point, applied in order so the streak counts each one.
-   const proofOk=checkProof(world,passages,clue,l.text).ok;
-   const kinds:("offClaim"|"proof"|"rivalWin")[]=["offClaim",...(proofOk?["proof" as const]:[]),"rivalWin"];
-   const apply=(g:typeof demo.game)=>kinds.reduce((acc,k)=>{const r=earn(acc.game,k,clue.id);return {game:withFreeze(r.game,rival,r.points>0),points:acc.points+r.points,coins:acc.coins+r.coins}},{game:g??newClueGame(),points:0,coins:0});
+   // The catch earns points (it's evidence); the win itself earns a coin. The clue is still proven by its question.
+   const kinds:("offClaim"|"rivalWin")[]=["offClaim","rivalWin"];
+   const apply=(g:typeof demo.game)=>kinds.reduce((acc,k)=>{const r=earn(acc.game,k,clue.id);return {game:withFreeze(r.game,rival,r.game.streak>(acc.game.streak??0)),points:acc.points+r.points,coins:acc.coins+r.coins}},{game:g??newClueGame(),points:0,coins:0});
    const total=apply(demo.game);if(total.game.freezeHeld&&!demo.game?.freezeHeld)setFreezeNote(true);
    setDemo(d=>({...d,game:apply(d.game).game}));
-   if(proofOk){s.setProof({text:l.text,pid:l.pid});s.setStance("contradicts");setProven(true)}
    setRaceState(r=>r?{...r,you:ms,done:true,outcome:"you"}:r);playStamp(0);
-   say({kind:"win",text:`You win the point and catch the mistake!${total.points?` +${total.points} points, +${total.coins} coins.`:""}`});return}
+   say({kind:"win",text:`You win the face-off and catch the mistake!${total.points?` +${total.points} points,`:""} +${total.coins} coins. Now answer the clue's question.`});return}
   setResults(x=>[...x,{line:l.text,ok:false}]);setRaceState(r=>r?{...r,lockUntil:Date.now()+RIVAL_LOCKOUT_MS}:r);say({kind:"hint",text:"Not that line. Locked out for 3 seconds."});
  }
  const locked=!!raceState&&!raceState.done&&now<raceState.lockUntil;
@@ -189,9 +224,9 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
  const task=raceState&&!raceState.done?`Race: tap the line that proves ${world.characters.find(c=>c.id===clue.off_claim?.character_id)?.name??"them"} wrong.`
   :flagging?`Tap the line that shows what ${replier?.name??"they"} got wrong, then Check.`
   :lie&&!lieCaught?`One thing ${liar?.name} said is false. Tap the line that proves it, then Prove it.`
-  :proven?"Proven. Now explain what it shows."
-  :s.asked?`Tap the line that proves or disproves ${replier?.name??"them"}, then Prove it.`
-  :s.notice;
+  :stage==="phrase"?"Mark the exact words that prove it."
+  :stage==="prove"||proven?"Now prove it: what does the line show?"
+  :q.question;
  const trust=trustMeter(world,demo);
  const voiceToggle=s.reply&&replier?voiceButtonFor(voice.current,replier.id,s.reply,replier.name):null;
 
@@ -235,7 +270,7 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
     {dock("hidden md:flex")}
    </div>
    {/* The passage */}
-   <ReadingPanel className="min-h-0 flex-1 md:order-1" passages={panel} notes={notes} kept={pouch} selected={selected} results={results} marks={demo.marks} onTap={tap} onMark={l=>setMarkLine(l)} locked={locked} pins={squad?[...myPins,...teamPins]:[]} reactions={reactions}
+   <ReadingPanel className="min-h-0 flex-1 md:order-1" glossary={world.glossary} passages={panel} notes={notes} kept={pouch} selected={selected} results={results} marks={demo.marks} onTap={tap} onMark={l=>setMarkLine(l)} locked={locked} pins={squad?[...myPins,...teamPins]:[]} reactions={reactions}
     title={<><span>The story · {[...new Set(panel.map(x=>paragraphLabel(x.id)))].join(" ")}</span>{squad&&<span className="normal-case">Your part first</span>}</>}/>
    {dock("flex md:hidden")}
   </div>
@@ -244,13 +279,17 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
    onTag={(tag:MarkTag|null)=>{const k=markKey(markLine.pid,markLine.index);setDemo(d=>{const m={...(d.marks??{})};if(tag)m[k]={tag,pid:markLine.pid,text:markLine.text,clueId:clue.id,at:new Date().toISOString()};else delete m[k];return {...d,marks:m}});setMarkLine(null)}}/>}
   {reactOpen&&squad&&<ReactSheet line={reactOpen} onClose={()=>setReactOpen(null)} onSend={(stem,body)=>{setReactions(r=>[...r,{line:reactOpen,by:"You",stem:REACTION_STEMS[stem],body}]);setReactOpen(null)}}/>}
   {voteOpen&&squad&&<VoteSheet pins={[...myPins,...teamPins]} reactions={reactions} factChecker={squad.teammates.find(t=>t.job==="fact-checker")?.name??null} onClose={()=>setVoteOpen(false)} onLock={line=>{setVoteOpen(false);proveLine(line)}}/>}
-  {explainOpen&&<ExplainSheet s={s} who={replier?.name} asked={!!s.asked&&!lie} onClose={()=>setExplainOpen(false)} onSave={saveClue}/>}
+  {notYet&&<div className="absolute inset-0 z-50 overflow-y-auto bg-[#2A2620]/45 p-3 md:p-8" role="dialog" aria-modal="true" aria-labelledby="notyet-h"><div className="mx-auto max-w-xl"><NotYet tryNo={Math.min(tries+1,MAX_TRIES)} hint={notYet} onTryAgain={()=>{setNotYet(null);setSelected(undefined);setMessage(null)}}/></div></div>}
+  {stage==="phrase"&&!notYet&&<Sheet label="Mark the exact words" onClose={()=>{}}><PhrasePicker line={accepted} onLock={lockPhrase}/></Sheet>}
+  {explainOpen&&!notYet&&<Sheet label="Prove it" onClose={()=>setExplainOpen(false)}>
+   {shown&&<p className="mb-2 rounded-2xl bg-[#FFF4D6] px-3 py-2 text-[15px] font-semibold text-[#3D2E0A]">Shown answer: this clue scores 0, but your proof still counts.</p>}
+   <blockquote className="rounded-2xl border-l-4 border-[#A0472C] bg-[#F4E1D6]/60 px-3 py-2 font-serif text-[15px] leading-6">{displayLine(accepted||s.proof?.text||"")}</blockquote>
+   {shown&&answerFor(q,accepted)?.phrase&&<PhrasePicker line={accepted} shownRange={phraseRange(accepted,answerFor(q,accepted)!.phrase!)}/>}
+   <ProveIt choices={lie?null:q.prove?proveChoices(q.prove,`${demo.id}:${clue.id}:${q.id}`):null} onSubmit={finishProof}/>
+  </Sheet>}
  </div>;
 
- function proveLine(line:string){setSelected(line);
-  const c=checkProof(world,passages,clue,line),pid=panel.find(x=>x.text.includes(line.trim().slice(0,30)))?.id??clue.source_anchor[0];
-  if(c.ok){setResults(x=>[...x,{line,ok:true}]);s.setProof({text:line,pid});setProven(true);const g=award("proof",clue.id);say({kind:"win",text:`Your squad's pick is the proof.${g.points?` +${g.points} points, +${g.coins} coin${g.coins===1?"":"s"}.`:""}`})}
-  else{setResults(x=>[...x,{line,ok:false}]);setDemo(d=>({...d,game:miss(d.game)}));say({kind:"hint",text:c.hint})}}
+ function proveLine(line:string){setSelected(line);prove(line)}
 
  // The bottom dock: the pouch and one clear action.
  function dock(className:string){
@@ -258,11 +297,11 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
   return <div className={`shrink-0 flex-col gap-1.5 ${className}`}>
    <div className="flex items-center justify-between rounded-2xl border-2 border-dashed border-[#C9B9A0] bg-[#FBF7EE] px-3 py-1.5 text-[13px] font-bold" aria-live="polite"><span>Evidence pouch · {pouch.length} of 3</span><span aria-hidden className="flex gap-1">{[0,1,2].map(i=><i key={i} className={`block h-2 w-5 rounded ${i<pouch.length?"bg-[#A0472C]":"bg-[#E4DCCB]"}`}/>)}</span></div>
    {squad&&!proven&&<div className="flex gap-1.5">{pouch.length>0||teamPins.length>0?<button type="button" onClick={()=>setReactOpen(teamPins.at(-1)?.line??pouch[0])} className="min-h-12 flex-1 rounded-full bg-[#F4E1D6] text-[15px] font-bold text-[#8A3B23]">React</button>:null}<button type="button" onClick={()=>setAskOpen(v=>!v)} aria-expanded={askOpen} className="min-h-12 flex-1 rounded-full bg-[#EFE8D8] text-[15px] font-bold">Ask</button><button type="button" disabled={!pouch.length} onClick={()=>setVoteOpen(true)} aria-label="Vote on the best proof" className="flex min-h-12 flex-[1.4] items-center justify-center gap-1.5 rounded-full bg-[#A0472C] text-[15px] font-bold text-white disabled:opacity-40"><Vote size={17}/>Vote</button></div>}
-   {!squad&&!proven&&!flagging&&!inRace&&<button type="button" disabled={!selected} onClick={prove} className="flex min-h-12 w-full items-center justify-center gap-1.5 rounded-full bg-[#A0472C] text-[16px] font-bold text-white disabled:opacity-40">Prove it <ArrowRight size={18}/></button>}
+   {!squad&&stage==="line"&&!flagging&&!inRace&&<button type="button" disabled={!selected} onClick={()=>prove()} className="flex min-h-12 w-full items-center justify-center gap-1.5 rounded-full bg-[#A0472C] text-[16px] font-bold text-white disabled:opacity-40">Lock in this line <ArrowRight size={18}/></button>}
    {flagging&&<div className="flex gap-1.5"><button type="button" onClick={()=>{setFlagging(false);setMessage(null)}} className="min-h-12 flex-1 rounded-full bg-[#EFE8D8] text-[15px] font-bold">Cancel</button><button type="button" disabled={!selected} onClick={flagCheck} className="flex min-h-12 flex-[2] items-center justify-center gap-1.5 rounded-full bg-[#A33B20] text-[15px] font-bold text-white disabled:opacity-40"><Flag size={16}/>Check</button></div>}
    {inRace&&<p className="text-center text-[13px] font-semibold text-[#6B6457]">{locked?"Locked out…":"Tap a line in the story."}</p>}
-   {proven&&!flagging&&<>{s.asked&&!lie&&!s.stance&&<div className="grid grid-cols-2 gap-1.5">{[["supports","Backs them up"],["contradicts","Proves them wrong"]].map(([v,l])=><button key={v} type="button" onClick={()=>s.setStance(v)} className="min-h-12 rounded-full bg-[#EFE8D8] text-[14px] font-bold">{l}</button>)}</div>}
-    <button type="button" disabled={!!s.asked&&!lie&&!s.stance} onClick={()=>setExplainOpen(true)} className="flex min-h-12 w-full items-center justify-center gap-1.5 rounded-full bg-[#A0472C] text-[16px] font-bold text-white disabled:opacity-40">Explain it in your words <ArrowRight size={18}/></button></>}
+   {stage==="prove"&&!flagging&&<>{s.asked&&!lie&&!s.stance&&<div className="grid grid-cols-2 gap-1.5">{[["supports","Backs them up"],["contradicts","Proves them wrong"]].map(([v,l])=><button key={v} type="button" onClick={()=>s.setStance(v)} className="min-h-12 rounded-full bg-[#EFE8D8] text-[14px] font-bold">{l}</button>)}</div>}
+    <button type="button" disabled={!!s.asked&&!lie&&!s.stance} onClick={()=>setExplainOpen(true)} className="flex min-h-12 w-full items-center justify-center gap-1.5 rounded-full bg-[#A0472C] text-[16px] font-bold text-white disabled:opacity-40">Prove it <ArrowRight size={18}/></button></>}
   </div>;
  }
 }
@@ -324,17 +363,6 @@ function VoteSheet({pins,reactions,factChecker,onLock,onClose}:{pins:PanelPin[];
    <span className="block font-serif text-[15px] leading-6">{displayLine(p.line)}</span>
    <span className="mt-1 flex flex-wrap justify-between gap-x-3 text-[12px] font-bold text-[#8A3B23]"><span>Pinned by {p.by}{p.computer?" (computer)":""} · {reacts(p.line)} reaction{reacts(p.line)===1?"":"s"}</span><span className="whitespace-nowrap">{n} vote{n===1?"":"s"}{lead?" · leading":""}</span></span></button></li>})}</ul>
   <button type="button" disabled={!mine||!winner} onClick={()=>winner&&onLock(winner)} className="case-primary mt-3 w-full disabled:opacity-40"><Check size={18}/>Lock in the squad's pick</button>
- </Sheet>;
-}
-function ExplainSheet({s,who,asked,onClose,onSave}:{s:ReturnType<typeof useClueSteps>;who?:string;asked:boolean;onClose:()=>void;onSave:()=>void}){
- const box=useRef<HTMLTextAreaElement>(null);useEffect(()=>{box.current?.focus()},[]);
- return <Sheet label="What does it show?" onClose={onClose}>
-  <p className="text-[15px] leading-6 text-[#4A4438]">{s.interpret}</p>
-  {s.proof&&<blockquote className="mt-2 rounded-2xl border-l-4 border-[#A0472C] bg-[#F4E1D6]/60 px-3 py-2 font-serif text-[15px] leading-6">{displayLine(s.proof.text)}</blockquote>}
-  <div className="mt-2 flex flex-wrap gap-1.5">{["This line shows…","I think this means… because…",...(asked&&who?[`This proves ${who} was wrong because…`]:[])].map(t=><button key={t} type="button" onClick={()=>{s.setExplain(v=>v?`${v} ${t}`:t);box.current?.focus()}} className="min-h-10 rounded-full bg-[#EFE8D8] px-3 text-[13px]">{t}</button>)}</div>
-  <label htmlFor="explain-box" className="sr-only">Your answer</label>
-  <textarea id="explain-box" ref={box} value={s.explain} onChange={e=>s.setExplain(e.target.value)} rows={4} maxLength={1200} placeholder="Write it in your own words…" className="mt-2 w-full rounded-2xl border border-[#E4DCCB] bg-white px-4 py-3 text-[16px] leading-6"/>
-  <button type="button" disabled={!s.explain.trim()||!s.proof} onClick={onSave} className="case-primary mt-2 w-full disabled:opacity-40"><Check size={18}/>Save this clue</button>
  </Sheet>;
 }
 function Sheet({label,children,onClose}:{label:string;children:React.ReactNode;onClose:()=>void}){

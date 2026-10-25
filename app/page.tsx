@@ -50,7 +50,7 @@ export type Demo = {
   think: boolean; thinkSupport:boolean; thinkAnswers:Record<string,string>; trace: boolean; evidence: number; connection: string;
   myWords:string[]; glossaryOpens:number; suggestedArtifactType:string; readAloudOn:boolean; hintFrequency:"often"|"sometimes"|"on_request"|"off"; sentenceStartersOn:boolean;
   resumePhrase: string; submitted: boolean;
-  artifactAnswers:Record<string,{notice:string;interpret:string;craft:string;technique:string;revisions:string[];character?:string;history?:{stage:"notice"|"interpret"|"craft";text:string;submitted_at:string}[]}>;
+  artifactAnswers:Record<string,{notice:string;interpret:string;craft:string;technique:string;revisions:string[];character?:string;fair?:{qid?:string;tries?:number;shown?:boolean;flags?:("fast"|"swaps")[]};history?:{stage:"notice"|"interpret"|"craft";text:string;submitted_at:string}[]}>;
   openedArtifacts:string[]; activeArtifact:string; artifactStage:number; artifactDialogOpen:boolean;
   briefingComplete:boolean; savedTextEvidence:SavedTextEvidence[]; authorshipRanges:AuthorshipRange[]; analysisReport?:AnalysisReport;
   previewComplete?:boolean; course?:"all"|"best"|"ap"|"aice"; lessonsDone?:Record<string,LessonRecord>; portionUnlocks?:string[]; classAuth?:ClassAuth; homeLanguage?:HomeLanguage|null;
@@ -69,6 +69,9 @@ export type Demo = {
   game?:import("@/lib/clue-game").ClueGame; marks?:Record<string,import("@/lib/clue-game").LineMark>; claimFlags?:import("@/lib/clue-game").ClaimFlag[]; missionSeen?:string[];
   // Your Turn activities finished after the game (lib/your-turn.ts).
   yourTurn?:import("@/lib/your-turn").YourTurnEntry[];
+  // Fair play on the clue screen: each clue's question for this student, questions seen before (kept through Start
+  // over), one writing task per scene, and the student's seat in their class roster (so neighbors differ).
+  clueQs?:Record<string,string>; clueSeen?:Record<string,string[]>; sceneWriting?:Record<string,{notice:string;interpret:string;craft:string;technique?:string;saved_at:string}>; classSeat?:number|null;
 };
 type ScreenSnapshot = { insideTheTextScreen: true; sequence: number; view: View; demo: Demo };
 const newDemo = (preset: string,worldId="tell-tale-heart"): Demo => ({
@@ -231,7 +234,8 @@ export default function Home() {
   const [startAtLie,setStartAtLie]=useState(false);
   function catchTheLie(){tryDemo();setStartAtLie(true)}
   // Scene screen "Start over" (demo only): a fresh demo in the same story.
-  function startDemoOver(){const fresh=newDemo("student_first_visit");setDemo({...fresh,worldId:demo.worldId,course:"all",grade:null,think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:0})}
+  // Starting over keeps which clue questions were seen, so the replay asks new ones.
+  function startDemoOver(){const fresh=newDemo("student_first_visit");const seen={...(demo.clueSeen??{})};for(const [c,q] of Object.entries(demo.clueQs??{}))seen[c]=[...new Set([...(seen[c]??[]),q])];setDemo({...fresh,worldId:demo.worldId,course:"all",grade:null,think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:0,clueSeen:seen})}
   function tryDemo(){const base=demo.preset==="student_first_visit"&&!demo.classAuth?demo:newDemo("student_first_visit");chooseSide("student");setDemo({...base,worldId:"sleepy-hollow",course:"all",grade:null,think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:base.worldId==="sleepy-hollow"?base.scene:0});setView("play")}
   // Opening a book keeps that story's progress; switching books starts the case flow at its first scene.
   function openStory(worldId:string){setDemo(d=>d.worldId===worldId?{...d,previewComplete:false}:{...d,worldId,course:"all",grade:null,think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:0});setView("play")}

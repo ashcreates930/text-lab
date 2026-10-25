@@ -8,6 +8,7 @@ import { paragraphNumber, readingPortions } from "./source-passages.ts";
 import { evidenceSentences, lineWords } from "./lies.ts";
 import { matchEvidence } from "./evidence-check.ts";
 import { streakMultiplier } from "./story-mode.ts";
+import { afterWrongLines, answerFor, missHint, nearMissFor, pidOf, tryFactor, type BankQuestion } from "./fair-play.ts";
 import { earnsFreeze } from "./freeze.ts";
 
 type Scene = WorldPack["scenes"][number];
@@ -53,12 +54,13 @@ export function characterCard(world: WorldPack, passages: SourcePassage[], chara
 
 // ---------- Checking a line ----------
 export type ProofCheck = { ok: true } | { ok: false; hint: string };
-// A proof is right when it is one of the clue's evidence lines. A wrong line gets a hint back to the passage (a
-// paragraph number, never the line itself).
-export function checkProof(world: WorldPack, passages: SourcePassage[], clue: Clue, line: string): ProofCheck {
-  if (matchEvidence(world, passages, line, { clueId: clue.id })) return { ok: true };
-  const where = clue.source_anchor.map(paragraphLabel).join(" and ");
-  return { ok: false, hint: `Not that one. This clue is about ${inSentence(clue.name)}. Look again in ${where}.` };
+// A proof is right when it answers the student's question from the clue's bank (lib/fair-play.ts). A wrong line gets a
+// hint back to the passage: a near miss's own hint, the paragraph on try 2, the part of it on try 3. Never the line.
+export function checkProof(world: WorldPack, passages: SourcePassage[], clue: Clue, line: string, q?: BankQuestion, nextTry = 2): ProofCheck {
+  if (q ? !!answerFor(q, line) : !!matchEvidence(world, passages, line, { clueId: clue.id })) return { ok: true };
+  const target = q?.answers[0];
+  if (!target) { const where = clue.source_anchor.map(paragraphLabel).join(" and "); return { ok: false, hint: `Not that one. This clue is about ${inSentence(clue.name)}. Look again in ${where}.` }; }
+  return { ok: false, hint: missHint(nextTry, { pid: pidOf(passages, target.line), line: target.line }, passages, nearMissFor(q!, line)?.hint) };
 }
 // Off claims: one per clue, said by a character at an unpredictable answer (any of the first three they give on that
 // clue, picked from the student's id). The student flags it with "Something's off" and taps the line that corrects it.
@@ -73,7 +75,8 @@ export const offClaimLines = (clue: Clue) => (clue.off_claim ? [clue.off_claim, 
 export const correctsOffClaim = (clue: Clue, line: string) => offClaimLines(clue).some((o) => sameLine(o.line, line));
 
 // ---------- Points, coins and streaks (saved with progress) ----------
-export const CLUE_POINTS = { proof: 100, offClaim: 300, lie: 300, rivalWin: 100 } as const;
+// Points come from evidence: a rival win earns a coin only.
+export const CLUE_POINTS = { proof: 100, offClaim: 300, lie: 300, rivalWin: 0 } as const;
 export const CLUE_COINS = { proof: 1, offClaim: 2, lie: 2, rivalWin: 1 } as const;
 export type EarnKind = keyof typeof CLUE_POINTS;
 // Rival play also keeps Freeze state (lib/freeze.ts): whether one is held, races played, the last freeze, and a log.
@@ -81,11 +84,15 @@ export type ClueGame = { points: number; coins: number; streak: number; bestStre
 export const newClueGame = (): ClueGame => ({ points: 0, coins: 0, streak: 0, bestStreak: 0, rivalWins: 0, rivalLosses: 0, earned: [] });
 // A correct proof. Each award counts once (key: kind and clue), so proving the same clue again earns nothing new.
 // Consecutive correct proofs build the streak: x1.2 for the second, x1.5 from the third (the Story Mode rule).
-export function earn(game: ClueGame | undefined, kind: EarnKind, key: string) {
+// tries / wrong (proofs and caught lies): the misses before the right line and the wrong lines tapped. Full points on
+// the first try, half on the second, none after, 25 off per wrong line; a shown answer earns nothing and ends the streak.
+export function earn(game: ClueGame | undefined, kind: EarnKind, key: string, fair: { tries?: number; wrong?: number; shown?: boolean } = {}) {
   const g = game ?? newClueGame(), id = `${kind}:${key}`;
   if (g.earned.includes(id)) return { game: g, points: 0, coins: 0 };
+  if (fair.shown) return { game: { ...g, streak: 0, earned: [...g.earned, id] }, points: 0, coins: 0 };
   const multiplier = streakMultiplier(g.streak);
-  const points = Math.round(CLUE_POINTS[kind] * multiplier), coins = CLUE_COINS[kind], streak = g.streak + 1;
+  const base = afterWrongLines(CLUE_POINTS[kind] * tryFactor((fair.tries ?? 0) + 1), fair.wrong ?? 0);
+  const points = Math.round(base * multiplier), coins = CLUE_COINS[kind], streak = g.streak + 1;
   return { game: { ...g, points: g.points + points, coins: g.coins + coins, streak, bestStreak: Math.max(g.bestStreak, streak), earned: [...g.earned, id], ...(kind === "rivalWin" ? { rivalWins: g.rivalWins + 1 } : {}) }, points, coins };
 }
 // Rival play: a proof that brings the streak to 3, 6, 9… earns a Freeze (hold at most one).

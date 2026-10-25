@@ -6,8 +6,9 @@ import type { LiveRoundEvidence } from "../live/evidence.ts";
 import { freezeLine } from "../freeze.ts";
 import { LEVELS, SPEED_FLAG_TEXT } from "../fair-play.ts";
 
-// What a saved answer looks like in students.progress.artifactAnswers (only the fields this view reads).
-export type SavedAnswer = { notice?: string; interpret?: string; craft?: string; character?: string };
+// What a saved answer looks like in students.progress.artifactAnswers (only the fields this view reads). fair: the clue
+// screen's question, misses before the right line, whether the answer was shown, and speed flags (lib/fair-play.ts).
+export type SavedAnswer = { notice?: string; interpret?: string; craft?: string; character?: string; fair?: { qid?: string; tries?: number; shown?: boolean; flags?: string[] } };
 // A saved storyboard frame in students.progress.storyFrames, keyed "<world>:<page>" (only the fields this view reads).
 export type SavedFrameInput = { description?: string; quote?: string; image?: string };
 // Spot the Lie results (scene id -> result) and the Final Verdict, as saved in students.progress (fields this view reads).
@@ -35,7 +36,8 @@ export type StoryboardFrame = { pageId: string; picture?: string; quote: string;
 // "backed-up": the line supported what the character said. null: no character was questioned for this clue.
 export type Finding = "proved-wrong" | "backed-up" | null;
 // character: the name of the character the student questioned, when the save recorded it.
-export type EvidenceCell = { proven: boolean; quote: string; explanation: string; finding: Finding; character?: string };
+// tries / shown / flags: from the clue screen (misses before the right line, a shown answer, speed flags: teachers only).
+export type EvidenceCell = { proven: boolean; quote: string; explanation: string; finding: Finding; character?: string; tries?: number; shown?: boolean; flags?: string[] };
 export type EvidenceClue = { id: string; name: string; sceneId: string };
 // lie: the scene's Spot the Lie clue and the character who testified, when the scene has one.
 export type EvidenceScene = { id: string; title: string; characters: string[]; clues: EvidenceClue[]; lie?: { clueId: string; character: string } };
@@ -48,7 +50,6 @@ export type ClassEvidence = {
   verdict?: { question: string; standards: string[] };
   // Live rounds the class played: each squad's answer and result, and what each student did in their role.
   live?: LiveRoundEvidence[];
-  // Story Mode: every student ranked per scene, with each round's points and proof (teachers only).
   // Story Mode (teachers only): max and level are the points possible and the goal level reached; per round, tries (misses
   // before the right answer), shown (the answer was shown after three misses, 0 points), typed (a typed "This proves…
   // because…") and flags (speed flags: never shown to students).
@@ -96,7 +97,8 @@ export function buildEvidence(world: WorldPack, students: EvidenceStudentInput[]
     for (const c of clues) {
       const a = s.answers?.[c.id], proven = isProven(a);
       const character = proven && a?.character ? names.get(a.character) : undefined;
-      cells[c.id] = { proven, quote: proven ? a!.notice!.trim() : "", explanation: proven ? a!.interpret!.trim() : "", finding: proven ? findingOf(a) : null, ...(character ? { character } : {}) };
+      const fair = proven ? a?.fair : undefined;
+      cells[c.id] = { proven, quote: proven ? a!.notice!.trim() : "", explanation: proven ? a!.interpret!.trim() : "", finding: proven ? findingOf(a) : null, ...(character ? { character } : {}), ...(fair ? { tries: fair.tries ?? 0, shown: !!fair.shown, flags: fair.flags ?? [] } : {}) };
     }
     const proven = clues.filter((c) => cells[c.id].proven).length;
     const provedWrong = clues.filter((c) => cells[c.id].finding === "proved-wrong").length;
@@ -149,7 +151,7 @@ export function evidenceDetail(e: ClassEvidence, studentId: string, clueId: stri
   const student = e.students.find((s) => s.id === studentId), clue = e.scenes.flatMap((s) => s.clues).find((c) => c.id === clueId);
   if (!student || !clue) return null;
   const cell = student.cells[clue.id], scene = e.scenes.find((s) => s.id === clue.sceneId);
-  return { title: `${student.nickname} · ${clue.name}`, sceneTitle: scene?.title ?? "", proven: cell.proven, quote: cell.quote, explanation: cell.explanation, finding: cell.finding, findingLine: cell.proven ? findingSentence(cell.finding, scene, cell.character) : "", notProvenLine: `${student.nickname} has not proven this clue yet.` };
+  return { title: `${student.nickname} · ${clue.name}`, sceneTitle: scene?.title ?? "", proven: cell.proven, quote: cell.quote, explanation: cell.explanation, finding: cell.finding, tries: cell.tries ?? null, shown: !!cell.shown, flags: (cell.flags ?? []).map((f) => SPEED_FLAG_TEXT[f as keyof typeof SPEED_FLAG_TEXT] ?? f), findingLine: cell.proven ? findingSentence(cell.finding, scene, cell.character) : "", notProvenLine: `${student.nickname} has not proven this clue yet.` };
 }
 
 // Spreadsheet export: one row per student and clue.

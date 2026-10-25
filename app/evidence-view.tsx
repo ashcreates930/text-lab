@@ -143,6 +143,7 @@ function DetailPanel({evidence,selected,onClose}:{evidence:ClassEvidence;selecte
     {d.proven?<>
      <div><p className="text-[14px] font-semibold text-[#6B6457]">The line from the story</p><blockquote className="mt-2 rounded-2xl border-l-4 border-[#A0472C] bg-[#F4E1D6]/50 px-4 py-3 font-serif text-[18px] leading-8 text-[#2A2620]">“{d.quote}”</blockquote></div>
      <div><p className="text-[14px] font-semibold text-[#6B6457]">Their explanation</p><p className="mt-2 text-[17px] leading-7 text-[#2A2620]">{d.explanation}</p></div>
+     {(d.tries!==null||d.flags.length>0)&&<p className="text-[15px] text-[#4A4438]">{d.shown?"Shown answer after three tries (0 points).":d.tries?`Found on try ${d.tries+1}.`:d.tries===0?"Found on the first try.":""}{d.flags.map(f=><span key={f} className="ml-2 inline-flex rounded-full bg-[#FFF4D6] px-2 py-0.5 text-[13px] font-bold text-[#6B4A00]">⚑ {f}</span>)}</p>}
      <p className={`flex items-start gap-2 rounded-2xl px-4 py-3 text-[16px] font-semibold ${d.finding==="proved-wrong"?"bg-[#A0472C] text-white":"bg-[#EFE8D8] text-[#2A2620]"}`}>{d.finding==="proved-wrong"&&<ShieldCheck size={20} className="mt-0.5 shrink-0"/>}{d.findingLine}</p>
     </>:<p className="text-[17px] leading-7 text-[#4A4438]">{d.notProvenLine}</p>}
     {student.storyboard.length>0&&<div className="border-t border-[#E4DCCB] pt-5"><h4 className="text-[17px] font-bold text-[#2A2620]">Storyboard</h4><p className="mt-1 text-[14px] text-[#6B6457]">{student.nickname}'s completed frames, in story order.</p>

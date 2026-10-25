@@ -242,7 +242,7 @@ function ReadRound({world,scene,passages,run,setting,sound,resume,send,onError}:
   <Pouch pouch={pouch} locked={locked} onRemove={x=>tap({text:x})} full={full}/>
   {tryNo===1&&<div className="case-art mt-4 aspect-[16/6] rounded-2xl" role="img" aria-label="The scene" style={{backgroundImage:`url('${scene.background_image}')`}}/>}
   <div className="mt-4 space-y-4">{chunks.slice(0,shown).map((p,i)=>i===shown-1&&noteOpen?<div key={p.id}><ContentNote text={notes.get(p.id)!}/><button type="button" onClick={()=>setNoteSeen(s=>({...s,[p.id]:true}))} className="case-secondary mt-3">Continue reading</button></div>
-   :<div key={p.id} className="rounded-3xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="mb-1 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Part {i+1} of {chunks.length}</p><ReadingPanel passages={[p]} kept={pouch} onTap={tap} className="shadow-none"/></div>)}</div>
+   :<div key={p.id} className="rounded-3xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="mb-1 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Part {i+1} of {chunks.length}</p><ReadingPanel glossary={world.glossary} passages={[p]} kept={pouch} onTap={tap} className="shadow-none"/></div>)}</div>
   <div className="mt-5 flex flex-wrap justify-end gap-3">
    {shown<chunks.length&&<button type="button" onClick={()=>setShown(n=>n+1)} disabled={noteOpen} className="case-secondary">Next part <ArrowRight size={18}/></button>}
    <button type="button" disabled={busy||pouch.length===locked.length} onClick={()=>lockIn(t.elapsed,t.grace)} className="case-primary disabled:opacity-40">Lock in {pouch.length} line{pouch.length===1?"":"s"}</button>
@@ -315,7 +315,7 @@ function InferRound({world,scene,passages,run,setting,sound,sandboxId,resume,sen
   <TimerBar t={t} seconds={trySeconds("confront",tryNo,setting).seconds}/>
   <LanternNote world={world} passages={passages} scene={scene} kind="confront" run={run}/>
   <p className="mt-4 text-[16px] font-semibold">Tap the one line that answers it.</p>
-  <ReadingPanel className="mt-2 max-h-[50vh]" passages={chunks} kept={line?[line]:[]} onTap={l=>{speed.tap();if(line&&lineKey(line)!==lineKey(l.text))speed.swap();setLine(l.text)}}/>
+  <ReadingPanel glossary={world.glossary} className="mt-2 max-h-[50vh]" passages={chunks} kept={line?[line]:[]} onTap={l=>{speed.tap();if(line&&lineKey(line)!==lineKey(l.text))speed.swap();setLine(l.text)}}/>
   <div className="mt-5 flex justify-end"><button type="button" disabled={!line||busy} onClick={()=>go({kind:"confront",line,...speed.meta()},t.elapsed,t.grace)} className="case-primary disabled:opacity-40">Lock in this line <ArrowRight size={18}/></button></div>
  </section>}</TimedTry>;
 }
@@ -355,7 +355,7 @@ function LieRound({world,scene,passages,run,setting,sound,sandboxId,resume,send,
   <TimerBar t={t} seconds={trySeconds("lie",tryNo,setting).seconds}/>
   <LanternNote world={world} passages={passages} scene={scene} kind="lie" run={run}/>
   <p className="mt-4 text-[16px] font-semibold">One thing is false. Tap the line in the story that proves it.</p>
-  <ReadingPanel className="mt-3 max-h-[45vh]" passages={source} kept={line?[line]:[]} onTap={l=>{speed.tap();if(line&&lineKey(line)!==lineKey(l.text))speed.swap();setLine(l.text)}}/>
+  <ReadingPanel glossary={world.glossary} className="mt-3 max-h-[45vh]" passages={source} kept={line?[line]:[]} onTap={l=>{speed.tap();if(line&&lineKey(line)!==lineKey(l.text))speed.swap();setLine(l.text)}}/>
   <div className="mt-5 flex justify-end"><button type="button" disabled={!line||busy} onClick={()=>go({kind:"lie",line,...speed.meta()},t.elapsed,t.grace)} className="case-primary disabled:opacity-40">Lock in this line <ArrowRight size={18}/></button></div>
  </section>}</TimedTry>;
 }
@@ -383,7 +383,7 @@ function CallRound({world,scene,passages,run,setting,resume,send,onError}:RoundP
    <div className="mt-2 grid gap-2 sm:grid-cols-3">{q.theories.map(th=><button key={th.id} type="button" aria-pressed={theory===th.id} onClick={()=>setTheory(th.id)} className={`rounded-2xl p-4 text-left ${theory===th.id?"bg-[#2A2620] text-white":"bg-[#FFFDF8] ring-1 ring-[#E4DCCB] hover:ring-[#A0472C]"}`}><span className="block text-[17px] font-bold">{th.name}</span><span className="mt-1 block text-[14px] leading-5 opacity-80">{th.description}</span></button>)}</div></fieldset>
   <Pouch pouch={run.state.pouch} picked={pins} onPick={togglePin} max={2}/>
   <details className="mt-3 rounded-2xl bg-[#FFFDF8] p-3 ring-1 ring-[#E4DCCB]" open={run.state.pouch.length<2}><summary className="cursor-pointer text-[15px] font-semibold text-[#8A3B23]">Or pin a line from the reading</summary>
-   <ReadingPanel className="mt-2 max-h-[45vh] shadow-none" passages={chunks} kept={pins} onTap={l=>togglePin(l.text)}/></details>
+   <ReadingPanel glossary={world.glossary} className="mt-2 max-h-[45vh] shadow-none" passages={chunks} kept={pins} onTap={l=>togglePin(l.text)}/></details>
   <div className="mt-5 flex justify-end"><button type="button" disabled={!theory||pins.length<2||busy} onClick={()=>go(t.elapsed,t.grace)} className="case-primary disabled:opacity-40">Lock in my case <ArrowRight size={18}/></button></div>
  </section>}</TimedTry>;
 }

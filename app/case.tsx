@@ -30,6 +30,7 @@ import {PlantLieView} from "./plant-lie";
 import {RoleIntro} from "./role-intro";
 import {StoryMode} from "./story-mode";
 import {ClueScreen} from "./clue-screen";
+import {SceneWriting} from "./scene-writing";
 import {MissionScreen,playMode} from "./mode-screens";
 import {YourTurn} from "./your-turn";
 import {yourTurnChoices} from "@/lib/your-turn";
@@ -45,7 +46,7 @@ export function CaseFlow(props:CaseProps){
 
 function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,startAtLie,onStarted,onStartOver}:CaseProps){
  const [world,setWorld]=useState<WorldPack|null>(null),[passages,setPassages]=useState<SourcePassage[]>([]),[error,setError]=useState("");
- const [openClue,setOpenClue]=useState<string>(""),[openFrame,setOpenFrame]=useState(""),[verdictOpen,setVerdictOpen]=useState(false),[toast,setToast]=useState(""),[celebrate,setCelebrate]=useState<{sceneId:string;rankUp:string|null}|null>(null),[justProven,setJustProven]=useState(""),[plantClue,setPlantClue]=useState("");
+ const [openClue,setOpenClue]=useState<string>(""),[openFrame,setOpenFrame]=useState(""),[openWriting,setOpenWriting]=useState(false),[verdictOpen,setVerdictOpen]=useState(false),[toast,setToast]=useState(""),[celebrate,setCelebrate]=useState<{sceneId:string;rankUp:string|null}|null>(null),[justProven,setJustProven]=useState(""),[plantClue,setPlantClue]=useState("");
  // Opening a clue or a storyboard frame, or going back to the scene, is a new screen: start at the top with focus on its heading.
  // Students in the story: a class follows its teacher's settings for roles and angles; everyone else has both on.
  const [personal,setPersonal]=useState<StoryPersonalSettings|null>(demo.classAuth?null:DEFAULT_PERSONAL);
@@ -54,8 +55,8 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  // Story Mode isn't available (its tables aren't set up): scenes open in the Case file view for everyone this visit.
  // storyJump: "Catch the lie" opens Story Mode at round 3 on the first scene with a testimony.
  const [storyUnavailable,setStoryUnavailable]=useState(false),[storyJump,setStoryJump]=useState<{sceneId:string;round:"lie"}|null>(null);
- useEffect(()=>{if(!demo.classAuth)return;fetch("/api/student/class",{headers:{"x-class-token":demo.classAuth.token},cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{setPersonal(j?{rolesOn:j.rolesOn!==false,anglesOn:j.anglesOn!==false}:DEFAULT_PERSONAL);setStoryModeOn(j?.storyModeOn!==false)}).catch(()=>setPersonal(DEFAULT_PERSONAL))},[demo.classAuth]);
- const screen=`${openClue}|${openFrame}|${verdictOpen}|${plantClue}|${!!demo.roleIntroSeen}|${storyUnavailable}|${(demo.missionSeen??[]).length}`,shownScreen=useRef(screen);
+ useEffect(()=>{if(!demo.classAuth)return;fetch("/api/student/class",{headers:{"x-class-token":demo.classAuth.token},cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{setPersonal(j?{rolesOn:j.rolesOn!==false,anglesOn:j.anglesOn!==false}:DEFAULT_PERSONAL);setStoryModeOn(j?.storyModeOn!==false);if(typeof j?.seat==="number")setDemo(d=>d.classSeat===j.seat?d:{...d,classSeat:j.seat})}).catch(()=>setPersonal(DEFAULT_PERSONAL))},[demo.classAuth]);
+ const screen=`${openClue}|${openFrame}|${openWriting}|${verdictOpen}|${plantClue}|${!!demo.roleIntroSeen}|${storyUnavailable}|${(demo.missionSeen??[]).length}`,shownScreen=useRef(screen);
  useLayoutEffect(()=>{if(shownScreen.current===screen)return;shownScreen.current=screen;focusScreenTop()},[screen]);
  useEffect(()=>{setWorld(null);fetch(`/worlds/${demo.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setError("We couldn't open this story. Refresh the page to try again."));fetch(`/worlds/${demo.worldId}/source.md`).then(r=>r.ok?r.text():"").then(t=>setPassages(parseSourcePassages(t))).catch(()=>setPassages([]))},[demo.worldId]);
  // Students play the scene game. The storybook reader stays in the code, switched off, until we decide to bring it back.
@@ -95,10 +96,11 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  // Plant a Lie (class students only): a new screen for a clue they have proven.
  const planting=demo.classAuth?scene.artifacts.find(a=>a.id===plantClue&&isDone(demo,a.id)):undefined;
  if(planting&&demo.classAuth)return <PlantLieView world={world} scene={scene} clue={planting} passages={passages} token={demo.classAuth.token} onClose={()=>setPlantClue("")}/>;
+ if(openWriting)return <SceneWriting world={world} scene={scene} sceneIndex={sceneIndex} roleId={role.id} demo={demo} setDemo={setDemo} onClose={saved=>{setOpenWriting(false);if(saved){window.scrollTo({top:0});setToast("Your writing for this scene is saved.")}}}/>;
  const clue=scene.artifacts.find(a=>a.id===openClue);
  if(clue)return <ClueScreen world={world} scene={scene} sceneIndex={sceneIndex} clue={clue} roleId={role.id} demo={demo} setDemo={setDemo} passages={passages} onClose={(saved,info)=>{setOpenClue("");if(!saved)return;window.scrollTo({top:0});setJustProven(clue.id);
   const badge=info?.factCheck?recordFactCheck(`${world.id}:${clue.id}`):false;
-  setToast(badge?"Badge earned: Fact Checker. You used the story to prove a character wrong.":"Clue proven and saved to your case file.");
+  setToast(badge?"Badge earned: Fact Checker. You used the story to prove a character wrong.":`Clue proven and saved to your case file.${info?.points?` +${info.points} points.`:""}`);
   if(info?.solves&&sceneSolved(true,frames,demo.storyFrames))celebrateScene()}}/>;
  // Story Mode: scenes with a story_mode block are played as four timed rounds, unless an adult opened the Case file
  // view (demo) or the teacher turned Story Mode off for the class. Then the clue board below is the scene.
@@ -106,10 +108,10 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  if(playMode(demo)==="solo"&&!(demo.missionSeen??[]).includes(scene.id))return <MissionScreen world={world} demo={demo} sceneIndex={sceneIndex} onGo={()=>setDemo(d=>({...d,missionSeen:[...new Set([...(d.missionSeen??[]),scene.id])]}))}/>;
  const storyHere=!!scene.story_mode&&storyModeOn&&!demo.caseFileView&&!storyUnavailable;
  if(storyHere)return <StoryMode key={scene.id} world={world} scene={scene} sceneIndex={sceneIndex} passages={passages} demo={demo} setDemo={setDemo} startAt={storyJump?.sceneId===scene.id?storyJump.round:undefined} onJumped={()=>setStoryJump(null)} onUnavailable={()=>{if(storyJump&&scene.lie)setOpenClue(scene.lie.clue_id);setStoryJump(null);setStoryUnavailable(true)}} onCleared={()=>{setDemo(d=>({...d,scene:Math.min(d.scene+1,world.scenes.length-1),events:[...d.events,"scene_complete"]}))}} onCaseFile={demo.classAuth?undefined:()=>setDemo(d=>({...d,caseFileView:true}))}/>;
- return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} onStoryMode={scene.story_mode&&demo.caseFileView&&!demo.classAuth&&!storyUnavailable?()=>setDemo(d=>({...d,caseFileView:false})):undefined} role={role} demo={demo} setDemo={setDemo} passages={passages} frames={frames} onOpenFrame={setOpenFrame} onOpenVerdict={()=>setVerdictOpen(true)} onCloseCase={closeCase} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} onStartOver={demo.classAuth?undefined:onStartOver} onPlantLie={demo.classAuth?setPlantClue:undefined} personal={personal??DEFAULT_PERSONAL} reprove={reprove} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
+ return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} onStoryMode={scene.story_mode&&demo.caseFileView&&!demo.classAuth&&!storyUnavailable?()=>setDemo(d=>({...d,caseFileView:false})):undefined} role={role} demo={demo} setDemo={setDemo} passages={passages} frames={frames} onOpenFrame={setOpenFrame} onOpenVerdict={()=>setVerdictOpen(true)} onOpenWriting={()=>setOpenWriting(true)} onCloseCase={closeCase} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} onStartOver={demo.classAuth?undefined:onStartOver} onPlantLie={demo.classAuth?setPlantClue:undefined} personal={personal??DEFAULT_PERSONAL} reprove={reprove} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
 }
 
-function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onOpenFrame,onOpenVerdict,onCloseCase,onOpenClue,onExit,onStartOver,onStoryMode,onPlantLie,personal,reprove,toast,celebrating,rankUp,justProven,onTutorial}:{onStartOver?:()=>void;onStoryMode?:()=>void;onPlantLie?:(clueId:string)=>void;personal:StoryPersonalSettings;reprove:string[];world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];frames:SceneFrame[];onOpenFrame:(key:string)=>void;onOpenVerdict:()=>void;onCloseCase:()=>void;onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string;onTutorial?:()=>void}){
+function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onOpenFrame,onOpenVerdict,onOpenWriting,onCloseCase,onOpenClue,onExit,onStartOver,onStoryMode,onPlantLie,personal,reprove,toast,celebrating,rankUp,justProven,onTutorial}:{onStartOver?:()=>void;onStoryMode?:()=>void;onPlantLie?:(clueId:string)=>void;personal:StoryPersonalSettings;reprove:string[];world:WorldPack;scene:Scene;sceneIndex:number;role:WorldPack["roles"][number];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;passages:SourcePassage[];frames:SceneFrame[];onOpenFrame:(key:string)=>void;onOpenVerdict:()=>void;onOpenWriting:()=>void;onCloseCase:()=>void;onOpenClue:(id:string)=>void;onExit:()=>void;toast:string;celebrating:boolean;rankUp:string|null;justProven:string;onTutorial?:()=>void}){
  const startOverRef=useRef<HTMLButtonElement>(null);
  const [confirmStart,setConfirmStart]=useState(false),[reading,setReading]=useState(false),[boardOpen,setBoardOpen]=useState(false),[moment,setMoment]=useState<{text:string;image:string}|null>(null);
  // Ambient sound: on for the demo, off for class sessions; the student can switch it either way.
@@ -132,9 +134,9 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onO
  function finish(){if(savedVerdict&&world.verdict){setStamping(true);return}onCloseCase()}
  function listen(){if(listening.playing){soundChannel.stop();return}setReading(true);playNarration(soundChannel,scene.id,narrationParts(world,scene,passages),browserNarration)}
  const nextImage=world.scenes[sceneIndex+1]?.background_image??scene.background_image;
- const step=nextStep({clues:scene.artifacts.map(a=>({id:a.id,name:a.name,done:isDone(demo,a.id),locked:locked(a)})),requiredFrame:needFrame&&{key:needFrame.key,saved:frameSaved(demo.storyFrames,needFrame.key)},last,hasChoice:!!scene.choice_point,choicePrompt:scene.choice_point?.prompt,verdict:world.verdict?{done:!!savedVerdict}:undefined});
+ const step=nextStep({clues:scene.artifacts.map(a=>({id:a.id,name:a.name,done:isDone(demo,a.id),locked:locked(a)})),...(scene.artifacts.length?{writing:{saved:!!demo.sceneWriting?.[scene.id]}}:{}),requiredFrame:needFrame&&{key:needFrame.key,saved:frameSaved(demo.storyFrames,needFrame.key)},last,hasChoice:!!scene.choice_point,choicePrompt:scene.choice_point?.prompt,verdict:world.verdict?{done:!!savedVerdict}:undefined});
  function choose(o:NonNullable<Scene["choice_point"]>["options"][number]){setDemo(d=>({...d,events:[...d.events,"delegation"],connection:o.consequence_narration,choices:{...(d.choices??{}),[scene.id]:o.id}}));setMoment({text:o.consequence_narration,image:nextImage})}
- function act(){const a=step.action;if(a.kind==="clue")onOpenClue(a.clueId);else if(a.kind==="frame")onOpenFrame(a.frameKey);else if(a.kind==="next")goNext();else if(a.kind==="verdict")onOpenVerdict();else if(a.kind==="close")finish()}
+ function act(){const a=step.action;if(a.kind==="clue")onOpenClue(a.clueId);else if(a.kind==="writing")onOpenWriting();else if(a.kind==="frame")onOpenFrame(a.frameKey);else if(a.kind==="next")goNext();else if(a.kind==="verdict")onOpenVerdict();else if(a.kind==="close")finish()}
  return <div className="case-ui mx-auto max-w-6xl px-4 pb-24 pt-6 md:px-8">
   <AmbientPlayer src={scene.ambient_audio} on={ambientOn} showing={sceneScreenShowing({inCase:true,clueOpen:false,frameOpen:false,boardOpen,consequence:!!moment||stamping})}/>
   {moment&&<ConsequenceMoment image={moment.image} text={moment.text} onContinue={()=>{setMoment(null);goNext()}}/>}
