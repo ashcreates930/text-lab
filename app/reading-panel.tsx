@@ -65,7 +65,7 @@ function LineButton({line,display,kept,selected,result,mark,locked,onTap,onMark}
  const name=`Line from paragraph ${paragraphLabel(line.pid).slice(1)}: ${first}… ${result!==undefined?(result?"Right line":"Not this line"):kept?"In your pouch. Tap to take out":"Add to pouch"}`;
  return <button type="button" disabled={locked} aria-pressed={kept} aria-label={name} aria-describedby={textId} onPointerDown={start} onPointerUp={cancel} onPointerLeave={cancel} onPointerCancel={cancel} onContextMenu={e=>{if(onMark)e.preventDefault()}}
   onClick={()=>{if(pressed.current){pressed.current=false;return}onTap(line)}}
-  className={`my-0.5 flex min-h-[44px] w-full select-none items-start gap-2 rounded-2xl border-2 px-3 py-2 text-left font-serif text-[17px] leading-[1.55] text-[#2A2620] transition active:scale-[.98] motion-reduce:transition-none motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-60 ${tone}`}>
+  className={`my-[3px] flex min-h-[44px] w-full select-none items-start gap-2 rounded-2xl border-2 px-3 py-1.5 text-left font-serif text-[17px] leading-[1.55] text-[#2A2620] transition active:scale-[.98] motion-reduce:transition-none motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-60 ${tone}`}>
   <span id={textId} className="min-w-0 flex-1">{mark&&<span className={`mr-1.5 inline-block rounded-md px-1.5 py-0.5 align-[2px] font-sans text-[11px] font-bold ${TAG_STYLE[mark.tag]}`}>{MARK_TAGS[mark.tag]}</span>}{display}</span>
   {result===true&&<Check size={18} className="mt-1 shrink-0 text-[#2F6B3A]" aria-label="Right line"/>}
   {result===false&&<X size={18} className="mt-1 shrink-0 text-[#A33B20]" aria-label="Not this line"/>}

@@ -284,7 +284,14 @@ export function roundIntroLine(last: Pick<RoundRecord, "kind" | "valid" | "shown
   return pick(FIRST_TRY[last.kind]);
 }
 // "200 / 1,200 · 280 more for Case Opened." (or the level reached, or Bonus past the most).
-// The ready card's one-line goal: the next level's points ("Goal: 1,032 for Case Opened").
+// How Story Mode opens a scene: a cleared run shows its results; a run with progress opens on "Welcome back" (once per
+// page load, never on a restart); anything else opens straight into the round with the passage on screen.
+export function storyOpening(run: { finished: boolean; state: { round: number; skipped?: number; rounds: unknown[] } }, resume: boolean, welcomed: boolean, restart: boolean): "cleared" | "welcome" | "play" {
+  if (run.finished) return "cleared";
+  const progress = resume || run.state.rounds.length > 0 || run.state.round > (run.state.skipped ?? 0);
+  return progress && !welcomed && !restart ? "welcome" : "play";
+}
+// The round banner's one-line goal: the next level's points ("Goal: 1,032 for Case Opened").
 export function nextGoal(total: number, max: number) {
   const next = levelPoints(max).find((l) => total < l.points);
   return next ? `Goal: ${next.points.toLocaleString("en-US")} for ${next.name}` : total > max ? "Goal reached: Bonus" : "Goal reached: Case Cracked";

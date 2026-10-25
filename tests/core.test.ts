@@ -2541,3 +2541,30 @@ test("story mode ready card and rival: one-line goal, a fixed computer rival tim
   assert.equal(sm.storyRivalOutcome({...right,tries:1},10,a),"rival","only a first-try proof wins the face-off");
   assert.equal(sm.storyRivalOutcome({...right,shown:true},10,a),"rival");
 });
+
+test("three-tap start: Try a case now, a mode card, a mission card, then the passage, in every playable world", async(t)=>{
+  const {tapsToPassage,preGameScreen,firstClue}=await import("../lib/pregame.ts");
+  const sm=await import("../lib/story-mode.ts");
+  for(const id of ["sleepy-hollow","tell-tale-heart","trifles"]){
+    const world=await roleWorld(id);
+    const taps=tapsToPassage(world);
+    t.diagnostic(`${id}: ${taps} taps from "Try a case now" to the first passage line`);
+    assert.ok(taps<=3,`${id} takes ${taps} taps`);
+    assert.equal(preGameScreen(world,{}),"role-and-mode","the role story and the mode cards share one screen");
+    const sc=world.scenes[Math.max(0,world.scenes.findIndex(s=>s.id===world.student_role?.start_scene))];
+    // The last tap opens the passage: Story Mode's round 1 with no ready card, or the scene's first clue.
+    if(sc.story_mode)assert.equal(sm.storyOpening({finished:false,state:sm.newRun()},false,false,false),"play");
+    else assert.ok(firstClue(sc),`${id} opens a clue`);
+  }
+});
+
+test("welcome back: a saved run opens on Keep playing or Start over, once per visit, never straight into a try", async()=>{
+  const sm=await import("../lib/story-mode.ts");
+  const played={finished:false,state:{...sm.newRun(),round:1,rounds:[{}]}};
+  assert.equal(sm.storyOpening(played,false,false,false),"welcome");
+  assert.equal(sm.storyOpening({finished:false,state:sm.newRun()},true,false,false),"welcome","a try in progress too");
+  assert.equal(sm.storyOpening(played,false,true,false),"play","shown once per visit");
+  assert.equal(sm.storyOpening(played,false,false,true),"play","Start over goes straight in");
+  assert.equal(sm.storyOpening({finished:false,state:{...sm.newRun(),round:2,skipped:2}},false,false,false),"play","Catch the lie's jump is not progress");
+  assert.equal(sm.storyOpening({...played,finished:true},false,false,false),"cleared");
+});

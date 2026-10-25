@@ -28,6 +28,7 @@ import {VerdictPanel,VerdictStamp,VerdictView} from "./verdict";
 import {theoryOf,verdictFor} from "@/lib/verdict";
 import {PlantLieView} from "./plant-lie";
 import {RoleIntro,UnlockChallenge} from "./role-intro";
+import {firstClue,preGameScreen} from "@/lib/pregame";
 import {StoryMode} from "./story-mode";
 import {ClueScreen} from "./clue-screen";
 import {SceneWriting} from "./scene-writing";
@@ -82,12 +83,18 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  const sceneIndex=Math.min(demo.scene,world.scenes.length-1),scene=world.scenes[sceneIndex],role=world.roles.find(r=>r.id===demo.role)!;
  const finished=demo.submitted;
  if(finished)return <CaseSummary world={world} demo={demo} passages={passages} onAnotherStory={onAnotherStory} personal={personal??DEFAULT_PERSONAL} setDemo={setDemo}/>;
- // Before the game, once (after saved progress has loaded): the role card and "How do you want to play?", then the
- // mission pick. Then Solo opens the mission map; Rival opens the scene's first round, whose Start opens the face-off.
- const introDue=!!personal&&(!demo.classAuth||demo.classProgressLoaded)&&!demo.roleIntroSeen&&(!demo.classAuth||!Object.keys(demo.artifactAnswers).length);
- if(introDue&&personal)return <RoleIntro world={world} settings={personal} onDone={angle=>setDemo(d=>({...d,roleIntroSeen:true,...(angle?{angle:{...(d.angle??{}),...angle}}:{}),scene:d.scene===0&&!storyJump&&personal.rolesOn&&world.student_role?Math.max(0,world.scenes.findIndex(s=>s.id===world.student_role!.start_scene)):d.scene}))}/>;
- // A story with missions: the student picks one before the first scene.
- if(world.missions?.length&&!demo.mission&&!!personal&&(!demo.classAuth||demo.classProgressLoaded))return <MissionPick world={world} onPick={id=>setDemo(d=>({...d,mission:id}))}/>;
+ // Before the game, once (after saved progress has loaded): one screen with the role story and the mode cards, then
+ // the mission pick (lib/pregame.ts). The last tap opens the passage: round 1 of Story Mode, or the scene's first clue.
+ // The mission map is skipped before the first scene and shows between scenes.
+ const loaded=!!personal&&(!demo.classAuth||demo.classProgressLoaded);
+ const pre=preGameScreen(world,demo);
+ const introDue=loaded&&pre==="role-and-mode"&&(!demo.classAuth||!Object.keys(demo.artifactAnswers).length);
+ const enterPassage=(d:Demo,sceneIdx:number):Demo=>{const sc=world.scenes[Math.min(sceneIdx,world.scenes.length-1)];
+  if(!storyJump&&!(sc.story_mode&&storyModeOn&&!d.caseFileView&&!storyUnavailable)){const c=firstClue(sc);if(c)setOpenClue(c.id)}
+  return {...d,missionSeen:[...new Set([...(d.missionSeen??[]),sc.id])]}};
+ if(introDue&&personal){const startIdx=demo.scene===0&&!storyJump&&personal.rolesOn&&world.student_role?Math.max(0,world.scenes.findIndex(s=>s.id===world.student_role!.start_scene)):demo.scene;
+  return <RoleIntro world={world} settings={personal} onDone={angle=>setDemo(d=>{const next={...d,roleIntroSeen:true,...(angle?{angle:{...(d.angle??{}),...angle}}:{}),scene:startIdx};return world.missions?.length?next:enterPassage(next,startIdx)})}/>}
+ if(loaded&&pre==="mission")return <MissionPick world={world} onPick={id=>setDemo(d=>enterPassage({...d,mission:id},d.scene))}/>;
  if(STORYBOOK_ON&&world.storybook)return <StorybookReader world={world} role={role} passages={passages} demo={demo} setDemo={setDemo} onExit={onExit} onFeedback={onFeedback}/>;
  const frames=sceneFrames(world,passages,sceneIndex);
  // The scene is solved when every clue is proven and its required frame is saved, whichever comes last.
