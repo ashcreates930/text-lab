@@ -2497,3 +2497,13 @@ test("streaks count first-try rounds only", async()=>{
   let s=sm.applyRound(sm.newRun(),sc(0));s=sm.applyRound(s,sc(1));assert.deepEqual([s.streak,s.rounds[1].multiplier,s.total],[0,1,200],"the base is already halved by the try; no streak multiplier");
   const g=cg.earn({...cg.newClueGame(),streak:2},"proof","a",{tries:1});assert.deepEqual([g.game.streak,g.points],[0,50]);
 });
+
+test("mission verdict compare: each cited line is marked same way or somewhere else, saved for the teacher, never scored", async()=>{
+  const {world,line}=await storyKit();
+  const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");const {buildEvidence}=await import("../lib/classroom/evidence.ts");
+  const l1=line("p069",5),l2=line("p069",0);
+  const p=StudentProgressSchema.parse({v:1,worldId:"sleepy-hollow",scene:3,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],storyFrames:{},mission:"find-ichabod",missionPieces:{pay:{at:"x",shown:false,via:"lead"},"no-body":{at:"x",shown:true,via:"story:read"}},missionVerdict:{mission_id:"find-ichabod",theory_id:"left-alive",pinned:[{line:l1,pid:"p069",piece:"pay"},{line:l2,pid:"p069",piece:"no-body"}],writing:"He left. His pay went with him.",early:false,saved_at:"x",compare:{[l1]:"same",[l2]:"else"}},updatedAt:new Date().toISOString()});
+  const e=buildEvidence(world,[{id:"s1",nickname:"Ana Ruiz",answers:{},mission:{mission:p.mission,pieces:p.missionPieces,verdict:p.missionVerdict}}],7);
+  const m=e.students[0].mission!;
+  assert.deepEqual([m.found.length,m.found.find(f=>f.line===l2)!.shown,m.verdict!.compare[l1],m.verdict!.compare[l2]],[2,true,"same","else"]);
+});

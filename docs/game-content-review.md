@@ -619,6 +619,13 @@ its answers. The searchers' report question keeps "found" and "bank" as reviewed
 - Word cards: discrimination (good judgment), executor, consigned and forthwith, wherever they appear.
 - Writing: the Notice, Interpret and Craft questions are one task per scene (the clue named below).
 
+### Missions: how the verdict works (for teachers and reviewers; not shown to students)
+
+- Order: pick a theory, pin at least 2 lines (pieces, or any lines from the story when fewer than 2 pieces were found), write 2 or 3 sentences, then the payoff is revealed.
+- The verdict is checked like Your Turn: sentence count, cited lines, the safety screen. It is never graded or AI-scored.
+- After the reveal, for each cited line the student taps "Points the same way" or "Points somewhere else". The taps are saved to the Evidence view and never scored.
+- Citing the payoff line before the reveal shows "You found it before the reveal" and is logged in the Evidence view.
+
 #### Mission: Find Ichabod
 
 Prove what really happened to Ichabod Crane.

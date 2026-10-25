@@ -15,7 +15,9 @@ export type Mission = NonNullable<WorldPack["missions"]>[number];
 export type MissionPiece = Mission["pieces"][number];
 // What the student has: pieces by id (shown: collected through a shown answer; via: where it was proven).
 export type PieceRecord = { at: string; shown: boolean; via: string };
-export type MissionVerdict = { mission_id: string; theory_id: string; pinned: { line: string; pid: string; piece: string | null }[]; writing: string; early: boolean; saved_at: string };
+// compare: after the reveal, for each cited line, whether the student says it points the same way as the text (never scored).
+export type Compare = "same" | "else";
+export type MissionVerdict = { mission_id: string; theory_id: string; pinned: { line: string; pid: string; piece: string | null }[]; writing: string; early: boolean; saved_at: string; compare?: Record<string, Compare> };
 
 const same = (a: string, b: string) => lineWords(a) === lineWords(b);
 export const missionFor = (world: WorldPack, id: string | null | undefined) => (id ? world.missions?.find((m) => m.id === id) : undefined);
@@ -61,8 +63,8 @@ export function verdictProblems(v: { theoryId: string; pinned: string[]; writing
 // An authored note for the reveal that never judges the writing: how many pieces were found.
 export function verdictNote(found: number, total: number) {
   if (found === total) return `You found all ${total} pieces.`;
-  if (found >= MIN_PINS) return `You found ${found} of ${total} pieces. Compare: which of your lines point the same way as the text?`;
-  return `You found ${found} of ${total} pieces, so you cited other lines from the story. Compare them with what the text says.`;
+  if (found >= MIN_PINS) return `You found ${found} of ${total} pieces.`;
+  return `You found ${found} of ${total} pieces, so you cited other lines from the story.`;
 }
 export const EARLY = "You found it before the reveal.";
 
