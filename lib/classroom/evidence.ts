@@ -17,10 +17,13 @@ export type SavedVerdictInput = { world_id?: string; theory_id?: string; pinned?
 export type SavedMarkInput = { tag?: string; text?: string; pid?: string };
 export type SavedFlagInput = { clueId?: string; characterId?: string; answer?: string; line?: string; matched?: boolean };
 export type SavedFreezeInput = { target?: string; clueId?: string; at?: string };
+// The scene's one writing task (Notice, Interpret, Craft), by scene id.
+export type SavedSceneWritingInput = { notice?: string; interpret?: string; craft?: string; technique?: string; saved_at?: string };
+export type EvidenceSceneWriting = { scene: string; clue: string; notice: string; interpret: string; craft: string; technique: string };
 export type SavedYourTurnInput = { title?: string; writing?: string; cited?: string[]; results?: { label?: string; line?: string; ok?: boolean }[]; at?: string };
 // Your Turn: the activity, how many answers held up, the student's 2 or 3 sentences and the lines they cited.
 export type EvidenceYourTurn = { title: string; heldUp: string; writing: string; cited: string[]; at: string };
-export type EvidenceStudentInput = { id: string; nickname: string; answers: Record<string, SavedAnswer> | null; frames?: Record<string, SavedFrameInput> | null; lies?: Record<string, SavedLieInput> | null; verdict?: SavedVerdictInput | null; marks?: Record<string, SavedMarkInput> | null; claimFlags?: SavedFlagInput[] | null; freezes?: SavedFreezeInput[] | null; yourTurn?: SavedYourTurnInput[] | null };
+export type EvidenceStudentInput = { id: string; nickname: string; answers: Record<string, SavedAnswer> | null; sceneWriting?: Record<string, SavedSceneWritingInput> | null; frames?: Record<string, SavedFrameInput> | null; lies?: Record<string, SavedLieInput> | null; verdict?: SavedVerdictInput | null; marks?: Record<string, SavedMarkInput> | null; claimFlags?: SavedFlagInput[] | null; freezes?: SavedFreezeInput[] | null; yourTurn?: SavedYourTurnInput[] | null };
 // Marked lines (clue, word to know, question) and "Something's off" flags. A matched flag caught the clue's off claim;
 // the others wait for the teacher's review.
 export type EvidenceMark = { tag: string; paragraph: string; text: string };
@@ -41,7 +44,7 @@ export type EvidenceCell = { proven: boolean; quote: string; explanation: string
 export type EvidenceClue = { id: string; name: string; sceneId: string };
 // lie: the scene's Spot the Lie clue and the character who testified, when the scene has one.
 export type EvidenceScene = { id: string; title: string; characters: string[]; clues: EvidenceClue[]; lie?: { clueId: string; character: string } };
-export type EvidenceStudent = { id: string; nickname: string; started: boolean; proven: number; provedWrong: number; needsHelp: boolean; cells: Record<string, EvidenceCell>; storyboard: StoryboardFrame[]; liesCaught: Record<string, boolean>; verdict: EvidenceVerdict | null; marks: EvidenceMark[]; claimFlags: EvidenceFlag[]; freezes: string[]; yourTurn: EvidenceYourTurn[] };
+export type EvidenceStudent = { id: string; nickname: string; started: boolean; proven: number; provedWrong: number; needsHelp: boolean; cells: Record<string, EvidenceCell>; storyboard: StoryboardFrame[]; liesCaught: Record<string, boolean>; verdict: EvidenceVerdict | null; marks: EvidenceMark[]; claimFlags: EvidenceFlag[]; freezes: string[]; yourTurn: EvidenceYourTurn[] ; sceneWriting: EvidenceSceneWriting[] };
 export type ClassEvidence = {
   story: { id: string; title: string };
   scenes: EvidenceScene[];
@@ -120,7 +123,8 @@ export function buildEvidence(world: WorldPack, students: EvidenceStudentInput[]
     // Freezes this student used in rival play (who, whom, when).
     const freezes = (s.freezes ?? []).filter((f) => f?.target && f.at).map((f) => freezeLine({ by: s.nickname, target: f.target!, at: f.at!, where: clueNames.get(f.clueId ?? "") ?? "a face-off" }));
     const yourTurn: EvidenceYourTurn[] = (s.yourTurn ?? []).filter((y) => y?.title && y.writing).map((y) => ({ title: y.title!, heldUp: `${(y.results ?? []).filter((r) => r.ok).length} of ${(y.results ?? []).length}`, writing: y.writing!, cited: (y.cited ?? []).map((c) => c.replace(/\s+/g, " ").trim()), at: y.at ?? "" }));
-    return { id: s.id, nickname: s.nickname, started, proven, provedWrong, needsHelp: started && proven === 0, cells, storyboard, liesCaught, verdict, marks, claimFlags, freezes, yourTurn };
+    const sceneWriting: EvidenceSceneWriting[] = world.scenes.flatMap((sc, i) => { const w = s.sceneWriting?.[sc.id]; if (!w?.notice) return []; const clue = sc.artifacts.find((a) => a.id === sc.writing_clue) ?? sc.artifacts[0]; return [{ scene: `Scene ${i + 1}`, clue: clue?.name ?? "", notice: w.notice ?? "", interpret: w.interpret ?? "", craft: w.craft ?? "", technique: w.technique ?? "" }]; });
+    return { id: s.id, nickname: s.nickname, started, proven, provedWrong, needsHelp: started && proven === 0, cells, storyboard, liesCaught, verdict, marks, claimFlags, freezes, yourTurn, sceneWriting };
   });
   const joined = rows.length;
   return {

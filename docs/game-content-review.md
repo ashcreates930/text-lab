@@ -599,18 +599,29 @@ Writing prompt: Sum up why the Lantern Ghost was wrong. Write 2 or 3 sentences a
 | Writing | Write it up · Lines you cite · Tap a line in the story below to cite it. · Your 2 or 3 sentences · Write 2 or 3 sentences. · Cite at least one line from the story: tap it in the passage. · Save for my teacher · Saved for your teacher |
 | Host | Your Turn · A 5 to 7 minute activity on every phone, picked from each student's angle answers. Every one ends with 2 or 3 sentences citing the story, saved to Evidence. · Start Your Turn for everyone · Your Turn is on. N of N saved so far. |
 
-## Fair play: The Legend of Sleepy Hollow (for review)
+## Fair play: The Legend of Sleepy Hollow
 
-Goal: students score only by reading. Every question below is authored, every line is copied exactly from the
-story, and every proof phrase is an exact slice of its line (checked by a script against `source.md`). Questions
-share no key words with their answer lines (names and common words aside). Near misses earn 0 points and show their
-hint, which always names a paragraph. Prove it choices are authored; the right one is listed first here and
-shuffled on screen. Lines of 25 words or fewer need no proof phrase.
+Students score only by reading. Generated from `worlds/sleepy-hollow/world.json` by
+`node --experimental-strip-types scripts/fair-play-review.ts sleepy-hollow`, so it always matches what students get.
+`validate:worlds` checks every line and phrase against `source.md`, near misses (on the passage, with a hint that names
+a paragraph), 4 Prove it choices, 3 or 4 questions per bank, and that no question shares a key word (by word root) with
+its answers. The searchers' report question keeps "found" and "bank" as reviewed exceptions.
 
-Ladder: each clue's bank has two "locate" questions and one "infer" question. Story Mode, scene 1: round 1 locate,
-round 2 infer, round 3 catch the lie, round 4 build the case.
+- Ladder: each clue's bank has two locate questions and one infer question. Story Mode, scene 1: round 1 locate,
+  round 2 infer (Brom asks), round 3 catch the lie, round 4 build the case.
+- Scoring: full points on the first try, half on the second, none after; 25 off per wrong line (never below 0 for the
+  round). A miss is an amber "Not yet" (try 2 names the paragraph, try 3 the part of it). After three misses the
+  answer is shown and the proof step still comes, for 0 points ("shown answer" in the Evidence view).
+- Long lines (over 25 words) need their exact words marked, with 2 words of tolerance at each edge. Prove it: one of
+  4 authored choices (shuffled on screen), or "This proves ___ because ___", saved for the teacher and never scored.
+- No Prove it choice relies on anything from a later scene. Points come from evidence: no speed bonus, and a rival
+  win earns a coin only. Speed flags (a tap within 4 seconds, more than 4 swaps) go to the teacher only.
+- Word cards: discrimination (good judgment), executor, consigned and forthwith, wherever they appear.
+- Writing: the Notice, Interpret and Craft questions are one task per scene (the clue named below).
 
 ### Scene 1 (`empty-schoolhouse`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **The searchers' report**.
 
 #### Clue: The empty schoolhouse
 
@@ -628,14 +639,14 @@ Near misses:
 >
 > Hint: That tells where it stood, not what it was made of. Check ¶11.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. The school was poor and roughly put together. ✓
 2. The school was the finest building in the valley.
 3. Ichabod built the school himself.
-4. Brom's gang broke the windows.
+4. Children broke the windows playing ball.
 
-**Locate. How did Ichabod shut up the room when no one was there, and why would it trap a burglar?**
+**Locate. How did Ichabod close up the room when no one was there, and why would it trap a burglar?**
 
 Answers:
 
@@ -649,7 +660,7 @@ Near misses:
 >
 > Hint: That is how it was put together. How was it shut at night? Check ¶11.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. A burglar could get in easily but would struggle to escape. ✓
 2. The school had strong iron locks.
@@ -672,7 +683,7 @@ Near misses:
 >
 > Hint: That is the sound of the classroom. How does the narrator judge his punishments? Check ¶12.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. He was strict but tried to be fair, going easier on the weak. ✓
 2. He never punished anyone.
@@ -681,7 +692,7 @@ Prove it (right answer first; shuffled on screen):
 
 #### Clue: Ichabod's belongings
 
-**Locate. Apart from reading material, what did Ichabod own? Name the clothing.**
+**Locate. Apart from reading material, what did Ichabod own? Name what he wore.**
 
 Answers:
 
@@ -699,7 +710,7 @@ Near misses:
 >
 > Hint: Money isn't on the list of his things. Check ¶69.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. Ichabod owned very little and lived plainly. ✓
 2. Ichabod was secretly rich.
@@ -718,7 +729,7 @@ Near misses:
 >
 > Hint: Hans worries there, but what job does he take on? Check ¶69.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. Hans was put in charge of what Ichabod left. ✓
 2. Hans was Ichabod's brother.
@@ -739,7 +750,7 @@ Near misses:
 >
 > Hint: That list has no money in it. Where does the narrator talk about his pay? Check ¶69.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. His pay wasn't left behind, so he likely had it with him. ✓
 2. He left all his money in the bundle.
@@ -762,14 +773,14 @@ Near misses:
 >
 > Hint: That music book is on his list, but which books does the narrator single out from the school's? Check ¶69.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. He owned books about witchcraft and fortune-telling, so he believed in the supernatural. ✓
 2. The books all belonged to the school.
 3. Ichabod hated ghost stories.
 4. Ichabod wrote the almanac himself.
 
-**Locate. What became of his spellbooks and verses, and what did Hans decide about his own kids' lessons?**
+**Locate. What became of his spellbooks and verses?**
 
 Answers:
 
@@ -783,7 +794,7 @@ Near misses:
 >
 > Hint: That names the books. What did Hans do with them? Check ¶69.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. Hans burned them because he thought reading did no good. ✓
 2. Hans kept them on the school shelf.
@@ -804,16 +815,16 @@ Near misses:
 >
 > Hint: That says he never married. Who was he writing for? Check ¶69.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
-1. Ichabod was courting Katrina, so he had a rival in Brom. ✓
+1. He was trying to win the Van Tassel heiress, which could give someone a reason to want him gone. ✓
 2. The poem was for his mother.
 3. Katrina wrote the poem.
 4. The poem was about the Horseman.
 
 #### Clue: The searchers' report
 
-**Locate. What lay on the stream's edge where the hoofprints stopped?**
+**Locate. What was found on the stream bank, past where the hoofprints led?**
 
 Answers:
 
@@ -827,7 +838,7 @@ Near misses:
 >
 > Hint: That's people gathering later. Where were these first found? Check ¶68.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. A smashed pumpkin lay beside his hat, which could point to a trick. ✓
 2. His body was found.
@@ -848,7 +859,7 @@ Near misses:
 >
 > Hint: They gathered and gossiped. What did they decide? Check ¶70.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. The town believed a ghost took him, based on old stories. ✓
 2. The town proved a ghost took him.
@@ -869,7 +880,7 @@ Near misses:
 >
 > Hint: That's the search itself. Why did people stop caring? Check ¶70.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. He had no wife or debts, so no one had a reason to keep looking. ✓
 2. They found him alive.
@@ -878,7 +889,7 @@ Prove it (right answer first; shuffled on screen):
 
 #### Story Mode, round 1: locate (3 lines each)
 
-**Tap 3 lines that show Ichabod's belongings were left behind.**
+**Tap 3 lines that show what Ichabod owned that was left behind.**
 
 Answers:
 
@@ -900,16 +911,17 @@ Near misses:
 >
 > Hint: Whose saddle was it? Check ¶66.
 
-
 **Tap 3 lines that show how people realized he was gone.**
 
 Answers:
+
+> ¶68: “The next morning the old horse was found without his saddle, and with the bridle under his feet, soberly cropping the grass at his master’s gate.”
 
 > ¶68: “Ichabod did not make his appearance at breakfast; dinner-hour came, but no Ichabod.”
 
 > ¶68: “The boys assembled at the schoolhouse, and strolled idly about the banks of the brook; but no schoolmaster.”
 
-> ¶68: “An inquiry was set on foot, and after diligent investigation they came upon his traces.”
+> ¶68: “Hans Van Ripper now began to feel some uneasiness about the fate of poor Ichabod, and his saddle.”
 
 Near misses:
 
@@ -917,8 +929,7 @@ Near misses:
 >
 > Hint: That's the Sunday after. What happened that first day? Check ¶68.
 
-
-**Tap 3 lines that show the trail the search party followed.**
+**Tap 3 lines that show the trail people followed to find him.**
 
 Answers:
 
@@ -934,12 +945,15 @@ Near misses:
 >
 > Hint: That's the crowd days later. Where did the search go? Check ¶68.
 
+#### Story Mode, round 2: infer (Brom Bones asks; tap one line, then Prove it)
 
-#### Story Mode, round 2: infer (Brom asks; tap one line, then Prove it)
+Right: Brom raises an eyebrow. "Huh. You read closer than most folks around here."
 
-**Brom asks: "So, a ghost or a man?" What detail by the stream hints a person was there?**
+Wrong: Brom snorts. "That's not what the story says. Read it again."
 
-Answers:
+**"So, a ghost or a man?" What detail by the stream hints a person was there?**
+
+Answer:
 
 > ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
 >
@@ -951,16 +965,16 @@ Near misses:
 >
 > Hint: That's what the town believed. What object was left behind? Check ¶68.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
-1. A smashed pumpkin could be a fake head thrown by a rider. ✓
+1. A smashed pumpkin beside his hat is an odd thing for a ghost to leave. ✓
 2. Pumpkins are signs of ghosts.
 3. Ichabod was carrying a pumpkin for dinner.
 4. The pumpkin proves the Horseman is real.
 
-**Brom asks: "Could he have just packed up and left?" Which line hints he might have gone on his own?**
+**"Could he have just packed up and left?" Which line hints he might have gone on his own?**
 
-Answers:
+Answer:
 
 > ¶69: “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.”
 >
@@ -972,16 +986,16 @@ Near misses:
 >
 > Hint: The horse came home, but what about his pay? Check ¶69.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. His pay wasn't found, so he may have taken it and gone. ✓
 2. He left all his money behind.
 3. He had nothing to take.
 4. Hans paid him to leave.
 
-**Brom asks: "Did the town look hard at the facts?" Which line shows how they reached a verdict?**
+**"Did the town look hard at the facts?" Which line shows how they reached a verdict?**
 
-Answers:
+Answer:
 
 > ¶70: “The stories of Brouwer, of Bones, and a whole budget of others were called to mind; and when they had diligently considered them all, and compared them with the symptoms of the present case, they shook their heads, and came to the conclusion that Ichabod had been carried off by the Galloping Hessian.”
 >
@@ -993,7 +1007,7 @@ Near misses:
 >
 > Hint: That's the talk starting. How did they decide? Check ¶70.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. They matched the case to old tales instead of weighing evidence. ✓
 2. They found the Horseman's tracks.
@@ -1002,56 +1016,70 @@ Prove it (right answer first; shuffled on screen):
 
 #### Story Mode, round 3: catch the lie
 
-**hans-van-ripper** (current): I looked through the schoolmaster's bundle myself. Inside were some shirts, a rusty razor, and a brand-new pitch-pipe. His books of magic went straight into the fire.
+**Hans Van Ripper**: I looked through the schoolmaster's bundle myself. Inside were some shirts, a rusty razor, and a brand-new pitch-pipe. His books of magic went straight into the fire.
 
 - False claim: *Inside were some shirts, a rusty razor, and a brand-new pitch-pipe.*
-- Disproved by: ¶69: “They consisted of two shirts and a half; two stocks for the neck; a pair or two of worsted stockings; an old pair of corduroy small-clothes; a rusty razor; a book of psalm tunes full of dog’s-ears; and a broken pitch-pipe.”
+- Disproved by: ¶0: “They consisted of two shirts and a half; two stocks for the neck; a pair or two of worsted stockings; an old pair of corduroy small-clothes; a rusty razor; a book of psalm tunes full of dog’s-ears; and a broken pitch-pipe.”
 
-**hans-van-ripper**: We searched high and low for the poor man. At last we pulled his body out of the brook. It was a sad day for the valley.
+**Hans Van Ripper**: We searched high and low for the poor man. At last we pulled his body out of the brook. It was a sad day for the valley.
 
 - False claim: *At last we pulled his body out of the brook.*
 - Disproved by: ¶69: “The brook was searched, but the body of the schoolmaster was not to be discovered.”
-- Miss hint: Not quite. Look for a line about what the brook search found.
 
-**brom-bones**: I heard all about the search. They found his hat by the water and a fresh-baked pie beside it. Odd thing to leave lying about.
+**Brom Bones**: I heard all about the search. They found his hat by the water and a fresh-baked pie beside it. Odd thing to leave lying about.
 
 - False claim: *They found his hat by the water and a fresh-baked pie beside it.*
 - Disproved by: ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
-- Miss hint: Not quite. Look for a line about what lay beside the hat.
 
 #### Story Mode, round 4: build the case (pick a theory, pin 2 lines)
 
-**Ichabod is gone. What do you think happened to him?** (current; theories unchanged: Brom's prank, The Headless Horseman, He ran away)
+**Ichabod is gone. What do you think happened to him?**
+
+- Brom's prank: Someone played a trick on Ichabod to scare him out of Sleepy Hollow.
+  > ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
+  > ¶69: “The brook was searched, but the body of the schoolmaster was not to be discovered.”
+
+- The Headless Horseman: The ghostly Galloping Hessian really chased Ichabod and carried him away.
+  > ¶70: “The stories of Brouwer, of Bones, and a whole budget of others were called to mind; and when they had diligently considered them all, and compared them with the symptoms of the present case, they shook their heads, and came to the conclusion that Ichabod had been carried off by the Galloping Hessian.”
+  > ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
+  > ¶70: “Knots of gazers and gossips were collected in the churchyard, at the bridge, and at the spot where the hat and pumpkin had been found.”
+
+- He ran away: Ichabod left on his own and started a new life somewhere else.
+  > ¶69: “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.”
+  > ¶69: “The brook was searched, but the body of the schoolmaster was not to be discovered.”
+  > ¶68: “The next morning the old horse was found without his saddle, and with the bridle under his feet, soberly cropping the grass at his master’s gate.”
 
 **Did Ichabod leave Sleepy Hollow alive?**
 
-- He left alive:
+- He left alive: His pay went with him and no body was found, so he may have left on his own.
   > ¶69: “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.”
   > ¶69: “The brook was searched, but the body of the schoolmaster was not to be discovered.”
 
-- He drowned:
+- He drowned: The trail ends at deep, dark water and his horse came home without him.
   > ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
   > ¶68: “The next morning the old horse was found without his saddle, and with the bridle under his feet, soberly cropping the grass at his master’s gate.”
 
-- Something took him:
+- Something took him: The town decided the Galloping Hessian carried him off.
   > ¶70: “The stories of Brouwer, of Bones, and a whole budget of others were called to mind; and when they had diligently considered them all, and compared them with the symptoms of the present case, they shook their heads, and came to the conclusion that Ichabod had been carried off by the Galloping Hessian.”
   > ¶70: “Knots of gazers and gossips were collected in the churchyard, at the bridge, and at the spot where the hat and pumpkin had been found.”
 
 **Which clue should the town have looked at hardest?**
 
-- The hat and pumpkin:
+- The hat and pumpkin: A hat and a shattered pumpkin by the brook could mean a trick, not a ghost.
   > ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
   > ¶70: “Knots of gazers and gossips were collected in the churchyard, at the bridge, and at the spot where the hat and pumpkin had been found.”
 
-- The missing pay:
+- The missing pay: His pay was never found, and no one kept looking for him.
   > ¶69: “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.”
   > ¶70: “As he was a bachelor, and in nobody’s debt, nobody troubled his head any more about him; the school was removed to a different quarter of the hollow, and another pedagogue reigned in his stead.”
 
-- The empty brook:
+- The empty brook: The searchers followed his trail, but the brook gave up no body.
   > ¶69: “The brook was searched, but the body of the schoolmaster was not to be discovered.”
   > ¶68: “An inquiry was set on foot, and after diligent investigation they came upon his traces.”
 
 ### Scene 2 (`van-tassel-party`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **Brom Bones, the brooding rival**.
 
 #### Clue: The Van Tassel feast
 
@@ -1069,7 +1097,7 @@ Near misses:
 >
 > Hint: That shows him eating. What is he dreaming of? Check ¶45.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. He imagined owning the Van Tassel wealth. ✓
 2. He wanted to become a baker.
@@ -1090,7 +1118,7 @@ Near misses:
 >
 > Hint: That's Katrina's father. What does Ichabod plan? Check ¶45.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. He would quit teaching and look down on people who had hosted him. ✓
 2. He would give money to the school.
@@ -1115,7 +1143,7 @@ Near misses:
 >
 > Hint: That lists the food. What catches his eye most? Check ¶44.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. The food and wealth draw him more than the young women do. ✓
 2. He only cares about Katrina's kindness.
@@ -1138,7 +1166,7 @@ Near misses:
 >
 > Hint: That's the music starting. Where is Brom during the dance? Check ¶48.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. Brom was jealous, watching Katrina dance with Ichabod. ✓
 2. Brom was dancing happily.
@@ -1163,14 +1191,14 @@ Near misses:
 >
 > Hint: That's a threat, not a prank they pulled. Check ¶33.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. Brom had a history of playing tricks on Ichabod. ✓
 2. Brom never bothered Ichabod.
 3. Ichabod pranked Brom first.
 4. Ghosts did the pranks.
 
-**Infer. Why didn't the two men simply settle it with their fists?**
+**Infer. Why didn't the two men simply have it out with their fists?**
 
 Answers:
 
@@ -1184,7 +1212,7 @@ Near misses:
 >
 > Hint: That shows the feud began. Why was there no fight? Check ¶33.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. Ichabod knew Brom was stronger, so Brom turned to tricks instead. ✓
 2. They were good friends.
@@ -1207,7 +1235,7 @@ Near misses:
 >
 > Hint: That's old Brouwer's tale. What did Brom claim? Check ¶55.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. Brom bragged that the ghost vanished at the bridge. ✓
 2. Brom lost the race.
@@ -1228,14 +1256,14 @@ Near misses:
 >
 > Hint: That's what he told back. How did their stories stay with him? Check ¶56.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
-1. The stories stuck in his mind and shaped his fear on the ride home. ✓
+1. The stories stuck in his mind and stayed with him. ✓
 2. He forgot them right away.
 3. He laughed them off.
 4. He wrote them down for his pupils.
 
-**Infer. Why might Brom share his boast with Ichabod listening?**
+**Infer. Why might Brom share his boast while Ichabod was in the room?**
 
 Answers:
 
@@ -1251,9 +1279,9 @@ Near misses:
 >
 > Hint: That's where the Horseman is said to ride. What did Brom add? Check ¶55.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
-1. Brom could plant the bridge in Ichabod's head before the ride. ✓
+1. Brom could plant the idea of the church bridge in Ichabod's mind. ✓
 2. Brom wanted to warn him kindly.
 3. Brom didn't know Ichabod was there.
 4. Brom was scared himself.
@@ -1274,7 +1302,7 @@ Near misses:
 >
 > Hint: That's when the party ends. Why does he remain? Check ¶57.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. He hoped to win Katrina's hand. ✓
 2. He was helping clean up.
@@ -1297,7 +1325,7 @@ Near misses:
 >
 > Hint: That's how he felt going in. How did he leave? Check ¶57.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. Something went badly in his talk with Katrina. ✓
 2. He was happy and proud.
@@ -1318,7 +1346,7 @@ Near misses:
 >
 > Hint: That's the narrator saying he doesn't know. What does he guess? Check ¶57.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. Katrina may have used Ichabod to make Brom jealous. ✓
 2. Katrina truly loved Ichabod.
@@ -1326,6 +1354,8 @@ Prove it (right answer first; shuffled on screen):
 4. Katrina told Ichabod to leave town.
 
 ### Scene 3 (`the-road-home`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **The shadowy rider**.
 
 #### Clue: Major André's tree
 
@@ -1343,7 +1373,7 @@ Near misses:
 >
 > Hint: That's what people say about the tree. What did he really see? Check ¶60.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. The scary shape was a lightning scar, so his fear was fooling him. ✓
 2. It was a real ghost.
@@ -1364,7 +1394,7 @@ Near misses:
 >
 > Hint: That's his whistle. Which line explains the groan? Check ¶60.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. The noise came from tree limbs, not a spirit. ✓
 2. A ghost was crying.
@@ -1385,7 +1415,7 @@ Near misses:
 >
 > Hint: That's the view of the river. What filled his mind? Check ¶59.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. The ghost stories from the party made him expect to see ghosts. ✓
 2. He had seen a ghost there before.
@@ -1410,7 +1440,7 @@ Near misses:
 >
 > Hint: That's the history of the spot. What did he see there? Check ¶62.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. It waited in the shadows and stayed silent, which made it more frightening. ✓
 2. It greeted him by name.
@@ -1431,7 +1461,7 @@ Near misses:
 >
 > Hint: That's his size. What did Ichabod see on the hill? Check ¶64.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. The rider seemed to have no head, so it looked like the Horseman. ✓
 2. The rider took off his hat.
@@ -1454,7 +1484,7 @@ Near misses:
 >
 > Hint: That detail makes him seem a ghost. Which lines show an ordinary rider? Check ¶63.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. A large rider who keeps pace could be a real person, like Brom. ✓
 2. Only a ghost can ride a horse.
@@ -1481,7 +1511,7 @@ Near misses:
 >
 > Hint: That's the horse turning. What gave way? Check ¶66.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. The saddle fell and was trampled, which matches what searchers later found. ✓
 2. Ichabod threw the saddle away.
@@ -1502,7 +1532,7 @@ Near misses:
 >
 > Hint: That's Hans the next day. What did Ichabod fear during the ride? Check ¶66.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. The saddle belonged to Hans, and Ichabod feared his anger. ✓
 2. The saddle was Ichabod's own.
@@ -1527,7 +1557,7 @@ Near misses:
 >
 > Hint: That shows the horse came home. Where was the saddle itself found? Check ¶68.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. It was trampled in the chase and found trampled the next day, so two parts of the story match. ✓
 2. It proves a ghost was there.
@@ -1552,7 +1582,7 @@ Near misses:
 >
 > Hint: That's what he remembered. What did he expect to see? Check ¶67.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. He expected the ghost to vanish, as in Brom's tale. ✓
 2. He expected Brom to stop him.
@@ -1575,7 +1605,7 @@ Near misses:
 >
 > Hint: That's the chase. What was thrown? Check ¶67.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. The rider threw something and knocked him down instead of vanishing. ✓
 2. The rider vanished in fire.
@@ -1596,7 +1626,7 @@ Near misses:
 >
 > Hint: That's the horse. What lay beside the hat? Check ¶68.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. A smashed pumpkin suggests the "head" was a pumpkin thrown by a living rider. ✓
 2. A real head was found.
@@ -1604,6 +1634,8 @@ Prove it (right answer first; shuffled on screen):
 4. The pumpkin was from the party table.
 
 ### Scene 4 (`the-towns-verdict`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **The storyteller's doubt**.
 
 #### Clue: The report from New York
 
@@ -1621,7 +1653,7 @@ Near misses:
 >
 > Hint: That's what the old wives say. What did the farmer report? Check ¶71.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. A farmer reported him alive and gone for fear and shame, but it is secondhand news. ✓
 2. He was carried off by a ghost.
@@ -1642,7 +1674,7 @@ Near misses:
 >
 > Hint: That's a ghost story about him. What did he become? Check ¶71.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. He made a new life elsewhere, which fits running away. ✓
 2. He became a ghost.
@@ -1663,7 +1695,7 @@ Near misses:
 >
 > Hint: That's Brom. Who brought the news, and when? Check ¶71.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. It came years later from one person, so it isn't firsthand proof. ✓
 2. Farmers always lie.
@@ -1686,7 +1718,7 @@ Near misses:
 >
 > Hint: That's news of Ichabod. What did Brom do? Check ¶71.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. Brom married Katrina, so he gained from Ichabod leaving. ✓
 2. Brom left the valley.
@@ -1707,7 +1739,7 @@ Near misses:
 >
 > Hint: That's the old wives. How does Brom act? Check ¶71.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. His laugh at the pumpkin hints he knows it was a trick. ✓
 2. He cries whenever it comes up.
@@ -1728,7 +1760,7 @@ Near misses:
 >
 > Hint: That's about the bridge. What do people think about Brom? Check ¶71.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. People only suspect him; no one saw him do it. ✓
 2. Brom confessed to everything.
@@ -1751,7 +1783,7 @@ Near misses:
 >
 > Hint: That's the farmer's report. What do the old wives claim? Check ¶72.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. They believe a ghost took him, and they keep retelling it. ✓
 2. They say he moved to New York.
@@ -1772,7 +1804,7 @@ Near misses:
 >
 > Hint: That's the schoolhouse. What happened to the route? Check ¶72.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. People feared the bridge so much that the route was changed. ✓
 2. The bridge washed away in a flood.
@@ -1793,7 +1825,7 @@ Near misses:
 >
 > Hint: That's about the school. Where does he praise the old wives? Check ¶72.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. He is likely joking, which makes their ghost claim less trustworthy. ✓
 2. He means it, so the ghost is proven.
@@ -1814,7 +1846,7 @@ Near misses:
 >
 > Hint: He starts to explain. What does he finally admit? Check ¶81.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. Even the man who told it doesn't believe all of it, so parts may be made up. ✓
 2. He swears it is all true.
@@ -1835,7 +1867,7 @@ Near misses:
 >
 > Hint: That's the others laughing. Who stayed serious? Check ¶75.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. One listener doubted the story and wanted proof. ✓
 2. Everyone believed it.
@@ -1856,7 +1888,7 @@ Near misses:
 >
 > Hint: That comes after his answer. What did he first ask? Check ¶75.
 
-Prove it (right answer first; shuffled on screen):
+Prove it (✓ is right; shuffled on screen):
 
 1. He asks what the story proves, like a detective weighing evidence. ✓
 2. He asks for another story.

@@ -420,9 +420,10 @@ function Results({world,scene,result,mode,run,headers,sandboxId,onNext}:{world:W
  const ok=r.valid;
  return <section className="mt-5" aria-labelledby="res-h">
   <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Round {r.round} · {ROUND_NAMES[r.kind]}</p>
-  {ok?<h1 id="res-h" className="mt-1 text-[40px] font-bold leading-none tabular-nums">+{r.points}</h1>
+  {ok&&r.points===0?<h1 id="res-h" className="mt-1 text-[32px] font-bold leading-tight">Found it</h1>
+   :ok?<h1 id="res-h" className="mt-1 text-[40px] font-bold leading-none tabular-nums">+{r.points}</h1>
    :<h1 id="res-h" className="mt-1 text-[32px] font-bold leading-tight">Here's what proves it</h1>}
-  <p className="mt-2 text-[17px]">{ok?`${r.detail}${r.tries?` · found on try ${r.tries+1}`:""}${r.grace?" · half points after time":""}`:r.points>0?`+${r.points} for the lines you found. The rest are shown below.`:"0 points this round. Read the line below: it's the proof."}</p>
+  <p className="mt-2 text-[17px]">{ok&&r.points===0?`${r.detail} on try ${r.tries+1}. Points come on the first two tries; your streak holds.`:ok?`${r.detail}${r.tries?` · found on try ${r.tries+1}`:""}${r.grace?" · half points after time":""}`:r.points>0?`+${r.points} for the lines you found. The rest are shown below.`:"0 points this round. Read the line below: it's the proof."}</p>
   {ok&&<ul className="mt-3 flex flex-wrap gap-2 text-[14px] font-semibold">
    <li className="rounded-full bg-[#EFE8D8] px-3 py-1">Proof {r.base}</li>
    {r.multiplier>1&&<li className="inline-flex items-center gap-1 rounded-full bg-[#A0472C] px-3 py-1 text-white"><Flame size={14}/>Streak x{r.multiplier}</li>}

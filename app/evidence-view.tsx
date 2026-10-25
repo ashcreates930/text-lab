@@ -83,6 +83,7 @@ export function EvidenceView({evidence,sample=false,className}:{evidence:ClassEv
     </table>
    </div>
   </>}
+  {evidence.students.some(st=>st.sceneWriting?.length)?<SceneWritingList students={evidence.students}/>:null}
   {evidence.students.some(st=>st.yourTurn?.length)?<YourTurnWriting students={evidence.students}/>:null}
   {evidence.students.some(st=>st.marks?.length||st.claimFlags?.length||st.freezes?.length)?<MarksAndFlags students={evidence.students}/>:null}
   {evidence.storyMode?.some(s=>s.rows.length)?<StoryBoards boards={evidence.storyMode}/>:null}
@@ -206,6 +207,18 @@ function MarksAndFlags({students}:{students:EvidenceStudent[]}){
    {st.freezes?.length>0&&<div className="mt-3"><p className="text-[13px] font-bold uppercase tracking-wide text-[#2F5D80]">❄ Freezes used</p><ul className="mt-1 space-y-1 text-[14px] text-[#2A2620]">{st.freezes.map((f,i)=><li key={i}>{f}</li>)}</ul></div>}
    {st.claimFlags.length>0&&<ul className="mt-3 space-y-2 text-[15px] leading-6">{st.claimFlags.map((f,i)=><li key={i} className="rounded-2xl border border-[#E4DCCB] p-3"><p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">{f.clue} · {f.character} · {f.matched?"Caught the mistake":"Needs your review"}</p><p className="mt-1 text-[#4A4438]">{f.character} said: {f.answer}</p><p className="mt-1 font-serif italic text-[#2A2620]">Student's line: “{f.line}”</p></li>)}</ul>}
   </li>)}</ul>
+ </section>;
+}
+
+// Scene writing: one Notice, Interpret and Craft task per scene, after its clues.
+function SceneWritingList({students}:{students:EvidenceStudent[]}){
+ return <section aria-labelledby="sw-ev-h" className="space-y-3">
+  <h3 id="sw-ev-h" className="flex items-center gap-2 text-[22px] font-bold text-[#2A2620]"><MessageCircle size={20} className="text-[#A0472C]"/>Scene writing</h3>
+  <p className="max-w-2xl text-[15px] leading-6 text-[#4A4438]">Each scene's one writing task: what students noticed, what it means, and the craft choice they made.</p>
+  <ul className="grid gap-3 md:grid-cols-2">{students.flatMap(st=>(st.sceneWriting??[]).map((w,i)=><li key={st.id+i} className="rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
+   <p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">{st.nickname} · {w.scene} · {w.clue}</p>
+   <dl className="mt-2 space-y-2 text-[15px] leading-6 text-[#2A2620]"><div><dt className="font-bold">Notice</dt><dd>{w.notice}</dd></div><div><dt className="font-bold">Interpret</dt><dd>{w.interpret}</dd></div><div><dt className="font-bold">Craft{w.technique?` · ${w.technique}`:""}</dt><dd>{w.craft}</dd></div></dl>
+  </li>))}</ul>
  </section>;
 }
 
