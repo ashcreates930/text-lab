@@ -16,11 +16,11 @@ const same = (a: string, b: string) => lineWords(a) === lineWords(b);
 
 // Every option of every angle question, in question order.
 export const ANGLE_OPTION_IDS = ANGLE_STEPS.flatMap((k) => Object.keys(ANGLE_OPTIONS[k].options));
-// The two activities that match a student's answers (what fires them up, then their lane, then how they play). A
-// student who skipped the angle gets the cold case file.
+// The two activities that match a student's "Unlock your challenge" answers (what fires them up, then their lane). A
+// student who skipped them gets the cold case file.
 export function yourTurnChoices(world: WorldPack, angle: Angle | null | undefined): string[] {
   const all = world.your_turn?.activities ?? {};
-  const picked = [angle?.firedUpBy, angle?.lane, angle?.style].filter((x): x is NonNullable<typeof x> => !!x && x in all);
+  const picked = [angle?.firedUpBy, angle?.lane].filter((x): x is NonNullable<typeof x> => !!x && x in all);
   const choices = [...new Set(picked)].slice(0, 2);
   if (choices.length) return choices;
   return "solo" in all ? ["solo"] : Object.keys(all).slice(0, 1);

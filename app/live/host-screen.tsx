@@ -317,12 +317,12 @@ function WitnessLink({sessionId,token}:{sessionId:string;token:string}){
 }
 
 // Your Turn: after the game, the teacher starts a personal activity on every phone (each student's own, from their
-// "What's your angle?" answers). Each one ends with 2 or 3 cited sentences, saved to the Evidence view.
+// "Unlock your challenge" answers, asked on each phone first). Each one ends with 2 or 3 cited sentences, saved to the Evidence view.
 function YourTurnHost({yourTurn,players,act}:{yourTurn:{started:boolean;saved:number};players:number;act:(b:Record<string,unknown>)=>void}){
  return <section aria-labelledby="yt-host-h" className="mt-6 rounded-3xl bg-[#2E2821] p-6">
   <h2 id="yt-host-h" className="text-[clamp(22px,2.2vw,32px)] font-bold">Your Turn</h2>
   {yourTurn.started?<p className="mt-2 text-[20px]">Your Turn is on. {yourTurn.saved} of {players} saved so far.</p>
-  :<><p className="mt-2 max-w-3xl text-[18px] text-[#E8DDCB]">A 5 to 7 minute activity on every phone, picked from each student's angle answers. Every one ends with 2 or 3 sentences citing the story, saved to Evidence.</p>
+  :<><p className="mt-2 max-w-3xl text-[18px] text-[#E8DDCB]">Each phone asks two quick questions first, then offers a 5 to 7 minute activity that fits. Every one ends with 2 or 3 sentences citing the story, saved to Evidence.</p>
    <button type="button" onClick={()=>act({action:"yourturn.start"})} className="host-btn mt-4">Start Your Turn for everyone</button></>}
  </section>;
 }
