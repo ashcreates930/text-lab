@@ -7,12 +7,12 @@
 // One screen flow, one clear action at a time. The server scores every try (lib/story-server.ts); the rules are in
 // lib/story-mode.ts and lib/fair-play.ts, and the content in the scene's `story_mode` block.
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
-import {ArrowRight,BookOpen,Check,Coins,Flame,Minus,RotateCcw,Timer,Trophy,Volume2,VolumeX,X} from "lucide-react";
+import {ArrowRight,BookOpen,Check,Coins,Flame,Hand,Minus,RotateCcw,Timer,Trophy,Volume2,VolumeX,X} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
 import type {Demo} from "./page";
-import {COUNTDOWN_SECONDS,GRACE_SECONDS,POUCH_MAX,POWER_UPS,ROUNDS,ROUND_NAMES,SECONDS,goalLine,roundIntroLine,callQ,inferQ,lanternParagraph,lieOf,phaseSeconds,readQ,timeAnnouncement,type PowerUp,type RoundInput,type RoundKind,type RoundRecord,type RunState,type Scene,type TimeSetting} from "@/lib/story-mode";
-import {LEVELS,levelFor,levelPoints} from "@/lib/fair-play";
+import {COUNTDOWN_SECONDS,GRACE_SECONDS,POUCH_MAX,POWER_UPS,ROUNDS,ROUND_NAMES,SECONDS,nextGoal,roundIntroLine,storyRivalMs,storyRivalOutcome,callQ,inferQ,lanternParagraph,lieOf,phaseSeconds,readQ,timeAnnouncement,type PowerUp,type RoundInput,type RoundKind,type RoundRecord,type RunState,type Scene,type TimeSetting} from "@/lib/story-mode";
+import {LEVELS,levelFor} from "@/lib/fair-play";
 import {contentNotes} from "@/lib/content-notes";
 import {narrationFile} from "@/lib/narration";
 import {ReadingPanel} from "./reading-panel";
@@ -26,6 +26,8 @@ import {getBrowserSupabase} from "@/lib/supabase-browser";
 import {NotYet,PhrasePicker,PointsGoal,PointsMeter,ProveIt,useSpeedMeta} from "./fair-play-ui";
 import {collectPieces,missionFor} from "@/lib/missions";
 import {MissionTracker} from "./missions";
+import {FaceOff,RivalEmblem,playMode} from "./mode-screens";
+import {newClueGame} from "@/lib/clue-game";
 
 type PublicRun={id:string;topic:string;nickname:string;state:RunState;total:number;bestTotal:number;finished:boolean;timeSetting:TimeSetting;scope:"class"|"demo";goal:{max:number;level:string|null}};
 type Board={kind:"individual"|"squad";top:{rank:number;name:string;score:number;me:boolean}[];me:{rank:number;score:number;movement:number}|null;players:number}|null;
@@ -36,7 +38,8 @@ type TryReply={run:PublicRun;notYet:{tryNo:number;hint:string;locked:string[]}|n
 type Resume={tryNo:number;locked:string[];line:string|null;shown:boolean;step:"phrase"|"prove"|"explain"|null;choices:string[]|null}|null;
 type Result={record:RoundRecord;shown:string[]|null;reaction:Reaction;run:PublicRun;board:Board;pulse:Pulse;answered:number};
 type Send=(input:RoundInput,elapsedMs:number,grace:boolean)=>Promise<TryReply|null>;
-type Stage="loading"|"ready"|"countdown"|"play"|"results"|"cleared"|"error";
+type Stage="loading"|"ready"|"countdown"|"faceoff"|"play"|"results"|"cleared"|"error";
+type Race={kind:RoundKind;start:number;rivalMs:number;youMs:number|null};
 
 // Sound cues: short and quiet, only when Sound is on.
 function cue(on:boolean,name:"tick"|"chime"|"streak"|"reveal"){if(!on)return;try{const a=new Audio(`/sounds/story/${name}.mp3`);a.volume=0.35;a.play().catch(()=>{})}catch{}}
@@ -46,8 +49,9 @@ const reducedMotion=()=>typeof window!=="undefined"&&!!window.matchMedia?.("(pre
 // onUnavailable: Story Mode's tables aren't set up (or the server can't reach them), so the scene opens in the Case
 // file view instead, with no error screen.
 // onLeads: this scene has mission leads the student hasn't followed (offered on the cleared screen).
-// autoStart: straight from the pre-game screens, a fresh run skips round 1's ready card and opens the passage.
-export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleared,onCaseFile,startAt,onJumped,onUnavailable,onLeads,autoStart=false,onAutoStarted}:{world:WorldPack;scene:Scene;sceneIndex:number;passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onCleared:()=>void;onCaseFile?:()=>void;startAt?:RoundKind;onJumped?:()=>void;onUnavailable:()=>void;onLeads?:()=>void;autoStart?:boolean;onAutoStarted?:()=>void}){
+// Rival (the student's play mode): each round's Start opens the face-off (You vs. the labeled computer rival, the
+// tug-of-war bar, 3-2-1), and the rival races during the round. Who wins the face-off never changes points.
+export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleared,onCaseFile,startAt,onJumped,onUnavailable,onLeads}:{world:WorldPack;scene:Scene;sceneIndex:number;passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onCleared:()=>void;onCaseFile?:()=>void;startAt?:RoundKind;onJumped?:()=>void;onUnavailable:()=>void;onLeads?:()=>void}){
  const content=scene.story_mode!;
  const headers=useMemo(()=>({"Content-Type":"application/json",...(demo.classAuth?{"x-class-token":demo.classAuth.token}:{})}),[demo.classAuth]);
  const [run,setRun]=useState<PublicRun|null>(null),[mode,setMode]=useState<"individual"|"squad"|"off">("individual");
@@ -63,18 +67,16 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
  const post=useCallback(async(path:string,body:Record<string,unknown>)=>{const r=await fetch(path,{method:"POST",headers,body:JSON.stringify({sandboxId:demo.id,...body})});const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error??"Something went wrong. Try again."),{status:r.status});return j},[headers,demo.id]);
  // Read once per start, so clearing the jump afterwards doesn't start the run again.
  const jump=useRef(startAt);jump.current=startAt;
- const callbacks=useRef({onJumped,onUnavailable,onAutoStarted});callbacks.current={onJumped,onUnavailable,onAutoStarted};
- const auto=useRef(autoStart);
+ const callbacks=useRef({onJumped,onUnavailable});callbacks.current={onJumped,onUnavailable};
+ const rival=playMode(demo)==="rival";
+ const [race,setRace]=useState<Race|null>(null),[raceWon,setRaceWon]=useState<"you"|"rival"|null>(null);
  const start=useCallback(async(restart=false)=>{
   setStage("loading");setError("");
   try{const j=await post("/api/story/run",{worldId:world.id,sceneId:scene.id,restart,...(jump.current&&!restart?{startAt:jump.current}:{})});
    if(j.unavailable){callbacks.current.onUnavailable();return}
    if(jump.current)callbacks.current.onJumped?.();
    // A round already in progress (a reload) picks up at its try.
-   const fresh=!j.run.finished&&!j.resume&&j.run.state.round===0&&!restart;
-   setRun(j.run);setMode(j.leaderboard);setResult(null);setResume(j.resume??null);setStage(j.run.finished?"cleared":j.resume?"play":auto.current&&fresh?"play":"ready");
-   // auto stays set for this mount (React can run start twice); a played round or a restart is never fresh.
-   if(auto.current)callbacks.current.onAutoStarted?.()}
+   setRun(j.run);setMode(j.leaderboard);setResult(null);setResume(j.resume??null);setStage(j.run.finished?"cleared":j.resume?"play":"ready")}
   catch(e){const status=(e as {status?:number}).status;
    // No answer, or a server error: open the Case file view rather than an error screen. A 4xx says what to do.
    if(!status||status>=500){callbacks.current.onUnavailable();return}
@@ -87,12 +89,16 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
  const send:Send=async(input,elapsedMs,grace)=>{
   if(!run)return null;
   setNotice("");
+  // The face-off: the student's first lock-in time this round.
+  setRace(r=>r&&r.youMs===null?{...r,youMs:elapsedMs}:r);
   const j=await post("/api/story/round",{runId:run.id,round:round+1,input,elapsedMs,grace,relaxed,previousRank:lastRank.current});
   setRun(j.run);
   if(!j.record)return j as TryReply;
   const r=j as Result;
   setResult(r);setResume(null);if(r.board?.me)lastRank.current=r.board.me.rank;
   setStage("results");
+  if(race){const o=storyRivalOutcome(r.record,race.youMs??elapsedMs,race.rivalMs);setRaceWon(o);setRace(null);
+   setDemo(d=>{const g=d.game??newClueGame();return {...d,game:o==="you"?{...g,rivalWins:g.rivalWins+1}:{...g,rivalLosses:g.rivalLosses+1}}})}
   cue(soundOn,r.record.valid?"chime":"reveal");
   if(r.record.valid&&r.record.streak>=2)setTimeout(()=>cue(soundOn,"streak"),500);
   setTimeout(()=>cue(soundOn,"reveal"),reducedMotion()?0:900);
@@ -109,25 +115,32 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
  // Second look: replays the last part of the reading.
  const replayLast=useCallback(()=>{const pid=content.read.chunks[content.read.chunks.length-1];if(!soundOn)return;playNarration(soundChannel,`${scene.id}:story`,[{id:pid,text:passages.find(p=>p.id===pid)?.text??"",src:narrationFile(world.id,scene.id,pid)}],browserNarration)},[content.read.chunks,soundOn,scene.id,passages,world.id]);
 
+ // One short row, so the passage keeps the room on a phone.
  const header=<div>
-  <div className="flex flex-wrap items-center justify-between gap-2">
-   <p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">{world.title} · Scene {sceneIndex+1} · Story Mode</p>
-   <div className="flex items-center gap-2">
-    {run&&<span className="inline-flex items-center gap-1 rounded-full bg-[#F4E1D6] px-3 py-1 text-[14px] font-bold tabular-nums text-[#8A3B23]" title="Lantern coins"><Coins size={14}/>{run.state.coins}<span className="sr-only"> Lantern coins</span></span>}
-    <button type="button" onClick={toggleSound} aria-pressed={soundOn} className="inline-flex min-h-11 items-center gap-1 rounded-full bg-[#EFE8D8] px-3 text-[14px] font-semibold">{soundOn?<Volume2 size={16}/>:<VolumeX size={16}/>}Sound {soundOn?"on":"off"}</button>
+  <div className="flex items-center justify-between gap-2">
+   <p className="min-w-0 truncate text-[12px] font-semibold uppercase tracking-wide text-[#8A3B23]" title={world.title}>Scene {sceneIndex+1} · Story Mode</p>
+   <div className="flex shrink-0 items-center gap-1.5">
+    {run&&<span className="inline-flex items-center gap-1 rounded-full bg-[#F4E1D6] px-2.5 py-1 text-[14px] font-bold tabular-nums text-[#8A3B23]" title="Lantern coins"><Coins size={14}/>{run.state.coins}<span className="sr-only"> Lantern coins</span></span>}
+    <button type="button" onClick={toggleSound} aria-pressed={soundOn} aria-label="Sound" className="grid h-11 w-11 place-items-center rounded-full bg-[#EFE8D8]">{soundOn?<Volume2 size={18}/>:<VolumeX size={18}/>}</button>
    </div>
   </div>
-  {run&&stage!=="loading"&&stage!=="cleared"&&<PointsMeter total={run.total} max={run.goal.max}/>}
+  {run&&stage!=="loading"&&stage!=="cleared"&&<PointsMeter total={run.total} max={run.goal.max} compact/>}
  </div>;
- return <div className="case-ui mx-auto max-w-3xl px-4 pb-24 pt-5 md:px-8">
+ const rivalName=world.computer_players?.rival.name??"Computer rival";
+ const beginRound=()=>{if(!kind)return;setRaceWon(null);setRace(rival?{kind,start:Date.now(),rivalMs:storyRivalMs(scene.id,kind,setting),youMs:null}:null);setStage("play")};
+ if(stage==="faceoff"&&kind)return <FaceOff world={world} demo={demo} clueName={`Round ${round+1} · ${ROUND_NAMES[kind]}`} auto onGo={beginRound} rules={`Same question, same passage. Lock in the right line on your first try before ${rivalName} does to win the round. Points come only from the proof.`}/>;
+ return <div className={`case-ui mx-auto max-w-3xl px-4 pt-3 md:px-8 ${stage==="play"?"pb-3":"pb-24"}`}>
   <AmbientPlayer src={scene.ambient_audio} on={ambientOn&&soundOn} showing={stage==="play"}/>
   {header}
   {notice&&<p role="alert" className="mt-3 rounded-2xl bg-[#FBF1EB] px-4 py-3 text-[16px]">{notice}</p>}
   {stage==="loading"&&<p className="mt-10 text-center text-[17px] text-[#6B6457]">Opening the scene…</p>}
   {stage==="error"&&<div className="mt-8 rounded-3xl bg-[#FFFDF8] p-6"><h1 className="text-[24px] font-bold">Story Mode can't open right now</h1><p className="mt-2 text-[16px]">{error}</p><div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={()=>start()} className="case-primary">Try again</button>{onCaseFile&&<button type="button" onClick={onCaseFile} className="case-secondary">Open the Case file</button>}</div></div>}
-  {stage==="ready"&&run&&kind&&<MissionTracker world={world} demo={demo}/>}
-  {stage==="ready"&&run&&kind&&<ReadyCard world={world} scene={scene} kind={kind} round={round} run={run} relaxed={relaxed} setRelaxed={setRelaxed} canRelax={run.timeSetting==="1"||run.timeSetting==="1.5"} onBuy={buy} onStart={()=>{setNotice("");setStage("countdown")}} onCaseFile={round===0?onCaseFile:undefined}/>}
-  {stage==="countdown"&&kind&&<Countdown kind={kind} round={round} sound={soundOn} onDone={()=>setStage("play")}/>}
+  {stage==="ready"&&run&&kind&&<MissionTracker world={world} demo={demo} compact/>}
+  {stage==="ready"&&run&&kind&&<ReadyCard world={world} scene={scene} kind={kind} round={round} run={run} rival={rival?rivalName:null} relaxed={relaxed} setRelaxed={setRelaxed} canRelax={run.timeSetting==="1"||run.timeSetting==="1.5"} onBuy={buy} onStart={()=>{setNotice("");setStage(rival?"faceoff":"countdown")}} onCaseFile={round===0?onCaseFile:undefined}/>}
+  {stage==="countdown"&&kind&&<Countdown kind={kind} round={round} sound={soundOn} onDone={beginRound}/>}
+  {stage==="play"&&run&&kind&&<><RoundTracker round={round} skipped={run.state.skipped??0} compact/><MissionTracker world={world} demo={demo} compact/></>}
+  {stage==="play"&&run&&kind&&race&&<RaceStrip race={race} name={rivalName} emblem={world.computer_players?.rival.emblem??"lantern"} wins={demo.game?.rivalWins??0} losses={demo.game?.rivalLosses??0}/>}
+  {stage==="results"&&raceWon&&<p role="status" className={`mt-4 flex items-center gap-3 rounded-2xl px-4 py-3 text-[16px] font-semibold ${raceWon==="you"?"bg-[#E8F2E7] text-[#2F6B3A]":"bg-[#E8EEF5] text-[#2E3B4E]"}`}><span className="h-10 w-10 shrink-0 overflow-hidden rounded-full"><RivalEmblem kind={world.computer_players?.rival.emblem??"lantern"} size={40}/></span>{raceWon==="you"?`You beat ${rivalName} to the line.`:`${rivalName} won this face-off. Your points still come from your proof.`}</p>}
   {stage==="play"&&run&&kind&&<RoundPlay key={round} world={world} scene={scene} passages={passages} kind={kind} run={run} setting={setting} sound={soundOn} sandboxId={demo.id} resume={resume} send={send} onError={m=>setNotice(m)}/>}
   {stage==="results"&&result&&run&&<Results world={world} scene={scene} result={result} mode={mode} run={run} headers={headers} sandboxId={demo.id} onNext={()=>{setResult(null);setStage(run.finished?"cleared":"ready")}}/>}
   {stage==="cleared"&&run&&<Cleared run={run} mode={mode} headers={headers} sandboxId={demo.id} onNext={onCleared} onAgain={()=>start(true)} onLeads={onLeads}/>}
@@ -136,43 +149,76 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
 
 // ---------- Ready card: what this round is, power-ups, Relaxed timer, Start ----------
 const ROUND_HELP:Record<RoundKind,string>={read:"Listen to the story and tap the lines that answer the question. Your Evidence pouch holds 3, so choose carefully.",confront:"Someone asks you a question. Find the one line that answers it, mark the words that prove it, then say what it shows.",lie:"A witness gives testimony. One thing is false. Tap the line that proves it, then say why in one sentence.",call:"Answer the case question. Pick a theory and pin 2 lines that support it."};
-function ReadyCard({world,scene,kind,round,run,relaxed,setRelaxed,canRelax,onBuy,onStart,onCaseFile}:{world:WorldPack;scene:Scene;kind:RoundKind;round:number;run:PublicRun;relaxed:boolean;setRelaxed:(v:boolean)=>void;canRelax:boolean;onBuy:(p:PowerUp)=>void;onStart:()=>void;onCaseFile?:()=>void}){
+// rival: the computer rival's name when the student plays Rival (Start then opens the face-off).
+// The timer starts only after Start. The full level breakdown sits behind "How scoring works".
+function ReadyCard({world,scene,kind,round,run,rival,relaxed,setRelaxed,canRelax,onBuy,onStart,onCaseFile}:{world:WorldPack;scene:Scene;kind:RoundKind;round:number;run:PublicRun;rival:string|null;relaxed:boolean;setRelaxed:(v:boolean)=>void;canRelax:boolean;onBuy:(p:PowerUp)=>void;onStart:()=>void;onCaseFile?:()=>void}){
  const role=world.student_role;const s=run.state;
  const usable=(p:PowerUp)=>p==="second-look"?kind!=="read":true;
  const firstRound=round===(s.skipped??0);
- return <section className="mt-5" aria-labelledby="ready-h">
-  {firstRound&&<div className="overflow-hidden rounded-3xl bg-[#2A2620] text-[#FFFDF8]"><div className="case-art aspect-[16/7]" role="img" aria-label={`The scene: ${scene.id.replace(/-/g," ")}`} style={{backgroundImage:`url('${scene.background_image}')`}}/><div className="p-5">{role&&<p className="text-[13px] font-semibold uppercase tracking-wide text-[#F3C9B2]">You are {role.name.replace(/^The /,"the ")}</p>}<p className="mt-1 text-[17px] leading-7">{scene.story_mode!.intro}</p>{round>0&&<p className="mt-2 text-[15px] text-[#F3C9B2]">You're starting at round {round+1}. Play the whole scene any time with "Play this scene again" at the end.</p>}</div></div>}
-  {firstRound&&<PointsGoal max={run.goal.max}/>}
-  <RoundTracker round={round} skipped={s.skipped??0}/>
-  <p className="mt-3 text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Round {round+1} of {ROUNDS.length}</p>
-  <h1 id="ready-h" className="mt-1 text-[30px] font-bold leading-tight">{ROUND_NAMES[kind]}</h1>
-  <div className="mt-3 rounded-2xl bg-[#FFFDF8] px-4 py-3 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="text-[17px] leading-7">{roundIntroLine(s.rounds.at(-1),round+(s.restarts??0))}</p><p className="mt-1 text-[15px] font-semibold tabular-nums text-[#4A4438]">{goalLine(run.total,run.goal.max)}</p></div>
-  {kind==="read"&&<Focus text={readQ(scene,s.picks).focus}/>}
-  <p className="mt-2 text-[17px] leading-7 text-[#4A4438]">{ROUND_HELP[kind]}</p>
+ return <section className="mt-3" aria-labelledby="ready-h">
+  {firstRound&&<div className="case-art relative mt-2 overflow-hidden rounded-2xl" style={{backgroundImage:`url('${scene.background_image}')`}}><div className="bg-[linear-gradient(90deg,rgba(42,38,32,.92),rgba(42,38,32,.6))] px-3 py-2 text-[#FFFDF8]">{role&&<p className="text-[11.5px] font-bold uppercase tracking-wide text-[#F3C9B2]">You are {role.name.replace(/^The /,"the ")}</p>}<p className="mt-0.5 text-[14px] leading-5">{scene.story_mode!.intro}</p>{round>0&&<p className="mt-1 text-[14px] text-[#F3C9B2]">You're starting at round {round+1}. Play the whole scene any time with "Play this scene again" at the end.</p>}</div></div>}
+  <RoundTracker round={round} skipped={s.skipped??0} compact/>
+  <div className="mt-3 flex flex-wrap items-baseline justify-between gap-2"><h1 id="ready-h" className="text-[26px] font-bold leading-tight"><span className="sr-only">Round {round+1} of {ROUNDS.length}: </span>{ROUND_NAMES[kind]}</h1>{rival&&<span className="rounded-full bg-[#2E3B4E] px-3 py-1 text-[13px] font-bold text-white">Rival · vs {rival}</span>}</div>
+  <ReadyQuestion world={world} scene={scene} kind={kind} run={run}/>
+  <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3"><p className="text-[17px] font-bold tabular-nums text-[#2A2620]">{nextGoal(run.total,run.goal.max)}</p></div>
+  <details className="text-[15px]"><summary className="inline-flex min-h-11 cursor-pointer items-center font-semibold text-[#8A3B23] underline underline-offset-4">How scoring works</summary><p className="mt-1 text-[15px] leading-6 text-[#4A4438]">{ROUND_HELP[kind]} {roundIntroLine(s.rounds.at(-1),round+(s.restarts??0))}</p><PointsGoal max={run.goal.max}/></details>
   {round>0&&<div className="mt-5 rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]">
    <h2 className="flex items-center gap-2 text-[18px] font-bold"><Coins size={18} className="text-[#A0472C]"/>Power-ups <span className="text-[15px] font-normal text-[#6B6457]">· {s.coins} coin{s.coins===1?"":"s"}</span></h2>
    <ul className="mt-3 grid gap-2 sm:grid-cols-3">{(Object.keys(POWER_UPS) as PowerUp[]).map(p=>{const on=(p==="lantern"&&s.lantern)||(p==="double-down"&&s.doubleDown);const short=s.coins<POWER_UPS[p].cost;const can=!on&&!short&&usable(p);
     // Can't afford it yet: a plain card that says what it takes, so it never looks used or done.
     return <li key={p}><button type="button" aria-disabled={!can} onClick={()=>can&&onBuy(p)} aria-pressed={on} className={`flex h-full w-full flex-col rounded-2xl p-3 text-left ${on?"bg-[#2A2620] text-white":can?"bg-[#F4E1D6] hover:bg-[#EDD3C4]":short&&usable(p)?"border-2 border-dashed border-[#C9B9A0] bg-[#FFFDF8] text-[#2A2620]":"bg-[#EFE8D8] text-[#8B8478]"}`}><span className="text-[16px] font-bold">{POWER_UPS[p].name} · {POWER_UPS[p].cost}</span><span className="mt-1 text-[13px] leading-5">{on?"Ready for this round.":!usable(p)?"Not used in this round.":short?<><b className="block text-[#8A3B23]">Need {POWER_UPS[p].cost} coin{POWER_UPS[p].cost===1?"":"s"}</b>{POWER_UPS[p].what}</>:POWER_UPS[p].what}</span></button></li>})}</ul>
   </div>}
-  <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+  <div className="mt-2 flex flex-col gap-1">
    {canRelax?<label className="inline-flex min-h-11 cursor-pointer items-center gap-3 text-[16px]"><input type="checkbox" checked={relaxed} onChange={e=>setRelaxed(e.target.checked)} className="h-5 w-5 accent-[#A0472C]"/>Relaxed timer (2x time)</label>:<p className="text-[15px] text-[#6B6457]">{run.timeSetting==="untimed"?"No timer for you: take the time you need.":"Your teacher gave you extra time."}</p>}
-   <button type="button" onClick={onStart} className="case-primary min-h-[58px] text-[18px]">Start round {round+1} <ArrowRight size={20}/></button>
+   <button type="button" onClick={onStart} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Start <ArrowRight size={20}/></button>
   </div>
   {onCaseFile&&<p className="mt-6 text-[14px] text-[#6B6457]">Teachers: <button type="button" onClick={onCaseFile} className="font-semibold text-[#8A3B23] underline underline-offset-4">open the Case file view</button> instead.</p>}
  </section>;
 }
 
+// The ready card's question: what the student will answer this round.
+function ReadyQuestion({world,scene,kind,run}:{world:WorldPack;scene:Scene;kind:RoundKind;run:PublicRun}){
+ const s=run.state,name=(id:string)=>world.characters.find(c=>c.id===id)?.name??"Someone";
+ if(kind==="read")return <Focus text={readQ(scene,s.picks).focus}/>;
+ if(kind==="confront")return <Focus label={`${name(scene.story_mode!.infer.character_id)} will ask you`} text={inferQ(scene,s.picks).question}/>;
+ if(kind==="lie")return <Focus label="Your question" text={`${name(lieOf(scene,s.picks).character_id)} gives testimony. One thing is false. Which line in the story proves it?`}/>;
+ return <Focus text={callQ(scene,s.picks).question}/>;
+}
+
 // The four rounds in a row: played rounds gray with a check (skipped ones gray with a dash), the current one highlighted.
-function RoundTracker({round,skipped}:{round:number;skipped:number}){
- return <ol className="mt-5 grid grid-cols-4 gap-1.5" aria-label={`Round ${round+1} of ${ROUNDS.length}`}>{ROUNDS.map((k,i)=>{const done=i<round,now=i===round,skip=done&&i<skipped;
-  return <li key={k} aria-current={now?"step":undefined} className={`flex min-h-[52px] flex-col justify-center rounded-2xl px-2 py-1.5 text-center text-[13px] font-semibold leading-tight ${now?"bg-[#A0472C] text-white shadow-[0_0_0_3px_rgba(160,71,44,.25)]":done?"bg-[#E4DCCB] text-[#6B6457]":"bg-[#FFFDF8] text-[#2A2620] ring-1 ring-[#E4DCCB]"}`}>
-   <span className="flex items-center justify-center gap-1">{done&&(skip?<Minus size={14} aria-hidden/>:<Check size={14} aria-hidden/>)}<span className="sr-only">{now?"Now: ":skip?"Skipped: ":done?"Done: ":"Later: "}</span>{i+1}</span><span>{ROUND_NAMES[k]}</span></li>})}</ol>;
+// compact: one short row on round screens.
+function RoundTracker({round,skipped,compact=false}:{round:number;skipped:number;compact?:boolean}){
+ return <ol className={`grid grid-cols-4 gap-1 ${compact?"mt-2":"mt-4"}`} aria-label={`Round ${round+1} of ${ROUNDS.length}`}>{ROUNDS.map((k,i)=>{const done=i<round,now=i===round,skip=done&&i<skipped;
+  return <li key={k} aria-current={now?"step":undefined} className={`flex flex-col justify-center rounded-xl px-1 text-center font-semibold leading-tight ${compact?"min-h-[28px] whitespace-nowrap py-1 text-[11px]":"min-h-[48px] py-1.5 text-[13px]"} ${now?"bg-[#A0472C] text-white shadow-[0_0_0_3px_rgba(160,71,44,.25)]":done?"bg-[#E4DCCB] text-[#6B6457]":"bg-[#FFFDF8] text-[#2A2620] ring-1 ring-[#E4DCCB]"}`}>
+   {compact?<span className="flex items-center justify-center gap-1">{done&&(skip?<Minus size={12} aria-hidden/>:<Check size={12} aria-hidden/>)}<span className="sr-only">{now?"Now: ":skip?"Skipped: ":done?"Done: ":"Later: "}</span>{ROUND_NAMES[k]}</span>
+    :<><span className="flex items-center justify-center gap-1">{done&&(skip?<Minus size={14} aria-hidden/>:<Check size={14} aria-hidden/>)}<span className="sr-only">{now?"Now: ":skip?"Skipped: ":done?"Done: ":"Later: "}</span>{i+1}</span><span>{ROUND_NAMES[k]}</span></>}</li>})}</ol>;
 }
 
 // Round 1's focus question, on the ready card and above the passage.
-function Focus({text}:{text:string}){
- return <p className="mt-3 rounded-2xl bg-[#2A2620] px-4 py-3 text-[18px] font-semibold leading-7 text-[#FFFDF8]"><span className="block text-[13px] font-semibold uppercase tracking-wide text-[#F3C9B2]">Your question</span>{text}</p>;
+function Focus({text,label="Your question"}:{text:string;label?:string}){
+ return <p className="mt-3 rounded-2xl bg-[#2A2620] px-4 py-3 text-[18px] font-semibold leading-7 text-[#FFFDF8]"><span className="block text-[13px] font-semibold uppercase tracking-wide text-[#F3C9B2]">{label}</span>{text}</p>;
+}
+
+// Rival: the computer rival racing during the round (its own clock from the round's start). Clearly labeled.
+function RaceStrip({race,name,emblem,wins,losses}:{race:Race;name:string;emblem:"lantern"|"rider";wins:number;losses:number}){
+ const [now,setNow]=useState(Date.now());
+ useEffect(()=>{const t=setInterval(()=>setNow(Date.now()),250);return()=>clearInterval(t)},[]);
+ const done=now-race.start>=race.rivalMs;
+ // The rival pulls the bar its way while it reads; the tally is the wins this story.
+ const share=done?0.3:Math.max(0.35,0.5-((now-race.start)/race.rivalMs)*0.15);
+ return <div className="mt-2 rounded-xl bg-[#FFFDF8] px-3 py-1 shadow-[0_1px_6px_-3px_rgba(42,38,32,.3)]">
+  <div className="flex items-center gap-2 text-[12.5px] font-bold"><span className="text-[#8A3B23]">You {wins}</span>
+   <div className="relative h-3 flex-1 overflow-hidden rounded-full bg-[#5E7FA8]" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(share*100)} aria-label={`Face-off with ${name}, computer rival`}><div className="h-full bg-[#A0472C] transition-[width] duration-500 motion-reduce:transition-none" style={{width:`${share*100}%`}}/><span aria-hidden className="absolute inset-y-0 left-1/2 w-[2px] bg-white"/></div>
+   <span className="text-[#3E5F86]">{losses} Rival</span><span className="h-5 w-5 shrink-0 overflow-hidden rounded-full"><RivalEmblem kind={emblem} size={20}/></span></div>
+  <p className="text-[11.5px] leading-4 text-[#4A4438]" aria-live="polite">{done?`${name} (computer rival) locked in a line. Points still come from your proof.`:`${name} (computer rival) is reading…`}</p>
+ </div>;
+}
+
+// The passage panel fills the rest of the phone screen (it scrolls inside), above the round's dock.
+function useFitHeight(){
+ const ref=useRef<HTMLDivElement>(null),dock=useRef<HTMLDivElement>(null);const [h,setH]=useState<number|null>(null);
+ useLayoutEffect(()=>{const f=()=>{const el=ref.current;if(!el)return;const top=el.getBoundingClientRect().top+window.scrollY;const d=dock.current?.offsetHeight??0;setH(Math.max(240,Math.floor(window.innerHeight-top-d-22)))};f();window.addEventListener("resize",f);return()=>window.removeEventListener("resize",f)});
+ return {ref,dock,style:h?{height:h}:undefined};
 }
 
 // ---------- 3-second countdown ----------
@@ -205,11 +251,12 @@ function useRoundTimer(seconds:number|null,pausedByNote:boolean,onOver:()=>void,
  const graceLeft=inGrace&&seconds!==null?Math.max(0,seconds+grace-elapsed/1000):0;
  return {elapsed,left,grace:inGrace,graceLeft,graceSeconds:grace,paused,announce};
 }
-function TimerBar({t,seconds}:{t:ReturnType<typeof useRoundTimer>;seconds:number|null}){
- if(seconds===null)return <p className="mt-3 flex items-center gap-2 text-[15px] text-[#6B6457]"><Timer size={16}/>No timer. Take the time you need.</p>;
+function TimerBar({t,seconds,compact=false}:{t:ReturnType<typeof useRoundTimer>;seconds:number|null;compact?:boolean}){
+ if(seconds===null)return <p className={`${compact?"mt-1.5":"mt-3"} flex items-center gap-2 text-[15px] text-[#6B6457]`}><Timer size={16}/>No timer. Take the time you need.</p>;
  const share=t.grace?t.graceLeft/t.graceSeconds:(t.left??0)/seconds;
  const label=t.grace?`${Math.ceil(t.graceLeft)}s for half points`:`${Math.ceil(t.left??0)}s left`;
- return <div className="mt-3">
+ if(compact&&!t.grace)return <div className="mt-1.5 flex items-center gap-2 text-[13px] font-semibold"><span className="text-[#4A4438]">{t.paused?"Paused":"Time"}</span><div aria-hidden className="h-2.5 flex-1 overflow-hidden rounded-full bg-[#E4DCCB]"><div className="h-full rounded-full bg-[#A0472C]" style={{width:`${Math.max(0,Math.min(1,share))*100}%`}}/></div><span className="tabular-nums" aria-hidden>{label}</span><p className="sr-only" aria-live="polite">{t.announce}</p></div>;
+ return <div className={compact?"mt-1.5":"mt-3"}>
   <div className="flex items-center justify-between text-[14px] font-semibold"><span className={t.grace?"text-[#A33B20]":"text-[#4A4438]"}>{t.grace?"Time! You can still add proof for half points":t.paused?"Paused":"Time"}</span><span className="tabular-nums" aria-hidden>{label}</span></div>
   <div aria-hidden className="mt-1 h-3 overflow-hidden rounded-full bg-[#E4DCCB]"><div className={`h-full rounded-full ${t.grace?"bg-[#A33B20]":"bg-[#A0472C]"}`} style={{width:`${Math.max(0,Math.min(1,share))*100}%`}}/></div>
   <p className="sr-only" aria-live="polite">{t.announce}{t.grace?" Time! You can still add proof for half points.":""}</p>
@@ -244,6 +291,9 @@ function ReadRound({world,scene,passages,run,setting,sound,resume,send,onError}:
  // A paragraph with a content note shows the note first, with the timer paused until the student continues.
  const [noteSeen,setNoteSeen]=useState<Record<string,boolean>>({});
  const current=chunks[shown-1],noteOpen=!!current&&notes.has(current.id)&&!noteSeen[current.id];
+ const fit=useFitHeight();
+ // A new part scrolls into view inside the panel.
+ useEffect(()=>{if(shown<2)return;const sc=fit.ref.current?.querySelector<HTMLElement>(".overflow-y-auto"),ols=sc?.querySelectorAll("ol"),last=ols?.[ols.length-1]?.parentElement;if(sc&&last)sc.scrollTo({top:last.getBoundingClientRect().top-sc.getBoundingClientRect().top+sc.scrollTop-4,behavior:reducedMotion()?"auto":"smooth"})},[shown]);// eslint-disable-line react-hooks/exhaustive-deps
  // Each part is narrated when it appears (ambient dips while it plays).
  useEffect(()=>{if(!current||noteOpen||!sound||tryNo>1)return;playNarration(soundChannel,`${scene.id}:story`,[{id:current.id,text:current.text,src:narrationFile(world.id,scene.id,current.id)}],browserNarration);return()=>soundChannel.stop()},[current,noteOpen,sound,scene.id,world.id,tryNo]);
  const isLocked=(t:string)=>locked.some(x=>lineKey(x)===lineKey(t));
@@ -255,20 +305,24 @@ function ReadRound({world,scene,passages,run,setting,sound,resume,send,onError}:
   if(r.reply?.notYet){setLocked(r.reply.notYet.locked);setPouch(r.reply.notYet.locked);setTryNo(r.reply.notYet.tryNo);setNotYet({hint:r.reply.notYet.hint})}
  }
  if(notYet)return <NotYet tryNo={tryNo} hint={notYet.hint} onTryAgain={()=>setNotYet(null)} extra={locked.length?<FoundSoFar lines={locked}/>:null}/>;
- return <TimedTry key={tryNo} kind="read" tryNo={tryNo} setting={setting} paused={noteOpen} onOver={(e,g)=>lockIn(e,g,true)}>{t=><section className="mt-4" aria-labelledby="play-h">
-  <h1 id="play-h" className="text-[24px] font-bold">{tryNo>1?`Try ${tryNo}: find the rest`:ROUND_NAMES.read}</h1>
-  {tryNo===1&&run.total===0&&!run.state.rounds.length&&<p className="mt-1 text-[15px] text-[#4A4438]"><b className="tabular-nums">{run.goal.max.toLocaleString()} points possible.</b> {levelPoints(run.goal.max).map(l=>`${l.name} at ${l.points.toLocaleString()}`).join(", ")}.</p>}
-  <Focus text={q.focus}/>
-  <p className="mt-2 text-[16px] text-[#4A4438]">{c.read.prompt}</p>
-  <TimerBar t={t} seconds={trySeconds("read",tryNo,setting).seconds}/>
+ const firstEver=tryNo===1&&run.state.round===(run.state.skipped??0);
+ return <TimedTry key={tryNo} kind="read" tryNo={tryNo} setting={setting} paused={noteOpen} onOver={(e,g)=>lockIn(e,g,true)}>{t=><section className="mt-2" aria-labelledby="play-h">
+  {/* The scene as a short banner with the question; the passage is the main panel. */}
+  <div className="case-art overflow-hidden rounded-2xl" style={{backgroundImage:`url('${scene.background_image}')`}}><div className="bg-[linear-gradient(90deg,rgba(42,38,32,.94),rgba(42,38,32,.7))] px-3 py-2 text-[#FFFDF8]">
+   <h1 id="play-h" className="text-[12px] font-bold uppercase tracking-wide text-[#F3C9B2]">{tryNo>1?`Try ${tryNo}: find the rest`:`${ROUND_NAMES.read} · your question`}</h1>
+   <p className="text-[16px] font-semibold leading-[1.35]">{q.focus}</p></div></div>
+  <TimerBar t={t} seconds={trySeconds("read",tryNo,setting).seconds} compact/>
   <LanternNote world={world} passages={passages} scene={scene} kind="read" run={run} locked={locked}/>
-  <Pouch pouch={pouch} locked={locked} onRemove={x=>tap({text:x})} full={full}/>
-  {tryNo===1&&<div className="case-art mt-4 aspect-[16/6] rounded-2xl" role="img" aria-label="The scene" style={{backgroundImage:`url('${scene.background_image}')`}}/>}
-  <div className="mt-4 space-y-4">{chunks.slice(0,shown).map((p,i)=>i===shown-1&&noteOpen?<div key={p.id}><ContentNote text={notes.get(p.id)!}/><button type="button" onClick={()=>setNoteSeen(s=>({...s,[p.id]:true}))} className="case-secondary mt-3">Continue reading</button></div>
-   :<div key={p.id} className="rounded-3xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="mb-1 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Part {i+1} of {chunks.length}</p><ReadingPanel glossary={world.glossary} passages={[p]} kept={pouch} onTap={tap} className="shadow-none"/></div>)}</div>
-  <div className="mt-5 flex flex-wrap justify-end gap-3">
-   {shown<chunks.length&&<button type="button" onClick={()=>setShown(n=>n+1)} disabled={noteOpen} className="case-secondary">Next part <ArrowRight size={18}/></button>}
-   <button type="button" disabled={busy||pouch.length===locked.length} onClick={()=>lockIn(t.elapsed,t.grace)} className="case-primary disabled:opacity-40">Lock in {pouch.length} line{pouch.length===1?"":"s"}</button>
+  <div ref={fit.ref} style={fit.style} className="mt-2 flex min-h-0 flex-col">
+   {noteOpen&&current?<div className="overflow-y-auto"><ContentNote text={notes.get(current.id)!}/><button type="button" onClick={()=>setNoteSeen(s=>({...s,[current.id]:true}))} className="case-secondary mt-3">Continue reading</button></div>
+    :<ReadingPanel glossary={world.glossary} passages={chunks.slice(0,shown)} kept={pouch} onTap={tap} className="h-full" title={<><span>Part {shown} of {chunks.length}</span>{firstEver&&!pouch.length?<span className="inline-flex items-center gap-1 rounded-full bg-[#A0472C] px-2.5 py-0.5 text-[12.5px] normal-case tracking-normal text-white"><Hand size={14} aria-hidden/>Tap a line</span>:<span className="font-semibold normal-case tracking-normal text-[#6B6457]">Tap the lines that answer it</span>}</>}/>}
+  </div>
+  <div ref={fit.dock} className="pt-2">
+   <PouchBar pouch={pouch} locked={locked} full={full}/>
+   <div className="mt-2 flex gap-2">
+    {shown<chunks.length&&<button type="button" onClick={()=>setShown(n=>n+1)} disabled={noteOpen} className="case-secondary min-h-[48px] flex-1 justify-center">Next part <ArrowRight size={18}/></button>}
+    <button type="button" disabled={busy||pouch.length===locked.length} onClick={()=>lockIn(t.elapsed,t.grace)} className="case-primary min-h-[48px] flex-1 justify-center disabled:opacity-40">Lock in {pouch.length} line{pouch.length===1?"":"s"}</button>
+   </div>
   </div>
  </section>}</TimedTry>;
 }
@@ -282,6 +336,14 @@ function TimedTry({kind,tryNo,setting,paused=false,onOver,children}:{kind:RoundK
  return <>{children(t)}</>;
 }
 
+// The pouch on the read round's dock: the count (it bumps when a line goes in) and three slots. Kept lines stay marked
+// in the passage; tapping one again takes it out.
+function PouchBar({pouch,locked,full}:{pouch:string[];locked:string[];full:boolean}){
+ return <div className="flex items-center justify-between gap-2 rounded-2xl border-2 border-dashed border-[#C9B9A0] bg-[#FBF7EE] px-3 py-1.5">
+  <p className="flex items-center gap-2 text-[14px] font-bold text-[#2A2620]" aria-live="polite"><BookOpen size={16} className="text-[#A0472C]" aria-hidden/>{full?<span className="text-[#A33B20]">Pouch full: tap a kept line to swap it</span>:<>Evidence pouch · <span key={pouch.length} className="count-bump tabular-nums">{pouch.length}</span> of {POUCH_MAX}</>}{locked.length>0&&<span className="font-semibold text-[#2F6B3A]"> · {locked.length} found</span>}</p>
+  <span aria-hidden className="flex gap-1">{Array.from({length:POUCH_MAX},(_,i)=><i key={i} className={`block h-2.5 w-5 rounded-full ${i<pouch.length?"bg-[#A0472C]":"bg-[#E4DCCB]"}`}/>)}</span>
+ </div>;
+}
 function Pouch({pouch,onRemove,full,picked,onPick,max,locked=[]}:{pouch:string[];onRemove?:(t:string)=>void;full?:boolean;picked?:string[];onPick?:(t:string)=>void;max?:number;locked?:string[]}){
  return <div className="mt-4 rounded-2xl border-2 border-dashed border-[#C9B9A0] bg-[#FBF7EE] p-3" aria-live="polite">
   <p className="flex items-center gap-2 text-[14px] font-bold text-[#2A2620]"><BookOpen size={16} className="text-[#A0472C]"/>Evidence pouch · {pouch.length} of {POUCH_MAX}{onPick&&max?` · pin ${max}`:""}</p>

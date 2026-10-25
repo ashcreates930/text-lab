@@ -34,12 +34,14 @@ export function MissionPick({world,onPick}:{world:WorldPack;onPick:(id:string)=>
 }
 
 // ---------- The tracker ----------
-export function MissionTracker({world,demo,dark=false}:{world:WorldPack;demo:Demo;dark?:boolean}){
+export function MissionTracker({world,demo,dark=false,compact=false,named=true}:{world:WorldPack;demo:Demo;dark?:boolean;compact?:boolean;named?:boolean}){
  const m=studentMission(world,demo);
  if(!m)return null;
  const found=piecesFound(m,demo.missionPieces).length;
+ // On round screens: one short row, so the passage keeps the room.
+ if(compact)return <div className="mt-2 flex items-center justify-between gap-2 rounded-xl bg-[#FFFDF8] px-3 py-1.5 text-[13px] font-bold shadow-[0_1px_6px_-3px_rgba(42,38,32,.3)]"><span>Mission: {found} of {m.pieces.length} pieces found</span><span aria-hidden className="flex gap-1">{m.pieces.map(p=><i key={p.id} className={`block h-2.5 w-4 rounded-full ${demo.missionPieces?.[p.id]?"bg-[#A0472C]":"bg-[#E4DCCB]"}`}/>)}</span></div>;
  return <div className={`mt-3 rounded-2xl px-4 py-3 ${dark?"bg-white/10 text-[#FFFDF8]":"bg-[#FFFDF8] shadow-[0_2px_10px_-5px_rgba(42,38,32,.3)]"}`}>
-  <p className="flex items-baseline justify-between gap-2 text-[15px] font-bold"><span>Mission: {found} of {m.pieces.length} pieces found</span><span className={`text-[13px] font-semibold ${dark?"text-[#E8DDCB]":"text-[#6B6457]"}`}>{m.title}</span></p>
+  <p className="flex items-baseline justify-between gap-2 text-[15px] font-bold"><span>Mission: {found} of {m.pieces.length} pieces found</span>{named&&<span className={`text-[13px] font-semibold ${dark?"text-[#E8DDCB]":"text-[#6B6457]"}`}>{m.title}</span>}</p>
   <ol className="mt-2 grid gap-1.5" style={{gridTemplateColumns:`repeat(${m.pieces.length},minmax(0,1fr))`}} aria-label={`${found} of ${m.pieces.length} mission pieces found`}>{m.pieces.map(p=>{const got=demo.missionPieces?.[p.id];return <li key={p.id} className={`grid h-8 place-items-center rounded-lg text-[14px] font-bold ${got?"bg-[#A0472C] text-white":dark?"border-2 border-dashed border-white/30 text-white/50":"border-2 border-dashed border-[#C9B9A0] bg-[#EFE8D8] text-[#8B8478]"}`}>{got?<Check size={15} aria-label="found"/>:<span aria-label="not found yet">?</span>}</li>})}</ol>
  </div>;
 }

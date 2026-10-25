@@ -284,6 +284,23 @@ export function roundIntroLine(last: Pick<RoundRecord, "kind" | "valid" | "shown
   return pick(FIRST_TRY[last.kind]);
 }
 // "200 / 1,200 · 280 more for Case Opened." (or the level reached, or Bonus past the most).
+// The ready card's one-line goal: the next level's points ("Goal: 1,032 for Case Opened").
+export function nextGoal(total: number, max: number) {
+  const next = levelPoints(max).find((l) => total < l.points);
+  return next ? `Goal: ${next.points.toLocaleString("en-US")} for ${next.name}` : total > max ? "Goal reached: Bonus" : "Goal reached: Case Cracked";
+}
+// Rival in Story Mode: the labeled computer rival "locks in" partway through the round's first-try time (45 to 70
+// percent, fixed per scene and round, scaled by the student's time setting). The student wins the round's face-off by
+// locking in the right line on the first try before then. It never changes points: points come from the proof.
+export function storyRivalMs(sceneId: string, kind: RoundKind, setting: TimeSetting) {
+  let h = 0;
+  for (const ch of `${sceneId}:${kind}`) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const secs = phaseSeconds(SECONDS[kind], setting) ?? SECONDS[kind] * 2;
+  return Math.round(secs * 1000 * (0.45 + (h % 26) / 100));
+}
+export function storyRivalOutcome(record: { valid: boolean; tries: number; shown: boolean }, youMs: number | null, rivalMs: number): "you" | "rival" {
+  return record.valid && record.tries === 0 && !record.shown && youMs !== null && youMs < rivalMs ? "you" : "rival";
+}
 export function goalLine(total: number, max: number) {
   const n = (x: number) => x.toLocaleString("en-US");
   const next = levelPoints(max).find((l) => total < l.points);

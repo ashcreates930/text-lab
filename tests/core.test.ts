@@ -2525,3 +2525,19 @@ test("mission verdict compare: each cited line is marked same way or somewhere e
   const m=e.students[0].mission!;
   assert.deepEqual([m.found.length,m.found.find(f=>f.line===l2)!.shown,m.verdict!.compare[l1],m.verdict!.compare[l2]],[2,true,"same","else"]);
 });
+
+test("story mode ready card and rival: one-line goal, a fixed computer rival time, and the face-off never touches points", async()=>{
+  const sm=await import("../lib/story-mode.ts");
+  assert.equal(sm.nextGoal(0,2580),"Goal: 1,032 for Case Opened");
+  assert.equal(sm.nextGoal(1100,2580),"Goal: 1,806 for Case Built");
+  assert.equal(sm.nextGoal(2400,2580),"Goal reached: Case Cracked");
+  const a=sm.storyRivalMs("empty-schoolhouse","read","1");
+  assert.equal(a,sm.storyRivalMs("empty-schoolhouse","read","1"),"the same every time");
+  assert.ok(a>=120000*0.45&&a<=120000*0.71,"partway through the round's first-try time");
+  assert.equal(sm.storyRivalMs("empty-schoolhouse","read","2"),a*2,"scaled by the student's extra time");
+  const right={valid:true,tries:0,shown:false};
+  assert.equal(sm.storyRivalOutcome(right,a-1,a),"you");
+  assert.equal(sm.storyRivalOutcome(right,a+1,a),"rival");
+  assert.equal(sm.storyRivalOutcome({...right,tries:1},10,a),"rival","only a first-try proof wins the face-off");
+  assert.equal(sm.storyRivalOutcome({...right,shown:true},10,a),"rival");
+});

@@ -1,21 +1,36 @@
 "use client";
 // Before the game, two quick screens: the student's part (a second-person card with one Start button), then "How do
-// you want to play?" (Solo, Rival or Squad, one tap). The interest questions come after the case closes ("Unlock your
-// challenge", before Your Turn). The teacher can turn the part off for a class; the play question always shows.
-import {useLayoutEffect,useState} from "react";
+// you want to play?" (Solo, Rival or Squad: large cards, one tap). The interest questions come after the case closes
+// ("Unlock your challenge", before Your Turn). The teacher can turn the part off for a class; the play question always
+// shows. Squads play only in live class, so outside one Squad says so and offers solo.
+import {useLayoutEffect,useRef,useState} from "react";
 import {focusScreenTop} from "./screen-focus";
-import {ArrowRight} from "lucide-react";
+import {ArrowRight,Check,Swords,User,Users} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import {ANGLE_OPTIONS,INTEREST_STEPS,PLAY_STEP,UNLOCK,type Angle,type StoryPersonalSettings} from "@/lib/student-role";
-import {SQUAD_SOLO_NOTE} from "./mode-screens";
 
-export function RoleIntro({world,settings,classSession=false,onDone}:{world:WorldPack;settings:StoryPersonalSettings;classSession?:boolean;onDone:(angle?:Angle)=>void}){
+// One line under each play mode, and its icon.
+const MODE_CARDS:Record<string,{line:string;Icon:typeof User}>={
+ solo:{line:"Work the case on your own, at your pace.",Icon:User},
+ rival:{line:"Race a computer rival to the right line.",Icon:Swords},
+ squad:{line:"Read together with your squad in live class.",Icon:Users},
+};
+const reduced=()=>typeof window!=="undefined"&&!!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+export function RoleIntro({world,settings,onDone}:{world:WorldPack;settings:StoryPersonalSettings;onDone:(angle?:Angle)=>void}){
  const role=settings.rolesOn?world.student_role:undefined;
- const [step,setStep]=useState<"role"|"play">(role?"role":"play");
+ const [step,setStep]=useState<"role"|"play"|"squad">(role?"role":"play");
+ const [picked,setPicked]=useState<string|null>(null);
+ const moved=useRef(false);
  // Each screen opens at the top with focus on its heading.
  useLayoutEffect(()=>{focusScreenTop()},[step]);
  const q=ANGLE_OPTIONS[PLAY_STEP];
- const pick=(value:string)=>onDone({[PLAY_STEP]:value} as Angle);
+ const done=(value:string)=>onDone({[PLAY_STEP]:value} as Angle);
+ // The tapped card presses, gets an outline and a check, then the next screen opens.
+ function pick(value:string){
+  if(moved.current)return;moved.current=true;setPicked(value);
+  window.setTimeout(()=>{if(value==="squad"){moved.current=false;setPicked(null);setStep("squad")}else done(value)},reduced()?80:380);
+ }
  return <div className="case-ui mx-auto max-w-2xl px-4 pb-24 pt-8 md:px-8">
   {step==="role"&&role?<section className="rounded-3xl bg-[#2A2620] p-6 text-[#FFFDF8] shadow-[0_10px_40px_-14px_rgba(42,38,32,.5)] md:p-8" aria-labelledby="role-h">
    <p className="text-[13px] font-semibold uppercase tracking-wide text-[#F3C9B2]">Your part in {world.title}</p>
@@ -23,10 +38,22 @@ export function RoleIntro({world,settings,classSession=false,onDone}:{world:Worl
    <p className="mt-3 text-[18px] leading-8 text-[#F6F0E3]">{role.intro}</p>
    <button type="button" onClick={()=>setStep("play")} className="case-primary mt-6 min-h-[56px] w-full text-[18px] sm:w-auto">Start <ArrowRight size={18}/></button>
   </section>
-  :<section className="rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]" aria-labelledby="play-h">
-   <h1 id="play-h" className="text-[28px] font-bold">{q.label}</h1>
-   {/* One tap each; buttons keep their place, so focus stays where the student tapped. */}
-   <div className="mt-4 grid gap-2 sm:grid-cols-3">{Object.entries(q.options).map(([value,text])=><button key={value} type="button" onClick={()=>pick(value)} className="min-h-[56px] rounded-2xl bg-[#F4E1D6] px-4 py-3 text-left text-[18px] font-semibold text-[#2A2620] transition hover:bg-[#EDD3C4]">{text}{/* Outside a live round, Squad plays solo today: said on the button, no extra tap. */}{value==="squad"&&classSession&&<span className="mt-1 block text-[14px] font-semibold leading-5 text-[#8A3B23]">{SQUAD_SOLO_NOTE}</span>}</button>)}</div>
+  :step==="squad"?<section className="rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]" aria-labelledby="squad-h">
+   <span aria-hidden className="grid h-14 w-14 place-items-center rounded-2xl bg-[#F4E1D6] text-[#A0472C]"><Users size={28}/></span>
+   <h1 id="squad-h" className="mt-4 text-[28px] font-bold leading-tight">Squads play in live class</h1>
+   <p className="mt-2 text-[17px] leading-7 text-[#4A4438]">When your teacher starts a live round, you'll read with your squad. Today you can play the case solo.</p>
+   <button type="button" onClick={()=>done("solo")} className="case-primary mt-6 min-h-[56px] w-full text-[18px]">Play solo instead <ArrowRight size={18}/></button>
+   <button type="button" onClick={()=>setStep("play")} className="mt-3 min-h-11 w-full text-[15px] font-semibold text-[#6B6457] underline underline-offset-4">Back</button>
+  </section>
+  :<section aria-labelledby="play-h">
+   <h1 id="play-h" className="text-[30px] font-bold leading-tight">{q.label}</h1>
+   <ul className="mt-5 grid gap-3">{Object.entries(q.options).map(([value,text])=>{const card=MODE_CARDS[value],on=picked===value;const Icon=card?.Icon??User;
+    return <li key={value}><button type="button" onClick={()=>pick(value)} aria-pressed={on}
+     className={`relative flex min-h-[96px] w-full items-center gap-4 rounded-3xl border-[3px] bg-[#FFFDF8] p-4 text-left shadow-[0_4px_16px_-8px_rgba(42,38,32,.4)] transition duration-150 motion-reduce:transition-none ${on?"scale-[.97] border-[#A0472C] shadow-none":"border-transparent hover:border-[#E4DCCB] active:scale-[.97]"}`}>
+     <span aria-hidden className={`grid h-14 w-14 shrink-0 place-items-center rounded-2xl ${on?"bg-[#A0472C] text-white":"bg-[#F4E1D6] text-[#A0472C]"}`}><Icon size={28}/></span>
+     <span className="min-w-0 flex-1"><span className="block text-[22px] font-bold leading-tight text-[#2A2620]">{text}</span><span className="mt-1 block text-[15px] leading-5 text-[#4A4438]">{card?.line}</span></span>
+     <span aria-hidden className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${on?"bg-[#A0472C] text-white":"border-2 border-[#E4DCCB]"}`}>{on&&<Check size={18}/>}</span>
+    </button></li>})}</ul>
   </section>}
  </div>;
 }
