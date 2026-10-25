@@ -83,8 +83,12 @@ export const hasFeedback = (f: z.infer<typeof FeedbackSchema> | undefined) => !!
 export const funChoices: Choice<"yes" | "kind_of" | "no"> = [["yes", "Yes"], ["kind_of", "Kind of"], ["no", "Not really"]];
 export const PlayFeedbackSchema = z.object({
   fun: z.enum(keys(funChoices)).optional(),
+  // "Was anything confusing?" Yes or No; Yes opens a short text box.
+  confused: z.enum(["yes", "no"]).optional(),
   confusing: shortText(600),
   playAgain: z.enum(keys(yesMaybeNo)).optional(),
   world: z.string().regex(/^[a-z0-9-]{1,40}$/),
   website: z.string().max(200).optional(), // honeypot
-}).refine((f) => f.fun || f.confusing || f.playAgain, { message: "Tap an answer first." });
+}).refine((f) => f.fun || f.confused || f.confusing || f.playAgain, { message: "Tap an answer first." });
+// What goes in broken_text: what confused them, or just Yes or No.
+export const confusingText = (f: { confused?: "yes" | "no"; confusing?: string }) => f.confusing ? f.confusing : f.confused === "yes" ? "Yes" : f.confused === "no" ? "No" : null;

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServiceSupabase } from "@/lib/supabase";
-import { PlayFeedbackSchema } from "@/lib/feedback";
+import { PlayFeedbackSchema, confusingText } from "@/lib/feedback";
 import { clientAddress, hashClientAddress } from "@/lib/demo-access";
 
 const RATE_LIMIT = 8, RATE_WINDOW_SECONDS = 600;
@@ -10,7 +10,7 @@ const RATE_LIMIT = 8, RATE_WINDOW_SECONDS = 600;
 export async function POST(request: Request) {
   const parsed = PlayFeedbackSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Check your answers and try again." }, { status: 400 });
-  const { fun, confusing, playAgain, world, website } = parsed.data;
+  const { fun, playAgain, world, website } = parsed.data;
   if (website) return NextResponse.json({ error: "Your answers could not be sent." }, { status: 400 });
   const db = getServiceSupabase();
   if (!db) return NextResponse.json({ error: "Feedback storage is not configured." }, { status: 503 });
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   if (rateError) { console.error("Form rate limit check failed:", rateError.message); return NextResponse.json({ error: "We couldn't save that right now. Please try again in a minute." }, { status: 503 }); }
   if (!allowed) return NextResponse.json({ error: "Too many answers from here. Please wait a few minutes and try again." }, { status: 429 });
   const context = `demo-ending:${world}`;
-  const row = { side_tried: "student", would_use: playAgain ?? null, broken_text: confusing ?? null, fun: fun ?? null, context };
+  const row = { side_tried: "student", would_use: playAgain ?? null, broken_text: confusingText(parsed.data), fun: fun ?? null, context };
   let { error } = await db.from("feedback_entries").insert(row);
   if (error && /\b(fun|context)\b/.test(error.message)) {
     console.error("feedback_entries: fun/context aren't in the database yet (run 202610260001_play_feedback.sql); saved in change_text.");

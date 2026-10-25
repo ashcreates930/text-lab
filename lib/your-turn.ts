@@ -9,6 +9,7 @@ import { evidenceSentences, lineWords } from "./lies.ts";
 import { ANGLE_OPTIONS, ANGLE_STEPS, type Angle } from "./student-role.ts";
 import { screenMessage } from "./safety.ts";
 import { paragraphLabel } from "./clue-game.ts";
+import { readingPortions } from "./source-passages.ts";
 
 export type YourTurnActivity = NonNullable<WorldPack["your_turn"]>["activities"][string];
 export type AcceptLine = { paragraph: string; line: string };
@@ -55,8 +56,18 @@ export type YourTurnEntry = { activity: string; title: string; results: { label:
 
 // ---------- validate:worlds ----------
 export function yourTurnProblems(world: WorldPack, passages: SourcePassage[]): string[] {
-  const acts = world.your_turn?.activities;
-  if (!acts) return [];
+  const all = world.your_turn?.activities;
+  if (!all) return [];
+  const startScene = Math.max(0, world.scenes.findIndex((s) => s.id === world.student_role?.start_scene));
+  const scenePids = new Set(readingPortions(passages, world.scenes)[startScene]?.map((p) => p.id) ?? []);
+  const acts: Record<string, YourTurnActivity> = { ...all };
+  const demoProblems: string[] = [];
+  for (const [id, a] of Object.entries(all)) if (a.demo) {
+    const merged = { ...a, ...a.demo, demo: undefined };
+    acts[`${id}/demo`] = merged;
+    for (const p of a.demo.paragraphs) if (!scenePids.has(p)) demoProblems.push(`${world.id}/your_turn/${id}/demo: ${p} is not in the start scene's reading`);
+    if (!sceneActivity(merged, scenePids)) demoProblems.push(`${world.id}/your_turn/${id}/demo: not enough start-scene lines to play`);
+  }
   const problems: string[] = [];
   const byId = new Map(passages.map((p) => [p.id, p]));
   const exact = (a: AcceptLine) => { const p = byId.get(a.paragraph); return !!p && evidenceSentences(p.text).includes(a.line); };
@@ -65,7 +76,7 @@ export function yourTurnProblems(world: WorldPack, passages: SourcePassage[]): s
   const dash = /—/;
   for (const [id, a] of Object.entries(acts)) {
     const where = `${world.id}/your_turn/${id}`;
-    if (!ANGLE_OPTION_IDS.includes(id)) problems.push(`${where}: not a "What's your angle?" option`);
+    if (!ANGLE_OPTION_IDS.includes(id.replace(/\/demo$/, ""))) problems.push(`${where}: not a "What's your angle?" option`);
     if (a.minutes < 5 || a.minutes > 7) problems.push(`${where}: activities run 5 to 7 minutes`);
     for (const pid of a.paragraphs) if (!byId.has(pid)) problems.push(`${where}: ${pid} is not a paragraph`);
     const texts = [a.title, a.intro, a.write, ...(a.exchanges ?? []).map((e) => e.say), ...Object.values(a.sides ?? {}).flatMap((s) => s.exchanges.map((e) => e.say)), ...(a.items ?? []).map((i) => i.label), ...(a.posts ?? []).map((p) => p.text)];
@@ -94,7 +105,7 @@ export function yourTurnProblems(world: WorldPack, passages: SourcePassage[]): s
       if (f.length !== 1 || !f[0].accept?.length) problems.push(`${where}: exactly one false post, with the line that disproves it`);
     }
   }
-  return problems;
+  return [...problems, ...demoProblems];
 }
 
 // ---------- The demo ending (scene 1 only) ----------
@@ -130,7 +141,9 @@ export function sceneActivity(a: YourTurnActivity, pids: Set<string>): YourTurnA
 export function sceneYourTurn(world: WorldPack, angle: Angle | null | undefined, pids: Set<string>, hides: (text: string) => boolean = () => false) {
   const acts = world.your_turn?.activities ?? {};
   const ok: Record<string, YourTurnActivity> = {};
-  for (const [id, a] of Object.entries(acts)) {
+  for (const [id, full] of Object.entries(acts)) {
+    // An authored demo version replaces what it names; either way only the scene's lines count.
+    const a = full.demo ? { ...full, ...full.demo, demo: undefined } : full;
     const s = sceneActivity(a, pids);
     if (!s) continue;
     const texts = [s.title, s.intro, s.write, ...(s.exchanges ?? []).map((e) => e.say), ...Object.values(s.sides ?? {}).flatMap((x) => x.exchanges.map((e) => e.say)), ...(s.items ?? []).map((i) => i.label), ...(s.posts ?? []).map((p) => p.text)];

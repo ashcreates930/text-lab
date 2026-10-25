@@ -11,10 +11,13 @@ const offClaim=z.object({character_id:z.string(),claim:z.string().min(1),paragra
 // factcheck (posts, one false), exhibits (the student's own proven lines). Every one ends with the write prompt.
 const ytLine=z.object({paragraph:z.string().regex(/^p\d{3}$/),line:z.string().min(1)});
 const ytExchange=z.object({say:z.string().min(1),accept:z.array(ytLine)});
-const yourTurnActivity=z.object({title:z.string().min(1),minutes:z.number().int(),kind:z.enum(["talk","debate","pick","order","lines","factcheck","exhibits"]),intro:z.string().min(1),paragraphs:z.array(z.string().regex(/^p\d{3}$/)).min(1),write:z.string().min(1),
- character_id:z.string().nullable().optional(),exchanges:z.array(ytExchange).optional(),sides:z.record(z.string(),z.object({character_id:z.string(),exchanges:z.array(ytExchange)})).optional(),
+const ytContent={character_id:z.string().nullable().optional(),exchanges:z.array(ytExchange).optional(),sides:z.record(z.string(),z.object({character_id:z.string(),exchanges:z.array(ytExchange)})).optional(),
  need:z.number().int().min(1).max(5).optional(),groups:z.record(z.string(),z.string()).optional(),items:z.array(z.object({id:z.string(),label:z.string().min(1),icon:z.string().optional(),group:z.string().optional(),accept:z.array(ytLine)})).optional(),
- posts:z.array(z.object({author:z.string(),text:z.string().min(1),false:z.boolean(),accept:z.array(ytLine).optional()})).optional()});
+ posts:z.array(z.object({author:z.string(),text:z.string().min(1),false:z.boolean(),accept:z.array(ytLine).optional()})).optional()};
+// demo: the version for the public demo's ending after the start scene, authored from that scene's lines only (it
+// replaces the fields it names; lib/your-turn.ts sceneYourTurn).
+const yourTurnActivity=z.object({title:z.string().min(1),minutes:z.number().int(),kind:z.enum(["talk","debate","pick","order","lines","factcheck","exhibits"]),intro:z.string().min(1),paragraphs:z.array(z.string().regex(/^p\d{3}$/)).min(1),write:z.string().min(1),
+ ...ytContent,demo:z.object({title:z.string().min(1).optional(),intro:z.string().min(1).optional(),write:z.string().min(1).optional(),paragraphs:z.array(z.string().regex(/^p\d{3}$/)).min(1),...ytContent}).optional()});
 // Fair play (lib/fair-play.ts): a clue's bank of 3 or 4 authored questions. Each answer is an exact evidence line of the
 // clue, with the exact words that prove it when the line is over 25 words; near misses look right but aren't, each with
 // a hint naming a paragraph; Prove it has one right choice and three wrong ones. shared_ok: key words the question may

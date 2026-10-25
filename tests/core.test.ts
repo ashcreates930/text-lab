@@ -2585,7 +2585,13 @@ test("demo ending Your Turn: scene 1 lines only, activities that can't work are 
   const pids=new Set(readingPortions(passages,world.scenes)[0].map(p=>p.id));
   const hides=(t:string)=>(world.missions??[]).some(m=>revealsPayoff(m,t));
   const r=yt.sceneYourTurn(world,null,pids,hides);
-  assert.deepEqual(Object.keys(r.activities).sort(),["loyalty","social-media","solo","squad","underestimated"]);
+  assert.deepEqual(Object.keys(r.activities).sort(),["fashion","loyalty","money","social-media","solo","squad","underestimated","winning"]);
+  assert.equal(r.activities.fashion.title,"Style Ichabod from his bundle","the authored demo version");
+  assert.deepEqual(Object.keys(r.activities.winning.sides!).sort(),["ran-away","the-horseman"]);
+  // The validator checks every demo line, and that it comes from scene 1.
+  const bad=structuredClone(world);bad.your_turn!.activities.money.demo!.items![0].accept=[{paragraph:"p025",line:"Not in the story."}];
+  const probs=yt.yourTurnProblems(bad,passages);
+  assert.ok(probs.some(p=>p.includes("money/demo: a line is not copied exactly")),probs.join("; "));
   for(const a of Object.values(r.activities)){
     assert.ok(a.paragraphs.every(p=>pids.has(p)),"reading is scene 1 only");
     const lines=[...(a.exchanges??[]).flatMap(e=>e.accept),...Object.values(a.sides??{}).flatMap(s=>s.exchanges.flatMap(e=>e.accept)),...(a.items??[]).flatMap(i=>i.accept),...(a.posts??[]).flatMap(p=>p.accept??[])];
@@ -2593,7 +2599,8 @@ test("demo ending Your Turn: scene 1 lines only, activities that can't work are 
     if(a.kind==="talk")assert.ok((a.exchanges??[]).length>=3);
   }
   assert.deepEqual(yt.sceneYourTurn(world,{firedUpBy:"loyalty",lane:"social-media"},pids,hides).choices,["loyalty","social-media"]);
-  assert.deepEqual(yt.sceneYourTurn(world,{firedUpBy:"money",lane:"fashion"},pids,hides).choices,["solo"],"hidden matches: the cold case file");
+  assert.deepEqual(yt.sceneYourTurn(world,{firedUpBy:"money",lane:"fashion"},pids,hides).choices,["money","fashion"]);
+  assert.deepEqual(yt.sceneYourTurn(world,{firedUpBy:"unfairness",lane:"music"},pids,hides).choices,["solo"],"hidden matches: the cold case file");
   assert.deepEqual(yt.sceneYourTurn(world,{firedUpBy:"underestimated",lane:"music"},pids,hides).choices,["underestimated"]);
 });
 

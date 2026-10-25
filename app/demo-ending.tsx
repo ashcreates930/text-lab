@@ -101,10 +101,10 @@ function CaseSoFar({world,demo,sceneIndex,onNext}:{world:WorldPack;demo:Demo;sce
 
 // ---------- The feedback card, then the way on ----------
 function FeedbackCard({world,sceneIndex,onNextScene,onAnotherStory}:{world:WorldPack;sceneIndex:number;onNextScene:()=>void;onAnotherStory?:()=>void}){
- const [fun,setFun]=useState(""),[confusing,setConfusing]=useState(""),[again,setAgain]=useState(""),[state,setState]=useState<"idle"|"sending"|"sent">("idle"),[error,setError]=useState("");
+ const [fun,setFun]=useState(""),[confused,setConfused]=useState(""),[confusing,setConfusing]=useState(""),[again,setAgain]=useState(""),[state,setState]=useState<"idle"|"sending"|"sent">("idle"),[error,setError]=useState("");
  async function send(){
   setError("");setState("sending");
-  try{const r=await fetch("/api/feedback/play",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({world:world.id,...(fun?{fun}:{}),...(confusing.trim()?{confusing}:{}),...(again?{playAgain:again}:{})})});
+  try{const r=await fetch("/api/feedback/play",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({world:world.id,...(fun?{fun}:{}),...(confused?{confused}:{}),...(confused==="yes"&&confusing.trim()?{confusing}:{}),...(again?{playAgain:again}:{})})});
    const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error??"We couldn't send that. Try again.");setState("sent")}
   catch(e){setError((e as Error).message);setState("idle")}
  }
@@ -114,11 +114,12 @@ function FeedbackCard({world,sceneIndex,onNextScene,onAnotherStory}:{world:World
    <h1 id="fb-h" className="text-[26px] font-bold leading-tight outline-none">{state==="sent"?"Thanks for telling us":"How was it?"}</h1>
    {state==="sent"?<p className="mt-2 text-[17px] text-[#4A4438]">Your answers help us make the next scene better.</p>:<>
     <p className="mt-3 text-[17px] font-bold">Was it fun?</p>{chips(funChoices,fun,setFun,"Was it fun?")}
-    <label htmlFor="fb-confusing" className="mt-4 block text-[17px] font-bold">Was anything confusing? <span className="font-normal text-[#6B6457]">(optional)</span></label>
-    <textarea id="fb-confusing" value={confusing} onChange={e=>setConfusing(e.target.value)} rows={2} maxLength={600} className="mt-2 w-full rounded-2xl border border-[#E4DCCB] bg-white px-4 py-3 text-[16px]"/>
+    <p className="mt-4 text-[17px] font-bold">Was anything confusing?</p>{chips([["yes","Yes"],["no","No"]],confused,setConfused,"Was anything confusing?")}
+    {confused==="yes"&&<><label htmlFor="fb-confusing" className="mt-3 block text-[15px] font-semibold text-[#4A4438]">What was confusing? <span className="font-normal text-[#6B6457]">(optional)</span></label>
+    <textarea id="fb-confusing" value={confusing} onChange={e=>setConfusing(e.target.value)} rows={2} maxLength={600} className="mt-1 w-full rounded-2xl border border-[#E4DCCB] bg-white px-4 py-3 text-[16px]"/></>}
     <p className="mt-3 text-[17px] font-bold">Would you play again?</p>{chips([["yes","Yes"],["maybe","Maybe"],["no","No"]],again,setAgain,"Would you play again?")}
     {error&&<p role="alert" className="mt-3 text-[15px] font-semibold text-[#A33B20]">{error}</p>}
-    <button type="button" disabled={state==="sending"||(!fun&&!again&&!confusing.trim())} onClick={send} className="case-secondary mt-4 min-h-[48px] w-full justify-center disabled:opacity-50">{state==="sending"?"Sending…":"Send"}</button></>}
+    <button type="button" disabled={state==="sending"||(!fun&&!again&&!confused)} onClick={send} className="case-secondary mt-4 min-h-[48px] w-full justify-center disabled:opacity-50">{state==="sending"?"Sending…":"Send"}</button></>}
   </section>
   <div className="mt-5 grid gap-2">
    <button type="button" onClick={onNextScene} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Keep playing: Scene {sceneIndex+2} <ArrowRight size={18}/></button>
