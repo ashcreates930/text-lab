@@ -55,9 +55,10 @@ const reducedMotion=()=>typeof window!=="undefined"&&!!window.matchMedia?.("(pre
 // first visit, come the three "How to play" tips (the header's "How to play" reopens them); with Rival, the face-off
 // and its 3-2-1 then play by themselves and the computer rival races. Who wins the face-off never changes points.
 // A visitor with a saved run gets "Welcome back" first (Keep playing or Start over), never straight into a try.
-export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleared,onCaseFile,startAt,onJumped,onUnavailable,onLeads}:{world:WorldPack;scene:Scene;sceneIndex:number;passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onCleared:()=>void;onCaseFile?:()=>void;startAt?:RoundKind;onJumped?:()=>void;onUnavailable:()=>void;onLeads?:()=>void}){
+// clearedLabel: the cleared screen's button (the public demo closes scene 1 with its ending instead of the next scene).
+export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleared,onCaseFile,startAt,onJumped,onUnavailable,onLeads,clearedLabel}:{world:WorldPack;scene:Scene;sceneIndex:number;passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onCleared:()=>void;onCaseFile?:()=>void;startAt?:RoundKind;onJumped?:()=>void;onUnavailable:()=>void;onLeads?:()=>void;clearedLabel?:string}){
  const content=scene.story_mode!;
- const headers=useMemo(()=>({"Content-Type":"application/json",...(demo.classAuth?{"x-class-token":demo.classAuth.token}:{})}),[demo.classAuth]);
+ const headers=useMemo(()=>({"Content-Type":"application/json",...(demo.classAuth?{"x-class-token":demo.classAuth.token}:{}),...(testSession()?{"x-textlab-test":"1"}:{})}),[demo.classAuth]);
  const [run,setRun]=useState<PublicRun|null>(null),[mode,setMode]=useState<"individual"|"squad"|"off">("individual");
  const [stage,setStage]=useState<Stage>("loading"),[error,setError]=useState(""),[notice,setNotice]=useState("");
  const [result,setResult]=useState<Result|null>(null),[relaxed,setRelaxed]=useState(false),[resume,setResume]=useState<Resume>(null);
@@ -161,7 +162,7 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
   {stage==="results"&&raceWon&&<p role="status" className={`mt-4 flex items-center gap-3 rounded-2xl px-4 py-3 text-[16px] font-semibold ${raceWon==="you"?"bg-[#E8F2E7] text-[#2F6B3A]":"bg-[#E8EEF5] text-[#2E3B4E]"}`}><span className="h-10 w-10 shrink-0 overflow-hidden rounded-full"><RivalEmblem kind={world.computer_players?.rival.emblem??"lantern"} size={40}/></span>{raceWon==="you"?`You beat ${rivalName} to the line.`:`${rivalName} won this face-off. Your points still come from your proof.`}</p>}
   {stage==="play"&&run&&kind&&bar&&<RoundPlay key={round} world={world} scene={scene} passages={passages} kind={kind} run={run} setting={setting} sound={soundOn} sandboxId={demo.id} resume={resume} send={send} onError={m=>setNotice(m)} bar={bar} hold={overlay.length>0}/>}
   {stage==="results"&&result&&run&&<Results world={world} scene={scene} result={result} mode={mode} run={run} headers={headers} sandboxId={demo.id} onNext={()=>{setResult(null);if(run.finished)setStage("cleared");else enterRound(false)}}/>}
-  {stage==="cleared"&&run&&<Cleared run={run} mode={mode} headers={headers} sandboxId={demo.id} onNext={onCleared} onAgain={()=>start(true)} onLeads={onLeads}/>}
+  {stage==="cleared"&&run&&<Cleared run={run} mode={mode} headers={headers} sandboxId={demo.id} onNext={onCleared} onAgain={()=>start(true)} onLeads={onLeads} nextLabel={clearedLabel}/>}
  </div>;
 }
 // An overlay over the round, on the page body (so no animated parent moves it), with focus on its heading.
@@ -174,6 +175,8 @@ function Over({label,full=false,children}:{label:string;full?:boolean;children:R
  if(!host)return null;
  return createPortal(<div ref={ref} role="dialog" aria-modal="true" aria-label={label} className={`case-ui fixed inset-0 z-50 overflow-y-auto overscroll-contain ${full?"bg-[#F6F0E3]":""}`}>{children}</div>,host);
 }
+// A test session (opened with ?test=1, kept for the tab): its runs are tagged and stay off real leaderboards.
+function testSession(){try{if(new URLSearchParams(location.search).get("test")==="1")sessionStorage.setItem("textlab-test","1");return sessionStorage.getItem("textlab-test")==="1"}catch{return false}}
 // Runs already opened this page load: a run with progress opens on "Welcome back" until the student picks Keep playing
 // or Start over (React may start the run twice; both must land on the card).
 const welcomed=new Set<string>();
@@ -602,7 +605,7 @@ function Results({world,scene,result,mode,run,headers,sandboxId,onNext}:{world:W
    {result.pulse.length?<ul className="mt-3 space-y-3">{result.pulse.map(p=><li key={p.key}><div className="flex justify-between gap-3 text-[15px]"><span className="font-semibold">{p.label}</span><span className="tabular-nums">{p.pct}%</span></div><div aria-hidden className="mt-1 h-2.5 rounded-full bg-[#E4DCCB]"><div className="h-full rounded-full bg-[#A0472C]" style={{width:`${p.pct}%`}}/></div>{p.strongest&&<p className="mt-1 font-serif text-[14px] italic leading-5 text-[#4A4438]">Strongest proof: “{p.strongest.replace(/\s+/g," ").slice(0,160)}{p.strongest.length>160?"…":""}”</p>}</li>)}</ul>
     :<p className="mt-2 text-[15px] text-[#6B6457]">Percentages show once 5 players have answered{result.answered?` (${result.answered} so far)`:""}.</p>}
   </section>
-  <div className="mt-6 flex flex-col items-end gap-1"><button type="button" disabled={mustKeep} onClick={onNext} className="case-primary min-h-[58px] text-[18px] disabled:opacity-40">{run.finished?"See your scene results":"Next round"} <ArrowRight size={20}/></button>{mustKeep&&<p className="text-[14px] text-[#6B6457]">Keep each shown line to continue.</p>}</div>
+  <div className="mt-6 flex flex-col items-end gap-1">{mustKeep&&<p className="text-[15px] font-semibold text-[#8A5A00]">Tap the shown line to keep it</p>}<button type="button" disabled={mustKeep} onClick={onNext} className="case-primary min-h-[58px] text-[18px] disabled:opacity-40">{run.finished?"See your scene results":"Next round"} <ArrowRight size={20}/></button></div>
  </section>;
 }
 function TrustMeter({name,value,change}:{name:string;value:number;change:number}){
@@ -612,7 +615,7 @@ function TrustMeter({name,value,change}:{name:string;value:number;change:number}
 }
 
 // ---------- Scene cleared: the total against the points possible, and the goal level reached ----------
-function Cleared({run,mode,headers,sandboxId,onNext,onAgain,onLeads}:{run:PublicRun;mode:"individual"|"squad"|"off";headers:Record<string,string>;sandboxId:string;onNext:()=>void;onAgain:()=>void;onLeads?:()=>void}){
+function Cleared({run,mode,headers,sandboxId,onNext,onAgain,onLeads,nextLabel="On to the next scene"}:{run:PublicRun;mode:"individual"|"squad"|"off";headers:Record<string,string>;sandboxId:string;onNext:()=>void;onAgain:()=>void;nextLabel?:string;onLeads?:()=>void}){
  const [board,setBoard]=useState<Board>(null);
  useEffect(()=>{if(mode==="off")return;fetch(`/api/story/board?runId=${run.id}&sandboxId=${sandboxId}`,{headers,cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>j&&setBoard(j.board)).catch(()=>{})},[run.id,headers,sandboxId,mode]);
  const level=levelFor(run.total,run.goal.max),next=LEVELS.find(l=>run.total<Math.ceil((l.pct/100)*run.goal.max));
@@ -622,6 +625,6 @@ function Cleared({run,mode,headers,sandboxId,onNext,onAgain,onLeads}:{run:Public
    <dl className="mt-4 grid grid-cols-2 gap-3 text-left sm:grid-cols-3"><div className="rounded-2xl bg-white/10 p-3"><dt className="text-[13px]">Best streak</dt><dd className="text-[22px] font-bold">{run.state.bestStreak}</dd></div><div className="rounded-2xl bg-white/10 p-3"><dt className="text-[13px]">Rank</dt><dd className="text-[22px] font-bold">{board?.me?`#${board.me.rank}`:"·"}</dd></div><div className="rounded-2xl bg-white/10 p-3"><dt className="text-[13px]">Coins left</dt><dd className="text-[22px] font-bold">{run.state.coins}</dd></div></dl></div>
   <div className="mt-5"><h2 className="text-[18px] font-bold">Your Evidence pouch</h2>{run.state.pouch.length?run.state.pouch.map(p=><blockquote key={p} className="mt-2 border-l-4 border-[#A0472C] pl-3 font-serif text-[16px] italic leading-7">“{p.replace(/\s+/g," ")}”</blockquote>):<p className="mt-1 text-[15px] text-[#6B6457]">No lines kept this time.</p>}</div>
   <BoardView board={board} mode={mode}/>
-  <div className="mt-6 flex flex-wrap items-center justify-between gap-3"><button type="button" onClick={onAgain} className="inline-flex min-h-11 items-center gap-2 text-[15px] text-[#6B6457] underline underline-offset-4"><RotateCcw size={16}/>Play this scene again</button>{onLeads?<button type="button" onClick={onLeads} className="case-primary min-h-[58px] text-[18px]">Follow your mission leads <ArrowRight size={20}/></button>:<button type="button" onClick={onNext} className="case-primary min-h-[58px] text-[18px]">On to the next scene <ArrowRight size={20}/></button>}</div>
+  <div className="mt-6 flex flex-wrap items-center justify-between gap-3"><button type="button" onClick={onAgain} className="inline-flex min-h-11 items-center gap-2 text-[15px] text-[#6B6457] underline underline-offset-4"><RotateCcw size={16}/>Play this scene again</button>{onLeads?<button type="button" onClick={onLeads} className="case-primary min-h-[58px] text-[18px]">Follow your mission leads <ArrowRight size={20}/></button>:<button type="button" onClick={onNext} className="case-primary min-h-[58px] text-[18px]">{nextLabel} <ArrowRight size={20}/></button>}</div>
  </section>;
 }

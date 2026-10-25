@@ -96,3 +96,47 @@ export function yourTurnProblems(world: WorldPack, passages: SourcePassage[]): s
   }
   return problems;
 }
+
+// ---------- The demo ending (scene 1 only) ----------
+// An activity cut down to one scene's paragraphs: every scored answer must be a line from those paragraphs. Returns null
+// when what's left isn't enough to play (a talk or debate side under 3 claims, a pick under its need, an order or fact
+// check missing a line), so the demo ending hides it.
+export function sceneActivity(a: YourTurnActivity, pids: Set<string>): YourTurnActivity | null {
+  const paragraphs = a.paragraphs.filter((p) => pids.has(p));
+  if (!paragraphs.length) return null;
+  const inScene = (l: AcceptLine) => pids.has(l.paragraph);
+  const claims = <E extends { accept: AcceptLine[] }>(list: E[]) => list.map((e) => ({ ...e, accept: e.accept.filter(inScene) })).filter((e) => e.accept.length);
+  if (a.kind === "talk") { const exchanges = claims(a.exchanges ?? []); return exchanges.length >= 3 ? { ...a, paragraphs, exchanges } : null; }
+  if (a.kind === "debate") {
+    const sides = Object.fromEntries(Object.entries(a.sides ?? {}).map(([k, s]) => [k, { ...s, exchanges: claims(s.exchanges) }]));
+    return Object.values(sides).length && Object.values(sides).every((s) => s.exchanges.length >= 3) ? { ...a, paragraphs, sides } : null;
+  }
+  if (a.kind === "pick" || a.kind === "order") {
+    const all = a.items ?? [];
+    // A piece the story supports only outside the scene goes; pieces the story never supports stay as wrong choices.
+    const items = all.filter((i) => !i.accept.length || i.accept.some(inScene)).map((i) => ({ ...i, accept: i.accept.filter(inScene) }));
+    const real = items.filter((i) => i.accept.length).length;
+    if (a.kind === "order") return items.length === all.length && real === all.length ? { ...a, paragraphs, items } : null;
+    return real >= (a.need ?? items.length) ? { ...a, paragraphs, items } : null;
+  }
+  if (a.kind === "factcheck") {
+    const posts = (a.posts ?? []).map((p) => (p.accept ? { ...p, accept: p.accept.filter(inScene) } : p));
+    return posts.some((p) => p.false && p.accept?.length) ? { ...a, paragraphs, posts } : null;
+  }
+  return { ...a, paragraphs }; // lines and exhibits: any lines from the scene's paragraphs
+}
+// The demo ending's Your Turn: the student's matching activities that still work with one scene's lines and never
+// mention the mission's payoff; the cold case file when none do.
+export function sceneYourTurn(world: WorldPack, angle: Angle | null | undefined, pids: Set<string>, hides: (text: string) => boolean = () => false) {
+  const acts = world.your_turn?.activities ?? {};
+  const ok: Record<string, YourTurnActivity> = {};
+  for (const [id, a] of Object.entries(acts)) {
+    const s = sceneActivity(a, pids);
+    if (!s) continue;
+    const texts = [s.title, s.intro, s.write, ...(s.exchanges ?? []).map((e) => e.say), ...Object.values(s.sides ?? {}).flatMap((x) => x.exchanges.map((e) => e.say)), ...(s.items ?? []).map((i) => i.label), ...(s.posts ?? []).map((p) => p.text)];
+    if (!texts.some(hides)) ok[id] = s;
+  }
+  const picked = [angle?.firedUpBy, angle?.lane].filter((x): x is NonNullable<typeof x> => !!x && x in ok);
+  const choices = [...new Set(picked)].slice(0, 2);
+  return { activities: ok, choices: choices.length ? choices : "solo" in ok ? ["solo"] : Object.keys(ok).slice(0, 1) };
+}

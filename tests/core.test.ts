@@ -2568,3 +2568,48 @@ test("welcome back: a saved run opens on Keep playing or Start over, once per vi
   assert.equal(sm.storyOpening({finished:false,state:{...sm.newRun(),round:2,skipped:2}},false,false,false),"play","Catch the lie's jump is not progress");
   assert.equal(sm.storyOpening({...played,finished:true},false,false,false),"cleared");
 });
+
+test("demo ending: only for the public demo after the start scene, once, and never after the last scene", async()=>{
+  const {demoEndingDue}=await import("../lib/pregame.ts");
+  const world=await roleWorld("sleepy-hollow");
+  assert.equal(demoEndingDue({},world,0),true);
+  assert.equal(demoEndingDue({classAuth:{token:"x"}},world,0),false,"class students keep the four-scene flow");
+  assert.equal(demoEndingDue({demoEnding:"done"},world,0),false,"once");
+  assert.equal(demoEndingDue({},world,1),false,"only after scene 1");
+  assert.equal(demoEndingDue({},world,world.scenes.length-1),false);
+});
+
+test("demo ending Your Turn: scene 1 lines only, activities that can't work are hidden, the cold case file otherwise", async()=>{
+  const {world,passages}=await storyKit();const yt=await import("../lib/your-turn.ts");
+  const {readingPortions}=await import("../lib/source-passages.ts");const {revealsPayoff}=await import("../lib/missions.ts");
+  const pids=new Set(readingPortions(passages,world.scenes)[0].map(p=>p.id));
+  const hides=(t:string)=>(world.missions??[]).some(m=>revealsPayoff(m,t));
+  const r=yt.sceneYourTurn(world,null,pids,hides);
+  assert.deepEqual(Object.keys(r.activities).sort(),["loyalty","social-media","solo","squad","underestimated"]);
+  for(const a of Object.values(r.activities)){
+    assert.ok(a.paragraphs.every(p=>pids.has(p)),"reading is scene 1 only");
+    const lines=[...(a.exchanges??[]).flatMap(e=>e.accept),...Object.values(a.sides??{}).flatMap(s=>s.exchanges.flatMap(e=>e.accept)),...(a.items??[]).flatMap(i=>i.accept),...(a.posts??[]).flatMap(p=>p.accept??[])];
+    assert.ok(lines.every(l=>pids.has(l.paragraph)),"every scored line is from scene 1");
+    if(a.kind==="talk")assert.ok((a.exchanges??[]).length>=3);
+  }
+  assert.deepEqual(yt.sceneYourTurn(world,{firedUpBy:"loyalty",lane:"social-media"},pids,hides).choices,["loyalty","social-media"]);
+  assert.deepEqual(yt.sceneYourTurn(world,{firedUpBy:"money",lane:"fashion"},pids,hides).choices,["solo"],"hidden matches: the cold case file");
+  assert.deepEqual(yt.sceneYourTurn(world,{firedUpBy:"underestimated",lane:"music"},pids,hides).choices,["underestimated"]);
+});
+
+test("test runs are tagged and never share a leaderboard with real players", async()=>{
+  const srv=await import("../lib/story-server.ts");
+  const prev={v:process.env.VERCEL_ENV,n:process.env.NODE_ENV};
+  try{
+    delete process.env.VERCEL_ENV;(process.env as Record<string,string|undefined>).NODE_ENV="production";
+    assert.deepEqual(srv.testTag(),{});assert.deepEqual(srv.testTag(true),{env:"test"});
+    (process.env as Record<string,string|undefined>).NODE_ENV="development";assert.deepEqual(srv.testTag(),{env:"dev"});
+    process.env.VERCEL_ENV="preview";assert.deepEqual(srv.testTag(),{env:"preview"});
+  }finally{if(prev.v===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=prev.v;if(prev.n===undefined)delete (process.env as Record<string,string|undefined>).NODE_ENV;else (process.env as Record<string,string|undefined>).NODE_ENV=prev.n}
+  const real={state:{}} as never,tester={state:{env:"test"}} as never,dev={state:{env:"dev"}} as never;
+  assert.deepEqual(srv.sameEnv([real,tester,dev],real),[real]);
+  assert.deepEqual(srv.sameEnv([real,tester,dev],tester),[tester,dev]);
+  const {PlayFeedbackSchema}=await import("../lib/feedback.ts");
+  assert.equal(PlayFeedbackSchema.safeParse({world:"sleepy-hollow"}).success,false,"at least one answer");
+  assert.equal(PlayFeedbackSchema.safeParse({world:"sleepy-hollow",fun:"kind_of",playAgain:"yes"}).success,true);
+});

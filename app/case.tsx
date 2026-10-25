@@ -28,7 +28,8 @@ import {VerdictPanel,VerdictStamp,VerdictView} from "./verdict";
 import {theoryOf,verdictFor} from "@/lib/verdict";
 import {PlantLieView} from "./plant-lie";
 import {RoleIntro,UnlockChallenge} from "./role-intro";
-import {firstClue,preGameScreen} from "@/lib/pregame";
+import {demoEndingDue,firstClue,preGameScreen} from "@/lib/pregame";
+import {DemoEnding} from "./demo-ending";
 import {StoryMode} from "./story-mode";
 import {ClueScreen} from "./clue-screen";
 import {SceneWriting} from "./scene-writing";
@@ -95,6 +96,8 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  if(introDue&&personal){const startIdx=demo.scene===0&&!storyJump&&personal.rolesOn&&world.student_role?Math.max(0,world.scenes.findIndex(s=>s.id===world.student_role!.start_scene)):demo.scene;
   return <RoleIntro world={world} settings={personal} onDone={angle=>setDemo(d=>{const next={...d,roleIntroSeen:true,...(angle?{angle:{...(d.angle??{}),...angle}}:{}),scene:startIdx};return world.missions?.length?next:enterPassage(next,startIdx)})}/>}
  if(loaded&&pre==="mission")return <MissionPick world={world} onPick={id=>setDemo(d=>enterPassage({...d,mission:id},d.scene))}/>;
+ // The public demo's ending after scene 1 (app/demo-ending.tsx), until the player goes on to scene 2.
+ if(demo.demoEnding&&demo.demoEnding!=="done")return <DemoEnding world={world} passages={passages} demo={demo} setDemo={setDemo} sceneIndex={sceneIndex} onAnotherStory={onAnotherStory}/>;
  if(STORYBOOK_ON&&world.storybook)return <StorybookReader world={world} role={role} passages={passages} demo={demo} setDemo={setDemo} onExit={onExit} onFeedback={onFeedback}/>;
  const frames=sceneFrames(world,passages,sceneIndex);
  // The scene is solved when every clue is proven and its required frame is saved, whichever comes last.
@@ -123,7 +126,7 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  // Solo players get the mission screen once per scene, before the scene itself.
  if(playMode(demo)==="solo"&&!(demo.missionSeen??[]).includes(scene.id))return <MissionScreen world={world} demo={demo} sceneIndex={sceneIndex} onGo={()=>setDemo(d=>({...d,missionSeen:[...new Set([...(d.missionSeen??[]),scene.id])]}))}/>;
  const storyHere=!!scene.story_mode&&storyModeOn&&!demo.caseFileView&&!storyUnavailable;
- if(storyHere)return <StoryMode key={scene.id} world={world} scene={scene} sceneIndex={sceneIndex} passages={passages} demo={demo} setDemo={setDemo} startAt={storyJump?.sceneId===scene.id?storyJump.round:undefined} onJumped={()=>setStoryJump(null)} onUnavailable={()=>{if(storyJump&&scene.lie)setOpenClue(scene.lie.clue_id);setStoryJump(null);setStoryUnavailable(true)}} onCleared={()=>{setDemo(d=>({...d,scene:Math.min(d.scene+1,world.scenes.length-1),events:[...d.events,"scene_complete"]}))}} onCaseFile={demo.classAuth?undefined:()=>setDemo(d=>({...d,caseFileView:true}))} onLeads={openLeads(world,demo,scene.id).length?()=>setOpenLeadsFor(scene.id):undefined}/>;
+ if(storyHere)return <StoryMode key={scene.id} world={world} scene={scene} sceneIndex={sceneIndex} passages={passages} demo={demo} setDemo={setDemo} startAt={storyJump?.sceneId===scene.id?storyJump.round:undefined} onJumped={()=>setStoryJump(null)} onUnavailable={()=>{if(storyJump&&scene.lie)setOpenClue(scene.lie.clue_id);setStoryJump(null);setStoryUnavailable(true)}} clearedLabel={demoEndingDue(demo,world,sceneIndex)?`Close scene ${sceneIndex+1}`:undefined} onCleared={()=>{setDemo(d=>demoEndingDue(d,world,sceneIndex)?{...d,demoEnding:"verdict"}:{...d,scene:Math.min(d.scene+1,world.scenes.length-1),events:[...d.events,"scene_complete"]})}} onCaseFile={demo.classAuth?undefined:()=>setDemo(d=>({...d,caseFileView:true}))} onLeads={openLeads(world,demo,scene.id).length?()=>setOpenLeadsFor(scene.id):undefined}/>;
  return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} onStoryMode={scene.story_mode&&demo.caseFileView&&!demo.classAuth&&!storyUnavailable?()=>setDemo(d=>({...d,caseFileView:false})):undefined} role={role} demo={demo} setDemo={setDemo} passages={passages} frames={frames} onOpenFrame={setOpenFrame} onOpenVerdict={()=>setVerdictOpen(true)} onOpenWriting={()=>setOpenWriting(true)} onOpenLeads={()=>setOpenLeadsFor(scene.id)} onCloseCase={closeCase} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} onStartOver={demo.classAuth?undefined:onStartOver} onPlantLie={demo.classAuth?setPlantClue:undefined} personal={personal??DEFAULT_PERSONAL} reprove={reprove} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
 }
 
@@ -146,7 +149,7 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onO
  const paragraphRefs=useRef<(HTMLElement|null)[]>([]);
  useEffect(()=>()=>{if(soundChannel.state.kind==="narration")soundChannel.stop()},[scene.id,demo.homeLanguage]);
  useEffect(()=>{const el=paragraphRefs.current[listening.part];if(!el)return;const still=window.matchMedia("(prefers-reduced-motion: reduce)").matches;el.scrollIntoView({block:"nearest",behavior:still?"auto":"smooth"})},[listening.part]);
- function goNext(){setDemo(d=>({...d,scene:d.scene+1,events:[...d.events,"scene_complete"]}));window.scrollTo({top:0})}
+ function goNext(){setDemo(d=>demoEndingDue(d,world,sceneIndex)?{...d,demoEnding:"verdict"}:{...d,scene:d.scene+1,events:[...d.events,"scene_complete"]});window.scrollTo({top:0})}
  // Closing the case after a Final Verdict shows the VERDICT stamp first.
  const savedVerdict=verdictFor(demo.verdict,world.id),[stamping,setStamping]=useState(false);
  function finish(){if(savedVerdict&&world.verdict){setStamping(true);return}onCloseCase()}

@@ -144,6 +144,6 @@ export function MissionVerdictView({world,passages,demo,setDemo,onBack,onFinish}
   <button type="button" disabled={problems.length>0} onClick={save} className="case-primary mt-6 min-h-[56px] w-full disabled:opacity-40">Close the case and see what the text says <ArrowRight size={18}/></button>
  </div>;
 }
-function PinLine({line,on,onTap,tag}:{line:string;on:boolean;onTap:(l:string)=>void;tag:string}){
+export function PinLine({line,on,onTap,tag}:{line:string;on:boolean;onTap:(l:string)=>void;tag:string}){
  return <button type="button" aria-pressed={on} onClick={()=>onTap(line)} className={`mt-2 block w-full rounded-2xl border-l-4 px-3 py-2 text-left ${on?"border-[#A0472C] bg-[#FBEDE5] ring-2 ring-[#A0472C]":"border-[#A0472C] bg-[#FFFDF8]"}`}><span className="block text-[11px] font-bold uppercase tracking-wide text-[#8A3B23]">{tag}{on?" · pinned":""}</span><span className="font-serif text-[15px] leading-6">{displayLine(line)}</span></button>;
 }

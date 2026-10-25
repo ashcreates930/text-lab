@@ -22,3 +22,8 @@ export function tapsToPassage(world: Pick<WorldPack, "missions">): number {
   }
   return taps;
 }
+// The public demo's ending ("Scene 1 closed", app/demo-ending.tsx) comes after the scene the student starts in, for
+// demo players only (never class students or live class), once, and never after the last scene.
+export const startSceneIndex = (world: Pick<WorldPack, "scenes" | "student_role">) => Math.max(0, world.scenes.findIndex((s) => s.id === world.student_role?.start_scene));
+export const demoEndingDue = (s: { classAuth?: unknown; demoEnding?: string }, world: Pick<WorldPack, "scenes" | "student_role">, sceneIndex: number) =>
+  !s.classAuth && !s.demoEnding && sceneIndex === startSceneIndex(world) && sceneIndex < world.scenes.length - 1;
