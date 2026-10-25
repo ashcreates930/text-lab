@@ -1,17 +1,17 @@
 "use client";
 // Public home page: what Text Lab is, who it is for, and one click into a case.
 import { useState } from "react";
-import { ArrowRight, Check, MessageCircle, Radio, Sparkles } from "lucide-react";
+import { ArrowRight, Check, MessageCircle, PenLine, Radio, Sparkles } from "lucide-react";
 import { Wordmark } from "./wordmark";
 import { openDemoRoom } from "./live/entry";
 import { copyTransform, faceClip, hologramLayout } from "@/lib/hologram";
 
 export function Landing({ brand, onStart, onCatchLie, onPreset, onJoin, onWaitlist, onPricing, onLessons, onClassroom, onApproach, onFeedback }: any) {
   const stories=[["The Legend of Sleepy Hollow","Washington Irving","Grades 6 to 8"],["The Tell-Tale Heart","Edgar Allan Poe","Grades 8 to 12"],["Trifles","Susan Glaspell","Grades 9 to 11"]];
-  const steps=[["01","Open a clue","Students step into a scene from the story and pick a clue to examine."],["02","Question, then prove","They ask a character what happened. Characters can be wrong, so students tap the line in the text that backs them up or proves them wrong."],["03","Spot the Lie","In every scene one character tells a lie on purpose. Students catch it with the one line from the story that disproves it."],["04","The Final Verdict","Students pin three proven clues, defend their theory in a short argument, and get feedback on the strength of their case."],["05","Play live in squads","Teachers run live rounds on the board. Squads of 3 or 4 share roles and earn points for evidence and reasoning, not speed."]];
+  const steps=[["01","Open a clue","Students step into a scene from the story and pick a clue to examine."],["02","Question, then prove","They ask a character what happened. Characters can be wrong, so students tap the line in the text that backs them up or proves them wrong."],["03","Play your way","Solo missions, rival face-offs, or squads that read together."],["04","Spot the Lie","In every scene one character tells a lie on purpose. Students catch it with the one line from the story that disproves it."],["05","The Final Verdict","Students pin three proven clues, defend their theory in a short argument, and get feedback on the strength of their case."],["06","Play live in squads","Teachers run live rounds on the board. Squads of 3 or 4 share roles and earn points for evidence and reasoning, not speed."]];
   const audiences:[string,string,string,string[],[string,()=>void]][]=[
     ["STUDENTS","Grades 6 to 12","Close reading that feels like solving a case, not filling out a worksheet.",["Short scenes, one clue at a time","Home-language help in Español, Kreyòl ayisyen, Português and Tiếng Việt","No email or password: a nickname is enough"],["Try a case",onStart]],
-    ["TEACHERS","English and ELA classrooms","One class link and your students are reading in under a minute.",["Share a link or QR code; students type a nickname and start","See which evidence came from the story and which came from an AI character","Run a live class discussion and assign five-minute mini lessons","Aligned to Florida B.E.S.T., AP and Cambridge AICE"],["Teacher sign in",onClassroom]],
+    ["TEACHERS","English and ELA classrooms","One class link and your students are reading in under a minute.",["Share a link or QR code; students type a nickname and start","See which evidence came from the story and which came from an AI character","Run a live class discussion and assign five-minute mini lessons","See each student's proof lines, squad pins, reactions and votes","Mark students absent so squad scores stay fair","Turn Freeze power-ups on or off for live rounds","Aligned to Florida B.E.S.T., AP and Cambridge AICE"],["Teacher sign in",onClassroom]],
     ["FAMILIES","Practice at home","A reading game your child can play in short sessions, with proof they actually read.",["Works on a laptop, tablet or phone","Help in Español, Kreyòl ayisyen, Português and Tiếng Việt","No email or password for students"],["Try a case",onStart]],
     ["SCHOOLS AND DISTRICTS","AI literacy inside ELA","Students learn that AI is a resource, not the source, by checking every AI answer against the text.",["School and district plans with an admin view","Professional development for teachers","Built by a practicing English teacher"],["See plans",onPricing]],
   ];
@@ -45,7 +45,7 @@ export function Landing({ brand, onStart, onCatchLie, onPreset, onJoin, onWaitli
     <section id="how" className="border-t border-[#E4DCCB] bg-[#FFFDF8] px-5 py-16 md:px-14 md:py-20"><div className="mx-auto max-w-7xl">
       <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">How a case works</p>
       <h2 className="serif mt-3 max-w-3xl text-[34px] leading-tight md:text-[44px]">AI can summarize any book. Text Lab makes students prove what's true.</h2>
-      <ol className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-5">{steps.map(([n,t,d])=><li key={n} className="rounded-3xl border border-[#E4DCCB] p-6"><span className="grid h-10 w-10 place-items-center rounded-full bg-[#A0472C] text-[15px] font-bold text-white">{n}</span><h3 className="mt-5 text-[21px] font-bold">{t}</h3><p className="mt-2 text-[16px] leading-7 text-[#4A4438]">{d}</p></li>)}</ol>
+      <ol className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">{steps.map(([n,t,d])=><li key={n} className="rounded-3xl border border-[#E4DCCB] p-6"><span className="grid h-10 w-10 place-items-center rounded-full bg-[#A0472C] text-[15px] font-bold text-white">{n}</span><h3 className="mt-5 text-[21px] font-bold">{t}</h3><p className="mt-2 text-[16px] leading-7 text-[#4A4438]">{d}</p></li>)}</ol>
     </div></section>
 
     <section id="who" className="px-5 py-16 md:px-14 md:py-20"><div className="mx-auto max-w-7xl">
@@ -76,7 +76,7 @@ export function Landing({ brand, onStart, onCatchLie, onPreset, onJoin, onWaitli
   </div>;
 }
 
-// New: three ways into live squads, Spot the Lie and hologram mode. Each card is one tap into the real thing.
+// New: live squads, Spot the Lie, hologram mode and Your Turn.
 function NewStrip({onCatchLie}:{onCatchLie:()=>void}){
   const [busy,setBusy]=useState(false),[error,setError]=useState("");
   async function playLive(){if(busy)return;setBusy(true);setError("");setError(await openDemoRoom());setBusy(false)}
@@ -84,14 +84,15 @@ function NewStrip({onCatchLie}:{onCatchLie:()=>void}){
   return <section aria-labelledby="new-h" className="px-5 pb-16 md:px-14"><div className="mx-auto max-w-7xl">
     <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">New</p>
     <h2 id="new-h" className="serif mt-2 text-[30px] leading-tight md:text-[36px]">More ways to prove what's true</h2>
-    <div className="mt-6 grid gap-5 md:grid-cols-3">
-      <div className={card}><Radio size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Play live with your class</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-[#4A4438]">Squads join on their phones with a QR code, take turns in four roles, and score points for evidence. The board shows the testimony, the votes and the strongest arguments.</p>
+    <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+      <div className={card}><Radio size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Play live with your class</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-[#4A4438]">Squads join on their phones with a QR code. Each member reads a different part of the passage and has a job: Reader, Fact-checker or Connector. Teammates pin lines, react with sentence stems and vote on their best proof.</p>
         <button type="button" onClick={playLive} aria-busy={busy} className="case-primary mt-5 w-full sm:w-fit">{busy?"Opening the demo room…":"Open a demo room"} <ArrowRight size={18}/></button>
         {error&&<p role="alert" className="mt-2 text-[15px] text-[#A33B20]">{error}</p>}</div>
       <div className={card}><MessageCircle size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Catch the lie</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-[#4A4438]">Hans Van Ripper swears he knows what was in Ichabod's bundle. One thing he says is false. Find the line in the story that proves it.</p>
         <button type="button" onClick={onCatchLie} className="case-primary mt-5 w-full sm:w-fit">Hear his testimony <ArrowRight size={18}/></button></div>
-      <div className={card}><Sparkles size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Characters as holograms</h3><p className="mt-2 text-[16px] leading-7 text-[#4A4438]">Set a phone under a clear pyramid and a witness takes the stand, speaking their testimony. Open any clue and tap Hologram.</p>
+      <div className={card}><Sparkles size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Characters as holograms</h3><p className="mt-2 text-[16px] leading-7 text-[#4A4438]">Tap a character's portrait to open their card, with traits quoted from the story. Tap Hologram, set your phone under a clear pyramid, and the character appears.</p>
         <MiniHologram/></div>
+      <div className={card}><PenLine size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Your Turn</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-[#4A4438]">After the case, each student gets a personal activity, like styling a character or debating one, that sends them back to the text to cite their proof.</p></div>
     </div>
   </div></section>;
 }
