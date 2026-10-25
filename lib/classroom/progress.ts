@@ -22,6 +22,8 @@ const answer = z.object({
   history: z.array(z.object({ stage: z.enum(["notice", "interpret", "craft"]), text: text(3000), submitted_at: text(40) })).max(60).optional(),
   // The character the student questioned before proving the clue. Older saves don't have it.
   character: id.optional(),
+  // The clue screen's question, misses before the right line, a shown answer, and speed flags (lib/fair-play.ts).
+  fair: z.object({ qid: id.optional(), tries: z.number().int().min(0).max(100).optional(), shown: z.boolean().optional(), flags: z.array(z.enum(["fast", "swaps"])).max(2).optional() }).optional(),
 });
 const frame = z.object({
   kind: z.enum(["add_detail", "student"]), description: text(600), quote: text(400), saved_at: text(40),
@@ -65,6 +67,15 @@ export const StudentProgressSchema = z.object({
   claimFlags: z.array(z.object({ clueId: id, characterId: id, answer: text(1200), line: text(1500), pid: text(12), matched: z.boolean(), at: text(40) })).max(200).optional(),
   // Your Turn: each finished activity, with its results and the closing 2 or 3 cited sentences.
   yourTurn: z.array(z.object({ activity: id, title: text(120), results: z.array(z.object({ label: text(200), line: text(1500), ok: z.boolean() })).max(12), writing: text(900), cited: z.array(text(1500)).max(5), at: text(40) })).max(30).optional(),
+  // Story missions: the chosen mission, pieces found (shown: through a shown answer), and the mission verdict.
+  mission: id.optional(),
+  missionPieces: z.record(id, z.object({ at: text(40), shown: z.boolean(), via: text(40) })).optional(),
+  missionVerdict: z.object({ mission_id: id, theory_id: id, pinned: z.array(z.object({ line: text(1500), pid: text(12), piece: id.nullable() })).max(12), writing: text(900), early: z.boolean(), saved_at: text(40), compare: z.record(text(1500), z.enum(["same", "else"])).optional() }).optional(),
+  // Clue question banks: the question each clue gave this student (clue id -> question id) and ones they've had before.
+  clueQs: z.record(id, id).optional(),
+  clueSeen: z.record(id, z.array(id).max(10)).optional(),
+  // Scene writing (one per scene): the Notice, Interpret and Craft answers, by scene id.
+  sceneWriting: z.record(id, z.object({ notice: text(3000), interpret: text(3000), craft: text(3000), technique: text(120).optional(), saved_at: text(40) })).optional(),
   // How the student plays (solo, rival or squad) and the scenes whose mission screen they have seen.
   missionSeen: z.array(id).max(50).optional(),
   // Story Mode, per scene (scene id -> run summary): the score, the Evidence pouch and trust with the characters the
@@ -72,6 +83,8 @@ export const StudentProgressSchema = z.object({
   story: z.record(id, z.object({
     runId: text(80), total: z.number().int().min(0).max(100000), bestStreak: z.number().int().min(0).max(10),
     trust: z.record(id, z.number().int().min(-12).max(12)), pouch: z.array(text(1500)).max(3), cleared: z.boolean(),
+    // The points possible for the student's questions and the goal level reached (lib/fair-play.ts).
+    max: z.number().int().min(0).max(100000).optional(), level: z.enum(["opened", "built", "cracked"]).nullable().optional(),
   })).optional(),
   updatedAt: text(40),
 });

@@ -5,12 +5,13 @@ import type { WorldPack } from "../world-schema.ts";
 import { readPassages, readWorld } from "../classroom/worlds.ts";
 import { NOT_EVIDENCE, matchEvidence } from "../evidence-check.ts";
 import type { SourcePassage } from "../source-passages.ts";
-import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, myStepRecord, playerState, publicStory, readingAction, squadReading, stepKind, type LiveStoryRound } from "./story.ts";
+import { liveMissionPieces, liveMissionSetting, missionPick, missionSetting } from "./missions.ts";
+import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, livePicks, myStepRecord, playerPicks, playerState, publicStory, readingAction, squadReading, stepKind, tryState, type LiveStoryRound } from "./story.ts";
 import { screenMessage } from "../safety.ts";
 import { checkWriting, yourTurnChoices, type YourTurnEntry } from "../your-turn.ts";
 import { evidenceSentences, lineWords } from "../lies.ts";
 import { AngleSchema, type Angle } from "../student-role.ts";
-import { studentBoard, type RoundInput, type TimeSetting } from "../story-mode.ts";
+import { inferQ, lieOf as storyLie, readQ, studentBoard, type RoundInput, type TimeSetting } from "../story-mode.ts";
 import { absentDay, getClassroomStore, memoryModeEnabled } from "../classroom/store.ts";
 import { screenArgument, judgeWithRubric } from "../verdict-server.ts";
 import { getLieBankStore } from "../lie-bank-store.ts";
@@ -179,6 +180,8 @@ export function hostView(st: LiveState) {
     // Who's here: class students can be marked absent for the session's day (left out of squad averages).
     roster: st.players.map((p) => ({ id: p.id, nickname: p.nickname, canMark: !!p.studentId && !!st.session.classId, absent: (st.absent ?? []).includes(p.id) })),
     storyBoard: round?.type === "story" ? (() => { const b = liveStoryBoard(st.responses, st.session.roundIndex, st.players, st.squads, round.squadsOn, st.absent); return { kind: b.kind, top: b.rows.slice(0, 5).map((r, k) => ({ rank: k + 1, name: r.name, score: r.score })), players: b.rows.length }; })() : null,
+    // Story missions: the options, the current setting, and each squad's mission and pieces.
+    missions: st.world.missions?.length ? { options: st.world.missions.map((m) => ({ id: m.id, title: m.title })), ...liveMissionSetting(st.responses), squads: st.squads.map((q) => ({ name: q.name, mission: liveMissionPieces(st.world, st.responses, q.id, st.players.filter((p) => p.squadId === q.id).map((p) => p.id)) })) } : null,
     lieScenes: st.world.scenes.filter((s) => s.lie).map((s, i) => ({ sceneId: s.id, label: `Scene ${st.world.scenes.indexOf(s) + 1}: ${s.lie!.topic}` , index: i })),
   };
 }
@@ -187,7 +190,8 @@ export function hostView(st: LiveState) {
 // last asked it to play.
 function storyWitness(st: LiveState, round: LiveStoryRound) {
   const scene = storyScene(st, round), kind = stepKind(round.step);
-  const speak = scene && round.showing === "round" && st.session.status === "round" ? (kind === "confront" ? { id: scene.story_mode!.confront.character_id, line: scene.story_mode!.confront.line } : kind === "lie" && scene.lie ? { id: scene.lie.character_id, line: scene.lie.testimony } : null) : null;
+  const picks = scene ? livePicks(scene) : null, lie = scene && picks ? storyLie(scene, picks) : null;
+  const speak = scene && picks && round.showing === "round" && st.session.status === "round" ? (kind === "confront" ? { id: scene.story_mode!.infer.character_id, line: inferQ(scene, picks).question } : kind === "lie" && lie ? { id: lie.character_id, line: lie.testimony } : null) : null;
   const who = speak ? st.world.characters.find((c) => c.id === speak.id) : undefined;
   return { story: who && speak ? { character: { id: who.id, name: who.name, portrait: who.portrait, hologram: who.hologram }, line: speak.line } : null };
 }
@@ -225,10 +229,15 @@ export function playerView(st: LiveState, playerId: string) {
     const scene = storyScene(st, round);
     const reading = scene && me.squadId && round.showing === "round" ? squadReading(scene, round, st.responses, i, st.players, me.squadId, me.id, st.absent) : null;
     const freeze = round.showing === "round" ? freezeView(round, st.responses, i, st.squads, st.players, me.id, Date.now()) : null;
-    return { reading, freeze, answered: !!myStepRecord(st.responses, i, round.step, me.id), last: round.showing === "board" || st.session.status !== "round" ? myStepRecord(st.responses, i, round.step, me.id) : null, total: state.total, pouch: state.pouch, board: view, boardKind: board.kind };
+    // This player's own round 1 question (in squads it matches their chunk) and their try in progress this step.
+    const picks = scene ? playerPicks(st.world, st.passages ?? [], scene, "", reading?.myChunk ?? null) : null;
+    const tried = round.showing === "round" ? tryState(st.responses, i, round.step, me.id) : null;
+    return { reading, freeze, focus: scene && picks ? readQ(scene, picks).focus : null, try: tried ? { notYet: tried.notYet ?? null, next: tried.next ?? null, locked: tried.attempt.locked.map((l) => l.line) } : null, answered: !!myStepRecord(st.responses, i, round.step, me.id), last: round.showing === "board" || st.session.status !== "round" ? myStepRecord(st.responses, i, round.step, me.id) : null, total: state.total, pouch: state.pouch, board: view, boardKind: board.kind };
   })() : null;
   return {
     session: sessionInfo(st), round: publicRound(st), purpose: round ? squadPurpose(round.type) : "", story, yourTurn: yourTurnView(st, me.id),
+    // Story missions: this squad's mission and pieces, or the choice when squads pick.
+    mission: (() => { const set = liveMissionSetting(st.responses); if (!st.world.missions?.length || (!set.missionId && !set.squadsChoose)) return null; const ids = me.squadId ? st.players.filter((p) => p.squadId === me.squadId).map((p) => p.id) : [me.id]; return { current: liveMissionPieces(st.world, st.responses, me.squadId, ids), choose: set.squadsChoose && !!me.squadId ? st.world.missions.map((m) => ({ id: m.id, title: m.title, problem: m.problem })) : null }; })(),
     me: { id: me.id, nickname: me.nickname },
     squad: squad && summary ? { id: squad.id, name: squad.name, members: summary.ids.map((pid) => ({ id: pid, nickname: st.players.find((x) => x.id === pid)!.nickname, roles: rolesOf(summary.roles, pid) })) } : null,
     myRoles, roleInfo: ROLE_INFO, answering, plantedByMySquad,
@@ -255,7 +264,8 @@ export type HostAction =
   | { action: "squads.auto" } | { action: "squads.move"; playerId: string; squadId: string | null }
   | { action: "round.start"; type: RoundType; sceneId?: string; plantedId?: string; squads?: boolean; freezes?: boolean } | { action: "round.stage" } | { action: "round.reveal" }
   | { action: "pause" } | { action: "resume" } | { action: "end" } | { action: "witness.play" } | { action: "player.absent"; playerId: string; absent: boolean } | { action: "yourturn.start" }
-  | { action: "override"; key: "sound"; squadId: string; value: boolean } | { action: "override"; key: "objection"; value: boolean };
+  | { action: "override"; key: "sound"; squadId: string; value: boolean } | { action: "override"; key: "objection"; value: boolean }
+  | { action: "mission.set"; missionId?: string | null; squadsChoose?: boolean };
 
 export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): Promise<string | null> {
   const s = st.session, round = currentRound(st);
@@ -315,6 +325,13 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
     case "pause": await store.updateSession(s.id, { paused: true }); return null;
     case "resume": await store.updateSession(s.id, { paused: false }); return null;
     case "end": await store.updateSession(s.id, { status: "ended", paused: false }); return null;
+    // Story missions: one mission for everyone, squads choose, or off (missionId null).
+    case "mission.set": {
+      const r = missionSetting(st.world, a);
+      if (typeof r === "string") return r;
+      await store.addResponse(s.id, { roundIndex: s.roundIndex, squadId: null, playerId: null, role: "host", kind: "mission", payload: r.payload, flagged: false });
+      return null;
+    }
     case "yourturn.start": {
       if (!st.world.your_turn) return "This story has no Your Turn activities yet.";
       if (st.responses.some((r) => r.kind === "your_turn_start")) return null;
@@ -374,6 +391,12 @@ export async function playerAct(store: LiveStore, st: LiveState, playerId: strin
   if (act.kind === "your_turn") return saveYourTurn(store, st, me, act.payload);
   if (s.status !== "round") return "Wait for the next round.";
   if (s.paused) return "The round is paused.";
+  if (act.kind === "mission_pick") {
+    const r = missionPick(st.world, st.responses, me?.squadId ?? null, act.payload.missionId);
+    if (typeof r === "string") return r;
+    await store.addResponse(s.id, { roundIndex: i, squadId: me?.squadId ?? null, playerId, role: null, kind: "mission_pick", payload: r.payload, flagged: false });
+    return null;
+  }
   if (act.kind === "vote") {
     if (!(round?.type === "verdict" && round.stage === "vote")) return "Voting is closed.";
     const theoryId = String(act.payload.theoryId ?? "");
@@ -385,8 +408,11 @@ export async function playerAct(store: LiveStore, st: LiveState, playerId: strin
     if (round?.type !== "story") return "This isn't a Story Mode round.";
     const scene = storyScene(st, round);
     if (!scene) return "This scene has no Story Mode.";
-    const r = answerStep(st.world, st.passages ?? [], scene, round, st.responses, i, playerId, act.payload.input as RoundInput, Date.now(), deps.timeSetting ?? "1", me.squadId);
+    const chunk = me.squadId ? squadReading(scene, round, st.responses, i, st.players, me.squadId, me.id, st.absent)?.myChunk ?? null : null;
+    const r = answerStep(st.world, st.passages ?? [], scene, round, st.responses, i, playerId, act.payload.input as RoundInput, Date.now(), deps.timeSetting ?? "1", me.squadId, { picks: playerPicks(st.world, st.passages ?? [], scene, "", chunk), seed: s.id });
     if (typeof r === "string") return r;
+    // A miss or a step is saved as a try (the phone shows "Not yet" or the next step); the last step is the answer.
+    if ("tryRow" in r) { await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: "story_try", payload: r.tryRow, flagged: false }); return null; }
     await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: "story", payload: { step: round.step, record: r.record, ...(act.payload.input && (act.payload.input as RoundInput).kind === "lie" ? { explanation: String((act.payload.input as { explanation?: string }).explanation ?? "").slice(0, 400) } : {}) }, flagged: false });
     return null;
   }

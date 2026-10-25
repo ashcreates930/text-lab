@@ -1,10 +1,14 @@
 // Story Mode as a live round: the host screen runs the same four rounds for everyone at once (a shared countdown, the
-// projected passage, confrontation and testimony), with a top-5 leaderboard reveal between rounds. Phones only show the
-// controls. Each player's answers are scored with the solo rules (lib/story-mode.ts); squads rank by their members'
-// average when the teacher turns squads on.
+// projected passage, the character's question and testimony), with a top-5 leaderboard reveal between rounds that shows
+// the lines that prove it. Phones only show the controls. Each try is scored with the solo rules (lib/story-mode.ts):
+// a miss is "Not yet" with a hint, and students retry until the round's timer ends (no student ever holds up the
+// round). Squads rank by their members' average when the teacher turns squads on; in squads, each member's round 1
+// question matches their chunk of the reading.
 import type { WorldPack } from "../world-schema.ts";
 import type { SourcePassage } from "../source-passages.ts";
-import { GRACE_SECONDS, ROUNDS, SECONDS, applyRound, boardName, newRun, pulseChoice, rankRows, scoreRound, speedBonus, type RoundInput, type RoundKind, type RoundRecord, type RunState, type Scene, type TimeSetting } from "../story-mode.ts";
+import { GRACE_SECONDS, ROUNDS, SECONDS, applyRound, attemptRound, boardName, callQ, inferQ, lieOf, newAttempt, newRun, pickRound, pulseChoice, rankRows, readQ, type Attempt, type Picks, type RoundInput, type RoundKind, type RoundRecord, type RunState, type Scene, type TimeSetting } from "../story-mode.ts";
+import { pickQuestion } from "../fair-play.ts";
+import { matchEvidence } from "../evidence-check.ts";
 import { squadMembersCounted, type LivePlayer, type LiveResponse } from "./engine.ts";
 import { evidenceSentences, lineWords } from "../lies.ts";
 import { FREEZE_MS, canFreeze, earnsFreeze, frozenMs } from "../freeze.ts";
@@ -12,8 +16,24 @@ import { REACTION_MAX, REACTION_STEMS, SQUAD_JOBS, squadChunks, squadJobs, voteW
 
 // freezesOn: the host turned Freezes on (squads only; off by default).
 export type LiveStoryRound = { type: "story"; sceneId: string; step: number; showing: "round" | "board"; stepStartedAt: string; squadsOn: boolean; freezesOn?: boolean };
-// Seconds per step, shared by everyone. Round 2's choice and proof run as one 90-second step live.
-export const LIVE_STORY_SECONDS: Record<RoundKind, number> = { read: SECONDS.read, confront: SECONDS.choice + SECONDS.proof, lie: SECONDS.lie, call: SECONDS.call };
+// Seconds per step, shared by everyone; retries happen inside the step's time.
+export const LIVE_STORY_SECONDS: Record<RoundKind, number> = { read: SECONDS.read, confront: SECONDS.confront, lie: SECONDS.lie, call: SECONDS.call };
+// The questions the whole class shares (what the board shows), picked once per live session.
+export const livePicks = (scene: Scene, seed = ""): Picks => pickRound(scene, { seed });
+// A player's questions: the shared ones, except round 1 in squads, where each member's question has its answers in
+// the member's own chunk of the reading.
+export function playerPicks(world: WorldPack, passages: SourcePassage[], scene: Scene, seed: string, chunk: string[] | null): Picks {
+  const shared = livePicks(scene, seed);
+  if (!chunk?.length) return shared;
+  const pid = (line: string) => matchEvidence(world, passages, line, { clueIds: scene.artifacts.map((a) => a.id) })?.pid ?? "";
+  return { ...shared, read: pickQuestion(scene.story_mode!.read.bank, { seed: `${seed}:read`, chunk, answerPids: (q) => q.answers.map(pid) }).id };
+}
+// The player's try in progress this step: the latest "Not yet" or step, from their saved tries.
+type TryRow = LiveResponse & { payload: { step: number; attempt: Attempt; notYet?: { tryNo: number; hint: string; locked: string[] } | null; next?: { name: "phrase" | "prove" | "explain"; choices: string[] | null; line: string | null } | null } };
+export function tryState(responses: LiveResponse[], roundIndex: number, step: number, playerId: string) {
+  const row = responses.filter((r) => r.roundIndex === roundIndex && r.kind === "story_try" && r.playerId === playerId && r.payload.step === step).sort((a, b) => a.createdAt.localeCompare(b.createdAt)).at(-1) as TryRow | undefined;
+  return row ? row.payload : null;
+}
 export const stepKind = (step: number) => ROUNDS[step];
 
 type StoryRow = LiveResponse & { payload: { step: number; record: RoundRecord } };
@@ -25,9 +45,10 @@ export function playerState(responses: LiveResponse[], roundIndex: number, playe
   for (const r of mine) s = { ...s, round: s.round + 1, total: s.total + r.payload.record.points, streak: r.payload.record.streak, bestStreak: Math.max(s.bestStreak, r.payload.record.streak), rounds: [...s.rounds, r.payload.record], pouch: r.payload.step === 0 ? r.payload.record.proof : s.pouch, coins: s.coins + r.payload.record.coinsEarned };
   return s;
 }
-// Scores one player's answer for the current step. setting: the player's own time (the teacher's extra time).
-// squadId: the player's squad; while another squad's Freeze holds it, lock-in waits, and the frozen time doesn't count.
-export function answerStep(world: WorldPack, passages: SourcePassage[], scene: Scene, round: LiveStoryRound, responses: LiveResponse[], roundIndex: number, playerId: string, input: RoundInput, nowMs: number, setting: TimeSetting, squadId: string | null = null): { record: RoundRecord } | string {
+// One try at the current step. setting: the player's own time (the teacher's extra time). squadId: the player's
+// squad; while another squad's Freeze holds it, lock-in waits, and the frozen time doesn't count. picks: the player's
+// questions. A miss or a step comes back as a try to save; the last step comes back as the scored record.
+export function answerStep(world: WorldPack, passages: SourcePassage[], scene: Scene, round: LiveStoryRound, responses: LiveResponse[], roundIndex: number, playerId: string, input: RoundInput, nowMs: number, setting: TimeSetting, squadId: string | null = null, o: { picks: Picks; seed: string } = { picks: livePicks(scene, ""), seed: "" }): { record: RoundRecord } | { tryRow: TryRow["payload"] } | string {
   if (round.showing !== "round") return "Eyes on the board.";
   const held = squadId ? squadFrozenUntil(responses, roundIndex, round.step, squadId) : 0;
   if (held > nowMs) return `Your squad's lock-in is frozen for ${Math.ceil((held - nowMs) / 1000)} more seconds. Keep reading.`;
@@ -44,11 +65,23 @@ export function answerStep(world: WorldPack, passages: SourcePassage[], scene: S
   const elapsedMs = Math.max(0, nowMs - started - paused);
   if (elapsedMs > (limit + GRACE_SECONDS) * 1000) return "Time's up for this round.";
   const grace = elapsedMs > limit * 1000;
-  const score = scoreRound(world, passages, scene, input, { elapsedMs, grace }, setting, state.pouch);
-  // Speed is measured against the step's shared length (scaled by the player's own extra time).
-  const speed = score.speed ? speedBonus(elapsedMs, LIVE_STORY_SECONDS[kind], setting) : 0;
-  const next = applyRound(base, { ...score, speed }, kind === "read" ? { pouch: score.proof } : {});
+  const prior = tryState(responses, roundIndex, round.step, playerId);
+  // Live: no limit on tries; the timer ends the round and the board reveals the answer.
+  const r = attemptRound(world, passages, scene, o.picks, prior?.attempt ?? newAttempt(), input, { maxTries: Infinity, seed: `${o.seed}:${playerId}`, pouch: state.pouch });
+  if (r.status === "invalid") return r.message;
+  if (r.status === "notYet") return { tryRow: { step: round.step, attempt: r.attempt, notYet: { tryNo: r.tryNo, hint: r.hint, locked: r.attempt.locked.map((l) => l.line) }, next: null } };
+  if (r.status === "next") return { tryRow: { step: round.step, attempt: r.attempt, notYet: null, next: { name: r.step, choices: r.choices ?? null, line: r.attempt.line ?? null } } };
+  const score = { ...r.score, grace, base: grace ? Math.round(r.score.base / 2) : r.score.base };
+  const next = applyRound(base, score, kind === "read" ? { pouch: score.proof } : {});
   return { record: { ...next.rounds[next.rounds.length - 1], choice: pulseChoice(score) } };
+}
+// The lines that prove the step, for the board's reveal after the timer: never shown while students are answering.
+export function revealLines(scene: Scene, step: number, picks: Picks) {
+  const kind = stepKind(step);
+  if (kind === "read") return readQ(scene, picks).answers.slice(0, 3);
+  if (kind === "confront") return [inferQ(scene, picks).answers[0].line];
+  if (kind === "lie") return [lieOf(scene, picks).truth_line];
+  return callQ(scene, picks).theories.flatMap((t) => t.supports.slice(0, 2));
 }
 
 // The board: top 5 individually (first name and last initial for class students), or squads by members' average.
@@ -71,19 +104,20 @@ export function liveStoryBoard(responses: LiveResponse[], roundIndex: number, pl
 export const answeredStep = (responses: LiveResponse[], roundIndex: number, step: number) => new Set(storyRows(responses, roundIndex).filter((r) => r.payload.step === step).map((r) => r.playerId)).size;
 export const myStepRecord = (responses: LiveResponse[], roundIndex: number, step: number, playerId: string) => storyRows(responses, roundIndex).find((r) => r.payload.step === step && r.playerId === playerId)?.payload.record ?? null;
 
-// What everyone sees for the current step (no answers: the authored "supports" mapping and the lie's truth line stay on
-// the server).
-export function publicStory(world: WorldPack, passages: SourcePassage[], scene: Scene, round: LiveStoryRound) {
-  const c = scene.story_mode!, kind = stepKind(round.step);
+// What everyone sees for the current step: the shared questions, and (only at the board, after the timer) the lines
+// that prove it. seed: the live session, so the board and phones agree.
+export function publicStory(world: WorldPack, passages: SourcePassage[], scene: Scene, round: LiveStoryRound, seed = "") {
+  const c = scene.story_mode!, kind = stepKind(round.step), picks = livePicks(scene, seed);
   const who = (id: string) => { const ch = world.characters.find((x) => x.id === id); return ch ? { id: ch.id, name: ch.name, portrait: ch.portrait ?? null } : null; };
-  const lie = scene.lie, clue = lie ? scene.artifacts.find((a) => a.id === lie.clue_id) : undefined;
+  const lie = lieOf(scene, picks), clue = scene.artifacts.find((a) => a.id === lie.clue_id), q = callQ(scene, picks);
   return {
     type: "story" as const, sceneId: scene.id, step: round.step, kind, showing: round.showing, stepStartedAt: round.stepStartedAt, seconds: kind ? LIVE_STORY_SECONDS[kind] : 0, squadsOn: round.squadsOn,
     intro: c.intro, image: scene.background_image,
-    read: kind === "read" ? { prompt: c.read.prompt, focus: c.read.focus, chunks: c.read.chunks.map((id) => ({ id, text: passages.find((p) => p.id === id)?.text ?? "" })) } : null,
-    confront: kind === "confront" ? { speaker: who(c.confront.character_id), line: c.confront.line, actions: c.confront.actions.map((a) => ({ id: a.id, label: a.label })), chunks: c.read.chunks } : null,
-    lie: kind === "lie" && lie ? { speaker: who(lie.character_id), testimony: lie.testimony, evidence: clue?.source_anchor ?? [], clueId: lie.clue_id } : null,
-    call: kind === "call" ? { question: c.call.question, theories: c.call.theories.map((t) => ({ id: t.id, name: t.name, description: t.description })) } : null,
+    read: kind === "read" ? { prompt: c.read.prompt, focus: readQ(scene, picks).focus, chunks: c.read.chunks.map((id) => ({ id, text: passages.find((p) => p.id === id)?.text ?? "" })) } : null,
+    confront: kind === "confront" ? { speaker: who(c.infer.character_id), line: inferQ(scene, picks).question, chunks: c.read.chunks } : null,
+    lie: kind === "lie" ? { speaker: who(lie.character_id), testimony: lie.testimony, evidence: clue?.source_anchor ?? [], clueId: lie.clue_id } : null,
+    call: kind === "call" ? { question: q.question, theories: q.theories.map((t) => ({ id: t.id, name: t.name, description: t.description })) } : null,
+    reveal: round.showing === "board" ? revealLines(scene, round.step, picks) : null,
   };
 }
 
@@ -94,8 +128,8 @@ export function publicStory(world: WorldPack, passages: SourcePassage[], scene: 
 // best proof line before locking in. Ties: most reactions, then the Fact-checker's vote (clue-game voteWinner).
 const rowsOf = (responses: LiveResponse[], roundIndex: number, squadId: string, kind: LiveResponse["kind"], step: number) => responses.filter((r) => r.roundIndex === roundIndex && r.squadId === squadId && r.kind === kind && r.payload.step === step).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 // The paragraphs a round reads from: the testimony's clue in round 3, the scene's reading in the others.
-export function roundParagraphs(scene: Scene, step: number) {
-  const lieClue = scene.lie ? scene.artifacts.find((a) => a.id === scene.lie!.clue_id) : undefined;
+export function roundParagraphs(scene: Scene, step: number, seed = "") {
+  const lie = lieOf(scene, livePicks(scene, seed)), lieClue = scene.artifacts.find((a) => a.id === lie.clue_id);
   return stepKind(step) === "lie" && lieClue ? lieClue.source_anchor : scene.story_mode!.read.chunks;
 }
 // Every round, with squads on. Jobs move round by round (so everyone tries each one); chunks split the round's reading.

@@ -54,7 +54,7 @@ export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] 
       prompt = world.verdict?.question ?? "";
       for (const s of scoreVerdictRound(squads, responses, i)) results.set(s.squadId, { result: s.theoryId ? `${world.verdict?.theories.find((t) => t.id === s.theoryId)?.name ?? s.theoryId} · ${s.detail}` : s.detail, points: s.points });
     } else if (round.type === "story") {
-      prompt = `Story Mode · ${world.scenes.find((sc) => sc.id === round.sceneId)?.story_mode?.call.question ?? round.sceneId}`;
+      prompt = `Story Mode · ${world.scenes.find((sc) => sc.id === round.sceneId)?.story_mode?.call.bank[0].question ?? round.sceneId}`;
       for (const s of storySquadScores(squads, responses, i, players, absent)) results.set(s.squadId, { result: `Members' average: ${s.points}`, points: s.points });
     } else {
       const o = objectionResult(round, responses, i);

@@ -598,3 +598,3277 @@ Writing prompt: Sum up why the Lantern Ghost was wrong. Write 2 or 3 sentences a
 | Answers | That holds up. · True to the story, maybe, but it doesn't answer that. Look again in ¶N. · The story doesn't support this one. · Not yet. What happens before that? · Move on · Answer with this line |
 | Writing | Write it up · Lines you cite · Tap a line in the story below to cite it. · Your 2 or 3 sentences · Write 2 or 3 sentences. · Cite at least one line from the story: tap it in the passage. · Save for my teacher · Saved for your teacher |
 | Host | Your Turn · A 5 to 7 minute activity on every phone, picked from each student's angle answers. Every one ends with 2 or 3 sentences citing the story, saved to Evidence. · Start Your Turn for everyone · Your Turn is on. N of N saved so far. |
+
+## Fair play: The Legend of Sleepy Hollow
+
+Students score only by reading. Generated from `worlds/sleepy-hollow/world.json` by
+`node --experimental-strip-types scripts/fair-play-review.ts sleepy-hollow`, so it always matches what students get.
+`validate:worlds` checks every line and phrase against `source.md`, near misses (on the passage, with a hint that names
+a paragraph), 4 Prove it choices, 3 or 4 questions per bank, and that no question shares a key word (by word root) with
+its answers. The searchers' report question keeps "found" and "bank" as reviewed exceptions.
+
+- Ladder: each clue's bank has two locate questions and one infer question. Story Mode, scene 1: round 1 locate,
+  round 2 infer (Brom asks), round 3 catch the lie, round 4 build the case.
+- Scoring: full points on the first try, half on the second, none after; 25 off per wrong line (never below 0 for the
+  round). A miss is an amber "Not yet" (try 2 names the paragraph, try 3 the part of it). After three misses the
+  answer is shown and the proof step still comes, for 0 points ("shown answer" in the Evidence view).
+- Long lines (over 25 words) need their exact words marked, with 2 words of tolerance at each edge. Prove it: one of
+  4 authored choices (shuffled on screen), or "This proves ___ because ___", saved for the teacher and never scored.
+- No Prove it choice relies on anything from a later scene. Points come from evidence: no speed bonus, and a rival
+  win earns a coin only. Speed flags (a tap within 4 seconds, more than 4 swaps) go to the teacher only.
+- Word cards: discrimination (good judgment), executor, consigned and forthwith, wherever they appear.
+- Writing: the Notice, Interpret and Craft questions are one task per scene (the clue named below).
+
+### Missions: how the verdict works (for teachers and reviewers; not shown to students)
+
+- Order: pick a theory, pin at least 2 lines (pieces, or any lines from the story when fewer than 2 pieces were found), write 2 or 3 sentences, then the payoff is revealed.
+- The verdict is checked like Your Turn: sentence count, cited lines, the safety screen. It is never graded or AI-scored.
+- After the reveal, for each cited line the student taps "Points the same way" or "Points somewhere else". The taps are saved to the Evidence view and never scored.
+- Citing the payoff line before the reveal shows "You found it before the reveal" and is logged in the Evidence view.
+
+#### Mission: Find Ichabod
+
+Prove what really happened to Ichabod Crane.
+
+- Sealed clue: `new-york-report`; payoff: “It is true, an old farmer, who had been down to New York on a visit several years after, and from whom this account of the ghostly adventure was received, brought home the intelligence that Ichabod Crane was still alive; that he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress; that he had changed his quarters to a distant part of the country; had kept school and studied law at the same time; had been admitted to the bar; turned politician; electioneered; written for the newspapers; and finally had been made a justice of the Ten Pound Court.”
+- Theories: He left the valley alive, He drowned in the brook, The Horseman carried him off
+- Piece `pay` (empty-schoolhouse): “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.” · Lead: Find the line that suggests his wages went wherever he went.
+- Piece `no-body` (empty-schoolhouse): “The brook was searched, but the body of the schoolmaster was not to be discovered.” · Lead: Find the line that tells what the hunt in the water turned up.
+- Piece `chapfallen` (van-tassel-party): “Something, however, I fear me, must have gone wrong, for he certainly sallied forth, after no very great interval, with an air quite desolate and chapfallen.” · Lead: Find the line that shows how he looked as he walked out after his talk with Katrina.
+- Piece `hans-wrath` (the-road-home): “For a moment the terror of Hans Van Ripper’s wrath passed across his mind,--for it was his Sunday saddle; but this was no time for petty fears; the goblin was hard on his haunches; and (unskilful rider that he was!) he had much ado to maintain his seat; sometimes slipping on one side, sometimes on another, and sometimes jolted on the high ridge of his horse’s backbone, with a violence that he verily feared would cleave him asunder.” · Lead: Find the line that shows whose anger he dreaded during the ride.
+- Piece `tumbled` (the-road-home): “It encountered his cranium with a tremendous crash,--he was tumbled headlong into the dust, and Gunpowder, the black steed, and the goblin rider, passed by like a whirlwind.” · Lead: Find the line that shows what happened to him on the far side of the crossing.
+
+#### Mission: Unmask the Horseman
+
+Prove whether the rider was a ghost or a person.
+
+- Sealed clue: `broms-knowing-look`; payoff: “Brom Bones, too, who, shortly after his rival’s disappearance conducted the blooming Katrina in triumph to the altar, was observed to look exceedingly knowing whenever the story of Ichabod was related, and always burst into a hearty laugh at the mention of the pumpkin; which led some to suspect that he knew more about the matter than he chose to tell.”
+- Theories: A real ghost, Brom Bones in disguise, Some other rider
+- Piece `pumpkin` (empty-schoolhouse): “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.” · Lead: Find the line that names the odd object next to what he left by the stream.
+- Piece `jokes` (van-tassel-party): “There was something extremely provoking in this obstinately pacific system; it left Brom no alternative but to draw upon the funds of rustic waggery in his disposition, and to play off boorish practical jokes upon his rival.” · Lead: Find the line that shows how Brom fought back without a real fight.
+- Piece `brag` (van-tassel-party): “He affirmed that on returning one night from the neighboring village of Sing Sing, he had been overtaken by this midnight trooper; that he had offered to race with him for a bowl of punch, and should have won it too, for Daredevil beat the goblin horse all hollow, but just as they came to the church bridge, the Hessian bolted, and vanished in a flash of fire.” · Lead: Find the line where Brom boasts about where his ghostly rival disappeared.
+- Piece `big-rider` (the-road-home): “He appeared to be a horseman of large dimensions, and mounted on a black horse of powerful frame.” · Lead: Find the line that describes how big the stranger and the animal under him were.
+- Piece `thrown` (the-road-home): “Just then he saw the goblin rising in his stirrups, and in the very act of hurling his head at him.” · Lead: Find the line where the pursuer throws something at Ichabod.
+
+#### Mission: Clear the schoolhouse
+
+Prove why the valley believes the schoolhouse is haunted.
+
+- Sealed clue: `old-wives-tale`; payoff: “The schoolhouse being deserted soon fell to decay, and was reported to be haunted by the ghost of the unfortunate pedagogue and the plowboy, loitering homeward of a still summer evening, has often fancied his voice at a distance, chanting a melancholy psalm tune among the tranquil solitudes of Sleepy Hollow.”
+- Theories: A real ghost haunts it, Old stories and fear, Pranks made it seem haunted
+- Piece `town-decides` (empty-schoolhouse): “The stories of Brouwer, of Bones, and a whole budget of others were called to mind; and when they had diligently considered them all, and compared them with the symptoms of the present case, they shook their heads, and came to the conclusion that Ichabod had been carried off by the Galloping Hessian.” · Lead: Find the line that shows how the townspeople explained his disappearance.
+- Piece `moved` (empty-schoolhouse): “As he was a bachelor, and in nobody’s debt, nobody troubled his head any more about him; the school was removed to a different quarter of the hollow, and another pedagogue reigned in his stead.” · Lead: Find the line that tells where the lessons moved after he was gone.
+- Piece `witches` (van-tassel-party): “They harried his hitherto peaceful domains; smoked out his singing school by stopping up the chimney; broke into the schoolhouse at night, in spite of its formidable fastenings of withe and window stakes, and turned everything topsy-turvy, so that the poor schoolmaster began to think all the witches in the country held their meetings there.” · Lead: Find the line that shows what the pranksters did to the building after dark.
+- Piece `haunt` (van-tassel-party): “Such was one of the favorite haunts of the Headless Horseman, and the place where he was most frequently encountered.” · Lead: Find the line that names the spot the Horseman liked best.
+- Piece `superstition` (the-road-home): “The common people regarded it with a mixture of respect and superstition, partly out of sympathy for the fate of its ill-starred namesake, and partly from the tales of strange sights, and doleful lamentations, told concerning it.” · Lead: Find the line that shows how ordinary folks felt about the old landmark.
+- Piece `half` (the-towns-verdict): ““Faith, sir,” replied the story-teller, “as to that matter, I don’t believe one-half of it myself.”” · Lead: Find the line where the man who spun the yarn admits his own doubts.
+
+### Scene 1 (`empty-schoolhouse`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **The searchers' report**.
+
+#### Clue: The empty schoolhouse
+
+**Locate. How was Ichabod's classroom put together?**
+
+Answers:
+
+> ¶11: “His schoolhouse was a low building of one large room, rudely constructed of logs; the windows partly glazed, and partly patched with leaves of old copybooks.”
+>
+> Proof phrase: *rudely constructed of logs; the windows partly glazed, and partly patched with leaves of old copybooks*
+
+Near misses:
+
+> ¶11: “The schoolhouse stood in a rather lonely but pleasant situation, just at the foot of a woody hill, with a brook running close by, and a formidable birch-tree growing at one end of it.”
+>
+> Hint: That tells where it stood, not what it was made of. Check ¶11.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The school was poor and roughly put together. ✓
+2. The school was the finest building in the valley.
+3. Ichabod built the school himself.
+4. Children broke the windows playing ball.
+
+**Locate. Why would a burglar have trouble once inside the room?**
+
+Answers:
+
+> ¶11: “It was most ingeniously secured at vacant hours, by a withe twisted in the handle of the door, and stakes set against the window shutters; so that though a thief might get in with perfect ease, he would find some embarrassment in getting out,—an idea most probably borrowed by the architect, Yost Van Houten, from the mystery of an eelpot.”
+>
+> Proof phrase: *though a thief might get in with perfect ease, he would find some embarrassment in getting out*
+
+Near misses:
+
+> ¶11: “His schoolhouse was a low building of one large room, rudely constructed of logs; the windows partly glazed, and partly patched with leaves of old copybooks.”
+>
+> Hint: That is how it was put together. How was it shut at night? Check ¶11.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A burglar could get in easily but would struggle to escape. ✓
+2. The school had strong iron locks.
+3. Nobody could ever get inside.
+4. Ichabod slept at the school to guard it.
+
+**Infer. What kind of teacher was Ichabod with children who misbehaved?**
+
+Answers:
+
+> ¶11: “Truth to say, he was a conscientious man, and ever bore in mind the golden maxim, “Spare the rod and spoil the child.””
+
+> ¶12: “I would not have it imagined, however, that he was one of those cruel potentates of the school who joy in the smart of their subjects; on the contrary, he administered justice with discrimination rather than severity; taking the burden off the backs of the weak, and laying it on those of the strong.”
+>
+> Proof phrase: *he administered justice with discrimination rather than severity*
+
+Near misses:
+
+> ¶11: “From hence the low murmur of his pupils’ voices, conning over their lessons, might be heard in a drowsy summer’s day, like the hum of a beehive; interrupted now and then by the authoritative voice of the master, in the tone of menace or command, or, peradventure, by the appalling sound of the birch, as he urged some tardy loiterer along the flowery path of knowledge.”
+>
+> Hint: That is the sound of the classroom. How does the narrator judge his punishments? Check ¶12.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He was strict but tried to be fair, going easier on the weak. ✓
+2. He never punished anyone.
+3. He was cruel and enjoyed it.
+4. Parents made him stop punishing.
+
+#### Clue: Ichabod's belongings
+
+**Locate. Apart from reading material, what did Ichabod own? Name what he wore.**
+
+Answers:
+
+> ¶69: “They consisted of two shirts and a half; two stocks for the neck; a pair or two of worsted stockings; an old pair of corduroy small-clothes; a rusty razor; a book of psalm tunes full of dog’s-ears; and a broken pitch-pipe.”
+>
+> Proof phrase: *two shirts and a half; two stocks for the neck; a pair or two of worsted stockings*
+
+Near misses:
+
+> ¶69: “As to the books and furniture of the schoolhouse, they belonged to the community, excepting Cotton Mather’s “History of Witchcraft,” a “New England Almanac,” and a book of dreams and fortune-telling; in which last was a sheet of foolscap much scribbled and blotted in several fruitless attempts to make a copy of verses in honor of the heiress of Van Tassel.”
+>
+> Hint: Those are his books. What else did he own? Check ¶69.
+
+> ¶69: “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.”
+>
+> Hint: Money isn't on the list of his things. Check ¶69.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Ichabod owned very little and lived plainly. ✓
+2. Ichabod was secretly rich.
+3. Hans Van Ripper took his clothes.
+4. Ichabod packed his things to run away.
+
+**Locate. What role did Hans take on after the schoolmaster vanished?**
+
+Answers:
+
+> ¶69: “Hans Van Ripper as executor of his estate, examined the bundle which contained all his worldly effects.”
+
+Near misses:
+
+> ¶68: “Hans Van Ripper now began to feel some uneasiness about the fate of poor Ichabod, and his saddle.”
+>
+> Hint: Hans worries there, but what job does he take on? Check ¶69.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Hans was put in charge of what Ichabod left. ✓
+2. Hans was Ichabod's brother.
+3. Hans was the town judge.
+4. Hans was looking for his saddle in the bundle.
+
+**Infer. Was Ichabod carrying cash when he vanished? Find the line that suggests it.**
+
+Answers:
+
+> ¶69: “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.”
+>
+> Proof phrase: *he must have had about his person at the time of his disappearance*
+
+Near misses:
+
+> ¶69: “They consisted of two shirts and a half; two stocks for the neck; a pair or two of worsted stockings; an old pair of corduroy small-clothes; a rusty razor; a book of psalm tunes full of dog’s-ears; and a broken pitch-pipe.”
+>
+> Hint: That list has no money in it. Where does the narrator talk about his pay? Check ¶69.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. His pay wasn't left behind, so he likely had it with him. ✓
+2. He left all his money in the bundle.
+3. He had no money at all.
+4. Hans took his money.
+
+#### Clue: Ichabod's own books and the unfinished poem
+
+**Locate. Which titles were Ichabod's personal property rather than the town's?**
+
+Answers:
+
+> ¶69: “As to the books and furniture of the schoolhouse, they belonged to the community, excepting Cotton Mather’s “History of Witchcraft,” a “New England Almanac,” and a book of dreams and fortune-telling; in which last was a sheet of foolscap much scribbled and blotted in several fruitless attempts to make a copy of verses in honor of the heiress of Van Tassel.”
+>
+> Proof phrase: *excepting Cotton Mather’s “History of Witchcraft,” a “New England Almanac,” and a book of dreams and fortune-telling*
+
+Near misses:
+
+> ¶69: “They consisted of two shirts and a half; two stocks for the neck; a pair or two of worsted stockings; an old pair of corduroy small-clothes; a rusty razor; a book of psalm tunes full of dog’s-ears; and a broken pitch-pipe.”
+>
+> Hint: That music book is on his list, but which books does the narrator single out from the school's? Check ¶69.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He owned books about witchcraft and fortune-telling, so he believed in the supernatural. ✓
+2. The books all belonged to the school.
+3. Ichabod hated ghost stories.
+4. Ichabod wrote the almanac himself.
+
+**Locate. What became of his spellbooks and verses?**
+
+Answers:
+
+> ¶69: “These magic books and the poetic scrawl were forthwith consigned to the flames by Hans Van Ripper; who, from that time forward, determined to send his children no more to school, observing that he never knew any good come of this same reading and writing.”
+>
+> Proof phrase: *These magic books and the poetic scrawl were forthwith consigned to the flames*
+
+Near misses:
+
+> ¶69: “As to the books and furniture of the schoolhouse, they belonged to the community, excepting Cotton Mather’s “History of Witchcraft,” a “New England Almanac,” and a book of dreams and fortune-telling; in which last was a sheet of foolscap much scribbled and blotted in several fruitless attempts to make a copy of verses in honor of the heiress of Van Tassel.”
+>
+> Hint: That names the books. What did Hans do with them? Check ¶69.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Hans burned them because he thought reading did no good. ✓
+2. Hans kept them on the school shelf.
+3. Hans gave them to Katrina.
+4. Ichabod took them with him.
+
+**Infer. Who was the unfinished poem for?**
+
+Answers:
+
+> ¶69: “As to the books and furniture of the schoolhouse, they belonged to the community, excepting Cotton Mather’s “History of Witchcraft,” a “New England Almanac,” and a book of dreams and fortune-telling; in which last was a sheet of foolscap much scribbled and blotted in several fruitless attempts to make a copy of verses in honor of the heiress of Van Tassel.”
+>
+> Proof phrase: *in honor of the heiress of Van Tassel*
+
+Near misses:
+
+> ¶70: “As he was a bachelor, and in nobody’s debt, nobody troubled his head any more about him; the school was removed to a different quarter of the hollow, and another pedagogue reigned in his stead.”
+>
+> Hint: That says he never married. Who was he writing for? Check ¶69.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He was trying to win the Van Tassel heiress, which could give someone a reason to want him gone. ✓
+2. The poem was for his mother.
+3. Katrina wrote the poem.
+4. The poem was about the Horseman.
+
+#### Clue: The searchers' report
+
+**Locate. What was found on the stream bank, past where the hoofprints led?**
+
+Answers:
+
+> ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
+>
+> Proof phrase: *was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin*
+
+Near misses:
+
+> ¶70: “Knots of gazers and gossips were collected in the churchyard, at the bridge, and at the spot where the hat and pumpkin had been found.”
+>
+> Hint: That's people gathering later. Where were these first found? Check ¶68.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A smashed pumpkin lay beside his hat, which could point to a trick. ✓
+2. His body was found.
+3. The Horseman's head was found.
+4. Nothing at all was found.
+
+**Locate. How did folks in the valley explain where he went?**
+
+Answers:
+
+> ¶70: “The stories of Brouwer, of Bones, and a whole budget of others were called to mind; and when they had diligently considered them all, and compared them with the symptoms of the present case, they shook their heads, and came to the conclusion that Ichabod had been carried off by the Galloping Hessian.”
+>
+> Proof phrase: *Ichabod had been carried off by the Galloping Hessian*
+
+Near misses:
+
+> ¶70: “Knots of gazers and gossips were collected in the churchyard, at the bridge, and at the spot where the hat and pumpkin had been found.”
+>
+> Hint: They gathered and gossiped. What did they decide? Check ¶70.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The town believed a ghost took him, based on old stories. ✓
+2. The town proved a ghost took him.
+3. The town blamed Brom.
+4. The town thought he ran away.
+
+**Infer. Why did people give up on him so quickly?**
+
+Answers:
+
+> ¶70: “As he was a bachelor, and in nobody’s debt, nobody troubled his head any more about him; the school was removed to a different quarter of the hollow, and another pedagogue reigned in his stead.”
+>
+> Proof phrase: *As he was a bachelor, and in nobody’s debt, nobody troubled his head any more about him*
+
+Near misses:
+
+> ¶69: “The brook was searched, but the body of the schoolmaster was not to be discovered.”
+>
+> Hint: That's the search itself. Why did people stop caring? Check ¶70.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He had no wife or debts, so no one had a reason to keep looking. ✓
+2. They found him alive.
+3. The town was afraid of the bridge.
+4. Hans forbade a search.
+
+#### Story Mode, round 1: locate (3 lines each)
+
+**Tap 3 lines that show what Ichabod owned that was left behind.**
+
+Answers:
+
+> ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
+
+> ¶69: “Hans Van Ripper as executor of his estate, examined the bundle which contained all his worldly effects.”
+
+> ¶69: “They consisted of two shirts and a half; two stocks for the neck; a pair or two of worsted stockings; an old pair of corduroy small-clothes; a rusty razor; a book of psalm tunes full of dog’s-ears; and a broken pitch-pipe.”
+
+> ¶69: “As to the books and furniture of the schoolhouse, they belonged to the community, excepting Cotton Mather’s “History of Witchcraft,” a “New England Almanac,” and a book of dreams and fortune-telling; in which last was a sheet of foolscap much scribbled and blotted in several fruitless attempts to make a copy of verses in honor of the heiress of Van Tassel.”
+
+Near misses:
+
+> ¶68: “The next morning the old horse was found without his saddle, and with the bridle under his feet, soberly cropping the grass at his master’s gate.”
+>
+> Hint: Whose saddle was it? Check ¶66.
+
+> ¶68: “Hans Van Ripper now began to feel some uneasiness about the fate of poor Ichabod, and his saddle.”
+>
+> Hint: Whose saddle was it? Check ¶66.
+
+**Tap 3 lines that show how people realized he was gone.**
+
+Answers:
+
+> ¶68: “The next morning the old horse was found without his saddle, and with the bridle under his feet, soberly cropping the grass at his master’s gate.”
+
+> ¶68: “Ichabod did not make his appearance at breakfast; dinner-hour came, but no Ichabod.”
+
+> ¶68: “The boys assembled at the schoolhouse, and strolled idly about the banks of the brook; but no schoolmaster.”
+
+> ¶68: “Hans Van Ripper now began to feel some uneasiness about the fate of poor Ichabod, and his saddle.”
+
+Near misses:
+
+> ¶70: “The mysterious event caused much speculation at the church on the following Sunday.”
+>
+> Hint: That's the Sunday after. What happened that first day? Check ¶68.
+
+**Tap 3 lines that show the trail people followed to find him.**
+
+Answers:
+
+> ¶68: “An inquiry was set on foot, and after diligent investigation they came upon his traces.”
+
+> ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
+
+> ¶69: “The brook was searched, but the body of the schoolmaster was not to be discovered.”
+
+Near misses:
+
+> ¶70: “Knots of gazers and gossips were collected in the churchyard, at the bridge, and at the spot where the hat and pumpkin had been found.”
+>
+> Hint: That's the crowd days later. Where did the search go? Check ¶68.
+
+#### Story Mode, round 2: infer (Brom Bones asks; tap one line, then Prove it)
+
+Right: Brom raises an eyebrow. "Huh. You read closer than most folks around here."
+
+Wrong: Brom snorts. "That's not what the story says. Read it again."
+
+**"Ghost or man, I wonder." What detail by the stream hints a person was there?**
+
+Answer:
+
+> ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
+>
+> Proof phrase: *close beside it a shattered pumpkin*
+
+Near misses:
+
+> ¶70: “The stories of Brouwer, of Bones, and a whole budget of others were called to mind; and when they had diligently considered them all, and compared them with the symptoms of the present case, they shook their heads, and came to the conclusion that Ichabod had been carried off by the Galloping Hessian.”
+>
+> Hint: That's what the town believed. What object was left behind? Check ¶68.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A smashed pumpkin beside his hat is an odd thing for a ghost to leave. ✓
+2. Pumpkins are signs of ghosts.
+3. Ichabod was carrying a pumpkin for dinner.
+4. The pumpkin proves the Horseman is real.
+
+**"Maybe he just packed up and left." Which line hints he might have gone on his own?**
+
+Answer:
+
+> ¶69: “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.”
+>
+> Proof phrase: *he must have had about his person at the time of his disappearance*
+
+Near misses:
+
+> ¶68: “The next morning the old horse was found without his saddle, and with the bridle under his feet, soberly cropping the grass at his master’s gate.”
+>
+> Hint: The horse came home, but what about his pay? Check ¶69.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. His pay wasn't found, so he may have taken it and gone. ✓
+2. He left all his money behind.
+3. He had nothing to take.
+4. Hans paid him to leave.
+
+**"I wonder if the town looked hard at the facts." Which line shows how they reached a verdict?**
+
+Answer:
+
+> ¶70: “The stories of Brouwer, of Bones, and a whole budget of others were called to mind; and when they had diligently considered them all, and compared them with the symptoms of the present case, they shook their heads, and came to the conclusion that Ichabod had been carried off by the Galloping Hessian.”
+>
+> Proof phrase: *compared them with the symptoms of the present case, they shook their heads*
+
+Near misses:
+
+> ¶70: “The mysterious event caused much speculation at the church on the following Sunday.”
+>
+> Hint: That's the talk starting. How did they decide? Check ¶70.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. They matched the case to old tales instead of weighing evidence. ✓
+2. They found the Horseman's tracks.
+3. They asked Ichabod's family.
+4. They waited for a judge.
+
+#### Story Mode, round 3: catch the lie
+
+**Hans Van Ripper**: I looked through the schoolmaster's bundle myself. Inside were some shirts, a rusty razor, and a brand-new pitch-pipe. His books of magic went straight into the fire.
+
+- False claim: *Inside were some shirts, a rusty razor, and a brand-new pitch-pipe.*
+- Disproved by: ¶0: “They consisted of two shirts and a half; two stocks for the neck; a pair or two of worsted stockings; an old pair of corduroy small-clothes; a rusty razor; a book of psalm tunes full of dog’s-ears; and a broken pitch-pipe.”
+
+**Hans Van Ripper**: We searched high and low for the poor man. At last we pulled his body out of the brook. It was a sad day for the valley.
+
+- False claim: *At last we pulled his body out of the brook.*
+- Disproved by: ¶69: “The brook was searched, but the body of the schoolmaster was not to be discovered.”
+
+**Brom Bones**: I heard all about the search. They found his hat by the water and a fresh-baked pie beside it. Odd thing to leave lying about.
+
+- False claim: *They found his hat by the water and a fresh-baked pie beside it.*
+- Disproved by: ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
+
+#### Story Mode, round 4: build the case (pick a theory, pin 2 lines)
+
+**Ichabod is gone. What do you think happened to him?**
+
+- Brom's prank: Someone played a trick on Ichabod to scare him out of Sleepy Hollow.
+  > ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
+  > ¶69: “The brook was searched, but the body of the schoolmaster was not to be discovered.”
+
+- The Headless Horseman: The ghostly Galloping Hessian really chased Ichabod and carried him away.
+  > ¶70: “The stories of Brouwer, of Bones, and a whole budget of others were called to mind; and when they had diligently considered them all, and compared them with the symptoms of the present case, they shook their heads, and came to the conclusion that Ichabod had been carried off by the Galloping Hessian.”
+  > ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
+  > ¶70: “Knots of gazers and gossips were collected in the churchyard, at the bridge, and at the spot where the hat and pumpkin had been found.”
+
+- He ran away: Ichabod left on his own and started a new life somewhere else.
+  > ¶69: “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.”
+  > ¶69: “The brook was searched, but the body of the schoolmaster was not to be discovered.”
+  > ¶68: “The next morning the old horse was found without his saddle, and with the bridle under his feet, soberly cropping the grass at his master’s gate.”
+
+**Did Ichabod leave Sleepy Hollow alive?**
+
+- He left alive: His pay went with him and no body was found, so he may have left on his own.
+  > ¶69: “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.”
+  > ¶69: “The brook was searched, but the body of the schoolmaster was not to be discovered.”
+
+- He drowned: The trail ends at deep, dark water and his horse came home without him.
+  > ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
+  > ¶68: “The next morning the old horse was found without his saddle, and with the bridle under his feet, soberly cropping the grass at his master’s gate.”
+
+- Something took him: The town decided the Galloping Hessian carried him off.
+  > ¶70: “The stories of Brouwer, of Bones, and a whole budget of others were called to mind; and when they had diligently considered them all, and compared them with the symptoms of the present case, they shook their heads, and came to the conclusion that Ichabod had been carried off by the Galloping Hessian.”
+  > ¶70: “Knots of gazers and gossips were collected in the churchyard, at the bridge, and at the spot where the hat and pumpkin had been found.”
+
+**Which clue should the town have looked at hardest?**
+
+- The hat and pumpkin: A hat and a shattered pumpkin by the brook could mean a trick, not a ghost.
+  > ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
+  > ¶70: “Knots of gazers and gossips were collected in the churchyard, at the bridge, and at the spot where the hat and pumpkin had been found.”
+
+- The missing pay: His pay was never found, and no one kept looking for him.
+  > ¶69: “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.”
+  > ¶70: “As he was a bachelor, and in nobody’s debt, nobody troubled his head any more about him; the school was removed to a different quarter of the hollow, and another pedagogue reigned in his stead.”
+
+- The empty brook: The searchers followed his trail, but the brook gave up no body.
+  > ¶69: “The brook was searched, but the body of the schoolmaster was not to be discovered.”
+  > ¶68: “An inquiry was set on foot, and after diligent investigation they came upon his traces.”
+
+### Scene 2 (`van-tassel-party`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **Brom Bones, the brooding rival**.
+
+#### Clue: The Van Tassel feast
+
+**Locate. What does Ichabod daydream about owning as he eats?**
+
+Answers:
+
+> ¶45: “He could not help, too, rolling his large eyes round him as he ate, and chuckling with the possibility that he might one day be lord of all this scene of almost unimaginable luxury and splendor.”
+>
+> Proof phrase: *he might one day be lord of all this scene of almost unimaginable luxury and splendor*
+
+Near misses:
+
+> ¶44: “Happily, Ichabod Crane was not in so great a hurry as his historian, but did ample justice to every dainty.”
+>
+> Hint: That shows him eating. What is he dreaming of? Check ¶45.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He imagined owning the Van Tassel wealth. ✓
+2. He wanted to become a baker.
+3. He worried there wasn't enough food.
+4. He planned to buy the farm with his pay.
+
+**Locate. What would he do to his old job and his old employer if he became rich?**
+
+Answers:
+
+> ¶45: “Then, he thought, how soon he’d turn his back upon the old schoolhouse; snap his fingers in the face of Hans Van Ripper, and every other niggardly patron, and kick any itinerant pedagogue out of doors that should dare to call him comrade!”
+>
+> Proof phrase: *snap his fingers in the face of Hans Van Ripper*
+
+Near misses:
+
+> ¶46: “Old Baltus Van Tassel moved about among his guests with a face dilated with content and good humor, round and jolly as the harvest moon.”
+>
+> Hint: That's Katrina's father. What does Ichabod plan? Check ¶45.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He would quit teaching and look down on his former employers. ✓
+2. He would give money to the school.
+3. He would thank Hans for his help.
+4. He would stay a teacher forever.
+
+**Infer. Does the feast show Ichabod wants Katrina, or what her family owns?**
+
+Answers:
+
+> ¶44: “Not those of the bevy of buxom lasses, with their luxurious display of red and white; but the ample charms of a genuine Dutch country tea-table, in the sumptuous time of autumn.”
+>
+> Proof phrase: *the ample charms of a genuine Dutch country tea-table*
+
+> ¶45: “He could not help, too, rolling his large eyes round him as he ate, and chuckling with the possibility that he might one day be lord of all this scene of almost unimaginable luxury and splendor.”
+>
+> Proof phrase: *lord of all this scene of almost unimaginable luxury and splendor*
+
+Near misses:
+
+> ¶44: “There was the doughty doughnut, the tender oly koek, and the crisp and crumbling cruller; sweet cakes and short cakes, ginger cakes and honey cakes, and the whole family of cakes.”
+>
+> Hint: That lists the food. What catches his eye most? Check ¶44.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The food and wealth draw him more than the young women do. ✓
+2. He only cares about Katrina's kindness.
+3. He is not hungry at all.
+4. Brom set the table to tempt him.
+
+#### Clue: Brom Bones, the brooding rival
+
+**Locate. How did Ichabod's rival feel while the music played?**
+
+Answers:
+
+> ¶48: “The lady of his heart was his partner in the dance, and smiling graciously in reply to all his amorous oglings; while Brom Bones, sorely smitten with love and jealousy, sat brooding by himself in one corner.”
+>
+> Proof phrase: *Brom Bones, sorely smitten with love and jealousy, sat brooding by himself in one corner*
+
+Near misses:
+
+> ¶47: “And now the sound of the music from the common room, or hall, summoned to the dance.”
+>
+> Hint: That's the music starting. Where is Brom during the dance? Check ¶48.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Brom was jealous, watching Katrina dance with Ichabod. ✓
+2. Brom was dancing happily.
+3. Brom left the party early.
+4. Brom was playing the fiddle.
+
+**Locate. What pranks did Brom and his friends pull on the teacher?**
+
+Answers:
+
+> ¶33: “They harried his hitherto peaceful domains; smoked out his singing school by stopping up the chimney; broke into the schoolhouse at night, in spite of its formidable fastenings of withe and window stakes, and turned everything topsy-turvy, so that the poor schoolmaster began to think all the witches in the country held their meetings there.”
+>
+> Proof phrase: *smoked out his singing school by stopping up the chimney*
+
+> ¶33: “But what was still more annoying, Brom took all opportunities of turning him into ridicule in presence of his mistress, and had a scoundrel dog whom he taught to whine in the most ludicrous manner, and introduced as a rival of Ichabod’s, to instruct her in psalmody.”
+>
+> Proof phrase: *had a scoundrel dog whom he taught to whine in the most ludicrous manner*
+
+Near misses:
+
+> ¶33: “Brom, who had a degree of rough chivalry in his nature, would fain have carried matters to open warfare and have settled their pretensions to the lady, according to the mode of those most concise and simple reasoners, the knights-errant of yore,—by single combat; but Ichabod was too conscious of the superior might of his adversary to enter the lists against him; he had overheard a boast of Bones, that he would “double the schoolmaster up, and lay him on a shelf of his own schoolhouse;” and he was too wary to give him an opportunity.”
+>
+> Hint: That's a threat, not a prank they pulled. Check ¶33.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Brom had a history of playing tricks on Ichabod. ✓
+2. Brom never bothered Ichabod.
+3. Ichabod pranked Brom first.
+4. Ghosts did the pranks.
+
+**Infer. Why didn't the two men simply have it out with their fists?**
+
+Answers:
+
+> ¶33: “Brom, who had a degree of rough chivalry in his nature, would fain have carried matters to open warfare and have settled their pretensions to the lady, according to the mode of those most concise and simple reasoners, the knights-errant of yore,—by single combat; but Ichabod was too conscious of the superior might of his adversary to enter the lists against him; he had overheard a boast of Bones, that he would “double the schoolmaster up, and lay him on a shelf of his own schoolhouse;” and he was too wary to give him an opportunity.”
+>
+> Proof phrase: *Ichabod was too conscious of the superior might of his adversary to enter the lists against him*
+
+Near misses:
+
+> ¶32: “Certain it is, this was not the case with the redoubtable Brom Bones; and from the moment Ichabod Crane made his advances, the interests of the former evidently declined: his horse was no longer seen tied to the palings on Sunday nights, and a deadly feud gradually arose between him and the preceptor of Sleepy Hollow.”
+>
+> Hint: That shows the feud began. Why was there no fight? Check ¶33.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Ichabod knew Brom was stronger, so Brom turned to tricks instead. ✓
+2. They were good friends.
+3. Brom was afraid of Ichabod.
+4. The town banned fighting.
+
+#### Clue: Brom's tale of racing the Horseman
+
+**Locate. In Brom's own adventure, where did the rider disappear?**
+
+Answers:
+
+> ¶55: “He affirmed that on returning one night from the neighboring village of Sing Sing, he had been overtaken by this midnight trooper; that he had offered to race with him for a bowl of punch, and should have won it too, for Daredevil beat the goblin horse all hollow, but just as they came to the church bridge, the Hessian bolted, and vanished in a flash of fire.”
+>
+> Proof phrase: *just as they came to the church bridge, the Hessian bolted, and vanished in a flash of fire*
+
+Near misses:
+
+> ¶54: “The tale was told of old Brouwer, a most heretical disbeliever in ghosts, how he met the Horseman returning from his foray into Sleepy Hollow, and was obliged to get up behind him; how they galloped over bush and brake, over hill and swamp, until they reached the bridge; when the Horseman suddenly turned into a skeleton, threw old Brouwer into the brook, and sprang away over the tree-tops with a clap of thunder.”
+>
+> Hint: That's old Brouwer's tale. What did Brom claim? Check ¶55.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Brom bragged that the ghost vanished at the bridge. ✓
+2. Brom lost the race.
+3. Brom said he had never seen the Horseman.
+4. The Horseman vanished at the mill.
+
+**Locate. How did the spooky stories that night affect the schoolmaster?**
+
+Answers:
+
+> ¶56: “All these tales, told in that drowsy undertone with which men talk in the dark, the countenances of the listeners only now and then receiving a casual gleam from the glare of a pipe, sank deep in the mind of Ichabod.”
+>
+> Proof phrase: *sank deep in the mind of Ichabod*
+
+Near misses:
+
+> ¶56: “He repaid them in kind with large extracts from his invaluable author, Cotton Mather, and added many marvellous events that had taken place in his native State of Connecticut, and fearful sights which he had seen in his nightly walks about Sleepy Hollow.”
+>
+> Hint: That's what he told back. How did their stories stay with him? Check ¶56.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The stories stuck in his mind and stayed with him. ✓
+2. He forgot them right away.
+3. He laughed them off.
+4. He wrote them down for his pupils.
+
+**Infer. Why might Brom share his boast while Ichabod was in the room?**
+
+Answers:
+
+> ¶55: “This story was immediately matched by a thrice marvellous adventure of Brom Bones, who made light of the Galloping Hessian as an arrant jockey.”
+
+> ¶56: “All these tales, told in that drowsy undertone with which men talk in the dark, the countenances of the listeners only now and then receiving a casual gleam from the glare of a pipe, sank deep in the mind of Ichabod.”
+>
+> Proof phrase: *sank deep in the mind of Ichabod*
+
+Near misses:
+
+> ¶54: “Such was one of the favorite haunts of the Headless Horseman, and the place where he was most frequently encountered.”
+>
+> Hint: That's where the Horseman is said to ride. What did Brom add? Check ¶55.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Brom could plant the idea of the church bridge in Ichabod's mind. ✓
+2. Brom wanted to warn him kindly.
+3. Brom didn't know Ichabod was there.
+4. Brom was scared himself.
+
+#### Clue: Ichabod's private talk with Katrina
+
+**Locate. Why did Ichabod remain after the guests went home?**
+
+Answers:
+
+> ¶57: “Ichabod only lingered behind, according to the custom of country lovers, to have a tête-à-tête with the heiress; fully convinced that he was now on the high road to success.”
+>
+> Proof phrase: *to have a tête-à-tête with the heiress*
+
+Near misses:
+
+> ¶57: “The revel now gradually broke up.”
+>
+> Hint: That's when the party ends. Why does he remain? Check ¶57.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He hoped to win Katrina's hand. ✓
+2. He was helping clean up.
+3. He was too scared to ride home.
+4. He was waiting for Brom.
+
+**Locate. What was his mood when he came out of the house?**
+
+Answers:
+
+> ¶57: “Something, however, I fear me, must have gone wrong, for he certainly sallied forth, after no very great interval, with an air quite desolate and chapfallen.”
+>
+> Proof phrase: *with an air quite desolate and chapfallen*
+
+> ¶57: “Let it suffice to say, Ichabod stole forth with the air of one who had been sacking a henroost, rather than a fair lady’s heart.”
+
+Near misses:
+
+> ¶57: “Ichabod only lingered behind, according to the custom of country lovers, to have a tête-à-tête with the heiress; fully convinced that he was now on the high road to success.”
+>
+> Hint: That's how he felt going in. How did he leave? Check ¶57.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Something went badly in his talk with Katrina. ✓
+2. He was happy and proud.
+3. He was angry at Brom.
+4. He was sick from the feast.
+
+**Infer. What does the narrator suspect Katrina was up to all along?**
+
+Answers:
+
+> ¶57: “Could that girl have been playing off any of her coquettish tricks?”
+
+> ¶57: “Was her encouragement of the poor pedagogue all a mere sham to secure her conquest of his rival?”
+
+Near misses:
+
+> ¶57: “What passed at this interview I will not pretend to say, for in fact I do not know.”
+>
+> Hint: That's the narrator saying he doesn't know. What does he guess? Check ¶57.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Katrina may have used Ichabod to make Brom jealous. ✓
+2. Katrina truly loved Ichabod.
+3. Katrina was a ghost.
+4. Katrina told Ichabod to leave town.
+
+### Scene 3 (`the-road-home`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **The shadowy rider**.
+
+#### Clue: Major André's tree
+
+**Locate. What did the pale shape in the branches turn out to be?**
+
+Answers:
+
+> ¶60: “As he approached a little nearer, he thought he saw something white, hanging in the midst of the tree: he paused and ceased whistling but, on looking more narrowly, perceived that it was a place where the tree had been scathed by lightning, and the white wood laid bare.”
+>
+> Proof phrase: *a place where the tree had been scathed by lightning, and the white wood laid bare*
+
+Near misses:
+
+> ¶59: “The common people regarded it with a mixture of respect and superstition, partly out of sympathy for the fate of its ill-starred namesake, and partly from the tales of strange sights, and doleful lamentations, told concerning it.”
+>
+> Hint: That's what people say about the tree. What did he really see? Check ¶60.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The scary shape was a lightning scar, so his fear was fooling him. ✓
+2. It was a real ghost.
+3. It was Brom in a sheet.
+4. It was Major André's coat.
+
+**Locate. What was the moaning noise really?**
+
+Answers:
+
+> ¶60: “Suddenly he heard a groan—his teeth chattered, and his knees smote against the saddle: it was but the rubbing of one huge bough upon another, as they were swayed about by the breeze.”
+>
+> Proof phrase: *it was but the rubbing of one huge bough upon another*
+
+Near misses:
+
+> ¶60: “As Ichabod approached this fearful tree, he began to whistle; he thought his whistle was answered; it was but a blast sweeping sharply through the dry branches.”
+>
+> Hint: That's his whistle. Which line explains the groan? Check ¶60.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The noise came from tree limbs, not a spirit. ✓
+2. A ghost was crying.
+3. Brom was hiding in the tree.
+4. His horse made the noise.
+
+**Infer. Why was Ichabod already frightened before he reached the landmark?**
+
+Answers:
+
+> ¶59: “All the stories of ghosts and goblins that he had heard in the afternoon now came crowding upon his recollection.”
+
+> ¶59: “He had never felt so lonely and dismal.”
+
+Near misses:
+
+> ¶58: “Far below him the Tappan Zee spread its dusky and indistinct waste of waters, with here and there the tall mast of a sloop, riding quietly at anchor under the land.”
+>
+> Hint: That's the view of the river. What filled his mind? Check ¶59.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The ghost stories from the party made him expect to see ghosts. ✓
+2. He had seen a ghost there before.
+3. Brom had warned him to go home.
+4. The night was bright and cheerful.
+
+#### Clue: The shadowy rider
+
+**Locate. How did the figure respond when Ichabod called out?**
+
+Answers:
+
+> ¶63: “He received no reply.”
+
+> ¶63: “Still there was no answer.”
+
+Near misses:
+
+> ¶61: “It was at this identical spot that the unfortunate André was captured, and under the covert of those chestnuts and vines were the sturdy yeomen concealed who surprised him.”
+>
+> Hint: That's the history of the spot. What did he see there? Check ¶62.
+
+> ¶62: “In the dark shadow of the grove, on the margin of the brook, he beheld something huge, misshapen and towering.”
+>
+> Hint: That's where he saw it. How did it reply? Check ¶63.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. It waited in the shadows and stayed silent, which made it more frightening. ✓
+2. It greeted him by name.
+3. It appeared in the middle of the church.
+4. It answered that it was the Horseman.
+
+**Locate. When they climbed the slope, what did Ichabod notice about the stranger?**
+
+Answers:
+
+> ¶64: “On mounting a rising ground, which brought the figure of his fellow-traveller in relief against the sky, gigantic in height, and muffled in a cloak, Ichabod was horror-struck on perceiving that he was headless!—but his horror was still more increased on observing that the head, which should have rested on his shoulders, was carried before him on the pommel of his saddle!”
+>
+> Proof phrase: *Ichabod was horror-struck on perceiving that he was headless*
+
+Near misses:
+
+> ¶63: “He appeared to be a horseman of large dimensions, and mounted on a black horse of powerful frame.”
+>
+> Hint: That's his size. What did Ichabod see on the hill? Check ¶64.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The rider seemed to have no head, so it looked like the Horseman. ✓
+2. The rider took off his hat.
+3. The rider was Ichabod's friend.
+4. The rider rode away.
+
+**Infer. Which details could fit a big flesh-and-blood rider rather than a spirit?**
+
+Answers:
+
+> ¶63: “He appeared to be a horseman of large dimensions, and mounted on a black horse of powerful frame.”
+
+> ¶64: “The stranger, however, quickened his horse to an equal pace.”
+
+> ¶64: “Ichabod pulled up, and fell into a walk, thinking to lag behind,—the other did the same.”
+
+Near misses:
+
+> ¶64: “On mounting a rising ground, which brought the figure of his fellow-traveller in relief against the sky, gigantic in height, and muffled in a cloak, Ichabod was horror-struck on perceiving that he was headless!—but his horror was still more increased on observing that the head, which should have rested on his shoulders, was carried before him on the pommel of his saddle!”
+>
+> Hint: That detail makes him seem a ghost. Which lines show an ordinary rider? Check ¶63.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A large rider who keeps pace could be a real person, like Brom. ✓
+2. Only a ghost can ride a horse.
+3. The rider floated above the road.
+4. The rider walked through a tree.
+
+#### Clue: Hans Van Ripper's saddle
+
+**Locate. What went wrong with Ichabod's seat as he fled?**
+
+Answers:
+
+> ¶66: “As yet the panic of the steed had given his unskilful rider an apparent advantage in the chase, but just as he had got half way through the hollow, the girths of the saddle gave way, and he felt it slipping from under him.”
+>
+> Proof phrase: *the girths of the saddle gave way*
+
+> ¶66: “He seized it by the pommel, and endeavored to hold it firm, but in vain; and had just time to save himself by clasping old Gunpowder round the neck, when the saddle fell to the earth, and he heard it trampled under foot by his pursuer.”
+>
+> Proof phrase: *the saddle fell to the earth, and he heard it trampled under foot by his pursuer*
+
+Near misses:
+
+> ¶65: “They had now reached the road which turns off to Sleepy Hollow; but Gunpowder, who seemed possessed with a demon, instead of keeping up it, made an opposite turn, and plunged headlong downhill to the left.”
+>
+> Hint: That's the horse turning. What gave way? Check ¶66.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The saddle fell and was trampled, which matches what searchers later found. ✓
+2. Ichabod threw the saddle away.
+3. The saddle was stolen at the party.
+4. The horse ran off with the saddle.
+
+**Locate. What worry flashed through Ichabod's head during the chase?**
+
+Answers:
+
+> ¶66: “For a moment the terror of Hans Van Ripper’s wrath passed across his mind,—for it was his Sunday saddle; but this was no time for petty fears; the goblin was hard on his haunches; and (unskilful rider that he was!) he had much ado to maintain his seat; sometimes slipping on one side, sometimes on another, and sometimes jolted on the high ridge of his horse’s backbone, with a violence that he verily feared would cleave him asunder.”
+>
+> Proof phrase: *the terror of Hans Van Ripper’s wrath passed across his mind*
+
+Near misses:
+
+> ¶68: “Hans Van Ripper now began to feel some uneasiness about the fate of poor Ichabod, and his saddle.”
+>
+> Hint: That's Hans the next day. What did Ichabod fear during the ride? Check ¶66.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The saddle belonged to Hans, and Ichabod feared his anger. ✓
+2. The saddle was Ichabod's own.
+3. The saddle belonged to Brom.
+4. Ichabod didn't care about the saddle.
+
+**Infer. Why does this piece of tack help show the ride happened as told?**
+
+Answers:
+
+> ¶66: “He seized it by the pommel, and endeavored to hold it firm, but in vain; and had just time to save himself by clasping old Gunpowder round the neck, when the saddle fell to the earth, and he heard it trampled under foot by his pursuer.”
+>
+> Proof phrase: *he heard it trampled under foot by his pursuer*
+
+> ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
+>
+> Proof phrase: *was found the saddle trampled in the dirt*
+
+Near misses:
+
+> ¶68: “The next morning the old horse was found without his saddle, and with the bridle under his feet, soberly cropping the grass at his master’s gate.”
+>
+> Hint: That shows the horse came home. Where was the saddle itself found? Check ¶68.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. It was trampled in the chase and found trampled the next day, so two parts of the story match. ✓
+2. It proves a ghost was there.
+3. It proves Ichabod drowned.
+4. It proves nothing happened.
+
+#### Clue: The head hurled at the bridge
+
+**Locate. What did Ichabod hope would happen once he crossed over?**
+
+Answers:
+
+> ¶67: ““If I can but reach that bridge,” thought Ichabod, “I am safe.””
+
+> ¶67: “Another convulsive kick in the ribs, and old Gunpowder sprang upon the bridge; he thundered over the resounding planks; he gained the opposite side; and now Ichabod cast a look behind to see if his pursuer should vanish, according to rule, in a flash of fire and brimstone.”
+>
+> Proof phrase: *to see if his pursuer should vanish, according to rule, in a flash of fire and brimstone*
+
+Near misses:
+
+> ¶67: “He recollected the place where Brom Bones’s ghostly competitor had disappeared.”
+>
+> Hint: That's what he remembered. What did he expect to see? Check ¶67.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He expected the ghost to vanish, as in Brom's tale. ✓
+2. He expected Brom to stop him.
+3. He expected to fall in the water.
+4. He expected to meet Katrina.
+
+**Locate. What did the pursuer do instead of vanishing?**
+
+Answers:
+
+> ¶67: “Just then he saw the goblin rising in his stirrups, and in the very act of hurling his head at him.”
+
+Near misses:
+
+> ¶67: “Just then he heard the black steed panting and blowing close behind him; he even fancied that he felt his hot breath.”
+>
+> Hint: That's the chase. What was thrown? Check ¶67.
+
+> ¶67: “It encountered his cranium with a tremendous crash,—he was tumbled headlong into the dust, and Gunpowder, the black steed, and the goblin rider, passed by like a whirlwind.”
+>
+> Hint: That's what happened to Ichabod. What did the pursuer do? Check ¶67.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The rider threw something and knocked him down instead of vanishing. ✓
+2. The rider vanished in fire.
+3. Ichabod escaped safely home.
+4. The rider stopped and talked.
+
+**Infer. What turned up the next day that might explain the thrown "head"?**
+
+Answers:
+
+> ¶68: “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.”
+>
+> Proof phrase: *close beside it a shattered pumpkin*
+
+Near misses:
+
+> ¶68: “The next morning the old horse was found without his saddle, and with the bridle under his feet, soberly cropping the grass at his master’s gate.”
+>
+> Hint: That's the horse. What lay beside the hat? Check ¶68.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A smashed pumpkin suggests the "head" could be a pumpkin thrown by a living rider. ✓
+2. A real head was found.
+3. Nothing was found by the brook.
+4. The pumpkin was from the party table.
+
+### Scene 4 (`the-towns-verdict`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **The storyteller's doubt**.
+
+#### Clue: The report from New York
+
+**Locate. According to the traveler, why did Ichabod go away?**
+
+Answers:
+
+> ¶71: “It is true, an old farmer, who had been down to New York on a visit several years after, and from whom this account of the ghostly adventure was received, brought home the intelligence that Ichabod Crane was still alive; that he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress; that he had changed his quarters to a distant part of the country; had kept school and studied law at the same time; had been admitted to the bar; turned politician; electioneered; written for the newspapers; and finally had been made a justice of the Ten Pound Court.”
+>
+> Proof phrase: *he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress*
+
+Near misses:
+
+> ¶72: “The old country wives, however, who are the best judges of these matters, maintain to this day that Ichabod was spirited away by supernatural means; and it is a favorite story often told about the neighborhood round the winter evening fire.”
+>
+> Hint: That's what the old wives say. What did the farmer report? Check ¶71.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A farmer reported him alive and gone for fear and shame, but it is secondhand news. ✓
+2. He was carried off by a ghost.
+3. He drowned in the brook.
+4. He married Katrina.
+
+**Locate. What careers did he take up afterward?**
+
+Answers:
+
+> ¶71: “It is true, an old farmer, who had been down to New York on a visit several years after, and from whom this account of the ghostly adventure was received, brought home the intelligence that Ichabod Crane was still alive; that he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress; that he had changed his quarters to a distant part of the country; had kept school and studied law at the same time; had been admitted to the bar; turned politician; electioneered; written for the newspapers; and finally had been made a justice of the Ten Pound Court.”
+>
+> Proof phrase: *had kept school and studied law at the same time; had been admitted to the bar; turned politician*
+
+Near misses:
+
+> ¶72: “The schoolhouse being deserted soon fell to decay, and was reported to be haunted by the ghost of the unfortunate pedagogue and the plowboy, loitering homeward of a still summer evening, has often fancied his voice at a distance, chanting a melancholy psalm tune among the tranquil solitudes of Sleepy Hollow.”
+>
+> Hint: That's a ghost story about him. What did he become? Check ¶71.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He made a new life elsewhere, which fits running away. ✓
+2. He became a ghost.
+3. He went back to Connecticut to farm.
+4. He stayed a schoolmaster in Sleepy Hollow.
+
+**Infer. Why should a detective be careful with this news?**
+
+Answers:
+
+> ¶71: “It is true, an old farmer, who had been down to New York on a visit several years after, and from whom this account of the ghostly adventure was received, brought home the intelligence that Ichabod Crane was still alive; that he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress; that he had changed his quarters to a distant part of the country; had kept school and studied law at the same time; had been admitted to the bar; turned politician; electioneered; written for the newspapers; and finally had been made a justice of the Ten Pound Court.”
+>
+> Proof phrase: *an old farmer, who had been down to New York on a visit several years after*
+
+Near misses:
+
+> ¶71: “Brom Bones, too, who, shortly after his rival’s disappearance conducted the blooming Katrina in triumph to the altar, was observed to look exceedingly knowing whenever the story of Ichabod was related, and always burst into a hearty laugh at the mention of the pumpkin; which led some to suspect that he knew more about the matter than he chose to tell.”
+>
+> Hint: That's Brom. Who brought the news, and when? Check ¶71.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. It came years later from one person, so it isn't firsthand proof. ✓
+2. Farmers always lie.
+3. Ichabod wrote it himself.
+4. The whole town saw him in New York.
+
+#### Clue: Brom's laugh at the pumpkin
+
+**Locate. What did Brom do soon after Ichabod was gone?**
+
+Answers:
+
+> ¶71: “Brom Bones, too, who, shortly after his rival’s disappearance conducted the blooming Katrina in triumph to the altar, was observed to look exceedingly knowing whenever the story of Ichabod was related, and always burst into a hearty laugh at the mention of the pumpkin; which led some to suspect that he knew more about the matter than he chose to tell.”
+>
+> Proof phrase: *conducted the blooming Katrina in triumph to the altar*
+
+Near misses:
+
+> ¶71: “It is true, an old farmer, who had been down to New York on a visit several years after, and from whom this account of the ghostly adventure was received, brought home the intelligence that Ichabod Crane was still alive; that he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress; that he had changed his quarters to a distant part of the country; had kept school and studied law at the same time; had been admitted to the bar; turned politician; electioneered; written for the newspapers; and finally had been made a justice of the Ten Pound Court.”
+>
+> Hint: That's news of Ichabod. What did Brom do? Check ¶71.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Brom married Katrina, so he gained from Ichabod leaving. ✓
+2. Brom left the valley.
+3. Brom searched for Ichabod.
+4. Brom became a teacher.
+
+**Locate. How does Brom react each time people retell what happened?**
+
+Answers:
+
+> ¶71: “Brom Bones, too, who, shortly after his rival’s disappearance conducted the blooming Katrina in triumph to the altar, was observed to look exceedingly knowing whenever the story of Ichabod was related, and always burst into a hearty laugh at the mention of the pumpkin; which led some to suspect that he knew more about the matter than he chose to tell.”
+>
+> Proof phrase: *always burst into a hearty laugh at the mention of the pumpkin*
+
+Near misses:
+
+> ¶72: “The old country wives, however, who are the best judges of these matters, maintain to this day that Ichabod was spirited away by supernatural means; and it is a favorite story often told about the neighborhood round the winter evening fire.”
+>
+> Hint: That's the old wives. How does Brom act? Check ¶71.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. His laugh at the pumpkin hints he knows it was a trick. ✓
+2. He cries whenever it comes up.
+3. He refuses to listen.
+4. He swears it was a ghost.
+
+**Infer. Why is Brom's behavior a clue but not proof?**
+
+Answers:
+
+> ¶71: “Brom Bones, too, who, shortly after his rival’s disappearance conducted the blooming Katrina in triumph to the altar, was observed to look exceedingly knowing whenever the story of Ichabod was related, and always burst into a hearty laugh at the mention of the pumpkin; which led some to suspect that he knew more about the matter than he chose to tell.”
+>
+> Proof phrase: *which led some to suspect that he knew more about the matter than he chose to tell*
+
+Near misses:
+
+> ¶72: “The bridge became more than ever an object of superstitious awe; and that may be the reason why the road has been altered of late years, so as to approach the church by the border of the millpond.”
+>
+> Hint: That's about the bridge. What do people think about Brom? Check ¶71.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. People only suspect him; no one saw him do it. ✓
+2. Brom confessed to everything.
+3. A judge found Brom guilty.
+4. Brom was out of town that night.
+
+#### Clue: The old wives' ghost story
+
+**Locate. What do the elderly women of the valley say became of him?**
+
+Answers:
+
+> ¶72: “The old country wives, however, who are the best judges of these matters, maintain to this day that Ichabod was spirited away by supernatural means; and it is a favorite story often told about the neighborhood round the winter evening fire.”
+>
+> Proof phrase: *Ichabod was spirited away by supernatural means*
+
+Near misses:
+
+> ¶71: “It is true, an old farmer, who had been down to New York on a visit several years after, and from whom this account of the ghostly adventure was received, brought home the intelligence that Ichabod Crane was still alive; that he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress; that he had changed his quarters to a distant part of the country; had kept school and studied law at the same time; had been admitted to the bar; turned politician; electioneered; written for the newspapers; and finally had been made a justice of the Ten Pound Court.”
+>
+> Hint: That's the farmer's report. What do the old wives claim? Check ¶72.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. They believe a ghost took him, and they keep retelling it. ✓
+2. They say he moved to New York.
+3. They say Brom scared him off.
+4. They say he drowned.
+
+**Locate. Why did the town move travelers away from the old crossing?**
+
+Answers:
+
+> ¶72: “The bridge became more than ever an object of superstitious awe; and that may be the reason why the road has been altered of late years, so as to approach the church by the border of the millpond.”
+>
+> Proof phrase: *The bridge became more than ever an object of superstitious awe*
+
+Near misses:
+
+> ¶72: “The schoolhouse being deserted soon fell to decay, and was reported to be haunted by the ghost of the unfortunate pedagogue and the plowboy, loitering homeward of a still summer evening, has often fancied his voice at a distance, chanting a melancholy psalm tune among the tranquil solitudes of Sleepy Hollow.”
+>
+> Hint: That's the schoolhouse. What happened to the route? Check ¶72.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. People feared the bridge so much that the route was changed. ✓
+2. The bridge washed away in a flood.
+3. Brom tore down the bridge.
+4. The bridge was rebuilt in stone.
+
+**Infer. Is the narrator serious when he praises these women's wisdom?**
+
+Answers:
+
+> ¶72: “The old country wives, however, who are the best judges of these matters, maintain to this day that Ichabod was spirited away by supernatural means; and it is a favorite story often told about the neighborhood round the winter evening fire.”
+>
+> Proof phrase: *who are the best judges of these matters*
+
+Near misses:
+
+> ¶72: “The schoolhouse being deserted soon fell to decay, and was reported to be haunted by the ghost of the unfortunate pedagogue and the plowboy, loitering homeward of a still summer evening, has often fancied his voice at a distance, chanting a melancholy psalm tune among the tranquil solitudes of Sleepy Hollow.”
+>
+> Hint: That's about the school. Where does he praise the old wives? Check ¶72.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He is likely joking, which makes their ghost claim less trustworthy. ✓
+2. He means it, so the ghost is proven.
+3. He never mentions them.
+4. He says they saw the ghost themselves.
+
+#### Clue: The storyteller's doubt
+
+**Locate. What does the man who told it admit when a listener calls it far-fetched?**
+
+Answers:
+
+> ¶81: ““Faith, sir,” replied the story-teller, “as to that matter, I don’t believe one-half of it myself.””
+
+Near misses:
+
+> ¶76: “The story-teller, who was just putting a glass of wine to his lips, as a refreshment after his toils, paused for a moment, looked at his inquirer with an air of infinite deference, and, lowering the glass slowly to the table, observed that the story was intended most logically to prove—”
+>
+> Hint: He starts to explain. What does he finally admit? Check ¶81.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Even the man who told it doesn't believe all of it, so parts may be made up. ✓
+2. He swears it is all true.
+3. He gets angry and leaves.
+4. He says Ichabod told him.
+
+**Locate. How did one listener react while the others laughed?**
+
+Answers:
+
+> ¶75: “There was, however, one tall, dry-looking old gentleman, with beetling eyebrows, who maintained a grave and rather severe face throughout, now and then folding his arms, inclining his head, and looking down upon the floor, as if turning a doubt over in his mind.”
+>
+> Proof phrase: *maintained a grave and rather severe face throughout*
+
+Near misses:
+
+> ¶75: “When his story was concluded, there was much laughter and approbation, particularly from two or three deputy aldermen, who had been asleep the greater part of the time.”
+>
+> Hint: That's the others laughing. Who stayed serious? Check ¶75.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. One listener doubted the story and wanted proof. ✓
+2. Everyone believed it.
+3. The listener fell asleep.
+4. The listener told his own ghost story.
+
+**Infer. What does the doubter want to know about it?**
+
+Answers:
+
+> ¶75: “When the mirth of the rest of the company had subsided, and silence was restored, he leaned one arm on the elbow of his chair, and sticking the other akimbo, demanded, with a slight, but exceedingly sage motion of the head, and contraction of the brow, what was the moral of the story, and what it went to prove?”
+>
+> Proof phrase: *what was the moral of the story, and what it went to prove*
+
+Near misses:
+
+> ¶80: “At length he observed that all this was very well, but still he thought the story a little on the extravagant—there were one or two points on which he had his doubts.”
+>
+> Hint: That comes after his answer. What did he first ask? Check ¶75.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He asks what the story proves, like a detective weighing evidence. ✓
+2. He asks for another story.
+3. He asks who the Horseman was.
+4. He asks to meet Ichabod.
+
+## Fair play: The Tell-Tale Heart
+
+Generated from `worlds/tell-tale-heart/world.json` (same rules as Sleepy Hollow).
+
+#### Mission: Test the narrator
+
+Prove whether he is the calm, sane man he claims to be.
+
+- Sealed clue: `confession-floorboards`; payoff: “I admit the deed! — tear up the planks! — here, here! — it is the beating of his hideous heart!””
+- Theories: He is calm and sane, Guilt is breaking him, He is not in his right mind
+- Piece `no-object` (search): “Object there was none.” · Lead: Find the line where he says he had no reason for the deed.
+- Piece `the-eye` (search): “I think it was his eye! — yes, it was this!” · Lead: Find the line where he names what drove him to it.
+- Piece `triumph` (room): “I could scarcely contain my feelings of triumph.” · Lead: Find the line that shows how proud he felt while sneaking in.
+- Piece `precautions` (room): “If, still, you think me mad, you will think so no longer when I describe the wise precautions I took for the concealment of the body.” · Lead: Find the line where he promises to prove he isn't crazy by how carefully he hid what he had done.
+- Piece `heard-not` (confession): “I gasped for breath — and yet the officers heard it not.” · Lead: Find the line that shows the visitors noticed nothing while he struggled.
+
+### Scene 1 (`arrival`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **Officers’ shriek report**.
+
+#### Clue: Street door and four o’clock
+
+**Locate. How late was it when his work was finished?**
+
+Answers:
+
+> ¶25: “When I had made an end of these labors, it was four o'clock — still dark as midnight.”
+
+Near misses:
+
+> ¶25: “As the bell sounded the hour, there came a knocking at the street door.”
+>
+> Hint: That's the knock. When did he finish? Check ¶25.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He finished before dawn, while it was still dark. ✓
+2. He finished at noon.
+3. He never finished.
+4. He finished at sunset.
+
+**Locate. What did the visitors say they were?**
+
+Answers:
+
+> ¶25: “There entered three men, who introduced themselves, with perfect suavity, as officers of the police.”
+
+Near misses:
+
+> ¶25: “I went down to open it with a light heart, — for what had I now to fear?”
+>
+> Hint: That's how he felt going down. Who came in? Check ¶25.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Three police officers arrived, and they were very polite. ✓
+2. Neighbors came to visit.
+3. The old man came home.
+4. One rude soldier came in.
+
+**Infer. How did he feel about answering?**
+
+Answers:
+
+> ¶25: “I went down to open it with a light heart, — for what had I now to fear?”
+
+Near misses:
+
+> ¶25: “When I had made an end of these labors, it was four o'clock — still dark as midnight.”
+>
+> Hint: That's the time. How did he feel? Check ¶25.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He felt carefree, as if he had nothing to fear at all. ✓
+2. He was terrified of the knock.
+3. He refused to open up.
+4. He was asleep and missed it.
+
+#### Clue: Officers’ shriek report
+
+**Locate. What did someone next door notice in the dark hours?**
+
+Answers:
+
+> ¶26: “A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises.”
+>
+> Proof phrase: *A shriek had been heard by a neighbor during the night*
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A neighbor heard a scream. ✓
+2. A neighbor saw a fire.
+3. A neighbor heard music.
+4. A neighbor saw a thief.
+
+**Locate. What were the visitors sent to do?**
+
+Answers:
+
+> ¶26: “A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises.”
+>
+> Proof phrase: *they (the officers) had been deputed to search the premises*
+
+Prove it (✓ is right; shuffled on screen):
+
+1. They were sent to look through the house. ✓
+2. They were sent to arrest the old man.
+3. They were sent to deliver a letter.
+4. They came to buy the house.
+
+**Infer. Why does a report from next door matter more than his word alone?**
+
+Answers:
+
+> ¶26: “A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises.”
+>
+> Proof phrase: *A shriek had been heard by a neighbor during the night*
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Someone else heard something, so his story can be checked. ✓
+2. The neighbor saw everything happen.
+3. The neighbor wrote the story.
+4. No one heard anything at all.
+
+### Scene 2 (`search`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **No stated motive**.
+
+#### Clue: Treasures, secure and undisturbed
+
+**Locate. Where did he say the old man had gone?**
+
+Answers:
+
+> ¶27: “The old man, I mentioned, was absent in the country.”
+
+Near misses:
+
+> ¶27: “The shriek, I said, was my own in a dream.”
+>
+> Hint: That explains the scream. Where did he say the old man was? Check ¶27.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He claimed the old man was away in the country. ✓
+2. He said the old man was asleep upstairs.
+3. He said the old man had moved to the city.
+4. He said he didn't know.
+
+**Locate. How did he explain the scream?**
+
+Answers:
+
+> ¶27: “The shriek, I said, was my own in a dream.”
+
+Near misses:
+
+> ¶27: “I smiled, — for what had I to fear?”
+>
+> Hint: That's his smile. What did he say about the noise? Check ¶27.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He claimed he cried out himself while dreaming. ✓
+2. He blamed a cat.
+3. He said the neighbor imagined it.
+4. He admitted the old man screamed.
+
+**Infer. Why might he show the visitors the old man's valuables?**
+
+Answers:
+
+> ¶27: “I showed them his treasures, secure, undisturbed.”
+
+Near misses:
+
+> ¶27: “I took my visitors all over the house.”
+>
+> Hint: That's the tour. What did he show them in the chamber? Check ¶27.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Untouched valuables suggest nothing was stolen, so nothing seems wrong. ✓
+2. He wanted to sell them.
+3. The valuables were missing.
+4. The officers asked to count the money.
+
+#### Clue: No stated motive
+
+**Locate. What did he say he wanted from the old man?**
+
+Answers:
+
+> ¶2: “For his gold I had no desire.”
+
+> ¶2: “Object there was none.”
+
+Near misses:
+
+> ¶2: “I loved the old man.”
+>
+> Hint: That's how he felt about him. Did he want anything? Check ¶2.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He says he wanted nothing from him, not even his money. ✓
+2. He wanted his gold.
+3. He wanted his house.
+4. He wanted revenge for an insult.
+
+**Locate. What feature of the old man bothered him?**
+
+Answers:
+
+> ¶2: “I think it was his eye! — yes, it was this!”
+
+> ¶2: “He had the eye of a vulture — a pale blue eye, with a film over it.”
+
+Near misses:
+
+> ¶2: “He had never wronged me.”
+>
+> Hint: That's what the old man didn't do. What bothered him? Check ¶2.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The old man's clouded eye frightened and disgusted him. ✓
+2. His voice was too loud.
+3. He snored at night.
+4. He owed money.
+
+**Infer. What did he decide to do about the old man?**
+
+Answers:
+
+> ¶2: “Whenever it fell upon me, my blood ran cold; and so, by degrees — very gradually — I made up my mind to take the life of the old man, and thus rid myself of the eye forever.”
+>
+> Proof phrase: *I made up my mind to take the life of the old man, and thus rid myself of the eye forever*
+
+Near misses:
+
+> ¶2: “It is impossible to say how first the idea entered my brain; but, once conceived, it haunted me day and night.”
+>
+> Hint: That's how the idea began. What did he decide? Check ¶2.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He planned to kill a man he loved just to escape his eye. ✓
+2. He planned to move away.
+3. He decided to steal the gold.
+4. He decided to help the old man.
+
+### Scene 3 (`room`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **Death-watches in the wall**.
+
+#### Clue: Lantern’s single thin ray
+
+**Locate. How long did it take him just to get inside the gap?**
+
+Answers:
+
+> ¶5: “It took me an hour to place my whole head within the opening so far that I could see the old man as he lay upon his bed.”
+>
+> Proof phrase: *It took me an hour to place my whole head within the opening*
+
+Near misses:
+
+> ¶5: “Ha! — would a madman have been so wise as this?”
+>
+> Hint: That's him boasting. How long did it take? Check ¶5.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He moved incredibly slowly, taking a whole hour. ✓
+2. He rushed straight in.
+3. He waited outside all night.
+4. He came in through the window.
+
+**Locate. Where did the beam land?**
+
+Answers:
+
+> ¶5: “And then, when my head was well in the room, I undid the lantern cautiously — oh, so cautiously (for the hinges creaked) — I undid it just so much that a single thin ray fell upon the vulture eye.”
+>
+> Proof phrase: *a single thin ray fell upon the vulture eye*
+
+Near misses:
+
+> ¶5: “It took me an hour to place my whole head within the opening so far that I could see the old man as he lay upon his bed.”
+>
+> Hint: That's his head going in. Where did the ray fall? Check ¶5.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He aimed the light only at the eye. ✓
+2. He lit the whole room.
+3. He shone it on the bed.
+4. He kept it dark.
+
+**Infer. What does his bragging about being careful suggest about how he sees himself?**
+
+Answers:
+
+> ¶5: “Ha! — would a madman have been so wise as this?”
+
+Near misses:
+
+> ¶5: “And then, when my head was well in the room, I undid the lantern cautiously — oh, so cautiously (for the hinges creaked) — I undid it just so much that a single thin ray fell upon the vulture eye.”
+>
+> Hint: That's the lantern. Where does he brag? Check ¶5.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He believes his care proves he is not mad. ✓
+2. He admits he is mad.
+3. He thinks the old man is wise.
+4. He is joking with the officers.
+
+#### Clue: Door opened night after night
+
+**Locate. At what hour did he start his visits?**
+
+Answers:
+
+> ¶4: “And every night, about midnight, I turned the latch of his door and opened it — oh so gently!”
+
+Near misses:
+
+> ¶4: “Oh, you would have laughed to see how cunningly I thrust it in!”
+>
+> Hint: That's him boasting. When did he start? Check ¶4.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He came around twelve, in the middle of the night. ✓
+2. At sunrise.
+3. At dinnertime.
+4. Only once, at noon.
+
+**Locate. How was his last visit different from the others?**
+
+Answers:
+
+> ¶8: “Upon the eighth night I was more than usually cautious in opening the door.”
+
+Near misses:
+
+> ¶8: “I fairly chuckled at the idea.”
+>
+> Hint: That's his laugh. How was he different that time? Check ¶8.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He was even more careful than usual. ✓
+2. He was careless and loud.
+3. He knocked first.
+4. He brought the officers.
+
+**Infer. How does his mood change as the visits go on?**
+
+Answers:
+
+> ¶8: “I could scarcely contain my feelings of triumph.”
+
+> ¶8: “Never, before that night, had I felt the extent of my own powers — of my sagacity.”
+
+Near misses:
+
+> ¶8: “And perhaps the old man heard me; for he moved in the bed suddenly, as if startled.”
+>
+> Hint: That's the old man moving. How does the narrator feel? Check ¶8.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He grows proud and thrilled with his own cleverness. ✓
+2. He grows sorry.
+3. He grows bored.
+4. He gives up.
+
+#### Clue: Heavy bed
+
+**Locate. What did he use to hold the old man down?**
+
+Answers:
+
+> ¶21: “In an instant I dragged him to the floor, and pulled the heavy bed over him.”
+
+Near misses:
+
+> ¶20: “With a loud yell, I threw open the lantern and leaped into the room.”
+>
+> Hint: That's him leaping in. What held the old man down? Check ¶21.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He used the heavy bed. ✓
+2. A blanket.
+3. A door.
+4. Nothing at all.
+
+**Locate. How did he feel right after, sitting there?**
+
+Answers:
+
+> ¶21: “I then sat upon the bed and smiled gaily, to find the deed so far done.”
+
+Near misses:
+
+> ¶21: “But, for many minutes, the heart beat on, with a muffled sound.”
+>
+> Hint: That's the sound going on. How did he feel? Check ¶21.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He was cheerful about what he had done. ✓
+2. He cried.
+3. He ran away.
+4. He called for help.
+
+**Infer. Why didn't the beating trouble him at first?**
+
+Answers:
+
+> ¶21: “This, however, did not vex me; it would not be heard through the walls.”
+
+Near misses:
+
+> ¶20: “And now a new anxiety seized me — the sound would be heard by a neighbor!”
+>
+> Hint: That was before. Why didn't it bother him now? Check ¶21.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He believed it could not get past the walls. ✓
+2. He couldn't hear it.
+3. He wanted to be caught.
+4. The officers were coming.
+
+#### Clue: Chairs and the narrator’s seat
+
+**Locate. What did he bring in for the visitors?**
+
+Answers:
+
+> ¶28: “In the enthusiasm of my confidence, I brought chairs into the room, and desired them here to rest from their fatigues; while I myself, in the wild audacity of my perfect triumph, placed my own seat upon the very spot beneath which reposed the corpse of the victim.”
+>
+> Proof phrase: *I brought chairs into the room*
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He acted like a relaxed host and offered seats. ✓
+2. He refused them seats.
+3. He made them stand outside.
+4. He sent them away.
+
+**Locate. Where did he choose to sit?**
+
+Answers:
+
+> ¶28: “In the enthusiasm of my confidence, I brought chairs into the room, and desired them here to rest from their fatigues; while I myself, in the wild audacity of my perfect triumph, placed my own seat upon the very spot beneath which reposed the corpse of the victim.”
+>
+> Proof phrase: *placed my own seat upon the very spot beneath which reposed the corpse of the victim*
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Right over the hidden body. ✓
+2. By the window.
+3. At the door.
+4. Far from the boards.
+
+**Infer. What does that choice reveal about his state of mind?**
+
+Answers:
+
+> ¶28: “In the enthusiasm of my confidence, I brought chairs into the room, and desired them here to rest from their fatigues; while I myself, in the wild audacity of my perfect triumph, placed my own seat upon the very spot beneath which reposed the corpse of the victim.”
+>
+> Proof phrase: *in the wild audacity of my perfect triumph*
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He was so sure of himself that he took a reckless risk. ✓
+2. He was too tired to move.
+3. He wanted to protect the officers.
+4. He forgot what lay below.
+
+#### Clue: Three floorboards
+
+**Locate. Where did he put what was left of the victim?**
+
+Answers:
+
+> ¶23: “I then took up three planks from the flooring of the chamber, and deposited all between the scantlings.”
+
+Near misses:
+
+> ¶23: “I cut off the head and the arms and the legs.”
+>
+> Hint: That's what he did first. Where did he hide it? Check ¶23.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He hid it under the floor. ✓
+2. He buried it in the garden.
+3. He threw it in the river.
+4. He locked it in a trunk.
+
+**Locate. How well did he say he covered his work?**
+
+Answers:
+
+> ¶24: “I then replaced the boards so cleverly, so cunningly, that no human eye — not even his — could have detected anything wrong.”
+
+Near misses:
+
+> ¶24: “I had been too wary for that.”
+>
+> Hint: That's him being wary. How well did he put things back? Check ¶24.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He claims no one could spot anything wrong. ✓
+2. He left a mess.
+3. He asked for help.
+4. He marked the spot.
+
+**Infer. Why does he walk us through every step of what he did with the remains?**
+
+Answers:
+
+> ¶23: “If, still, you think me mad, you will think so no longer when I describe the wise precautions I took for the concealment of the body.”
+>
+> Proof phrase: *you will think so no longer when I describe the wise precautions*
+
+Near misses:
+
+> ¶22: “His eye would trouble me no more.”
+>
+> Hint: That's about the eye. Why does he explain his steps? Check ¶23.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He thinks careful planning proves he is sane. ✓
+2. He wants to be caught.
+3. He is confessing to the police.
+4. He feels sorry.
+
+#### Clue: Tub
+
+**Locate. What does he say kept the floor clean?**
+
+Answers:
+
+> ¶24: “A tub had caught all — ha! ha!”
+
+Near misses:
+
+> ¶24: “There was nothing to wash out — no stain of any kind — no blood-spot whatever.”
+>
+> Hint: That's the result. What did the work? Check ¶24.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He says a tub took everything. ✓
+2. A rug.
+3. A bucket of water.
+4. A cloth.
+
+**Locate. What did he say was left to clean up?**
+
+Answers:
+
+> ¶24: “There was nothing to wash out — no stain of any kind — no blood-spot whatever.”
+
+Near misses:
+
+> ¶24: “A tub had caught all — ha! ha!”
+>
+> Hint: That's what took it all. What was left behind? Check ¶24.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He claims there was nothing at all to clean. ✓
+2. Blood everywhere.
+3. A broken lamp.
+4. Footprints.
+
+**Infer. What in his telling sounds more like bragging than reporting?**
+
+Answers:
+
+> ¶24: “A tub had caught all — ha! ha!”
+
+> ¶24: “I then replaced the boards so cleverly, so cunningly, that no human eye — not even his — could have detected anything wrong.”
+
+Near misses:
+
+> ¶23: “The night waned, and I worked hastily, but in silence.”
+>
+> Hint: That's the work at night. Where does he gloat? Check ¶24.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He laughs and boasts, so this is his own account, not proof. ✓
+2. He shows real evidence.
+3. The officers confirm it.
+4. He sounds ashamed.
+
+#### Clue: Closed shutters
+
+**Locate. What blocked out all light in the bedroom?**
+
+Answers:
+
+> ¶9: “His room was as black as pitch with the thick darkness, (for the shutters were close fastened, through fear of robbers,) and so I knew that he could not see the opening of the door, and I kept on pushing it steadily, steadily.”
+>
+> Proof phrase: *the shutters were close fastened, through fear of robbers*
+
+Near misses:
+
+> ¶9: “Now you may think that I drew back — but no.”
+>
+> Hint: That's him not stopping. Why was the room so dark? Check ¶9.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Shutters closed tight against thieves. ✓
+2. A moonless sky.
+3. A broken lantern.
+4. Heavy curtains he hung.
+
+**Locate. Did he stop when he got close?**
+
+Answers:
+
+> ¶9: “Now you may think that I drew back — but no.”
+
+Near misses:
+
+> ¶9: “His room was as black as pitch with the thick darkness, (for the shutters were close fastened, through fear of robbers,) and so I knew that he could not see the opening of the door, and I kept on pushing it steadily, steadily.”
+>
+> Hint: That explains the dark. Did he stop? Check ¶9.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He kept going instead of pulling back. ✓
+2. He ran away.
+3. He woke the old man.
+4. He waited a week.
+
+**Infer. Why did he feel safe going on?**
+
+Answers:
+
+> ¶9: “His room was as black as pitch with the thick darkness, (for the shutters were close fastened, through fear of robbers,) and so I knew that he could not see the opening of the door, and I kept on pushing it steadily, steadily.”
+>
+> Proof phrase: *I knew that he could not see the opening of the door*
+
+Near misses:
+
+> ¶9: “Now you may think that I drew back — but no.”
+>
+> Hint: That's him not drawing back. Why did he feel safe? Check ¶9.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He knew the old man couldn't see him in the dark. ✓
+2. The old man was deaf.
+3. The officers were with him.
+4. The door was gone.
+
+#### Clue: Death-watches in the wall
+
+**Locate. What was the old man doing instead of sleeping?**
+
+Answers:
+
+> ¶11: “He was still sitting up in the bed, listening; — just as I have done, night after night, hearkening to the death-watches in the wall.”
+
+Near misses:
+
+> ¶11: “For another hour I did not move a muscle, and in the meantime I did not hear the old man lie down.”
+>
+> Hint: That's the narrator waiting. What was the old man doing? Check ¶11.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He sat up in bed, listening in fear. ✓
+2. He was asleep.
+3. He was reading.
+4. He called the police.
+
+**Locate. How long did the narrator stay frozen?**
+
+Answers:
+
+> ¶11: “For another hour I did not move a muscle, and in the meantime I did not hear the old man lie down.”
+
+Near misses:
+
+> ¶11: “I kept quite still and said nothing.”
+>
+> Hint: That's him keeping quiet at first. How long? Check ¶11.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He stood still for another whole hour. ✓
+2. A second.
+3. He left at once.
+4. Until morning.
+
+**Infer. How is the old man like the narrator in this moment?**
+
+Answers:
+
+> ¶11: “He was still sitting up in the bed, listening; — just as I have done, night after night, hearkening to the death-watches in the wall.”
+
+Near misses:
+
+> ¶11: “I kept quite still and said nothing.”
+>
+> Hint: That's the narrator. How are they alike? Check ¶11.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Both lie awake, listening in the dark. ✓
+2. Both are asleep.
+3. Both are laughing.
+4. Neither can hear.
+
+### Scene 4 (`confession`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **The officers’ calm**.
+
+#### Clue: Floorboards at the confession
+
+**Locate. What name does he call the officers?**
+
+Answers:
+
+> ¶34: ““Villains!””
+
+Near misses:
+
+> ¶34: “I shrieked, “dissemble no more!”
+>
+> Hint: That's what he orders. What does he call them? Check ¶34.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He calls them villains. ✓
+2. Friends.
+3. Gentlemen.
+4. Neighbors.
+
+**Locate. What does he order them to stop doing?**
+
+Answers:
+
+> ¶34: “I shrieked, “dissemble no more!”
+
+Near misses:
+
+> ¶34: ““Villains!””
+>
+> Hint: That's the name he calls them. What does he demand? Check ¶34.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He orders them to stop pretending. ✓
+2. To stop talking.
+3. To leave.
+4. To search.
+
+**Infer. What pushes him to the breaking point just before he speaks?**
+
+Answers:
+
+> ¶33: “I felt that I must scream or die! — and now — again! — hark! louder! louder! louder! louder!”
+
+Near misses:
+
+> ¶33: “Was it possible they heard not?”
+>
+> Hint: That's his question. What pushes him over? Check ¶33.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The sound grows unbearable and he must scream. ✓
+2. The officers accuse him.
+3. The old man walks in.
+4. The clock strikes.
+
+#### Clue: The officers’ calm
+
+**Locate. What did he realize about where the sound came from?**
+
+Answers:
+
+> ¶30: “The ringing became more distinct: I talked more freely, to get rid of the feeling; but it continued and gained definiteness — until, at length, I found that the noise was not within my ears.”
+>
+> Proof phrase: *I found that the noise was not within my ears*
+
+Near misses:
+
+> ¶29: “My head ached, and I fancied a ringing in my ears: but still they sat and still chatted.”
+>
+> Hint: That's when it starts. What does he realize? Check ¶30.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He decided the noise wasn't just in his head. ✓
+2. He knew it was the clock.
+3. He thought it was rain.
+4. He never noticed it.
+
+**Locate. How did the visitors behave while he grew frantic?**
+
+Answers:
+
+> ¶32: “And still the men chatted pleasantly, and smiled.”
+
+Near misses:
+
+> ¶31: “I gasped for breath — and yet the officers heard it not.”
+>
+> Hint: That's him gasping. What were the officers doing? Check ¶32.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. They stayed calm and friendly, seeming to notice nothing. ✓
+2. They drew their weapons.
+3. They left.
+4. They shouted at him.
+
+**Infer. Why might the sound be coming from inside him rather than the floor?**
+
+Answers:
+
+> ¶31: “I gasped for breath — and yet the officers heard it not.”
+
+> ¶33: “They heard! — they suspected! — they knew! — they were making a mockery of my horror! — this I thought, and this I think.”
+
+Near misses:
+
+> ¶32: “I swung the chair upon which I had sat, and grated it upon the boards; — but the noise arose over all and continually increased.”
+>
+> Hint: That's him scraping the chair. Who notices the sound? Check ¶31.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. No one else notices it, so it may be his guilt. ✓
+2. The officers notice it clearly.
+3. It's a clock in the wall.
+4. The old man is alive.
+
+## Fair play: Trifles
+
+Generated from `worlds/trifles/world.json` (same rules as Sleepy Hollow).
+
+#### Mission: Find what the men miss
+
+Prove why the women keep the evidence to themselves.
+
+- Sealed clue: `knot-it`; payoff: “We call it--knot it, Mr. Henderson.”
+- Theories: They understand Minnie, They are afraid, They aren't sure
+- Piece `hinge` (kitchen): “One hinge is pulled apart.” · Lead: Find the line that shows the cage was damaged.
+- Piece `the-bird` (kitchen): “It’s the bird.” · Lead: Find the line where the women discover what's inside the box.
+- Piece `hard-man` (minnie-foster): “But he was a hard man, Mrs. Peters.” · Lead: Find the line where Mrs. Hale sums up what John Wright was like.
+- Piece `rope` (the-law-and-the-women): “Killing a man while he slept, slipping a rope around his neck that choked the life out of him.” · Lead: Find the line that describes how John Wright died.
+- Piece `no-reason` (the-last-word): “No, Peters, it’s all perfectly clear except a reason for doing it.” · Lead: Find the line where the lawyer says what the case still lacks.
+- Piece `pocket` (the-last-word): “MRS. HALE snatches the box and puts it in the pocket of her big coat.” · Lead: Find the line that shows where the evidence ends up.
+
+### Scene 1 (`kitchen`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **Mr. Hale's account**.
+
+#### Clue: Mr. Hale's account
+
+**Locate. What were Hale and his son hauling to market?**
+
+Answers:
+
+> ¶19: “Harry and I had started to town with a load of potatoes.”
+
+Near misses:
+
+> ¶19: “We came along the road from my place and as I got here I said, “I’m going to see if I can’t get John Wright to go in with me on a party telephone.””
+>
+> Hint: That's why he stopped. What were they carrying? Check ¶19.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. They were taking potatoes to town. ✓
+2. Corn to the mill.
+3. Milk to a neighbor.
+4. Nothing at all.
+
+**Locate. Who was there when Hale walked in?**
+
+Answers:
+
+> ¶23: “I wasn’t sure, I’m not sure yet, but I opened the door—this door [_indicating the door by which the two women are still standing_] and there in that rocker—[_pointing to it_] sat Mrs. Wright.”
+>
+> Proof phrase: *sat Mrs. Wright*
+
+Near misses:
+
+> ¶23: “I didn’t hear or see anything; I knocked at the door, and still it was all quiet inside.”
+>
+> Hint: That's before he went in. Who did he find? Check ¶23.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Mrs. Wright, in her rocker. ✓
+2. John Wright, at the table.
+3. No one at all.
+4. The sheriff.
+
+**Infer. Why is Hale's story less than certain?**
+
+Answers:
+
+> ¶23: “So I knocked again, and I thought I heard somebody say, “Come in.””
+
+> ¶23: “I wasn’t sure, I’m not sure yet, but I opened the door—this door [_indicating the door by which the two women are still standing_] and there in that rocker—[_pointing to it_] sat Mrs. Wright.”
+>
+> Proof phrase: *I wasn’t sure, I’m not sure yet*
+
+Near misses:
+
+> ¶23: “I knew they must be up, it was past eight o’clock.”
+>
+> Hint: That's the time. Where does he admit doubt? Check ¶23.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He isn't sure what he heard, so his account has gaps. ✓
+2. He saw everything clearly.
+3. He wasn't there.
+4. He wrote it all down.
+
+#### Clue: The broken jars of preserves
+
+**Locate. What happened to the jars of food she had put up?**
+
+Answers:
+
+> ¶58: “Oh, her fruit; it did freeze.”
+
+Near misses:
+
+> ¶58: “She worried about that when it turned so cold.”
+>
+> Hint: That's her worry. What actually happened? Check ¶58.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The cold froze them. ✓
+2. Someone stole them.
+3. She ate them.
+4. They were fine.
+
+**Locate. What had she feared would happen when the weather turned?**
+
+Answers:
+
+> ¶58: “She said the fire’d go out and her jars would break.”
+
+Near misses:
+
+> ¶58: “Oh, her fruit; it did freeze.”
+>
+> Hint: That's what happened. What did she fear? Check ¶58.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The fire would die and her jars would crack. ✓
+2. Robbers would come.
+3. The sheriff would visit.
+4. The roof would leak.
+
+**Infer. What does her concern for these jars suggest about her?**
+
+Answers:
+
+> ¶58: “She worried about that when it turned so cold.”
+
+Near misses:
+
+> ¶58: “She said the fire’d go out and her jars would break.”
+>
+> Hint: That's what she said would happen. Who was thinking about it? Check ¶58.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She cared about her everyday work at home. ✓
+2. She didn't care about her home.
+3. She wanted to sell them.
+4. She blamed her husband.
+
+#### Clue: The quilt
+
+**Locate. What was Mrs. Wright making with the scraps?**
+
+Answers:
+
+> ¶157: “She was piecing a quilt.”
+
+Near misses:
+
+> ¶160: “Pretty, isn’t it?”
+>
+> Hint: That's an opinion. What was she making? Check ¶157.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She was sewing a quilt. ✓
+2. A dress.
+3. Curtains.
+4. A rug.
+
+**Locate. What two ways could she finish it?**
+
+Answers:
+
+> ¶160: “I wonder if she was goin’ to quilt it or just knot it?”
+
+Near misses:
+
+> ¶160: “It’s log cabin pattern.”
+>
+> Hint: That's the pattern. What's the choice? Check ¶160.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She could either quilt it or knot it. ✓
+2. Paint it or dye it.
+3. Sell it or give it away.
+4. Burn it or bury it.
+
+**Infer. What is Mrs. Hale doing to the messy part of the sewing?**
+
+Answers:
+
+> ¶179: “Just pulling out a stitch or two that’s not sewed very good.”
+
+Near misses:
+
+> ¶179: “Bad sewing always made me fidgety.”
+>
+> Hint: That's how she feels. What is she doing? Check ¶179.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She is fixing the sewing, which changes the evidence. ✓
+2. She is cutting the quilt apart.
+3. She is packing it to take.
+4. She is reading a letter.
+
+#### Clue: The birdcage with the broken door
+
+**Locate. What did Mrs. Peters come across on the shelf?**
+
+Answers:
+
+> ¶193: “Why, here’s a bird-cage.”
+
+Near misses:
+
+> ¶193: “Did she have a bird, Mrs. Hale?”
+>
+> Hint: That's her question. What did she find? Check ¶193.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. An empty birdcage. ✓
+2. A box of letters.
+3. A broken jar.
+4. A rope.
+
+**Locate. What is wrong with the little gate?**
+
+Answers:
+
+> ¶205: “One hinge is pulled apart.”
+
+> ¶205: “It’s broke.”
+
+Near misses:
+
+> ¶205: “Why, look at this door.”
+>
+> Hint: That points to it. What's wrong with it? Check ¶205.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A hinge is pulled apart, as if forced. ✓
+2. It's painted.
+3. It's locked.
+4. It's brand new.
+
+**Infer. Why is it strange that there's a cage but no pet in it?**
+
+Answers:
+
+> ¶193: “Did she have a bird, Mrs. Hale?”
+
+> ¶205: “One hinge is pulled apart.”
+
+Near misses:
+
+> ¶193: “[_Looking in cupboard._]”
+>
+> Hint: That's where she looked. What makes it strange? Check ¶193.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A missing bird and a damaged cage raise questions about what happened. ✓
+2. Birds always escape.
+3. The cage was only for show.
+4. Mrs. Wright hated birds.
+
+#### Clue: The box with the canary
+
+**Locate. Where do the women hunt for quilting supplies to bring to Minnie?**
+
+Answers:
+
+> ¶241: “[_They look in the sewing basket._”
+
+Near misses:
+
+> ¶250: “It’s the bird.”
+>
+> Hint: That's what they find. Where did they search? Check ¶241.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. In the sewing basket. ✓
+2. Under the bed.
+3. In the barn.
+4. In the stove.
+
+**Locate. What is inside the box?**
+
+Answers:
+
+> ¶250: “It’s the bird.”
+
+Near misses:
+
+> ¶241: “[_They look in the sewing basket._”
+>
+> Hint: That's where they look. What do they find? Check ¶250.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The bird. ✓
+2. Money.
+3. A letter.
+4. Thread.
+
+**Infer. Why would someone hide this among sewing things?**
+
+Answers:
+
+> ¶250: “It’s the bird.”
+
+Near misses:
+
+> ¶241: “[_They look in the sewing basket._”
+>
+> Hint: That's where it was. What was hidden? Check ¶250.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Someone wanted to keep the bird where the men wouldn't look. ✓
+2. It was put there by mistake.
+3. The sheriff hid it.
+4. It was a gift for Mrs. Hale.
+
+### Scene 2 (`minnie-foster`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **Mrs. Hale's words about John Wright**.
+
+#### Clue: The shabby skirt and the choir girl
+
+**Locate. How does Mrs. Hale describe John Wright's way with money?**
+
+Answers:
+
+> ¶125: “Wright was close.”
+
+Near misses:
+
+> ¶125: “She didn’t even belong to the Ladies Aid.”
+>
+> Hint: That's about the Ladies Aid. What about money? Check ¶125.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He was stingy. ✓
+2. He was generous.
+3. He was rich.
+4. He was in debt.
+
+**Locate. What was Minnie like before she married?**
+
+Answers:
+
+> ¶125: “She used to wear pretty clothes and be lively, when she was Minnie Foster, one of the town girls singing in the choir.”
+
+Near misses:
+
+> ¶125: “But that—oh, that was thirty years ago.”
+>
+> Hint: That's how long ago. What was she like? Check ¶125.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Lively, prettily dressed, and singing in the choir. ✓
+2. Shy and silent.
+3. A teacher.
+4. Always alone.
+
+**Infer. What creature does Mrs. Hale compare Minnie to?**
+
+Answers:
+
+> ¶238: “She—come to think of it, she was kind of like a bird herself—real sweet and pretty, but kind of timid and—fluttery.”
+>
+> Proof phrase: *she was kind of like a bird herself*
+
+Near misses:
+
+> ¶238: “How?—she—did—change.”
+>
+> Hint: That's how she changed. What does Mrs. Hale compare her to? Check ¶238.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A bird: sweet and pretty, but timid. ✓
+2. A cat: sly and quiet.
+3. A horse: strong and wild.
+4. A storm: loud and angry.
+
+#### Clue: The apron and the little shawl
+
+**Locate. What did Mrs. Wright request?**
+
+Answers:
+
+> ¶127: “She said she wanted an apron.”
+
+> ¶127: “And then her little shawl that always hung behind the door.”
+
+Near misses:
+
+> ¶127: “Funny thing to want, for there isn’t much to get you dirty in jail, goodness knows.”
+>
+> Hint: That's Mrs. Peters' opinion. What did she ask for? Check ¶127.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. An apron and her little shawl. ✓
+2. Her quilt.
+3. Her bird.
+4. Her fruit.
+
+**Locate. Where were the aprons kept?**
+
+Answers:
+
+> ¶127: “She said they was in the top drawer in this cupboard.”
+
+Near misses:
+
+> ¶127: “And then her little shawl that always hung behind the door.”
+>
+> Hint: That's the shawl. Where were the aprons? Check ¶127.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. In the top drawer of the cupboard. ✓
+2. In the bottom drawer.
+3. Behind the door.
+4. Upstairs.
+
+**Infer. Why does Mrs. Hale believe these requests mean Minnie is innocent?**
+
+Answers:
+
+> ¶138: “Well, I don’t think she did.”
+
+> ¶138: “Asking for an apron and her little shawl.”
+
+Near misses:
+
+> ¶138: “Worrying about her fruit.”
+>
+> Hint: That's the fruit. What does she conclude? Check ¶138.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Someone worried about everyday things doesn't seem like a killer to her. ✓
+2. She has proof.
+3. Minnie confessed.
+4. The sheriff told her.
+
+#### Clue: The lonesome house in the hollow
+
+**Locate. How long since Mrs. Hale had visited?**
+
+Answers:
+
+> ¶78: “I’ve not been in this house—it’s more than a year.”
+
+Near misses:
+
+> ¶78: “I’ve not seen much of her of late years.”
+>
+> Hint: That's seeing her. How long since she came to the house? Check ¶78.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. More than a year. ✓
+2. Last week.
+3. Never.
+4. Yesterday.
+
+**Locate. What kept her from visiting?**
+
+Answers:
+
+> ¶220: “I stayed away because it weren’t cheerful—and that’s why I ought to have come.”
+
+> ¶86: “It never seemed a very cheerful place.”
+
+Near misses:
+
+> ¶82: “Farmers’ wives have their hands full, Mr. Henderson.”
+>
+> Hint: That's about farm work. What kept her away? Check ¶220.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The house was gloomy, so she avoided it. ✓
+2. She was sick.
+3. She was angry at Minnie.
+4. She lived far away.
+
+**Infer. What does Mrs. Hale regret?**
+
+Answers:
+
+> ¶220: “I wish I had come over to see Minnie Foster sometimes.”
+
+> ¶216: “I wish I had come over sometimes when _she_ was here.”
+
+Near misses:
+
+> ¶220: “Maybe because it’s down in a hollow and you don’t see the road.”
+>
+> Hint: That's where the house is. What does she wish? Check ¶220.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Minnie was lonely, and no one visited her. ✓
+2. Minnie was too busy for friends.
+3. Minnie had many visitors.
+4. Minnie moved away.
+
+#### Clue: Mrs. Hale's words about John Wright
+
+**Locate. What does Mrs. Hale grant in Wright's favor?**
+
+Answers:
+
+> ¶229: “Yes—good; he didn’t drink, and kept his word as well as most, I guess, and paid his debts.”
+
+Near misses:
+
+> ¶227: “They say he was a good man.”
+>
+> Hint: That's what people say. What does Mrs. Hale grant? Check ¶229.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He didn't drink, kept his word, and paid his debts. ✓
+2. He was cheerful.
+3. He loved birds.
+4. He gave to the church.
+
+**Locate. What does she compare spending time with him to?**
+
+Answers:
+
+> ¶229: “Like a raw wind that gets to the bone.”
+
+Near misses:
+
+> ¶229: “Just to pass the time of day with him—[_Shivers._]”
+>
+> Hint: That's her shiver. What does she compare it to? Check ¶229.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A cold wind that chills you to the bone. ✓
+2. A warm fire.
+3. A quiet song.
+4. A sunny day.
+
+**Infer. How does her opinion of him differ from his reputation?**
+
+Answers:
+
+> ¶229: “But he was a hard man, Mrs. Peters.”
+
+> ¶227: “They say he was a good man.”
+
+Near misses:
+
+> ¶94: “But I don’t think a place’d be any cheerfuller for John Wright’s being in it.”
+>
+> Hint: That's about the place. Where does she weigh both views? Check ¶229.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. People called him good, but she found him hard and cold. ✓
+2. She agrees he was kind.
+3. She never met him.
+4. Everyone hated him.
+
+### Scene 3 (`the-law-and-the-women`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **Two kinds of crime**.
+
+#### Clue: Two kinds of crime
+
+**Locate. What does Mrs. Peters say must happen to wrongdoers?**
+
+Answers:
+
+> ¶296: “The law has got to punish crime, Mrs. Hale.”
+
+> ¶152: “But Mrs. Hale, the law is the law.”
+
+Near misses:
+
+> ¶292: “I know what stillness is.”
+>
+> Hint: That's her memory. What does she say about the rules? Check ¶296.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She says the law must punish crime. ✓
+2. Forgive them.
+3. Let the women decide.
+4. Ignore it.
+
+**Locate. What does Mrs. Hale regret not doing?**
+
+Answers:
+
+> ¶298: “Oh, I _wish_ I’d come over here once in a while!”
+
+Near misses:
+
+> ¶298: “I wish you’d seen Minnie Foster when she wore a white dress with blue ribbons and stood up there in the choir and sang.”
+>
+> Hint: That's a memory. What does she regret? Check ¶298.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Visiting Minnie now and then. ✓
+2. Calling the sheriff.
+3. Moving away.
+4. Buying a bird.
+
+**Infer. What does Mrs. Hale call the real wrong?**
+
+Answers:
+
+> ¶298: “That was a crime!”
+
+Near misses:
+
+> ¶298: “I wish you’d seen Minnie Foster when she wore a white dress with blue ribbons and stood up there in the choir and sang.”
+>
+> Hint: That's Minnie long ago. What wrong does she name? Check ¶298.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Leaving Minnie alone and lonely was a wrong no law answers for. ✓
+2. The bird's death was legal.
+3. Mrs. Peters broke the law.
+4. Minnie did nothing at all.
+
+#### Clue: The stillness in Dakota
+
+**Locate. What loss does Mrs. Peters remember from Dakota?**
+
+Answers:
+
+> ¶292: “When we homesteaded in Dakota, and my first baby died—after he was two years old, and me with no other then—”
+
+Near misses:
+
+> ¶292: “I know what stillness is.”
+>
+> Hint: That's what she knows. What happened there? Check ¶292.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Her first baby died. ✓
+2. Her house burned.
+3. Her husband left.
+4. Her bird flew away.
+
+**Locate. What does Mrs. Hale say the quiet would feel like once the music in the house was gone?**
+
+Answers:
+
+> ¶290: “If there’d been years and years of nothing, then a bird to sing to you, it would be awful—still, after the bird was still.”
+>
+> Proof phrase: *then a bird to sing to you, it would be awful*
+
+Near misses:
+
+> ¶292: “I know what stillness is.”
+>
+> Hint: That's Mrs. Peters. What does Mrs. Hale imagine? Check ¶290.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Awful, because the one bright thing would be gone. ✓
+2. Peaceful and restful.
+3. Exciting.
+4. Exactly the same as before.
+
+**Infer. How does Mrs. Peters catch her own feelings and change the subject?**
+
+Answers:
+
+> ¶296: “[_Pulling herself back._]”
+
+> ¶296: “The law has got to punish crime, Mrs. Hale.”
+
+Near misses:
+
+> ¶292: “I know what stillness is.”
+>
+> Hint: That's her memory. How does she change course? Check ¶296.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She turns from her grief to talk about the law. ✓
+2. She starts to cry and leaves.
+3. She calls the sheriff.
+4. She laughs it off.
+
+#### Clue: The rope and the bird's neck
+
+**Locate. What does the lawyer say about strangers breaking in?**
+
+Answers:
+
+> ¶270: “No sign at all of anyone having come from the outside.”
+
+Near misses:
+
+> ¶270: “Their own rope.”
+>
+> Hint: That's about the rope. What about strangers? Check ¶270.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. There's no sign anyone came in from outside. ✓
+2. A stranger broke in.
+3. The door was smashed.
+4. Neighbors saw a man.
+
+**Locate. How did John Wright die?**
+
+Answers:
+
+> ¶283: “Killing a man while he slept, slipping a rope around his neck that choked the life out of him.”
+
+Near misses:
+
+> ¶283: “It was an awful thing was done in this house that night, Mrs. Hale.”
+>
+> Hint: That's how awful it was. How was it done? Check ¶283.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Someone strangled him with a rope while he slept. ✓
+2. He was shot.
+3. He fell down the stairs.
+4. He was poisoned.
+
+**Infer. Why does Mrs. Hale repeat those words and reach out the way she does?**
+
+Answers:
+
+> ¶285: “His neck.”
+
+> ¶286: “[_Her hand goes out and rests on the bird-cage._”
+
+Near misses:
+
+> ¶283: “It was an awful thing was done in this house that night, Mrs. Hale.”
+>
+> Hint: That's Mrs. Peters. What does Mrs. Hale do? Check ¶285.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She links how Wright died to how the bird died. ✓
+2. She wants to clean it.
+3. She is tired.
+4. She is looking for the key.
+
+#### Clue: Mrs. Peters's kitten memory
+
+**Locate. What happened to Mrs. Peters' pet when she was young?**
+
+Answers:
+
+> ¶275: “When I was a girl—my kitten—there was a boy took a hatchet, and before my eyes—and before I could get there—[_Covers her face an instant._]”
+>
+> Proof phrase: *there was a boy took a hatchet, and before my eyes*
+
+Near misses:
+
+> ¶275: “If they hadn’t held me back I would have—[_Catches herself, looks upstairs where steps are heard, falters weakly_]—hurt him.”
+>
+> Hint: That's what she wanted to do. What happened first? Check ¶275.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A boy killed her kitten with a hatchet. ✓
+2. It ran away.
+3. It grew old.
+4. It was given away.
+
+**Locate. What does she say she would have done to the boy?**
+
+Answers:
+
+> ¶275: “If they hadn’t held me back I would have—[_Catches herself, looks upstairs where steps are heard, falters weakly_]—hurt him.”
+
+Near misses:
+
+> ¶275: “When I was a girl—my kitten—there was a boy took a hatchet, and before my eyes—and before I could get there—[_Covers her face an instant._]”
+>
+> Hint: That's what happened. What would she have done? Check ¶275.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She would have hurt him. ✓
+2. Forgiven him.
+3. Told his mother.
+4. Laughed.
+
+**Infer. What does she insist nobody can be sure of?**
+
+Answers:
+
+> ¶288: “We don’t know who killed him.”
+
+> ¶279: “We don’t know who killed the bird.”
+
+Near misses:
+
+> ¶275: “If they hadn’t held me back I would have—[_Catches herself, looks upstairs where steps are heard, falters weakly_]—hurt him.”
+>
+> Hint: That's her memory. What does she insist? Check ¶288.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. They can't be sure who killed him. ✓
+2. Whether the bird could sing.
+3. What day it is.
+4. Where the sheriff went.
+
+### Scene 4 (`the-last-word`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **The missing motive**.
+
+#### Clue: The missing motive
+
+**Locate. What does the lawyer say is the one thing they lack?**
+
+Answers:
+
+> ¶309: “No, Peters, it’s all perfectly clear except a reason for doing it.”
+
+Near misses:
+
+> ¶309: “But you know juries when it comes to women.”
+>
+> Hint: That's about juries. What's missing? Check ¶309.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A reason, a motive, for the killing. ✓
+2. A witness.
+3. The weapon.
+4. A confession.
+
+**Locate. What did the attorney say earlier was required to convict?**
+
+Answers:
+
+> ¶148: “Mr. Henderson said coming out that what was needed for the case was a motive; something to show anger, or—sudden feeling.”
+
+Near misses:
+
+> ¶309: “Something to show—something to make a story about—a thing that would connect up with this strange way of doing it—”
+>
+> Hint: That's what he says now. What did he say earlier? Check ¶148.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A motive: something showing anger or sudden feeling. ✓
+2. Fingerprints.
+3. A second rope.
+4. Nothing more.
+
+**Infer. What kind of evidence does he hope to find?**
+
+Answers:
+
+> ¶309: “Something to show—something to make a story about—a thing that would connect up with this strange way of doing it—”
+
+Near misses:
+
+> ¶309: “But you know juries when it comes to women.”
+>
+> Hint: That's about juries. What does he hope for? Check ¶309.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Something dramatic to tell a jury, tied to the strange method. ✓
+2. Proof the women did it.
+3. Money in the house.
+4. A lost letter.
+
+#### Clue: The bundle for the jail
+
+**Locate. How does the lawyer judge the items the women chose?**
+
+Answers:
+
+> ¶319: “Oh, I guess they’re not very dangerous things the ladies have picked out.”
+
+Near misses:
+
+> ¶317: “[_The LAWYER goes to the table, picks up the apron, laughs._”
+>
+> Hint: That's him laughing. What does he say about them? Check ¶319.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He thinks they are harmless trifles. ✓
+2. He thinks they are evidence.
+3. He takes them away.
+4. He reads every label.
+
+**Locate. Why does he decide Mrs. Peters can go unwatched?**
+
+Answers:
+
+> ¶319: “No, Mrs. Peters doesn’t need supervising.”
+
+> ¶319: “For that matter, a sheriff’s wife is married to the law.”
+
+Near misses:
+
+> ¶321: “Not—just that way.”
+>
+> Hint: That's her reply. What's his reason? Check ¶319.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A sheriff's wife is on the law's side, he says. ✓
+2. She is too old.
+3. She is leaving town.
+4. She told him so.
+
+**Infer. What does Mrs. Peters' short answer suggest?**
+
+Answers:
+
+> ¶321: “Not—just that way.”
+
+Near misses:
+
+> ¶323: “Married to the law.”
+>
+> Hint: That's the sheriff. What does Mrs. Peters say? Check ¶321.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She may not see herself only on the law's side anymore. ✓
+2. She fully agrees.
+3. She didn't hear him.
+4. She is angry at the sheriff.
+
+#### Clue: The box in Mrs. Hale's coat pocket
+
+**Locate. Why can't Mrs. Peters hide it in her bag?**
+
+Answers:
+
+> ¶328: “It is too big.”
+
+Near misses:
+
+> ¶328: “Suddenly MRS. PETERS throws back quilt pieces and tries to put the box in the bag she is wearing.”
+>
+> Hint: That's her trying. Why didn't it work? Check ¶328.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. It doesn't fit. ✓
+2. The men are watching.
+3. The bag is full of fruit.
+4. She changes her mind at once.
+
+**Locate. Where does it end up?**
+
+Answers:
+
+> ¶328: “MRS. HALE snatches the box and puts it in the pocket of her big coat.”
+
+Near misses:
+
+> ¶328: “She opens box, starts to take bird out, cannot touch it, goes to pieces, stands there helpless.”
+>
+> Hint: That's Mrs. Peters freezing. Who takes it? Check ¶328.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. In Mrs. Hale's coat pocket. ✓
+2. In the stove.
+3. With the sheriff.
+4. Back in the basket.
+
+**Infer. How do the two women decide what to do without speaking?**
+
+Answers:
+
+> ¶328: “Then MRS. HALE rises, hands tight together, looking intensely at MRS. PETERS, whose eyes make a slow turn, finally meeting MRS. HALE’S.”
+
+> ¶328: “A moment MRS. HALE holds her, then her own eyes point the way to where the box is concealed.”
+
+Near misses:
+
+> ¶328: “The SHERIFF follows the COUNTY ATTORNEY into the other room.”
+>
+> Hint: That's the men leaving. How do the women decide? Check ¶328.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. They share a long look and agree without words. ✓
+2. They argue loudly.
+3. They write a note.
+4. They flip a coin.
+
+#### Clue: The last line: knot it
+
+**Locate. What do the men mock the women for wondering?**
+
+Answers:
+
+> ¶163: “They wonder if she was going to quilt it or just knot it!”
+
+Near misses:
+
+> ¶164: “[_The men laugh, the women look abashed._”
+>
+> Hint: That's their reaction. What did they repeat? Check ¶163.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Whether she would quilt it or knot it. ✓
+2. Whether it would rain.
+3. What to cook.
+4. Who owned the farm.
+
+**Locate. What does the lawyer ask the women at the end?**
+
+Answers:
+
+> ¶330: “She was going to—what is it you call it, ladies?”
+
+Near misses:
+
+> ¶330: “Well, Henry, at least we found out that she was not going to quilt it.”
+>
+> Hint: That's his joke. What does he ask? Check ¶330.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. What they call that kind of finishing. ✓
+2. Where the bird is.
+3. Who killed John Wright.
+4. When they'll leave.
+
+**Infer. What does the attorney think the search turned up?**
+
+Answers:
+
+> ¶330: “Well, Henry, at least we found out that she was not going to quilt it.”
+
+Near misses:
+
+> ¶330: “[_Facetiously._]”
+>
+> Hint: That's how he says it. What does he think they found out? Check ¶330.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He thinks the quilt is a joke, so he misses what matters. ✓
+2. He solved the case.
+3. He found the bird.
+4. He respects their work.

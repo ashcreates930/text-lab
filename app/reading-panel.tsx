@@ -4,12 +4,14 @@
 // or the Mark button beside each line for keyboard and screen reader users, tags a line as a clue, a word to know or a
 // question. The text is cleaned for display only (lib/clue-game.ts displayLine); taps send the story's own text.
 // The right line is never highlighted before the student taps it: only lines they kept, and their result, are marked.
-import {useEffect,useRef} from "react";
+// Words to know: glossary words that appear in the passage are listed above it; tapping one opens its card.
+import {useEffect,useMemo,useRef,useState} from "react";
 import {Bookmark,Check,X} from "lucide-react";
 import type {SourcePassage} from "@/lib/source-passages";
 import {withContentNotes} from "@/lib/content-notes";
 import {evidenceSentences,lineWords} from "@/lib/lies";
 import {MARK_TAGS,displayLine,markKey,paragraphLabel,type LineMark} from "@/lib/clue-game";
+import {wordsToKnow,type GlossaryWord} from "@/lib/fair-play";
 import {ContentNote} from "./content-note";
 
 export type PanelLine={pid:string;index:number;text:string};
@@ -18,9 +20,11 @@ export type PanelReaction={line:string;by:string;stem:string;body:string};
 const same=(a:string,b:string)=>lineWords(a)===lineWords(b);
 const TAG_STYLE:Record<string,string>={clue:"bg-[#A0472C] text-white",word:"bg-[#DDE7F3] text-[#24476E]",question:"bg-[#FBEFD2] text-[#6E520F]"};
 
-export function ReadingPanel({passages,notes,kept=[],selected,results,pins=[],reactions=[],marks,onTap,onMark,locked=false,title,className=""}:{passages:SourcePassage[];notes?:Map<string,string>;kept?:string[];selected?:string;results?:{line:string;ok:boolean}[];pins?:PanelPin[];reactions?:PanelReaction[];marks?:Record<string,LineMark>;onTap:(l:PanelLine)=>void;onMark?:(l:PanelLine)=>void;locked?:boolean;title?:React.ReactNode;className?:string}){
+export function ReadingPanel({passages,notes,kept=[],selected,results,pins=[],reactions=[],marks,onTap,onMark,locked=false,title,className="",glossary}:{passages:SourcePassage[];notes?:Map<string,string>;kept?:string[];selected?:string;results?:{line:string;ok:boolean}[];pins?:PanelPin[];reactions?:PanelReaction[];marks?:Record<string,LineMark>;onTap:(l:PanelLine)=>void;onMark?:(l:PanelLine)=>void;locked?:boolean;title?:React.ReactNode;className?:string;glossary?:GlossaryWord[]}){
+ const words=useMemo(()=>wordsToKnow(passages,glossary),[passages,glossary]);
  return <section aria-label="The story" className={`flex min-h-0 flex-col overflow-hidden rounded-3xl bg-[#FFFDF8] shadow-[0_2px_14px_-6px_rgba(42,38,32,.35)] ${className}`}>
   {title&&<div className="flex items-center justify-between gap-2 border-b border-[#EFE8D8] px-4 py-2 text-[12px] font-bold uppercase tracking-wide text-[#8A3B23]">{title}</div>}
+  {words.length>0&&<WordCards words={words}/>}
   <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 py-2 md:px-3" tabIndex={-1}>
    {withContentNotes(passages,notes??new Map()).map(item=>item.kind==="note"?<div key={item.id} className="px-2 py-1"><ContentNote text={item.text}/></div>
     :<div key={item.id} className="mb-2">
@@ -80,5 +84,17 @@ export function MarkSheet({line,current,inPouch,onTag,onPouch,onClose}:{line:Pan
     <button type="button" onClick={onPouch} className="min-h-12 rounded-full bg-[#EFE8D8] px-5 text-left text-[16px] font-bold text-[#2A2620]">{inPouch?"Take out of my pouch":"Keep in my pouch"}</button>
     <button type="button" onClick={onClose} className="min-h-11 text-[15px] font-semibold text-[#6B6457] underline underline-offset-4">Done</button></div>
   </div>
+ </div>;
+}
+
+// Words to know: a row of the glossary words in this passage. A card opens in place (one at a time) and closes with
+// Escape or its button; focus stays in the row.
+function WordCards({words}:{words:GlossaryWord[]}){
+ const [open,setOpen]=useState<string|null>(null);
+ const card=words.find(w=>w.term===open);
+ useEffect(()=>{if(!open)return;const k=(e:KeyboardEvent)=>{if(e.key==="Escape")setOpen(null)};window.addEventListener("keydown",k);return()=>window.removeEventListener("keydown",k)},[open]);
+ return <div className="border-b border-[#EFE8D8] px-3 py-2">
+  <div className="flex flex-wrap items-center gap-1.5"><span className="text-[12px] font-bold uppercase tracking-wide text-[#24476E]">Words to know</span>{words.map(w=><button key={w.term} type="button" aria-expanded={open===w.term} onClick={()=>setOpen(o=>o===w.term?null:w.term)} className={`min-h-9 rounded-full px-3 text-[14px] font-semibold ${open===w.term?"bg-[#24476E] text-white":"bg-[#DDE7F3] text-[#24476E]"}`}>{w.term}</button>)}</div>
+  {card&&<div role="note" aria-live="polite" className="mt-2 flex items-start justify-between gap-2 rounded-2xl bg-[#EEF3FA] px-3 py-2"><p className="text-[15px] leading-6 text-[#1F3550]"><b>{card.term}:</b> {card.student_friendly_definition}</p><button type="button" onClick={()=>setOpen(null)} aria-label="Close the word card" className="grid h-9 w-9 shrink-0 place-items-center rounded-full hover:bg-[#DDE7F3]"><X size={16}/></button></div>}
  </div>;
 }

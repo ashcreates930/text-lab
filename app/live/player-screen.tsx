@@ -85,13 +85,22 @@ function Checklist({state}:{state:View}){
  return <ol className="mt-4 space-y-1 rounded-2xl bg-[#FFFDF8] p-3 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]" aria-label="Your squad's progress">{rows.map(([r,done,label])=><li key={r} className="flex items-start gap-2 text-[15px]"><span className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full ${done?"bg-[#A0472C] text-white":"bg-[#EFE8D8]"}`}>{done&&<Check size={13}/>}</span><span><b>{ROLE_INFO[r].name}</b> ({who(r)}): {done?label:"waiting"}</span></li>)}</ol>;
 }
 
+// Story missions on the phone: the squad's mission and pieces, or the choice when squads pick.
+function MissionBar({state,act}:{state:View;act:(k:string,p?:Record<string,unknown>)=>void}){
+ const m=state.mission;if(!m)return null;
+ if(!m.current&&m.choose)return <section className="mt-4 rounded-2xl bg-[#2A2620] p-4 text-[#FFFDF8]" aria-labelledby="mpick-h"><h2 id="mpick-h" className="text-[18px] font-bold">Choose your squad's mission</h2>
+  <ul className="mt-2 space-y-2">{m.choose.map(o=><li key={o.id}><button type="button" onClick={()=>act("mission_pick",{missionId:o.id})} className="w-full rounded-xl bg-white/10 px-3 py-2 text-left"><b className="block text-[16px]">{o.title}</b><span className="text-[14px] text-[#E8DDCB]">{o.problem}</span></button></li>)}</ul></section>;
+ if(!m.current)return null;
+ return <p className="mt-4 rounded-2xl bg-[#FFFDF8] px-4 py-2 text-[15px] font-bold shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]">Mission: {m.current.found} of {m.current.total} pieces found <span className="font-semibold text-[#6B6457]">· {m.current.title}</span></p>;
+}
+
 function RoundView({state,act,world,passages}:{state:View;act:(k:string,p?:Record<string,unknown>)=>void;world:ReturnType<typeof useStory>["world"];passages:ReturnType<typeof useStory>["passages"]}){
  const round=state.round!;const p=state.progress;const roles=state.myRoles as Role[];
  const [text,setText]=useState("");const [note,setNote]=useState("");
  useEffect(()=>{setText("")},[state.session.roundIndex]);
  const notes=useMemo(()=>world?contentNotes(world):new Map<string,string>(),[world]);
  // Story Mode: the phone shows only this round's controls.
- if(round.type==="story"&&state.story)return <PlayerStory round={round as never} story={state.story} act={act} world={world} passages={passages} sceneId={"sceneId" in round?String(round.sceneId):""}/>;
+ if(round.type==="story"&&state.story)return <><MissionBar state={state} act={act}/><PlayerStory round={round as never} story={state.story} act={act} world={world} passages={passages} sceneId={"sceneId" in round?String(round.sceneId):""}/></>;
  // Verdict vote and objection vote: everyone votes.
  if(round.type==="verdict"&&"stage" in round&&round.stage==="vote")return <section className="mt-5"><h1 className="text-[26px] font-bold leading-tight">{"question" in round?round.question:""}</h1><p className="mt-1 text-[16px] text-[#4A4438]">Vote for the theory you can best defend.</p>
   <div className="mt-4 grid gap-3">{"theories" in round&&round.theories.map(t=><button key={t.id} type="button" onClick={()=>act("vote",{theoryId:t.id})} aria-pressed={state.myVote===t.id} className={`rounded-2xl p-4 text-left ${state.myVote===t.id?"bg-[#A0472C] text-white":"bg-[#FFFDF8] shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"}`}><span className="flex items-center justify-between text-[19px] font-bold">{t.name}{state.myVote===t.id&&<Check size={20}/>}</span><span className={`mt-1 block text-[15px] ${state.myVote===t.id?"text-white/90":"text-[#4A4438]"}`}>{t.description}</span></button>)}</div></section>;

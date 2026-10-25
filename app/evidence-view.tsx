@@ -6,6 +6,7 @@
 // (theory and case strength); selecting it opens their pinned quotes and closing argument.
 // Used for real classes (app/classroom.tsx) and the sample classroom (app/teacher-demo.tsx).
 import {useEffect,useMemo,useRef,useState} from "react";
+import {LEVELS,SPEED_FLAG_TEXT} from "@/lib/fair-play";
 import {AlertTriangle,Check,Download,Flag,Gavel,MessageCircle,Radio,ShieldCheck,X} from "lucide-react";
 import type {LiveRoundEvidence} from "@/lib/live/evidence";
 import {evidenceCsv,evidenceDetail,type ClassEvidence,type EvidenceClue,type EvidenceStudent} from "@/lib/classroom/evidence";
@@ -82,6 +83,8 @@ export function EvidenceView({evidence,sample=false,className}:{evidence:ClassEv
     </table>
    </div>
   </>}
+  {evidence.students.some(st=>st.mission)?<Missions students={evidence.students}/>:null}
+  {evidence.students.some(st=>st.sceneWriting?.length)?<SceneWritingList students={evidence.students}/>:null}
   {evidence.students.some(st=>st.yourTurn?.length)?<YourTurnWriting students={evidence.students}/>:null}
   {evidence.students.some(st=>st.marks?.length||st.claimFlags?.length||st.freezes?.length)?<MarksAndFlags students={evidence.students}/>:null}
   {evidence.storyMode?.some(s=>s.rows.length)?<StoryBoards boards={evidence.storyMode}/>:null}
@@ -142,6 +145,7 @@ function DetailPanel({evidence,selected,onClose}:{evidence:ClassEvidence;selecte
     {d.proven?<>
      <div><p className="text-[14px] font-semibold text-[#6B6457]">The line from the story</p><blockquote className="mt-2 rounded-2xl border-l-4 border-[#A0472C] bg-[#F4E1D6]/50 px-4 py-3 font-serif text-[18px] leading-8 text-[#2A2620]">“{d.quote}”</blockquote></div>
      <div><p className="text-[14px] font-semibold text-[#6B6457]">Their explanation</p><p className="mt-2 text-[17px] leading-7 text-[#2A2620]">{d.explanation}</p></div>
+     {(d.tries!==null||d.flags.length>0)&&<p className="text-[15px] text-[#4A4438]">{d.shown?"Shown answer after three tries (0 points).":d.tries?`Found on try ${d.tries+1}.`:d.tries===0?"Found on the first try.":""}{d.flags.map(f=><span key={f} className="ml-2 inline-flex rounded-full bg-[#FFF4D6] px-2 py-0.5 text-[13px] font-bold text-[#6B4A00]">⚑ {f}</span>)}</p>}
      <p className={`flex items-start gap-2 rounded-2xl px-4 py-3 text-[16px] font-semibold ${d.finding==="proved-wrong"?"bg-[#A0472C] text-white":"bg-[#EFE8D8] text-[#2A2620]"}`}>{d.finding==="proved-wrong"&&<ShieldCheck size={20} className="mt-0.5 shrink-0"/>}{d.findingLine}</p>
     </>:<p className="text-[17px] leading-7 text-[#4A4438]">{d.notProvenLine}</p>}
     {student.storyboard.length>0&&<div className="border-t border-[#E4DCCB] pt-5"><h4 className="text-[17px] font-bold text-[#2A2620]">Storyboard</h4><p className="mt-1 text-[14px] text-[#6B6457]">{student.nickname}'s completed frames, in story order.</p>
@@ -175,8 +179,9 @@ function LiveRounds({rounds}:{rounds:LiveRoundEvidence[]}){
 }
 
 // Story Mode: the full class leaderboard per scene (teachers only; students see the top 5 and their own rank), with
-// each student's points and proof per round.
-const ROUND_LABEL=["Read and notice","Something happens to you","Catch the lie","Make your call"];
+// each student's goal level, and per round their points, tries, proof, shown answers, typed proofs and speed flags.
+// Speed flags are for the teacher only: students never see them.
+const ROUND_LABEL=["Locate","Infer","Catch the lie","Build the case"];
 function StoryBoards({boards}:{boards:NonNullable<ClassEvidence["storyMode"]>}){
  return <section aria-labelledby="story-boards-h" className="space-y-3">
   <h3 id="story-boards-h" className="flex items-center gap-2 text-[22px] font-bold text-[#2A2620]"><Gavel size={20} className="text-[#A0472C]"/>Story Mode leaderboard</h3>
@@ -184,8 +189,8 @@ function StoryBoards({boards}:{boards:NonNullable<ClassEvidence["storyMode"]>}){
   {boards.filter(b=>b.rows.length).map(b=><div key={b.sceneId} className="rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
    <p className="text-[14px] font-bold uppercase tracking-wide text-[#8A3B23]">{b.sceneTitle}</p>
    <ol className="mt-3 space-y-2">{b.rows.map(r=><li key={r.nickname+r.rank}><details className="rounded-2xl border border-[#E4DCCB] px-4 py-3">
-    <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-2 text-[16px]"><span className="flex items-center gap-3"><span className="w-7 text-right font-bold tabular-nums">{r.rank}</span><span className="font-semibold">{r.nickname}</span>{r.timeSetting!=="1"&&<span className="rounded-full bg-[#EFE8D8] px-2 py-0.5 text-[12px] font-semibold">{r.timeSetting==="untimed"?"Untimed":r.timeSetting+"x time"}</span>}{!r.finished&&<span className="text-[13px] text-[#8B8478]">in progress</span>}</span><span className="tabular-nums">{r.score} pts · best streak {r.bestStreak}</span></summary>
-    <ul className="mt-3 space-y-2 text-[14px] leading-6 text-[#4A4438]">{r.rounds.map(x=><li key={x.round}><b>Round {x.round}, {ROUND_LABEL[x.round-1]}:</b> {x.points} pts{x.grace?" (late, half points)":""}{x.choice&&x.round!==1?<> · {x.choice}</>:null}{x.proof.map(p=><span key={p} className="mt-1 block font-serif italic">“{p.replace(/\s+/g," ")}”</span>)}{x.explanation&&<span className="mt-1 block">Explanation: {x.explanation}</span>}</li>)}</ul>
+    <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-2 text-[16px]"><span className="flex items-center gap-3"><span className="w-7 text-right font-bold tabular-nums">{r.rank}</span><span className="font-semibold">{r.nickname}</span>{r.timeSetting!=="1"&&<span className="rounded-full bg-[#EFE8D8] px-2 py-0.5 text-[12px] font-semibold">{r.timeSetting==="untimed"?"Untimed":r.timeSetting+"x time"}</span>}{!r.finished&&<span className="text-[13px] text-[#8B8478]">in progress</span>}</span><span className="tabular-nums">{r.score}{r.max?` / ${r.max}`:""} pts{r.level?` · ${LEVELS.find(l=>l.id===r.level)?.name??""}`:""} · best streak {r.bestStreak}{r.rounds.some(x=>x.flags?.length)?" · ⚑ speed flag":""}</span></summary>
+    <ul className="mt-3 space-y-2 text-[14px] leading-6 text-[#4A4438]">{r.rounds.map(x=><li key={x.round}><b>Round {x.round}, {ROUND_LABEL[x.round-1]}:</b> {x.points} pts{x.grace?" (late, half points)":""}{x.shown?" · shown answer":x.tries?` · right on try ${x.tries+1}`:""}{x.choice&&x.round!==1&&!["found","missed","caught"].includes(x.choice)?<> · {x.choice}</>:null}{x.flags?.map(f=><span key={f} className="ml-2 inline-flex rounded-full bg-[#FFF4D6] px-2 py-0.5 text-[12px] font-bold text-[#6B4A00]">⚑ {SPEED_FLAG_TEXT[f as keyof typeof SPEED_FLAG_TEXT]??f}</span>)}{x.typed&&<span className="mt-1 block">Typed proof: {x.typed}</span>}{x.proof.map(p=><span key={p} className="mt-1 block font-serif italic">“{p.replace(/\s+/g," ")}”</span>)}{x.explanation&&<span className="mt-1 block">Explanation: {x.explanation}</span>}</li>)}</ul>
    </details></li>)}</ol>
   </div>)}
  </section>;
@@ -203,6 +208,32 @@ function MarksAndFlags({students}:{students:EvidenceStudent[]}){
    {st.freezes?.length>0&&<div className="mt-3"><p className="text-[13px] font-bold uppercase tracking-wide text-[#2F5D80]">❄ Freezes used</p><ul className="mt-1 space-y-1 text-[14px] text-[#2A2620]">{st.freezes.map((f,i)=><li key={i}>{f}</li>)}</ul></div>}
    {st.claimFlags.length>0&&<ul className="mt-3 space-y-2 text-[15px] leading-6">{st.claimFlags.map((f,i)=><li key={i} className="rounded-2xl border border-[#E4DCCB] p-3"><p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">{f.clue} · {f.character} · {f.matched?"Caught the mistake":"Needs your review"}</p><p className="mt-1 text-[#4A4438]">{f.character} said: {f.answer}</p><p className="mt-1 font-serif italic text-[#2A2620]">Student's line: “{f.line}”</p></li>)}</ul>}
   </li>)}</ul>
+ </section>;
+}
+
+// Missions: pieces found (shown ones marked), the verdict, and whether it cited the payoff before the reveal.
+function Missions({students}:{students:EvidenceStudent[]}){
+ return <section aria-labelledby="mission-ev-h" className="space-y-3">
+  <h3 id="mission-ev-h" className="flex items-center gap-2 text-[22px] font-bold text-[#2A2620]"><Gavel size={20} className="text-[#A0472C]"/>Missions</h3>
+  <p className="max-w-2xl text-[15px] leading-6 text-[#4A4438]">Each student's mission: the pieces they proved while playing, and their verdict before the text's answer was revealed.</p>
+  <ul className="grid gap-3 md:grid-cols-2">{students.filter(st=>st.mission).map(st=>{const m=st.mission!;return <li key={st.id} className="rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
+   <p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">{st.nickname} · {m.title} · {m.found.length} of {m.total} pieces</p>
+   <ul className="mt-2 space-y-1.5">{m.found.map(p=><li key={p.line} className="font-serif text-[14px] italic leading-5 text-[#2A2620]">“{p.line.replace(/\s+/g," ")}”{p.shown&&<span className="ml-2 rounded-full bg-[#FFF4D6] px-2 py-0.5 font-sans text-[12px] font-bold not-italic text-[#6B4A00]">shown</span>}</li>)}</ul>
+   {m.verdict?<div className="mt-3 border-t border-[#E4DCCB] pt-3"><p className="text-[14px] font-bold">Verdict: {m.verdict.theory}{m.verdict.early&&<span className="ml-2 rounded-full bg-[#E8F2E7] px-2 py-0.5 text-[12px] text-[#2F6B3A]">Found it before the reveal</span>}</p><p className="mt-1 text-[15px] leading-6">{m.verdict.writing}</p>
+    {m.verdict.pinned.length>0&&<ul className="mt-2 space-y-1.5">{m.verdict.pinned.map(l=><li key={l} className="text-[14px] leading-5"><span className="font-serif italic">“{l.replace(/s+/g," ")}”</span> <span className="font-bold text-[#6B6457]">· {m.verdict!.compare[l]==="same"?"Points the same way":m.verdict!.compare[l]==="else"?"Points somewhere else":"Not compared yet"}</span></li>)}</ul>}</div>:<p className="mt-3 text-[14px] text-[#6B6457]">No verdict yet.</p>}
+  </li>})}</ul>
+ </section>;
+}
+
+// Scene writing: one Notice, Interpret and Craft task per scene, after its clues.
+function SceneWritingList({students}:{students:EvidenceStudent[]}){
+ return <section aria-labelledby="sw-ev-h" className="space-y-3">
+  <h3 id="sw-ev-h" className="flex items-center gap-2 text-[22px] font-bold text-[#2A2620]"><MessageCircle size={20} className="text-[#A0472C]"/>Scene writing</h3>
+  <p className="max-w-2xl text-[15px] leading-6 text-[#4A4438]">Each scene's one writing task: what students noticed, what it means, and the craft choice they made.</p>
+  <ul className="grid gap-3 md:grid-cols-2">{students.flatMap(st=>(st.sceneWriting??[]).map((w,i)=><li key={st.id+i} className="rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
+   <p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">{st.nickname} · {w.scene} · {w.clue}</p>
+   <dl className="mt-2 space-y-2 text-[15px] leading-6 text-[#2A2620]"><div><dt className="font-bold">Notice</dt><dd>{w.notice}</dd></div><div><dt className="font-bold">Interpret</dt><dd>{w.interpret}</dd></div><div><dt className="font-bold">Craft{w.technique?` · ${w.technique}`:""}</dt><dd>{w.craft}</dd></div></dl>
+  </li>))}</ul>
  </section>;
 }
 

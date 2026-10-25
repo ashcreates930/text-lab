@@ -37,7 +37,7 @@ export type LivePlayer = { id: string; nickname: string; squadId: string | null;
 // story_pin / story_react / story_vote: reading together in a live Story Mode squad (lib/live/story.ts squadReading).
 // story_freeze: a squad member froze another squad's lock-in (lib/freeze.ts). your_turn_start / your_turn: the host
 // started Your Turn for everyone; a player saved their activity (lib/your-turn.ts).
-export type ResponseKind = "pin" | "explain" | "approve" | "object" | "submit" | "vote" | "pins" | "argument" | "judged" | "counter_vote" | "override" | "witness" | "story" | "story_pin" | "story_react" | "story_vote" | "story_freeze" | "your_turn_start" | "your_turn";
+export type ResponseKind = "pin" | "explain" | "approve" | "object" | "submit" | "vote" | "pins" | "argument" | "judged" | "counter_vote" | "override" | "witness" | "story" | "story_try" | "mission" | "mission_pick" | "story_pin" | "story_react" | "story_vote" | "story_freeze" | "your_turn_start" | "your_turn";
 export type LiveResponse = {
   id: string; roundIndex: number; squadId: string | null; playerId: string | null; role: Role | "host" | "system" | null;
   kind: ResponseKind; payload: Record<string, unknown>; flagged: boolean; createdAt: string;

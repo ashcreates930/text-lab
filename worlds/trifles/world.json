@@ -298,6 +298,7 @@
   "scenes": [
     {
       "id": "kitchen",
+      "writing_clue": "mr-hales-account",
       "narration": "The sheriff’s party enters the cold Wright farmhouse kitchen. Unwashed pans, a loaf left out, and a dish towel mark unfinished work. Mr. Hale tells the men about the morning he found Mrs. Wright in her rocking chair. While the men discuss the case, Mrs. Hale and Mrs. Peters notice frozen preserves, an uneven quilt, and a birdcage with a broken hinge. The kitchen holds ordinary things, but the women begin to see how they fit together.",
       "summary": "The sheriff, the county attorney, and Mr. Hale search the Wright farmhouse kitchen after Mr. Wright was found dead. Mr. Hale tells how he found Mrs. Wright sitting calmly in her rocking chair. While the men look for big clues, Mrs. Hale and Mrs. Peters notice small things in the kitchen that may explain what happened.",
       "background_image": "/worlds/trifles/kitchen.png",
@@ -435,6 +436,85 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "hauling",
+              "ladder": "locate",
+              "question": "What were Hale and his son hauling to market?",
+              "answers": [
+                {
+                  "line": "Harry and I had started to town with a load of potatoes."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "We came along\nthe road from my place and as I got here I said, “I’m going to see if I\ncan’t get John Wright to go in with me on a party telephone.”",
+                  "hint": "That's why he stopped. What were they carrying? Check ¶19."
+                }
+              ],
+              "prove": {
+                "right": "They were taking potatoes to town.",
+                "wrong": [
+                  "Corn to the mill.",
+                  "Milk to a neighbor.",
+                  "Nothing at all."
+                ]
+              }
+            },
+            {
+              "id": "in-the-rocker",
+              "ladder": "locate",
+              "question": "Who was there when Hale walked in?",
+              "answers": [
+                {
+                  "line": "I wasn’t sure, I’m not sure yet, but I opened the door--this door\n[_indicating the door by which the two women are still standing_] and\nthere in that rocker--[_pointing to it_] sat Mrs. Wright.",
+                  "phrase": "sat Mrs. Wright"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I didn’t hear or see anything; I knocked at the door, and still it was\nall quiet inside.",
+                  "hint": "That's before he went in. Who did he find? Check ¶23."
+                }
+              ],
+              "prove": {
+                "right": "Mrs. Wright, in her rocker.",
+                "wrong": [
+                  "John Wright, at the table.",
+                  "No one at all.",
+                  "The sheriff."
+                ]
+              }
+            },
+            {
+              "id": "unsure",
+              "ladder": "infer",
+              "question": "Why is Hale's story less than certain?",
+              "answers": [
+                {
+                  "line": "So I knocked again, and I thought I heard somebody say, “Come in.”"
+                },
+                {
+                  "line": "I wasn’t sure, I’m not sure yet, but I opened the door--this door\n[_indicating the door by which the two women are still standing_] and\nthere in that rocker--[_pointing to it_] sat Mrs. Wright.",
+                  "phrase": "I wasn’t sure, I’m not sure yet"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I knew they must be up, it was past eight o’clock.",
+                  "hint": "That's the time. Where does he admit doubt? Check ¶23."
+                }
+              ],
+              "prove": {
+                "right": "He isn't sure what he heard, so his account has gaps.",
+                "wrong": [
+                  "He saw everything clearly.",
+                  "He wasn't there.",
+                  "He wrote it all down."
+                ]
+              }
+            }
           ]
         },
         {
@@ -527,6 +607,80 @@
                 "suspense",
                 "point of view"
               ]
+            }
+          ],
+          "bank": [
+            {
+              "id": "froze",
+              "ladder": "locate",
+              "question": "What happened to the jars of food she had put up?",
+              "answers": [
+                {
+                  "line": "Oh, her fruit; it did freeze."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "She worried about that when it turned so cold.",
+                  "hint": "That's her worry. What actually happened? Check ¶58."
+                }
+              ],
+              "prove": {
+                "right": "The cold froze them.",
+                "wrong": [
+                  "Someone stole them.",
+                  "She ate them.",
+                  "They were fine."
+                ]
+              }
+            },
+            {
+              "id": "feared",
+              "ladder": "locate",
+              "question": "What had she feared would happen when the weather turned?",
+              "answers": [
+                {
+                  "line": "She said the\nfire’d go out and her jars would break."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Oh, her fruit; it did freeze.",
+                  "hint": "That's what happened. What did she fear? Check ¶58."
+                }
+              ],
+              "prove": {
+                "right": "The fire would die and her jars would crack.",
+                "wrong": [
+                  "Robbers would come.",
+                  "The sheriff would visit.",
+                  "The roof would leak."
+                ]
+              }
+            },
+            {
+              "id": "cared",
+              "ladder": "infer",
+              "question": "What does her concern for these jars suggest about her?",
+              "answers": [
+                {
+                  "line": "She worried about that when it turned so cold."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "She said the\nfire’d go out and her jars would break.",
+                  "hint": "That's what she said would happen. Who was thinking about it? Check ¶58."
+                }
+              ],
+              "prove": {
+                "right": "She cared about her everyday work at home.",
+                "wrong": [
+                  "She didn't care about her home.",
+                  "She wanted to sell them.",
+                  "She blamed her husband."
+                ]
+              }
             }
           ]
         },
@@ -623,6 +777,80 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "making",
+              "ladder": "locate",
+              "question": "What was Mrs. Wright making with the scraps?",
+              "answers": [
+                {
+                  "line": "She was piecing a quilt."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Pretty, isn’t it?",
+                  "hint": "That's an opinion. What was she making? Check ¶157."
+                }
+              ],
+              "prove": {
+                "right": "She was sewing a quilt.",
+                "wrong": [
+                  "A dress.",
+                  "Curtains.",
+                  "A rug."
+                ]
+              }
+            },
+            {
+              "id": "two-ways",
+              "ladder": "locate",
+              "question": "What two ways could she finish it?",
+              "answers": [
+                {
+                  "line": "I wonder if she was goin’ to\nquilt it or just knot it?"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "It’s log cabin pattern.",
+                  "hint": "That's the pattern. What's the choice? Check ¶160."
+                }
+              ],
+              "prove": {
+                "right": "She could either quilt it or knot it.",
+                "wrong": [
+                  "Paint it or dye it.",
+                  "Sell it or give it away.",
+                  "Burn it or bury it."
+                ]
+              }
+            },
+            {
+              "id": "fixing",
+              "ladder": "infer",
+              "question": "What is Mrs. Hale doing to the messy part of the sewing?",
+              "answers": [
+                {
+                  "line": "Just pulling out a stitch or two that’s not sewed very\ngood."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Bad sewing always made me fidgety.",
+                  "hint": "That's how she feels. What is she doing? Check ¶179."
+                }
+              ],
+              "prove": {
+                "right": "She is fixing the sewing, which changes the evidence.",
+                "wrong": [
+                  "She is cutting the quilt apart.",
+                  "She is packing it to take.",
+                  "She is reading a letter."
+                ]
+              }
+            }
           ]
         },
         {
@@ -716,6 +944,86 @@
                 "suspense",
                 "point of view"
               ]
+            }
+          ],
+          "bank": [
+            {
+              "id": "found",
+              "ladder": "locate",
+              "question": "What did Mrs. Peters come across on the shelf?",
+              "answers": [
+                {
+                  "line": "Why, here’s a bird-cage."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Did\nshe have a bird, Mrs. Hale?",
+                  "hint": "That's her question. What did she find? Check ¶193."
+                }
+              ],
+              "prove": {
+                "right": "An empty birdcage.",
+                "wrong": [
+                  "A box of letters.",
+                  "A broken jar.",
+                  "A rope."
+                ]
+              }
+            },
+            {
+              "id": "damaged",
+              "ladder": "locate",
+              "question": "What is wrong with the little gate?",
+              "answers": [
+                {
+                  "line": "One hinge\nis pulled apart."
+                },
+                {
+                  "line": "It’s broke."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Why, look at this door.",
+                  "hint": "That points to it. What's wrong with it? Check ¶205."
+                }
+              ],
+              "prove": {
+                "right": "A hinge is pulled apart, as if forced.",
+                "wrong": [
+                  "It's painted.",
+                  "It's locked.",
+                  "It's brand new."
+                ]
+              }
+            },
+            {
+              "id": "empty",
+              "ladder": "infer",
+              "question": "Why is it strange that there's a cage but no pet in it?",
+              "answers": [
+                {
+                  "line": "Did\nshe have a bird, Mrs. Hale?"
+                },
+                {
+                  "line": "One hinge\nis pulled apart."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "[_Looking in cupboard._]",
+                  "hint": "That's where she looked. What makes it strange? Check ¶193."
+                }
+              ],
+              "prove": {
+                "right": "A missing bird and a damaged cage raise questions about what happened.",
+                "wrong": [
+                  "Birds always escape.",
+                  "The cage was only for show.",
+                  "Mrs. Wright hated birds."
+                ]
+              }
             }
           ]
         },
@@ -811,6 +1119,80 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "where",
+              "ladder": "locate",
+              "question": "Where do the women hunt for quilting supplies to bring to Minnie?",
+              "answers": [
+                {
+                  "line": "[_They look in the sewing basket._"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "It’s the bird.",
+                  "hint": "That's what they find. Where did they search? Check ¶241."
+                }
+              ],
+              "prove": {
+                "right": "In the sewing basket.",
+                "wrong": [
+                  "Under the bed.",
+                  "In the barn.",
+                  "In the stove."
+                ]
+              }
+            },
+            {
+              "id": "inside",
+              "ladder": "locate",
+              "question": "What is inside the box?",
+              "answers": [
+                {
+                  "line": "It’s the bird."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "[_They look in the sewing basket._",
+                  "hint": "That's where they look. What do they find? Check ¶250."
+                }
+              ],
+              "prove": {
+                "right": "The bird.",
+                "wrong": [
+                  "Money.",
+                  "A letter.",
+                  "Thread."
+                ]
+              }
+            },
+            {
+              "id": "why-hide",
+              "ladder": "infer",
+              "question": "Why would someone hide this among sewing things?",
+              "answers": [
+                {
+                  "line": "It’s the bird."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "[_They look in the sewing basket._",
+                  "hint": "That's where it was. What was hidden? Check ¶250."
+                }
+              ],
+              "prove": {
+                "right": "Someone wanted to keep the bird where the men wouldn't look.",
+                "wrong": [
+                  "It was put there by mistake.",
+                  "The sheriff hid it.",
+                  "It was a gift for Mrs. Hale."
+                ]
+              }
+            }
           ]
         }
       ],
@@ -833,6 +1215,7 @@
     },
     {
       "id": "minnie-foster",
+      "writing_clue": "a-hard-man",
       "narration": "With the men searching upstairs, the kitchen grows quiet. Mrs. Hale lifts a worn skirt from the table and begins to talk about Minnie Foster, the town girl who once sang in the choir. Mrs. Peters remembers the small things Mrs. Wright asked for in jail: an apron and her little shawl. Through the window, the farm sits low in its hollow, out of sight of the road. Who was Minnie Foster, and what happened to her in this house?",
       "summary": "Mrs. Hale and Mrs. Peters gather clothes to take to Mrs. Wright in jail. Mrs. Hale remembers that Mrs. Wright, called Minnie Foster before she married, used to wear pretty clothes and sing in the church choir. Mrs. Hale says the house was lonely, that she stayed away for more than a year, and that John Wright was a hard man.",
       "art_direction": "Painterly, period-accurate interior of a plain 1910s Midwestern farmhouse kitchen in winter, cold gray daylight, muted browns and grays with touches of faded blue. Keep the upper-left area of the image as plain, empty, dark wall in shadow with no objects, because text will overlay it. Upper center: a plain wooden table edge with a worn, faded woman's skirt laid across it, its hem frayed, clearly visible. Upper right: a narrow stair door standing ajar with a small dark knitted shawl hanging on a hook behind it and a folded apron on a shelf beside it, clearly visible. Lower left foreground: a small frosted window looking out on a snowy, empty hollow with bare trees and no road in sight, clearly visible. Lower center: the heavy outer door rimed with frost, a cold draft suggested by a thin drift of snow on the floorboards and an empty hook beside it, clearly visible. No people in the foreground; no readable text; no faces in detail; quiet, lonely mood.",
@@ -969,6 +1352,81 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "close",
+              "ladder": "locate",
+              "question": "How does Mrs. Hale describe John Wright's way with money?",
+              "answers": [
+                {
+                  "line": "Wright was close."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "She didn’t even belong to the Ladies Aid.",
+                  "hint": "That's about the Ladies Aid. What about money? Check ¶125."
+                }
+              ],
+              "prove": {
+                "right": "He was stingy.",
+                "wrong": [
+                  "He was generous.",
+                  "He was rich.",
+                  "He was in debt."
+                ]
+              }
+            },
+            {
+              "id": "young",
+              "ladder": "locate",
+              "question": "What was Minnie like before she married?",
+              "answers": [
+                {
+                  "line": "She used to wear pretty clothes and be\nlively, when she was Minnie Foster, one of the town girls singing in\nthe choir."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "But that--oh, that was thirty years ago.",
+                  "hint": "That's how long ago. What was she like? Check ¶125."
+                }
+              ],
+              "prove": {
+                "right": "Lively, prettily dressed, and singing in the choir.",
+                "wrong": [
+                  "Shy and silent.",
+                  "A teacher.",
+                  "Always alone."
+                ]
+              }
+            },
+            {
+              "id": "like-a-bird",
+              "ladder": "infer",
+              "question": "What creature does Mrs. Hale compare Minnie to?",
+              "answers": [
+                {
+                  "line": "She--come to think of it, she was kind of like a bird\nherself--real sweet and pretty, but kind of timid and--fluttery.",
+                  "phrase": "she was kind of like a bird herself"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "How?--she--did--change.",
+                  "hint": "That's how she changed. What does Mrs. Hale compare her to? Check ¶238."
+                }
+              ],
+              "prove": {
+                "right": "A bird: sweet and pretty, but timid.",
+                "wrong": [
+                  "A cat: sly and quiet.",
+                  "A horse: strong and wild.",
+                  "A storm: loud and angry."
+                ]
+              }
+            }
           ]
         },
         {
@@ -1062,6 +1520,86 @@
                 "suspense",
                 "point of view"
               ]
+            }
+          ],
+          "bank": [
+            {
+              "id": "asked-for",
+              "ladder": "locate",
+              "question": "What did Mrs. Wright request?",
+              "answers": [
+                {
+                  "line": "She said she wanted an apron."
+                },
+                {
+                  "line": "And then her little shawl that always hung behind\nthe door."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Funny thing to want, for there isn’t much\nto get you dirty in jail, goodness knows.",
+                  "hint": "That's Mrs. Peters' opinion. What did she ask for? Check ¶127."
+                }
+              ],
+              "prove": {
+                "right": "An apron and her little shawl.",
+                "wrong": [
+                  "Her quilt.",
+                  "Her bird.",
+                  "Her fruit."
+                ]
+              }
+            },
+            {
+              "id": "where-kept",
+              "ladder": "locate",
+              "question": "Where were the aprons kept?",
+              "answers": [
+                {
+                  "line": "She said they was in the top drawer in this\ncupboard."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "And then her little shawl that always hung behind\nthe door.",
+                  "hint": "That's the shawl. Where were the aprons? Check ¶127."
+                }
+              ],
+              "prove": {
+                "right": "In the top drawer of the cupboard.",
+                "wrong": [
+                  "In the bottom drawer.",
+                  "Behind the door.",
+                  "Upstairs."
+                ]
+              }
+            },
+            {
+              "id": "innocent",
+              "ladder": "infer",
+              "question": "Why does Mrs. Hale believe these requests mean Minnie is innocent?",
+              "answers": [
+                {
+                  "line": "Well, I don’t think she did."
+                },
+                {
+                  "line": "Asking for an apron and her little shawl."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Worrying about her fruit.",
+                  "hint": "That's the fruit. What does she conclude? Check ¶138."
+                }
+              ],
+              "prove": {
+                "right": "Someone worried about everyday things doesn't seem like a killer to her.",
+                "wrong": [
+                  "She has proof.",
+                  "Minnie confessed.",
+                  "The sheriff told her."
+                ]
+              }
             }
           ]
         },
@@ -1160,6 +1698,86 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "how-long",
+              "ladder": "locate",
+              "question": "How long since Mrs. Hale had visited?",
+              "answers": [
+                {
+                  "line": "I’ve not\nbeen in this house--it’s more than a year."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I’ve not seen much of her of late years.",
+                  "hint": "That's seeing her. How long since she came to the house? Check ¶78."
+                }
+              ],
+              "prove": {
+                "right": "More than a year.",
+                "wrong": [
+                  "Last week.",
+                  "Never.",
+                  "Yesterday."
+                ]
+              }
+            },
+            {
+              "id": "kept-away",
+              "ladder": "locate",
+              "question": "What kept her from visiting?",
+              "answers": [
+                {
+                  "line": "I stayed away because it weren’t cheerful--and that’s\nwhy I ought to have come."
+                },
+                {
+                  "line": "It never seemed a very cheerful place."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Farmers’ wives have their hands full, Mr.\nHenderson.",
+                  "hint": "That's about farm work. What kept her away? Check ¶220."
+                }
+              ],
+              "prove": {
+                "right": "The house was gloomy, so she avoided it.",
+                "wrong": [
+                  "She was sick.",
+                  "She was angry at Minnie.",
+                  "She lived far away."
+                ]
+              }
+            },
+            {
+              "id": "regret",
+              "ladder": "infer",
+              "question": "What does Mrs. Hale regret?",
+              "answers": [
+                {
+                  "line": "I wish I had come over to see\nMinnie Foster sometimes."
+                },
+                {
+                  "line": "I wish I had come over sometimes when _she_ was\nhere."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Maybe because\nit’s down in a hollow and you don’t see the road.",
+                  "hint": "That's where the house is. What does she wish? Check ¶220."
+                }
+              ],
+              "prove": {
+                "right": "Minnie was lonely, and no one visited her.",
+                "wrong": [
+                  "Minnie was too busy for friends.",
+                  "Minnie had many visitors.",
+                  "Minnie moved away."
+                ]
+              }
+            }
           ]
         },
         {
@@ -1255,6 +1873,83 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "in-favor",
+              "ladder": "locate",
+              "question": "What does Mrs. Hale grant in Wright's favor?",
+              "answers": [
+                {
+                  "line": "Yes--good; he didn’t drink, and kept his word as well as most, I\nguess, and paid his debts."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "They say he was a good man.",
+                  "hint": "That's what people say. What does Mrs. Hale grant? Check ¶229."
+                }
+              ],
+              "prove": {
+                "right": "He didn't drink, kept his word, and paid his debts.",
+                "wrong": [
+                  "He was cheerful.",
+                  "He loved birds.",
+                  "He gave to the church."
+                ]
+              }
+            },
+            {
+              "id": "raw-wind",
+              "ladder": "locate",
+              "question": "What does she compare spending time with him to?",
+              "answers": [
+                {
+                  "line": "Like a raw wind that gets\nto the bone."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Just to\npass the time of day with him--[_Shivers._]",
+                  "hint": "That's her shiver. What does she compare it to? Check ¶229."
+                }
+              ],
+              "prove": {
+                "right": "A cold wind that chills you to the bone.",
+                "wrong": [
+                  "A warm fire.",
+                  "A quiet song.",
+                  "A sunny day."
+                ]
+              }
+            },
+            {
+              "id": "hard",
+              "ladder": "infer",
+              "question": "How does her opinion of him differ from his reputation?",
+              "answers": [
+                {
+                  "line": "But he was a hard man, Mrs. Peters."
+                },
+                {
+                  "line": "They say he was a good man."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "But I don’t think a place’d be any\ncheerfuller for John Wright’s being in it.",
+                  "hint": "That's about the place. Where does she weigh both views? Check ¶229."
+                }
+              ],
+              "prove": {
+                "right": "People called him good, but she found him hard and cold.",
+                "wrong": [
+                  "She agrees he was kind.",
+                  "She never met him.",
+                  "Everyone hated him."
+                ]
+              }
+            }
           ]
         }
       ],
@@ -1277,6 +1972,7 @@
     },
     {
       "id": "the-law-and-the-women",
+      "writing_clue": "two-kinds-of-crime",
       "narration": "The bird lies hidden under the quilt pieces, and the men's footsteps cross the floor above. Mrs. Hale and Mrs. Peters sit apart, not looking at each other, speaking carefully. Mrs. Peters says the law has got to punish crime, yet her own memories keep breaking through. Mrs. Hale's hand rests on the empty cage. Whose side is each woman on, and what does she owe the law?",
       "summary": "After the men leave the room, the two women talk quietly about the dead bird. Mrs. Peters remembers a boy who killed her kitten and the silence after her first baby died. Mrs. Peters says the law must punish crime, and Mrs. Hale says that leaving Minnie alone for years was also a crime.",
       "art_direction": "Painterly, period-accurate 1910s farmhouse kitchen in late afternoon winter light, deep shadows, muted browns, grays, and a little dull red from scattered quilt pieces. Keep the upper-left area as plain, empty, dark wall in shadow with no objects, because text will overlay it. Upper center: a narrow stair door, slightly open, with faint light spilling down the steps from the room above where the men are searching, clearly visible. Upper right: a frosted window with a wide, empty, snow-covered prairie beyond it, flat and silent, clearly visible. Lower center: the kitchen table with an empty birdcage, its small door hanging crooked, and a woman's hand resting on top of the cage, seen from the wrist down, clearly visible; quilt pieces scattered beside it. Lower right: a slight, thin woman in a dark coat seated near the stove, seen from behind and to the side, one hand lifted toward her face, no facial detail, clearly visible. No readable text; no faces in detail; no violence shown; tense, quiet mood.",
@@ -1413,6 +2109,83 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "the-law",
+              "ladder": "locate",
+              "question": "What does Mrs. Peters say must happen to wrongdoers?",
+              "answers": [
+                {
+                  "line": "The law has got to\npunish crime, Mrs. Hale."
+                },
+                {
+                  "line": "But Mrs. Hale, the law is the law."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I know what stillness is.",
+                  "hint": "That's her memory. What does she say about the rules? Check ¶296."
+                }
+              ],
+              "prove": {
+                "right": "She says the law must punish crime.",
+                "wrong": [
+                  "Forgive them.",
+                  "Let the women decide.",
+                  "Ignore it."
+                ]
+              }
+            },
+            {
+              "id": "regret",
+              "ladder": "locate",
+              "question": "What does Mrs. Hale regret not doing?",
+              "answers": [
+                {
+                  "line": "Oh, I _wish_ I’d come over here\nonce in a while!"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I wish you’d seen Minnie Foster when she\nwore a white dress with blue ribbons and stood up there in the choir\nand sang.",
+                  "hint": "That's a memory. What does she regret? Check ¶298."
+                }
+              ],
+              "prove": {
+                "right": "Visiting Minnie now and then.",
+                "wrong": [
+                  "Calling the sheriff.",
+                  "Moving away.",
+                  "Buying a bird."
+                ]
+              }
+            },
+            {
+              "id": "real-wrong",
+              "ladder": "infer",
+              "question": "What does Mrs. Hale call the real wrong?",
+              "answers": [
+                {
+                  "line": "That was a crime!"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I wish you’d seen Minnie Foster when she\nwore a white dress with blue ribbons and stood up there in the choir\nand sang.",
+                  "hint": "That's Minnie long ago. What wrong does she name? Check ¶298."
+                }
+              ],
+              "prove": {
+                "right": "Leaving Minnie alone and lonely was a wrong no law answers for.",
+                "wrong": [
+                  "The bird's death was legal.",
+                  "Mrs. Peters broke the law.",
+                  "Minnie did nothing at all."
+                ]
+              }
+            }
           ]
         },
         {
@@ -1507,6 +2280,84 @@
                 "suspense",
                 "point of view"
               ]
+            }
+          ],
+          "bank": [
+            {
+              "id": "loss",
+              "ladder": "locate",
+              "question": "What loss does Mrs. Peters remember from Dakota?",
+              "answers": [
+                {
+                  "line": "When we\nhomesteaded in Dakota, and my first baby died--after he was two years\nold, and me with no other then--"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I know what stillness is.",
+                  "hint": "That's what she knows. What happened there? Check ¶292."
+                }
+              ],
+              "prove": {
+                "right": "Her first baby died.",
+                "wrong": [
+                  "Her house burned.",
+                  "Her husband left.",
+                  "Her bird flew away."
+                ]
+              }
+            },
+            {
+              "id": "the-quiet",
+              "ladder": "locate",
+              "question": "What does Mrs. Hale say the quiet would feel like once the music in the house was gone?",
+              "answers": [
+                {
+                  "line": "If there’d been years and years of\nnothing, then a bird to sing to you, it would be awful--still, after\nthe bird was still.",
+                  "phrase": "then a bird to sing to you, it would be awful"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I know what stillness is.",
+                  "hint": "That's Mrs. Peters. What does Mrs. Hale imagine? Check ¶290."
+                }
+              ],
+              "prove": {
+                "right": "Awful, because the one bright thing would be gone.",
+                "wrong": [
+                  "Peaceful and restful.",
+                  "Exciting.",
+                  "Exactly the same as before."
+                ]
+              }
+            },
+            {
+              "id": "changes-course",
+              "ladder": "infer",
+              "question": "How does Mrs. Peters catch her own feelings and change the subject?",
+              "answers": [
+                {
+                  "line": "[_Pulling herself back._]"
+                },
+                {
+                  "line": "The law has got to\npunish crime, Mrs. Hale."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I know what stillness is.",
+                  "hint": "That's her memory. How does she change course? Check ¶296."
+                }
+              ],
+              "prove": {
+                "right": "She turns from her grief to talk about the law.",
+                "wrong": [
+                  "She starts to cry and leaves.",
+                  "She calls the sheriff.",
+                  "She laughs it off."
+                ]
+              }
             }
           ]
         },
@@ -1604,6 +2455,83 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "strangers",
+              "ladder": "locate",
+              "question": "What does the lawyer say about strangers breaking in?",
+              "answers": [
+                {
+                  "line": "No\nsign at all of anyone having come from the outside."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Their own rope.",
+                  "hint": "That's about the rope. What about strangers? Check ¶270."
+                }
+              ],
+              "prove": {
+                "right": "There's no sign anyone came in from outside.",
+                "wrong": [
+                  "A stranger broke in.",
+                  "The door was smashed.",
+                  "Neighbors saw a man."
+                ]
+              }
+            },
+            {
+              "id": "how-died",
+              "ladder": "locate",
+              "question": "How did John Wright die?",
+              "answers": [
+                {
+                  "line": "Killing a man while he slept, slipping a rope around his neck that\nchoked the life out of him."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "It was an awful thing was done in this house that night, Mrs. Hale.",
+                  "hint": "That's how awful it was. How was it done? Check ¶283."
+                }
+              ],
+              "prove": {
+                "right": "Someone strangled him with a rope while he slept.",
+                "wrong": [
+                  "He was shot.",
+                  "He fell down the stairs.",
+                  "He was poisoned."
+                ]
+              }
+            },
+            {
+              "id": "connects",
+              "ladder": "infer",
+              "question": "Why does Mrs. Hale repeat those words and reach out the way she does?",
+              "answers": [
+                {
+                  "line": "His neck."
+                },
+                {
+                  "line": "[_Her hand goes out and rests on the bird-cage._"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "It was an awful thing was done in this house that night, Mrs. Hale.",
+                  "hint": "That's Mrs. Peters. What does Mrs. Hale do? Check ¶285."
+                }
+              ],
+              "prove": {
+                "right": "She links how Wright died to how the bird died.",
+                "wrong": [
+                  "She wants to clean it.",
+                  "She is tired.",
+                  "She is looking for the key."
+                ]
+              }
+            }
           ]
         },
         {
@@ -1699,6 +2627,84 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "kitten",
+              "ladder": "locate",
+              "question": "What happened to Mrs. Peters' pet when she was young?",
+              "answers": [
+                {
+                  "line": "When I was a girl--my kitten--there was a boy took a\nhatchet, and before my eyes--and before I could get there--[_Covers her\nface an instant._]",
+                  "phrase": "there was a boy took a hatchet, and before my eyes"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "If they hadn’t held me back I would have--[_Catches\nherself, looks upstairs where steps are heard, falters weakly_]--hurt\nhim.",
+                  "hint": "That's what she wanted to do. What happened first? Check ¶275."
+                }
+              ],
+              "prove": {
+                "right": "A boy killed her kitten with a hatchet.",
+                "wrong": [
+                  "It ran away.",
+                  "It grew old.",
+                  "It was given away."
+                ]
+              }
+            },
+            {
+              "id": "would-have",
+              "ladder": "locate",
+              "question": "What does she say she would have done to the boy?",
+              "answers": [
+                {
+                  "line": "If they hadn’t held me back I would have--[_Catches\nherself, looks upstairs where steps are heard, falters weakly_]--hurt\nhim."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "When I was a girl--my kitten--there was a boy took a\nhatchet, and before my eyes--and before I could get there--[_Covers her\nface an instant._]",
+                  "hint": "That's what happened. What would she have done? Check ¶275."
+                }
+              ],
+              "prove": {
+                "right": "She would have hurt him.",
+                "wrong": [
+                  "Forgiven him.",
+                  "Told his mother.",
+                  "Laughed."
+                ]
+              }
+            },
+            {
+              "id": "not-sure",
+              "ladder": "infer",
+              "question": "What does she insist nobody can be sure of?",
+              "answers": [
+                {
+                  "line": "We don’t know who killed him."
+                },
+                {
+                  "line": "We don’t know who killed the bird."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "If they hadn’t held me back I would have--[_Catches\nherself, looks upstairs where steps are heard, falters weakly_]--hurt\nhim.",
+                  "hint": "That's her memory. What does she insist? Check ¶288."
+                }
+              ],
+              "prove": {
+                "right": "They can't be sure who killed him.",
+                "wrong": [
+                  "Whether the bird could sing.",
+                  "What day it is.",
+                  "Where the sheriff went."
+                ]
+              }
+            }
           ]
         }
       ],
@@ -1721,6 +2727,7 @@
     },
     {
       "id": "the-last-word",
+      "writing_clue": "missing-motive",
       "narration": "The county attorney walks through the kitchen one last time. The case is clear to him except for one thing: a reason. He glances at the apron, laughs, and decides that a sheriff's wife is married to the law. Then, for one moment, the men are in the other room, and the box is still under the quilt pieces. What will the women do, and what would you call it?",
       "summary": "The county attorney says the case needs a motive to convince a jury. When the men step out, Mrs. Peters tries to hide the box with the dead bird but cannot, and Mrs. Hale puts it in her coat pocket. The attorney jokes about the quilt one more time, and Mrs. Hale answers that they call it \"knot it.\"",
       "art_direction": "Painterly, period-accurate 1910s farmhouse kitchen at dusk in winter, the last gray light at the window, a warm glow from the iron stove, muted browns, grays, and deep blue shadows. Keep the upper-left area as plain, empty, dark wall in shadow with no objects, because text will overlay it. Lower left: a young man's small open notebook and a pencil lying on a chair seat, pages blank or blurred, clearly visible. Center: on the kitchen table, a small bundle of clothes (a folded apron and a skirt) with a glass jar wrapped in a petticoat beside it, clearly visible. Center right: a woman's large, heavy winter coat seen from the side, one hand pressed flat against a bulging pocket, no face shown, clearly visible. Lower center foreground: scattered bright quilt blocks in a log cabin pattern spread across the table's edge, clearly visible. A door to the front room stands open in the background. No readable text; no faces in detail; no dead animal shown; tense, quiet mood.",
@@ -1837,6 +2844,80 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "lacks",
+              "ladder": "locate",
+              "question": "What does the lawyer say is the one thing they lack?",
+              "answers": [
+                {
+                  "line": "No, Peters, it’s all perfectly clear except a reason for doing it."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "But\nyou know juries when it comes to women.",
+                  "hint": "That's about juries. What's missing? Check ¶309."
+                }
+              ],
+              "prove": {
+                "right": "A reason, a motive, for the killing.",
+                "wrong": [
+                  "A witness.",
+                  "The weapon.",
+                  "A confession."
+                ]
+              }
+            },
+            {
+              "id": "earlier",
+              "ladder": "locate",
+              "question": "What did the attorney say earlier was required to convict?",
+              "answers": [
+                {
+                  "line": "Mr. Henderson said coming out that what was needed for the case was a\nmotive; something to show anger, or--sudden feeling."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Something to show--something to make a story about--a thing that\nwould connect up with this strange way of doing it--",
+                  "hint": "That's what he says now. What did he say earlier? Check ¶148."
+                }
+              ],
+              "prove": {
+                "right": "A motive: something showing anger or sudden feeling.",
+                "wrong": [
+                  "Fingerprints.",
+                  "A second rope.",
+                  "Nothing more."
+                ]
+              }
+            },
+            {
+              "id": "hopes",
+              "ladder": "infer",
+              "question": "What kind of evidence does he hope to find?",
+              "answers": [
+                {
+                  "line": "Something to show--something to make a story about--a thing that\nwould connect up with this strange way of doing it--"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "But\nyou know juries when it comes to women.",
+                  "hint": "That's about juries. What does he hope for? Check ¶309."
+                }
+              ],
+              "prove": {
+                "right": "Something dramatic to tell a jury, tied to the strange method.",
+                "wrong": [
+                  "Proof the women did it.",
+                  "Money in the house.",
+                  "A lost letter."
+                ]
+              }
+            }
           ]
         },
         {
@@ -1933,6 +3014,83 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "items",
+              "ladder": "locate",
+              "question": "How does the lawyer judge the items the women chose?",
+              "answers": [
+                {
+                  "line": "Oh, I guess they’re not very dangerous things the ladies have picked\nout."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "[_The LAWYER goes to the table, picks up the apron, laughs._",
+                  "hint": "That's him laughing. What does he say about them? Check ¶319."
+                }
+              ],
+              "prove": {
+                "right": "He thinks they are harmless trifles.",
+                "wrong": [
+                  "He thinks they are evidence.",
+                  "He takes them away.",
+                  "He reads every label."
+                ]
+              }
+            },
+            {
+              "id": "no-watching",
+              "ladder": "locate",
+              "question": "Why does he decide Mrs. Peters can go unwatched?",
+              "answers": [
+                {
+                  "line": "No, Mrs. Peters doesn’t need supervising."
+                },
+                {
+                  "line": "For that matter, a sheriff’s wife is married to the law."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Not--just that way.",
+                  "hint": "That's her reply. What's his reason? Check ¶319."
+                }
+              ],
+              "prove": {
+                "right": "A sheriff's wife is on the law's side, he says.",
+                "wrong": [
+                  "She is too old.",
+                  "She is leaving town.",
+                  "She told him so."
+                ]
+              }
+            },
+            {
+              "id": "not-just",
+              "ladder": "infer",
+              "question": "What does Mrs. Peters' short answer suggest?",
+              "answers": [
+                {
+                  "line": "Not--just that way."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Married to the law.",
+                  "hint": "That's the sheriff. What does Mrs. Peters say? Check ¶321."
+                }
+              ],
+              "prove": {
+                "right": "She may not see herself only on the law's side anymore.",
+                "wrong": [
+                  "She fully agrees.",
+                  "She didn't hear him.",
+                  "She is angry at the sheriff."
+                ]
+              }
+            }
           ]
         },
         {
@@ -2025,6 +3183,83 @@
                 "suspense",
                 "point of view"
               ]
+            }
+          ],
+          "bank": [
+            {
+              "id": "too-big",
+              "ladder": "locate",
+              "question": "Why can't Mrs. Peters hide it in her bag?",
+              "answers": [
+                {
+                  "line": "It is too big."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Suddenly MRS.\n    PETERS throws back quilt pieces and tries to put the box in the bag\n    she is wearing.",
+                  "hint": "That's her trying. Why didn't it work? Check ¶328."
+                }
+              ],
+              "prove": {
+                "right": "It doesn't fit.",
+                "wrong": [
+                  "The men are watching.",
+                  "The bag is full of fruit.",
+                  "She changes her mind at once."
+                ]
+              }
+            },
+            {
+              "id": "ends-up",
+              "ladder": "locate",
+              "question": "Where does it end up?",
+              "answers": [
+                {
+                  "line": "MRS. HALE snatches the box and\n    puts it in the pocket of her big coat."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "She opens box, starts to take bird\n    out, cannot touch it, goes to pieces, stands there helpless.",
+                  "hint": "That's Mrs. Peters freezing. Who takes it? Check ¶328."
+                }
+              ],
+              "prove": {
+                "right": "In Mrs. Hale's coat pocket.",
+                "wrong": [
+                  "In the stove.",
+                  "With the sheriff.",
+                  "Back in the basket."
+                ]
+              }
+            },
+            {
+              "id": "silent",
+              "ladder": "infer",
+              "question": "How do the two women decide what to do without speaking?",
+              "answers": [
+                {
+                  "line": "Then MRS. HALE rises, hands tight together, looking\n    intensely at MRS. PETERS, whose eyes make a slow turn, finally\n    meeting MRS. HALE’S."
+                },
+                {
+                  "line": "A moment MRS. HALE holds her, then her own\n    eyes point the way to where the box is concealed."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "The SHERIFF follows the COUNTY ATTORNEY into the\n    other room.",
+                  "hint": "That's the men leaving. How do the women decide? Check ¶328."
+                }
+              ],
+              "prove": {
+                "right": "They share a long look and agree without words.",
+                "wrong": [
+                  "They argue loudly.",
+                  "They write a note.",
+                  "They flip a coin."
+                ]
+              }
             }
           ]
         },
@@ -2122,6 +3357,80 @@
                 "suspense",
                 "point of view"
               ]
+            }
+          ],
+          "bank": [
+            {
+              "id": "laugh",
+              "ladder": "locate",
+              "question": "What do the men mock the women for wondering?",
+              "answers": [
+                {
+                  "line": "They wonder if she was going to quilt it or just knot it!"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "[_The men laugh, the women look abashed._",
+                  "hint": "That's their reaction. What did they repeat? Check ¶163."
+                }
+              ],
+              "prove": {
+                "right": "Whether she would quilt it or knot it.",
+                "wrong": [
+                  "Whether it would rain.",
+                  "What to cook.",
+                  "Who owned the farm."
+                ]
+              }
+            },
+            {
+              "id": "asks",
+              "ladder": "locate",
+              "question": "What does the lawyer ask the women at the end?",
+              "answers": [
+                {
+                  "line": "She was going to--what is it you call it, ladies?"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Well, Henry, at least we found out that she was not\ngoing to quilt it.",
+                  "hint": "That's his joke. What does he ask? Check ¶330."
+                }
+              ],
+              "prove": {
+                "right": "What they call that kind of finishing.",
+                "wrong": [
+                  "Where the bird is.",
+                  "Who killed John Wright.",
+                  "When they'll leave."
+                ]
+              }
+            },
+            {
+              "id": "found-out",
+              "ladder": "infer",
+              "question": "What does the attorney think the search turned up?",
+              "answers": [
+                {
+                  "line": "Well, Henry, at least we found out that she was not\ngoing to quilt it."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "[_Facetiously._]",
+                  "hint": "That's how he says it. What does he think they found out? Check ¶330."
+                }
+              ],
+              "prove": {
+                "right": "He thinks the quilt is a joke, so he misses what matters.",
+                "wrong": [
+                  "He solved the case.",
+                  "He found the bird.",
+                  "He respects their work."
+                ]
+              }
             }
           ]
         }
@@ -3711,5 +5020,74 @@
         "description": "The men laughed at the women and ignored what they noticed, so the women chose to stand by Minnie instead."
       }
     ]
-  }
+  },
+  "missions": [
+    {
+      "id": "what-the-men-miss",
+      "title": "Find what the men miss",
+      "problem": "Prove why the women keep the evidence to themselves.",
+      "sealed_clue": "knot-it",
+      "payoff": {
+        "line": "We call it--knot it, Mr. Henderson.",
+        "keywords": [
+          "We call it"
+        ]
+      },
+      "theories": [
+        {
+          "id": "understand",
+          "name": "They understand Minnie",
+          "description": "They see what her life was like and protect her."
+        },
+        {
+          "id": "afraid",
+          "name": "They are afraid",
+          "description": "They worry about getting into trouble themselves."
+        },
+        {
+          "id": "unsure",
+          "name": "They aren't sure",
+          "description": "They don't know what the evidence really means."
+        }
+      ],
+      "pieces": [
+        {
+          "id": "hinge",
+          "scene_id": "kitchen",
+          "line": "One hinge\nis pulled apart.",
+          "lead": "Find the line that shows the cage was damaged."
+        },
+        {
+          "id": "the-bird",
+          "scene_id": "kitchen",
+          "line": "It’s the bird.",
+          "lead": "Find the line where the women discover what's inside the box."
+        },
+        {
+          "id": "hard-man",
+          "scene_id": "minnie-foster",
+          "line": "But he was a hard man, Mrs. Peters.",
+          "lead": "Find the line where Mrs. Hale sums up what John Wright was like."
+        },
+        {
+          "id": "rope",
+          "scene_id": "the-law-and-the-women",
+          "line": "Killing a man while he slept, slipping a rope around his neck that\nchoked the life out of him.",
+          "lead": "Find the line that describes how John Wright died."
+        },
+        {
+          "id": "no-reason",
+          "scene_id": "the-last-word",
+          "line": "No, Peters, it’s all perfectly clear except a reason for doing it.",
+          "lead": "Find the line where the lawyer says what the case still lacks."
+        },
+        {
+          "id": "pocket",
+          "scene_id": "the-last-word",
+          "line": "MRS. HALE snatches the box and\n    puts it in the pocket of her big coat.",
+          "lead": "Find the line that shows where the evidence ends up."
+        }
+      ]
+    }
+  ]
 }

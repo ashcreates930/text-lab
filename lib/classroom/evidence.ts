@@ -4,9 +4,11 @@
 import type { WorldPack } from "../world-schema.ts";
 import type { LiveRoundEvidence } from "../live/evidence.ts";
 import { freezeLine } from "../freeze.ts";
+import { LEVELS, SPEED_FLAG_TEXT } from "../fair-play.ts";
 
-// What a saved answer looks like in students.progress.artifactAnswers (only the fields this view reads).
-export type SavedAnswer = { notice?: string; interpret?: string; craft?: string; character?: string };
+// What a saved answer looks like in students.progress.artifactAnswers (only the fields this view reads). fair: the clue
+// screen's question, misses before the right line, whether the answer was shown, and speed flags (lib/fair-play.ts).
+export type SavedAnswer = { notice?: string; interpret?: string; craft?: string; character?: string; fair?: { qid?: string; tries?: number; shown?: boolean; flags?: string[] } };
 // A saved storyboard frame in students.progress.storyFrames, keyed "<world>:<page>" (only the fields this view reads).
 export type SavedFrameInput = { description?: string; quote?: string; image?: string };
 // Spot the Lie results (scene id -> result) and the Final Verdict, as saved in students.progress (fields this view reads).
@@ -15,10 +17,17 @@ export type SavedVerdictInput = { world_id?: string; theory_id?: string; pinned?
 export type SavedMarkInput = { tag?: string; text?: string; pid?: string };
 export type SavedFlagInput = { clueId?: string; characterId?: string; answer?: string; line?: string; matched?: boolean };
 export type SavedFreezeInput = { target?: string; clueId?: string; at?: string };
+// The scene's one writing task (Notice, Interpret, Craft), by scene id.
+export type SavedSceneWritingInput = { notice?: string; interpret?: string; craft?: string; technique?: string; saved_at?: string };
+// A student's mission: pieces found (shown: through a shown answer) and the verdict (early: it cited the payoff line
+// before the reveal).
+export type SavedMissionInput = { mission?: string | null; pieces?: Record<string, { shown?: boolean }> | null; verdict?: { mission_id?: string; theory_id?: string; pinned?: { line: string }[]; writing?: string; early?: boolean; compare?: Record<string, string> } | null };
+export type EvidenceMission = { title: string; found: { line: string; shown: boolean }[]; total: number; verdict: { theory: string; pinned: string[]; writing: string; early: boolean; compare: Record<string, "same" | "else"> } | null };
+export type EvidenceSceneWriting = { scene: string; clue: string; notice: string; interpret: string; craft: string; technique: string };
 export type SavedYourTurnInput = { title?: string; writing?: string; cited?: string[]; results?: { label?: string; line?: string; ok?: boolean }[]; at?: string };
 // Your Turn: the activity, how many answers held up, the student's 2 or 3 sentences and the lines they cited.
 export type EvidenceYourTurn = { title: string; heldUp: string; writing: string; cited: string[]; at: string };
-export type EvidenceStudentInput = { id: string; nickname: string; answers: Record<string, SavedAnswer> | null; frames?: Record<string, SavedFrameInput> | null; lies?: Record<string, SavedLieInput> | null; verdict?: SavedVerdictInput | null; marks?: Record<string, SavedMarkInput> | null; claimFlags?: SavedFlagInput[] | null; freezes?: SavedFreezeInput[] | null; yourTurn?: SavedYourTurnInput[] | null };
+export type EvidenceStudentInput = { id: string; nickname: string; answers: Record<string, SavedAnswer> | null; mission?: SavedMissionInput | null; sceneWriting?: Record<string, SavedSceneWritingInput> | null; frames?: Record<string, SavedFrameInput> | null; lies?: Record<string, SavedLieInput> | null; verdict?: SavedVerdictInput | null; marks?: Record<string, SavedMarkInput> | null; claimFlags?: SavedFlagInput[] | null; freezes?: SavedFreezeInput[] | null; yourTurn?: SavedYourTurnInput[] | null };
 // Marked lines (clue, word to know, question) and "Something's off" flags. A matched flag caught the clue's off claim;
 // the others wait for the teacher's review.
 export type EvidenceMark = { tag: string; paragraph: string; text: string };
@@ -34,11 +43,12 @@ export type StoryboardFrame = { pageId: string; picture?: string; quote: string;
 // "backed-up": the line supported what the character said. null: no character was questioned for this clue.
 export type Finding = "proved-wrong" | "backed-up" | null;
 // character: the name of the character the student questioned, when the save recorded it.
-export type EvidenceCell = { proven: boolean; quote: string; explanation: string; finding: Finding; character?: string };
+// tries / shown / flags: from the clue screen (misses before the right line, a shown answer, speed flags: teachers only).
+export type EvidenceCell = { proven: boolean; quote: string; explanation: string; finding: Finding; character?: string; tries?: number; shown?: boolean; flags?: string[] };
 export type EvidenceClue = { id: string; name: string; sceneId: string };
 // lie: the scene's Spot the Lie clue and the character who testified, when the scene has one.
 export type EvidenceScene = { id: string; title: string; characters: string[]; clues: EvidenceClue[]; lie?: { clueId: string; character: string } };
-export type EvidenceStudent = { id: string; nickname: string; started: boolean; proven: number; provedWrong: number; needsHelp: boolean; cells: Record<string, EvidenceCell>; storyboard: StoryboardFrame[]; liesCaught: Record<string, boolean>; verdict: EvidenceVerdict | null; marks: EvidenceMark[]; claimFlags: EvidenceFlag[]; freezes: string[]; yourTurn: EvidenceYourTurn[] };
+export type EvidenceStudent = { id: string; nickname: string; started: boolean; proven: number; provedWrong: number; needsHelp: boolean; cells: Record<string, EvidenceCell>; storyboard: StoryboardFrame[]; liesCaught: Record<string, boolean>; verdict: EvidenceVerdict | null; marks: EvidenceMark[]; claimFlags: EvidenceFlag[]; freezes: string[]; yourTurn: EvidenceYourTurn[] ; sceneWriting: EvidenceSceneWriting[]; mission: EvidenceMission | null };
 export type ClassEvidence = {
   story: { id: string; title: string };
   scenes: EvidenceScene[];
@@ -47,8 +57,10 @@ export type ClassEvidence = {
   verdict?: { question: string; standards: string[] };
   // Live rounds the class played: each squad's answer and result, and what each student did in their role.
   live?: LiveRoundEvidence[];
-  // Story Mode: every student ranked per scene, with each round's points and proof (teachers only).
-  storyMode?: { sceneId: string; sceneTitle: string; rows: { rank: number; nickname: string; score: number; bestStreak: number; finished: boolean; timeSetting: string; rounds: { round: number; kind: string; points: number; valid: boolean; choice: string; proof: string[]; explanation: string; grace: boolean }[] }[] }[];
+  // Story Mode (teachers only): max and level are the points possible and the goal level reached; per round, tries (misses
+  // before the right answer), shown (the answer was shown after three misses, 0 points), typed (a typed "This proves…
+  // because…") and flags (speed flags: never shown to students).
+  storyMode?: { sceneId: string; sceneTitle: string; rows: { rank: number; nickname: string; score: number; bestStreak: number; finished: boolean; timeSetting: string; max?: number; level?: string | null; rounds: { round: number; kind: string; points: number; valid: boolean; choice: string; proof: string[]; explanation: string; grace: boolean; tries?: number; shown?: boolean; typed?: string | null; flags?: string[] }[] }[] }[];
   summary: { joined: number; totalClues: number; averageProven: number; provedWrongStudents: number; needsHelp: number; anyProven: boolean };
 };
 
@@ -92,7 +104,8 @@ export function buildEvidence(world: WorldPack, students: EvidenceStudentInput[]
     for (const c of clues) {
       const a = s.answers?.[c.id], proven = isProven(a);
       const character = proven && a?.character ? names.get(a.character) : undefined;
-      cells[c.id] = { proven, quote: proven ? a!.notice!.trim() : "", explanation: proven ? a!.interpret!.trim() : "", finding: proven ? findingOf(a) : null, ...(character ? { character } : {}) };
+      const fair = proven ? a?.fair : undefined;
+      cells[c.id] = { proven, quote: proven ? a!.notice!.trim() : "", explanation: proven ? a!.interpret!.trim() : "", finding: proven ? findingOf(a) : null, ...(character ? { character } : {}), ...(fair ? { tries: fair.tries ?? 0, shown: !!fair.shown, flags: fair.flags ?? [] } : {}) };
     }
     const proven = clues.filter((c) => cells[c.id].proven).length;
     const provedWrong = clues.filter((c) => cells[c.id].finding === "proved-wrong").length;
@@ -114,7 +127,11 @@ export function buildEvidence(world: WorldPack, students: EvidenceStudentInput[]
     // Freezes this student used in rival play (who, whom, when).
     const freezes = (s.freezes ?? []).filter((f) => f?.target && f.at).map((f) => freezeLine({ by: s.nickname, target: f.target!, at: f.at!, where: clueNames.get(f.clueId ?? "") ?? "a face-off" }));
     const yourTurn: EvidenceYourTurn[] = (s.yourTurn ?? []).filter((y) => y?.title && y.writing).map((y) => ({ title: y.title!, heldUp: `${(y.results ?? []).filter((r) => r.ok).length} of ${(y.results ?? []).length}`, writing: y.writing!, cited: (y.cited ?? []).map((c) => c.replace(/\s+/g, " ").trim()), at: y.at ?? "" }));
-    return { id: s.id, nickname: s.nickname, started, proven, provedWrong, needsHelp: started && proven === 0, cells, storyboard, liesCaught, verdict, marks, claimFlags, freezes, yourTurn };
+    const sceneWriting: EvidenceSceneWriting[] = world.scenes.flatMap((sc, i) => { const w = s.sceneWriting?.[sc.id]; if (!w?.notice) return []; const clue = sc.artifacts.find((a) => a.id === sc.writing_clue) ?? sc.artifacts[0]; return [{ scene: `Scene ${i + 1}`, clue: clue?.name ?? "", notice: w.notice ?? "", interpret: w.interpret ?? "", craft: w.craft ?? "", technique: w.technique ?? "" }]; });
+    const mm = s.mission?.mission ? world.missions?.find((x) => x.id === s.mission!.mission) : undefined;
+    const mv = mm && s.mission?.verdict?.mission_id === mm.id ? s.mission.verdict : null;
+    const mission: EvidenceMission | null = mm ? { title: mm.title, total: mm.pieces.length, found: mm.pieces.filter((p) => s.mission?.pieces?.[p.id]).map((p) => ({ line: p.line, shown: !!s.mission?.pieces?.[p.id]?.shown })), verdict: mv ? { theory: mm.theories.find((t) => t.id === mv.theory_id)?.name ?? "", pinned: (mv.pinned ?? []).map((p) => p.line), writing: mv.writing ?? "", early: !!mv.early, compare: Object.fromEntries(Object.entries(mv.compare ?? {}).filter(([, v]) => v === "same" || v === "else")) as Record<string, "same" | "else"> } : null } : null;
+    return { id: s.id, nickname: s.nickname, started, proven, provedWrong, needsHelp: started && proven === 0, cells, storyboard, liesCaught, verdict, marks, claimFlags, freezes, yourTurn, sceneWriting, mission };
   });
   const joined = rows.length;
   return {
@@ -145,7 +162,7 @@ export function evidenceDetail(e: ClassEvidence, studentId: string, clueId: stri
   const student = e.students.find((s) => s.id === studentId), clue = e.scenes.flatMap((s) => s.clues).find((c) => c.id === clueId);
   if (!student || !clue) return null;
   const cell = student.cells[clue.id], scene = e.scenes.find((s) => s.id === clue.sceneId);
-  return { title: `${student.nickname} · ${clue.name}`, sceneTitle: scene?.title ?? "", proven: cell.proven, quote: cell.quote, explanation: cell.explanation, finding: cell.finding, findingLine: cell.proven ? findingSentence(cell.finding, scene, cell.character) : "", notProvenLine: `${student.nickname} has not proven this clue yet.` };
+  return { title: `${student.nickname} · ${clue.name}`, sceneTitle: scene?.title ?? "", proven: cell.proven, quote: cell.quote, explanation: cell.explanation, finding: cell.finding, tries: cell.tries ?? null, shown: !!cell.shown, flags: (cell.flags ?? []).map((f) => SPEED_FLAG_TEXT[f as keyof typeof SPEED_FLAG_TEXT] ?? f), findingLine: cell.proven ? findingSentence(cell.finding, scene, cell.character) : "", notProvenLine: `${student.nickname} has not proven this clue yet.` };
 }
 
 // Spreadsheet export: one row per student and clue.
@@ -168,11 +185,13 @@ export function evidenceCsv(e: ClassEvidence) {
   }
   // Story Mode: one row per student per scene, with each round's points and proof.
   if (e.storyMode?.some((s) => s.rows.length)) {
-    lines.push("", ["Story Mode scene", "Rank", "Student", "Score", "Best streak", "Time", "Round 1 points", "Round 1 proof", "Round 2 points", "Round 2 move", "Round 2 proof", "Round 3 points", "Round 3 line", "Round 3 explanation", "Round 4 points", "Round 4 theory", "Round 4 proof"].join(","));
+    lines.push("", ["Story Mode scene", "Rank", "Student", "Score", "Points possible", "Goal level", "Best streak", "Time", "Round 1 points", "Round 1 proof", "Round 2 points", "Round 2 answer", "Round 2 proof", "Round 3 points", "Round 3 line", "Round 3 explanation", "Round 4 points", "Round 4 theory", "Round 4 proof", "Shown answers", "Speed flags"].join(","));
     for (const sc of e.storyMode) for (const r of sc.rows) {
       const rd = (n: number) => r.rounds.find((x) => x.round === n);
       const pts = (n: number) => (rd(n) ? `${rd(n)!.points}${rd(n)!.grace ? " (late, half)" : ""}` : "");
-      lines.push([sc.sceneTitle, String(r.rank), r.nickname, String(r.score), String(r.bestStreak), r.timeSetting === "1" ? "Standard" : r.timeSetting === "untimed" ? "Untimed" : `${r.timeSetting}x`, pts(1), (rd(1)?.proof ?? []).join(" | "), pts(2), rd(2)?.choice ?? "", (rd(2)?.proof ?? []).join(" | "), pts(3), (rd(3)?.proof ?? []).join(" | "), rd(3)?.explanation ?? "", pts(4), rd(4)?.choice ?? "", (rd(4)?.proof ?? []).join(" | ")].map(cell).join(","));
+      const shownRounds = r.rounds.filter((x) => x.shown).map((x) => `Round ${x.round}`).join(" | ");
+      const flagged = r.rounds.filter((x) => x.flags?.length).map((x) => `Round ${x.round}: ${x.flags!.map((f) => SPEED_FLAG_TEXT[f as keyof typeof SPEED_FLAG_TEXT] ?? f).join("; ")}`).join(" | ");
+      lines.push([sc.sceneTitle, String(r.rank), r.nickname, String(r.score), r.max ? String(r.max) : "", LEVELS.find((l) => l.id === r.level)?.name ?? "", String(r.bestStreak), r.timeSetting === "1" ? "Standard" : r.timeSetting === "untimed" ? "Untimed" : `${r.timeSetting}x`, pts(1), (rd(1)?.proof ?? []).join(" | "), pts(2), rd(2)?.typed ?? rd(2)?.choice ?? "", (rd(2)?.proof ?? []).join(" | "), pts(3), (rd(3)?.proof ?? []).join(" | "), rd(3)?.explanation ?? "", pts(4), rd(4)?.choice ?? "", (rd(4)?.proof ?? []).join(" | "), shownRounds, flagged].map(cell).join(","));
     }
   }
   // Live rounds: a second table, one row per student per round (squads score together; no individual ranking).
