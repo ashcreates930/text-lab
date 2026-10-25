@@ -619,6 +619,43 @@ its answers. The searchers' report question keeps "found" and "bank" as reviewed
 - Word cards: discrimination (good judgment), executor, consigned and forthwith, wherever they appear.
 - Writing: the Notice, Interpret and Craft questions are one task per scene (the clue named below).
 
+#### Mission: Find Ichabod
+
+Prove what really happened to Ichabod Crane.
+
+- Sealed clue: `new-york-report`; payoff: “It is true, an old farmer, who had been down to New York on a visit several years after, and from whom this account of the ghostly adventure was received, brought home the intelligence that Ichabod Crane was still alive; that he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress; that he had changed his quarters to a distant part of the country; had kept school and studied law at the same time; had been admitted to the bar; turned politician; electioneered; written for the newspapers; and finally had been made a justice of the Ten Pound Court.”
+- Theories: He left the valley alive, He drowned in the brook, The Horseman carried him off
+- Piece `pay` (empty-schoolhouse): “Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance.” · Lead: Find the line that suggests his wages went wherever he went.
+- Piece `no-body` (empty-schoolhouse): “The brook was searched, but the body of the schoolmaster was not to be discovered.” · Lead: Find the line that tells what the hunt in the water turned up.
+- Piece `chapfallen` (van-tassel-party): “Something, however, I fear me, must have gone wrong, for he certainly sallied forth, after no very great interval, with an air quite desolate and chapfallen.” · Lead: Find the line that shows how he looked as he walked out after his talk with Katrina.
+- Piece `hans-wrath` (the-road-home): “For a moment the terror of Hans Van Ripper’s wrath passed across his mind,--for it was his Sunday saddle; but this was no time for petty fears; the goblin was hard on his haunches; and (unskilful rider that he was!) he had much ado to maintain his seat; sometimes slipping on one side, sometimes on another, and sometimes jolted on the high ridge of his horse’s backbone, with a violence that he verily feared would cleave him asunder.” · Lead: Find the line that shows whose anger he dreaded during the ride.
+- Piece `tumbled` (the-road-home): “It encountered his cranium with a tremendous crash,--he was tumbled headlong into the dust, and Gunpowder, the black steed, and the goblin rider, passed by like a whirlwind.” · Lead: Find the line that shows what happened to him on the far side of the crossing.
+
+#### Mission: Unmask the Horseman
+
+Prove whether the rider was a ghost or a person.
+
+- Sealed clue: `broms-knowing-look`; payoff: “Brom Bones, too, who, shortly after his rival’s disappearance conducted the blooming Katrina in triumph to the altar, was observed to look exceedingly knowing whenever the story of Ichabod was related, and always burst into a hearty laugh at the mention of the pumpkin; which led some to suspect that he knew more about the matter than he chose to tell.”
+- Theories: A real ghost, Brom Bones in disguise, Some other rider
+- Piece `pumpkin` (empty-schoolhouse): “In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin.” · Lead: Find the line that names the odd object next to what he left by the stream.
+- Piece `jokes` (van-tassel-party): “There was something extremely provoking in this obstinately pacific system; it left Brom no alternative but to draw upon the funds of rustic waggery in his disposition, and to play off boorish practical jokes upon his rival.” · Lead: Find the line that shows how Brom fought back without a real fight.
+- Piece `brag` (van-tassel-party): “He affirmed that on returning one night from the neighboring village of Sing Sing, he had been overtaken by this midnight trooper; that he had offered to race with him for a bowl of punch, and should have won it too, for Daredevil beat the goblin horse all hollow, but just as they came to the church bridge, the Hessian bolted, and vanished in a flash of fire.” · Lead: Find the line where Brom boasts about where his ghostly rival disappeared.
+- Piece `big-rider` (the-road-home): “He appeared to be a horseman of large dimensions, and mounted on a black horse of powerful frame.” · Lead: Find the line that describes how big the stranger and the animal under him were.
+- Piece `thrown` (the-road-home): “Just then he saw the goblin rising in his stirrups, and in the very act of hurling his head at him.” · Lead: Find the line where the pursuer throws something at Ichabod.
+
+#### Mission: Clear the schoolhouse
+
+Prove why the valley believes the schoolhouse is haunted.
+
+- Sealed clue: `old-wives-tale`; payoff: “The schoolhouse being deserted soon fell to decay, and was reported to be haunted by the ghost of the unfortunate pedagogue and the plowboy, loitering homeward of a still summer evening, has often fancied his voice at a distance, chanting a melancholy psalm tune among the tranquil solitudes of Sleepy Hollow.”
+- Theories: A real ghost haunts it, Old stories and fear, Pranks made it seem haunted
+- Piece `town-decides` (empty-schoolhouse): “The stories of Brouwer, of Bones, and a whole budget of others were called to mind; and when they had diligently considered them all, and compared them with the symptoms of the present case, they shook their heads, and came to the conclusion that Ichabod had been carried off by the Galloping Hessian.” · Lead: Find the line that shows how the townspeople explained his disappearance.
+- Piece `moved` (empty-schoolhouse): “As he was a bachelor, and in nobody’s debt, nobody troubled his head any more about him; the school was removed to a different quarter of the hollow, and another pedagogue reigned in his stead.” · Lead: Find the line that tells where the lessons moved after he was gone.
+- Piece `witches` (van-tassel-party): “They harried his hitherto peaceful domains; smoked out his singing school by stopping up the chimney; broke into the schoolhouse at night, in spite of its formidable fastenings of withe and window stakes, and turned everything topsy-turvy, so that the poor schoolmaster began to think all the witches in the country held their meetings there.” · Lead: Find the line that shows what the pranksters did to the building after dark.
+- Piece `haunt` (van-tassel-party): “Such was one of the favorite haunts of the Headless Horseman, and the place where he was most frequently encountered.” · Lead: Find the line that names the spot the Horseman liked best.
+- Piece `superstition` (the-road-home): “The common people regarded it with a mixture of respect and superstition, partly out of sympathy for the fate of its ill-starred namesake, and partly from the tales of strange sights, and doleful lamentations, told concerning it.” · Lead: Find the line that shows how ordinary folks felt about the old landmark.
+- Piece `half` (the-towns-verdict): ““Faith, sir,” replied the story-teller, “as to that matter, I don’t believe one-half of it myself.”” · Lead: Find the line where the man who spun the yarn admits his own doubts.
+
 ### Scene 1 (`empty-schoolhouse`)
 
 Scene writing (Notice, Interpret, Craft): the questions from **The searchers' report**.
@@ -1894,3 +1931,1937 @@ Prove it (✓ is right; shuffled on screen):
 2. He asks for another story.
 3. He asks who the Horseman was.
 4. He asks to meet Ichabod.
+
+## Fair play: The Tell-Tale Heart
+
+Generated from `worlds/tell-tale-heart/world.json` (same rules as Sleepy Hollow).
+
+#### Mission: Test the narrator
+
+Prove whether he is the calm, sane man he claims to be.
+
+- Sealed clue: `confession-floorboards`; payoff: “I admit the deed! — tear up the planks! — here, here! — it is the beating of his hideous heart!””
+- Theories: He is calm and sane, Guilt is breaking him, He is not in his right mind
+- Piece `no-object` (search): “Object there was none.” · Lead: Find the line where he says he had no reason for the deed.
+- Piece `the-eye` (search): “I think it was his eye! — yes, it was this!” · Lead: Find the line where he names what drove him to it.
+- Piece `triumph` (room): “I could scarcely contain my feelings of triumph.” · Lead: Find the line that shows how proud he felt while sneaking in.
+- Piece `precautions` (room): “If, still, you think me mad, you will think so no longer when I describe the wise precautions I took for the concealment of the body.” · Lead: Find the line where he promises to prove he isn't crazy by how carefully he hid what he had done.
+- Piece `heard-not` (confession): “I gasped for breath — and yet the officers heard it not.” · Lead: Find the line that shows the visitors noticed nothing while he struggled.
+
+### Scene 1 (`arrival`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **Officers’ shriek report**.
+
+#### Clue: Street door and four o’clock
+
+**Locate. How late was it when his work was finished?**
+
+Answers:
+
+> ¶25: “When I had made an end of these labors, it was four o'clock — still dark as midnight.”
+
+Near misses:
+
+> ¶25: “As the bell sounded the hour, there came a knocking at the street door.”
+>
+> Hint: That's the knock. When did he finish? Check ¶25.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He finished before dawn, while it was still dark. ✓
+2. He finished at noon.
+3. He never finished.
+4. He finished at sunset.
+
+**Locate. Who came through the doorway, and what did they say they were?**
+
+Answers:
+
+> ¶25: “There entered three men, who introduced themselves, with perfect suavity, as officers of the police.”
+
+Near misses:
+
+> ¶25: “I went down to open it with a light heart, — for what had I now to fear?”
+>
+> Hint: That's how he felt going down. Who came in? Check ¶25.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Three police officers arrived, and they were very polite. ✓
+2. Neighbors came to visit.
+3. The old man came home.
+4. One rude soldier came in.
+
+**Infer. How did he feel about answering, and why is that strange?**
+
+Answers:
+
+> ¶25: “I went down to open it with a light heart, — for what had I now to fear?”
+
+Near misses:
+
+> ¶25: “When I had made an end of these labors, it was four o'clock — still dark as midnight.”
+>
+> Hint: That's the time. How did he feel? Check ¶25.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He felt carefree, as if he had nothing to fear at all. ✓
+2. He was terrified of the knock.
+3. He refused to open up.
+4. He was asleep and missed it.
+
+#### Clue: Officers’ shriek report
+
+**Locate. What did someone next door notice in the dark hours?**
+
+Answers:
+
+> ¶26: “A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises.”
+>
+> Proof phrase: *A shriek had been heard by a neighbor during the night*
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A neighbor heard a scream. ✓
+2. A neighbor saw a fire.
+3. A neighbor heard music.
+4. A neighbor saw a thief.
+
+**Locate. What were the visitors sent to do?**
+
+Answers:
+
+> ¶26: “A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises.”
+>
+> Proof phrase: *they (the officers) had been deputed to search the premises*
+
+Prove it (✓ is right; shuffled on screen):
+
+1. They were sent to look through the house. ✓
+2. They were sent to arrest the old man.
+3. They were sent to deliver a letter.
+4. They came to buy the house.
+
+**Infer. Why does a report from next door matter more than his word alone?**
+
+Answers:
+
+> ¶26: “A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises.”
+>
+> Proof phrase: *A shriek had been heard by a neighbor during the night*
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Someone else heard something, so his story can be checked. ✓
+2. The neighbor saw everything happen.
+3. The neighbor wrote the story.
+4. No one heard anything at all.
+
+### Scene 2 (`search`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **No stated motive**.
+
+#### Clue: Treasures, secure and undisturbed
+
+**Locate. Where did he say the old man had gone?**
+
+Answers:
+
+> ¶27: “The old man, I mentioned, was absent in the country.”
+
+Near misses:
+
+> ¶27: “The shriek, I said, was my own in a dream.”
+>
+> Hint: That explains the scream. Where did he say the old man was? Check ¶27.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He claimed the old man was away in the country. ✓
+2. He said the old man was asleep upstairs.
+3. He said the old man had moved to the city.
+4. He said he didn't know.
+
+**Locate. How did he explain the scream?**
+
+Answers:
+
+> ¶27: “The shriek, I said, was my own in a dream.”
+
+Near misses:
+
+> ¶27: “I smiled, — for what had I to fear?”
+>
+> Hint: That's his smile. What did he say about the noise? Check ¶27.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He claimed he cried out himself while dreaming. ✓
+2. He blamed a cat.
+3. He said the neighbor imagined it.
+4. He admitted the old man screamed.
+
+**Infer. Why might he show the visitors the old man's valuables?**
+
+Answers:
+
+> ¶27: “I showed them his treasures, secure, undisturbed.”
+
+Near misses:
+
+> ¶27: “I took my visitors all over the house.”
+>
+> Hint: That's the tour. What did he show them in the chamber? Check ¶27.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Untouched valuables suggest nothing was stolen, so nothing seems wrong. ✓
+2. He wanted to sell them.
+3. The valuables were missing.
+4. The officers asked to count the money.
+
+#### Clue: No stated motive
+
+**Locate. What did he say he wanted from the old man?**
+
+Answers:
+
+> ¶2: “For his gold I had no desire.”
+
+> ¶2: “Object there was none.”
+
+Near misses:
+
+> ¶2: “I loved the old man.”
+>
+> Hint: That's how he felt about him. Did he want anything? Check ¶2.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He says he wanted nothing from him, not even his money. ✓
+2. He wanted his gold.
+3. He wanted his house.
+4. He wanted revenge for an insult.
+
+**Locate. What feature of the old man bothered him?**
+
+Answers:
+
+> ¶2: “I think it was his eye! — yes, it was this!”
+
+> ¶2: “He had the eye of a vulture — a pale blue eye, with a film over it.”
+
+Near misses:
+
+> ¶2: “He had never wronged me.”
+>
+> Hint: That's what the old man didn't do. What bothered him? Check ¶2.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The old man's clouded eye frightened and disgusted him. ✓
+2. His voice was too loud.
+3. He snored at night.
+4. He owed money.
+
+**Infer. What decision did he reach, and why is his reason odd?**
+
+Answers:
+
+> ¶2: “Whenever it fell upon me, my blood ran cold; and so, by degrees — very gradually — I made up my mind to take the life of the old man, and thus rid myself of the eye forever.”
+>
+> Proof phrase: *I made up my mind to take the life of the old man, and thus rid myself of the eye forever*
+
+Near misses:
+
+> ¶2: “It is impossible to say how first the idea entered my brain; but, once conceived, it haunted me day and night.”
+>
+> Hint: That's how the idea began. What did he decide? Check ¶2.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He planned to kill a man he loved just to escape his eye. ✓
+2. He planned to move away.
+3. He decided to steal the gold.
+4. He decided to help the old man.
+
+### Scene 3 (`room`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **Death-watches in the wall**.
+
+#### Clue: Lantern’s single thin ray
+
+**Locate. How long did it take him just to get inside the gap?**
+
+Answers:
+
+> ¶5: “It took me an hour to place my whole head within the opening so far that I could see the old man as he lay upon his bed.”
+>
+> Proof phrase: *It took me an hour to place my whole head within the opening*
+
+Near misses:
+
+> ¶5: “Ha! — would a madman have been so wise as this?”
+>
+> Hint: That's him boasting. How long did it take? Check ¶5.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He moved incredibly slowly, taking a whole hour. ✓
+2. He rushed straight in.
+3. He waited outside all night.
+4. He came in through the window.
+
+**Locate. Where did the beam land?**
+
+Answers:
+
+> ¶5: “And then, when my head was well in the room, I undid the lantern cautiously — oh, so cautiously (for the hinges creaked) — I undid it just so much that a single thin ray fell upon the vulture eye.”
+>
+> Proof phrase: *a single thin ray fell upon the vulture eye*
+
+Near misses:
+
+> ¶5: “It took me an hour to place my whole head within the opening so far that I could see the old man as he lay upon his bed.”
+>
+> Hint: That's his head going in. Where did the ray fall? Check ¶5.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He aimed the light only at the eye. ✓
+2. He lit the whole room.
+3. He shone it on the bed.
+4. He kept it dark.
+
+**Infer. What does his bragging about being careful suggest about how he sees himself?**
+
+Answers:
+
+> ¶5: “Ha! — would a madman have been so wise as this?”
+
+Near misses:
+
+> ¶5: “And then, when my head was well in the room, I undid the lantern cautiously — oh, so cautiously (for the hinges creaked) — I undid it just so much that a single thin ray fell upon the vulture eye.”
+>
+> Hint: That's the lantern. Where does he brag? Check ¶5.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He believes his care proves he is not mad. ✓
+2. He admits he is mad.
+3. He thinks the old man is wise.
+4. He is joking with the officers.
+
+#### Clue: Door opened night after night
+
+**Locate. At what hour did he start his visits?**
+
+Answers:
+
+> ¶4: “And every night, about midnight, I turned the latch of his door and opened it — oh so gently!”
+
+Near misses:
+
+> ¶4: “Oh, you would have laughed to see how cunningly I thrust it in!”
+>
+> Hint: That's him boasting. When did he start? Check ¶4.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He came around twelve, in the middle of the night. ✓
+2. At sunrise.
+3. At dinnertime.
+4. Only once, at noon.
+
+**Locate. How was his last visit different from the others?**
+
+Answers:
+
+> ¶8: “Upon the eighth night I was more than usually cautious in opening the door.”
+
+Near misses:
+
+> ¶8: “I fairly chuckled at the idea.”
+>
+> Hint: That's his laugh. How was he different that time? Check ¶8.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He was even more careful than usual. ✓
+2. He was careless and loud.
+3. He knocked first.
+4. He brought the officers.
+
+**Infer. How does his mood change as the visits go on?**
+
+Answers:
+
+> ¶8: “I could scarcely contain my feelings of triumph.”
+
+> ¶8: “Never, before that night, had I felt the extent of my own powers — of my sagacity.”
+
+Near misses:
+
+> ¶8: “And perhaps the old man heard me; for he moved in the bed suddenly, as if startled.”
+>
+> Hint: That's the old man moving. How does the narrator feel? Check ¶8.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He grows proud and thrilled with his own cleverness. ✓
+2. He grows sorry.
+3. He grows bored.
+4. He gives up.
+
+#### Clue: Heavy bed
+
+**Locate. What did he use to hold the old man down?**
+
+Answers:
+
+> ¶21: “In an instant I dragged him to the floor, and pulled the heavy bed over him.”
+
+Near misses:
+
+> ¶20: “With a loud yell, I threw open the lantern and leaped into the room.”
+>
+> Hint: That's him leaping in. What held the old man down? Check ¶21.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He used the heavy bed. ✓
+2. A blanket.
+3. A door.
+4. Nothing at all.
+
+**Locate. How did he feel right after, sitting there?**
+
+Answers:
+
+> ¶21: “I then sat upon the bed and smiled gaily, to find the deed so far done.”
+
+Near misses:
+
+> ¶21: “But, for many minutes, the heart beat on, with a muffled sound.”
+>
+> Hint: That's the sound going on. How did he feel? Check ¶21.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He was cheerful about what he had done. ✓
+2. He cried.
+3. He ran away.
+4. He called for help.
+
+**Infer. Why didn't the beating trouble him at first?**
+
+Answers:
+
+> ¶21: “This, however, did not vex me; it would not be heard through the walls.”
+
+Near misses:
+
+> ¶20: “And now a new anxiety seized me — the sound would be heard by a neighbor!”
+>
+> Hint: That was before. Why didn't it bother him now? Check ¶21.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He believed it could not get past the walls. ✓
+2. He couldn't hear it.
+3. He wanted to be caught.
+4. The officers were coming.
+
+#### Clue: Chairs and the narrator’s seat
+
+**Locate. What did he bring in for the visitors?**
+
+Answers:
+
+> ¶28: “In the enthusiasm of my confidence, I brought chairs into the room, and desired them here to rest from their fatigues; while I myself, in the wild audacity of my perfect triumph, placed my own seat upon the very spot beneath which reposed the corpse of the victim.”
+>
+> Proof phrase: *I brought chairs into the room*
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He acted like a relaxed host and offered seats. ✓
+2. He refused them seats.
+3. He made them stand outside.
+4. He sent them away.
+
+**Locate. Where did he choose to sit?**
+
+Answers:
+
+> ¶28: “In the enthusiasm of my confidence, I brought chairs into the room, and desired them here to rest from their fatigues; while I myself, in the wild audacity of my perfect triumph, placed my own seat upon the very spot beneath which reposed the corpse of the victim.”
+>
+> Proof phrase: *placed my own seat upon the very spot beneath which reposed the corpse of the victim*
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Right over the hidden body. ✓
+2. By the window.
+3. At the door.
+4. Far from the boards.
+
+**Infer. What does that choice reveal about his state of mind?**
+
+Answers:
+
+> ¶28: “In the enthusiasm of my confidence, I brought chairs into the room, and desired them here to rest from their fatigues; while I myself, in the wild audacity of my perfect triumph, placed my own seat upon the very spot beneath which reposed the corpse of the victim.”
+>
+> Proof phrase: *in the wild audacity of my perfect triumph*
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He was so sure of himself that he took a reckless risk. ✓
+2. He was too tired to move.
+3. He wanted to protect the officers.
+4. He forgot what lay below.
+
+#### Clue: Three floorboards
+
+**Locate. Where did he put what was left of the victim?**
+
+Answers:
+
+> ¶23: “I then took up three planks from the flooring of the chamber, and deposited all between the scantlings.”
+
+Near misses:
+
+> ¶23: “I cut off the head and the arms and the legs.”
+>
+> Hint: That's what he did first. Where did he hide it? Check ¶23.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He hid it under the floor. ✓
+2. He buried it in the garden.
+3. He threw it in the river.
+4. He locked it in a trunk.
+
+**Locate. How well did he say he covered his work?**
+
+Answers:
+
+> ¶24: “I then replaced the boards so cleverly, so cunningly, that no human eye — not even his — could have detected anything wrong.”
+
+Near misses:
+
+> ¶24: “I had been too wary for that.”
+>
+> Hint: That's him being wary. How well did he put things back? Check ¶24.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He claims no one could spot anything wrong. ✓
+2. He left a mess.
+3. He asked for help.
+4. He marked the spot.
+
+**Infer. Why does he walk us through every step of what he did with the remains?**
+
+Answers:
+
+> ¶23: “If, still, you think me mad, you will think so no longer when I describe the wise precautions I took for the concealment of the body.”
+>
+> Proof phrase: *you will think so no longer when I describe the wise precautions*
+
+Near misses:
+
+> ¶22: “His eye would trouble me no more.”
+>
+> Hint: That's about the eye. Why does he explain his steps? Check ¶23.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He thinks careful planning proves he is sane. ✓
+2. He wants to be caught.
+3. He is confessing to the police.
+4. He feels sorry.
+
+#### Clue: Tub
+
+**Locate. What does he say kept the floor clean?**
+
+Answers:
+
+> ¶24: “A tub had caught all — ha! ha!”
+
+Near misses:
+
+> ¶24: “There was nothing to wash out — no stain of any kind — no blood-spot whatever.”
+>
+> Hint: That's the result. What did the work? Check ¶24.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He says a tub took everything. ✓
+2. A rug.
+3. A bucket of water.
+4. A cloth.
+
+**Locate. What did he say was left to clean up?**
+
+Answers:
+
+> ¶24: “There was nothing to wash out — no stain of any kind — no blood-spot whatever.”
+
+Near misses:
+
+> ¶24: “A tub had caught all — ha! ha!”
+>
+> Hint: That's what took it all. What was left behind? Check ¶24.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He claims there was nothing at all to clean. ✓
+2. Blood everywhere.
+3. A broken lamp.
+4. Footprints.
+
+**Infer. What in his telling sounds more like bragging than reporting?**
+
+Answers:
+
+> ¶24: “A tub had caught all — ha! ha!”
+
+> ¶24: “I then replaced the boards so cleverly, so cunningly, that no human eye — not even his — could have detected anything wrong.”
+
+Near misses:
+
+> ¶23: “The night waned, and I worked hastily, but in silence.”
+>
+> Hint: That's the work at night. Where does he gloat? Check ¶24.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He laughs and boasts, so this is his own account, not proof. ✓
+2. He shows real evidence.
+3. The officers confirm it.
+4. He sounds ashamed.
+
+#### Clue: Closed shutters
+
+**Locate. What blocked out all light in the bedroom?**
+
+Answers:
+
+> ¶9: “His room was as black as pitch with the thick darkness, (for the shutters were close fastened, through fear of robbers,) and so I knew that he could not see the opening of the door, and I kept on pushing it steadily, steadily.”
+>
+> Proof phrase: *the shutters were close fastened, through fear of robbers*
+
+Near misses:
+
+> ¶9: “Now you may think that I drew back — but no.”
+>
+> Hint: That's him not stopping. Why was the room so dark? Check ¶9.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Shutters closed tight against thieves. ✓
+2. A moonless sky.
+3. A broken lantern.
+4. Heavy curtains he hung.
+
+**Locate. Did he stop when he got close?**
+
+Answers:
+
+> ¶9: “Now you may think that I drew back — but no.”
+
+Near misses:
+
+> ¶9: “His room was as black as pitch with the thick darkness, (for the shutters were close fastened, through fear of robbers,) and so I knew that he could not see the opening of the door, and I kept on pushing it steadily, steadily.”
+>
+> Hint: That explains the dark. Did he stop? Check ¶9.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He kept going instead of pulling back. ✓
+2. He ran away.
+3. He woke the old man.
+4. He waited a week.
+
+**Infer. Why did he feel safe going on?**
+
+Answers:
+
+> ¶9: “His room was as black as pitch with the thick darkness, (for the shutters were close fastened, through fear of robbers,) and so I knew that he could not see the opening of the door, and I kept on pushing it steadily, steadily.”
+>
+> Proof phrase: *I knew that he could not see the opening of the door*
+
+Near misses:
+
+> ¶9: “Now you may think that I drew back — but no.”
+>
+> Hint: That's him not drawing back. Why did he feel safe? Check ¶9.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He knew the old man couldn't see him in the dark. ✓
+2. The old man was deaf.
+3. The officers were with him.
+4. The door was gone.
+
+#### Clue: Death-watches in the wall
+
+**Locate. What was the old man doing instead of sleeping?**
+
+Answers:
+
+> ¶11: “He was still sitting up in the bed, listening; — just as I have done, night after night, hearkening to the death-watches in the wall.”
+
+Near misses:
+
+> ¶11: “For another hour I did not move a muscle, and in the meantime I did not hear the old man lie down.”
+>
+> Hint: That's the narrator waiting. What was the old man doing? Check ¶11.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He sat up in bed, listening in fear. ✓
+2. He was asleep.
+3. He was reading.
+4. He called the police.
+
+**Locate. How long did the narrator stay frozen?**
+
+Answers:
+
+> ¶11: “For another hour I did not move a muscle, and in the meantime I did not hear the old man lie down.”
+
+Near misses:
+
+> ¶11: “I kept quite still and said nothing.”
+>
+> Hint: That's him keeping quiet at first. How long? Check ¶11.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He stood still for another whole hour. ✓
+2. A second.
+3. He left at once.
+4. Until morning.
+
+**Infer. How is the old man like the narrator in this moment?**
+
+Answers:
+
+> ¶11: “He was still sitting up in the bed, listening; — just as I have done, night after night, hearkening to the death-watches in the wall.”
+
+Near misses:
+
+> ¶11: “I kept quite still and said nothing.”
+>
+> Hint: That's the narrator. How are they alike? Check ¶11.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Both lie awake, listening in the dark. ✓
+2. Both are asleep.
+3. Both are laughing.
+4. Neither can hear.
+
+### Scene 4 (`confession`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **The officers’ calm**.
+
+#### Clue: Floorboards at the confession
+
+**Locate. What name does he call the officers?**
+
+Answers:
+
+> ¶34: ““Villains!””
+
+Near misses:
+
+> ¶34: “I shrieked, “dissemble no more!”
+>
+> Hint: That's what he orders. What does he call them? Check ¶34.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He calls them villains. ✓
+2. Friends.
+3. Gentlemen.
+4. Neighbors.
+
+**Locate. What does he order them to stop doing?**
+
+Answers:
+
+> ¶34: “I shrieked, “dissemble no more!”
+
+Near misses:
+
+> ¶34: ““Villains!””
+>
+> Hint: That's the name he calls them. What does he demand? Check ¶34.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He orders them to stop pretending. ✓
+2. To stop talking.
+3. To leave.
+4. To search.
+
+**Infer. What pushes him to the breaking point just before he speaks?**
+
+Answers:
+
+> ¶33: “I felt that I must scream or die! — and now — again! — hark! louder! louder! louder! louder!”
+
+Near misses:
+
+> ¶33: “Was it possible they heard not?”
+>
+> Hint: That's his question. What pushes him over? Check ¶33.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The sound grows unbearable and he must scream. ✓
+2. The officers accuse him.
+3. The old man walks in.
+4. The clock strikes.
+
+#### Clue: The officers’ calm
+
+**Locate. Where did he first think the sound came from, and what did he decide?**
+
+Answers:
+
+> ¶30: “The ringing became more distinct: I talked more freely, to get rid of the feeling; but it continued and gained definiteness — until, at length, I found that the noise was not within my ears.”
+>
+> Proof phrase: *I found that the noise was not within my ears*
+
+Near misses:
+
+> ¶29: “My head ached, and I fancied a ringing in my ears: but still they sat and still chatted.”
+>
+> Hint: That's when it starts. What does he realize? Check ¶30.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He decided the noise wasn't just in his head. ✓
+2. He knew it was the clock.
+3. He thought it was rain.
+4. He never noticed it.
+
+**Locate. How did the visitors behave while he grew frantic?**
+
+Answers:
+
+> ¶32: “And still the men chatted pleasantly, and smiled.”
+
+Near misses:
+
+> ¶31: “I gasped for breath — and yet the officers heard it not.”
+>
+> Hint: That's him gasping. What were the officers doing? Check ¶32.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. They stayed calm and friendly, seeming to notice nothing. ✓
+2. They drew their weapons.
+3. They left.
+4. They shouted at him.
+
+**Infer. Why might the sound be coming from inside him rather than the floor?**
+
+Answers:
+
+> ¶31: “I gasped for breath — and yet the officers heard it not.”
+
+> ¶33: “They heard! — they suspected! — they knew! — they were making a mockery of my horror! — this I thought, and this I think.”
+
+Near misses:
+
+> ¶32: “I swung the chair upon which I had sat, and grated it upon the boards; — but the noise arose over all and continually increased.”
+>
+> Hint: That's him scraping the chair. Who notices the sound? Check ¶31.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. No one else notices it, so it may be his guilt. ✓
+2. The officers notice it clearly.
+3. It's a clock in the wall.
+4. The old man is alive.
+
+## Fair play: Trifles
+
+Generated from `worlds/trifles/world.json` (same rules as Sleepy Hollow).
+
+#### Mission: Find what the men miss
+
+Prove why the women keep the evidence to themselves.
+
+- Sealed clue: `knot-it`; payoff: “We call it--knot it, Mr. Henderson.”
+- Theories: They understand Minnie, They are afraid, They aren't sure
+- Piece `hinge` (kitchen): “One hinge is pulled apart.” · Lead: Find the line that shows the cage was damaged.
+- Piece `the-bird` (kitchen): “It’s the bird.” · Lead: Find the line where the women discover what's inside the box.
+- Piece `hard-man` (minnie-foster): “But he was a hard man, Mrs. Peters.” · Lead: Find the line where Mrs. Hale sums up what John Wright was like.
+- Piece `rope` (the-law-and-the-women): “Killing a man while he slept, slipping a rope around his neck that choked the life out of him.” · Lead: Find the line that describes how John Wright died.
+- Piece `no-reason` (the-last-word): “No, Peters, it’s all perfectly clear except a reason for doing it.” · Lead: Find the line where the lawyer says what the case still lacks.
+- Piece `pocket` (the-last-word): “MRS. HALE snatches the box and puts it in the pocket of her big coat.” · Lead: Find the line that shows where the evidence ends up.
+
+### Scene 1 (`kitchen`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **Mr. Hale's account**.
+
+#### Clue: Mr. Hale's account
+
+**Locate. What were Hale and his son hauling to market?**
+
+Answers:
+
+> ¶19: “Harry and I had started to town with a load of potatoes.”
+
+Near misses:
+
+> ¶19: “We came along the road from my place and as I got here I said, “I’m going to see if I can’t get John Wright to go in with me on a party telephone.””
+>
+> Hint: That's why he stopped. What were they carrying? Check ¶19.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. They were taking potatoes to town. ✓
+2. Corn to the mill.
+3. Milk to a neighbor.
+4. Nothing at all.
+
+**Locate. Who was there when Hale walked in?**
+
+Answers:
+
+> ¶23: “I wasn’t sure, I’m not sure yet, but I opened the door—this door [_indicating the door by which the two women are still standing_] and there in that rocker—[_pointing to it_] sat Mrs. Wright.”
+>
+> Proof phrase: *sat Mrs. Wright*
+
+Near misses:
+
+> ¶23: “I didn’t hear or see anything; I knocked at the door, and still it was all quiet inside.”
+>
+> Hint: That's before he went in. Who did he find? Check ¶23.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Mrs. Wright, in her rocker. ✓
+2. John Wright, at the table.
+3. No one at all.
+4. The sheriff.
+
+**Infer. Why is Hale's story less than certain?**
+
+Answers:
+
+> ¶23: “So I knocked again, and I thought I heard somebody say, “Come in.””
+
+> ¶23: “I wasn’t sure, I’m not sure yet, but I opened the door—this door [_indicating the door by which the two women are still standing_] and there in that rocker—[_pointing to it_] sat Mrs. Wright.”
+>
+> Proof phrase: *I wasn’t sure, I’m not sure yet*
+
+Near misses:
+
+> ¶23: “I knew they must be up, it was past eight o’clock.”
+>
+> Hint: That's the time. Where does he admit doubt? Check ¶23.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He isn't sure what he heard, so his account has gaps. ✓
+2. He saw everything clearly.
+3. He wasn't there.
+4. He wrote it all down.
+
+#### Clue: The broken jars of preserves
+
+**Locate. What happened to the jars of food she had put up?**
+
+Answers:
+
+> ¶58: “Oh, her fruit; it did freeze.”
+
+Near misses:
+
+> ¶58: “She worried about that when it turned so cold.”
+>
+> Hint: That's her worry. What actually happened? Check ¶58.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The cold froze them. ✓
+2. Someone stole them.
+3. She ate them.
+4. They were fine.
+
+**Locate. What had she feared would happen when the weather turned?**
+
+Answers:
+
+> ¶58: “She said the fire’d go out and her jars would break.”
+
+Near misses:
+
+> ¶58: “Oh, her fruit; it did freeze.”
+>
+> Hint: That's what happened. What did she fear? Check ¶58.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The fire would die and her jars would crack. ✓
+2. Robbers would come.
+3. The sheriff would visit.
+4. The roof would leak.
+
+**Infer. What does her concern for these jars suggest about her?**
+
+Answers:
+
+> ¶58: “She worried about that when it turned so cold.”
+
+Near misses:
+
+> ¶58: “She said the fire’d go out and her jars would break.”
+>
+> Hint: That's what she said would happen. Who was thinking about it? Check ¶58.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She cared about her everyday work at home. ✓
+2. She didn't care about her home.
+3. She wanted to sell them.
+4. She blamed her husband.
+
+#### Clue: The quilt
+
+**Locate. What was Mrs. Wright making with the scraps?**
+
+Answers:
+
+> ¶157: “She was piecing a quilt.”
+
+Near misses:
+
+> ¶160: “Pretty, isn’t it?”
+>
+> Hint: That's an opinion. What was she making? Check ¶157.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She was sewing a quilt. ✓
+2. A dress.
+3. Curtains.
+4. A rug.
+
+**Locate. What two ways could she finish it?**
+
+Answers:
+
+> ¶160: “I wonder if she was goin’ to quilt it or just knot it?”
+
+Near misses:
+
+> ¶160: “It’s log cabin pattern.”
+>
+> Hint: That's the pattern. What's the choice? Check ¶160.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She could either quilt it or knot it. ✓
+2. Paint it or dye it.
+3. Sell it or give it away.
+4. Burn it or bury it.
+
+**Infer. What is Mrs. Hale changing in the messy part, and why does it matter?**
+
+Answers:
+
+> ¶179: “Just pulling out a stitch or two that’s not sewed very good.”
+
+Near misses:
+
+> ¶179: “Bad sewing always made me fidgety.”
+>
+> Hint: That's how she feels. What is she doing? Check ¶179.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She is fixing the sewing, which changes the evidence. ✓
+2. She is cutting the quilt apart.
+3. She is packing it to take.
+4. She is reading a letter.
+
+#### Clue: The birdcage with the broken door
+
+**Locate. What did Mrs. Peters come across on the shelf?**
+
+Answers:
+
+> ¶193: “Why, here’s a bird-cage.”
+
+Near misses:
+
+> ¶193: “Did she have a bird, Mrs. Hale?”
+>
+> Hint: That's her question. What did she find? Check ¶193.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. An empty birdcage. ✓
+2. A box of letters.
+3. A broken jar.
+4. A rope.
+
+**Locate. What is wrong with the little gate?**
+
+Answers:
+
+> ¶205: “One hinge is pulled apart.”
+
+> ¶205: “It’s broke.”
+
+Near misses:
+
+> ¶205: “Why, look at this door.”
+>
+> Hint: That points to it. What's wrong with it? Check ¶205.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A hinge is pulled apart, as if forced. ✓
+2. It's painted.
+3. It's locked.
+4. It's brand new.
+
+**Infer. Why is it strange that there's a cage but no pet in it?**
+
+Answers:
+
+> ¶193: “Did she have a bird, Mrs. Hale?”
+
+> ¶205: “One hinge is pulled apart.”
+
+Near misses:
+
+> ¶193: “[_Looking in cupboard._]”
+>
+> Hint: That's where she looked. What makes it strange? Check ¶193.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A missing bird and a damaged cage raise questions about what happened. ✓
+2. Birds always escape.
+3. The cage was only for show.
+4. Mrs. Wright hated birds.
+
+#### Clue: The box with the canary
+
+**Locate. Where do they search next?**
+
+Answers:
+
+> ¶241: “[_They look in the sewing basket._”
+
+Near misses:
+
+> ¶250: “It’s the bird.”
+>
+> Hint: That's what they find. Where did they search? Check ¶241.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. In the sewing basket. ✓
+2. Under the bed.
+3. In the barn.
+4. In the stove.
+
+**Locate. What is inside the box?**
+
+Answers:
+
+> ¶250: “It’s the bird.”
+
+Near misses:
+
+> ¶241: “[_They look in the sewing basket._”
+>
+> Hint: That's where they look. What do they find? Check ¶250.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The bird. ✓
+2. Money.
+3. A letter.
+4. Thread.
+
+**Infer. Why would someone hide this among sewing things?**
+
+Answers:
+
+> ¶250: “It’s the bird.”
+
+Near misses:
+
+> ¶241: “[_They look in the sewing basket._”
+>
+> Hint: That's where it was. What was hidden? Check ¶250.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Someone wanted to keep the bird where the men wouldn't look. ✓
+2. It was put there by mistake.
+3. The sheriff hid it.
+4. It was a gift for Mrs. Hale.
+
+### Scene 2 (`minnie-foster`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **Mrs. Hale's words about John Wright**.
+
+#### Clue: The shabby skirt and the choir girl
+
+**Locate. How does Mrs. Hale describe John Wright's way with money?**
+
+Answers:
+
+> ¶125: “Wright was close.”
+
+Near misses:
+
+> ¶125: “She didn’t even belong to the Ladies Aid.”
+>
+> Hint: That's about the Ladies Aid. What about money? Check ¶125.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He was stingy. ✓
+2. He was generous.
+3. He was rich.
+4. He was in debt.
+
+**Locate. What was Minnie like before she married?**
+
+Answers:
+
+> ¶125: “She used to wear pretty clothes and be lively, when she was Minnie Foster, one of the town girls singing in the choir.”
+
+Near misses:
+
+> ¶125: “But that—oh, that was thirty years ago.”
+>
+> Hint: That's how long ago. What was she like? Check ¶125.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Lively, prettily dressed, and singing in the choir. ✓
+2. Shy and silent.
+3. A teacher.
+4. Always alone.
+
+**Infer. What creature does Mrs. Hale compare Minnie to, and why does it fit?**
+
+Answers:
+
+> ¶238: “She—come to think of it, she was kind of like a bird herself—real sweet and pretty, but kind of timid and—fluttery.”
+>
+> Proof phrase: *she was kind of like a bird herself*
+
+Near misses:
+
+> ¶238: “How?—she—did—change.”
+>
+> Hint: That's how she changed. What does Mrs. Hale compare her to? Check ¶238.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A bird: sweet and pretty, but timid. ✓
+2. A cat: sly and quiet.
+3. A horse: strong and wild.
+4. A storm: loud and angry.
+
+#### Clue: The apron and the little shawl
+
+**Locate. What did Mrs. Wright request?**
+
+Answers:
+
+> ¶127: “She said she wanted an apron.”
+
+> ¶127: “And then her little shawl that always hung behind the door.”
+
+Near misses:
+
+> ¶127: “Funny thing to want, for there isn’t much to get you dirty in jail, goodness knows.”
+>
+> Hint: That's Mrs. Peters' opinion. What did she ask for? Check ¶127.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. An apron and her little shawl. ✓
+2. Her quilt.
+3. Her bird.
+4. Her fruit.
+
+**Locate. Where were the aprons kept?**
+
+Answers:
+
+> ¶127: “She said they was in the top drawer in this cupboard.”
+
+Near misses:
+
+> ¶127: “And then her little shawl that always hung behind the door.”
+>
+> Hint: That's the shawl. Where were the aprons? Check ¶127.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. In the top drawer of the cupboard. ✓
+2. In the bottom drawer.
+3. Behind the door.
+4. Upstairs.
+
+**Infer. Why does Mrs. Hale believe these requests mean Minnie is innocent?**
+
+Answers:
+
+> ¶138: “Well, I don’t think she did.”
+
+> ¶138: “Asking for an apron and her little shawl.”
+
+Near misses:
+
+> ¶138: “Worrying about her fruit.”
+>
+> Hint: That's the fruit. What does she conclude? Check ¶138.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Someone worried about everyday things doesn't seem like a killer to her. ✓
+2. She has proof.
+3. Minnie confessed.
+4. The sheriff told her.
+
+#### Clue: The lonesome house in the hollow
+
+**Locate. How long since Mrs. Hale had visited?**
+
+Answers:
+
+> ¶78: “I’ve not been in this house—it’s more than a year.”
+
+Near misses:
+
+> ¶78: “I’ve not seen much of her of late years.”
+>
+> Hint: That's seeing her. How long since she came to the house? Check ¶78.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. More than a year. ✓
+2. Last week.
+3. Never.
+4. Yesterday.
+
+**Locate. What kept her from visiting?**
+
+Answers:
+
+> ¶220: “I stayed away because it weren’t cheerful—and that’s why I ought to have come.”
+
+> ¶86: “It never seemed a very cheerful place.”
+
+Near misses:
+
+> ¶82: “Farmers’ wives have their hands full, Mr. Henderson.”
+>
+> Hint: That's about farm work. What kept her away? Check ¶220.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. The house was gloomy, so she avoided it. ✓
+2. She was sick.
+3. She was angry at Minnie.
+4. She lived far away.
+
+**Infer. What does she regret, and what does that suggest about Minnie's life?**
+
+Answers:
+
+> ¶220: “I wish I had come over to see Minnie Foster sometimes.”
+
+> ¶216: “I wish I had come over sometimes when _she_ was here.”
+
+Near misses:
+
+> ¶220: “Maybe because it’s down in a hollow and you don’t see the road.”
+>
+> Hint: That's where the house is. What does she wish? Check ¶220.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Minnie was lonely, and no one visited her. ✓
+2. Minnie was too busy for friends.
+3. Minnie had many visitors.
+4. Minnie moved away.
+
+#### Clue: Mrs. Hale's words about John Wright
+
+**Locate. What does Mrs. Hale grant in Wright's favor?**
+
+Answers:
+
+> ¶229: “Yes—good; he didn’t drink, and kept his word as well as most, I guess, and paid his debts.”
+
+Near misses:
+
+> ¶227: “They say he was a good man.”
+>
+> Hint: That's what people say. What does Mrs. Hale grant? Check ¶229.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He didn't drink, kept his word, and paid his debts. ✓
+2. He was cheerful.
+3. He loved birds.
+4. He gave to the church.
+
+**Locate. What does she compare spending time with him to?**
+
+Answers:
+
+> ¶229: “Like a raw wind that gets to the bone.”
+
+Near misses:
+
+> ¶229: “Just to pass the time of day with him—[_Shivers._]”
+>
+> Hint: That's her shiver. What does she compare it to? Check ¶229.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A cold wind that chills you to the bone. ✓
+2. A warm fire.
+3. A quiet song.
+4. A sunny day.
+
+**Infer. How does her opinion of him differ from his reputation?**
+
+Answers:
+
+> ¶229: “But he was a hard man, Mrs. Peters.”
+
+> ¶227: “They say he was a good man.”
+
+Near misses:
+
+> ¶94: “But I don’t think a place’d be any cheerfuller for John Wright’s being in it.”
+>
+> Hint: That's about the place. Where does she weigh both views? Check ¶229.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. People called him good, but she found him hard and cold. ✓
+2. She agrees he was kind.
+3. She never met him.
+4. Everyone hated him.
+
+### Scene 3 (`the-law-and-the-women`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **Two kinds of crime**.
+
+#### Clue: Two kinds of crime
+
+**Locate. What does Mrs. Peters say must happen to wrongdoers?**
+
+Answers:
+
+> ¶296: “The law has got to punish crime, Mrs. Hale.”
+
+> ¶152: “But Mrs. Hale, the law is the law.”
+
+Near misses:
+
+> ¶292: “I know what stillness is.”
+>
+> Hint: That's her memory. What does she say about the rules? Check ¶296.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She says the law must punish crime. ✓
+2. Forgive them.
+3. Let the women decide.
+4. Ignore it.
+
+**Locate. What does Mrs. Hale regret not doing?**
+
+Answers:
+
+> ¶298: “Oh, I _wish_ I’d come over here once in a while!”
+
+Near misses:
+
+> ¶298: “I wish you’d seen Minnie Foster when she wore a white dress with blue ribbons and stood up there in the choir and sang.”
+>
+> Hint: That's a memory. What does she regret? Check ¶298.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Visiting Minnie now and then. ✓
+2. Calling the sheriff.
+3. Moving away.
+4. Buying a bird.
+
+**Infer. What does Mrs. Hale say was the real wrong, and who goes unanswered for it?**
+
+Answers:
+
+> ¶298: “That was a crime!”
+
+> ¶298: “Who’s going to punish that?”
+
+Near misses:
+
+> ¶298: “I wish you’d seen Minnie Foster when she wore a white dress with blue ribbons and stood up there in the choir and sang.”
+>
+> Hint: That's Minnie long ago. What wrong does she name? Check ¶298.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Leaving Minnie alone and lonely was a wrong no law answers for. ✓
+2. The bird's death was legal.
+3. Mrs. Peters broke the law.
+4. Minnie did nothing at all.
+
+#### Clue: The stillness in Dakota
+
+**Locate. What loss does Mrs. Peters remember from Dakota?**
+
+Answers:
+
+> ¶292: “When we homesteaded in Dakota, and my first baby died—after he was two years old, and me with no other then—”
+
+Near misses:
+
+> ¶292: “I know what stillness is.”
+>
+> Hint: That's what she knows. What happened there? Check ¶292.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Her first baby died. ✓
+2. Her house burned.
+3. Her husband left.
+4. Her bird flew away.
+
+**Locate. What does Mrs. Hale say the quiet would feel like once the music in the house was gone?**
+
+Answers:
+
+> ¶290: “If there’d been years and years of nothing, then a bird to sing to you, it would be awful—still, after the bird was still.”
+>
+> Proof phrase: *then a bird to sing to you, it would be awful*
+
+Near misses:
+
+> ¶292: “I know what stillness is.”
+>
+> Hint: That's Mrs. Peters. What does Mrs. Hale imagine? Check ¶290.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Awful, because the one bright thing would be gone. ✓
+2. Peaceful and restful.
+3. Exciting.
+4. Exactly the same as before.
+
+**Infer. How does Mrs. Peters catch her own feelings and change the subject?**
+
+Answers:
+
+> ¶296: “[_Pulling herself back._]”
+
+> ¶296: “The law has got to punish crime, Mrs. Hale.”
+
+Near misses:
+
+> ¶292: “I know what stillness is.”
+>
+> Hint: That's her memory. How does she change course? Check ¶296.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She turns from her grief to talk about the law. ✓
+2. She starts to cry and leaves.
+3. She calls the sheriff.
+4. She laughs it off.
+
+#### Clue: The rope and the bird's neck
+
+**Locate. What does the lawyer say about strangers breaking in?**
+
+Answers:
+
+> ¶270: “No sign at all of anyone having come from the outside.”
+
+Near misses:
+
+> ¶270: “Their own rope.”
+>
+> Hint: That's about the rope. What about strangers? Check ¶270.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. There's no sign anyone came in from outside. ✓
+2. A stranger broke in.
+3. The door was smashed.
+4. Neighbors saw a man.
+
+**Locate. How did John Wright die?**
+
+Answers:
+
+> ¶283: “Killing a man while he slept, slipping a rope around his neck that choked the life out of him.”
+
+Near misses:
+
+> ¶283: “It was an awful thing was done in this house that night, Mrs. Hale.”
+>
+> Hint: That's how awful it was. How was it done? Check ¶283.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Someone strangled him with a rope while he slept. ✓
+2. He was shot.
+3. He fell down the stairs.
+4. He was poisoned.
+
+**Infer. Why does Mrs. Hale repeat those words and reach out the way she does?**
+
+Answers:
+
+> ¶285: “His neck.”
+
+> ¶286: “[_Her hand goes out and rests on the bird-cage._”
+
+Near misses:
+
+> ¶283: “It was an awful thing was done in this house that night, Mrs. Hale.”
+>
+> Hint: That's Mrs. Peters. What does Mrs. Hale do? Check ¶285.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She links how Wright died to how the bird died. ✓
+2. She wants to clean it.
+3. She is tired.
+4. She is looking for the key.
+
+#### Clue: Mrs. Peters's kitten memory
+
+**Locate. What happened to Mrs. Peters' pet when she was young?**
+
+Answers:
+
+> ¶275: “When I was a girl—my kitten—there was a boy took a hatchet, and before my eyes—and before I could get there—[_Covers her face an instant._]”
+>
+> Proof phrase: *there was a boy took a hatchet, and before my eyes*
+
+Near misses:
+
+> ¶275: “If they hadn’t held me back I would have—[_Catches herself, looks upstairs where steps are heard, falters weakly_]—hurt him.”
+>
+> Hint: That's what she wanted to do. What happened first? Check ¶275.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A boy killed her kitten with a hatchet. ✓
+2. It ran away.
+3. It grew old.
+4. It was given away.
+
+**Locate. What does she say she would have done to the boy?**
+
+Answers:
+
+> ¶275: “If they hadn’t held me back I would have—[_Catches herself, looks upstairs where steps are heard, falters weakly_]—hurt him.”
+
+Near misses:
+
+> ¶275: “When I was a girl—my kitten—there was a boy took a hatchet, and before my eyes—and before I could get there—[_Covers her face an instant._]”
+>
+> Hint: That's what happened. What would she have done? Check ¶275.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She would have hurt him. ✓
+2. Forgiven him.
+3. Told his mother.
+4. Laughed.
+
+**Infer. What does she insist nobody can be sure of?**
+
+Answers:
+
+> ¶288: “We don’t know who killed him.”
+
+> ¶279: “We don’t know who killed the bird.”
+
+Near misses:
+
+> ¶275: “If they hadn’t held me back I would have—[_Catches herself, looks upstairs where steps are heard, falters weakly_]—hurt him.”
+>
+> Hint: That's her memory. What does she insist? Check ¶288.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. They can't be sure who killed him. ✓
+2. Whether the bird could sing.
+3. What day it is.
+4. Where the sheriff went.
+
+### Scene 4 (`the-last-word`)
+
+Scene writing (Notice, Interpret, Craft): the questions from **The missing motive**.
+
+#### Clue: The missing motive
+
+**Locate. What does the lawyer say is the one thing they lack?**
+
+Answers:
+
+> ¶309: “No, Peters, it’s all perfectly clear except a reason for doing it.”
+
+Near misses:
+
+> ¶309: “But you know juries when it comes to women.”
+>
+> Hint: That's about juries. What's missing? Check ¶309.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A reason, a motive, for the killing. ✓
+2. A witness.
+3. The weapon.
+4. A confession.
+
+**Locate. What did the attorney say earlier was required to convict?**
+
+Answers:
+
+> ¶148: “Mr. Henderson said coming out that what was needed for the case was a motive; something to show anger, or—sudden feeling.”
+
+Near misses:
+
+> ¶309: “Something to show—something to make a story about—a thing that would connect up with this strange way of doing it—”
+>
+> Hint: That's what he says now. What did he say earlier? Check ¶148.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A motive: something showing anger or sudden feeling. ✓
+2. Fingerprints.
+3. A second rope.
+4. Nothing more.
+
+**Infer. What kind of evidence does he hope to find?**
+
+Answers:
+
+> ¶309: “Something to show—something to make a story about—a thing that would connect up with this strange way of doing it—”
+
+Near misses:
+
+> ¶309: “But you know juries when it comes to women.”
+>
+> Hint: That's about juries. What does he hope for? Check ¶309.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Something dramatic to tell a jury, tied to the strange method. ✓
+2. Proof the women did it.
+3. Money in the house.
+4. A lost letter.
+
+#### Clue: The bundle for the jail
+
+**Locate. How does the lawyer judge the items the women chose?**
+
+Answers:
+
+> ¶319: “Oh, I guess they’re not very dangerous things the ladies have picked out.”
+
+Near misses:
+
+> ¶317: “[_The LAWYER goes to the table, picks up the apron, laughs._”
+>
+> Hint: That's him laughing. What does he say about them? Check ¶319.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He thinks they are harmless trifles. ✓
+2. He thinks they are evidence.
+3. He takes them away.
+4. He reads every label.
+
+**Locate. Why does he decide Mrs. Peters can go unwatched?**
+
+Answers:
+
+> ¶319: “No, Mrs. Peters doesn’t need supervising.”
+
+> ¶319: “For that matter, a sheriff’s wife is married to the law.”
+
+Near misses:
+
+> ¶321: “Not—just that way.”
+>
+> Hint: That's her reply. What's his reason? Check ¶319.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. A sheriff's wife is on the law's side, he says. ✓
+2. She is too old.
+3. She is leaving town.
+4. She told him so.
+
+**Infer. What does Mrs. Peters' short answer suggest?**
+
+Answers:
+
+> ¶321: “Not—just that way.”
+
+Near misses:
+
+> ¶323: “Married to the law.”
+>
+> Hint: That's the sheriff. What does Mrs. Peters say? Check ¶321.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. She may not see herself only on the law's side anymore. ✓
+2. She fully agrees.
+3. She didn't hear him.
+4. She is angry at the sheriff.
+
+#### Clue: The box in Mrs. Hale's coat pocket
+
+**Locate. Why can't Mrs. Peters hide it in her bag?**
+
+Answers:
+
+> ¶328: “It is too big.”
+
+Near misses:
+
+> ¶328: “Suddenly MRS. PETERS throws back quilt pieces and tries to put the box in the bag she is wearing.”
+>
+> Hint: That's her trying. Why didn't it work? Check ¶328.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. It doesn't fit. ✓
+2. The men are watching.
+3. The bag is full of fruit.
+4. She changes her mind at once.
+
+**Locate. Where does it end up?**
+
+Answers:
+
+> ¶328: “MRS. HALE snatches the box and puts it in the pocket of her big coat.”
+
+Near misses:
+
+> ¶328: “She opens box, starts to take bird out, cannot touch it, goes to pieces, stands there helpless.”
+>
+> Hint: That's Mrs. Peters freezing. Who takes it? Check ¶328.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. In Mrs. Hale's coat pocket. ✓
+2. In the stove.
+3. With the sheriff.
+4. Back in the basket.
+
+**Infer. How do the two women decide what to do without speaking?**
+
+Answers:
+
+> ¶328: “Then MRS. HALE rises, hands tight together, looking intensely at MRS. PETERS, whose eyes make a slow turn, finally meeting MRS. HALE’S.”
+
+> ¶328: “A moment MRS. HALE holds her, then her own eyes point the way to where the box is concealed.”
+
+Near misses:
+
+> ¶328: “The SHERIFF follows the COUNTY ATTORNEY into the other room.”
+>
+> Hint: That's the men leaving. How do the women decide? Check ¶328.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. They share a long look and agree without words. ✓
+2. They argue loudly.
+3. They write a note.
+4. They flip a coin.
+
+#### Clue: The last line: knot it
+
+**Locate. What do the men mock the women for wondering?**
+
+Answers:
+
+> ¶163: “They wonder if she was going to quilt it or just knot it!”
+
+Near misses:
+
+> ¶164: “[_The men laugh, the women look abashed._”
+>
+> Hint: That's their reaction. What did they repeat? Check ¶163.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. Whether she would quilt it or knot it. ✓
+2. Whether it would rain.
+3. What to cook.
+4. Who owned the farm.
+
+**Locate. What does the lawyer ask the women at the end?**
+
+Answers:
+
+> ¶330: “She was going to—what is it you call it, ladies?”
+
+Near misses:
+
+> ¶330: “Well, Henry, at least we found out that she was not going to quilt it.”
+>
+> Hint: That's his joke. What does he ask? Check ¶330.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. What they call that kind of finishing. ✓
+2. Where the bird is.
+3. Who killed John Wright.
+4. When they'll leave.
+
+**Infer. What does the attorney think they learned, and what does that show about him?**
+
+Answers:
+
+> ¶330: “Well, Henry, at least we found out that she was not going to quilt it.”
+
+Near misses:
+
+> ¶330: “[_Facetiously._]”
+>
+> Hint: That's how he says it. What does he think they found out? Check ¶330.
+
+Prove it (✓ is right; shuffled on screen):
+
+1. He thinks the quilt is a joke, so he misses what matters. ✓
+2. He solved the case.
+3. He found the bird.
+4. He respects their work.

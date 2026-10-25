@@ -2419,7 +2419,7 @@ test("fair play on the clue screen: bank questions, first-try points, shown answ
   const won=cg.earn(undefined,"rivalWin","a");assert.deepEqual([won.points,won.coins],[0,1]);
   // Stories without a bank yet: one question that any of the clue's evidence lines answers.
   const tth=WorldPackSchema.parse(JSON.parse(await readFile(new URL("../worlds/tell-tale-heart/world.json",import.meta.url),"utf8")));
-  const c2=tth.scenes[0].artifacts[0];const b2=fp.clueBank(tth,[],c2,"What do you notice?");
+  const c2={...tth.scenes[0].artifacts[0],bank:undefined};const b2=fp.clueBank(tth,[],c2,"What do you notice?");
   assert.deepEqual([b2.length,b2[0].question,b2[0].prove],[1,"What do you notice?",null]);
   // Words to know: the glossary words in the passage on screen.
   const {wordsToKnow}=fp;

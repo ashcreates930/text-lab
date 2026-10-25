@@ -290,6 +290,7 @@
   "scenes": [
     {
       "id": "arrival",
+      "writing_clue": "arrival-shriek-report",
       "narration": "Before dawn, you arrive at the house with officers. A neighbor heard a shriek in the night. The narrator says the old man is away in the country, yet invites you to search.",
       "summary": "It is four o'clock in the morning. Police officers knock at the narrator's door because a neighbor heard a scream in the night. The narrator smiles, says the scream was his own bad dream, and invites the officers to search the house.",
       "background_image": "/worlds/tell-tale-heart/arrival.png",
@@ -407,6 +408,80 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "finished",
+              "ladder": "locate",
+              "question": "How late was it when his work was finished?",
+              "answers": [
+                {
+                  "line": "When I had made an end of these labors, it was four o'clock — still dark as midnight."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "As the bell sounded the hour, there came a knocking at the street door.",
+                  "hint": "That's the knock. When did he finish? Check ¶25."
+                }
+              ],
+              "prove": {
+                "right": "He finished before dawn, while it was still dark.",
+                "wrong": [
+                  "He finished at noon.",
+                  "He never finished.",
+                  "He finished at sunset."
+                ]
+              }
+            },
+            {
+              "id": "who-came",
+              "ladder": "locate",
+              "question": "Who came through the doorway, and what did they say they were?",
+              "answers": [
+                {
+                  "line": "There entered three men, who introduced themselves, with perfect suavity, as officers of the police."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I went down to open it with a light heart, — for what had I now to fear?",
+                  "hint": "That's how he felt going down. Who came in? Check ¶25."
+                }
+              ],
+              "prove": {
+                "right": "Three police officers arrived, and they were very polite.",
+                "wrong": [
+                  "Neighbors came to visit.",
+                  "The old man came home.",
+                  "One rude soldier came in."
+                ]
+              }
+            },
+            {
+              "id": "light-heart",
+              "ladder": "infer",
+              "question": "How did he feel about answering, and why is that strange?",
+              "answers": [
+                {
+                  "line": "I went down to open it with a light heart, — for what had I now to fear?"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "When I had made an end of these labors, it was four o'clock — still dark as midnight.",
+                  "hint": "That's the time. How did he feel? Check ¶25."
+                }
+              ],
+              "prove": {
+                "right": "He felt carefree, as if he had nothing to fear at all.",
+                "wrong": [
+                  "He was terrified of the knock.",
+                  "He refused to open up.",
+                  "He was asleep and missed it."
+                ]
+              }
+            }
           ]
         },
         {
@@ -495,6 +570,68 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "neighbor",
+              "ladder": "locate",
+              "question": "What did someone next door notice in the dark hours?",
+              "answers": [
+                {
+                  "line": "A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises.",
+                  "phrase": "A shriek had been heard by a neighbor during the night"
+                }
+              ],
+              "near_misses": [],
+              "prove": {
+                "right": "A neighbor heard a scream.",
+                "wrong": [
+                  "A neighbor saw a fire.",
+                  "A neighbor heard music.",
+                  "A neighbor saw a thief."
+                ]
+              }
+            },
+            {
+              "id": "sent-to",
+              "ladder": "locate",
+              "question": "What were the visitors sent to do?",
+              "answers": [
+                {
+                  "line": "A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises.",
+                  "phrase": "they (the officers) had been deputed to search the premises"
+                }
+              ],
+              "near_misses": [],
+              "prove": {
+                "right": "They were sent to look through the house.",
+                "wrong": [
+                  "They were sent to arrest the old man.",
+                  "They were sent to deliver a letter.",
+                  "They came to buy the house."
+                ]
+              }
+            },
+            {
+              "id": "report-matters",
+              "ladder": "infer",
+              "question": "Why does a report from next door matter more than his word alone?",
+              "answers": [
+                {
+                  "line": "A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises.",
+                  "phrase": "A shriek had been heard by a neighbor during the night"
+                }
+              ],
+              "near_misses": [],
+              "prove": {
+                "right": "Someone else heard something, so his story can be checked.",
+                "wrong": [
+                  "The neighbor saw everything happen.",
+                  "The neighbor wrote the story.",
+                  "No one heard anything at all."
+                ]
+              }
+            }
           ]
         }
       ],
@@ -516,6 +653,7 @@
     },
     {
       "id": "search",
+      "writing_clue": "search-motive",
       "narration": "The officers search the house. The narrator brings chairs into the old man's chamber and sits above the floorboards. He is at ease, but soon grows pale.",
       "summary": "The narrator explains how his plan began: he could not stand the old man's pale, clouded eye. He describes creeping into the room for eight nights, killing the old man, and hiding the body under the floorboards. He believes no one could ever find it.",
       "background_image": "/worlds/tell-tale-heart/search.png",
@@ -637,6 +775,80 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "away",
+              "ladder": "locate",
+              "question": "Where did he say the old man had gone?",
+              "answers": [
+                {
+                  "line": "The old man, I mentioned, was absent in the country."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "The shriek, I said, was my own in a dream.",
+                  "hint": "That explains the scream. Where did he say the old man was? Check ¶27."
+                }
+              ],
+              "prove": {
+                "right": "He claimed the old man was away in the country.",
+                "wrong": [
+                  "He said the old man was asleep upstairs.",
+                  "He said the old man had moved to the city.",
+                  "He said he didn't know."
+                ]
+              }
+            },
+            {
+              "id": "scream",
+              "ladder": "locate",
+              "question": "How did he explain the scream?",
+              "answers": [
+                {
+                  "line": "The shriek, I said, was my own in a dream."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I smiled, — for what had I to fear?",
+                  "hint": "That's his smile. What did he say about the noise? Check ¶27."
+                }
+              ],
+              "prove": {
+                "right": "He claimed he cried out himself while dreaming.",
+                "wrong": [
+                  "He blamed a cat.",
+                  "He said the neighbor imagined it.",
+                  "He admitted the old man screamed."
+                ]
+              }
+            },
+            {
+              "id": "valuables",
+              "ladder": "infer",
+              "question": "Why might he show the visitors the old man's valuables?",
+              "answers": [
+                {
+                  "line": "I showed them his treasures, secure, undisturbed."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I took my visitors all over the house.",
+                  "hint": "That's the tour. What did he show them in the chamber? Check ¶27."
+                }
+              ],
+              "prove": {
+                "right": "Untouched valuables suggest nothing was stolen, so nothing seems wrong.",
+                "wrong": [
+                  "He wanted to sell them.",
+                  "The valuables were missing.",
+                  "The officers asked to count the money."
+                ]
+              }
+            }
           ]
         },
         {
@@ -725,6 +937,87 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "wanted",
+              "ladder": "locate",
+              "question": "What did he say he wanted from the old man?",
+              "answers": [
+                {
+                  "line": "For his gold I had no desire."
+                },
+                {
+                  "line": "Object there was none."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I loved the old man.",
+                  "hint": "That's how he felt about him. Did he want anything? Check ¶2."
+                }
+              ],
+              "prove": {
+                "right": "He says he wanted nothing from him, not even his money.",
+                "wrong": [
+                  "He wanted his gold.",
+                  "He wanted his house.",
+                  "He wanted revenge for an insult."
+                ]
+              }
+            },
+            {
+              "id": "bothered",
+              "ladder": "locate",
+              "question": "What feature of the old man bothered him?",
+              "answers": [
+                {
+                  "line": "I think it was his eye! — yes, it was this!"
+                },
+                {
+                  "line": "He had the eye of a vulture — a pale blue eye, with a film over it."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "He had never wronged me.",
+                  "hint": "That's what the old man didn't do. What bothered him? Check ¶2."
+                }
+              ],
+              "prove": {
+                "right": "The old man's clouded eye frightened and disgusted him.",
+                "wrong": [
+                  "His voice was too loud.",
+                  "He snored at night.",
+                  "He owed money."
+                ]
+              }
+            },
+            {
+              "id": "decision",
+              "ladder": "infer",
+              "question": "What decision did he reach, and why is his reason odd?",
+              "answers": [
+                {
+                  "line": "Whenever it fell upon me, my blood ran cold; and so, by degrees — very gradually — I made up my mind to take the life of the old man, and thus rid myself of the eye forever.",
+                  "phrase": "I made up my mind to take the life of the old man, and thus rid myself of the eye forever"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "It is impossible to say how first the idea entered my brain; but, once conceived, it haunted me day and night.",
+                  "hint": "That's how the idea began. What did he decide? Check ¶2."
+                }
+              ],
+              "prove": {
+                "right": "He planned to kill a man he loved just to escape his eye.",
+                "wrong": [
+                  "He planned to move away.",
+                  "He decided to steal the gold.",
+                  "He decided to help the old man."
+                ]
+              }
+            }
           ]
         }
       ],
@@ -747,6 +1040,7 @@
     },
     {
       "id": "room",
+      "writing_clue": "room-death-watches",
       "narration": "The officers remain in the room. The narrator talks more freely, grows pale, and paces. He says a low, quick sound grows louder, though the officers continue chatting.",
       "summary": "The narrator remembers watching the old man every night with a lantern and hearing his heart beat. Now he brings chairs into that same room and sits right above the hidden body. He feels proud and calm, but he begins to hear a sound.",
       "background_image": "/worlds/tell-tale-heart/room.png",
@@ -868,6 +1162,82 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "an-hour",
+              "ladder": "locate",
+              "question": "How long did it take him just to get inside the gap?",
+              "answers": [
+                {
+                  "line": "It took me an hour to place my whole head within the opening so far that I could see the old man as he lay upon his bed.",
+                  "phrase": "It took me an hour to place my whole head within the opening"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Ha! — would a madman have been so wise as this?",
+                  "hint": "That's him boasting. How long did it take? Check ¶5."
+                }
+              ],
+              "prove": {
+                "right": "He moved incredibly slowly, taking a whole hour.",
+                "wrong": [
+                  "He rushed straight in.",
+                  "He waited outside all night.",
+                  "He came in through the window."
+                ]
+              }
+            },
+            {
+              "id": "beam",
+              "ladder": "locate",
+              "question": "Where did the beam land?",
+              "answers": [
+                {
+                  "line": "And then, when my head was well in the room, I undid the lantern cautiously — oh, so cautiously (for the hinges creaked) — I undid it just so much that a single thin ray fell upon the vulture eye.",
+                  "phrase": "a single thin ray fell upon the vulture eye"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "It took me an hour to place my whole head within the opening so far that I could see the old man as he lay upon his bed.",
+                  "hint": "That's his head going in. Where did the ray fall? Check ¶5."
+                }
+              ],
+              "prove": {
+                "right": "He aimed the light only at the eye.",
+                "wrong": [
+                  "He lit the whole room.",
+                  "He shone it on the bed.",
+                  "He kept it dark."
+                ]
+              }
+            },
+            {
+              "id": "boast",
+              "ladder": "infer",
+              "question": "What does his bragging about being careful suggest about how he sees himself?",
+              "answers": [
+                {
+                  "line": "Ha! — would a madman have been so wise as this?"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "And then, when my head was well in the room, I undid the lantern cautiously — oh, so cautiously (for the hinges creaked) — I undid it just so much that a single thin ray fell upon the vulture eye.",
+                  "hint": "That's the lantern. Where does he brag? Check ¶5."
+                }
+              ],
+              "prove": {
+                "right": "He believes his care proves he is not mad.",
+                "wrong": [
+                  "He admits he is mad.",
+                  "He thinks the old man is wise.",
+                  "He is joking with the officers."
+                ]
+              }
+            }
           ]
         },
         {
@@ -957,6 +1327,83 @@
                 "suspense",
                 "point of view"
               ]
+            }
+          ],
+          "bank": [
+            {
+              "id": "start",
+              "ladder": "locate",
+              "question": "At what hour did he start his visits?",
+              "answers": [
+                {
+                  "line": "And every night, about midnight, I turned the latch of his door and opened it — oh so gently!"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Oh, you would have laughed to see how cunningly I thrust it in!",
+                  "hint": "That's him boasting. When did he start? Check ¶4."
+                }
+              ],
+              "prove": {
+                "right": "He came around twelve, in the middle of the night.",
+                "wrong": [
+                  "At sunrise.",
+                  "At dinnertime.",
+                  "Only once, at noon."
+                ]
+              }
+            },
+            {
+              "id": "last-visit",
+              "ladder": "locate",
+              "question": "How was his last visit different from the others?",
+              "answers": [
+                {
+                  "line": "Upon the eighth night I was more than usually cautious in opening the door."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I fairly chuckled at the idea.",
+                  "hint": "That's his laugh. How was he different that time? Check ¶8."
+                }
+              ],
+              "prove": {
+                "right": "He was even more careful than usual.",
+                "wrong": [
+                  "He was careless and loud.",
+                  "He knocked first.",
+                  "He brought the officers."
+                ]
+              }
+            },
+            {
+              "id": "mood",
+              "ladder": "infer",
+              "question": "How does his mood change as the visits go on?",
+              "answers": [
+                {
+                  "line": "I could scarcely contain my feelings of triumph."
+                },
+                {
+                  "line": "Never, before that night, had I felt the extent of my own powers — of my sagacity."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "And perhaps the old man heard me; for he moved in the bed suddenly, as if startled.",
+                  "hint": "That's the old man moving. How does the narrator feel? Check ¶8."
+                }
+              ],
+              "prove": {
+                "right": "He grows proud and thrilled with his own cleverness.",
+                "wrong": [
+                  "He grows sorry.",
+                  "He grows bored.",
+                  "He gives up."
+                ]
+              }
             }
           ]
         },
@@ -1048,6 +1495,80 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "cover",
+              "ladder": "locate",
+              "question": "What did he use to hold the old man down?",
+              "answers": [
+                {
+                  "line": "In an instant I dragged him to the floor, and pulled the heavy bed over him."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "With a loud yell, I threw open the lantern and leaped into the room.",
+                  "hint": "That's him leaping in. What held the old man down? Check ¶21."
+                }
+              ],
+              "prove": {
+                "right": "He used the heavy bed.",
+                "wrong": [
+                  "A blanket.",
+                  "A door.",
+                  "Nothing at all."
+                ]
+              }
+            },
+            {
+              "id": "cheerful",
+              "ladder": "locate",
+              "question": "How did he feel right after, sitting there?",
+              "answers": [
+                {
+                  "line": "I then sat upon the bed and smiled gaily, to find the deed so far done."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "But, for many minutes, the heart beat on, with a muffled sound.",
+                  "hint": "That's the sound going on. How did he feel? Check ¶21."
+                }
+              ],
+              "prove": {
+                "right": "He was cheerful about what he had done.",
+                "wrong": [
+                  "He cried.",
+                  "He ran away.",
+                  "He called for help."
+                ]
+              }
+            },
+            {
+              "id": "walls",
+              "ladder": "infer",
+              "question": "Why didn't the beating trouble him at first?",
+              "answers": [
+                {
+                  "line": "This, however, did not vex me; it would not be heard through the walls."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "And now a new anxiety seized me — the sound would be heard by a neighbor!",
+                  "hint": "That was before. Why didn't it bother him now? Check ¶21."
+                }
+              ],
+              "prove": {
+                "right": "He believed it could not get past the walls.",
+                "wrong": [
+                  "He couldn't hear it.",
+                  "He wanted to be caught.",
+                  "The officers were coming."
+                ]
+              }
+            }
           ]
         },
         {
@@ -1135,6 +1656,68 @@
                 "suspense",
                 "point of view"
               ]
+            }
+          ],
+          "bank": [
+            {
+              "id": "chairs",
+              "ladder": "locate",
+              "question": "What did he bring in for the visitors?",
+              "answers": [
+                {
+                  "line": "In the enthusiasm of my confidence, I brought chairs into the room, and desired them here to rest from their fatigues; while I myself, in the wild audacity of my perfect triumph, placed my own seat upon the very spot beneath which reposed the corpse of the victim.",
+                  "phrase": "I brought chairs into the room"
+                }
+              ],
+              "near_misses": [],
+              "prove": {
+                "right": "He acted like a relaxed host and offered seats.",
+                "wrong": [
+                  "He refused them seats.",
+                  "He made them stand outside.",
+                  "He sent them away."
+                ]
+              }
+            },
+            {
+              "id": "where-sit",
+              "ladder": "locate",
+              "question": "Where did he choose to sit?",
+              "answers": [
+                {
+                  "line": "In the enthusiasm of my confidence, I brought chairs into the room, and desired them here to rest from their fatigues; while I myself, in the wild audacity of my perfect triumph, placed my own seat upon the very spot beneath which reposed the corpse of the victim.",
+                  "phrase": "placed my own seat upon the very spot beneath which reposed the corpse of the victim"
+                }
+              ],
+              "near_misses": [],
+              "prove": {
+                "right": "Right over the hidden body.",
+                "wrong": [
+                  "By the window.",
+                  "At the door.",
+                  "Far from the boards."
+                ]
+              }
+            },
+            {
+              "id": "audacity",
+              "ladder": "infer",
+              "question": "What does that choice reveal about his state of mind?",
+              "answers": [
+                {
+                  "line": "In the enthusiasm of my confidence, I brought chairs into the room, and desired them here to rest from their fatigues; while I myself, in the wild audacity of my perfect triumph, placed my own seat upon the very spot beneath which reposed the corpse of the victim.",
+                  "phrase": "in the wild audacity of my perfect triumph"
+                }
+              ],
+              "near_misses": [],
+              "prove": {
+                "right": "He was so sure of himself that he took a reckless risk.",
+                "wrong": [
+                  "He was too tired to move.",
+                  "He wanted to protect the officers.",
+                  "He forgot what lay below."
+                ]
+              }
             }
           ]
         },
@@ -1226,6 +1809,81 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "hid",
+              "ladder": "locate",
+              "question": "Where did he put what was left of the victim?",
+              "answers": [
+                {
+                  "line": "I then took up three planks from the flooring of the chamber, and deposited all between the scantlings."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I cut off the head and the arms and the legs.",
+                  "hint": "That's what he did first. Where did he hide it? Check ¶23."
+                }
+              ],
+              "prove": {
+                "right": "He hid it under the floor.",
+                "wrong": [
+                  "He buried it in the garden.",
+                  "He threw it in the river.",
+                  "He locked it in a trunk."
+                ]
+              }
+            },
+            {
+              "id": "replaced",
+              "ladder": "locate",
+              "question": "How well did he say he covered his work?",
+              "answers": [
+                {
+                  "line": "I then replaced the boards so cleverly, so cunningly, that no human eye — not even his — could have detected anything wrong."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I had been too wary for that.",
+                  "hint": "That's him being wary. How well did he put things back? Check ¶24."
+                }
+              ],
+              "prove": {
+                "right": "He claims no one could spot anything wrong.",
+                "wrong": [
+                  "He left a mess.",
+                  "He asked for help.",
+                  "He marked the spot."
+                ]
+              }
+            },
+            {
+              "id": "precautions",
+              "ladder": "infer",
+              "question": "Why does he walk us through every step of what he did with the remains?",
+              "answers": [
+                {
+                  "line": "If, still, you think me mad, you will think so no longer when I describe the wise precautions I took for the concealment of the body.",
+                  "phrase": "you will think so no longer when I describe the wise precautions"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "His eye would trouble me no more.",
+                  "hint": "That's about the eye. Why does he explain his steps? Check ¶23."
+                }
+              ],
+              "prove": {
+                "right": "He thinks careful planning proves he is sane.",
+                "wrong": [
+                  "He wants to be caught.",
+                  "He is confessing to the police.",
+                  "He feels sorry."
+                ]
+              }
+            }
           ]
         },
         {
@@ -1313,6 +1971,83 @@
                 "suspense",
                 "point of view"
               ]
+            }
+          ],
+          "bank": [
+            {
+              "id": "kept-clean",
+              "ladder": "locate",
+              "question": "What does he say kept the floor clean?",
+              "answers": [
+                {
+                  "line": "A tub had caught all — ha! ha!"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "There was nothing to wash out — no stain of any kind — no blood-spot whatever.",
+                  "hint": "That's the result. What did the work? Check ¶24."
+                }
+              ],
+              "prove": {
+                "right": "He says a tub took everything.",
+                "wrong": [
+                  "A rug.",
+                  "A bucket of water.",
+                  "A cloth."
+                ]
+              }
+            },
+            {
+              "id": "nothing-left",
+              "ladder": "locate",
+              "question": "What did he say was left to clean up?",
+              "answers": [
+                {
+                  "line": "There was nothing to wash out — no stain of any kind — no blood-spot whatever."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "A tub had caught all — ha! ha!",
+                  "hint": "That's what took it all. What was left behind? Check ¶24."
+                }
+              ],
+              "prove": {
+                "right": "He claims there was nothing at all to clean.",
+                "wrong": [
+                  "Blood everywhere.",
+                  "A broken lamp.",
+                  "Footprints."
+                ]
+              }
+            },
+            {
+              "id": "gloat",
+              "ladder": "infer",
+              "question": "What in his telling sounds more like bragging than reporting?",
+              "answers": [
+                {
+                  "line": "A tub had caught all — ha! ha!"
+                },
+                {
+                  "line": "I then replaced the boards so cleverly, so cunningly, that no human eye — not even his — could have detected anything wrong."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "The night waned, and I worked hastily, but in silence.",
+                  "hint": "That's the work at night. Where does he gloat? Check ¶24."
+                }
+              ],
+              "prove": {
+                "right": "He laughs and boasts, so this is his own account, not proof.",
+                "wrong": [
+                  "He shows real evidence.",
+                  "The officers confirm it.",
+                  "He sounds ashamed."
+                ]
+              }
             }
           ]
         },
@@ -1402,6 +2137,82 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "blocked",
+              "ladder": "locate",
+              "question": "What blocked out all light in the bedroom?",
+              "answers": [
+                {
+                  "line": "His room was as black as pitch with the thick darkness, (for the shutters were close fastened, through fear of robbers,) and so I knew that he could not see the opening of the door, and I kept on pushing it steadily, steadily.",
+                  "phrase": "the shutters were close fastened, through fear of robbers"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Now you may think that I drew back — but no.",
+                  "hint": "That's him not stopping. Why was the room so dark? Check ¶9."
+                }
+              ],
+              "prove": {
+                "right": "Shutters closed tight against thieves.",
+                "wrong": [
+                  "A moonless sky.",
+                  "A broken lantern.",
+                  "Heavy curtains he hung."
+                ]
+              }
+            },
+            {
+              "id": "no-stopping",
+              "ladder": "locate",
+              "question": "Did he stop when he got close?",
+              "answers": [
+                {
+                  "line": "Now you may think that I drew back — but no."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "His room was as black as pitch with the thick darkness, (for the shutters were close fastened, through fear of robbers,) and so I knew that he could not see the opening of the door, and I kept on pushing it steadily, steadily.",
+                  "hint": "That explains the dark. Did he stop? Check ¶9."
+                }
+              ],
+              "prove": {
+                "right": "He kept going instead of pulling back.",
+                "wrong": [
+                  "He ran away.",
+                  "He woke the old man.",
+                  "He waited a week."
+                ]
+              }
+            },
+            {
+              "id": "felt-safe",
+              "ladder": "infer",
+              "question": "Why did he feel safe going on?",
+              "answers": [
+                {
+                  "line": "His room was as black as pitch with the thick darkness, (for the shutters were close fastened, through fear of robbers,) and so I knew that he could not see the opening of the door, and I kept on pushing it steadily, steadily.",
+                  "phrase": "I knew that he could not see the opening of the door"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Now you may think that I drew back — but no.",
+                  "hint": "That's him not drawing back. Why did he feel safe? Check ¶9."
+                }
+              ],
+              "prove": {
+                "right": "He knew the old man couldn't see him in the dark.",
+                "wrong": [
+                  "The old man was deaf.",
+                  "The officers were with him.",
+                  "The door was gone."
+                ]
+              }
+            }
           ]
         },
         {
@@ -1490,6 +2301,80 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "sitting-up",
+              "ladder": "locate",
+              "question": "What was the old man doing instead of sleeping?",
+              "answers": [
+                {
+                  "line": "He was still sitting up in the bed, listening; — just as I have done, night after night, hearkening to the death-watches in the wall."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "For another hour I did not move a muscle, and in the meantime I did not hear the old man lie down.",
+                  "hint": "That's the narrator waiting. What was the old man doing? Check ¶11."
+                }
+              ],
+              "prove": {
+                "right": "He sat up in bed, listening in fear.",
+                "wrong": [
+                  "He was asleep.",
+                  "He was reading.",
+                  "He called the police."
+                ]
+              }
+            },
+            {
+              "id": "frozen",
+              "ladder": "locate",
+              "question": "How long did the narrator stay frozen?",
+              "answers": [
+                {
+                  "line": "For another hour I did not move a muscle, and in the meantime I did not hear the old man lie down."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I kept quite still and said nothing.",
+                  "hint": "That's him keeping quiet at first. How long? Check ¶11."
+                }
+              ],
+              "prove": {
+                "right": "He stood still for another whole hour.",
+                "wrong": [
+                  "A second.",
+                  "He left at once.",
+                  "Until morning."
+                ]
+              }
+            },
+            {
+              "id": "alike",
+              "ladder": "infer",
+              "question": "How is the old man like the narrator in this moment?",
+              "answers": [
+                {
+                  "line": "He was still sitting up in the bed, listening; — just as I have done, night after night, hearkening to the death-watches in the wall."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I kept quite still and said nothing.",
+                  "hint": "That's the narrator. How are they alike? Check ¶11."
+                }
+              ],
+              "prove": {
+                "right": "Both lie awake, listening in the dark.",
+                "wrong": [
+                  "Both are asleep.",
+                  "Both are laughing.",
+                  "Neither can hear."
+                ]
+              }
+            }
           ]
         }
       ],
@@ -1512,6 +2397,7 @@
     },
     {
       "id": "confession",
+      "writing_clue": "confession-officers-calm",
       "narration": "The narrator can bear the officers' smiles no longer. He cries out, admits the deed, and demands that they tear up the planks.",
       "summary": "The sound grows louder and louder. The narrator believes the officers hear it too and are only pretending not to. He cannot stand it, so he screams that he did it and tells them to tear up the floorboards.",
       "background_image": "/worlds/tell-tale-heart/confession.png",
@@ -1609,6 +2495,80 @@
                 "point of view"
               ]
             }
+          ],
+          "bank": [
+            {
+              "id": "villains",
+              "ladder": "locate",
+              "question": "What name does he call the officers?",
+              "answers": [
+                {
+                  "line": "“Villains!”"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I shrieked, “dissemble no more!",
+                  "hint": "That's what he orders. What does he call them? Check ¶34."
+                }
+              ],
+              "prove": {
+                "right": "He calls them villains.",
+                "wrong": [
+                  "Friends.",
+                  "Gentlemen.",
+                  "Neighbors."
+                ]
+              }
+            },
+            {
+              "id": "stop",
+              "ladder": "locate",
+              "question": "What does he order them to stop doing?",
+              "answers": [
+                {
+                  "line": "I shrieked, “dissemble no more!"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "“Villains!”",
+                  "hint": "That's the name he calls them. What does he demand? Check ¶34."
+                }
+              ],
+              "prove": {
+                "right": "He orders them to stop pretending.",
+                "wrong": [
+                  "To stop talking.",
+                  "To leave.",
+                  "To search."
+                ]
+              }
+            },
+            {
+              "id": "breaking",
+              "ladder": "infer",
+              "question": "What pushes him to the breaking point just before he speaks?",
+              "answers": [
+                {
+                  "line": "I felt that I must scream or die! — and now — again! — hark! louder! louder! louder! louder!"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "Was it possible they heard not?",
+                  "hint": "That's his question. What pushes him over? Check ¶33."
+                }
+              ],
+              "prove": {
+                "right": "The sound grows unbearable and he must scream.",
+                "wrong": [
+                  "The officers accuse him.",
+                  "The old man walks in.",
+                  "The clock strikes."
+                ]
+              }
+            }
           ]
         },
         {
@@ -1700,6 +2660,84 @@
                 "suspense",
                 "point of view"
               ]
+            }
+          ],
+          "bank": [
+            {
+              "id": "not-in-ears",
+              "ladder": "locate",
+              "question": "Where did he first think the sound came from, and what did he decide?",
+              "answers": [
+                {
+                  "line": "The ringing became more distinct: I talked more freely, to get rid of the feeling; but it continued and gained definiteness — until, at length, I found that the noise was not within my ears.",
+                  "phrase": "I found that the noise was not within my ears"
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "My head ached, and I fancied a ringing in my ears: but still they sat and still chatted.",
+                  "hint": "That's when it starts. What does he realize? Check ¶30."
+                }
+              ],
+              "prove": {
+                "right": "He decided the noise wasn't just in his head.",
+                "wrong": [
+                  "He knew it was the clock.",
+                  "He thought it was rain.",
+                  "He never noticed it."
+                ]
+              }
+            },
+            {
+              "id": "calm",
+              "ladder": "locate",
+              "question": "How did the visitors behave while he grew frantic?",
+              "answers": [
+                {
+                  "line": "And still the men chatted pleasantly, and smiled."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I gasped for breath — and yet the officers heard it not.",
+                  "hint": "That's him gasping. What were the officers doing? Check ¶32."
+                }
+              ],
+              "prove": {
+                "right": "They stayed calm and friendly, seeming to notice nothing.",
+                "wrong": [
+                  "They drew their weapons.",
+                  "They left.",
+                  "They shouted at him."
+                ]
+              }
+            },
+            {
+              "id": "inside-him",
+              "ladder": "infer",
+              "question": "Why might the sound be coming from inside him rather than the floor?",
+              "answers": [
+                {
+                  "line": "I gasped for breath — and yet the officers heard it not."
+                },
+                {
+                  "line": "They heard! — they suspected! — they knew! — they were making a mockery of my horror! — this I thought, and this I think."
+                }
+              ],
+              "near_misses": [
+                {
+                  "line": "I swung the chair upon which I had sat, and grated it upon the boards; — but the noise arose over all and continually increased.",
+                  "hint": "That's him scraping the chair. Who notices the sound? Check ¶31."
+                }
+              ],
+              "prove": {
+                "right": "No one else notices it, so it may be his guilt.",
+                "wrong": [
+                  "The officers notice it clearly.",
+                  "It's a clock in the wall.",
+                  "The old man is alive."
+                ]
+              }
             }
           ]
         }
@@ -2776,5 +3814,70 @@
         "description": "He believed the officers heard the sound and were mocking him, so he confessed to end their game."
       }
     ]
-  }
+  },
+  "missions": [
+    {
+      "id": "test-the-narrator",
+      "title": "Test the narrator",
+      "problem": "Prove whether he is the calm, sane man he claims to be.",
+      "sealed_clue": "confession-floorboards",
+      "payoff": {
+        "line": "I admit the deed! — tear up the planks! — here, here! — it is the beating of his hideous heart!”",
+        "keywords": [
+          "I admit the deed",
+          "tear up the planks",
+          "hideous heart"
+        ]
+      },
+      "theories": [
+        {
+          "id": "calm-sane",
+          "name": "He is calm and sane",
+          "description": "He planned carefully and stayed in control, as he says."
+        },
+        {
+          "id": "guilt",
+          "name": "Guilt is breaking him",
+          "description": "What he did is cracking his calm from the inside."
+        },
+        {
+          "id": "not-right",
+          "name": "He is not in his right mind",
+          "description": "His fears and reasons don't make sense."
+        }
+      ],
+      "pieces": [
+        {
+          "id": "no-object",
+          "scene_id": "search",
+          "line": "Object there was none.",
+          "lead": "Find the line where he says he had no reason for the deed."
+        },
+        {
+          "id": "the-eye",
+          "scene_id": "search",
+          "line": "I think it was his eye! — yes, it was this!",
+          "lead": "Find the line where he names what drove him to it."
+        },
+        {
+          "id": "triumph",
+          "scene_id": "room",
+          "line": "I could scarcely contain my feelings of triumph.",
+          "lead": "Find the line that shows how proud he felt while sneaking in."
+        },
+        {
+          "id": "precautions",
+          "scene_id": "room",
+          "line": "If, still, you think me mad, you will think so no longer when I describe the wise precautions I took for the concealment of the body.",
+          "lead": "Find the line where he promises to prove he isn't crazy by how carefully he hid what he had done."
+        },
+        {
+          "id": "heard-not",
+          "scene_id": "confession",
+          "line": "I gasped for breath — and yet the officers heard it not.",
+          "lead": "Find the line that shows the visitors noticed nothing while he struggled."
+        }
+      ]
+    }
+  ]
 }
