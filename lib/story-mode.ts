@@ -13,7 +13,7 @@ import { contentNotes } from "./content-notes.ts";
 import { isTruthLine, lieProblems, lineWords, type Lie } from "./lies.ts";
 import { evidenceLines, matchEvidence } from "./evidence-check.ts";
 import { soundExplanation } from "./live/engine.ts";
-import { MAX_TRIES, afterWrongLines, answerFor, missHint, nameWords, nearMissFor, needsPhrase, phraseMatches, phraseRange, pickQuestion, proveChoices, proveRight, questionProblems, speedFlags, tryFactor, typedProof, type SpeedFlag } from "./fair-play.ts";
+import { MAX_TRIES, afterWrongLines, levelPoints, answerFor, missHint, nameWords, nearMissFor, needsPhrase, phraseMatches, phraseRange, pickQuestion, proveChoices, proveRight, questionProblems, speedFlags, tryFactor, typedProof, type SpeedFlag } from "./fair-play.ts";
 
 export type Scene = WorldPack["scenes"][number];
 export type StoryContent = NonNullable<Scene["story_mode"]>;
@@ -258,6 +258,34 @@ export function lanternParagraph(world: WorldPack, passages: SourcePassage[], sc
   if (round === "lie") return lieOf(scene, picks).truth_paragraph;
   const supports = callQ(scene, picks).theories.flatMap((t) => t.supports).map(pid).filter(Boolean) as string[];
   return supports.sort((a, b) => supports.filter((x) => x === b).length - supports.filter((x) => x === a).length)[0] ?? null;
+}
+
+// ---------- Round intros: a word on the last round ----------
+// One line on each round intro about how the last round went: name what they did on a first-try success, coach after
+// retries, encourage (never praise) after a shown answer. Several authored versions of each, so it doesn't repeat.
+const FIRST_TRY: Record<RoundKind, string[]> = {
+  read: ["3 of 3 lines on your first try. One clue closer to cracking the case.", "You found all 3 lines on your first try. That's how a detective reads.", "First try, all 3 lines. The case file is filling up."],
+  confront: ["You found the line and proved what it shows on your first try.", "Right line, right words, first try. Brom noticed.", "First try: you backed your answer with the exact words."],
+  lie: ["You caught the lie on your first try. The text doesn't lie.", "First try: you found the line that proves the testimony false.", "One line, one try, one lie caught."],
+  call: ["Two lines, first try: your case holds up.", "First try: both lines support your theory.", "Your case is built on the text, first try."],
+};
+const RETRIES = ["That one took a few tries. Slow down and read closely; the proof is in the text.", "A few tries that time. Read each line all the way through before you lock it in.", "You got there. This round, check each line against the question before you tap it."];
+const SHOWN = ["Now you know where to look. This round, find it yourself.", "The answer was shown last round. Read closely and find this one on your own.", "Fresh round, fresh start. The proof is in the text: go find it."];
+const START = ["Read closely. Every point comes from a line in the story.", "Your case starts here. Find the lines that prove it."];
+// The word on the last round (null before round 1 is played); seed keeps it from repeating the same version each round.
+export function roundIntroLine(last: Pick<RoundRecord, "kind" | "valid" | "shown" | "tries" | "wrong"> | undefined, seed: number) {
+  const pick = (xs: string[]) => xs[Math.abs(seed) % xs.length];
+  if (!last) return pick(START);
+  if (last.shown || !last.valid) return pick(SHOWN);
+  if (last.tries > 0 || last.wrong > 0) return pick(RETRIES);
+  return pick(FIRST_TRY[last.kind]);
+}
+// "200 / 1,200 · 280 more for Case Opened." (or the level reached, or Bonus past the most).
+export function goalLine(total: number, max: number) {
+  const n = (x: number) => x.toLocaleString("en-US");
+  const next = levelPoints(max).find((l) => total < l.points);
+  const tail = total > max ? "Bonus" : next ? `${n(next.points - total)} more for ${next.name}` : "Case Cracked";
+  return `${n(total)} / ${n(max)} · ${tail}${tail.endsWith("Bonus") || tail === "Case Cracked" ? "" : "."}`;
 }
 
 // ---------- Class pulse (anonymized) ----------

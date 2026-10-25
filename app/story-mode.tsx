@@ -7,11 +7,11 @@
 // One screen flow, one clear action at a time. The server scores every try (lib/story-server.ts); the rules are in
 // lib/story-mode.ts and lib/fair-play.ts, and the content in the scene's `story_mode` block.
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
-import {ArrowRight,BookOpen,Check,Coins,Flame,RotateCcw,Timer,Trophy,Volume2,VolumeX,X} from "lucide-react";
+import {ArrowRight,BookOpen,Check,Coins,Flame,Minus,RotateCcw,Timer,Trophy,Volume2,VolumeX,X} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
 import type {Demo} from "./page";
-import {COUNTDOWN_SECONDS,GRACE_SECONDS,POUCH_MAX,POWER_UPS,ROUNDS,ROUND_NAMES,SECONDS,callQ,inferQ,lanternParagraph,lieOf,phaseSeconds,readQ,timeAnnouncement,type PowerUp,type RoundInput,type RoundKind,type RoundRecord,type RunState,type Scene,type TimeSetting} from "@/lib/story-mode";
+import {COUNTDOWN_SECONDS,GRACE_SECONDS,POUCH_MAX,POWER_UPS,ROUNDS,ROUND_NAMES,SECONDS,goalLine,roundIntroLine,callQ,inferQ,lanternParagraph,lieOf,phaseSeconds,readQ,timeAnnouncement,type PowerUp,type RoundInput,type RoundKind,type RoundRecord,type RunState,type Scene,type TimeSetting} from "@/lib/story-mode";
 import {LEVELS,levelFor} from "@/lib/fair-play";
 import {contentNotes} from "@/lib/content-notes";
 import {narrationFile} from "@/lib/narration";
@@ -131,14 +131,17 @@ function ReadyCard({world,scene,kind,round,run,relaxed,setRelaxed,canRelax,onBuy
  return <section className="mt-5" aria-labelledby="ready-h">
   {firstRound&&<div className="overflow-hidden rounded-3xl bg-[#2A2620] text-[#FFFDF8]"><div className="case-art aspect-[16/7]" role="img" aria-label={`The scene: ${scene.id.replace(/-/g," ")}`} style={{backgroundImage:`url('${scene.background_image}')`}}/><div className="p-5">{role&&<p className="text-[13px] font-semibold uppercase tracking-wide text-[#F3C9B2]">You are {role.name.replace(/^The /,"the ")}</p>}<p className="mt-1 text-[17px] leading-7">{scene.story_mode!.intro}</p>{round>0&&<p className="mt-2 text-[15px] text-[#F3C9B2]">You're starting at round {round+1}. Play the whole scene any time with "Play this scene again" at the end.</p>}</div></div>}
   {firstRound&&<PointsGoal max={run.goal.max}/>}
-  <p className="mt-5 text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Round {round+1} of {ROUNDS.length}</p>
+  <RoundTracker round={round} skipped={s.skipped??0}/>
+  <p className="mt-3 text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Round {round+1} of {ROUNDS.length}</p>
   <h1 id="ready-h" className="mt-1 text-[30px] font-bold leading-tight">{ROUND_NAMES[kind]}</h1>
+  <div className="mt-3 rounded-2xl bg-[#FFFDF8] px-4 py-3 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="text-[17px] leading-7">{roundIntroLine(s.rounds.at(-1),round+(s.restarts??0))}</p><p className="mt-1 text-[15px] font-semibold tabular-nums text-[#4A4438]">{goalLine(run.total,run.goal.max)}</p></div>
   {kind==="read"&&<Focus text={readQ(scene,s.picks).focus}/>}
   <p className="mt-2 text-[17px] leading-7 text-[#4A4438]">{ROUND_HELP[kind]}</p>
   {round>0&&<div className="mt-5 rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]">
    <h2 className="flex items-center gap-2 text-[18px] font-bold"><Coins size={18} className="text-[#A0472C]"/>Power-ups <span className="text-[15px] font-normal text-[#6B6457]">· {s.coins} coin{s.coins===1?"":"s"}</span></h2>
-   <ul className="mt-3 grid gap-2 sm:grid-cols-3">{(Object.keys(POWER_UPS) as PowerUp[]).map(p=>{const on=(p==="lantern"&&s.lantern)||(p==="double-down"&&s.doubleDown);const can=!on&&s.coins>=POWER_UPS[p].cost&&usable(p);
-    return <li key={p}><button type="button" aria-disabled={!can} onClick={()=>can&&onBuy(p)} aria-pressed={on} className={`flex h-full w-full flex-col rounded-2xl p-3 text-left ${on?"bg-[#2A2620] text-white":can?"bg-[#F4E1D6] hover:bg-[#EDD3C4]":"bg-[#EFE8D8] text-[#8B8478]"}`}><span className="text-[16px] font-bold">{POWER_UPS[p].name} · {POWER_UPS[p].cost}</span><span className="mt-1 text-[13px] leading-5">{on?"Ready for this round.":!usable(p)?"Not used in this round.":POWER_UPS[p].what}</span></button></li>})}</ul>
+   <ul className="mt-3 grid gap-2 sm:grid-cols-3">{(Object.keys(POWER_UPS) as PowerUp[]).map(p=>{const on=(p==="lantern"&&s.lantern)||(p==="double-down"&&s.doubleDown);const short=s.coins<POWER_UPS[p].cost;const can=!on&&!short&&usable(p);
+    // Can't afford it yet: a plain card that says what it takes, so it never looks used or done.
+    return <li key={p}><button type="button" aria-disabled={!can} onClick={()=>can&&onBuy(p)} aria-pressed={on} className={`flex h-full w-full flex-col rounded-2xl p-3 text-left ${on?"bg-[#2A2620] text-white":can?"bg-[#F4E1D6] hover:bg-[#EDD3C4]":short&&usable(p)?"border-2 border-dashed border-[#C9B9A0] bg-[#FFFDF8] text-[#2A2620]":"bg-[#EFE8D8] text-[#8B8478]"}`}><span className="text-[16px] font-bold">{POWER_UPS[p].name} · {POWER_UPS[p].cost}</span><span className="mt-1 text-[13px] leading-5">{on?"Ready for this round.":!usable(p)?"Not used in this round.":short?<><b className="block text-[#8A3B23]">Need {POWER_UPS[p].cost} coin{POWER_UPS[p].cost===1?"":"s"}</b>{POWER_UPS[p].what}</>:POWER_UPS[p].what}</span></button></li>})}</ul>
   </div>}
   <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
    {canRelax?<label className="inline-flex min-h-11 cursor-pointer items-center gap-3 text-[16px]"><input type="checkbox" checked={relaxed} onChange={e=>setRelaxed(e.target.checked)} className="h-5 w-5 accent-[#A0472C]"/>Relaxed timer (2x time)</label>:<p className="text-[15px] text-[#6B6457]">{run.timeSetting==="untimed"?"No timer for you: take the time you need.":"Your teacher gave you extra time."}</p>}
@@ -146,6 +149,13 @@ function ReadyCard({world,scene,kind,round,run,relaxed,setRelaxed,canRelax,onBuy
   </div>
   {onCaseFile&&<p className="mt-6 text-[14px] text-[#6B6457]">Teachers: <button type="button" onClick={onCaseFile} className="font-semibold text-[#8A3B23] underline underline-offset-4">open the Case file view</button> instead.</p>}
  </section>;
+}
+
+// The four rounds in a row: played rounds gray with a check (skipped ones gray with a dash), the current one highlighted.
+function RoundTracker({round,skipped}:{round:number;skipped:number}){
+ return <ol className="mt-5 grid grid-cols-4 gap-1.5" aria-label={`Round ${round+1} of ${ROUNDS.length}`}>{ROUNDS.map((k,i)=>{const done=i<round,now=i===round,skip=done&&i<skipped;
+  return <li key={k} aria-current={now?"step":undefined} className={`flex min-h-[52px] flex-col justify-center rounded-2xl px-2 py-1.5 text-center text-[13px] font-semibold leading-tight ${now?"bg-[#A0472C] text-white shadow-[0_0_0_3px_rgba(160,71,44,.25)]":done?"bg-[#E4DCCB] text-[#6B6457]":"bg-[#FFFDF8] text-[#2A2620] ring-1 ring-[#E4DCCB]"}`}>
+   <span className="flex items-center justify-center gap-1">{done&&(skip?<Minus size={14} aria-hidden/>:<Check size={14} aria-hidden/>)}<span className="sr-only">{now?"Now: ":skip?"Skipped: ":done?"Done: ":"Later: "}</span>{i+1}</span><span>{ROUND_NAMES[k]}</span></li>})}</ol>;
 }
 
 // Round 1's focus question, on the ready card and above the passage.

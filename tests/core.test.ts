@@ -2438,3 +2438,20 @@ test("fair play on the clue screen: bank questions, first-try points, shown answ
   assert.deepEqual([e.students[0].cells[clue.id].tries,e.students[0].cells[clue.id].flags],[1,["fast"]]);
   assert.deepEqual(evidenceDetail(e,"s1",clue.id)!.flags,["Tapped a line within 4 seconds of opening the passage"]);
 });
+
+test("story mode round intros: name a first-try success, coach after retries, never praise a shown answer", async()=>{
+  const {sm}=await storyKit();
+  const r=(o:Partial<{kind:import("../lib/story-mode.ts").RoundKind;valid:boolean;shown:boolean;tries:number;wrong:number}>)=>({kind:"read" as const,valid:true,shown:false,tries:0,wrong:0,...o});
+  assert.match(sm.roundIntroLine(r({}),0),/3 of 3 lines|all 3 lines|all 3 lines/i);
+  assert.match(sm.roundIntroLine(r({kind:"lie"}),1),/lie|testimony/i);
+  for(let seed=0;seed<3;seed++){
+    assert.match(sm.roundIntroLine(r({tries:1}),seed),/tries|Read each line|check each line/i);
+    const shown=sm.roundIntroLine(r({valid:false,shown:true}),seed);
+    assert.doesNotMatch(shown,/great|nice|well done|first try|good job/i,"a shown answer is never praised");
+  }
+  // Different versions, so the line doesn't repeat every round.
+  assert.notEqual(sm.roundIntroLine(r({tries:1}),0),sm.roundIntroLine(r({tries:1}),1));
+  assert.equal(sm.goalLine(200,1200),"200 / 1,200 · 280 more for Case Opened.");
+  assert.equal(sm.goalLine(1100,1200),"1,100 / 1,200 · Case Cracked");
+  assert.equal(sm.goalLine(1300,1200),"1,300 / 1,200 · Bonus");
+});
