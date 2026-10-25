@@ -1,6 +1,6 @@
 "use client";
 // Your Turn: a personal 5 to 7 minute activity after the game. The student picks one of the two activities that match
-// their "What's your angle?" answers, works through it in the story (every scored answer is an authored line, checked
+// their "Unlock your challenge" answers, works through it in the story (every scored answer is an authored line, checked
 // in lib/your-turn.ts), then writes 2 or 3 sentences citing at least one exact line. Used after a solo case and on
 // phones when the teacher starts Your Turn from the live host screen.
 import {useEffect,useLayoutEffect,useMemo,useState} from "react";
@@ -29,7 +29,7 @@ export function YourTurn({world,passages,choices,theory,proven=[],ai=null,onSave
  if(!id)return <section className="case-ui mx-auto max-w-xl px-4 pb-10 pt-4" aria-labelledby="yt-h">
   <p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Your Turn · 5 to 7 minutes</p>
   <h1 id="yt-h" className="mt-1 text-[26px] font-bold leading-tight outline-none">Pick your activity</h1>
-  <p className="mt-1 text-[15px] text-[#4A4438]">Chosen from your answers to "What's your angle?". Both send you back into the story.</p>
+  <p className="mt-1 text-[15px] text-[#4A4438]">{choices.length>1?"Picked from your answers. Both send you back into the story.":"It sends you back into the story."}</p>
   <ul className="mt-4 space-y-3">{choices.map(c=>{const a=acts[c];return a?<li key={c}><button type="button" onClick={()=>setId(c)} className="w-full rounded-3xl bg-[#FFFDF8] p-4 text-left shadow-[0_2px_12px_-6px_rgba(42,38,32,.35)] ring-2 ring-transparent hover:ring-[#A0472C]"><span className="block text-[19px] font-bold">{a.title}</span><span className="mt-1 block text-[14px] leading-5 text-[#4A4438]">{a.intro}</span><span className="mt-2 inline-block rounded-full bg-[#F4E1D6] px-3 py-1 text-[12px] font-bold text-[#8A3B23]">{a.minutes} minutes</span></button></li>:null})}</ul>
   {onClose&&<button type="button" onClick={onClose} className="mt-5 min-h-11 text-[15px] text-[#6B6457] underline underline-offset-4">Not now</button>}
  </section>;

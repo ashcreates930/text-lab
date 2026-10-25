@@ -12,7 +12,7 @@ import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
 import type {Demo} from "./page";
 import {COUNTDOWN_SECONDS,GRACE_SECONDS,POUCH_MAX,POWER_UPS,ROUNDS,ROUND_NAMES,SECONDS,goalLine,roundIntroLine,callQ,inferQ,lanternParagraph,lieOf,phaseSeconds,readQ,timeAnnouncement,type PowerUp,type RoundInput,type RoundKind,type RoundRecord,type RunState,type Scene,type TimeSetting} from "@/lib/story-mode";
-import {LEVELS,levelFor} from "@/lib/fair-play";
+import {LEVELS,levelFor,levelPoints} from "@/lib/fair-play";
 import {contentNotes} from "@/lib/content-notes";
 import {narrationFile} from "@/lib/narration";
 import {ReadingPanel} from "./reading-panel";
@@ -46,7 +46,8 @@ const reducedMotion=()=>typeof window!=="undefined"&&!!window.matchMedia?.("(pre
 // onUnavailable: Story Mode's tables aren't set up (or the server can't reach them), so the scene opens in the Case
 // file view instead, with no error screen.
 // onLeads: this scene has mission leads the student hasn't followed (offered on the cleared screen).
-export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleared,onCaseFile,startAt,onJumped,onUnavailable,onLeads}:{world:WorldPack;scene:Scene;sceneIndex:number;passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onCleared:()=>void;onCaseFile?:()=>void;startAt?:RoundKind;onJumped?:()=>void;onUnavailable:()=>void;onLeads?:()=>void}){
+// autoStart: straight from the pre-game screens, a fresh run skips round 1's ready card and opens the passage.
+export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleared,onCaseFile,startAt,onJumped,onUnavailable,onLeads,autoStart=false,onAutoStarted}:{world:WorldPack;scene:Scene;sceneIndex:number;passages:SourcePassage[];demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onCleared:()=>void;onCaseFile?:()=>void;startAt?:RoundKind;onJumped?:()=>void;onUnavailable:()=>void;onLeads?:()=>void;autoStart?:boolean;onAutoStarted?:()=>void}){
  const content=scene.story_mode!;
  const headers=useMemo(()=>({"Content-Type":"application/json",...(demo.classAuth?{"x-class-token":demo.classAuth.token}:{})}),[demo.classAuth]);
  const [run,setRun]=useState<PublicRun|null>(null),[mode,setMode]=useState<"individual"|"squad"|"off">("individual");
@@ -62,14 +63,18 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
  const post=useCallback(async(path:string,body:Record<string,unknown>)=>{const r=await fetch(path,{method:"POST",headers,body:JSON.stringify({sandboxId:demo.id,...body})});const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error??"Something went wrong. Try again."),{status:r.status});return j},[headers,demo.id]);
  // Read once per start, so clearing the jump afterwards doesn't start the run again.
  const jump=useRef(startAt);jump.current=startAt;
- const callbacks=useRef({onJumped,onUnavailable});callbacks.current={onJumped,onUnavailable};
+ const callbacks=useRef({onJumped,onUnavailable,onAutoStarted});callbacks.current={onJumped,onUnavailable,onAutoStarted};
+ const auto=useRef(autoStart);
  const start=useCallback(async(restart=false)=>{
   setStage("loading");setError("");
   try{const j=await post("/api/story/run",{worldId:world.id,sceneId:scene.id,restart,...(jump.current&&!restart?{startAt:jump.current}:{})});
    if(j.unavailable){callbacks.current.onUnavailable();return}
    if(jump.current)callbacks.current.onJumped?.();
    // A round already in progress (a reload) picks up at its try.
-   setRun(j.run);setMode(j.leaderboard);setResult(null);setResume(j.resume??null);setStage(j.run.finished?"cleared":j.resume?"play":"ready")}
+   const fresh=!j.run.finished&&!j.resume&&j.run.state.round===0&&!restart;
+   setRun(j.run);setMode(j.leaderboard);setResult(null);setResume(j.resume??null);setStage(j.run.finished?"cleared":j.resume?"play":auto.current&&fresh?"play":"ready");
+   // auto stays set for this mount (React can run start twice); a played round or a restart is never fresh.
+   if(auto.current)callbacks.current.onAutoStarted?.()}
   catch(e){const status=(e as {status?:number}).status;
    // No answer, or a server error: open the Case file view rather than an error screen. A 4xx says what to do.
    if(!status||status>=500){callbacks.current.onUnavailable();return}
@@ -252,6 +257,7 @@ function ReadRound({world,scene,passages,run,setting,sound,resume,send,onError}:
  if(notYet)return <NotYet tryNo={tryNo} hint={notYet.hint} onTryAgain={()=>setNotYet(null)} extra={locked.length?<FoundSoFar lines={locked}/>:null}/>;
  return <TimedTry key={tryNo} kind="read" tryNo={tryNo} setting={setting} paused={noteOpen} onOver={(e,g)=>lockIn(e,g,true)}>{t=><section className="mt-4" aria-labelledby="play-h">
   <h1 id="play-h" className="text-[24px] font-bold">{tryNo>1?`Try ${tryNo}: find the rest`:ROUND_NAMES.read}</h1>
+  {tryNo===1&&run.total===0&&!run.state.rounds.length&&<p className="mt-1 text-[15px] text-[#4A4438]"><b className="tabular-nums">{run.goal.max.toLocaleString()} points possible.</b> {levelPoints(run.goal.max).map(l=>`${l.name} at ${l.points.toLocaleString()}`).join(", ")}.</p>}
   <Focus text={q.focus}/>
   <p className="mt-2 text-[16px] text-[#4A4438]">{c.read.prompt}</p>
   <TimerBar t={t} seconds={trySeconds("read",tryNo,setting).seconds}/>

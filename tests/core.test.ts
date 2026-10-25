@@ -1533,14 +1533,15 @@ test("student roles are validated: a real start scene, one line of setup, never 
   assert.match(bad(w=>{delete w.scenes[0].choice_point!.role_frame}),/without a role_frame/);
 });
 
-test("what's your angle: only the three choices reach the AI, and the teacher's settings turn roles and angles off", async()=>{
+test("what's your angle: characters hear only the part and how the student plays, and the teacher's settings turn roles and angles off", async()=>{
   const sr=await import("../lib/student-role.ts");
   const world=await roleWorld("sleepy-hollow");
   const p=sr.personaPrompt(world,{firedUpBy:"underestimated",lane:"music",style:"rival"});
-  assert.match(p,/newest student in Ichabod's class/);assert.match(p,/being underestimated/);assert.match(p,/music/);assert.match(p,/rival/);
+  assert.match(p,/newest student in Ichabod's class/);assert.match(p,/rival/);
+  assert.doesNotMatch(p,/underestimated/,"interest answers never reach a character");assert.doesNotMatch(p,/music/);
   assert.match(p,/must still come from the source passages/);
   assert.equal(sr.personaPrompt(world,{lane:"music"},{rolesOn:false,anglesOn:false}),"");
-  assert.doesNotMatch(sr.personaPrompt(world,{lane:"music"},{rolesOn:true,anglesOn:false}),/music/);
+  assert.doesNotMatch(sr.personaPrompt(world,{style:"rival"},{rolesOn:true,anglesOn:false}),/rival/);
   assert.doesNotMatch(sr.personaPrompt(world,null,{rolesOn:false,anglesOn:true}),/playing a part/);
   // Anything but the listed choices is refused: no free text can ride along.
   assert.equal(sr.AngleSchema.safeParse({lane:"my name is Sam"}).success,false);
@@ -1550,7 +1551,10 @@ test("what's your angle: only the three choices reach the AI, and the teacher's 
   assert.equal(sr.ANGLE_STEPS.length,3);
   assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.firedUpBy.options),["Unfairness","Being underestimated","Loyalty","Winning","Money"]);
   assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.lane.options),["Sports","Music","Gaming","Fashion","Social media"]);
-  assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.style.options),["Solo detective","Squad","Rival"]);
+  assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.style.options),["Solo","Rival","Squad"]);
+  assert.equal(sr.ANGLE_OPTIONS.style.label,"How do you want to play?");
+  assert.deepEqual([sr.PLAY_STEP,...sr.INTEREST_STEPS],["style","firedUpBy","lane"],"play mode before the game; interests before Your Turn");
+  assert.deepEqual(sr.UNLOCK,{title:"Unlock your challenge",line:"Two quick taps and we'll pick a challenge that fits you."});
   // Saved with progress only.
   const {StudentProgressSchema}=await import("../lib/classroom/progress.ts");
   const base={v:1,worldId:"sleepy-hollow",scene:0,submitted:false,readerProgress:{},artifactAnswers:{},savedTextEvidence:[],updatedAt:"2026-10-19T00:00:00Z"};
@@ -2328,7 +2332,7 @@ test("Your Turn content: one activity per angle option, every scored line exact,
 test("Your Turn: two activities from the angle, answers checked against authored lines, 2 or 3 cited sentences", async()=>{
   const {world,passages,line}=await storyKit();const yt=await import("../lib/your-turn.ts");
   assert.deepEqual(yt.yourTurnChoices(world,{firedUpBy:"money",lane:"fashion",style:"rival"}),["money","fashion"]);
-  assert.deepEqual(yt.yourTurnChoices(world,{style:"rival"}),["rival"]);
+  assert.deepEqual(yt.yourTurnChoices(world,{style:"rival"}),["solo"],"how they play doesn't pick a challenge");
   assert.deepEqual(yt.yourTurnChoices(world,null),["solo"],"skipped the angle: the cold case file");
   const fashion=world.your_turn!.activities.fashion;
   const suit=fashion.items!.find(i=>i.id==="suit")!,bow=fashion.items!.find(i=>i.id==="bow")!;
@@ -2359,7 +2363,12 @@ test("Your Turn live: the host starts it for everyone; each phone saves one of i
   assert.equal(server.playerView(st,p.id).yourTurn,null,"not until the host starts it");
   assert.equal(await server.hostAct(store,st,{action:"yourturn.start"}),null,"even after the session has ended");
   st=(await server.loadState(store,s.id))!;
-  assert.deepEqual(server.playerView(st,p.id).yourTurn,{choices:["loyalty","fashion"],done:[]});
+  assert.deepEqual(server.playerView(st,p.id).yourTurn,{ask:true,choices:[],done:[]},"each phone asks the two questions first, even with saved answers");
+  assert.match((await server.playerAct(store,st,p.id,{kind:"your_turn",payload:{activity:"fashion"}},{judgeAllowed:async()=>false}))??"",/Unlock your challenge first/);
+  assert.match((await server.playerAct(store,st,p.id,{kind:"your_turn_angle",payload:{lane:"my name is Rosa"}},{judgeAllowed:async()=>false}))??"",/Pick one/);
+  assert.equal(await server.playerAct(store,st,p.id,{kind:"your_turn_angle",payload:{firedUpBy:"loyalty",lane:"fashion"}},{judgeAllowed:async()=>false}),null);
+  st=(await server.loadState(store,s.id))!;
+  assert.deepEqual(server.playerView(st,p.id).yourTurn,{ask:false,choices:["loyalty","fashion"],done:[]});
   assert.deepEqual(server.hostView(st).yourTurn,{started:true,saved:0});
   const act=async(payload:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;return server.playerAct(store,st,p.id,{kind:"your_turn",payload},{judgeAllowed:async()=>false})};
   assert.match((await act({activity:"money",writing:"A. B.",cited:[]}))??"",/one of your two/);

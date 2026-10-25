@@ -10,7 +10,7 @@ import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, liv
 import { screenMessage } from "../safety.ts";
 import { checkWriting, yourTurnChoices, type YourTurnEntry } from "../your-turn.ts";
 import { evidenceSentences, lineWords } from "../lies.ts";
-import { AngleSchema, type Angle } from "../student-role.ts";
+import { AngleSchema } from "../student-role.ts";
 import { inferQ, lieOf as storyLie, readQ, studentBoard, type RoundInput, type TimeSetting } from "../story-mode.ts";
 import { absentDay, getClassroomStore, memoryModeEnabled } from "../classroom/store.ts";
 import { screenArgument, judgeWithRubric } from "../verdict-server.ts";
@@ -58,8 +58,7 @@ export async function broadcast(sessionId: string) {
 // ---------- Loading ----------
 // bank: the class's approved planted lies for this story (class sessions only).
 // absent: player ids whose students were marked absent on the session's day (left out of Story Mode squad averages).
-// angles: class students' "What's your angle?" answers, loaded once the host starts Your Turn.
-export type LiveState = { session: StoredSession; world: WorldPack; squads: Awaited<ReturnType<LiveStore["listSquads"]>>; players: LivePlayer[]; responses: LiveResponse[]; bank?: PlantedLie[]; passages?: SourcePassage[]; absent?: string[]; angles?: Record<string, Angle> };
+export type LiveState = { session: StoredSession; world: WorldPack; squads: Awaited<ReturnType<LiveStore["listSquads"]>>; players: LivePlayer[]; responses: LiveResponse[]; bank?: PlantedLie[]; passages?: SourcePassage[]; absent?: string[] };
 export async function loadState(store: LiveStore, sessionId: string): Promise<LiveState | null> {
   const session = await store.getSession(sessionId);
   if (!session) return null;
@@ -67,21 +66,16 @@ export async function loadState(store: LiveStore, sessionId: string): Promise<Li
   if (!world) return null;
   const [squads, players, responses, bank, passages, absentStudents] = await Promise.all([store.listSquads(sessionId), store.listPlayers(sessionId), store.listResponses(sessionId), loadBank(session), readPassages(session.worldId), loadAbsent(session)]);
   const away = new Set(absentStudents);
-  const angles = responses.some((r) => r.kind === "your_turn_start") ? await loadAngles(players) : undefined;
-  return { session, world, squads, players, responses, bank, passages, absent: players.filter((p) => p.studentId && away.has(p.studentId)).map((p) => p.id), ...(angles ? { angles } : {}) };
+  return { session, world, squads, players, responses, bank, passages, absent: players.filter((p) => p.studentId && away.has(p.studentId)).map((p) => p.id) };
 }
-// Your Turn: each class student's angle, from their saved progress (player id -> angle).
-async function loadAngles(players: LivePlayer[]) {
-  const classes = getClassroomStore();
-  const out: Record<string, Angle> = {};
-  if (!classes) return out;
-  await Promise.all(players.filter((p) => p.studentId).map(async (p) => { const a = AngleSchema.safeParse((await classes.getProgress(p.studentId!).catch(() => null))?.angle); if (a.success) out[p.id] = a.data; }));
-  return out;
-}
-// What a player sees once the host starts Your Turn: their two activities and what they've already saved.
+// What a player sees once the host starts Your Turn: first "Unlock your challenge" (ask: the two interest questions),
+// then their two activities and what they've already saved. A player who skipped gets the cold case file.
 function yourTurnView(st: LiveState, playerId: string) {
   if (!st.responses.some((r) => r.kind === "your_turn_start") || !st.world.your_turn) return null;
-  return { choices: yourTurnChoices(st.world, st.angles?.[playerId]), done: st.responses.filter((r) => r.kind === "your_turn" && r.playerId === playerId).map((r) => String(r.payload.title ?? "")) };
+  const answered = st.responses.filter((r) => r.kind === "your_turn_angle" && r.playerId === playerId).at(-1);
+  if (!answered) return { ask: true, choices: [] as string[], done: [] as string[] };
+  const angle = AngleSchema.safeParse(answered.payload);
+  return { ask: false, choices: yourTurnChoices(st.world, angle.success ? angle.data : null), done: st.responses.filter((r) => r.kind === "your_turn" && r.playerId === playerId).map((r) => String(r.payload.title ?? "")) };
 }
 // Students marked absent on the day the session was held (New York date), so an old session's totals don't change
 // with later marks. None before the absent migration runs, or for a session without a class.
@@ -388,6 +382,7 @@ export async function playerAct(store: LiveStore, st: LiveState, playerId: strin
   const me = st.players.find((p) => p.id === playerId);
   if (!me) return "Please join again.";
   // Your Turn works whatever the round is doing, once the host has started it.
+  if (act.kind === "your_turn_angle") return saveYourTurnAngle(store, st, me, act.payload);
   if (act.kind === "your_turn") return saveYourTurn(store, st, me, act.payload);
   if (s.status !== "round") return "Wait for the next round.";
   if (s.paused) return "The round is paused.";
@@ -511,9 +506,20 @@ export async function join(store: LiveStore, session: StoredSession, input: { ni
 // ---------- Your Turn (after the game, started by the host) ----------
 // Checks a player's finished activity (one of their two, 2 or 3 sentences citing an exact line, screened), keeps it
 // for the session, and saves it with a class student's progress for the Evidence view.
+// "Unlock your challenge" on a phone: only the two interest answers are kept (empty when skipped), once per player.
+async function saveYourTurnAngle(store: LiveStore, st: LiveState, me: LivePlayer, payload: Record<string, unknown>): Promise<string | null> {
+  const view = yourTurnView(st, me.id);
+  if (!view) return "Your teacher hasn't started Your Turn yet.";
+  if (!view.ask) return null;
+  const a = AngleSchema.safeParse({ ...(payload.firedUpBy ? { firedUpBy: payload.firedUpBy } : {}), ...(payload.lane ? { lane: payload.lane } : {}) });
+  if (!a.success) return "Pick one of the choices, or Skip.";
+  await store.addResponse(st.session.id, { roundIndex: st.session.roundIndex, squadId: me.squadId, playerId: me.id, role: null, kind: "your_turn_angle", payload: a.data as Record<string, unknown>, flagged: false });
+  return null;
+}
 async function saveYourTurn(store: LiveStore, st: LiveState, me: LivePlayer, payload: Record<string, unknown>): Promise<string | null> {
   const view = yourTurnView(st, me.id);
   if (!view) return "Your teacher hasn't started Your Turn yet.";
+  if (view.ask) return "Unlock your challenge first.";
   const activity = String(payload.activity ?? "");
   if (!view.choices.includes(activity)) return "Pick one of your two activities.";
   const passages = st.passages ?? [];

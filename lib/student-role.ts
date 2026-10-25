@@ -1,18 +1,24 @@
 // Students in the story: each world gives the student a part to play (world.student_role: a name, a one-line setup,
 // the scene they start in, and a second-person intro card), and each choice point can carry a personal frame for that
-// part (choice_point.role_frame). Students can also pick "What's your angle?" (three taps, skippable). The angle is
-// saved with their progress only, and only those three choices ever reach the AI. Teachers can turn roles and angles
-// off for a class. Pure rules, shared by the screens, the chat route, the world validator and the tests.
+// part (choice_point.role_frame). Before the game the student picks how they want to play (one tap); after the case
+// closes, two quick interest taps ("Unlock your challenge") pick their Your Turn activities. All three are saved with
+// their progress only. Characters hear only the student's part and how they play, never the interest answers.
+// Teachers can turn roles and angles off for a class. Pure rules, shared by the screens, the chat route, the world
+// validator and the tests.
 import { z } from "zod";
 import type { WorldPack } from "./world-schema.ts";
 
 export const ANGLE_OPTIONS = {
   firedUpBy: { label: "What fires you up?", options: { unfairness: "Unfairness", underestimated: "Being underestimated", loyalty: "Loyalty", winning: "Winning", money: "Money" } },
   lane: { label: "What's your lane?", options: { sports: "Sports", music: "Music", gaming: "Gaming", fashion: "Fashion", "social-media": "Social media" } },
-  style: { label: "How do you play?", options: { solo: "Solo detective", squad: "Squad", rival: "Rival" } },
+  style: { label: "How do you want to play?", options: { solo: "Solo", rival: "Rival", squad: "Squad" } },
 } as const;
 export type AngleKey = keyof typeof ANGLE_OPTIONS;
 export const ANGLE_STEPS = Object.keys(ANGLE_OPTIONS) as AngleKey[];
+// Before the game: how they want to play. After the case closes: the two interest questions ("Unlock your challenge").
+export const PLAY_STEP: AngleKey = "style";
+export const INTEREST_STEPS: AngleKey[] = ["firedUpBy", "lane"];
+export const UNLOCK = { title: "Unlock your challenge", line: "Two quick taps and we'll pick a challenge that fits you." } as const;
 const ids = <K extends AngleKey>(k: K) => Object.keys(ANGLE_OPTIONS[k].options) as [string, ...string[]];
 // Only these three choices are ever sent to the AI: no free text, nothing personal.
 export const AngleSchema = z.object({
@@ -27,15 +33,16 @@ const label = (k: AngleKey, v: string | undefined) => (v ? (ANGLE_OPTIONS[k].opt
 export type StoryPersonalSettings = { rolesOn: boolean; anglesOn: boolean };
 export const DEFAULT_PERSONAL: StoryPersonalSettings = { rolesOn: true, anglesOn: true };
 
-// What the character is told about the student: the student's part (from the world file) and their angle (three
-// choices). Characters address the student in that part, but every fact still comes from the source passages.
+// What the character is told about the student: the student's part (from the world file) and how they play. The
+// interest answers never reach a character. Characters address the student in that part, but every fact still comes
+// from the source passages.
 export function personaPrompt(world: Pick<WorldPack, "student_role">, angle: Angle | null | undefined, settings: StoryPersonalSettings = DEFAULT_PERSONAL) {
   const parts: string[] = [];
   const role = settings.rolesOn ? world.student_role : undefined;
   if (role) parts.push(`The student is playing a part in the story: ${role.name}. ${role.setup} Speak to them as that person, using "you". Their part adds no new events: every fact you mention must still come from the source passages, and you know nothing about them beyond that one line.`);
   const a = settings.anglesOn && angle ? AngleSchema.safeParse(angle) : null;
   if (a?.success) {
-    const bits = [label("firedUpBy", a.data.firedUpBy) && `what fires them up: ${label("firedUpBy", a.data.firedUpBy)!.toLowerCase()}`, label("lane", a.data.lane) && `their lane: ${label("lane", a.data.lane)!.toLowerCase()}`, label("style", a.data.style) && `how they like to play: ${label("style", a.data.style)!.toLowerCase()}`].filter(Boolean);
+    const bits = [label("style", a.data.style) && `how they like to play: ${label("style", a.data.style)!.toLowerCase()}`].filter(Boolean);
     if (bits.length) parts.push(`The student picked an angle (${bits.join("; ")}). You may use at most one short, plain comparison to it when it makes your answer clearer. Never change or add story facts for it, and never mention that they picked it.`);
   }
   return parts.join(" ");

@@ -9,6 +9,7 @@ import {contentNotes} from "@/lib/content-notes";
 import {EvidenceLines} from "../evidence-lines";
 import {playerKey,postJson,readStored,store,useLive,useScreenTop,useStory} from "./use-live";
 import {YourTurn} from "../your-turn";
+import {UnlockChallenge} from "../role-intro";
 import {PlayerStory} from "./player-story";
 
 type View=ReturnType<typeof playerView>;
@@ -188,9 +189,12 @@ function Ended({state}:{state:View}){
  return <section className="mt-6"><h1 className="text-[30px] font-bold">Case closed</h1><p className="mt-2 text-[18px]">{state.squad?`${state.squad.name} earned ${state.score} points.`:"Thanks for playing."}</p><p className="mt-1 text-[15px] text-[#6B6457]">Points came from your squad's evidence and reasoning.</p></section>;
 }
 
-// Your Turn on a phone, once the teacher starts it: the student's two activities (from their angle answers).
+// Your Turn on a phone, once the teacher starts it: "Unlock your challenge" (two taps, or Skip), then the student's
+// two activities from those answers.
 function YourTurnPhone({state,world,passages,seat}:{state:View;world:NonNullable<ReturnType<typeof useStory>["world"]>;passages:ReturnType<typeof useStory>["passages"];seat:Seat}){
  const yt=state.yourTurn!;
+ const [err,setErr]=useState("");
+ if(yt.ask)return <div className="-mx-4">{err&&<p role="alert" className="mx-4 mt-4 rounded-2xl bg-[#FBE3DC] p-3 text-[15px] text-[#8A3B23]">{err}</p>}<UnlockChallenge onDone={async a=>{const r=await postJson(`/api/live/sessions/${seat.sessionId}/act`,{kind:"your_turn_angle",payload:a},{"x-live-player":seat.playerToken});setErr(r.ok?"":r.error??"Try again.")}}/></div>;
  if(yt.done.length&&yt.choices.length)return <section className="mt-5"><p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Your Turn</p><h1 className="mt-1 text-[26px] font-bold">Saved for your teacher</h1><p className="mt-2 text-[16px]">{yt.done.join(", ")}. Eyes on the board.</p></section>;
  return <div className="-mx-4"><YourTurn world={world} passages={passages} choices={yt.choices} onSave={async e=>{const r=await postJson(`/api/live/sessions/${seat.sessionId}/act`,{kind:"your_turn",payload:e},{"x-live-player":seat.playerToken});return r.ok?null:r.error}}/></div>;
 }

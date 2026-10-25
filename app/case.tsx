@@ -27,7 +27,7 @@ import {FrameView,StoryboardRow,StoryboardStrip} from "./storyboard";
 import {VerdictPanel,VerdictStamp,VerdictView} from "./verdict";
 import {theoryOf,verdictFor} from "@/lib/verdict";
 import {PlantLieView} from "./plant-lie";
-import {RoleIntro} from "./role-intro";
+import {RoleIntro,UnlockChallenge} from "./role-intro";
 import {StoryMode} from "./story-mode";
 import {ClueScreen} from "./clue-screen";
 import {SceneWriting} from "./scene-writing";
@@ -82,11 +82,15 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  const sceneIndex=Math.min(demo.scene,world.scenes.length-1),scene=world.scenes[sceneIndex],role=world.roles.find(r=>r.id===demo.role)!;
  const finished=demo.submitted;
  if(finished)return <CaseSummary world={world} demo={demo} passages={passages} onAnotherStory={onAnotherStory} personal={personal??DEFAULT_PERSONAL} setDemo={setDemo}/>;
- // The role card and "What's your angle?" come once, before the first clue (after saved progress has loaded).
- const introDue=!!personal&&(!demo.classAuth||demo.classProgressLoaded)&&!demo.roleIntroSeen&&(!demo.classAuth||!Object.keys(demo.artifactAnswers).length)&&((personal.rolesOn&&!!world.student_role)||personal.anglesOn);
- if(introDue&&personal)return <RoleIntro world={world} settings={personal} onDone={angle=>setDemo(d=>({...d,roleIntroSeen:true,...(angle?{angle}:{}),scene:d.scene===0&&!storyJump&&personal.rolesOn&&world.student_role?Math.max(0,world.scenes.findIndex(s=>s.id===world.student_role!.start_scene)):d.scene}))}/>;
+ // Before the game, once (after saved progress has loaded): the role card and "How do you want to play?", then the
+ // mission pick. quickStart: the first scene then opens straight to the passage (no map, no Start round 1).
+ const introDue=!!personal&&(!demo.classAuth||demo.classProgressLoaded)&&!demo.roleIntroSeen&&(!demo.classAuth||!Object.keys(demo.artifactAnswers).length);
+ if(introDue&&personal)return <RoleIntro world={world} settings={personal} classSession={!!demo.classAuth} onDone={angle=>setDemo(d=>({...d,roleIntroSeen:true,quickStart:true,...(angle?{angle:{...(d.angle??{}),...angle}}:{}),scene:d.scene===0&&!storyJump&&personal.rolesOn&&world.student_role?Math.max(0,world.scenes.findIndex(s=>s.id===world.student_role!.start_scene)):d.scene}))}/>;
  // A story with missions: the student picks one before the first scene.
- if(world.missions?.length&&!demo.mission&&!!personal&&(!demo.classAuth||demo.classProgressLoaded))return <MissionPick world={world} onPick={id=>setDemo(d=>({...d,mission:id}))}/>;
+ if(world.missions?.length&&!demo.mission&&!!personal&&(!demo.classAuth||demo.classProgressLoaded))return <MissionPick world={world} onPick={id=>{const sc=world.scenes[Math.min(demo.scene,world.scenes.length-1)];
+  setDemo(d=>({...d,mission:id,...(d.quickStart?{missionSeen:[...new Set([...(d.missionSeen??[]),sc.id])]}:{})}));
+  // A scene without Story Mode opens its first clue: the passage is the clue screen's main panel.
+  if(demo.quickStart&&!sc.story_mode){const first=sc.artifacts.find(a=>!a.unlock_condition);if(first)setOpenClue(first.id);setDemo(d=>({...d,quickStart:false}))}}}/>;
  if(STORYBOOK_ON&&world.storybook)return <StorybookReader world={world} role={role} passages={passages} demo={demo} setDemo={setDemo} onExit={onExit} onFeedback={onFeedback}/>;
  const frames=sceneFrames(world,passages,sceneIndex);
  // The scene is solved when every clue is proven and its required frame is saved, whichever comes last.
@@ -115,7 +119,7 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  // Solo players get the mission screen once per scene, before the scene itself.
  if(playMode(demo)==="solo"&&!(demo.missionSeen??[]).includes(scene.id))return <MissionScreen world={world} demo={demo} sceneIndex={sceneIndex} onGo={()=>setDemo(d=>({...d,missionSeen:[...new Set([...(d.missionSeen??[]),scene.id])]}))}/>;
  const storyHere=!!scene.story_mode&&storyModeOn&&!demo.caseFileView&&!storyUnavailable;
- if(storyHere)return <StoryMode key={scene.id} world={world} scene={scene} sceneIndex={sceneIndex} passages={passages} demo={demo} setDemo={setDemo} startAt={storyJump?.sceneId===scene.id?storyJump.round:undefined} onJumped={()=>setStoryJump(null)} onUnavailable={()=>{if(storyJump&&scene.lie)setOpenClue(scene.lie.clue_id);setStoryJump(null);setStoryUnavailable(true)}} onCleared={()=>{setDemo(d=>({...d,scene:Math.min(d.scene+1,world.scenes.length-1),events:[...d.events,"scene_complete"]}))}} onCaseFile={demo.classAuth?undefined:()=>setDemo(d=>({...d,caseFileView:true}))} onLeads={openLeads(world,demo,scene.id).length?()=>setOpenLeadsFor(scene.id):undefined}/>;
+ if(storyHere)return <StoryMode key={scene.id} world={world} scene={scene} sceneIndex={sceneIndex} passages={passages} demo={demo} setDemo={setDemo} autoStart={!!demo.quickStart} onAutoStarted={()=>setDemo(d=>({...d,quickStart:false}))} startAt={storyJump?.sceneId===scene.id?storyJump.round:undefined} onJumped={()=>setStoryJump(null)} onUnavailable={()=>{if(storyJump&&scene.lie)setOpenClue(scene.lie.clue_id);setStoryJump(null);setStoryUnavailable(true)}} onCleared={()=>{setDemo(d=>({...d,scene:Math.min(d.scene+1,world.scenes.length-1),events:[...d.events,"scene_complete"]}))}} onCaseFile={demo.classAuth?undefined:()=>setDemo(d=>({...d,caseFileView:true}))} onLeads={openLeads(world,demo,scene.id).length?()=>setOpenLeadsFor(scene.id):undefined}/>;
  return <SceneView world={world} scene={scene} sceneIndex={sceneIndex} onStoryMode={scene.story_mode&&demo.caseFileView&&!demo.classAuth&&!storyUnavailable?()=>setDemo(d=>({...d,caseFileView:false})):undefined} role={role} demo={demo} setDemo={setDemo} passages={passages} frames={frames} onOpenFrame={setOpenFrame} onOpenVerdict={()=>setVerdictOpen(true)} onOpenWriting={()=>setOpenWriting(true)} onOpenLeads={()=>setOpenLeadsFor(scene.id)} onCloseCase={closeCase} onOpenClue={id=>{setOpenClue(id);window.scrollTo({top:0})}} onExit={onExit} onStartOver={demo.classAuth?undefined:onStartOver} onPlantLie={demo.classAuth?setPlantClue:undefined} personal={personal??DEFAULT_PERSONAL} reprove={reprove} toast={toast} celebrating={celebrate?.sceneId===scene.id} rankUp={celebrate?.sceneId===scene.id?celebrate.rankUp:null} justProven={justProven} onTutorial={onTutorial}/>;
 }
 
@@ -213,7 +217,9 @@ function SceneView({world,scene,sceneIndex,role,demo,setDemo,passages,frames,onO
 
 export function CaseSummary({world,demo,passages=[],onAnotherStory,personal=DEFAULT_PERSONAL,setDemo}:{world:WorldPack;demo:Demo;passages?:SourcePassage[];onAnotherStory:()=>void;personal?:StoryPersonalSettings;setDemo?:React.Dispatch<React.SetStateAction<Demo>>}){
  // Your Turn: a personal activity after the game, from the student's angle answers.
- const [yourTurn,setYourTurn]=useState(false);
+ const [yourTurn,setYourTurn]=useState(false),[unlocking,setUnlocking]=useState(false);
+ // "Unlock your challenge" comes first, once, unless the teacher turned angles off (then: the Cold case file).
+ const needUnlock=personal.anglesOn&&!demo.challengeAsked&&!demo.angle?.firedUpBy&&!demo.angle?.lane;
  const ytChoices=world.your_turn?yourTurnChoices(world,demo.angle):[];
  const ytDone=(demo.yourTurn??[]).filter(e=>ytChoices.includes(e.activity));
  const role=world.roles.find(r=>r.id===demo.role);
@@ -224,6 +230,7 @@ export function CaseSummary({world,demo,passages=[],onAnotherStory,personal=DEFA
  const storyboard=storyboardSoFar(world,passages,demo.storyFrames,world.scenes.length-1);
  const verdict=verdictFor(demo.verdict,world.id);
  const date=new Date().toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"});
+ if(unlocking&&setDemo)return <UnlockChallenge onDone={a=>{setDemo(d=>({...d,challengeAsked:true,angle:{...(d.angle??{}),...a}}));setUnlocking(false);setYourTurn(true)}}/>;
  if(yourTurn&&setDemo)return <YourTurn world={world} passages={passages} choices={ytChoices} theory={verdictFor(demo.verdict,world.id)?.theory_id??null} proven={Object.values(demo.artifactAnswers).map(a=>a.notice).filter(Boolean)} ai={{sandboxId:demo.id,classToken:demo.classAuth?.token,sceneId:world.scenes[world.scenes.length-1].id}} onSave={e=>{setDemo(d=>({...d,yourTurn:[...(d.yourTurn??[]),e].slice(-30)}))}} onClose={()=>{setYourTurn(false);setTimeout(()=>focusScreenTop(),0)}}/>;
  return <div className="case-ui mx-auto max-w-3xl px-4 pb-24 pt-10 md:px-8">
   <div className="relative overflow-hidden rounded-3xl bg-[#FFFDF8] shadow-[0_10px_40px_-14px_rgba(42,38,32,.35)] print:shadow-none">
@@ -237,7 +244,7 @@ export function CaseSummary({world,demo,passages=[],onAnotherStory,personal=DEFA
     <div aria-hidden className="case-stamp case-stamp-page justify-self-center">Case closed</div>
    </div>
   </div>
-  {ytChoices.length>0&&setDemo&&<section aria-labelledby="yt-card-h" className="mt-6 rounded-3xl bg-[#2A2620] p-5 text-[#FFFDF8] print:hidden"><p className="text-[12px] font-bold uppercase tracking-wide text-[#F3C9B2]">5 to 7 minutes</p><h2 id="yt-card-h" className="text-[22px] font-bold">Your Turn</h2><p className="mt-1 text-[15px] text-[#E8DDCB]">One more trip into the story, picked from your answers to "What's your angle?": {ytChoices.map(c=>world.your_turn!.activities[c].title).join(" or ")}.</p>{ytDone.length>0&&<p className="mt-1 text-[14px] text-[#F3C9B2]">Done: {ytDone.map(e=>e.title).join(", ")}</p>}<button type="button" onClick={()=>setYourTurn(true)} className="case-primary mt-3">{ytDone.length?"Do another":"Start Your Turn"} <ArrowRight size={18}/></button></section>}
+  {ytChoices.length>0&&setDemo&&<section aria-labelledby="yt-card-h" className="mt-6 rounded-3xl bg-[#2A2620] p-5 text-[#FFFDF8] print:hidden"><p className="text-[12px] font-bold uppercase tracking-wide text-[#F3C9B2]">5 to 7 minutes</p><h2 id="yt-card-h" className="text-[22px] font-bold">Your Turn</h2><p className="mt-1 text-[15px] text-[#E8DDCB]">{needUnlock?"One more trip into the story, picked to fit you.":`One more trip into the story: ${ytChoices.map(c=>world.your_turn!.activities[c].title).join(" or ")}.`}</p>{ytDone.length>0&&<p className="mt-1 text-[14px] text-[#F3C9B2]">Done: {ytDone.map(e=>e.title).join(", ")}</p>}<button type="button" onClick={()=>needUnlock?setUnlocking(true):setYourTurn(true)} className="case-primary mt-3">{needUnlock?"Unlock your challenge":ytDone.length?"Do another":"Start Your Turn"} <ArrowRight size={18}/></button></section>}
   {chosen.length>0&&<ul className="mt-6 space-y-2 rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)] print:shadow-none">{chosen.map(c=><li key={c.sceneId} className="text-[16px] text-[#2A2620]"><span className="font-semibold">You chose:</span> {c.label}</li>)}</ul>}
   {/* On screen: the case board. On paper: the clean list below, so it fits the page. */}
   <div className="mt-6 print:hidden"><h2 className="mb-3 text-[22px] font-bold">Your case board</h2><CaseBoard world={world} answers={demo.artifactAnswers} storyboard={storyboard} top={verdict&&<VerdictPanel world={world} verdict={verdict}/>}/></div>
