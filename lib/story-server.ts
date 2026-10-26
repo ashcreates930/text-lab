@@ -28,21 +28,22 @@ function demoNickname(sandboxId: string, taken: string[]) {
 
 // startAt: open at a later round (demo visitors only, from the home page's "Catch the lie"). Earlier rounds are skipped
 // and score nothing; a cleared run starts over first.
-export async function startRun(store: StoryStore, world: WorldPack, scene: Scene, who: Identity, restart = false, startAt?: RoundKind): Promise<StoryRun | string> {
-  const run = await openRun(store, world, scene, who, restart);
+// test: the request came from a test session (?test=1), so the run is tagged as a test run.
+export async function startRun(store: StoryStore, world: WorldPack, scene: Scene, who: Identity, restart = false, startAt?: RoundKind, test = false): Promise<StoryRun | string> {
+  const run = await openRun(store, world, scene, who, restart, test);
   if (typeof run === "string" || !startAt || who.scope !== "demo") return run;
   return skipTo(store, world, scene, who, run, ROUNDS.indexOf(startAt));
 }
 async function skipTo(store: StoryStore, world: WorldPack, scene: Scene, who: Identity, run: StoryRun, index: number): Promise<StoryRun | string> {
   if (index <= 0) return run;
   let from = run;
-  if (run.finished) { const again = await openRun(store, world, scene, who, true); if (typeof again === "string") return again; from = again; }
+  if (run.finished) { const again = await openRun(store, world, scene, who, true, run.state.env === "test"); if (typeof again === "string") return again; from = again; }
   if (from.state.round >= index) return from;
   const state: RunState = { ...from.state, round: index, skipped: index - from.state.round + (from.state.skipped ?? 0) };
   await store.saveRun(from.id, { state });
   return { ...from, state };
 }
-async function openRun(store: StoryStore, world: WorldPack, scene: Scene, who: Identity, restart: boolean): Promise<StoryRun | string> {
+async function openRun(store: StoryStore, world: WorldPack, scene: Scene, who: Identity, restart: boolean, test: boolean): Promise<StoryRun | string> {
   if (!scene.story_mode) return "This scene has no Story Mode.";
   const day = storyDay();
   const key = who.scope === "class"
@@ -66,19 +67,26 @@ async function openRun(store: StoryStore, world: WorldPack, scene: Scene, who: I
     if (restarts > MAX_RESTARTS) return "You've started this scene over many times today. Come back tomorrow for a fresh run.";
     await store.clearRounds(found.id);
     const seen = [...new Set([...(found.state.seen ?? []), ...Object.entries(found.state.picks ?? {}).map(([k, v]) => `${k}:${v}`)])];
-    const state: RunState = { ...newRun(), restarts, seen, picks: picksFor(seen, restarts), ...previewTag() };
+    const state: RunState = { ...newRun(), restarts, seen, picks: picksFor(seen, restarts), ...testTag(test || found.state.env === "test") };
     await store.saveRun(found.id, { state, total: 0, finished: false, timeSetting });
     return { ...found, state, total: 0, finished: false, timeSetting };
   }
   const nickname = who.scope === "class" ? who.nickname : demoNickname(who.sandboxId, (await store.listRuns({ scope: "demo", worldId: world.id, sceneId: scene.id, day })).map((r) => r.nickname));
   // Two starts at once (a double tap, or two tabs): the database keeps one run per player, so the second insert fails
   // and we return the run that won.
-  try { return await store.createRun({ ...key, nickname, state: { ...newRun(), picks: picksFor([], 0), ...previewTag() }, total: 0, bestTotal: 0, bestStreak: 0, finished: false, timeSetting }); }
+  try { return await store.createRun({ ...key, nickname, state: { ...newRun(), picks: picksFor([], 0), ...testTag(test) }, total: 0, bestTotal: 0, bestStreak: 0, finished: false, timeSetting }); }
   catch (e) { const winner = await store.findRun(key); if (winner) return winner; throw e; }
 }
 
-// Previews share the production database: their runs are tagged so they can be found and removed before a merge.
-const previewTag = (): Pick<RunState, "env"> => (process.env.VERCEL_ENV === "preview" ? { env: "preview" } : {});
+// Previews and local development share the production database, and testers can open a session with ?test=1: their
+// runs are tagged, kept off real players' leaderboards and class pulse, and can be removed.
+export function testTag(test = false): Pick<RunState, "env"> {
+  if (process.env.VERCEL_ENV === "preview") return { env: "preview" };
+  if (test) return { env: "test" };
+  return process.env.NODE_ENV === "development" ? { env: "dev" } : {};
+}
+// The runs a player's board and pulse may show: real runs for real players, test runs only alongside other test runs.
+export const sameEnv = (runs: StoryRun[], run: StoryRun) => runs.filter((r) => !!r.state.env === !!run.state.env);
 
 export type RoundBody = { round: number; input: RoundInput; elapsedMs: number; grace: boolean; relaxed: boolean };
 const BASE_SECONDS: Record<RoundInput["kind"], number> = { read: SECONDS.read, confront: SECONDS.confront, lie: SECONDS.lie, call: SECONDS.call };
@@ -164,7 +172,7 @@ export async function buyPowerUp(store: StoryStore, run: StoryRun, p: PowerUp) {
 // teacher marked absent today.
 export async function boardFor(store: StoryStore, run: StoryRun, mode: LeaderboardMode, previousRank: number | null, squads?: Map<string, string>, absent: string[] = []) {
   if (mode === "off") return null;
-  const runs = await store.listRuns(run.scope === "class" ? { scope: "class", classId: run.classId, worldId: run.worldId, sceneId: run.sceneId } : { scope: "demo", worldId: run.worldId, sceneId: run.sceneId, day: run.day });
+  const runs = sameEnv(await store.listRuns(run.scope === "class" ? { scope: "class", classId: run.classId, worldId: run.worldId, sceneId: run.sceneId } : { scope: "demo", worldId: run.worldId, sceneId: run.sceneId, day: run.day }), run);
   const score = (r: StoryRun) => Math.max(r.bestTotal, r.total);
   if (mode === "squad" && run.scope === "class" && squads) {
     // Squads rank by their members' average, so a squad of 3 isn't behind a squad of 4. Every member counts (0 if they
@@ -196,7 +204,7 @@ export async function teacherBoard(store: StoryStore, classId: string, world: Wo
 export async function pulseFor(store: StoryStore, run: StoryRun, scene: Scene, round: number) {
   const kind = ROUNDS[round - 1];
   if (!kind) return [];
-  const runs = await store.listRuns(run.scope === "class" ? { scope: "class", classId: run.classId, worldId: run.worldId, sceneId: run.sceneId } : { scope: "demo", worldId: run.worldId, sceneId: run.sceneId, day: run.day });
+  const runs = sameEnv(await store.listRuns(run.scope === "class" ? { scope: "class", classId: run.classId, worldId: run.worldId, sceneId: run.sceneId } : { scope: "demo", worldId: run.worldId, sceneId: run.sceneId, day: run.day }), run);
   const rows = (await store.listRounds(runs.map((r) => r.id))).filter((r) => r.round === round).map((r) => ({ choice: r.choice, valid: r.valid, proof: r.proof }));
   // Round 4: only players who got the same case question.
   const options = pulseOptions(scene, kind, run.state.picks);

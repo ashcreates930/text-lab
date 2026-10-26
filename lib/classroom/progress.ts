@@ -71,6 +71,7 @@ export const StudentProgressSchema = z.object({
   mission: id.optional(),
   // Whether "Unlock your challenge" was answered or skipped (so it's asked once).
   challengeAsked: z.boolean().optional(),
+  howToSeen: z.boolean().optional(),
   missionPieces: z.record(id, z.object({ at: text(40), shown: z.boolean(), via: text(40) })).optional(),
   missionVerdict: z.object({ mission_id: id, theory_id: id, pinned: z.array(z.object({ line: text(1500), pid: text(12), piece: id.nullable() })).max(12), writing: text(900), early: z.boolean(), saved_at: text(40), compare: z.record(text(1500), z.enum(["same", "else"])).optional() }).optional(),
   // Clue question banks: the question each clue gave this student (clue id -> question id) and ones they've had before.

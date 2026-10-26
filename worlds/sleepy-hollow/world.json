@@ -6026,7 +6026,105 @@
             ]
           }
         },
-        "write": "Who won the debate, and why? Write 2 or 3 sentences and cite at least one line."
+        "write": "Who won the debate, and why? Write 2 or 3 sentences and cite at least one line.",
+        "demo": {
+          "title": "Ghost or ran away?",
+          "intro": "Pick your side: the Headless Horseman took him, or he ran away. A character argues the other one. Win each round with a line from this morning's search.",
+          "write": "Who won the debate, and why? Write 2 or 3 sentences and cite at least one line.",
+          "paragraphs": [
+            "p068",
+            "p069",
+            "p070"
+          ],
+          "sides": {
+            "the-horseman": {
+              "character_id": "hans-van-ripper",
+              "exchanges": [
+                {
+                  "say": "A ghost? Nonsense. Nobody sensible in this valley believes that.",
+                  "accept": [
+                    {
+                      "paragraph": "p070",
+                      "line": "The stories of Brouwer, of Bones, and a whole budget of\nothers were called to mind; and when they had diligently considered them\nall, and compared them with the symptoms of the present case, they shook\ntheir heads, and came to the conclusion that Ichabod had been carried\noff by the Galloping Hessian."
+                    }
+                  ]
+                },
+                {
+                  "say": "Nothing strange happened on that road. He just rode off.",
+                  "accept": [
+                    {
+                      "paragraph": "p068",
+                      "line": "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin."
+                    }
+                  ]
+                },
+                {
+                  "say": "He packed up his things and left like any man would.",
+                  "accept": [
+                    {
+                      "paragraph": "p069",
+                      "line": "Hans Van Ripper as executor of his estate, examined the\nbundle which contained all his worldly effects."
+                    },
+                    {
+                      "paragraph": "p069",
+                      "line": "They consisted of two\nshirts and a half; two stocks for the neck; a pair or two of worsted\nstockings; an old pair of corduroy small-clothes; a rusty razor; a book\nof psalm tunes full of dog’s-ears; and a broken pitch-pipe."
+                    }
+                  ]
+                },
+                {
+                  "say": "If something took him, we would have found him by now.",
+                  "accept": [
+                    {
+                      "paragraph": "p069",
+                      "line": "The brook was searched, but the body of the schoolmaster was not to\nbe discovered."
+                    }
+                  ]
+                }
+              ]
+            },
+            "ran-away": {
+              "character_id": "brom-bones",
+              "exchanges": [
+                {
+                  "say": "The Galloping Hessian took him. The whole church agreed on it.",
+                  "accept": [
+                    {
+                      "paragraph": "p069",
+                      "line": "Whatever money the\nschoolmaster possessed, and he had received his quarter’s pay but a\nday or two before, he must have had about his person at the time of his\ndisappearance."
+                    }
+                  ]
+                },
+                {
+                  "say": "He drowned in that black water by the bridge.",
+                  "accept": [
+                    {
+                      "paragraph": "p069",
+                      "line": "The brook was searched, but the body of the schoolmaster was not to\nbe discovered."
+                    }
+                  ]
+                },
+                {
+                  "say": "A man running away would have taken his things with him.",
+                  "accept": [
+                    {
+                      "paragraph": "p069",
+                      "line": "They consisted of two\nshirts and a half; two stocks for the neck; a pair or two of worsted\nstockings; an old pair of corduroy small-clothes; a rusty razor; a book\nof psalm tunes full of dog’s-ears; and a broken pitch-pipe."
+                    }
+                  ]
+                },
+                {
+                  "say": "Someone in the valley would have gone after him.",
+                  "accept": [
+                    {
+                      "paragraph": "p070",
+                      "line": "As he was a bachelor, and in nobody’s\ndebt, nobody troubled his head any more about him; the school was\nremoved to a different quarter of the hollow, and another pedagogue\nreigned in his stead."
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
       },
       "money": {
         "title": "Advise Ichabod about the farm",
@@ -6140,7 +6238,89 @@
             "accept": []
           }
         ],
-        "write": "What is your advice to Ichabod? Write 2 or 3 sentences and cite at least one line."
+        "write": "What is your advice to Ichabod? Write 2 or 3 sentences and cite at least one line.",
+        "demo": {
+          "title": "Advise Ichabod about his pay",
+          "intro": "Ichabod was paid a day or two before he vanished. Pick 3 cards for your advice, with at least one thing he had and one thing he left behind, and back each with a line.",
+          "write": "What is your advice to Ichabod about his money and his things? Write 2 or 3 sentences and cite at least one line.",
+          "paragraphs": [
+            "p069",
+            "p070"
+          ],
+          "groups": {
+            "had": "What he had",
+            "left": "What he left behind"
+          },
+          "items": [
+            {
+              "id": "pay",
+              "label": "His quarter's pay, just paid",
+              "group": "had",
+              "accept": [
+                {
+                  "paragraph": "p069",
+                  "line": "Whatever money the\nschoolmaster possessed, and he had received his quarter’s pay but a\nday or two before, he must have had about his person at the time of his\ndisappearance."
+                }
+              ]
+            },
+            {
+              "id": "debt",
+              "label": "No debts to anyone",
+              "group": "had",
+              "accept": [
+                {
+                  "paragraph": "p070",
+                  "line": "As he was a bachelor, and in nobody’s\ndebt, nobody troubled his head any more about him; the school was\nremoved to a different quarter of the hollow, and another pedagogue\nreigned in his stead."
+                }
+              ]
+            },
+            {
+              "id": "bundle",
+              "label": "A bundle of all his worldly things",
+              "group": "left",
+              "accept": [
+                {
+                  "paragraph": "p069",
+                  "line": "Hans Van Ripper as executor of his estate, examined the\nbundle which contained all his worldly effects."
+                }
+              ]
+            },
+            {
+              "id": "tunes",
+              "label": "A book of psalm tunes and a broken pitch-pipe",
+              "group": "left",
+              "accept": [
+                {
+                  "paragraph": "p069",
+                  "line": "They consisted of two\nshirts and a half; two stocks for the neck; a pair or two of worsted\nstockings; an old pair of corduroy small-clothes; a rusty razor; a book\nof psalm tunes full of dog’s-ears; and a broken pitch-pipe."
+                }
+              ]
+            },
+            {
+              "id": "books",
+              "label": "His own books, burned by Hans",
+              "group": "left",
+              "accept": [
+                {
+                  "paragraph": "p069",
+                  "line": "These magic books and the poetic scrawl were forthwith consigned to the\nflames by Hans Van Ripper; who, from that time forward, determined to\nsend his children no more to school, observing that he never knew\nany good come of this same reading and writing."
+                }
+              ]
+            },
+            {
+              "id": "savings",
+              "label": "A box of savings under the schoolhouse",
+              "group": "had",
+              "accept": []
+            },
+            {
+              "id": "loan",
+              "label": "Money owed to him by the Van Tassels",
+              "group": "had",
+              "accept": []
+            }
+          ]
+        }
       },
       "sports": {
         "title": "Instant replay: the chase",
@@ -6390,7 +6570,85 @@
             "accept": []
           }
         ],
-        "write": "Describe your look for Ichabod. Write 2 or 3 sentences and cite at least one line."
+        "write": "Describe your look for Ichabod. Write 2 or 3 sentences and cite at least one line.",
+        "demo": {
+          "title": "Style Ichabod from his bundle",
+          "intro": "Hans Van Ripper opened the bundle that held everything Ichabod owned. Style Ichabod for the party from what was really in it. Pick 3 pieces and back each with the line that lists it. The story decides, not you.",
+          "write": "Describe your look for Ichabod. Write 2 or 3 sentences and cite at least one line.",
+          "paragraphs": [
+            "p068",
+            "p069"
+          ],
+          "items": [
+            {
+              "id": "shirts",
+              "label": "Two and a half shirts",
+              "icon": "👕",
+              "accept": [
+                {
+                  "paragraph": "p069",
+                  "line": "They consisted of two\nshirts and a half; two stocks for the neck; a pair or two of worsted\nstockings; an old pair of corduroy small-clothes; a rusty razor; a book\nof psalm tunes full of dog’s-ears; and a broken pitch-pipe."
+                }
+              ]
+            },
+            {
+              "id": "stocks",
+              "label": "Two neck stocks",
+              "icon": "🧣",
+              "accept": [
+                {
+                  "paragraph": "p069",
+                  "line": "They consisted of two\nshirts and a half; two stocks for the neck; a pair or two of worsted\nstockings; an old pair of corduroy small-clothes; a rusty razor; a book\nof psalm tunes full of dog’s-ears; and a broken pitch-pipe."
+                }
+              ]
+            },
+            {
+              "id": "stockings",
+              "label": "Worsted stockings",
+              "icon": "🧦",
+              "accept": [
+                {
+                  "paragraph": "p069",
+                  "line": "They consisted of two\nshirts and a half; two stocks for the neck; a pair or two of worsted\nstockings; an old pair of corduroy small-clothes; a rusty razor; a book\nof psalm tunes full of dog’s-ears; and a broken pitch-pipe."
+                }
+              ]
+            },
+            {
+              "id": "smallclothes",
+              "label": "Old corduroy small-clothes",
+              "icon": "👖",
+              "accept": [
+                {
+                  "paragraph": "p069",
+                  "line": "They consisted of two\nshirts and a half; two stocks for the neck; a pair or two of worsted\nstockings; an old pair of corduroy small-clothes; a rusty razor; a book\nof psalm tunes full of dog’s-ears; and a broken pitch-pipe."
+                }
+              ]
+            },
+            {
+              "id": "hat",
+              "label": "His hat, found by the brook",
+              "icon": "🎩",
+              "accept": [
+                {
+                  "paragraph": "p068",
+                  "line": "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin."
+                }
+              ]
+            },
+            {
+              "id": "cape",
+              "label": "A velvet cape",
+              "icon": "🧥",
+              "accept": []
+            },
+            {
+              "id": "buckles",
+              "label": "Silver shoe buckles",
+              "icon": "👞",
+              "accept": []
+            }
+          ]
+        }
       },
       "social-media": {
         "title": "Fact-check the feed",

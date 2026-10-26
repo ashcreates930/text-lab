@@ -6,7 +6,7 @@
 // Demo rivals and teammates are computer players, clearly labeled; their choices come only from authored lines.
 // Class students play squads in live rounds with their class, so outside one they play solo.
 import {useEffect,useLayoutEffect,useRef,useState} from "react";
-import {MissionTracker} from "./missions";
+import {MissionTracker,studentMission} from "./missions";
 import {ArrowRight,Coins,Flame,Trophy,Check} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import type {Demo} from "./page";
@@ -54,9 +54,9 @@ function useScreenTop(){useLayoutEffect(()=>{focusScreenTop()},[])}
 export function MissionScreen({world,demo,sceneIndex,onGo}:{world:WorldPack;demo:Demo;sceneIndex:number;onGo:()=>void}){
  useScreenTop();
  const g=demo.game??newClueGame(),role=world.student_role,trust=trustMeter(world,demo);
- const goal=world.roles.find(r=>r.id===demo.role)?.goal??world.roles[0]?.goal??"";
+ const goal=studentMission(world,demo)?.title??world.roles.find(r=>r.id===demo.role)?.goal??world.roles[0]?.goal??"";
  const scene=world.scenes[sceneIndex];
- return <div className="case-ui mx-auto flex min-h-[calc(100dvh-64px)] max-w-xl flex-col px-4 pb-6 pt-4">
+ return <div className="case-ui mx-auto flex min-h-[calc(100dvh-96px)] max-w-xl flex-col px-4 pb-6 pt-4">
   <div className="flex items-center justify-between gap-2"><p className="text-[13px] font-semibold text-[#6B6457]">{world.title}</p><span className="rounded-full bg-[#2A2620] px-3 py-1 text-[12px] font-bold text-white">Solo</span></div>
   {squadSoloToday(demo)&&<p className="mt-2 rounded-2xl bg-[#F4E1D6] px-4 py-2 text-[14px] font-semibold text-[#8A3B23]">{SQUAD_SOLO_NOTE}</p>}
   <section className="relative mt-3 overflow-hidden rounded-3xl bg-[#2A2620] p-5 text-[#FFFDF8]">
@@ -66,7 +66,7 @@ export function MissionScreen({world,demo,sceneIndex,onGo}:{world:WorldPack;demo
    <ol className="mt-5 flex items-center" aria-label={`Scene ${sceneIndex+1} of ${world.scenes.length}`}>{world.scenes.map((s,i)=><li key={s.id} className={`flex items-center ${i<world.scenes.length-1?"flex-1":""}`}>
     <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border-[3px] text-[14px] font-bold ${i<sceneIndex?"border-[#8B8478] bg-[#6B6457] text-[#E8DDCB]":i===sceneIndex?"border-[#F3C9B2] bg-[#A0472C] text-white shadow-[0_0_0_5px_rgba(160,71,44,.35)]":"border-[#5a5146] bg-[#3a342b] text-[#bdb3a2]"}`} aria-current={i===sceneIndex?"step":undefined}><span className="sr-only">{i<sceneIndex?"Done: ":i===sceneIndex?"Now: ":"Later: "}</span>{i<sceneIndex?<Check size={16} aria-hidden/>:i+1}</span>
     {i<world.scenes.length-1&&<span aria-hidden className={`h-1 flex-1 ${i<sceneIndex?"bg-[#8B8478]":"bg-[#5a5146]"}`}/>}</li>)}</ol>
-   <MissionTracker world={world} demo={demo} dark/>
+   <MissionTracker world={world} demo={demo} dark named={false}/>
    <div aria-hidden className="mt-1.5 grid text-[11px] font-semibold text-[#E8DDCB]" style={{gridTemplateColumns:`repeat(${world.scenes.length},minmax(0,1fr))`}}>{world.scenes.map((s,i)=><span key={s.id} className={`leading-tight ${i===0?"text-left":i===world.scenes.length-1?"text-right":"text-center"}`}>{sceneLabel(world,i)}</span>)}</div>
   </section>
   <div className="mt-3 grid grid-cols-2 gap-2">
@@ -91,17 +91,18 @@ export function RivalEmblem({kind,size=84}:{kind:"lantern"|"rider";size?:number}
 }
 
 // ---------- Rival: the face-off ----------
-export function FaceOff({world,demo,clueName,onGo}:{world:WorldPack;demo:Demo;clueName:string;onGo:()=>void}){
+// auto: the 3-2-1 starts at once (a Story Mode round, after its ready card's Start). rules: what wins the face-off.
+export function FaceOff({world,demo,clueName,onGo,auto=false,rules}:{world:WorldPack;demo:Demo;clueName:string;onGo:()=>void;auto?:boolean;rules?:string}){
  useScreenTop();
  const g=demo.game??newClueGame(),rival=world.computer_players?.rival??{name:"Computer rival",emblem:"lantern" as const};
- const [count,setCount]=useState<number|null>(null);
+ const [count,setCount]=useState<number|null>(auto?3:null);
  const go=useRef(onGo);go.current=onGo;
  useEffect(()=>{if(count===null)return;if(count===0){go.current();return}const t=setTimeout(()=>setCount(c=>(c??1)-1),reduced()?600:900);return()=>clearTimeout(t)},[count]);
  const total=Math.max(1,g.rivalWins+g.rivalLosses),share=g.rivalWins+g.rivalLosses?g.rivalWins/total:0.5;
- return <div className="case-ui mx-auto flex min-h-[calc(100dvh-64px)] max-w-xl flex-col px-4 pb-6 pt-4">
+ return <div className="case-ui mx-auto flex min-h-[calc(100dvh-96px)] max-w-xl flex-col px-4 pb-6 pt-4">
   <div className="flex items-center justify-between"><p className="text-[13px] font-semibold text-[#6B6457]">Rival · {clueName}</p><Chips demo={demo}/></div>
   <h1 className="mt-3 text-center text-[28px] font-bold outline-none">Face-off</h1>
-  <p className="mx-auto mt-1 max-w-sm text-center text-[15px] leading-6 text-[#4A4438]">Same claim, same passage. The right line wins the point; speed only breaks a tie. A wrong tap locks you out for 3 seconds.</p>
+  <p className="mx-auto mt-1 max-w-sm text-center text-[15px] leading-6 text-[#4A4438]">{rules??"Same claim, same passage. The right line wins the point; speed only breaks a tie. A wrong tap locks you out for 3 seconds."}</p>
   <div className="mt-5 flex items-center justify-between px-2">
    <div className="w-32 text-center"><span className="mx-auto grid h-[84px] w-[84px] place-items-center rounded-full border-4 border-white bg-[#A0472C] text-[24px] font-bold text-white shadow-lg">You</span><p className="mt-2 text-[15px] font-bold">You</p><p className="text-[12px] font-semibold text-[#6B6457]">{g.rivalWins} win{g.rivalWins===1?"":"s"}</p></div>
    <span className="text-[40px] font-bold italic text-[#A0472C]" aria-hidden>VS</span>
@@ -126,7 +127,7 @@ export type HuddleMember={id:string;name:string;job:SquadJob;part:string;status:
 export function Huddle({squad,clueName,members,progress,onGo,demo}:{squad:string;clueName:string;members:HuddleMember[];progress:{done:number;total:number};onGo:()=>void;demo:Demo}){
  useScreenTop();
  const me=members.find(m=>m.me);
- return <div className="case-ui mx-auto flex min-h-[calc(100dvh-64px)] max-w-xl flex-col px-4 pb-6 pt-4">
+ return <div className="case-ui mx-auto flex min-h-[calc(100dvh-96px)] max-w-xl flex-col px-4 pb-6 pt-4">
   <div className="flex items-center justify-between"><p className="text-[13px] font-semibold text-[#6B6457]">Squad · {clueName}</p><Chips demo={demo}/></div>
   <section className="mt-3 rounded-3xl bg-[#2A2620] p-4 text-[#FFFDF8]"><p className="text-[11px] font-bold uppercase tracking-wide text-[#F3C9B2]">Your squad</p><h1 className="text-[24px] font-bold outline-none">{squad}</h1><p className="mt-1 text-[14px] text-[#E8DDCB]">Each of you reads a different part. Pins light up on everyone's screen.</p></section>
   <p className="mt-3 text-[12px] font-bold uppercase tracking-wide text-[#8A3B23]">Squad progress</p>

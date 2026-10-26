@@ -72,8 +72,13 @@ export type Demo = {
   // Fair play on the clue screen: each clue's question for this student, questions seen before (kept through Start
   // over), one writing task per scene, and the student's seat in their class roster (so neighbors differ).
   // Story missions (lib/missions.ts): the chosen mission, pieces found, and the mission verdict.
-  // quickStart: the student just finished the pre-game screens, so the first scene opens straight to the passage.
-  quickStart?:boolean; challengeAsked?:boolean;
+  challengeAsked?:boolean;
+  // howToSeen: the three "How to play" tips were closed once (they come back from the header's "How to play").
+  howToSeen?:boolean;
+  // The public demo's ending after scene 1 (app/demo-ending.tsx): the step it's on ("done" once the player goes on), and
+  // the scene's mini verdict (never scored; the mission verdict after the last scene is separate).
+  demoEnding?:import("./demo-ending").DemoEndingStep;
+  sceneVerdict?:{mission_id:string;scene_id:string;theory_id:string;pinned:{line:string;pid:string|null;piece:string|null}[];writing:string;saved_at:string};
   mission?:string; missionPieces?:Record<string,import("@/lib/missions").PieceRecord>; missionVerdict?:import("@/lib/missions").MissionVerdict;
   clueQs?:Record<string,string>; clueSeen?:Record<string,string[]>; sceneWriting?:Record<string,{notice:string;interpret:string;craft:string;technique?:string;saved_at:string}>; classSeat?:number|null;
 };

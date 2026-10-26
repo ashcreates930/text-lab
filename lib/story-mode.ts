@@ -220,8 +220,9 @@ export type RoundRecord = RoundScore & { round: number; multiplier: number; doub
 // skipped: rounds jumped over at the start (the home page's "Catch the lie"); they score nothing and don't count toward
 // the points possible. picks: this run's questions; seen: questions from earlier runs (kept through "Play again");
 // attempt: the round in progress.
-// env: "preview" for runs started on a Vercel preview, so they can be removed from the shared leaderboard.
-export type RunState = { env?: "preview"; round: number; total: number; streak: number; bestStreak: number; coins: number; pouch: string[]; trust: Record<string, number>; lantern: boolean; doubleDown: boolean; rounds: RoundRecord[]; restarts?: number; skipped?: number; picks?: Picks; seen?: string[]; attempt?: Attempt | null };
+// env: a test run (a Vercel preview, local development, or a session opened with ?test=1). Test runs never appear on a
+// real player's leaderboard or class pulse, and can be found and removed from the shared database.
+export type RunState = { env?: "preview" | "dev" | "test"; round: number; total: number; streak: number; bestStreak: number; coins: number; pouch: string[]; trust: Record<string, number>; lantern: boolean; doubleDown: boolean; rounds: RoundRecord[]; restarts?: number; skipped?: number; picks?: Picks; seen?: string[]; attempt?: Attempt | null };
 export const newRun = (): RunState => ({ round: 0, total: 0, streak: 0, bestStreak: 0, coins: 0, pouch: [], trust: {}, lantern: false, doubleDown: false, rounds: [] });
 export const runMax = (s: Pick<RunState, "skipped">) => maxPoints(s.skipped ?? 0);
 
@@ -284,6 +285,30 @@ export function roundIntroLine(last: Pick<RoundRecord, "kind" | "valid" | "shown
   return pick(FIRST_TRY[last.kind]);
 }
 // "200 / 1,200 · 280 more for Case Opened." (or the level reached, or Bonus past the most).
+// How Story Mode opens a scene: a cleared run shows its results; a run with progress opens on "Welcome back" (once per
+// page load, never on a restart); anything else opens straight into the round with the passage on screen.
+export function storyOpening(run: { finished: boolean; state: { round: number; skipped?: number; rounds: unknown[] } }, resume: boolean, welcomed: boolean, restart: boolean): "cleared" | "welcome" | "play" {
+  if (run.finished) return "cleared";
+  const progress = resume || run.state.rounds.length > 0 || run.state.round > (run.state.skipped ?? 0);
+  return progress && !welcomed && !restart ? "welcome" : "play";
+}
+// The round banner's one-line goal: the next level's points ("Goal: 1,032 for Case Opened").
+export function nextGoal(total: number, max: number) {
+  const next = levelPoints(max).find((l) => total < l.points);
+  return next ? `Goal: ${next.points.toLocaleString("en-US")} for ${next.name}` : total > max ? "Goal reached: Bonus" : "Goal reached: Case Cracked";
+}
+// Rival in Story Mode: the labeled computer rival "locks in" partway through the round's first-try time (45 to 70
+// percent, fixed per scene and round, scaled by the student's time setting). The student wins the round's face-off by
+// locking in the right line on the first try before then. It never changes points: points come from the proof.
+export function storyRivalMs(sceneId: string, kind: RoundKind, setting: TimeSetting) {
+  let h = 0;
+  for (const ch of `${sceneId}:${kind}`) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const secs = phaseSeconds(SECONDS[kind], setting) ?? SECONDS[kind] * 2;
+  return Math.round(secs * 1000 * (0.45 + (h % 26) / 100));
+}
+export function storyRivalOutcome(record: { valid: boolean; tries: number; shown: boolean }, youMs: number | null, rivalMs: number): "you" | "rival" {
+  return record.valid && record.tries === 0 && !record.shown && youMs !== null && youMs < rivalMs ? "you" : "rival";
+}
 export function goalLine(total: number, max: number) {
   const n = (x: number) => x.toLocaleString("en-US");
   const next = levelPoints(max).find((l) => total < l.points);

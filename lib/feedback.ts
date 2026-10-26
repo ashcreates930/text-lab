@@ -78,3 +78,17 @@ export const SubmissionSchema = z.object({
 }).refine((s) => s.waitlist || (s.feedback && Object.values(s.feedback).some((v) => v !== undefined)), { message: "Add some feedback or join the waitlist." });
 export type Submission = z.infer<typeof SubmissionSchema>;
 export const hasFeedback = (f: z.infer<typeof FeedbackSchema> | undefined) => !!f && Object.values(f).some((v) => v !== undefined);
+
+// The demo ending's feedback card: three quick taps from a player (no email, no sign-up).
+export const funChoices: Choice<"yes" | "kind_of" | "no"> = [["yes", "Yes"], ["kind_of", "Kind of"], ["no", "Not really"]];
+export const PlayFeedbackSchema = z.object({
+  fun: z.enum(keys(funChoices)).optional(),
+  // "Was anything confusing?" Yes or No; Yes opens a short text box.
+  confused: z.enum(["yes", "no"]).optional(),
+  confusing: shortText(600),
+  playAgain: z.enum(keys(yesMaybeNo)).optional(),
+  world: z.string().regex(/^[a-z0-9-]{1,40}$/),
+  website: z.string().max(200).optional(), // honeypot
+}).refine((f) => f.fun || f.confused || f.confusing || f.playAgain, { message: "Tap an answer first." });
+// What goes in broken_text: what confused them, or just Yes or No.
+export const confusingText = (f: { confused?: "yes" | "no"; confusing?: string }) => f.confusing ? f.confusing : f.confused === "yes" ? "Yes" : f.confused === "no" ? "No" : null;

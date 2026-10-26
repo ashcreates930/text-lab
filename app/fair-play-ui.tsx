@@ -28,9 +28,9 @@ export function NotYet({tryNo,hint,maxTries=MAX_TRIES,onTryAgain,extra}:{tryNo:n
 export function PointsMeter({total,max,compact}:{total:number;max:number;compact?:boolean}){
  const level=levelFor(total,max),over=total>max;
  const share=max>0?Math.min(1,total/max):0;
- return <div className={compact?"":"mt-3"}>
-  <div className="flex items-baseline justify-between gap-2 text-[14px] font-semibold"><span className="text-[#4A4438]">Points goal{level?` · ${level.name}`:""}{over?" · Bonus":""}</span><span className="tabular-nums text-[#2A2620]">{total.toLocaleString()} / {max.toLocaleString()}</span></div>
-  <div className="relative mt-1 h-3 overflow-hidden rounded-full bg-[#E4DCCB]" role="meter" aria-valuemin={0} aria-valuemax={max} aria-valuenow={total} aria-label={`Points: ${total} of ${max}${level?`, ${level.name}`:""}${over?", bonus":""}`}>
+ return <div className={compact?"mt-1":"mt-3"}>
+  <div className={`flex items-baseline justify-between gap-2 font-semibold ${compact?"text-[13px]":"text-[14px]"}`}><span className="text-[#4A4438]">Points goal{level?` · ${level.name}`:""}{over?" · Bonus":""}</span><span className="tabular-nums text-[#2A2620]">{total.toLocaleString()} / {max.toLocaleString()}</span></div>
+  <div className={`relative mt-1 overflow-hidden rounded-full bg-[#E4DCCB] ${compact?"h-2":"h-3"}`} role="meter" aria-valuemin={0} aria-valuemax={max} aria-valuenow={total} aria-label={`Points: ${total} of ${max}${level?`, ${level.name}`:""}${over?", bonus":""}`}>
    <div className={`h-full rounded-full ${over?"bg-[#C98A12]":"bg-[#A0472C]"}`} style={{width:`${share*100}%`}}/>
    {LEVELS.map(l=><span key={l.id} aria-hidden className="absolute top-0 h-full w-0.5 bg-[#FFFDF8]" style={{left:`${l.pct}%`}}/>)}
   </div>

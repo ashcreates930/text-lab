@@ -41,7 +41,7 @@ export function ClueScreen(p:Props){
  const [intro,setIntro]=useState(needsIntro);
  const squad=useMemo(()=>mode==="squad"?demoSquad(p.world,p.passages,p.scene,p.clue):null,[mode,p.world,p.passages,p.scene,p.clue]);
  const go=()=>{setIntro(false);setTimeout(()=>focusScreenTop(),0)};
- if(intro&&mode==="rival")return <FaceOff world={p.world} demo={p.demo} clueName={p.clue.name} onGo={go}/>;
+ if(intro&&mode==="rival")return <FaceOff world={p.world} demo={p.demo} clueName={p.clue.name} auto onGo={go}/>;
  if(intro&&mode==="squad"&&squad)return <Huddle squad={squad.name} clueName={p.clue.name} members={squad.members} progress={{done:p.scene.artifacts.filter(a=>p.demo.artifactAnswers[a.id]?.interpret?.trim()).length,total:p.scene.artifacts.length}} onGo={go} demo={p.demo}/>;
  return <CluePlay {...p} mode={mode} race={mode==="rival"&&!!p.clue.off_claim&&!raced} squad={squad}/>;
 }

@@ -2525,3 +2525,98 @@ test("mission verdict compare: each cited line is marked same way or somewhere e
   const m=e.students[0].mission!;
   assert.deepEqual([m.found.length,m.found.find(f=>f.line===l2)!.shown,m.verdict!.compare[l1],m.verdict!.compare[l2]],[2,true,"same","else"]);
 });
+
+test("story mode ready card and rival: one-line goal, a fixed computer rival time, and the face-off never touches points", async()=>{
+  const sm=await import("../lib/story-mode.ts");
+  assert.equal(sm.nextGoal(0,2580),"Goal: 1,032 for Case Opened");
+  assert.equal(sm.nextGoal(1100,2580),"Goal: 1,806 for Case Built");
+  assert.equal(sm.nextGoal(2400,2580),"Goal reached: Case Cracked");
+  const a=sm.storyRivalMs("empty-schoolhouse","read","1");
+  assert.equal(a,sm.storyRivalMs("empty-schoolhouse","read","1"),"the same every time");
+  assert.ok(a>=120000*0.45&&a<=120000*0.71,"partway through the round's first-try time");
+  assert.equal(sm.storyRivalMs("empty-schoolhouse","read","2"),a*2,"scaled by the student's extra time");
+  const right={valid:true,tries:0,shown:false};
+  assert.equal(sm.storyRivalOutcome(right,a-1,a),"you");
+  assert.equal(sm.storyRivalOutcome(right,a+1,a),"rival");
+  assert.equal(sm.storyRivalOutcome({...right,tries:1},10,a),"rival","only a first-try proof wins the face-off");
+  assert.equal(sm.storyRivalOutcome({...right,shown:true},10,a),"rival");
+});
+
+test("three-tap start: Try a case now, a mode card, a mission card, then the passage, in every playable world", async(t)=>{
+  const {tapsToPassage,preGameScreen,firstClue}=await import("../lib/pregame.ts");
+  const sm=await import("../lib/story-mode.ts");
+  for(const id of ["sleepy-hollow","tell-tale-heart","trifles"]){
+    const world=await roleWorld(id);
+    const taps=tapsToPassage(world);
+    t.diagnostic(`${id}: ${taps} taps from "Try a case now" to the first passage line`);
+    assert.ok(taps<=3,`${id} takes ${taps} taps`);
+    assert.equal(preGameScreen(world,{}),"role-and-mode","the role story and the mode cards share one screen");
+    const sc=world.scenes[Math.max(0,world.scenes.findIndex(s=>s.id===world.student_role?.start_scene))];
+    // The last tap opens the passage: Story Mode's round 1 with no ready card, or the scene's first clue.
+    if(sc.story_mode)assert.equal(sm.storyOpening({finished:false,state:sm.newRun()},false,false,false),"play");
+    else assert.ok(firstClue(sc),`${id} opens a clue`);
+  }
+});
+
+test("welcome back: a saved run opens on Keep playing or Start over, once per visit, never straight into a try", async()=>{
+  const sm=await import("../lib/story-mode.ts");
+  const played={finished:false,state:{...sm.newRun(),round:1,rounds:[{}]}};
+  assert.equal(sm.storyOpening(played,false,false,false),"welcome");
+  assert.equal(sm.storyOpening({finished:false,state:sm.newRun()},true,false,false),"welcome","a try in progress too");
+  assert.equal(sm.storyOpening(played,false,true,false),"play","shown once per visit");
+  assert.equal(sm.storyOpening(played,false,false,true),"play","Start over goes straight in");
+  assert.equal(sm.storyOpening({finished:false,state:{...sm.newRun(),round:2,skipped:2}},false,false,false),"play","Catch the lie's jump is not progress");
+  assert.equal(sm.storyOpening({...played,finished:true},false,false,false),"cleared");
+});
+
+test("demo ending: only for the public demo after the start scene, once, and never after the last scene", async()=>{
+  const {demoEndingDue}=await import("../lib/pregame.ts");
+  const world=await roleWorld("sleepy-hollow");
+  assert.equal(demoEndingDue({},world,0),true);
+  assert.equal(demoEndingDue({classAuth:{token:"x"}},world,0),false,"class students keep the four-scene flow");
+  assert.equal(demoEndingDue({demoEnding:"done"},world,0),false,"once");
+  assert.equal(demoEndingDue({},world,1),false,"only after scene 1");
+  assert.equal(demoEndingDue({},world,world.scenes.length-1),false);
+});
+
+test("demo ending Your Turn: scene 1 lines only, activities that can't work are hidden, the cold case file otherwise", async()=>{
+  const {world,passages}=await storyKit();const yt=await import("../lib/your-turn.ts");
+  const {readingPortions}=await import("../lib/source-passages.ts");const {revealsPayoff}=await import("../lib/missions.ts");
+  const pids=new Set(readingPortions(passages,world.scenes)[0].map(p=>p.id));
+  const hides=(t:string)=>(world.missions??[]).some(m=>revealsPayoff(m,t));
+  const r=yt.sceneYourTurn(world,null,pids,hides);
+  assert.deepEqual(Object.keys(r.activities).sort(),["fashion","loyalty","money","social-media","solo","squad","underestimated","winning"]);
+  assert.equal(r.activities.fashion.title,"Style Ichabod from his bundle","the authored demo version");
+  assert.deepEqual(Object.keys(r.activities.winning.sides!).sort(),["ran-away","the-horseman"]);
+  // The validator checks every demo line, and that it comes from scene 1.
+  const bad=structuredClone(world);bad.your_turn!.activities.money.demo!.items![0].accept=[{paragraph:"p025",line:"Not in the story."}];
+  const probs=yt.yourTurnProblems(bad,passages);
+  assert.ok(probs.some(p=>p.includes("money/demo: a line is not copied exactly")),probs.join("; "));
+  for(const a of Object.values(r.activities)){
+    assert.ok(a.paragraphs.every(p=>pids.has(p)),"reading is scene 1 only");
+    const lines=[...(a.exchanges??[]).flatMap(e=>e.accept),...Object.values(a.sides??{}).flatMap(s=>s.exchanges.flatMap(e=>e.accept)),...(a.items??[]).flatMap(i=>i.accept),...(a.posts??[]).flatMap(p=>p.accept??[])];
+    assert.ok(lines.every(l=>pids.has(l.paragraph)),"every scored line is from scene 1");
+    if(a.kind==="talk")assert.ok((a.exchanges??[]).length>=3);
+  }
+  assert.deepEqual(yt.sceneYourTurn(world,{firedUpBy:"loyalty",lane:"social-media"},pids,hides).choices,["loyalty","social-media"]);
+  assert.deepEqual(yt.sceneYourTurn(world,{firedUpBy:"money",lane:"fashion"},pids,hides).choices,["money","fashion"]);
+  assert.deepEqual(yt.sceneYourTurn(world,{firedUpBy:"unfairness",lane:"music"},pids,hides).choices,["solo"],"hidden matches: the cold case file");
+  assert.deepEqual(yt.sceneYourTurn(world,{firedUpBy:"underestimated",lane:"music"},pids,hides).choices,["underestimated"]);
+});
+
+test("test runs are tagged and never share a leaderboard with real players", async()=>{
+  const srv=await import("../lib/story-server.ts");
+  const prev={v:process.env.VERCEL_ENV,n:process.env.NODE_ENV};
+  try{
+    delete process.env.VERCEL_ENV;(process.env as Record<string,string|undefined>).NODE_ENV="production";
+    assert.deepEqual(srv.testTag(),{});assert.deepEqual(srv.testTag(true),{env:"test"});
+    (process.env as Record<string,string|undefined>).NODE_ENV="development";assert.deepEqual(srv.testTag(),{env:"dev"});
+    process.env.VERCEL_ENV="preview";assert.deepEqual(srv.testTag(),{env:"preview"});
+  }finally{if(prev.v===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=prev.v;if(prev.n===undefined)delete (process.env as Record<string,string|undefined>).NODE_ENV;else (process.env as Record<string,string|undefined>).NODE_ENV=prev.n}
+  const real={state:{}} as never,tester={state:{env:"test"}} as never,dev={state:{env:"dev"}} as never;
+  assert.deepEqual(srv.sameEnv([real,tester,dev],real),[real]);
+  assert.deepEqual(srv.sameEnv([real,tester,dev],tester),[tester,dev]);
+  const {PlayFeedbackSchema}=await import("../lib/feedback.ts");
+  assert.equal(PlayFeedbackSchema.safeParse({world:"sleepy-hollow"}).success,false,"at least one answer");
+  assert.equal(PlayFeedbackSchema.safeParse({world:"sleepy-hollow",fun:"kind_of",playAgain:"yes"}).success,true);
+});

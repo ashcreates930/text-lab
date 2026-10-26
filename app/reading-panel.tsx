@@ -5,7 +5,7 @@
 // question. The text is cleaned for display only (lib/clue-game.ts displayLine); taps send the story's own text.
 // The right line is never highlighted before the student taps it: only lines they kept, and their result, are marked.
 // Words to know: glossary words that appear in the passage are listed above it; tapping one opens its card.
-import {useEffect,useMemo,useRef,useState} from "react";
+import {useEffect,useId,useMemo,useRef,useState} from "react";
 import {Bookmark,Check,X} from "lucide-react";
 import type {SourcePassage} from "@/lib/source-passages";
 import {withContentNotes} from "@/lib/content-notes";
@@ -55,15 +55,18 @@ const initials=(name:string)=>name.split(/\s+/).map(w=>w[0]).join("").slice(0,2)
 
 // One line: a tap keeps it; a long press (half a second) opens the mark-up menu. A long press never also counts as a tap.
 function LineButton({line,display,kept,selected,result,mark,locked,onTap,onMark}:{line:PanelLine;display:string;kept:boolean;selected:boolean;result?:boolean;mark?:LineMark;locked:boolean;onTap:(l:PanelLine)=>void;onMark?:(l:PanelLine)=>void}){
- const timer=useRef<number|null>(null),pressed=useRef(false);
+ const timer=useRef<number|null>(null),pressed=useRef(false),textId=useId();
  useEffect(()=>()=>{if(timer.current)window.clearTimeout(timer.current)},[]);
  const start=()=>{if(!onMark)return;pressed.current=false;timer.current=window.setTimeout(()=>{pressed.current=true;onMark(line)},500)};
  const cancel=()=>{if(timer.current){window.clearTimeout(timer.current);timer.current=null}};
- const tone=result===true?"border-[#2F6B3A] bg-[#E8F2E7]":result===false?"border-[#A33B20] bg-[#FBEDE5]":selected?"border-[#A0472C] bg-[#FBEDE5] ring-2 ring-[#A0472C]/30":kept?"border-[#A0472C] bg-[#FBEDE5]":"border-transparent hover:border-[#E4DCCB] hover:bg-[#FBF7EE]";
- return <button type="button" disabled={locked} aria-pressed={kept} onPointerDown={start} onPointerUp={cancel} onPointerLeave={cancel} onPointerCancel={cancel} onContextMenu={e=>{if(onMark)e.preventDefault()}}
+ const tone=result===true?"border-[#2F6B3A] bg-[#E8F2E7]":result===false?"border-[#A33B20] bg-[#FBEDE5]":selected?"border-[#A0472C] bg-[#FBEDE5] ring-2 ring-[#A0472C]/30":kept?"line-pop border-[#A0472C] bg-[#FBEDE5]":"border-[#E9E1D2] bg-[#FFFDF8] hover:border-[#C9B9A0] hover:bg-[#FBF7EE]";
+ // Its name says where it is and what a tap does; the whole line is its description.
+ const first=display.split(/\s+/).slice(0,6).join(" ");
+ const name=`Line from paragraph ${paragraphLabel(line.pid).slice(1)}: ${first}… ${result!==undefined?(result?"Right line":"Not this line"):kept?"In your pouch. Tap to take out":"Add to pouch"}`;
+ return <button type="button" disabled={locked} aria-pressed={kept} aria-label={name} aria-describedby={textId} onPointerDown={start} onPointerUp={cancel} onPointerLeave={cancel} onPointerCancel={cancel} onContextMenu={e=>{if(onMark)e.preventDefault()}}
   onClick={()=>{if(pressed.current){pressed.current=false;return}onTap(line)}}
-  className={`my-0.5 flex min-h-[44px] w-full select-none items-start gap-2 rounded-2xl border-2 px-3 py-2 text-left font-serif text-[17px] leading-[1.55] text-[#2A2620] transition-colors motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-60 ${tone}`}>
-  <span className="min-w-0 flex-1">{mark&&<span className={`mr-1.5 inline-block rounded-md px-1.5 py-0.5 align-[2px] font-sans text-[11px] font-bold ${TAG_STYLE[mark.tag]}`}>{MARK_TAGS[mark.tag]}</span>}{display}</span>
+  className={`my-[3px] flex min-h-[44px] w-full select-none items-start gap-2 rounded-2xl border-2 px-3 py-1.5 text-left font-serif text-[17px] leading-[1.55] text-[#2A2620] transition active:scale-[.98] motion-reduce:transition-none motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-60 ${tone}`}>
+  <span id={textId} className="min-w-0 flex-1">{mark&&<span className={`mr-1.5 inline-block rounded-md px-1.5 py-0.5 align-[2px] font-sans text-[11px] font-bold ${TAG_STYLE[mark.tag]}`}>{MARK_TAGS[mark.tag]}</span>}{display}</span>
   {result===true&&<Check size={18} className="mt-1 shrink-0 text-[#2F6B3A]" aria-label="Right line"/>}
   {result===false&&<X size={18} className="mt-1 shrink-0 text-[#A33B20]" aria-label="Not this line"/>}
   {result===undefined&&kept&&<span className="sr-only">In your pouch</span>}
