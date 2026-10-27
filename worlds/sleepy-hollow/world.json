@@ -477,7 +477,8 @@
               "answers": [
                 {
                   "line": "His schoolhouse was a low building of one large room, rudely constructed\nof logs; the windows partly glazed, and partly patched with leaves of\nold copybooks.",
-                  "phrase": "rudely constructed of logs; the windows partly glazed, and partly patched with leaves of old copybooks"
+                  "phrase": "rudely constructed of logs; the windows partly glazed, and partly patched with leaves of old copybooks",
+                  "key": "rudely constructed of logs"
                 }
               ],
               "near_misses": [
@@ -502,7 +503,8 @@
               "answers": [
                 {
                   "line": "It was most ingeniously secured at vacant hours, by a\nwithe twisted in the handle of the door, and stakes set against the\nwindow shutters; so that though a thief might get in with perfect ease,\nhe would find some embarrassment in getting out,--an idea most probably\nborrowed by the architect, Yost Van Houten, from the mystery of an\neelpot.",
-                  "phrase": "though a thief might get in with perfect ease, he would find some embarrassment in getting out"
+                  "phrase": "though a thief might get in with perfect ease, he would find some embarrassment in getting out",
+                  "key": "embarrassment in getting out"
                 }
               ],
               "near_misses": [
@@ -530,7 +532,8 @@
                 },
                 {
                   "line": "I would not have it imagined, however, that he was one of those cruel\npotentates of the school who joy in the smart of their subjects; on\nthe contrary, he administered justice with discrimination rather than\nseverity; taking the burden off the backs of the weak, and laying it on\nthose of the strong.",
-                  "phrase": "he administered justice with discrimination rather than severity"
+                  "phrase": "he administered justice with discrimination rather than severity",
+                  "key": "discrimination rather than severity"
                 }
               ],
               "near_misses": [
@@ -656,7 +659,13 @@
               "answers": [
                 {
                   "line": "They consisted of two\nshirts and a half; two stocks for the neck; a pair or two of worsted\nstockings; an old pair of corduroy small-clothes; a rusty razor; a book\nof psalm tunes full of dog’s-ears; and a broken pitch-pipe.",
-                  "phrase": "two shirts and a half; two stocks for the neck; a pair or two of worsted stockings"
+                  "phrase": "two shirts and a half; two stocks for the neck; a pair or two of worsted stockings",
+                  "key": [
+                    "two shirts and a half",
+                    "two stocks for the neck",
+                    "worsted stockings",
+                    "corduroy small-clothes"
+                  ]
                 }
               ],
               "near_misses": [
@@ -709,7 +718,8 @@
               "answers": [
                 {
                   "line": "Whatever money the\nschoolmaster possessed, and he had received his quarter’s pay but a\nday or two before, he must have had about his person at the time of his\ndisappearance.",
-                  "phrase": "he must have had about his person at the time of his disappearance"
+                  "phrase": "he must have had about his person at the time of his disappearance",
+                  "key": "about his person"
                 }
               ],
               "near_misses": [
@@ -835,7 +845,12 @@
               "answers": [
                 {
                   "line": "As to the\nbooks and furniture of the schoolhouse, they belonged to the community,\nexcepting Cotton Mather’s “History of Witchcraft,” a “New England\nAlmanac,” and a book of dreams and fortune-telling; in which last was\na sheet of foolscap much scribbled and blotted in several fruitless\nattempts to make a copy of verses in honor of the heiress of Van Tassel.",
-                  "phrase": "excepting Cotton Mather’s “History of Witchcraft,” a “New England Almanac,” and a book of dreams and fortune-telling"
+                  "phrase": "excepting Cotton Mather’s “History of Witchcraft,” a “New England Almanac,” and a book of dreams and fortune-telling",
+                  "key": [
+                    "History of Witchcraft",
+                    "New England Almanac",
+                    "book of dreams and fortune-telling"
+                  ]
                 }
               ],
               "near_misses": [
@@ -860,7 +875,8 @@
               "answers": [
                 {
                   "line": "These magic books and the poetic scrawl were forthwith consigned to the\nflames by Hans Van Ripper; who, from that time forward, determined to\nsend his children no more to school, observing that he never knew\nany good come of this same reading and writing.",
-                  "phrase": "These magic books and the poetic scrawl were forthwith consigned to the flames"
+                  "phrase": "These magic books and the poetic scrawl were forthwith consigned to the flames",
+                  "key": "consigned to the flames"
                 }
               ],
               "near_misses": [
@@ -885,7 +901,8 @@
               "answers": [
                 {
                   "line": "As to the\nbooks and furniture of the schoolhouse, they belonged to the community,\nexcepting Cotton Mather’s “History of Witchcraft,” a “New England\nAlmanac,” and a book of dreams and fortune-telling; in which last was\na sheet of foolscap much scribbled and blotted in several fruitless\nattempts to make a copy of verses in honor of the heiress of Van Tassel.",
-                  "phrase": "in honor of the heiress of Van Tassel"
+                  "phrase": "in honor of the heiress of Van Tassel",
+                  "key": "heiress of Van Tassel"
                 }
               ],
               "near_misses": [
@@ -1012,7 +1029,11 @@
               "answers": [
                 {
                   "line": "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin.",
-                  "phrase": "was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin"
+                  "phrase": "was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin",
+                  "key": [
+                    "shattered pumpkin",
+                    "hat of the unfortunate Ichabod"
+                  ]
                 }
               ],
               "near_misses": [
@@ -1041,7 +1062,8 @@
               "answers": [
                 {
                   "line": "The stories of Brouwer, of Bones, and a whole budget of\nothers were called to mind; and when they had diligently considered them\nall, and compared them with the symptoms of the present case, they shook\ntheir heads, and came to the conclusion that Ichabod had been carried\noff by the Galloping Hessian.",
-                  "phrase": "Ichabod had been carried off by the Galloping Hessian"
+                  "phrase": "Ichabod had been carried off by the Galloping Hessian",
+                  "key": "carried off by the Galloping Hessian"
                 }
               ],
               "near_misses": [
@@ -1066,7 +1088,11 @@
               "answers": [
                 {
                   "line": "As he was a bachelor, and in nobody’s\ndebt, nobody troubled his head any more about him; the school was\nremoved to a different quarter of the hollow, and another pedagogue\nreigned in his stead.",
-                  "phrase": "As he was a bachelor, and in nobody’s debt, nobody troubled his head any more about him"
+                  "phrase": "As he was a bachelor, and in nobody’s debt, nobody troubled his head any more about him",
+                  "key": [
+                    "bachelor",
+                    "in nobody’s debt"
+                  ]
                 }
               ],
               "near_misses": [
@@ -1184,7 +1210,8 @@
               "answers": [
                 {
                   "line": "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin.",
-                  "phrase": "close beside it a shattered pumpkin"
+                  "phrase": "close beside it a shattered pumpkin",
+                  "key": "shattered pumpkin"
                 }
               ],
               "near_misses": [
@@ -1208,7 +1235,8 @@
               "answers": [
                 {
                   "line": "Whatever money the\nschoolmaster possessed, and he had received his quarter’s pay but a\nday or two before, he must have had about his person at the time of his\ndisappearance.",
-                  "phrase": "he must have had about his person at the time of his disappearance"
+                  "phrase": "he must have had about his person at the time of his disappearance",
+                  "key": "about his person"
                 }
               ],
               "near_misses": [
@@ -1232,7 +1260,11 @@
               "answers": [
                 {
                   "line": "The stories of Brouwer, of Bones, and a whole budget of\nothers were called to mind; and when they had diligently considered them\nall, and compared them with the symptoms of the present case, they shook\ntheir heads, and came to the conclusion that Ichabod had been carried\noff by the Galloping Hessian.",
-                  "phrase": "compared them with the symptoms of the present case, they shook their heads"
+                  "phrase": "compared them with the symptoms of the present case, they shook their heads",
+                  "key": [
+                    "compared them with the symptoms",
+                    "stories of Brouwer, of Bones"
+                  ]
                 }
               ],
               "near_misses": [
@@ -1288,7 +1320,8 @@
                   "description": "Someone played a trick on Ichabod to scare him out of Sleepy Hollow.",
                   "supports": [
                     "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin.",
-                    "The brook was searched, but the body of the schoolmaster was not to\nbe discovered."
+                    "The brook was searched, but the body of the schoolmaster was not to\nbe discovered.",
+                    "As to the\nbooks and furniture of the schoolhouse, they belonged to the community,\nexcepting Cotton Mather’s “History of Witchcraft,” a “New England\nAlmanac,” and a book of dreams and fortune-telling; in which last was\na sheet of foolscap much scribbled and blotted in several fruitless\nattempts to make a copy of verses in honor of the heiress of Van Tassel."
                   ]
                 },
                 {
@@ -1298,7 +1331,8 @@
                   "supports": [
                     "The stories of Brouwer, of Bones, and a whole budget of\nothers were called to mind; and when they had diligently considered them\nall, and compared them with the symptoms of the present case, they shook\ntheir heads, and came to the conclusion that Ichabod had been carried\noff by the Galloping Hessian.",
                     "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin.",
-                    "Knots of gazers and gossips were collected in the\nchurchyard, at the bridge, and at the spot where the hat and pumpkin\nhad been found."
+                    "The brook was searched, but the body of the schoolmaster was not to\nbe discovered.",
+                    "The next morning the old horse was found without his saddle, and with\nthe bridle under his feet, soberly cropping the grass at his master’s\ngate."
                   ]
                 },
                 {
@@ -1308,7 +1342,8 @@
                   "supports": [
                     "Whatever money the\nschoolmaster possessed, and he had received his quarter’s pay but a\nday or two before, he must have had about his person at the time of his\ndisappearance.",
                     "The brook was searched, but the body of the schoolmaster was not to\nbe discovered.",
-                    "The next morning the old horse was found without his saddle, and with\nthe bridle under his feet, soberly cropping the grass at his master’s\ngate."
+                    "The next morning the old horse was found without his saddle, and with\nthe bridle under his feet, soberly cropping the grass at his master’s\ngate.",
+                    "As he was a bachelor, and in nobody’s\ndebt, nobody troubled his head any more about him; the school was\nremoved to a different quarter of the hollow, and another pedagogue\nreigned in his stead."
                   ]
                 }
               ]
@@ -1323,7 +1358,8 @@
                   "description": "His pay went with him and no body was found, so he may have left on his own.",
                   "supports": [
                     "Whatever money the\nschoolmaster possessed, and he had received his quarter’s pay but a\nday or two before, he must have had about his person at the time of his\ndisappearance.",
-                    "The brook was searched, but the body of the schoolmaster was not to\nbe discovered."
+                    "The brook was searched, but the body of the schoolmaster was not to\nbe discovered.",
+                    "As he was a bachelor, and in nobody’s\ndebt, nobody troubled his head any more about him; the school was\nremoved to a different quarter of the hollow, and another pedagogue\nreigned in his stead."
                   ]
                 },
                 {
@@ -1341,7 +1377,8 @@
                   "description": "The town decided the Galloping Hessian carried him off.",
                   "supports": [
                     "The stories of Brouwer, of Bones, and a whole budget of\nothers were called to mind; and when they had diligently considered them\nall, and compared them with the symptoms of the present case, they shook\ntheir heads, and came to the conclusion that Ichabod had been carried\noff by the Galloping Hessian.",
-                    "Knots of gazers and gossips were collected in the\nchurchyard, at the bridge, and at the spot where the hat and pumpkin\nhad been found."
+                    "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin.",
+                    "The brook was searched, but the body of the schoolmaster was not to\nbe discovered."
                   ]
                 }
               ]
@@ -1356,7 +1393,8 @@
                   "description": "A hat and a shattered pumpkin by the brook could mean a trick, not a ghost.",
                   "supports": [
                     "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin.",
-                    "Knots of gazers and gossips were collected in the\nchurchyard, at the bridge, and at the spot where the hat and pumpkin\nhad been found."
+                    "Knots of gazers and gossips were collected in the\nchurchyard, at the bridge, and at the spot where the hat and pumpkin\nhad been found.",
+                    "An inquiry was set on foot, and after diligent\ninvestigation they came upon his traces."
                   ]
                 },
                 {
@@ -1365,7 +1403,9 @@
                   "description": "His pay was never found, and no one kept looking for him.",
                   "supports": [
                     "Whatever money the\nschoolmaster possessed, and he had received his quarter’s pay but a\nday or two before, he must have had about his person at the time of his\ndisappearance.",
-                    "As he was a bachelor, and in nobody’s\ndebt, nobody troubled his head any more about him; the school was\nremoved to a different quarter of the hollow, and another pedagogue\nreigned in his stead."
+                    "As he was a bachelor, and in nobody’s\ndebt, nobody troubled his head any more about him; the school was\nremoved to a different quarter of the hollow, and another pedagogue\nreigned in his stead.",
+                    "Hans Van Ripper as executor of his estate, examined the\nbundle which contained all his worldly effects.",
+                    "They consisted of two\nshirts and a half; two stocks for the neck; a pair or two of worsted\nstockings; an old pair of corduroy small-clothes; a rusty razor; a book\nof psalm tunes full of dog’s-ears; and a broken pitch-pipe."
                   ]
                 },
                 {
@@ -1374,7 +1414,8 @@
                   "description": "The searchers followed his trail, but the brook gave up no body.",
                   "supports": [
                     "The brook was searched, but the body of the schoolmaster was not to\nbe discovered.",
-                    "An inquiry was set on foot, and after diligent\ninvestigation they came upon his traces."
+                    "An inquiry was set on foot, and after diligent\ninvestigation they came upon his traces.",
+                    "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin."
                   ]
                 }
               ]
@@ -1535,7 +1576,8 @@
               "answers": [
                 {
                   "line": "He could not help, too, rolling his\nlarge eyes round him as he ate, and chuckling with the possibility that\nhe might one day be lord of all this scene of almost unimaginable luxury\nand splendor.",
-                  "phrase": "he might one day be lord of all this scene of almost unimaginable luxury and splendor"
+                  "phrase": "he might one day be lord of all this scene of almost unimaginable luxury and splendor",
+                  "key": "lord of all this scene"
                 }
               ],
               "near_misses": [
@@ -1560,7 +1602,8 @@
               "answers": [
                 {
                   "line": "Then, he thought, how soon he’d turn his back upon the old\nschoolhouse; snap his fingers in the face of Hans Van Ripper, and every\nother niggardly patron, and kick any itinerant pedagogue out of doors\nthat should dare to call him comrade!",
-                  "phrase": "snap his fingers in the face of Hans Van Ripper"
+                  "phrase": "snap his fingers in the face of Hans Van Ripper",
+                  "key": "snap his fingers"
                 }
               ],
               "near_misses": [
@@ -1585,11 +1628,13 @@
               "answers": [
                 {
                   "line": "Not those of the bevy of buxom lasses, with their\nluxurious display of red and white; but the ample charms of a genuine\nDutch country tea-table, in the sumptuous time of autumn.",
-                  "phrase": "the ample charms of a genuine Dutch country tea-table"
+                  "phrase": "the ample charms of a genuine Dutch country tea-table",
+                  "key": "genuine Dutch country tea-table"
                 },
                 {
                   "line": "He could not help, too, rolling his\nlarge eyes round him as he ate, and chuckling with the possibility that\nhe might one day be lord of all this scene of almost unimaginable luxury\nand splendor.",
-                  "phrase": "lord of all this scene of almost unimaginable luxury and splendor"
+                  "phrase": "lord of all this scene of almost unimaginable luxury and splendor",
+                  "key": "lord of all this scene"
                 }
               ],
               "near_misses": [
@@ -1722,7 +1767,11 @@
               "answers": [
                 {
                   "line": "The\nlady of his heart was his partner in the dance, and smiling graciously\nin reply to all his amorous oglings; while Brom Bones, sorely smitten\nwith love and jealousy, sat brooding by himself in one corner.",
-                  "phrase": "Brom Bones, sorely smitten with love and jealousy, sat brooding by himself in one corner"
+                  "phrase": "Brom Bones, sorely smitten with love and jealousy, sat brooding by himself in one corner",
+                  "key": [
+                    "love and jealousy",
+                    "sat brooding"
+                  ]
                 }
               ],
               "near_misses": [
@@ -1747,11 +1796,13 @@
               "answers": [
                 {
                   "line": "They harried his hitherto peaceful domains; smoked\nout his singing school by stopping up the chimney; broke into the\nschoolhouse at night, in spite of its formidable fastenings of withe\nand window stakes, and turned everything topsy-turvy, so that the poor\nschoolmaster began to think all the witches in the country held\ntheir meetings there.",
-                  "phrase": "smoked out his singing school by stopping up the chimney"
+                  "phrase": "smoked out his singing school by stopping up the chimney",
+                  "key": "smoked out his singing school"
                 },
                 {
                   "line": "But what was still more annoying, Brom took all\nopportunities of turning him into ridicule in presence of his mistress,\nand had a scoundrel dog whom he taught to whine in the most ludicrous\nmanner, and introduced as a rival of Ichabod’s, to instruct her in\npsalmody.",
-                  "phrase": "had a scoundrel dog whom he taught to whine in the most ludicrous manner"
+                  "phrase": "had a scoundrel dog whom he taught to whine in the most ludicrous manner",
+                  "key": "taught to whine"
                 }
               ],
               "near_misses": [
@@ -1776,7 +1827,8 @@
               "answers": [
                 {
                   "line": "Brom, who had a degree of rough chivalry in his nature, would fain have\ncarried matters to open warfare and have settled their pretensions\nto the lady, according to the mode of those most concise and simple\nreasoners, the knights-errant of yore,--by single combat; but Ichabod\nwas too conscious of the superior might of his adversary to enter the\nlists against him; he had overheard a boast of Bones, that he would\n“double the schoolmaster up, and lay him on a shelf of his own\nschoolhouse;” and he was too wary to give him an opportunity.",
-                  "phrase": "Ichabod was too conscious of the superior might of his adversary to enter the lists against him"
+                  "phrase": "Ichabod was too conscious of the superior might of his adversary to enter the lists against him",
+                  "key": "superior might of his adversary"
                 }
               ],
               "near_misses": [
@@ -1903,7 +1955,11 @@
               "answers": [
                 {
                   "line": "He affirmed that on returning one night from the neighboring village of\nSing Sing, he had been overtaken by this midnight trooper; that he had\noffered to race with him for a bowl of punch, and should have won it\ntoo, for Daredevil beat the goblin horse all hollow, but just as they\ncame to the church bridge, the Hessian bolted, and vanished in a flash\nof fire.",
-                  "phrase": "just as they came to the church bridge, the Hessian bolted, and vanished in a flash of fire"
+                  "phrase": "just as they came to the church bridge, the Hessian bolted, and vanished in a flash of fire",
+                  "key": [
+                    "vanished in a flash of fire",
+                    "the Hessian bolted"
+                  ]
                 }
               ],
               "near_misses": [
@@ -1928,7 +1984,8 @@
               "answers": [
                 {
                   "line": "All these tales, told in that drowsy undertone with which men talk in\nthe dark, the countenances of the listeners only now and then receiving\na casual gleam from the glare of a pipe, sank deep in the mind of\nIchabod.",
-                  "phrase": "sank deep in the mind of Ichabod"
+                  "phrase": "sank deep in the mind of Ichabod",
+                  "key": "sank deep"
                 }
               ],
               "near_misses": [
@@ -1956,7 +2013,8 @@
                 },
                 {
                   "line": "All these tales, told in that drowsy undertone with which men talk in\nthe dark, the countenances of the listeners only now and then receiving\na casual gleam from the glare of a pipe, sank deep in the mind of\nIchabod.",
-                  "phrase": "sank deep in the mind of Ichabod"
+                  "phrase": "sank deep in the mind of Ichabod",
+                  "key": "sank deep"
                 }
               ],
               "near_misses": [
@@ -2082,7 +2140,8 @@
               "answers": [
                 {
                   "line": "Ichabod only lingered behind, according to the custom of\ncountry lovers, to have a tête-à-tête with the heiress; fully convinced\nthat he was now on the high road to success.",
-                  "phrase": "to have a tête-à-tête with the heiress"
+                  "phrase": "to have a tête-à-tête with the heiress",
+                  "key": "tête-à-tête with the heiress"
                 }
               ],
               "near_misses": [
@@ -2107,7 +2166,8 @@
               "answers": [
                 {
                   "line": "Something, however, I fear me, must have gone wrong, for he certainly\nsallied forth, after no very great interval, with an air quite desolate\nand chapfallen.",
-                  "phrase": "with an air quite desolate and chapfallen"
+                  "phrase": "with an air quite desolate and chapfallen",
+                  "key": "desolate and chapfallen"
                 },
                 {
                   "line": "Let it suffice to say, Ichabod stole forth\nwith the air of one who had been sacking a henroost, rather than a fair\nlady’s heart."
@@ -2328,7 +2388,11 @@
               "answers": [
                 {
                   "line": "As he approached a little nearer, he thought he saw\nsomething white, hanging in the midst of the tree: he paused and ceased\nwhistling but, on looking more narrowly, perceived that it was a place\nwhere the tree had been scathed by lightning, and the white wood laid\nbare.",
-                  "phrase": "a place where the tree had been scathed by lightning, and the white wood laid bare"
+                  "phrase": "a place where the tree had been scathed by lightning, and the white wood laid bare",
+                  "key": [
+                    "scathed by lightning",
+                    "white wood laid bare"
+                  ]
                 }
               ],
               "near_misses": [
@@ -2353,7 +2417,8 @@
               "answers": [
                 {
                   "line": "Suddenly he heard a groan--his teeth chattered, and his knees\nsmote against the saddle: it was but the rubbing of one huge bough upon\nanother, as they were swayed about by the breeze.",
-                  "phrase": "it was but the rubbing of one huge bough upon another"
+                  "phrase": "it was but the rubbing of one huge bough upon another",
+                  "key": "rubbing of one huge bough upon another"
                 }
               ],
               "near_misses": [
@@ -2539,7 +2604,8 @@
               "answers": [
                 {
                   "line": "On mounting a rising\nground, which brought the figure of his fellow-traveller in relief\nagainst the sky, gigantic in height, and muffled in a cloak, Ichabod was\nhorror-struck on perceiving that he was headless!--but his horror was\nstill more increased on observing that the head, which should have\nrested on his shoulders, was carried before him on the pommel of his\nsaddle!",
-                  "phrase": "Ichabod was horror-struck on perceiving that he was headless"
+                  "phrase": "Ichabod was horror-struck on perceiving that he was headless",
+                  "key": "he was headless"
                 }
               ],
               "near_misses": [
@@ -2696,11 +2762,13 @@
               "answers": [
                 {
                   "line": "As yet the panic of the steed had given his unskilful rider an apparent\nadvantage in the chase, but just as he had got half way through the\nhollow, the girths of the saddle gave way, and he felt it slipping from\nunder him.",
-                  "phrase": "the girths of the saddle gave way"
+                  "phrase": "the girths of the saddle gave way",
+                  "key": "girths of the saddle gave way"
                 },
                 {
                   "line": "He seized it by the pommel, and endeavored to hold it firm,\nbut in vain; and had just time to save himself by clasping old Gunpowder\nround the neck, when the saddle fell to the earth, and he heard it\ntrampled under foot by his pursuer.",
-                  "phrase": "the saddle fell to the earth, and he heard it trampled under foot by his pursuer"
+                  "phrase": "the saddle fell to the earth, and he heard it trampled under foot by his pursuer",
+                  "key": "saddle fell to the earth"
                 }
               ],
               "near_misses": [
@@ -2725,7 +2793,8 @@
               "answers": [
                 {
                   "line": "For a moment the terror of Hans Van\nRipper’s wrath passed across his mind,--for it was his Sunday saddle;\nbut this was no time for petty fears; the goblin was hard on his\nhaunches; and (unskilful rider that he was!) he had much ado to maintain\nhis seat; sometimes slipping on one side, sometimes on another, and\nsometimes jolted on the high ridge of his horse’s backbone, with a\nviolence that he verily feared would cleave him asunder.",
-                  "phrase": "the terror of Hans Van Ripper’s wrath passed across his mind"
+                  "phrase": "the terror of Hans Van Ripper’s wrath passed across his mind",
+                  "key": "Hans Van Ripper’s wrath"
                 }
               ],
               "near_misses": [
@@ -2750,11 +2819,13 @@
               "answers": [
                 {
                   "line": "He seized it by the pommel, and endeavored to hold it firm,\nbut in vain; and had just time to save himself by clasping old Gunpowder\nround the neck, when the saddle fell to the earth, and he heard it\ntrampled under foot by his pursuer.",
-                  "phrase": "he heard it trampled under foot by his pursuer"
+                  "phrase": "he heard it trampled under foot by his pursuer",
+                  "key": "trampled under foot"
                 },
                 {
                   "line": "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin.",
-                  "phrase": "was found the saddle trampled in the dirt"
+                  "phrase": "was found the saddle trampled in the dirt",
+                  "key": "saddle trampled in the dirt"
                 }
               ],
               "near_misses": [
@@ -2890,7 +2961,11 @@
                 },
                 {
                   "line": "Another convulsive kick in the ribs, and\nold Gunpowder sprang upon the bridge; he thundered over the resounding\nplanks; he gained the opposite side; and now Ichabod cast a look behind\nto see if his pursuer should vanish, according to rule, in a flash of\nfire and brimstone.",
-                  "phrase": "to see if his pursuer should vanish, according to rule, in a flash of fire and brimstone"
+                  "phrase": "to see if his pursuer should vanish, according to rule, in a flash of fire and brimstone",
+                  "key": [
+                    "vanish",
+                    "flash of fire and brimstone"
+                  ]
                 }
               ],
               "near_misses": [
@@ -2943,7 +3018,8 @@
               "answers": [
                 {
                   "line": "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin.",
-                  "phrase": "close beside it a shattered pumpkin"
+                  "phrase": "close beside it a shattered pumpkin",
+                  "key": "shattered pumpkin"
                 }
               ],
               "near_misses": [
@@ -3112,7 +3188,11 @@
               "answers": [
                 {
                   "line": "It is true, an old farmer, who had been down to New York on a visit\nseveral years after, and from whom this account of the ghostly adventure\nwas received, brought home the intelligence that Ichabod Crane was still\nalive; that he had left the neighborhood partly through fear of the\ngoblin and Hans Van Ripper, and partly in mortification at having been\nsuddenly dismissed by the heiress; that he had changed his quarters to a\ndistant part of the country; had kept school and studied law at the same\ntime; had been admitted to the bar; turned politician; electioneered;\nwritten for the newspapers; and finally had been made a justice of\nthe Ten Pound Court.",
-                  "phrase": "he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress"
+                  "phrase": "he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress",
+                  "key": [
+                    "fear of the goblin and Hans Van Ripper",
+                    "dismissed by the heiress"
+                  ]
                 }
               ],
               "near_misses": [
@@ -3137,7 +3217,12 @@
               "answers": [
                 {
                   "line": "It is true, an old farmer, who had been down to New York on a visit\nseveral years after, and from whom this account of the ghostly adventure\nwas received, brought home the intelligence that Ichabod Crane was still\nalive; that he had left the neighborhood partly through fear of the\ngoblin and Hans Van Ripper, and partly in mortification at having been\nsuddenly dismissed by the heiress; that he had changed his quarters to a\ndistant part of the country; had kept school and studied law at the same\ntime; had been admitted to the bar; turned politician; electioneered;\nwritten for the newspapers; and finally had been made a justice of\nthe Ten Pound Court.",
-                  "phrase": "had kept school and studied law at the same time; had been admitted to the bar; turned politician"
+                  "phrase": "had kept school and studied law at the same time; had been admitted to the bar; turned politician",
+                  "key": [
+                    "studied law",
+                    "admitted to the bar",
+                    "turned politician"
+                  ]
                 }
               ],
               "near_misses": [
@@ -3162,7 +3247,11 @@
               "answers": [
                 {
                   "line": "It is true, an old farmer, who had been down to New York on a visit\nseveral years after, and from whom this account of the ghostly adventure\nwas received, brought home the intelligence that Ichabod Crane was still\nalive; that he had left the neighborhood partly through fear of the\ngoblin and Hans Van Ripper, and partly in mortification at having been\nsuddenly dismissed by the heiress; that he had changed his quarters to a\ndistant part of the country; had kept school and studied law at the same\ntime; had been admitted to the bar; turned politician; electioneered;\nwritten for the newspapers; and finally had been made a justice of\nthe Ten Pound Court.",
-                  "phrase": "an old farmer, who had been down to New York on a visit several years after"
+                  "phrase": "an old farmer, who had been down to New York on a visit several years after",
+                  "key": [
+                    "an old farmer",
+                    "several years after"
+                  ]
                 }
               ],
               "near_misses": [
@@ -3288,7 +3377,8 @@
               "answers": [
                 {
                   "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell.",
-                  "phrase": "conducted the blooming Katrina in triumph to the altar"
+                  "phrase": "conducted the blooming Katrina in triumph to the altar",
+                  "key": "Katrina in triumph to the altar"
                 }
               ],
               "near_misses": [
@@ -3313,7 +3403,8 @@
               "answers": [
                 {
                   "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell.",
-                  "phrase": "always burst into a hearty laugh at the mention of the pumpkin"
+                  "phrase": "always burst into a hearty laugh at the mention of the pumpkin",
+                  "key": "laugh at the mention of the pumpkin"
                 }
               ],
               "near_misses": [
@@ -3338,7 +3429,8 @@
               "answers": [
                 {
                   "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell.",
-                  "phrase": "which led some to suspect that he knew more about the matter than he chose to tell"
+                  "phrase": "which led some to suspect that he knew more about the matter than he chose to tell",
+                  "key": "knew more about the matter than he chose to tell"
                 }
               ],
               "near_misses": [
@@ -3464,7 +3556,8 @@
               "answers": [
                 {
                   "line": "The old country wives, however, who are the best judges of these\nmatters, maintain to this day that Ichabod was spirited away by\nsupernatural means; and it is a favorite story often told about the\nneighborhood round the winter evening fire.",
-                  "phrase": "Ichabod was spirited away by supernatural means"
+                  "phrase": "Ichabod was spirited away by supernatural means",
+                  "key": "spirited away by supernatural means"
                 }
               ],
               "near_misses": [
@@ -3489,7 +3582,8 @@
               "answers": [
                 {
                   "line": "The bridge became more than\never an object of superstitious awe; and that may be the reason why the\nroad has been altered of late years, so as to approach the church by\nthe border of the millpond.",
-                  "phrase": "The bridge became more than ever an object of superstitious awe"
+                  "phrase": "The bridge became more than ever an object of superstitious awe",
+                  "key": "object of superstitious awe"
                 }
               ],
               "near_misses": [
@@ -3514,7 +3608,8 @@
               "answers": [
                 {
                   "line": "The old country wives, however, who are the best judges of these\nmatters, maintain to this day that Ichabod was spirited away by\nsupernatural means; and it is a favorite story often told about the\nneighborhood round the winter evening fire.",
-                  "phrase": "who are the best judges of these matters"
+                  "phrase": "who are the best judges of these matters",
+                  "key": "best judges of these matters"
                 }
               ],
               "near_misses": [
@@ -3666,7 +3761,8 @@
               "answers": [
                 {
                   "line": "There was,\nhowever, one tall, dry-looking old gentleman, with beetling eyebrows,\nwho maintained a grave and rather severe face throughout, now and then\nfolding his arms, inclining his head, and looking down upon the floor,\nas if turning a doubt over in his mind.",
-                  "phrase": "maintained a grave and rather severe face throughout"
+                  "phrase": "maintained a grave and rather severe face throughout",
+                  "key": "grave and rather severe face"
                 }
               ],
               "near_misses": [
@@ -3691,7 +3787,8 @@
               "answers": [
                 {
                   "line": "When the mirth of the rest of the company had subsided, and\nsilence was restored, he leaned one arm on the elbow of his chair, and\nsticking the other akimbo, demanded, with a slight, but exceedingly\nsage motion of the head, and contraction of the brow, what was the\nmoral of the story, and what it went to prove?",
-                  "phrase": "what was the moral of the story, and what it went to prove"
+                  "phrase": "what was the moral of the story, and what it went to prove",
+                  "key": "what was the moral of the story"
                 }
               ],
               "near_misses": [

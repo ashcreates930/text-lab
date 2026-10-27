@@ -97,7 +97,8 @@ function WordCards({words}:{words:GlossaryWord[]}){
  const card=words.find(w=>w.term===open);
  useEffect(()=>{if(!open)return;const k=(e:KeyboardEvent)=>{if(e.key==="Escape")setOpen(null)};window.addEventListener("keydown",k);return()=>window.removeEventListener("keydown",k)},[open]);
  return <div className="border-b border-[#EFE8D8] px-3 py-2">
-  <div className="flex flex-wrap items-center gap-1.5"><span className="text-[12px] font-bold uppercase tracking-wide text-[#24476E]">Words to know</span>{words.map(w=><button key={w.term} type="button" aria-expanded={open===w.term} onClick={()=>setOpen(o=>o===w.term?null:w.term)} className={`min-h-9 rounded-full px-3 text-[14px] font-semibold ${open===w.term?"bg-[#24476E] text-white":"bg-[#DDE7F3] text-[#24476E]"}`}>{w.term}</button>)}</div>
+  {/* One row that scrolls sideways, so the passage keeps the room on a phone. */}
+  <div className="flex items-center gap-1.5 overflow-x-auto whitespace-nowrap [scrollbar-width:none]"><span className="shrink-0 text-[12px] font-bold uppercase tracking-wide text-[#24476E]">Words to know</span>{words.map(w=><button key={w.term} type="button" aria-expanded={open===w.term} onClick={()=>setOpen(o=>o===w.term?null:w.term)} className={`min-h-9 shrink-0 rounded-full px-3 text-[14px] font-semibold ${open===w.term?"bg-[#24476E] text-white":"bg-[#DDE7F3] text-[#24476E]"}`}>{w.term}</button>)}</div>
   {card&&<div role="note" aria-live="polite" className="mt-2 flex items-start justify-between gap-2 rounded-2xl bg-[#EEF3FA] px-3 py-2"><p className="text-[15px] leading-6 text-[#1F3550]"><b>{card.term}:</b> {card.student_friendly_definition}</p><button type="button" onClick={()=>setOpen(null)} aria-label="Close the word card" className="grid h-9 w-9 shrink-0 place-items-center rounded-full hover:bg-[#DDE7F3]"><X size={16}/></button></div>}
  </div>;
 }

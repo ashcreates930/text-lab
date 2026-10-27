@@ -16,7 +16,7 @@ import {useClueSteps,evidenceLabel,CLASS_AI_OFF,type Clue,type Scene} from "./cl
 import {contentNotes} from "@/lib/content-notes";
 import {lieFor,tryLine,testimonyParts,lineWords} from "@/lib/lies";
 import {withFreeze,inSentence,REACTION_MAX,REACTION_STEMS,RIVAL_LOCKOUT_MS,RIVAL_SECONDS,SQUAD_JOBS,checkProof,cluePanel,computerPins,computerRivalPlan,correctsOffClaim,displayLine,earn,markKey,miss,newClueGame,paragraphLabel,rivalOutcome,squadJobs,voteWinner,type ClaimFlag,type MarkTag,type ReactionStem} from "@/lib/clue-game";
-import {MAX_TRIES,answerFor,clueBank,needsPhrase,phraseMatches,phraseRange,pickQuestion,proveChoices,proveRight,speedFlags,typedProof} from "@/lib/fair-play";
+import {MARK_AGAIN,MAX_TRIES,answerFor,clueBank,needsPhrase,phraseMatches,phraseRange,pickQuestion,proveChoices,proveRight,speedFlags,typedProof} from "@/lib/fair-play";
 import {NotYet,PhrasePicker,ProveIt,useSpeedMeta} from "./fair-play-ui";
 import {collectPieces,missionFor,withoutPayoff} from "@/lib/missions";
 import {screenMessage} from "@/lib/safety";
@@ -137,10 +137,9 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
  }
  function lockPhrase(range:[number,number]){
   const hit=answerFor(q,accepted);
-  if(hit?.phrase&&phraseMatches(accepted,hit.phrase,range)){setStage("prove");return}
-  const t=tries+1;
-  if(t>=MAX_TRIES){setTries(t);setShown(true);setStage("prove");return}
-  missed("Right line. Now mark only the words that prove it.",false);
+  if(hit?.phrase&&phraseMatches(accepted,hit,range)){setStage("prove");return}
+  // The line is right: marking again never costs a try.
+  say({kind:"hint",text:MARK_AGAIN});
  }
  // Prove it: a right choice or a typed answer saves the clue; points follow the try the line was found on.
  function finishProof(p:{choice?:string;proves?:string;because?:string}){

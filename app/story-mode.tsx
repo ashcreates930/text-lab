@@ -23,6 +23,7 @@ import {browserNarration,soundChannel} from "./sound-player";
 import {playNarration} from "@/lib/narration";
 import {focusScreenTop} from "./screen-focus";
 import {getBrowserSupabase} from "@/lib/supabase-browser";
+import {MAX_TRIES} from "@/lib/fair-play";
 import {NotYet,PhrasePicker,PointsGoal,PointsMeter,ProveIt,useSpeedMeta} from "./fair-play-ui";
 import {collectPieces,missionFor} from "@/lib/missions";
 import {MissionTracker} from "./missions";
@@ -33,7 +34,7 @@ type PublicRun={id:string;topic:string;nickname:string;state:RunState;total:numb
 type Board={kind:"individual"|"squad";top:{rank:number;name:string;score:number;me:boolean}[];me:{rank:number;score:number;movement:number}|null;players:number}|null;
 type Pulse={key:string;label:string;pct:number;strongest:string}[];
 type Reaction={line:string;trust:number}|null;
-type Step={name:"phrase"|"prove"|"explain";choices:string[]|null;shown:string[]|null;phrase:[number,number]|null};
+type Step={name:"phrase"|"prove"|"explain";choices:string[]|null;shown:string[]|null;phrase:[number,number]|null;note?:string|null};
 type TryReply={run:PublicRun;notYet:{tryNo:number;hint:string;locked:string[]}|null;step:Step|null;reaction:Reaction};
 type Resume={tryNo:number;locked:string[];line:string|null;shown:boolean;step:"phrase"|"prove"|"explain"|null;choices:string[]|null}|null;
 type Result={record:RoundRecord;shown:string[]|null;reaction:Reaction;run:PublicRun;board:Board;pulse:Pulse;answered:number};
@@ -253,6 +254,9 @@ function PowerUps({kind,run,onBuy}:{kind:RoundKind;run:PublicRun;onBuy:(p:PowerU
   return <li key={p}><button type="button" aria-disabled={!can} onClick={()=>can&&onBuy(p)} aria-pressed={on} className={`flex h-full w-full flex-col rounded-2xl p-3 text-left ${on?"bg-[#2A2620] text-white":can?"bg-[#F4E1D6] hover:bg-[#EDD3C4]":short&&usable(p)?"border-2 border-dashed border-[#C9B9A0] bg-[#FFFDF8] text-[#2A2620]":"bg-[#EFE8D8] text-[#8B8478]"}`}><span className="text-[16px] font-bold">{POWER_UPS[p].name} · {POWER_UPS[p].cost}</span><span className="mt-1 text-[13px] leading-5">{on?"Ready for this round.":!usable(p)?"Not used in this round.":short?<><b className="block text-[#8A3B23]">Need {POWER_UPS[p].cost} coin{POWER_UPS[p].cost===1?"":"s"}</b>{POWER_UPS[p].what}</>:POWER_UPS[p].what}</span></button></li>})}</ul>;
 }
 
+function RoundHeading({round,kind,tryNo}:{round:number;kind:RoundKind;tryNo:number}){
+ return <div className="flex items-baseline justify-between gap-2"><h1 id="play-h" tabIndex={-1} className="text-[20px] font-bold leading-tight outline-none">Round {round} · {ROUND_NAMES[kind]}</h1>{tryNo>1&&<span className="shrink-0 rounded-full bg-[#FFF4D6] px-2.5 py-0.5 text-[13px] font-bold text-[#8A5A00]">Try {tryNo} of {MAX_TRIES}</span>}</div>;
+}
 // The four rounds in a row: played rounds gray with a check (skipped ones gray with a dash), the current one highlighted.
 // compact: one short row on round screens.
 function RoundTracker({round,skipped,compact=false}:{round:number;skipped:number;compact?:boolean}){
@@ -367,12 +371,12 @@ function ReadRound({world,scene,passages,run,setting,sound,resume,send,onError,b
   setBusy(false);
   if(r.reply?.notYet){setLocked(r.reply.notYet.locked);setPouch(r.reply.notYet.locked);setTryNo(r.reply.notYet.tryNo);setNotYet({hint:r.reply.notYet.hint})}
  }
- if(notYet)return <NotYet tryNo={tryNo} hint={notYet.hint} onTryAgain={()=>setNotYet(null)} extra={locked.length?<FoundSoFar lines={locked}/>:null}/>;
+ if(notYet)return <NotYet tryNo={tryNo} hint={notYet.hint} onTryAgain={()=>{setNotYet(null);setStarted(false)}} extra={locked.length?<FoundSoFar lines={locked}/>:null}/>;
  const firstEver=tryNo===1&&run.state.round===(run.state.skipped??0);
  const need=Math.max(1,q.answers.length-locked.length);
  return <TimedTry key={tryNo} kind="read" tryNo={tryNo} setting={setting} paused={noteOpen||hold} waiting={!started} onOver={(e,g)=>lockIn(e,g,true)}>{t=><section className="mt-2" aria-labelledby="play-h">
   {/* The question and goal as a short banner; the passage is the main panel. */}
-  <RoundBanner bar={bar} started={started} label={tryNo>1?`Try ${tryNo}: find the rest`:ROUND_NAMES.read} question={q.focus} clock={clockOf(t,trySeconds("read",tryNo,setting).seconds,!started)}/>
+  <RoundBanner bar={bar} started={started} label={`Round 1 · ${ROUND_NAMES.read}${tryNo>1?` · Try ${tryNo} of ${MAX_TRIES}`:""}`} question={q.focus} clock={clockOf(t,trySeconds("read",tryNo,setting).seconds,!started)}/>
   <LanternNote world={world} passages={passages} scene={scene} kind="read" run={run} locked={locked}/>
   <div ref={fit.ref} style={fit.style} className="relative mt-2 flex min-h-0 flex-col">
    {firstEver&&!pouch.length&&!noteOpen&&<span aria-hidden className="pointer-events-none absolute right-3 top-2 z-10 inline-flex items-center gap-1 rounded-full bg-[#A0472C] px-2.5 py-1 text-[12.5px] font-bold text-white shadow"><Hand size={14}/>Tap a line to start</span>}
@@ -448,6 +452,7 @@ function InferRound({world,scene,passages,run,setting,sound,sandboxId,resume,sen
  const [started,setStarted]=useState(!!resume);
  const [line,setLine]=useState(""),[accepted,setAccepted]=useState(resume?.line??""),[step,setStep]=useState<Step|null>(resume?.step?{name:resume.step,choices:resume.choices,shown:resume.shown&&resume.line?[resume.line]:null,phrase:null}:null);
  const speed=useSpeedMeta();
+ const fit=useFitHeight();
  async function go(input:RoundInput,elapsed=0,grace=false){
   if(busy)return;setBusy(true);
   const r=await trySend(send,onError,input,elapsed,grace);setBusy(false);
@@ -455,25 +460,26 @@ function InferRound({world,scene,passages,run,setting,sound,sandboxId,resume,sen
   if(r.reply.notYet){setTryNo(r.reply.notYet.tryNo);setNotYet({hint:r.reply.notYet.hint,reaction:r.reply.reaction});return}
   if(r.reply.step){const s=r.reply.step;if(s.shown?.[0])setAccepted(s.shown[0]);else if(input.kind==="confront"&&!accepted)setAccepted(input.line);setStep(s)}
  }
- if(notYet)return <><Speaker world={world} characterId={who} line={q.question} sound={false} sandboxId={sandboxId} label="Asks you"/><NotYet tryNo={tryNo} hint={notYet.hint} onTryAgain={()=>{setNotYet(null);setLine("")}} extra={notYet.reaction?<Reacts world={world} who={who} reaction={notYet.reaction} trust={run.state.trust[who]??0}/>:null}/></>;
+ if(notYet)return <><Speaker world={world} characterId={who} line={q.question} sound={false} sandboxId={sandboxId} label="Asks you"/><NotYet tryNo={tryNo} hint={notYet.hint} onTryAgain={()=>{setNotYet(null);setLine("");setStarted(false)}} extra={notYet.reaction?<Reacts world={world} who={who} reaction={notYet.reaction} trust={run.state.trust[who]??0}/>:null}/></>;
  if(step&&accepted){
   const shown=!!step.shown;
   return <section className="mt-4" aria-labelledby="play-h">
    <h1 id="play-h" className="text-[24px] font-bold">{step.name==="phrase"?"Mark the exact words":"Prove it"}</h1>
    <Speaker world={world} characterId={who} line={q.question} sound={false} sandboxId={sandboxId} label="Asks you"/>
+   {step.name==="phrase"&&step.note&&<p role="status" className="mt-3 rounded-2xl bg-[#E8F2E7] px-4 py-3 text-[17px] font-semibold text-[#2F6B3A]">{step.note}</p>}
    {step.name==="phrase"?<PhrasePicker line={accepted} busy={busy} onLock={range=>go({kind:"confront",line:accepted,marked:range})}/>
     :<><TheLine line={accepted} shown={shown}/>{shown&&step.phrase&&<PhrasePicker line={accepted} shownRange={step.phrase}/>}<ProveIt choices={step.choices} busy={busy} onSubmit={p=>go({kind:"confront",line:accepted,prove:p})}/></>}
   </section>;
  }
  return <TimedTry key={tryNo} kind="confront" tryNo={tryNo} setting={setting} paused={hold} waiting={!started} onOver={(e,g)=>go({kind:"confront",line,...speed.meta(),timeout:true},e,g)}>{t=><section className="mt-3" aria-labelledby="play-h">
-  <h1 id="play-h" tabIndex={-1} className="text-[24px] font-bold outline-none">{tryNo>1?`Try ${tryNo}`:ROUND_NAMES.confront}</h1>
+  <RoundHeading round={2} kind="confront" tryNo={tryNo}/>
   <RoundBanner bar={bar} started={started}/>
   <Speaker world={world} characterId={who} line={q.question} sound={sound&&tryNo===1} sandboxId={sandboxId} label="Asks you"/>
   <TimerBar t={t} seconds={trySeconds("confront",tryNo,setting).seconds} waiting={!started}/>
   <LanternNote world={world} passages={passages} scene={scene} kind="confront" run={run}/>
   <p className="mt-4 text-[16px] font-semibold">Tap the one line that answers it.</p>
-  <ReadingPanel glossary={world.glossary} className="mt-2 max-h-[50vh]" passages={chunks} kept={line?[line]:[]} onTap={l=>{setStarted(true);speed.tap();if(line&&lineKey(line)!==lineKey(l.text))speed.swap();setLine(l.text)}}/>
-  <div className="mt-5 flex justify-end"><button type="button" disabled={!line||busy} onClick={()=>go({kind:"confront",line,...speed.meta()},t.elapsed,t.grace)} className="case-primary disabled:opacity-40">Lock in this line <ArrowRight size={18}/></button></div>
+  <div ref={fit.ref} style={fit.style} className="mt-2 flex min-h-0 flex-col"> <ReadingPanel glossary={world.glossary} className="h-full" passages={chunks} kept={line?[line]:[]} onTap={l=>{setStarted(true);speed.tap();if(line&&lineKey(line)!==lineKey(l.text))speed.swap();setLine(l.text)}}/></div>
+  <div ref={fit.dock} className="flex justify-end pt-2"><button type="button" disabled={!line||busy} onClick={()=>go({kind:"confront",line,...speed.meta()},t.elapsed,t.grace)} className="case-primary disabled:opacity-40">Lock in this line <ArrowRight size={18}/></button></div>
  </section>}</TimedTry>;
 }
 // The character's reaction to a try, with trust moving the same way.
@@ -490,6 +496,7 @@ function LieRound({world,scene,passages,run,setting,sound,sandboxId,resume,send,
  const [started,setStarted]=useState(!!resume);
  const [line,setLine]=useState(""),[accepted,setAccepted]=useState(resume?.line??""),[shownLine,setShownLine]=useState(resume?.shown&&resume.line?resume.line:""),[explain,setExplain]=useState("");
  const speed=useSpeedMeta();
+ const fit=useFitHeight();
  async function go(input:RoundInput,elapsed=0,grace=false){
   if(busy)return;setBusy(true);
   const r=await trySend(send,onError,input,elapsed,grace);setBusy(false);
@@ -498,7 +505,7 @@ function LieRound({world,scene,passages,run,setting,sound,sandboxId,resume,send,
   if(r.reply.step){const s=r.reply.step.shown?.[0];if(s){setShownLine(s);setAccepted(s)}else if(input.kind==="lie")setAccepted(input.line)}
  }
  const testimony=<Speaker world={world} characterId={lie.character_id} line={lie.testimony} sound={sound&&tryNo===1&&!accepted} sandboxId={sandboxId} label="Testimony"/>;
- if(notYet)return <>{testimony}<NotYet tryNo={tryNo} hint={notYet} onTryAgain={()=>{setNotYet(null);setLine("")}}/></>;
+ if(notYet)return <>{testimony}<NotYet tryNo={tryNo} hint={notYet} onTryAgain={()=>{setNotYet(null);setLine("");setStarted(false)}}/></>;
  if(accepted)return <section className="mt-4" aria-labelledby="play-h">
   <h1 id="play-h" className="text-[24px] font-bold">{shownLine?"Here's the proof":"Lie caught"}</h1>
   {testimony}
@@ -508,14 +515,14 @@ function LieRound({world,scene,passages,run,setting,sound,sandboxId,resume,send,
   <div className="mt-5 flex justify-end"><button type="button" disabled={!explain.trim()||busy} onClick={()=>go({kind:"lie",line:accepted,explanation:explain})} className="case-primary disabled:opacity-40">Submit <ArrowRight size={18}/></button></div>
  </section>;
  return <TimedTry key={tryNo} kind="lie" tryNo={tryNo} setting={setting} paused={hold} waiting={!started} onOver={(e,g)=>go({kind:"lie",line,...speed.meta(),timeout:true},e,g)}>{t=><section className="mt-3" aria-labelledby="play-h">
-  <h1 id="play-h" tabIndex={-1} className="text-[24px] font-bold outline-none">{tryNo>1?`Try ${tryNo}`:"Catch the lie"}</h1>
+  <RoundHeading round={3} kind="lie" tryNo={tryNo}/>
   <RoundBanner bar={bar} started={started}/>
   {testimony}
   <TimerBar t={t} seconds={trySeconds("lie",tryNo,setting).seconds} waiting={!started}/>
   <LanternNote world={world} passages={passages} scene={scene} kind="lie" run={run}/>
   <p className="mt-4 text-[16px] font-semibold">One thing is false. Tap the line in the story that proves it.</p>
-  <ReadingPanel glossary={world.glossary} className="mt-3 max-h-[45vh]" passages={source} kept={line?[line]:[]} onTap={l=>{setStarted(true);speed.tap();if(line&&lineKey(line)!==lineKey(l.text))speed.swap();setLine(l.text)}}/>
-  <div className="mt-5 flex justify-end"><button type="button" disabled={!line||busy} onClick={()=>go({kind:"lie",line,...speed.meta()},t.elapsed,t.grace)} className="case-primary disabled:opacity-40">Lock in this line <ArrowRight size={18}/></button></div>
+  <div ref={fit.ref} style={fit.style} className="mt-2 flex min-h-0 flex-col"> <ReadingPanel glossary={world.glossary} className="h-full" passages={source} kept={line?[line]:[]} onTap={l=>{setStarted(true);speed.tap();if(line&&lineKey(line)!==lineKey(l.text))speed.swap();setLine(l.text)}}/></div>
+  <div ref={fit.dock} className="flex justify-end pt-2"><button type="button" disabled={!line||busy} onClick={()=>go({kind:"lie",line,...speed.meta()},t.elapsed,t.grace)} className="case-primary disabled:opacity-40">Lock in this line <ArrowRight size={18}/></button></div>
  </section>}</TimedTry>;
 }
 
@@ -533,19 +540,23 @@ function CallRound({world,scene,passages,run,setting,resume,send,onError,bar,hol
   const r=await trySend(send,onError,{kind:"call",theoryId:theory,pins,...speed.meta(),...(timeout?{timeout:true}:{})},elapsed,grace);setBusy(false);
   if(r.reply?.notYet){setTryNo(r.reply.notYet.tryNo);setNotYet(r.reply.notYet.hint)}
  }
- if(notYet)return <NotYet tryNo={tryNo} hint={notYet} onTryAgain={()=>{setNotYet(null);setPins([])}}/>;
- return <TimedTry key={tryNo} kind="call" tryNo={tryNo} setting={setting} paused={hold} waiting={!started} onOver={(e,g)=>go(e,g,true)}>{t=><section className="mt-3" aria-labelledby="play-h">
-  <h1 id="play-h" tabIndex={-1} className="text-[24px] font-bold outline-none">{tryNo>1?`Try ${tryNo}`:"Build the case"}</h1>
+ const fit=useFitHeight();
+ const picked=q.theories.find(th=>th.id===theory);
+ const fromPouch=run.state.pouch.filter(l=>!pins.some(p=>lineKey(p)===lineKey(l)));
+ if(notYet)return <NotYet tryNo={tryNo} hint={notYet} onTryAgain={()=>{setNotYet(null);setPins([]);setStarted(false)}}/>;
+ return <TimedTry key={tryNo} kind="call" tryNo={tryNo} setting={setting} paused={hold} waiting={!started} onOver={(e,g)=>go(e,g,true)}>{t=><section className="mt-2" aria-labelledby="play-h">
+  <RoundHeading round={4} kind="call" tryNo={tryNo}/>
   <RoundBanner bar={bar} started={started}/>
-  <p className="mt-2 text-[19px] font-semibold leading-7">{q.question}</p>
-  <TimerBar t={t} seconds={trySeconds("call",tryNo,setting).seconds} waiting={!started}/>
+  <p className="mt-1 text-[17px] font-semibold leading-6">{q.question}</p>
+  <TimerBar t={t} seconds={trySeconds("call",tryNo,setting).seconds} compact waiting={!started}/>
   <LanternNote world={world} passages={passages} scene={scene} kind="call" run={run}/>
-  <fieldset className="mt-4"><legend className="text-[16px] font-semibold">Your theory</legend>
-   <div className="mt-2 grid gap-2 sm:grid-cols-3">{q.theories.map(th=><button key={th.id} type="button" aria-pressed={theory===th.id} onClick={()=>{setStarted(true);setTheory(th.id)}} className={`rounded-2xl p-4 text-left ${theory===th.id?"bg-[#2A2620] text-white":"bg-[#FFFDF8] ring-1 ring-[#E4DCCB] hover:ring-[#A0472C]"}`}><span className="block text-[17px] font-bold">{th.name}</span><span className="mt-1 block text-[14px] leading-5 opacity-80">{th.description}</span></button>)}</div></fieldset>
-  <Pouch pouch={run.state.pouch} picked={pins} onPick={togglePin} max={2}/>
-  <details className="mt-3 rounded-2xl bg-[#FFFDF8] p-3 ring-1 ring-[#E4DCCB]" open={run.state.pouch.length<2}><summary className="cursor-pointer text-[15px] font-semibold text-[#8A3B23]">Or pin a line from the reading</summary>
-   <ReadingPanel glossary={world.glossary} className="mt-2 max-h-[45vh] shadow-none" passages={chunks} kept={pins} onTap={l=>togglePin(l.text)}/></details>
-  <div className="mt-5 flex justify-end"><button type="button" disabled={!theory||pins.length<2||busy} onClick={()=>go(t.elapsed,t.grace)} className="case-primary disabled:opacity-40">Lock in my case <ArrowRight size={18}/></button></div>
+  <fieldset className="mt-2"><legend className="text-[14px] font-bold uppercase tracking-wide text-[#8A3B23]">1 · Your theory</legend>
+   <div className="mt-1 grid grid-cols-3 gap-1.5">{q.theories.map(th=><button key={th.id} type="button" aria-pressed={theory===th.id} aria-label={`Theory: ${th.name}. ${th.description}`} onClick={()=>{setStarted(true);setTheory(th.id)}} className={`min-h-[48px] rounded-xl px-2 py-1.5 text-center text-[14px] font-bold leading-tight ${theory===th.id?"bg-[#2A2620] text-white":"bg-[#FFFDF8] ring-1 ring-[#E4DCCB] hover:ring-[#A0472C]"}`}>{th.name}</button>)}</div>
+   {picked&&<p className="mt-1 text-[13.5px] leading-5 text-[#4A4438]">{picked.description}</p>}</fieldset>
+  <p className="mt-2 text-[14px] font-bold uppercase tracking-wide text-[#8A3B23]">2 · Pin 2 lines that support it <span className="normal-case tracking-normal text-[#2A2620]">· {pins.length}/2</span></p>
+  {fromPouch.length>0&&<div className="mt-1 flex items-center gap-1 overflow-x-auto [scrollbar-width:none]" role="group" aria-label="Lines from your pouch"><span className="shrink-0 text-[12.5px] font-semibold text-[#6B6457]">Your pouch:</span>{fromPouch.map(l=><button key={l} type="button" onClick={()=>togglePin(l)} aria-label={`Pin from your pouch: ${displayLine(l).split(/\s+/).slice(0,6).join(" ")}…`} className="inline-flex min-h-8 shrink-0 items-center rounded-full bg-[#F4E1D6] px-2.5 text-[12.5px] font-semibold text-[#8A3B23]">+ {displayLine(l).split(/\s+/).slice(0,3).join(" ")}…</button>)}</div>}
+  <div ref={fit.ref} style={fit.style} className="mt-1.5 flex min-h-0 flex-col"><ReadingPanel glossary={world.glossary} className="h-full" passages={chunks} kept={pins} onTap={l=>togglePin(l.text)}/></div>
+  <div ref={fit.dock} className="pt-2"><button type="button" disabled={!theory||pins.length<2||busy} onClick={()=>go(t.elapsed,t.grace)} className="case-primary min-h-[48px] w-full justify-center disabled:opacity-40">{!theory?"Pick a theory":pins.length<2?`Pin ${2-pins.length} more line${pins.length===1?"":"s"}`:"Lock in my case"} <ArrowRight size={18}/></button></div>
  </section>}</TimedTry>;
 }
 

@@ -8,7 +8,8 @@
 // - Tries: full points on the first try, half on the second, none after; each wrong line costs 25 (never below 0 for the
 //   round). Try 2 names the paragraph; try 3 names the part of the paragraph. After three misses the answer is shown and
 //   the Prove it step is still required, for 0 points ("shown answer").
-// - Exact words: lines over 25 words need the authored phrase marked, with 2 words of tolerance at each edge.
+// - Exact words: lines over 25 words need the proof words marked: any span of the line that holds one of the answer's
+//   key phrases counts. A span that misses them is "Right line! Mark the words that prove it", with no try used.
 // - Prove it: pick from 4 authored choices, or finish "This proves ___ because ___" (saved for the teacher, never scored).
 // - Speed flags, for the teacher only: a line tapped within 4 seconds of opening the passage, or more than 4 swaps
 //   before locking in.
@@ -65,13 +66,13 @@ export function phraseRange(line: string, phrase: string): [number, number] | nu
   for (let i = 0; i + want.length <= words.length; i++) if (want.every((w, k) => words[i + k].w === w)) return [words[i].i, words[i + want.length - 1].i];
   return null;
 }
-// A marked range matches the authored phrase when each edge is within 2 words of the authored edge.
-export function phraseMatches(line: string, phrase: string, marked: [number, number]) {
-  const want = phraseRange(line, phrase);
-  if (!want) return false;
+// A marked range proves the line when it holds one of the answer's key phrases (the authored phrase if none).
+export const phraseKeys = (a: { phrase?: string; key?: string | string[] }) => (a.key === undefined ? (a.phrase ? [a.phrase] : []) : Array.isArray(a.key) ? a.key : [a.key]);
+export function phraseMatches(line: string, a: { phrase?: string; key?: string | string[] }, marked: [number, number]) {
   const [s, e] = marked[0] <= marked[1] ? marked : [marked[1], marked[0]];
-  return Math.abs(s - want[0]) <= PHRASE_TOLERANCE && Math.abs(e - want[1]) <= PHRASE_TOLERANCE;
+  return phraseKeys(a).some((k) => { const r = phraseRange(line, k); return !!r && s <= r[0] && e >= r[1]; });
 }
+export const MARK_AGAIN = "Right line! Mark the words that prove it.";
 
 // ---------- Prove it ----------
 export const PROVE_FRAME = { start: "This proves", middle: "because" } as const;
@@ -225,6 +226,10 @@ export function questionProblems(at: string, q: { question?: string; focus?: str
     const l = answerLine(a.line);
     if (!l || l.text !== a.line) problems.push(`${at}: answer "${a.line.replace(/\s+/g, " ").slice(0, 60)}" is not copied exactly from one of its evidence lines`);
     if (phrases && "phrase" in a && a.phrase !== undefined && !phraseRange(a.line, a.phrase)) problems.push(`${at}: phrase "${a.phrase.slice(0, 50)}" is not in its line`);
+    if (phrases && "phrase" in a && a.phrase) {
+      if (a.key === undefined) problems.push(`${at}: phrase "${a.phrase.slice(0, 40)}" needs its key proof words`);
+      for (const k of phraseKeys(a)) if (!phraseRange(a.line, k)) problems.push(`${at}: key "${k.slice(0, 40)}" is not in its line`);
+    }
     if (phrases && needsPhrase(a.line) && !("phrase" in a && a.phrase)) problems.push(`${at}: a line over 25 words needs a proof phrase`);
   }
   for (const n of q.near_misses ?? []) {

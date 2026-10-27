@@ -469,7 +469,8 @@
               "answers": [
                 {
                   "line": "I wasn’t sure, I’m not sure yet, but I opened the door--this door\n[_indicating the door by which the two women are still standing_] and\nthere in that rocker--[_pointing to it_] sat Mrs. Wright.",
-                  "phrase": "sat Mrs. Wright"
+                  "phrase": "sat Mrs. Wright",
+                  "key": "sat Mrs. Wright"
                 }
               ],
               "near_misses": [
@@ -497,7 +498,11 @@
                 },
                 {
                   "line": "I wasn’t sure, I’m not sure yet, but I opened the door--this door\n[_indicating the door by which the two women are still standing_] and\nthere in that rocker--[_pointing to it_] sat Mrs. Wright.",
-                  "phrase": "I wasn’t sure, I’m not sure yet"
+                  "phrase": "I wasn’t sure, I’m not sure yet",
+                  "key": [
+                    "I wasn’t sure",
+                    "I’m not sure yet"
+                  ]
                 }
               ],
               "near_misses": [
@@ -1409,7 +1414,8 @@
               "answers": [
                 {
                   "line": "She--come to think of it, she was kind of like a bird\nherself--real sweet and pretty, but kind of timid and--fluttery.",
-                  "phrase": "she was kind of like a bird herself"
+                  "phrase": "she was kind of like a bird herself",
+                  "key": "kind of like a bird"
                 }
               ],
               "near_misses": [
@@ -2314,7 +2320,8 @@
               "answers": [
                 {
                   "line": "If there’d been years and years of\nnothing, then a bird to sing to you, it would be awful--still, after\nthe bird was still.",
-                  "phrase": "then a bird to sing to you, it would be awful"
+                  "phrase": "then a bird to sing to you, it would be awful",
+                  "key": "it would be awful"
                 }
               ],
               "near_misses": [
@@ -2636,7 +2643,8 @@
               "answers": [
                 {
                   "line": "When I was a girl--my kitten--there was a boy took a\nhatchet, and before my eyes--and before I could get there--[_Covers her\nface an instant._]",
-                  "phrase": "there was a boy took a hatchet, and before my eyes"
+                  "phrase": "there was a boy took a hatchet, and before my eyes",
+                  "key": "took a hatchet"
                 }
               ],
               "near_misses": [

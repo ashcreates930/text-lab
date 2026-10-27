@@ -24,7 +24,8 @@ const yourTurnActivity=z.object({title:z.string().min(1),minutes:z.number().int(
 // share with its answers (reviewed by hand).
 const nearMiss=z.object({line:z.string(),hint:z.string().min(1)});
 const proveIt=z.object({right:z.string().min(1),wrong:z.array(z.string().min(1)).length(3)});
-const bankAnswer=z.object({line:z.string(),phrase:z.string().optional()});
+// key: the proof words inside the line (one, or any of several); a marked span that holds one of them counts.
+const bankAnswer=z.object({line:z.string(),phrase:z.string().optional(),key:z.union([z.string().min(1),z.array(z.string().min(1)).min(1)]).optional()});
 const bankQuestion=z.object({id:z.string(),ladder:z.enum(["locate","infer"]),question:z.string().min(1),answers:z.array(bankAnswer).min(1),near_misses:z.array(nearMiss).default([]),prove:proveIt.nullable(),shared_ok:z.array(z.string()).optional()});
 const artifact = z.object({off_claim:offClaim.optional(),bank:z.array(bankQuestion).optional(),id:z.string(),name:z.string(),scene_id:z.string(),evidence_type:z.enum(["observed","claimed","reported"]),secondary_evidence_type:z.enum(["observed","claimed","reported"]).optional(),position,image:z.string().optional(),closeup_image:z.string().optional(),source_anchor:z.array(z.string()),unlock_condition:z.string().nullable(),questions:z.array(artifactQuestion).length(3)});
 // Spot the Lie: once per scene, a character testifies with one false claim that one line of the story disproves.
