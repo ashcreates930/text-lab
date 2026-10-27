@@ -6,6 +6,7 @@ import { readFileSync } from "node:fs";
 import { WorldPackSchema } from "../lib/world-schema.ts";
 import { parseSourcePassages, readingPortions } from "../lib/source-passages.ts";
 import { evidenceSentences } from "../lib/lies.ts";
+import { cluePanel } from "../lib/clue-game.ts";
 
 const [worldId, sceneArg] = process.argv.slice(2);
 const world = WorldPackSchema.parse(JSON.parse(readFileSync(`worlds/${worldId}/world.json`, "utf8")));
@@ -21,11 +22,11 @@ const reading = readingPortions(passages, world.scenes)[si] ?? [];
 out.push(`## ${world.title} · Scene ${si + 1} (${scene.id})`, "", `Reading: ${reading.map((p) => lab(p.id)).join(", ")}`, "");
 
 for (const a of scene.artifacts) {
-  out.push(`### Clue: ${a.name} (${a.id})`, "", `Clue paragraphs: ${a.source_anchor.map(lab).join(", ")}`, "");
+  out.push(`### Clue: ${a.name} (${a.id})`, "", `Clue paragraphs: ${a.source_anchor.map(lab).join(", ")} · tappable on the clue screen: ${cluePanel(world, passages, scene, a).map((p) => lab(p.id)).join(", ")}`, "");
   if (a.off_claim) out.push(`- **Off claim** (${name(a.off_claim.character_id)} says): "${a.off_claim.claim}"`, `  - Accepted (corrects it): ${q(a.off_claim.line, a.off_claim.paragraph)}`, "");
   for (const b of a.bank ?? []) {
     out.push(`- **Question (${b.ladder})**: ${b.question}`);
-    for (const x of b.answers) out.push(`  - Accepted: ${q(x.line)}${x.phrase ? ` · exact words: "${x.phrase}"` : ""}`);
+    for (const x of b.answers) out.push(`  - Accepted: ${q(x.line)}${x.phrase ? ` · exact words: "${x.phrase}" · key (any span holding one counts): ${[x.key ?? x.phrase].flat().map((k) => `"${k}"`).join(" or ")}` : ""}`);
     for (const n of b.near_misses) out.push(`  - Near miss: ${q(n.line)} · hint: "${n.hint}"`);
     if (b.prove) out.push(`  - Prove it: right "${b.prove.right}" · wrong: ${b.prove.wrong.map((w) => `"${w}"`).join("; ")}`);
     out.push("");
@@ -46,7 +47,7 @@ if (sm) {
   out.push(`#### Round 2 · Infer (${name(sm.infer.character_id)} asks)`, "");
   for (const b of sm.infer.bank) {
     out.push(`- **Question**: ${b.question}`);
-    for (const x of b.answers) out.push(`  - Accepted: ${q(x.line)}${x.phrase ? ` · exact words: "${x.phrase}"` : ""}`);
+    for (const x of b.answers) out.push(`  - Accepted: ${q(x.line)}${x.phrase ? ` · exact words: "${x.phrase}" · key (any span holding one counts): ${[x.key ?? x.phrase].flat().map((k) => `"${k}"`).join(" or ")}` : ""}`);
     for (const n of b.near_misses) out.push(`  - Near miss: ${q(n.line)} · hint: "${n.hint}"`);
     if (b.prove) out.push(`  - Prove it: right "${b.prove.right}" · wrong: ${b.prove.wrong.map((w) => `"${w}"`).join("; ")}`);
     out.push("");
