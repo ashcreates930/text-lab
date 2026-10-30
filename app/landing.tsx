@@ -1,12 +1,12 @@
 "use client";
 // Public home page: what Text Lab is, who it is for, and one click into a case.
 import { useState } from "react";
-import { ArrowRight, Check, MessageCircle, PenLine, Radio, Sparkles } from "lucide-react";
+import { ArrowRight, Check, MessageCircle, PenLine, Radio, Sparkles, Zap } from "lucide-react";
 import { Wordmark } from "./wordmark";
 import { openDemoRoom } from "./live/entry";
 import { copyTransform, faceClip, hologramLayout } from "@/lib/hologram";
 
-export function Landing({ brand, onStart, onCatchLie, onPreset, onJoin, onWaitlist, onPricing, onLessons, onClassroom, onApproach, onFeedback }: any) {
+export function Landing({ brand, onStart, onCatchLie, onProofRace, onPreset, onJoin, onWaitlist, onPricing, onLessons, onClassroom, onApproach, onFeedback }: any) {
   const stories=[["The Legend of Sleepy Hollow","Washington Irving","Grades 6 to 8"],["The Tell-Tale Heart","Edgar Allan Poe","Grades 8 to 12"],["Trifles","Susan Glaspell","Grades 9 to 11"]];
   const steps=[["01","Open a clue","Students step into a scene from the story and pick a clue to examine."],["02","Question, then prove","They ask a character what happened. Characters can be wrong, so students tap the line in the text that backs them up or proves them wrong. A wrong line means 'Not yet': students look again, and first-try proof earns full points."],["03","Play your way","Solo missions, rival face-offs, or squads that read together."],["04","Spot the Lie","In every scene one character tells a lie on purpose. Students catch it with the one line from the story that disproves it."],["05","Close the case","Each student picks a mission, like Find Ichabod. They collect proof as they play, write their verdict with cited lines, and then the story reveals what really happened."],["06","Play live in squads","Teachers run live rounds on the board. Squads of 3 or 4 share roles and earn points for evidence and reasoning, not speed."]];
   const audiences:[string,string,string,string[],[string,()=>void]][]=[
@@ -40,7 +40,7 @@ export function Landing({ brand, onStart, onCatchLie, onPreset, onJoin, onWaitli
       </div>
     </section>
 
-    <NewStrip onCatchLie={onCatchLie}/>
+    <NewStrip onCatchLie={onCatchLie} onProofRace={onProofRace}/>
 
     <section id="how" className="border-t border-[#E4DCCB] bg-[#FFFDF8] px-5 py-16 md:px-14 md:py-20"><div className="mx-auto max-w-7xl">
       <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">How a case works</p>
@@ -76,8 +76,8 @@ export function Landing({ brand, onStart, onCatchLie, onPreset, onJoin, onWaitli
   </div>;
 }
 
-// New: live squads, Spot the Lie, hologram mode and Your Turn.
-function NewStrip({onCatchLie}:{onCatchLie:()=>void}){
+// New: Proof Race, live squads, Spot the Lie, hologram mode and Your Turn.
+function NewStrip({onCatchLie,onProofRace}:{onCatchLie:()=>void;onProofRace?:()=>void}){
   const [busy,setBusy]=useState(false),[error,setError]=useState("");
   async function playLive(){if(busy)return;setBusy(true);setError("");setError(await openDemoRoom());setBusy(false)}
   const card="flex flex-col rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]";
@@ -85,6 +85,8 @@ function NewStrip({onCatchLie}:{onCatchLie:()=>void}){
     <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">New</p>
     <h2 id="new-h" className="serif mt-2 text-[30px] leading-tight md:text-[36px]">More ways to prove what's true</h2>
     <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+      {onProofRace&&<div className={card}><Zap size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Proof Race</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-[#4A4438]">Read a short chunk with no timer, check the gist, then race to tap the line that answers the question. Points come only from the right line, with a bonus for speed. Play live with your class, or solo against the Lantern Ghost.</p>
+        <button type="button" onClick={onProofRace} className="case-primary mt-5 w-full sm:w-fit">Try Proof Race <ArrowRight size={18}/></button></div>}
       <div className={card}><Radio size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Play live with your class</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-[#4A4438]">Squads join on their phones with a QR code. Each member reads a different part of the passage and has a job: Reader, Fact-checker or Connector. Teammates pin lines, react with sentence stems and vote on their best proof.</p>
         <button type="button" onClick={playLive} aria-busy={busy} className="case-primary mt-5 w-full sm:w-fit">{busy?"Opening the demo room…":"Open a demo room"} <ArrowRight size={18}/></button>
         {error&&<p role="alert" className="mt-2 text-[15px] text-[#A33B20]">{error}</p>}</div>

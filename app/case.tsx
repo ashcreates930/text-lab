@@ -30,6 +30,8 @@ import {PlantLieView} from "./plant-lie";
 import {RoleIntro,UnlockChallenge} from "./role-intro";
 import {demoEndingDue,firstClue,preGameScreen} from "@/lib/pregame";
 import {DemoEnding} from "./demo-ending";
+import {ProofRaceSolo} from "./proof-race";
+import {hasProofRace} from "@/lib/proof-race";
 import {StoryMode} from "./story-mode";
 import {ClueScreen} from "./clue-screen";
 import {SceneWriting} from "./scene-writing";
@@ -95,6 +97,8 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
   return {...d,missionSeen:[...new Set([...(d.missionSeen??[]),sc.id])]}};
  if(introDue&&personal){const startIdx=demo.scene===0&&!storyJump&&personal.rolesOn&&world.student_role?Math.max(0,world.scenes.findIndex(s=>s.id===world.student_role!.start_scene)):demo.scene;
   return <RoleIntro world={world} settings={personal} onDone={angle=>setDemo(d=>{const next={...d,roleIntroSeen:true,...(angle?{angle:{...(d.angle??{}),...angle}}:{}),scene:startIdx};return world.missions?.length?next:enterPassage(next,startIdx)})}/>}
+ // Proof Race (solo): chunked reading against the Lantern Ghost; "Play the case" goes on to the mission and the scenes.
+ if(loaded&&demo.angle?.style==="race"&&hasProofRace(world)&&passages.length)return <ProofRaceSolo world={world} passages={passages} preset={demo.preset} onExit={()=>setDemo(d=>({...d,angle:{...(d.angle??{}),style:"solo"}}))}/>;
  if(loaded&&pre==="mission")return <MissionPick world={world} onPick={id=>setDemo(d=>enterPassage({...d,mission:id},d.scene))}/>;
  // The public demo's ending after scene 1 (app/demo-ending.tsx), until the player goes on to scene 2.
  if(demo.demoEnding&&demo.demoEnding!=="done")return <DemoEnding world={world} passages={passages} demo={demo} setDemo={setDemo} sceneIndex={sceneIndex} onAnotherStory={onAnotherStory}/>;

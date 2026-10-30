@@ -5,7 +5,9 @@ import {useEffect,useRef,useState} from "react";
 import {Check,Gavel,MessageCircle,Pause,Play,Search,Shuffle,Sparkles,Square,Users,Volume2,X} from "lucide-react";
 import type {hostView} from "@/lib/live/server";
 import {ROLE_INFO,OBJECTION_SECONDS,type Role} from "@/lib/live/engine";
-import {hostKey,postJson,readStored,useLive,useScreenTop} from "./use-live";
+import {hostKey,postJson,readStored,useLive,useScreenTop,useStory} from "./use-live";
+import {LobbyBoard,LobbyMusic,RaceFinishHost,RaceHost,RacePick,isRace} from "./race-live";
+import {Podium} from "../proof-race";
 
 type View=ReturnType<typeof hostView>;
 const big="text-[clamp(18px,1.6vw,26px)]";
@@ -14,7 +16,8 @@ export function HostScreen({sessionId}:{sessionId:string}){
  const [token,setToken]=useState<string|null>(null);
  useEffect(()=>{setToken(readStored<string>(hostKey(sessionId)))},[sessionId]);
  const {state,setState,error}=useLive<View>(token?sessionId:null,token?{"x-live-host":token}:null);
-const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|null)=>v?`${v.session.status}:${v.session.roundIndex}:${(v.round as {stage?:string}|null)?.stage??""}`:null;
+const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|null)=>v?`${v.session.status}:${v.session.roundIndex}:${(v.round as {stage?:string}|null)?.stage??""}:${(v.round as {step?:number;beat?:string}|null)?.beat??""}:${(v.round as {step?:number}|null)?.step??""}`:null;
+ const {world}=useStory(state?.session.worldId);
  const [notice,setNotice]=useState(""),[ending,setEnding]=useState(false);
  useScreenTop(screenKey(state));
  async function act(body:Record<string,unknown>){const r=await postJson(`/api/live/sessions/${sessionId}/host`,body,{"x-live-host":token??""});if(r.ok){setState(r.data);setNotice("")}else setNotice(r.error)}
@@ -31,6 +34,7 @@ const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|nul
     <Counter label="Squads joined" value={state.counters.squadsJoined}/>
     {s.status==="round"&&state.counters.squadsAnswering>0&&<Counter label="Squads submitted" value={`${state.counters.squadsSubmitted}/${state.counters.squadsAnswering}`}/>}
     {s.status==="round"&&(round?.type==="verdict"&&"stage" in round&&round.stage==="vote"||round?.type==="objection"&&"stage" in round&&round.stage==="vote")&&<Counter label="Votes" value={state.counters.votes}/>}
+    {s.status==="lobby"&&<LobbyMusic on={s.status==="lobby"}/>}
     {s.status!=="ended"&&s.status!=="lobby"&&<button type="button" onClick={()=>act({action:s.paused?"resume":"pause"})} className="host-btn-secondary">{s.paused?<Play size={22}/>:<Pause size={22}/>}{s.paused?"Resume":"Pause"}</button>}
     {s.status!=="ended"&&(ending?<span role="group" aria-label="End this live round for everyone?" className="flex flex-wrap items-center gap-2"><span className="text-[16px] font-semibold">End for everyone?</span><button type="button" autoFocus onClick={()=>{setEnding(false);act({action:"end"})}} className="host-btn-secondary">Yes, end</button><button type="button" onClick={()=>setEnding(false)} className="host-btn-secondary">Keep playing</button></span>
      :<button type="button" onClick={()=>setEnding(true)} className="host-btn-secondary"><Square size={20}/>End</button>)}
@@ -41,9 +45,13 @@ const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|nul
   {s.paused&&<p className={`mt-4 rounded-2xl bg-[#F3C9B2] px-5 py-3 font-bold text-[#2A2620] ${big}`}>Paused</p>}
 
   {(s.status==="lobby"||(s.status==="reveal"&&!round))&&<Lobby state={state} joinUrl={joinUrl} act={act}/>}
-  {s.status==="round"&&round&&<LiveRound state={state} act={act} sessionId={sessionId}/>}
+  {s.status==="lobby"&&<LobbyBoard state={state} act={act}/>}
+  {s.status==="round"&&isRace(round)&&<RaceHost state={state} round={round} world={world} act={act}/>}
+  {s.status==="ended"&&isRace(round)&&<RaceFinishHost state={state} round={round}/>}
+  {s.status==="ended"&&!isRace(round)&&state.scores.filter(x=>x.points>0).length>0&&<div className="mt-6"><Podium dark sound title="Top squads" entries={state.scores.filter(x=>x.points>0).slice(0,3).map(x=>({id:x.squadId,name:x.name,points:x.points}))}/></div>}
+  {s.status==="round"&&round&&!isRace(round)&&<LiveRound state={state} act={act} sessionId={sessionId}/>}
   {s.status==="reveal"&&round&&<Reveal state={state} act={act}/>}
-  {(s.status==="reveal"||s.status==="lobby")&&state.squads.some(q=>q.members.length)&&<RoundPicker state={state} act={act} first={s.status==="lobby"}/>}
+  {(s.status==="reveal"||s.status==="lobby")&&(state.squads.some(q=>q.members.length)||(state.proofRace&&state.counters.players>0))&&<RoundPicker state={state} act={act} first={s.status==="lobby"}/>}
   {(s.status==="reveal"||s.status==="ended")&&state.yourTurn&&<YourTurnHost yourTurn={state.yourTurn} players={state.counters.players} act={act}/>}
   {s.status!=="lobby"&&<Scoreboard state={state}/>}
   {s.status!=="ended"&&s.status!=="lobby"&&<p className="mt-8 text-[18px] text-[#F3C9B2]">Join at {joinUrl.replace(/^https?:\/\//,"")}</p>}
@@ -53,7 +61,7 @@ const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|nul
 function Shell({children}:{children:React.ReactNode}){
  return <main className="case-ui case-ui-dark min-h-screen bg-[#1E1A15] px-5 py-6 md:px-10 md:py-8">{children}</main>;
 }
-const roundTitle=(t:string)=>t==="story"?"Story Mode":t==="lie"?"Spot the Lie":t==="verdict"?"Verdict Vote":"Objection!";
+const roundTitle=(t:string)=>t==="race"?"Proof Race":t==="story"?"Story Mode":t==="lie"?"Spot the Lie":t==="verdict"?"Verdict Vote":"Objection!";
 function Counter({label,value}:{label:string;value:number|string}){
  return <div className="rounded-2xl bg-[#2E2821] px-4 py-2 text-center" aria-live="polite"><p className="text-[28px] font-bold leading-none tabular-nums">{value}</p><p className="mt-1 text-[14px] text-[#F3C9B2]">{label}</p></div>;
 }
@@ -106,6 +114,7 @@ function RoundPicker({state,act,first}:{state:View;act:(b:Record<string,unknown>
  return <section className="mt-8 rounded-3xl bg-[#2E2821] p-5" aria-labelledby="pick-h">
   <h2 id="pick-h" className="text-[24px] font-bold">{first?"Start the first round":"Next round"}</h2>
   <div className="mt-4 grid gap-3 md:grid-cols-3">
+   {state.proofRace&&<RacePick state={state} act={act}/>}
    {state.storyScenes.length>0&&<StoryPick state={state} act={act}/>}
    {state.missions&&<MissionPick state={state} act={act}/>}
    <div className="rounded-2xl bg-[#1E1A15] p-4"><p className="flex items-center gap-2 text-[22px] font-bold"><Search size={22}/> Spot the Lie</p><p className="mt-1 text-[16px] text-[#E8DDCB]">A character testifies. Squads find the line that disproves them.</p>

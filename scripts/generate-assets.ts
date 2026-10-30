@@ -118,7 +118,8 @@ if(process.argv.includes("--narration")){
   console.log(`Done. Recorded ${made} paragraph(s) (${chars} characters); ${kept} already existed.`);
   process.exit(0);
 }
-// --sfx: Story Mode sound cues (countdown tick, correct chime, streak sting, leaderboard reveal), short and quiet, from
+// --sfx: Story Mode sound cues (countdown tick, correct chime, streak sting, leaderboard reveal), the live lobby loop and
+// the podium flourish, short and quiet, from
 // ElevenLabs sound generation like the ambient tracks. Saved to public/sounds/story/<name>.mp3. Takes --only=<name,...>.
 if(process.argv.includes("--sfx")){
   if(!elevenLabsKey)throw new Error("ELEVENLABS_API_KEY is required for sound effects.");
@@ -128,6 +129,9 @@ if(process.argv.includes("--sfx")){
     chime:["A short, gentle two-note bell chime for a correct answer, soft and warm, quiet.",1],
     streak:["A brief, bright rising three-note pluck on a harp, cheerful but quiet, no drums.",1.2],
     reveal:["A short, soft paper flip followed by a light single piano note, quiet.",1.5],
+    // Live lobby and the podium (Proof Race and every live game).
+    lobby:["A quiet, light, looping lobby tune for a classroom reading game: soft plucked strings and a gentle woodblock, warm and curious, no vocals, no drums, steady and calm.",20],
+    celebrate:["A short, cheerful celebration flourish: a bright rising harp run and a soft bell, quiet and warm, no crowd, no drums.",2.5],
   };
   const dir=join(process.cwd(),"public","sounds","story");await mkdir(dir,{recursive:true});
   for(const [name,[prompt,seconds]] of Object.entries(cues)){

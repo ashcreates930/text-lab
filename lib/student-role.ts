@@ -11,7 +11,7 @@ import type { WorldPack } from "./world-schema.ts";
 export const ANGLE_OPTIONS = {
   firedUpBy: { label: "What fires you up?", options: { unfairness: "Unfairness", underestimated: "Being underestimated", loyalty: "Loyalty", winning: "Winning", money: "Money" } },
   lane: { label: "What's your lane?", options: { sports: "Sports", music: "Music", gaming: "Gaming", fashion: "Fashion", "social-media": "Social media" } },
-  style: { label: "How do you want to play?", options: { solo: "Solo", rival: "Rival", squad: "Squad" } },
+  style: { label: "How do you want to play?", options: { solo: "Solo", rival: "Rival", squad: "Squad", race: "Proof Race" } },
 } as const;
 export type AngleKey = keyof typeof ANGLE_OPTIONS;
 export const ANGLE_STEPS = Object.keys(ANGLE_OPTIONS) as AngleKey[];

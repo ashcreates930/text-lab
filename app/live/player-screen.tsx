@@ -11,6 +11,7 @@ import {playerKey,postJson,readStored,store,useLive,useScreenTop,useStory} from 
 import {YourTurn} from "../your-turn";
 import {UnlockChallenge} from "../role-intro";
 import {PlayerStory} from "./player-story";
+import {AvatarPick,RaceEndedPlayer,RacePlayer,WordsWhileWaiting,isRace} from "./race-live";
 
 type View=ReturnType<typeof playerView>;
 type Seat={sessionId:string;playerToken:string;nickname:string};
@@ -46,8 +47,8 @@ function Play({seat,onLeave}:{seat:Seat;onLeave:()=>void}){
  const {state,setState,error}=useLive<View>(seat.sessionId,{"x-live-player":seat.playerToken});
  const {world,passages}=useStory(state?.session.worldId);
  const [notice,setNotice]=useState("");
- useScreenTop(state?`${state.session.status}:${state.session.roundIndex}:${(state.round as {stage?:string}|null)?.stage??""}:${!!state.answering}`:null);
- async function act(kind:string,payload:Record<string,unknown>={}){const r=await postJson(`/api/live/sessions/${seat.sessionId}/act`,{kind,payload},{"x-live-player":seat.playerToken});if(r.ok){setState(r.data);setNotice("")}else setNotice(r.error)}
+ useScreenTop(state?`${state.session.status}:${state.session.roundIndex}:${(state.round as {stage?:string}|null)?.stage??""}:${!!state.answering}:${(state.round as {beat?:string}|null)?.beat??""}:${(state.round as {step?:number}|null)?.step??""}`:null);
+ async function act(kind:string,payload:Record<string,unknown>={}):Promise<string|null>{const r=await postJson(`/api/live/sessions/${seat.sessionId}/act`,{kind,payload},{"x-live-player":seat.playerToken});if(r.ok){setState(r.data);setNotice("");return null}setNotice(r.error);return r.error}
  if(!state)return <Frame><p className="text-[18px]" aria-live="polite">{error||"Joining…"}</p>{error==="Join the round first."&&<button type="button" onClick={onLeave} className="case-primary mt-4">Join again</button>}</Frame>;
  const s=state.session,round=state.round;
  return <Frame>
@@ -59,8 +60,10 @@ function Play({seat,onLeave}:{seat:Seat;onLeave:()=>void}){
   {s.paused&&<p className="mt-3 rounded-2xl bg-[#2A2620] px-4 py-3 text-[17px] font-semibold text-white">Paused. Eyes on the board.</p>}
   <div aria-live="polite">
    {state.yourTurn&&s.status!=="round"&&world?<YourTurnPhone state={state} world={world} passages={passages} seat={seat}/>
+   :s.status==="ended"&&isRace(round)?<RaceEndedPlayer state={state}/>
    :s.status==="ended"?<Ended state={state}/>
-   :s.status==="lobby"||!round?<Waiting state={state}/>
+   :s.status==="lobby"||!round?<><Waiting state={state}/><AvatarPick state={state} act={act}/><WordsWhileWaiting world={world}/></>
+   :isRace(round)?<RacePlayer state={state} world={world} act={act}/>
    :s.status==="reveal"?<Revealed state={state}/>
    :<RoundView state={state} act={act} world={world} passages={passages}/>}
   </div>

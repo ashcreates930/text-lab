@@ -92,7 +92,7 @@ export function MarkSheet({line,current,inPouch,onTag,onPouch,onClose}:{line:Pan
 
 // Words to know: a row of the glossary words in this passage. A card opens in place (one at a time) and closes with
 // Escape or its button; focus stays in the row.
-function WordCards({words}:{words:GlossaryWord[]}){
+export function WordCards({words}:{words:GlossaryWord[]}){
  const [open,setOpen]=useState<string|null>(null);
  const card=words.find(w=>w.term===open);
  useEffect(()=>{if(!open)return;const k=(e:KeyboardEvent)=>{if(e.key==="Escape")setOpen(null)};window.addEventListener("keydown",k);return()=>window.removeEventListener("keydown",k)},[open]);

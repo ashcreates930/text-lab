@@ -5,7 +5,7 @@
 // shows. Squads play only in live class, so outside one Squad says so and offers solo.
 import {useLayoutEffect,useRef,useState} from "react";
 import {focusScreenTop} from "./screen-focus";
-import {ArrowRight,Check,Swords,User,Users} from "lucide-react";
+import {ArrowRight,Check,Swords,User,Users,Zap} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import {ANGLE_OPTIONS,INTEREST_STEPS,PLAY_STEP,UNLOCK,type Angle,type StoryPersonalSettings} from "@/lib/student-role";
 
@@ -14,6 +14,7 @@ const MODE_CARDS:Record<string,{line:string;Icon:typeof User}>={
  solo:{line:"Work the case on your own, at your pace.",Icon:User},
  rival:{line:"Race a computer rival to the right line.",Icon:Swords},
  squad:{line:"Read together with your squad in live class.",Icon:Users},
+ race:{line:"Read a chunk, then race the Lantern Ghost to the line that proves it.",Icon:Zap},
 };
 const reduced=()=>typeof window!=="undefined"&&!!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 

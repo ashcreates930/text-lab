@@ -1551,7 +1551,7 @@ test("what's your angle: characters hear only the part and how the student plays
   assert.equal(sr.ANGLE_STEPS.length,3);
   assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.firedUpBy.options),["Unfairness","Being underestimated","Loyalty","Winning","Money"]);
   assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.lane.options),["Sports","Music","Gaming","Fashion","Social media"]);
-  assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.style.options),["Solo","Rival","Squad"]);
+  assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.style.options),["Solo","Rival","Squad","Proof Race"]);
   assert.equal(sr.ANGLE_OPTIONS.style.label,"How do you want to play?");
   assert.deepEqual([sr.PLAY_STEP,...sr.INTEREST_STEPS],["style","firedUpBy","lane"],"play mode before the game; interests before Your Turn");
   assert.deepEqual(sr.UNLOCK,{title:"Unlock your challenge",line:"Two quick taps and we'll pick a challenge that fits you."});
@@ -2327,7 +2327,7 @@ test("rival freezes are logged for the teacher", async()=>{
 test("Your Turn content: one activity per angle option, every scored line exact, validated", async()=>{
   const {world,passages}=await storyKit();const yt=await import("../lib/your-turn.ts");
   assert.deepEqual(yt.yourTurnProblems(world,passages),[]);
-  assert.deepEqual(Object.keys(world.your_turn!.activities).sort(),[...yt.ANGLE_OPTION_IDS].sort(),"every option of all three questions");
+  assert.deepEqual(Object.keys(world.your_turn!.activities).sort(),yt.ANGLE_OPTION_IDS.filter(id=>id!=="race").sort(),"every option of all three questions (Proof Race is a way to play, not a challenge)");
   assert.equal(world.your_turn!.activities.loyalty.kind,"talk");assert.equal(world.your_turn!.activities.loyalty.character_id,"hans-van-ripper");
   assert.equal(world.your_turn!.activities.winning.kind,"debate");
   for(const a of Object.values(world.your_turn!.activities))assert.ok(a.minutes>=5&&a.minutes<=7);
