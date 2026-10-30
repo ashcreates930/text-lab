@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
 import {WorldPackSchema} from "../lib/world-schema.ts";
-import {screenMessage} from "../lib/safety.ts";
+import {screenBoardText,screenMessage} from "../lib/safety.ts";
 import {characterReply} from "../lib/llm.ts";
 import {generateResumePhrase,hashResumePhrase} from "../lib/resume.ts";
 import {createDemoSandboxId,isDemoSandboxExpired} from "../lib/demo-sandbox.ts";
@@ -2757,6 +2757,7 @@ test("proof race live: beats, readiness, gist and question saving, taps scored o
   assert.equal(pub().beat,"process");
   assert.equal(await act(ids[0],"race_question",{text:"Why did the narrator go hunting alone?"}),null);
   assert.equal(await act(ids[1],"race_question",{text:"Where do you live?"}),null);
+  assert.equal(await act(ids[2],"race_question",{text:"this story is stupid and so are you"}),null);
   const qs=server.hostView(st).race!.questions;assert.equal(qs.length,1,"a flagged question never reaches the board");
   assert.equal(await host({action:"race.pin",questionId:qs[0].id}),null);assert.equal(pub().pinned,"Why did the narrator go hunting alone?");
   // Finish: the podium and class stats; the Evidence view keeps every question, flagged ones marked.
@@ -2764,7 +2765,7 @@ test("proof race live: beats, readiness, gist and question saving, taps scored o
   const fin=pub().finish!;
   assert.equal(fin.podium[0].name,"Ana Ruiz");assert.equal(fin.stats.rows.length,6);assert.equal(fin.stats.hardest.length,3);
   const ev=liveRoundEvidence({session:st.session,world:st.world,squads:st.squads,players:st.players,responses:st.responses});
-  const race=ev.find(r=>r.type==="Proof Race")!;assert.equal(race.questions!.length,2);assert.equal(race.questions!.find(q=>q.flagged)!.text,"Where do you live?");
+  const race=ev.find(r=>r.type==="Proof Race")!;assert.equal(race.questions!.length,3);assert.equal(race.questions!.filter(q=>q.flagged).length,2);assert.equal(race.questions!.find(q=>q.flagged)!.text,"Where do you live?");
   assert.ok(race.squads[0].members.find(m=>m.nickname==="Ben Cole")!.actions.some(a=>/near miss/.test(a)));
 });
 
@@ -2774,4 +2775,9 @@ test("production fixes: mission questions hold the student's pieces, and round 1
   const {lineWords}=await import("../lib/lies.ts");const has=(xs:string[])=>xs.some(x=>lines.some(l=>lineWords(l)===lineWords(x)));
   for(const seed of ["a","b","c","d","e","f"]){const p=sm.pickRound(scene,{seed,pieceLines:lines});assert.ok(has(sm.readQ(scene,p).answers),`round 1 holds a piece (${seed})`);assert.ok(has(sm.inferQ(scene,p).answers.map(a=>a.line)),`round 2 holds a piece (${seed})`)}
   assert.equal(sm.POUCH_MAX,3,"the button asks for the pouch's lines");
+});
+
+test("board questions: put-downs and swearing stay off the class board, story questions pass", ()=>{
+  for(const t of ["this story is stupid and so are you","you suck","wtf is this"])assert.notEqual(screenBoardText(t).action,"allow",t);
+  for(const t of ["Why did the class laugh at Ichabod?","Was the Horseman really a ghost?","Who passed the glass of cider?"])assert.equal(screenBoardText(t).action,"allow",t);
 });

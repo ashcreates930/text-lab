@@ -7,7 +7,7 @@ import type { WorldPack } from "../world-schema.ts";
 import type { SourcePassage } from "../source-passages.ts";
 import type { LivePlayer, LiveResponse, LiveSquad } from "./engine.ts";
 import { BEATS, PROCESS_SECONDS, chunkStats, gistPoints, podium, raceBoard, raceChunks, raceLimitMs, raceTap, readiness, squadTotals, type Beat, type RaceChunk, type RaceSettings } from "../proof-race.ts";
-import { screenMessage } from "../safety.ts";
+import { screenBoardText } from "../safety.ts";
 import { lineWords } from "../lies.ts";
 
 export type LiveRaceRound = { type: "race"; settings: RaceSettings; step: number; beat: Beat; beatStartedAt: string; squadsOn: boolean; pinned?: string | null };
@@ -62,7 +62,7 @@ export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses:
     if (me.asked) return "You already asked your question.";
     const text = String(payload.text ?? "").trim().replace(/\s+/g, " ").slice(0, 200);
     if (text.length < 3) return "Type your question first.";
-    const s = screenMessage(text);
+    const s = screenBoardText(text);
     // A blocked question never reaches the board; it's kept, flagged, for the teacher.
     return { payload: { step: round.step, text }, flagged: s.action !== "allow" };
   }
@@ -111,7 +111,11 @@ export const raceReadiness = (round: LiveRaceRound, responses: LiveResponse[], r
   readiness(rows(responses, roundIndex, "race_ready", round.step).map((r) => r.playerId!).filter(Boolean), players.map((p) => p.id), round.settings.autoAdvance);
 // How many have answered this beat (for the host).
 export function raceAnswered(round: LiveRaceRound, responses: LiveResponse[], roundIndex: number, players: LivePlayer[]) {
-  return players.filter((p) => { const c = playerChunk(responses, roundIndex, round.step, p.id); return round.beat === "process" ? c.gist !== null || c.asked : c.done; }).length;
+  return raceDone(round, responses, roundIndex, players).length;
+}
+// Who has answered this beat (the host waits only on extra time that someone is still using).
+export function raceDone(round: LiveRaceRound, responses: LiveResponse[], roundIndex: number, players: LivePlayer[]) {
+  return players.filter((p) => { const c = playerChunk(responses, roundIndex, round.step, p.id); return round.beat === "process" ? c.gist !== null || c.asked : c.done; }).map((p) => p.id);
 }
 // "Your question": up to 3 questions for the board, never a flagged one and never a name; the teacher can pin one.
 export function raceQuestions(responses: LiveResponse[], roundIndex: number, step: number) {

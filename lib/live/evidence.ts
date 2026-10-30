@@ -3,6 +3,7 @@
 // Flagged writing is shown here, marked, because this view is the teacher's only; it never reaches the host screen.
 import type { WorldPack } from "../world-schema.ts";
 import { freezeLine } from "../freeze.ts";
+import { raceTotals } from "./race.ts";
 import { ROLE_INFO, objectionResult, roundLie, scoreLieRound, scoreVerdictRound, storySquadScores, type LivePlayer, type LiveResponse, type LiveSession, type LiveSquad, type Role } from "./engine.ts";
 
 export type LiveMemberEvidence = { nickname: string; studentId: string | null; actions: string[] };
@@ -72,6 +73,7 @@ export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] 
     const verdict = round.type === "verdict";
     // Proof Race without squads: every player in one group, with their points.
     const groups = round.type === "race" && !players.some((p) => p.squadId) ? [{ id: "__all", name: "Everyone", position: 0 }] : squads;
+    const raceTotal = round.type === "race" ? raceTotals(responses, i, players, Number.MAX_SAFE_INTEGER) : null;
     const squadRows = groups.flatMap((sq): LiveSquadEvidence[] => {
       // Roster order: current members, then anyone who acted for this squad and has since moved.
       const memberIds = new Set(players.filter((p) => sq.id === "__all" || p.squadId === sq.id).map((p) => p.id));
@@ -81,12 +83,15 @@ export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] 
       const words = verdict ? latest(sq.id, "argument") : latest(sq.id, "explain");
       const answer = verdict ? ((evidence?.payload.pins ?? []) as { quote: string }[]).map((p) => p.quote).join(" | ") : text(evidence, "quote");
       const r = results.get(sq.id) ?? { result: "", points: 0 };
+      // Proof Race: the group's points are its players' points (squads by average, as on the board).
+      if (raceTotal) { const pts = [...memberIds].map((pid) => raceTotal.get(pid) ?? 0); r.points = sq.id === "__all" ? pts.reduce((a, b) => a + b, 0) : Math.round(pts.reduce((a, b) => a + b, 0) / Math.max(1, pts.length)); r.result = sq.id === "__all" ? "Class total" : "Squad average"; }
       if (round.type === "objection" && sq.id !== round.objectSquadId && sq.id !== round.defendSquadId) r.result = "Voted";
       return [{
         name: sq.name, answer, explanation: text(words, "text"), flagged: !!words?.flagged, ...r,
         members: [...memberIds].map((pid) => {
           const p = players.find((x) => x.id === pid);
-          return { nickname: p?.nickname ?? "Player", studentId: p?.studentId ?? null, actions: rows.filter((x) => x.playerId === pid).map((x) => actionLine(x, world)).filter(Boolean) };
+          const acts = rows.filter((x) => x.playerId === pid).map((x) => actionLine(x, world)).filter(Boolean);
+          return { nickname: p?.nickname ?? "Player", studentId: p?.studentId ?? null, actions: raceTotal ? [`${raceTotal.get(pid) ?? 0} pts`, ...acts] : acts };
         }),
       }];
     });

@@ -8,7 +8,7 @@ import type { SourcePassage } from "../source-passages.ts";
 import { liveMissionPieces, liveMissionSetting, missionPick, missionSetting } from "./missions.ts";
 import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, livePicks, myStepRecord, playerPicks, playerState, publicStory, readingAction, squadReading, stepKind, tryState, type LiveStoryRound } from "./story.ts";
 import { screenMessage } from "../safety.ts";
-import { liveRaceBoard, liveRaceChunks, nextBeat, playerChunk, raceAnswer, raceAnswered, raceFinish, raceQuestions, raceReadiness, raceReveal, raceTotals, type LiveRaceRound } from "./race.ts";
+import { liveRaceBoard, liveRaceChunks, nextBeat, playerChunk, raceAnswer, raceAnswered, raceDone, raceFinish, raceQuestions, raceReadiness, raceReveal, raceTotals, type LiveRaceRound } from "./race.ts";
 import { hasProofRace, parseRaceSettings, raceLimitMs } from "../proof-race.ts";
 import { checkWriting, yourTurnChoices, type YourTurnEntry } from "../your-turn.ts";
 import { evidenceSentences, lineWords } from "../lies.ts";
@@ -158,7 +158,7 @@ function publicRace(st: LiveState, round: LiveRaceRound) {
     question: round.beat === "race" || after ? c.question : null,
     reveal: after ? raceReveal(c, st.responses, i, st.players) : null,
     board: round.beat === "board" || st.session.status === "ended" ? (() => { const b = liveRaceBoard(st.responses, i, st.players, st.squads, round.squadsOn, round.step); return { kind: b.kind, top: b.rows.slice(0, 5) }; })() : null,
-    finish: st.session.status === "ended" ? raceFinish(chunks, st.responses, i, st.players, st.squads, round.squadsOn) : null,
+    finish: st.session.status === "ended" ? (() => { const f = raceFinish(chunks, st.responses, i, st.players, st.squads, round.squadsOn); return { ...f, podium: f.podium.map((r) => ({ ...r, portrait: f.kind === "player" ? avatarOf(st, r.id)?.portrait ?? null : null })) }; })() : null,
     pinned: pinned ? String(pinned.payload.text) : null,
   };
 }
@@ -182,7 +182,7 @@ export function hostView(st: LiveState) {
     // The lobby board: names and avatars as they join; Proof Race readiness, answers and student questions.
     lobby: st.players.map((p) => ({ id: p.id, nickname: p.nickname, avatar: avatarOf(st, p.id), extraTime: ([...st.responses].reverse().find((r) => r.kind === "player_time" && r.payload.playerId === p.id)?.payload.setting as string | undefined) ?? null })),
     proofRace: hasProofRace(st.world),
-    race: round?.type === "race" ? { ready: raceReadiness(round, st.responses, st.session.roundIndex, st.players), answered: raceAnswered(round, st.responses, st.session.roundIndex, st.players), questions: raceQuestions(st.responses, st.session.roundIndex, round.step), pinned: round.pinned ?? null } : null,
+    race: round?.type === "race" ? { ready: raceReadiness(round, st.responses, st.session.roundIndex, st.players), answered: raceAnswered(round, st.responses, st.session.roundIndex, st.players), done: raceDone(round, st.responses, st.session.roundIndex, st.players), questions: raceQuestions(st.responses, st.session.roundIndex, round.step), pinned: round.pinned ?? null } : null,
     squads, unassigned: st.players.filter((p) => !p.squadId).map((p) => ({ id: p.id, nickname: p.nickname })),
     counters: { players: st.players.length, squadsJoined: answering.length, squadsAnswering: answeringNow.length, squadsSubmitted: answeringNow.filter((s) => s.submitted).length,
       votes: round?.type === "verdict" || round?.type === "objection" ? new Set(st.responses.filter((r) => r.roundIndex === st.session.roundIndex && (r.kind === "vote" || r.kind === "counter_vote")).map((r) => r.playerId)).size : 0 },

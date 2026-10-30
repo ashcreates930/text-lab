@@ -9,7 +9,7 @@ import type {SourcePassage} from "@/lib/source-passages";
 import {DEFAULT_RACE,PROCESS_SECONDS,gistPoints,raceChunks,raceBoard,raceLimitMs,raceTap,rivalPlay,type BoardRow,type RaceChunk} from "@/lib/proof-race";
 import {wordsToKnow} from "@/lib/fair-play";
 import {narrationFile,playNarration} from "@/lib/narration";
-import {screenMessage} from "@/lib/safety";
+import {screenBoardText} from "@/lib/safety";
 import {lineWords} from "@/lib/lies";
 import {ReadingPanel,WordCards} from "./reading-panel";
 import {RivalEmblem} from "./mode-screens";
@@ -67,11 +67,11 @@ export function QuestionAsk({sent,onSend}:{sent:boolean;onSend:(text:string)=>Pr
 
 // ---------- Leaderboard and podium ----------
 // The top 5, reordered with a short slide from each row's old place ("up 2"); a static list with reduced motion.
-export function Leaderboard({rows,meId,dark=false,title="Leaderboard"}:{rows:BoardRow[];meId?:string|null;dark?:boolean;title?:string}){
+export function Leaderboard({rows,meId,dark=false,title="Leaderboard",main=false}:{rows:BoardRow[];meId?:string|null;dark?:boolean;title?:string;main?:boolean}){
  const top=rows.slice(0,5);const [settled,setSettled]=useState(false);
  useLayoutEffect(()=>{setSettled(false);if(reducedMotion()){setSettled(true);return}const t=requestAnimationFrame(()=>requestAnimationFrame(()=>setSettled(true)));return()=>cancelAnimationFrame(t)},[rows]);
  const row=dark?64:56;
- return <section aria-labelledby="lb-h" className={dark?"":"mt-4"}><h2 id="lb-h" className={`${dark?"text-[clamp(24px,2.4vw,36px)]":"text-[22px]"} font-bold`}>{title}</h2>
+ return <section aria-labelledby="lb-h" className={dark?"":"mt-4"}>{(()=>{const H=main?"h1":"h2";return <H id="lb-h" className={`${dark?"text-[clamp(24px,2.4vw,36px)]":"text-[22px]"} font-bold outline-none`}>{title}</H>})()}
   <ol className="relative mt-3" style={{height:top.length*(row+8)}}>{top.map((r,k)=>{const from=r.prevRank!==null&&r.prevRank<=8?(r.prevRank-r.rank)*(row+8):0;
    return <li key={r.id} className={`absolute inset-x-0 flex items-center gap-3 rounded-2xl px-4 ${r.id===meId?"bg-[#A0472C] text-white":dark?"bg-white/10":"bg-[#FFFDF8] shadow-[0_1px_8px_-4px_rgba(42,38,32,.35)]"}`} style={{height:row,top:k*(row+8),transform:settled?"none":`translateY(${from}px)`,transition:settled&&!reducedMotion()?"transform .7s cubic-bezier(.2,.8,.2,1)":"none"}}>
     <span className={`w-8 text-center font-bold tabular-nums ${dark?"text-[28px]":"text-[20px]"}`}>{r.rank}</span>
@@ -82,14 +82,14 @@ export function Leaderboard({rows,meId,dark=false,title="Leaderboard"}:{rows:Boa
  </section>;
 }
 export type PodiumEntry={id:string;name:string;points:number;portrait?:string|null};
-export function Podium({entries,dark=false,sound=false,title="Top detectives"}:{entries:PodiumEntry[];dark?:boolean;sound?:boolean;title?:string}){
+export function Podium({entries,dark=false,sound=false,title="Top detectives",main=false}:{entries:PodiumEntry[];dark?:boolean;sound?:boolean;title?:string;main?:boolean}){
  const [shown,setShown]=useState(reducedMotion()?3:0);
  useEffect(()=>{if(reducedMotion())return;cue(sound,"celebrate",0.5);const ts=[setTimeout(()=>setShown(1),400),setTimeout(()=>setShown(2),1100),setTimeout(()=>setShown(3),1800)];return()=>ts.forEach(clearTimeout)},[sound]);
  // Third, then second, then first.
  const order=[1,0,2],heights=[200,150,120];
- return <section aria-labelledby="podium-h" className="text-center"><h2 id="podium-h" className={`${dark?"text-[clamp(28px,3vw,48px)]":"text-[26px]"} font-bold`}>{title}</h2>
+ return <section aria-labelledby="podium-h" className="text-center">{(()=>{const H=main?"h1":"h2";return <H id="podium-h" className={`${dark?"text-[clamp(28px,3vw,48px)]":"text-[26px]"} font-bold outline-none`}>{title}</H>})()}
   <p className="sr-only">{entries.map((e,k)=>`${k+1}: ${e.name}, ${e.points} points`).join(". ")}</p>
-  <div aria-hidden className="mt-6 flex items-end justify-center gap-3">{order.map(k=>{const e=entries[k];if(!e)return <div key={k} className="w-[28%] max-w-[180px]"/>;const visible=shown>=3-k;
+  <div aria-hidden className="mt-6 flex items-end justify-center gap-3">{order.map(k=>{const e=entries[k];if(!e)return null;const visible=shown>=3-k;
    return <div key={k} className="flex w-[28%] max-w-[180px] flex-col items-center" style={{opacity:visible?1:0,transform:visible?"none":"translateY(24px)",transition:reducedMotion()?"none":"all .5s ease-out"}}>
     {k===0&&<Crown size={28} className="mb-1 text-[#E7B54A]"/>}
     {e.portrait?<img src={e.portrait} alt="" className="h-16 w-16 rounded-full border-4 border-white object-cover"/>:<span className="grid h-16 w-16 place-items-center rounded-full border-4 border-white bg-[#F4E1D6] text-[22px] font-bold text-[#8A3B23]">{e.name.slice(0,1)}</span>}
@@ -133,7 +133,7 @@ export function ProofRaceSolo({world,passages,preset,onExit}:{world:WorldPack;pa
   {beat==="process"&&<section aria-labelledby="pr-h"><h1 id="pr-h" className="mt-2 text-[26px] font-bold outline-none">{c.process==="gist"?"Gist":"Your question"}</h1>
    <ClockBar left={processLeft} seconds={PROCESS_SECONDS}/>
    {c.process==="gist"&&c.gist?<GistPick options={c.gist.options} picked={gist} best={gist!==null?c.gist.best:null} onPick={i=>{setGist(i);const p=gistPoints(c,i);add(me,setMe,p);cue(sound,p?"chime":"tick")}}/>
-    :<QuestionAsk sent={asked} onSend={t=>{const s=screenMessage(t);if(s.action!=="allow")return s.message??"Try different words.";setAsked(true);return null}}/>}
+    :<QuestionAsk sent={asked} onSend={t=>{const s=screenBoardText(t);if(s.action!=="allow")return s.message??"Try different words.";setAsked(true);return null}}/>}
    {(gist!==null||asked)&&<button type="button" onClick={()=>go("race")} className="case-primary mt-4 min-h-[52px] w-full justify-center">To the race <ArrowRight size={18}/></button>}</section>}
   {beat==="race"&&<section aria-labelledby="pr-h"><h1 id="pr-h" className="mt-2 text-[24px] font-bold leading-tight outline-none">{c.question}</h1>
    <ClockBar left={raceLeft} seconds={limit/1000}/>
@@ -143,9 +143,9 @@ export function ProofRaceSolo({world,passages,preset,onExit}:{world:WorldPack;pa
    <p className="text-[16px] text-[#4A4438]">{tap.result==="right"?"Right line, with a speed bonus.":tap.result==="retryRight"?"Found it on the retry.":"Here's the line that proves it."}</p>
    <ReadingPanel className="mt-3" glossary={world.glossary} passages={c.passages as SourcePassage[]} results={[...c.answers.map(a=>({line:a,ok:true})),...(tap.line&&!c.answers.some(a=>lineWords(a)===lineWords(tap.line))?[{line:tap.line,ok:false}]:[])]} onTap={()=>{}} locked/>
    <button type="button" onClick={()=>go("board")} className="case-primary mt-4 min-h-[52px] w-full justify-center">Leaderboard <ArrowRight size={18}/></button></section>}
-  {beat==="board"&&<section><Leaderboard rows={board} meId="me"/>
+  {beat==="board"&&<section><Leaderboard main rows={board} meId="me"/>
    <button type="button" onClick={nextChunk} className="case-primary mt-5 min-h-[52px] w-full justify-center">{k+1>=chunks.length?"Final results":"Next chunk"} <ArrowRight size={18}/></button></section>}
-  {beat==="finish"&&<section className="mt-4"><Podium sound={sound} entries={board.map(r=>({id:r.id,name:r.name,points:r.points}))} title="Final results"/>
+  {beat==="finish"&&<section className="mt-4"><Podium main sound={sound} entries={board.map(r=>({id:r.id,name:r.name,points:r.points}))} title="Final results"/>
    <p className="mt-6 text-center text-[16px] text-[#4A4438]">Every point came from a line you proved in the story.</p>
    <button type="button" onClick={onExit} className="case-primary mt-5 min-h-[52px] w-full justify-center">Play the case <ArrowRight size={18}/></button></section>}
  </div>;

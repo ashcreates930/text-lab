@@ -63,7 +63,8 @@ export function RacePick({state,act}:{state:HostView;act:(b:Record<string,unknow
 // ---------- The host board during a Proof Race ----------
 export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound;world:WorldPack|null;act:(b:Record<string,unknown>)=>void}){
  const race=state.race!;
- const maxScale=Math.max(1,...state.lobby.map(p=>p.extraTime==="untimed"?3:Number(p.extraTime??1)||1));
+ // The longest time still in use: extra time counts only for players who have not answered yet.
+ const maxScale=Math.max(1,...state.lobby.filter(p=>!race.done.includes(p.id)).map(p=>p.extraTime==="untimed"?3:Number(p.extraTime??1)||1));
  const processLeft=useBeatClock(round.beatStartedAt,round.beat==="process"?round.processSeconds:null);
  const raceLeft=useBeatClock(round.beatStartedAt,round.beat==="race"?round.seconds*maxScale:null);
  const baseLeft=useBeatClock(round.beatStartedAt,round.beat==="race"?round.seconds:null);
@@ -72,6 +73,9 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
  const key=`${round.step}:${round.beat}`;
  const due=(round.beat==="read"&&race.ready.advance)||(round.beat==="process"&&processLeft===0)||(round.beat==="race"&&(raceLeft===0||(race.answered>=state.counters.players&&state.counters.players>0)));
  useEffect(()=>{if(due&&moved.current!==key&&!state.session.paused){moved.current=key;act({action:"race.next"})}},[due,key,act,state.session.paused]);
+ // Up to 3 anonymous questions, pinnable while they are asked and again on the reveal.
+ const questions=<div className="mt-3"><p className="text-[20px]">Student questions (no names):</p><ul className="mt-2 grid gap-2">{race.questions.slice(0,3).map(q=><li key={q.id} className="flex items-center justify-between gap-3 rounded-2xl bg-white/10 px-5 py-3 text-[clamp(18px,1.8vw,26px)]"><span>{q.text}</span><button type="button" onClick={()=>act({action:"race.pin",questionId:race.pinned===q.id?null:q.id})} aria-pressed={race.pinned===q.id} className="host-btn-secondary"><Pin size={18}/>{race.pinned===q.id?"Pinned":"Pin"}</button></li>)}
+     {!race.questions.length&&<li className="text-[18px] text-[#B8AD9E]">Waiting for questions…</li>}</ul></div>;
  const next=<button type="button" onClick={()=>act({action:"race.next"})} className="host-btn">{round.beat==="board"?(round.step+1>=round.total?"Final podium":"Next chunk"):"Next"} <ArrowRight size={22}/></button>;
  return <section className="mt-4" aria-labelledby="race-h">
   <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="race-h" className="text-[clamp(22px,2.2vw,34px)] font-bold">Chunk {round.step+1} of {round.total} · {({read:"Read",process:round.chunk.process==="question"?"Your question":"Gist",race:"Race",reveal:"The proof",board:"Leaderboard"} as Record<string,string>)[round.beat]}</h2>{next}</div>
@@ -79,14 +83,14 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
    <div className="mt-3"><ChunkRead world={world} sceneId={round.chunk.sceneId} passages={round.chunk.passages} size="board" dark/></div></>}
   {round.beat==="process"&&<div className="mt-3"><ClockBar left={processLeft} seconds={round.processSeconds}/><p className="mt-2 text-[20px] text-[#F3C9B2]">{race.answered} of {state.counters.players} answered</p>
    {round.chunk.process==="gist"&&round.chunk.gist?<ol className="mt-3 grid gap-2">{round.chunk.gist.map((g,i)=><li key={i} className="rounded-2xl bg-white/10 px-5 py-3 text-[clamp(18px,1.8vw,28px)]">{String.fromCharCode(65+i)}. {g}</li>)}</ol>
-    :<div className="mt-3"><p className="text-[20px]">Student questions (no names):</p><ul className="mt-2 grid gap-2">{race.questions.slice(0,3).map(q=><li key={q.id} className="flex items-center justify-between gap-3 rounded-2xl bg-white/10 px-5 py-3 text-[clamp(18px,1.8vw,26px)]"><span>{q.text}</span><button type="button" onClick={()=>act({action:"race.pin",questionId:race.pinned===q.id?null:q.id})} aria-pressed={race.pinned===q.id} className="host-btn-secondary"><Pin size={18}/>{race.pinned===q.id?"Pinned":"Pin"}</button></li>)}
-     {!race.questions.length&&<li className="text-[18px] text-[#B8AD9E]">Waiting for questions…</li>}</ul></div>}</div>}
+    :questions}</div>}
   {round.pinned&&<p className="mt-3 rounded-2xl bg-[#F3C9B2] px-5 py-3 text-[clamp(18px,1.8vw,26px)] font-bold text-[#2A2620]"><Pin size={20} className="mr-2 inline"/>For discussion: {round.pinned}</p>}
   {round.beat==="race"&&<div className="mt-3"><p className="text-[clamp(24px,2.6vw,42px)] font-bold leading-tight">{round.question}</p><div className="mt-2"><ClockBar left={baseLeft} seconds={round.seconds}/></div>
    <p className="mt-2 text-[20px] text-[#F3C9B2]">{race.answered} of {state.counters.players} answered{maxScale>1?" · extra time still running for some":""}</p>
    <div className="mt-3 rounded-3xl bg-[#FFFDF8] px-6 py-4 font-serif text-[clamp(20px,2vw,32px)] leading-[1.6] text-[#2A2620]">{round.chunk.passages.map(p=><p key={p.id}>{p.text.replace(/\s+/g," ")}</p>)}</div></div>}
   {(round.beat==="reveal")&&round.reveal&&<div className="mt-3"><p className="text-[clamp(24px,2.6vw,40px)] font-bold">{round.reveal.pct}% found the proof</p><p className="text-[20px] text-[#F3C9B2]">{round.question}</p>
-   <div className="mt-3 [&_button]:text-[clamp(18px,1.8vw,28px)]"><ReadingPanel passages={round.chunk.passages as SourcePassage[]} results={[{line:round.reveal.line,ok:true}]} onTap={()=>{}} locked/></div></div>}
+   <div className="mt-3 [&_button]:text-[clamp(18px,1.8vw,28px)]"><ReadingPanel passages={round.chunk.passages as SourcePassage[]} results={[{line:round.reveal.line,ok:true}]} onTap={()=>{}} locked/></div>
+   {round.chunk.process==="question"&&race.questions.length>0&&questions}</div>}
   {round.beat==="board"&&round.board&&<div className="mt-4"><Leaderboard rows={round.board.top as BoardRow[]} dark title={round.board.kind==="squad"?"Squads":"Top 5"}/></div>}
  </section>;
 }
@@ -152,6 +156,6 @@ export function RaceEndedPlayer({state}:{state:PlayerView}){
  return <section className="mt-6 text-center"><h1 className="text-[30px] font-bold outline-none">Race over</h1>
   {state.race.place&&<p className="mt-2 text-[20px]">You finished <b>#{state.race.place.rank}</b> of {state.race.place.of} with {state.race.total.toLocaleString()} points.</p>}
   {mine!==null&&mine>=0&&<p className="mt-2 text-[20px] font-bold text-[#A0472C]">You're on the podium!</p>}
-  <div className="mt-5"><Podium entries={f.podium.map(r=>({id:r.id,name:r.name,points:r.points}))}/></div>
+  <div className="mt-5"><Podium entries={f.podium.map(r=>({id:r.id,name:r.name,points:r.points,portrait:r.portrait}))}/></div>
   <p className="mt-4 text-[15px] text-[#6B6457]">Every point came from a line proved in the story.</p></section>;
 }
