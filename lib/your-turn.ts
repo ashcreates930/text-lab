@@ -79,9 +79,10 @@ export function yourTurnProblems(world: WorldPack, passages: SourcePassage[]): s
     if (!ANGLE_OPTION_IDS.includes(id.replace(/\/demo$/, ""))) problems.push(`${where}: not a "What's your angle?" option`);
     if (a.minutes < 5 || a.minutes > 7) problems.push(`${where}: activities run 5 to 7 minutes`);
     for (const pid of a.paragraphs) if (!byId.has(pid)) problems.push(`${where}: ${pid} is not a paragraph`);
-    const texts = [a.title, a.intro, a.write, ...(a.exchanges ?? []).map((e) => e.say), ...Object.values(a.sides ?? {}).flatMap((s) => s.exchanges.map((e) => e.say)), ...(a.items ?? []).map((i) => i.label), ...(a.posts ?? []).map((p) => p.text)];
+    const texts = [a.title, a.intro, a.write, ...[...(a.exchanges ?? []), ...Object.values(a.sides ?? {}).flatMap((s) => s.exchanges)].flatMap((e) => (e.weigh ? [e.weigh.feedback] : [])), ...(a.exchanges ?? []).map((e) => e.say), ...Object.values(a.sides ?? {}).flatMap((s) => s.exchanges.map((e) => e.say)), ...(a.items ?? []).map((i) => i.label), ...(a.posts ?? []).map((p) => p.text)];
     if (texts.some((t) => dash.test(t))) problems.push(`${where}: no em dashes`);
-    const lines: AcceptLine[] = [...(a.exchanges ?? []).flatMap((e) => e.accept), ...Object.values(a.sides ?? {}).flatMap((s) => s.exchanges.flatMap((e) => e.accept)), ...(a.items ?? []).flatMap((i) => i.accept), ...(a.posts ?? []).flatMap((p) => p.accept ?? [])];
+    const claimLines = (e: { accept: AcceptLine[]; weigh?: { uncertain: AcceptLine[] } }) => [...e.accept, ...(e.weigh?.uncertain ?? [])];
+    const lines: AcceptLine[] = [...(a.exchanges ?? []).flatMap(claimLines), ...Object.values(a.sides ?? {}).flatMap((s) => s.exchanges.flatMap(claimLines)), ...(a.items ?? []).flatMap((i) => i.accept), ...(a.posts ?? []).flatMap((p) => p.accept ?? [])];
     for (const l of lines) {
       if (!exact(l)) problems.push(`${where}: a line is not copied exactly from ${l.paragraph}`);
       else if (!a.paragraphs.includes(l.paragraph)) problems.push(`${where}: ${l.paragraph} isn't in the activity's reading`);

@@ -441,7 +441,7 @@
             {
               "id": "hauling",
               "ladder": "locate",
-              "question": "What were Hale and his son hauling to market?",
+              "question": "What were Hale and Harry hauling to town?",
               "answers": [
                 {
                   "line": "Harry and I had started to town with a load of potatoes."
@@ -460,7 +460,10 @@
                   "Milk to a neighbor.",
                   "Nothing at all."
                 ]
-              }
+              },
+              "shared_ok": [
+                "town"
+              ]
             },
             {
               "id": "in-the-rocker",
@@ -1540,6 +1543,9 @@
                 },
                 {
                   "line": "And then her little shawl that always hung behind\nthe door."
+                },
+                {
+                  "line": "Asking for an apron and her little shawl."
                 }
               ],
               "near_misses": [
@@ -2337,7 +2343,10 @@
                 {
                   "line": "If there’d been years and years of\nnothing, then a bird to sing to you, it would be awful--still, after\nthe bird was still.",
                   "phrase": "then a bird to sing to you, it would be awful",
-                  "key": "it would be awful"
+                  "key": [
+                    "it would be awful",
+                    "still, after the bird was still"
+                  ]
                 }
               ],
               "near_misses": [
