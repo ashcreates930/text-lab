@@ -3872,3 +3872,11 @@ Prove it (✓ is right; shuffled on screen):
 2. He solved the case.
 3. He found the bird.
 4. He respects their work.
+
+## Proof Race sprints (content only; the game mode isn't built yet)
+
+### The Legend of Sleepy Hollow · Scene 1 (`empty-schoolhouse`)
+
+Twelve sprint questions, approved. They are in `worlds/sleepy-hollow/world.json` (`scenes[0].sprints`), and `validate:worlds` checks each one: exact lines, near misses in the chunk with a ¶ hint, one thing per question, and no word roots shared with the answer.
+
+**Teacher note for sprint #4** ("Which figures from long ago are blamed for the magic over this land?", ¶5.3): Irving's 1820 description of Native people reflects his era; pause here for discussion.

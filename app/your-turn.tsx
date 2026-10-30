@@ -60,19 +60,27 @@ function Talk({world,passages,characterId,exchanges,ai,onDone}:{world:WorldPack;
  const who=characterId?world.characters.find(c=>c.id===characterId)??null:null;
  const name=who?.name??world.computer_players?.rival.name??"Computer rival";
  const [i,setI]=useState(0),[line,setLine]=useState(""),[text,setText]=useState(""),[msg,setMsg]=useState<{ok:boolean;text:string}|null>(null),[reply,setReply]=useState(""),[results,setResults]=useState<Result[]>([]),[busy,setBusy]=useState(false);
+ // A claim the story leaves open (weigh) has two taps: the line that supports it, then the line that keeps it uncertain.
+ const [weighStep,setWeighStep]=useState<0|1>(0);
  const ex=exchanges[i];
  async function answer(){
   if(!line||!ex)return;
   const t=text.trim();if(t){const s=screenMessage(t);if(s.action!=="allow"){setMsg({ok:false,text:s.message??"Try different words."});return}}
+  if(ex.weigh){
+   const c=checkAnswer((weighStep===0?ex.accept:ex.weigh.uncertain) as AcceptLine[],line);
+   if(!c.ok){setMsg({ok:false,text:c.hint});return}
+   if(weighStep===0){setWeighStep(1);setLine("");setMsg({ok:false,text:"That backs up the claim. Now tap the line that keeps it uncertain."});return}
+   setResults(r=>[...r,{label:ex.say,line,ok:true}]);setMsg({ok:true,text:ex.weigh.feedback});return;
+  }
   const c=checkAnswer(ex.accept as AcceptLine[],line);
   if(!c.ok){setMsg({ok:false,text:c.hint});return}
   const r=[...results,{label:ex.say,line,ok:true}];setResults(r);setMsg({ok:true,text:"That holds up."});
   // The character answers back in their own voice (solo only); scoring stays with the authored lines.
   if(ai&&who){setBusy(true);try{const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json",...(ai.classToken?{"x-class-token":ai.classToken}:{})},body:JSON.stringify({sandboxId:ai.sandboxId,worldId:world.id,scene:ai.sceneId,character:who.id,question:`You told me: "${ex.say}" I answer with this line from the story: "${line.replace(/\s+/g," ")}"${t?` and I say: ${t}`:""}. React in one or two sentences.`})});const j=await res.json();setReply(String(j.text??""))}catch{setReply("")}finally{setBusy(false)}}
  }
- function next(skip=false){const r=skip?[...results,{label:ex.say,line,ok:false}]:results;setResults(r);setLine("");setText("");setMsg(null);setReply("");if(i+1>=exchanges.length)onDone(r);else setI(i+1)}
+ function next(skip=false){const r=skip?[...results,{label:ex.say,line,ok:false}]:results;setResults(r);setLine("");setText("");setMsg(null);setReply("");setWeighStep(0);if(i+1>=exchanges.length)onDone(r);else setI(i+1)}
  return <div className="mt-3 space-y-3">
-  <p className="text-[13px] font-bold text-[#8A3B23]">Claim {i+1} of {exchanges.length}</p>
+  <p className="text-[13px] font-bold text-[#8A3B23]">Claim {i+1} of {exchanges.length}{ex?.weigh?` · ${weighStep===0?"Step 1 of 2: tap the line that supports it":"Step 2 of 2: tap the line that keeps it uncertain"}`:""}</p>
   <div className="flex gap-2.5 rounded-2xl bg-[#2A2620] p-3 text-[#FFFDF8]">{who?<Portrait character={who} size={40}/>:<span aria-hidden className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#2E3B4E]">🏮</span>}<div><p className="text-[11px] font-bold uppercase tracking-wide text-[#F3C9B2]">{name}{who?"":" · Computer rival"}</p><p className="text-[15px] leading-[1.45]">{ex.say}</p>{busy&&<p className="mt-1 text-[14px] text-[#E8DDCB]">…</p>}{reply&&<p className="mt-1 text-[14px] italic text-[#E8DDCB]">{reply}</p>}</div></div>
   <ReadingPanel className="max-h-[38dvh]" passages={passages} kept={line?[line]:[]} onTap={(l:PanelLine)=>{if(!msg?.ok){setLine(l.text);setMsg(null)}}} title={<span>The story · tap the line that answers</span>}/>
   {!msg?.ok&&<><label htmlFor="yt-say" className="block text-[14px] font-bold">Say it in your words (optional)</label><input id="yt-say" value={text} onChange={e=>setText(e.target.value)} maxLength={140} className="min-h-11 w-full rounded-2xl border border-[#E4DCCB] bg-white px-4 text-[16px]"/></>}

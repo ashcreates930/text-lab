@@ -1429,7 +1429,204 @@
             }
           ]
         }
-      }
+      },
+      "sprints": [
+        {
+          "id": "walk",
+          "question": "About how long a walk is it from the river port to the hollow?",
+          "paragraphs": [
+            "p003"
+          ],
+          "answers": [
+            "Not far from this village, perhaps about two miles, there is a little\nvalley or rather lap of land among high hills, which is one of the\nquietest places in the whole world."
+          ],
+          "near_misses": [
+            {
+              "line": "In the bosom of one of those spacious coves which indent the eastern\nshore of the Hudson, at that broad expansion of the river denominated\nby the ancient Dutch navigators the Tappan Zee, and where they always\nprudently shortened sail and implored the protection of St. Nicholas\nwhen they crossed, there lies a small market town or rural port, which\nby some is called Greensburgh, but which is more generally and properly\nknown by the name of Tarry Town.",
+              "hint": "That names the town. How far is the valley from it? Check ¶3."
+            }
+          ]
+        },
+        {
+          "id": "birds",
+          "question": "Which birds are nearly the only noise in that glen?",
+          "paragraphs": [
+            "p003"
+          ],
+          "answers": [
+            "A small brook glides through it,\nwith just murmur enough to lull one to repose; and the occasional\nwhistle of a quail or tapping of a woodpecker is almost the only sound\nthat ever breaks in upon the uniform tranquillity."
+          ],
+          "near_misses": [
+            {
+              "line": "Not far from this village, perhaps about two miles, there is a little\nvalley or rather lap of land among high hills, which is one of the\nquietest places in the whole world.",
+              "hint": "That says it's quiet. Which birds break the quiet? Check ¶3."
+            }
+          ]
+        },
+        {
+          "id": "first-hunt",
+          "question": "What scared the narrator on his first hunt as a boy?",
+          "paragraphs": [
+            "p004"
+          ],
+          "answers": [
+            "I had wandered into it at noontime, when all nature\nis peculiarly quiet, and was startled by the roar of my own gun, as it\nbroke the Sabbath stillness around and was prolonged and reverberated\nby the angry echoes."
+          ],
+          "near_misses": [
+            {
+              "line": "I recollect that, when a stripling, my first exploit in\nsquirrel-shooting was in a grove of tall walnut-trees that shades one\nside of the valley.",
+              "hint": "That's where he hunted. What startled him? Check ¶4."
+            }
+          ]
+        },
+        {
+          "id": "bewitched",
+          "question": "Which figures from long ago are blamed for the magic over this land?",
+          "paragraphs": [
+            "p005"
+          ],
+          "answers": [
+            "Some say that the place\nwas bewitched by a High German doctor, during the early days of the\nsettlement; others, that an old Indian chief, the prophet or wizard of\nhis tribe, held his powwows there before the country was discovered by\nMaster Hendrick Hudson."
+          ],
+          "near_misses": [
+            {
+              "line": "Certain it is, the place still continues under\nthe sway of some witching power, that holds a spell over the minds of\nthe good people, causing them to walk in a continual reverie.",
+              "hint": "That says the spell is still there. Who is said to have cast it? Check ¶5."
+            }
+          ]
+        },
+        {
+          "id": "ruling-ghost",
+          "question": "Which ghost outranks every other in these parts?",
+          "paragraphs": [
+            "p006"
+          ],
+          "answers": [
+            "The dominant spirit, however, that haunts this enchanted region, and\nseems to be commander-in-chief of all the powers of the air, is the\napparition of a figure on horseback, without a head."
+          ],
+          "near_misses": [
+            {
+              "line": "His haunts are not\nconfined to the valley, but extend at times to the adjacent roads, and\nespecially to the vicinity of a church at no great distance.",
+              "hint": "That's where he rides. Which line says he rules the other spirits? Check ¶6."
+            }
+          ]
+        },
+        {
+          "id": "wounded",
+          "question": "How was the rider wounded long ago?",
+          "paragraphs": [
+            "p006"
+          ],
+          "answers": [
+            "It is said by some\nto be the ghost of a Hessian trooper, whose head had been carried away\nby a cannon-ball, in some nameless battle during the Revolutionary War,\nand who is ever and anon seen by the country folk hurrying along in\nthe gloom of night, as if on the wings of the wind."
+          ],
+          "near_misses": [
+            {
+              "line": "Indeed,\ncertain of the most authentic historians of those parts, who have been\ncareful in collecting and collating the floating facts concerning this\nspectre, allege that the body of the trooper having been buried in the\nchurchyard, the ghost rides forth to the scene of battle in nightly\nquest of his head, and that the rushing speed with which he sometimes\npasses along the Hollow, like a midnight blast, is owing to his being\nbelated, and in a hurry to get back to the churchyard before daybreak.",
+              "hint": "That's what he does now. How did he lose his head? Check ¶6."
+            }
+          ]
+        },
+        {
+          "id": "searching",
+          "question": "What is the phantom searching for after dark?",
+          "paragraphs": [
+            "p006"
+          ],
+          "answers": [
+            "Indeed,\ncertain of the most authentic historians of those parts, who have been\ncareful in collecting and collating the floating facts concerning this\nspectre, allege that the body of the trooper having been buried in the\nchurchyard, the ghost rides forth to the scene of battle in nightly\nquest of his head, and that the rushing speed with which he sometimes\npasses along the Hollow, like a midnight blast, is owing to his being\nbelated, and in a hurry to get back to the churchyard before daybreak."
+          ],
+          "near_misses": [
+            {
+              "line": "It is said by some\nto be the ghost of a Hessian trooper, whose head had been carried away\nby a cannon-ball, in some nameless battle during the Revolutionary War,\nand who is ever and anon seen by the country folk hurrying along in\nthe gloom of night, as if on the wings of the wind.",
+              "hint": "That's how he lost it. What does he hunt for at night? Check ¶6."
+            }
+          ]
+        },
+        {
+          "id": "newcomers",
+          "question": "What happens to people who move here from elsewhere?",
+          "paragraphs": [
+            "p007",
+            "p008"
+          ],
+          "answers": [
+            "It is remarkable that the visionary propensity I have mentioned is not\nconfined to the native inhabitants of the valley, but is unconsciously\nimbibed by every one who resides there for a time.",
+            "However wide awake\nthey may have been before they entered that sleepy region, they are\nsure, in a little time, to inhale the witching influence of the air, and\nbegin to grow imaginative, to dream dreams, and see apparitions."
+          ],
+          "near_misses": [
+            {
+              "line": "Such is the general purport of this legendary superstition, which has\nfurnished materials for many a wild story in that region of shadows; and\nthe spectre is known at all the country firesides, by the name of the\nHeadless Horseman of Sleepy Hollow.",
+              "hint": "That's the legend's name. What happens to newcomers? Check ¶8."
+            }
+          ]
+        },
+        {
+          "id": "born",
+          "question": "Where was Ichabod born?",
+          "paragraphs": [
+            "p010"
+          ],
+          "answers": [
+            "He was a native of Connecticut, a State which supplies the\nUnion with pioneers for the mind as well as for the forest, and sends\nforth yearly its legions of frontier woodmen and country schoolmasters."
+          ],
+          "near_misses": [
+            {
+              "line": "In this by-place of nature there abode, in a remote period of American\nhistory, that is to say, some thirty years since, a worthy wight of the\nname of Ichabod Crane, who sojourned, or, as he expressed it, “tarried,”\n in Sleepy Hollow, for the purpose of instructing the children of the\nvicinity.",
+              "hint": "That's where he worked. Where was he from? Check ¶10."
+            }
+          ]
+        },
+        {
+          "id": "built",
+          "question": "How was Ichabod built?",
+          "paragraphs": [
+            "p010"
+          ],
+          "answers": [
+            "He was tall,\nbut exceedingly lank, with narrow shoulders, long arms and legs, hands\nthat dangled a mile out of his sleeves, feet that might have served for\nshovels, and his whole frame most loosely hung together."
+          ],
+          "near_misses": [
+            {
+              "line": "His head was\nsmall, and flat at top, with huge ears, large green glassy eyes, and a\nlong snipe nose, so that it looked like a weather-cock perched upon his\nspindle neck to tell which way the wind blew.",
+              "hint": "That's his head. What about his body? Check ¶10."
+            }
+          ]
+        },
+        {
+          "id": "meals-bed",
+          "question": "How did Ichabod get his meals and a bed?",
+          "paragraphs": [
+            "p013"
+          ],
+          "answers": [
+            "The revenue\narising from his school was small, and would have been scarcely\nsufficient to furnish him with daily bread, for he was a huge feeder,\nand, though lank, had the dilating powers of an anaconda; but to help\nout his maintenance, he was, according to country custom in those\nparts, boarded and lodged at the houses of the farmers whose children\nhe instructed.",
+            "With these he lived successively a week at a time, thus\ngoing the rounds of the neighborhood, with all his worldly effects tied\nup in a cotton handkerchief."
+          ],
+          "near_misses": [
+            {
+              "line": "When school hours were over, he was even the companion and playmate\nof the larger boys; and on holiday afternoons would convoy some of\nthe smaller ones home, who happened to have pretty sisters, or good\nhousewives for mothers, noted for the comforts of the cupboard.",
+              "hint": "That's his free time. Who fed and housed him? Check ¶13."
+            }
+          ]
+        },
+        {
+          "id": "side-job",
+          "question": "What did Ichabod teach on the side for coins?",
+          "paragraphs": [
+            "p015"
+          ],
+          "answers": [
+            "In addition to his other vocations, he was the singing-master of the\nneighborhood, and picked up many bright shillings by instructing the\nyoung folks in psalmody."
+          ],
+          "near_misses": [
+            {
+              "line": "It was a matter of no little vanity to him on\nSundays, to take his station in front of the church gallery, with a band\nof chosen singers; where, in his own mind, he completely carried away\nthe palm from the parson.",
+              "hint": "That's his Sunday pride. What did he get paid to teach? Check ¶15."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "van-tassel-party",
@@ -1645,7 +1842,10 @@
                 {
                   "line": "Not those of the bevy of buxom lasses, with their\nluxurious display of red and white; but the ample charms of a genuine\nDutch country tea-table, in the sumptuous time of autumn.",
                   "phrase": "the ample charms of a genuine Dutch country tea-table",
-                  "key": "genuine Dutch country tea-table"
+                  "key": [
+                    "genuine Dutch country tea-table",
+                    "Not those of the bevy of buxom lasses"
+                  ]
                 },
                 {
                   "line": "He could not help, too, rolling his\nlarge eyes round him as he ate, and chuckling with the possibility that\nhe might one day be lord of all this scene of almost unimaginable luxury\nand splendor.",
@@ -1821,12 +2021,18 @@
                 {
                   "line": "They harried his hitherto peaceful domains; smoked\nout his singing school by stopping up the chimney; broke into the\nschoolhouse at night, in spite of its formidable fastenings of withe\nand window stakes, and turned everything topsy-turvy, so that the poor\nschoolmaster began to think all the witches in the country held\ntheir meetings there.",
                   "phrase": "smoked out his singing school by stopping up the chimney",
-                  "key": "smoked out his singing school"
+                  "key": [
+                    "smoked out his singing school",
+                    "turned everything topsy-turvy"
+                  ]
                 },
                 {
                   "line": "But what was still more annoying, Brom took all\nopportunities of turning him into ridicule in presence of his mistress,\nand had a scoundrel dog whom he taught to whine in the most ludicrous\nmanner, and introduced as a rival of Ichabod’s, to instruct her in\npsalmody.",
                   "phrase": "had a scoundrel dog whom he taught to whine in the most ludicrous manner",
-                  "key": "taught to whine"
+                  "key": [
+                    "taught to whine",
+                    "turning him into ridicule"
+                  ]
                 }
               ],
               "near_misses": [
@@ -2214,6 +2420,11 @@
                 },
                 {
                   "line": "Let it suffice to say, Ichabod stole forth\nwith the air of one who had been sacking a henroost, rather than a fair\nlady’s heart."
+                },
+                {
+                  "line": "Without looking to the right or left to notice the scene\nof rural wealth, on which he had so often gloated, he went straight to\nthe stable, and with several hearty cuffs and kicks roused his steed\nmost uncourteously from the comfortable quarters in which he was soundly\nsleeping, dreaming of mountains of corn and oats, and whole valleys of\ntimothy and clover.",
+                  "phrase": "hearty cuffs and kicks",
+                  "key": "hearty cuffs and kicks"
                 }
               ],
               "near_misses": [
@@ -2421,7 +2632,17 @@
             "character_id": "brom-bones",
             "claim": "That old tree is a skinny thing. You'd ride right past it without noticing.",
             "paragraph": "p059",
-            "line": "In the centre of the road\nstood an enormous tulip-tree, which towered like a giant above all the\nother trees of the neighborhood, and formed a kind of landmark."
+            "line": "In the centre of the road\nstood an enormous tulip-tree, which towered like a giant above all the\nother trees of the neighborhood, and formed a kind of landmark.",
+            "also": [
+              {
+                "paragraph": "p059",
+                "line": "Its\nlimbs were gnarled and fantastic, large enough to form trunks for\nordinary trees, twisting down almost to the earth, and rising again into\nthe air."
+              },
+              {
+                "paragraph": "p059",
+                "line": "It was connected with the tragical story of the unfortunate\nAndré, who had been taken prisoner hard by; and was universally known\nby the name of Major André’s tree."
+              }
+            ]
           },
           "bank": [
             {
@@ -2665,7 +2886,10 @@
                 {
                   "line": "On mounting a rising\nground, which brought the figure of his fellow-traveller in relief\nagainst the sky, gigantic in height, and muffled in a cloak, Ichabod was\nhorror-struck on perceiving that he was headless!--but his horror was\nstill more increased on observing that the head, which should have\nrested on his shoulders, was carried before him on the pommel of his\nsaddle!",
                   "phrase": "Ichabod was horror-struck on perceiving that he was headless",
-                  "key": "he was headless"
+                  "key": [
+                    "he was headless",
+                    "carried before him on the pommel"
+                  ]
                 }
               ],
               "near_misses": [
@@ -3485,7 +3709,10 @@
                 {
                   "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell.",
                   "phrase": "always burst into a hearty laugh at the mention of the pumpkin",
-                  "key": "laugh at the mention of the pumpkin"
+                  "key": [
+                    "laugh at the mention of the pumpkin",
+                    "look exceedingly knowing"
+                  ]
                 }
               ],
               "near_misses": [
@@ -3838,12 +4065,15 @@
             {
               "id": "serious-listener",
               "ladder": "locate",
-              "question": "How did one listener react while the others laughed?",
+              "question": "How did one listener react while the others were amused?",
               "answers": [
                 {
                   "line": "There was,\nhowever, one tall, dry-looking old gentleman, with beetling eyebrows,\nwho maintained a grave and rather severe face throughout, now and then\nfolding his arms, inclining his head, and looking down upon the floor,\nas if turning a doubt over in his mind.",
                   "phrase": "maintained a grave and rather severe face throughout",
                   "key": "grave and rather severe face"
+                },
+                {
+                  "line": "He was one of your wary men,\nwho never laugh but upon good grounds--when they have reason and law on\ntheir side."
                 }
               ],
               "near_misses": [
@@ -5886,6 +6116,7 @@
         "paragraphs": [
           "p028",
           "p033",
+          "p057",
           "p071"
         ],
         "intro": "Brom Bones thinks he played fair with Ichabod. Answer each claim with a line from the story.",
@@ -5927,6 +6158,10 @@
               {
                 "paragraph": "p071",
                 "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
+              },
+              {
+                "paragraph": "p057",
+                "line": "Was her encouragement of the\npoor pedagogue all a mere sham to secure her conquest of his rival?"
               }
             ]
           }
@@ -6101,7 +6336,9 @@
         "kind": "debate",
         "paragraphs": [
           "p028",
+          "p032",
           "p033",
+          "p048",
           "p064",
           "p067",
           "p068",
@@ -6132,10 +6369,19 @@
                 "say": "That so-called head was a pumpkin, found smashed by the brook.",
                 "accept": [
                   {
-                    "paragraph": "p064",
-                    "line": "On mounting a rising\nground, which brought the figure of his fellow-traveller in relief\nagainst the sky, gigantic in height, and muffled in a cloak, Ichabod was\nhorror-struck on perceiving that he was headless!--but his horror was\nstill more increased on observing that the head, which should have\nrested on his shoulders, was carried before him on the pommel of his\nsaddle!"
+                    "paragraph": "p068",
+                    "line": "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin."
                   }
-                ]
+                ],
+                "weigh": {
+                  "uncertain": [
+                    {
+                      "paragraph": "p064",
+                      "line": "On mounting a rising\nground, which brought the figure of his fellow-traveller in relief\nagainst the sky, gigantic in height, and muffled in a cloak, Ichabod was\nhorror-struck on perceiving that he was headless!--but his horror was\nstill more increased on observing that the head, which should have\nrested on his shoulders, was carried before him on the pommel of his\nsaddle!"
+                    }
+                  ],
+                  "feedback": "Irving never settles it. That's the point."
+                }
               },
               {
                 "say": "A farmer from New York says he's alive and well.",
@@ -6211,6 +6457,14 @@
                   {
                     "paragraph": "p028",
                     "line": "The neighbors looked upon him with a mixture\nof awe, admiration, and good-will; and, when any madcap prank or rustic\nbrawl occurred in the vicinity, always shook their heads, and warranted\nBrom Bones was at the bottom of it."
+                  },
+                  {
+                    "paragraph": "p033",
+                    "line": "There was\nsomething extremely provoking in this obstinately pacific system; it\nleft Brom no alternative but to draw upon the funds of rustic waggery in\nhis disposition, and to play off boorish practical jokes upon his rival."
+                  },
+                  {
+                    "paragraph": "p033",
+                    "line": "They harried his hitherto peaceful domains; smoked\nout his singing school by stopping up the chimney; broke into the\nschoolhouse at night, in spite of its formidable fastenings of withe\nand window stakes, and turned everything topsy-turvy, so that the poor\nschoolmaster began to think all the witches in the country held\ntheir meetings there."
                   }
                 ]
               },
@@ -6242,6 +6496,14 @@
                   {
                     "paragraph": "p071",
                     "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
+                  },
+                  {
+                    "paragraph": "p048",
+                    "line": "The\nlady of his heart was his partner in the dance, and smiling graciously\nin reply to all his amorous oglings; while Brom Bones, sorely smitten\nwith love and jealousy, sat brooding by himself in one corner."
+                  },
+                  {
+                    "paragraph": "p032",
+                    "line": "Certain it is, this\nwas not the case with the redoubtable Brom Bones; and from the moment\nIchabod Crane made his advances, the interests of the former evidently\ndeclined: his horse was no longer seen tied to the palings on Sunday\nnights, and a deadly feud gradually arose between him and the preceptor\nof Sleepy Hollow."
                   }
                 ]
               }
@@ -6362,6 +6624,7 @@
           "p025",
           "p027",
           "p028",
+          "p030",
           "p045"
         ],
         "intro": "Ichabod dreams of the Van Tassel farm. Pick 3 cards for your advice, with at least one thing he wants and one thing it costs him, and back each with a line.",
@@ -6441,6 +6704,10 @@
               {
                 "paragraph": "p028",
                 "line": "Among these, the most formidable was a burly, roaring, roystering blade,\nof the name of Abraham, or, according to the Dutch abbreviation, Brom\nVan Brunt, the hero of the country round, which rang with his feats of\nstrength and hardihood."
+              },
+              {
+                "paragraph": "p030",
+                "line": "Such was the formidable rival with whom Ichabod Crane had to contend,\nand, considering all things, a stouter man than he would have shrunk\nfrom the competition, and a wiser man would have despaired."
               }
             ]
           },
@@ -6974,6 +7241,7 @@
         "character_id": null,
         "paragraphs": [
           "p069",
+          "p070",
           "p071",
           "p072"
         ],
@@ -7012,6 +7280,10 @@
               {
                 "paragraph": "p072",
                 "line": "The schoolhouse being deserted soon fell to\ndecay, and was reported to be haunted by the ghost of the unfortunate\npedagogue and the plowboy, loitering homeward of a still summer evening,\nhas often fancied his voice at a distance, chanting a melancholy psalm\ntune among the tranquil solitudes of Sleepy Hollow."
+              },
+              {
+                "paragraph": "p070",
+                "line": "As he was a bachelor, and in nobody’s\ndebt, nobody troubled his head any more about him; the school was\nremoved to a different quarter of the hollow, and another pedagogue\nreigned in his stead."
               }
             ]
           }

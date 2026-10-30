@@ -190,6 +190,26 @@ export function sharedRoots(question: string, lines: string[], names: Set<string
 }
 
 // ---------- validate:worlds: clue banks ----------
+// Proof Race sprints (content only): each is one question, answered by a line in its own short chunk, checked like a
+// bank question (exact lines, near misses on the chunk with a ¶ hint, one thing per question, no shared word roots), with
+// the chunk inside the scene's reading.
+export function sprintProblems(world: WorldPack, passages: SourcePassage[], reading: (sceneIndex: number) => Set<string>): string[] {
+  const problems: string[] = [], names = nameWords(world), dash = /—/;
+  world.scenes.forEach((scene, i) => {
+    const ids = new Set<string>(), inScene = reading(i);
+    for (const s of scene.sprints ?? []) {
+      const at = `${world.id}/${scene.id} sprint/${s.id}`;
+      if (ids.has(s.id)) problems.push(`${at}: id used twice`);
+      ids.add(s.id);
+      for (const p of s.paragraphs) if (!inScene.has(p)) problems.push(`${at}: ${p} is not in this scene's reading`);
+      const chunk = new Set(s.paragraphs);
+      const onChunk = (line: string) => { const p = passages.find((x) => chunk.has(x.id) && evidenceSentences(x.text).includes(line)); return p ? { text: line, pid: p.id } : null; };
+      problems.push(...questionProblems(at, { question: s.question, answers: s.answers, near_misses: s.near_misses }, names, onChunk, (line) => onChunk(line)?.pid ?? null, false));
+      if ([s.question, ...s.near_misses.map((n) => n.hint)].some((t) => dash.test(t))) problems.push(`${at}: no em dashes`);
+    }
+  });
+  return problems;
+}
 export function bankProblems(world: WorldPack, passages: SourcePassage[], panelOf: (scene: Scene, clue: Clue) => SourcePassage[]): string[] {
   const problems: string[] = [];
   const names = nameWords(world);

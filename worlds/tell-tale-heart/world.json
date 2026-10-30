@@ -580,7 +580,10 @@
                 {
                   "line": "A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises.",
                   "phrase": "A shriek had been heard by a neighbor during the night",
-                  "key": "shriek had been heard by a neighbor"
+                  "key": [
+                    "shriek had been heard by a neighbor",
+                    "A shriek had been heard"
+                  ]
                 }
               ],
               "near_misses": [],
@@ -651,7 +654,10 @@
         "truth_paragraph": "p025",
         "truth_line": "When I had made an end of these labors, it was four o'clock — still dark as midnight.",
         "explanation": "The officer said they knocked just after midnight, but the story says it was four o'clock.",
-        "topic": "what time the officers arrived"
+        "topic": "what time the officers arrived",
+        "also_truth": [
+          "As the bell sounded the hour, there came a knocking at the street door."
+        ]
       }
     },
     {
@@ -945,7 +951,7 @@
             {
               "id": "wanted",
               "ladder": "locate",
-              "question": "What did he say he wanted from the old man?",
+              "question": "Did he say he wanted anything from the old man?",
               "answers": [
                 {
                   "line": "For his gold I had no desire."
@@ -1872,6 +1878,9 @@
               "answers": [
                 {
                   "line": "I then replaced the boards so cleverly, so cunningly, that no human eye — not even his — could have detected anything wrong."
+                },
+                {
+                  "line": "There was nothing to wash out — no stain of any kind — no blood-spot whatever."
                 }
               ],
               "near_misses": [
@@ -2722,6 +2731,9 @@
                   "line": "The ringing became more distinct: I talked more freely, to get rid of the feeling; but it continued and gained definiteness — until, at length, I found that the noise was not within my ears.",
                   "phrase": "I found that the noise was not within my ears",
                   "key": "not within my ears"
+                },
+                {
+                  "line": "I admit the deed! — tear up the planks! — here, here! — it is the beating of his hideous heart!”"
                 }
               ],
               "near_misses": [

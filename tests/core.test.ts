@@ -2596,7 +2596,7 @@ test("demo ending Your Turn: scene 1 lines only, activities that can't work are 
   const pids=new Set(readingPortions(passages,world.scenes)[0].map(p=>p.id));
   const hides=(t:string)=>(world.missions??[]).some(m=>revealsPayoff(m,t));
   const r=yt.sceneYourTurn(world,null,pids,hides);
-  assert.deepEqual(Object.keys(r.activities).sort(),["fashion","loyalty","money","social-media","solo","squad","underestimated","winning"]);
+  assert.deepEqual(Object.keys(r.activities).sort(),["fashion","loyalty","money","rival","social-media","solo","squad","underestimated","winning"]);
   assert.equal(r.activities.fashion.title,"Style Ichabod from his bundle","the authored demo version");
   assert.deepEqual(Object.keys(r.activities.winning.sides!).sort(),["ran-away","the-horseman"]);
   // The validator checks every demo line, and that it comes from scene 1.
@@ -2642,4 +2642,20 @@ test("build the case: any 2 lines from a theory's authored list count, and the t
   const off="Ichabod did not make his appearance at breakfast; dinner-hour\ncame, but no Ichabod.";
   let a=sm.newAttempt();for(let i=0;i<2;i++){const r=go(a,[th.supports[0],off]);assert.equal(r.status,"notYet");if(r.status==="notYet")a=r.attempt}
   const last=go(a,[th.supports[0],off]);assert.equal(last.status,"done");if(last.status==="done")assert.deepEqual([last.score.valid,last.score.shown],[false,true]);
+});
+
+test("the pumpkin claim is weighed, not rebutted, and scene 1's Proof Race sprints are valid content", async()=>{
+  const {world,passages}=await storyKit();const yt=await import("../lib/your-turn.ts");
+  const ex=world.your_turn!.activities.winning.sides!["the-horseman"].exchanges.find(e=>/pumpkin/.test(e.say))!;
+  assert.ok(ex.weigh,"a two-step claim");
+  assert.equal(yt.checkAnswer(ex.accept,ex.accept[0].line).ok,true);assert.match(ex.accept[0].line.replace(/\s+/g," "),/shattered pumpkin/);
+  assert.equal(yt.checkAnswer(ex.weigh!.uncertain,ex.weigh!.uncertain[0].line).ok,true);assert.match(ex.weigh!.uncertain[0].line.replace(/\s+/g," "),/pommel/);
+  assert.equal(ex.weigh!.feedback,"Irving never settles it. That's the point.");
+  assert.deepEqual(yt.yourTurnProblems(world,passages),[]);
+  const sprints=world.scenes[0].sprints!;assert.equal(sprints.length,12);
+  assert.ok(sprints.every(s=>s.near_misses.length===1&&/¶\d+/.test(s.near_misses[0].hint)));
+  const fp=await import("../lib/fair-play.ts");const {readingPortions}=await import("../lib/source-passages.ts");
+  const bad=structuredClone(world);bad.scenes[0].sprints![0].near_misses[0].line="Not in the story.";bad.scenes[0].sprints![1].question="Which birds whistle in that glen?";
+  const probs=fp.sprintProblems(bad,passages,(i)=>new Set((readingPortions(passages,bad.scenes)[i]??[]).map(p=>p.id)));
+  assert.ok(probs.some(p=>/sprint\/walk: near miss/.test(p))&&probs.some(p=>/sprint\/birds: the question shares key words/.test(p)),probs.join("; "));
 });
