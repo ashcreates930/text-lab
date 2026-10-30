@@ -1736,7 +1736,7 @@ test("fair play rules: word roots, exact words, hints, question picks, goal leve
   const target={pid:"p069",line:line("p069",5)};
   assert.equal(fp.missHint(2,target,passages),"Not that one. Look again in ¶69.");
   assert.equal(fp.missHint(3,target,passages),"Look in the last part of ¶69.");
-  assert.equal(fp.missHint(2,target,passages,"Whose saddle was it? Check ¶66."),"Whose saddle was it? Check ¶66.");
+  assert.equal(fp.missHint(2,target,passages,"That saddle was Hans's, not Ichabod's. Check ¶69."),"That saddle was Hans's, not Ichabod's. Check ¶69.");
   // Picks: a replay gets an unseen question; neighbors in the roster get different ones; a squad chunk is respected.
   const bank=[{id:"a",pids:["p1"]},{id:"b",pids:["p2"]},{id:"c",pids:["p3"]}];
   assert.equal(fp.pickQuestion(bank,{seed:"x",seen:["a","b"]}).id,"c");
@@ -1762,7 +1762,7 @@ test("story mode round 1, locate: lines lock as they're found, Not yet in betwee
   // Two right and a saddle line: Not yet, try 2, with the saddle hint; the two right lines stay locked.
   const t1=go(sm.newAttempt(),[line("p068",5),line("p069",1),line("p068",0)]);
   assert.ok(t1.status==="notYet");if(t1.status!=="notYet")return;
-  assert.equal(t1.tryNo,2);assert.match(t1.hint,/Whose saddle was it\? Check ¶66\./);assert.match(t1.hint,/One more line to find/);
+  assert.equal(t1.tryNo,2);assert.match(t1.hint,/That saddle was Hans's, not Ichabod's\. Check ¶69\./);assert.match(t1.hint,/One more line to find/);
   assert.equal(t1.attempt.locked.length,2);
   // The third line on try 2: 100 + 100 + 50, minus 25 for the wrong line.
   const t2=go(t1.attempt,[line("p068",5),line("p069",1),line("p069",3)]);
@@ -2252,7 +2252,7 @@ test("off claims accept their alternative correcting lines (#6 and #12), and #5 
   assert.match(clue("party-feast").off_claim!.line,/did ample justice to every dainty/);
   assert.ok(cg.checkProof(world,passages,clue("party-feast"),clue("party-feast").off_claim!.line).ok,"the feast clue includes ¶44");
   assert.ok(cg.correctsOffClaim(clue("broms-corner"),clue("broms-corner").off_claim!.also![0].line));
-  assert.match(clue("broms-corner").off_claim!.also![0].line.replace(/\s+/g," "),/smoked out his singing school/);
+  assert.ok(clue("broms-corner").off_claim!.also!.some(a=>/smoked out his singing school/.test(a.line.replace(/\s+/g," "))));
   assert.ok(cg.correctsOffClaim(clue("hurled-head"),clue("hurled-head").off_claim!.also![0].line));
   assert.match(clue("fallen-saddle").off_claim!.line.replace(/\s+/g," "),/\(unskilful rider that he was!\) he had much ado/);
 });
@@ -2428,7 +2428,8 @@ test("fair play on the clue screen: bank questions, first-try points, shown answ
   assert.equal(cg.checkProof(world,passages,clue,line("p012",0),q).ok,true);
   const m2=cg.checkProof(world,passages,clue,line("p011",0),q,2),m3=cg.checkProof(world,passages,clue,line("p011",0),q,3);
   assert.ok(!m2.ok&&/¶11/.test(m2.hint));assert.ok(!m3.ok&&/part of ¶11/.test(m3.hint));
-  const near=cg.checkProof(world,passages,clue,line("p011",3),q,2);assert.ok(!near.ok&&/How does the narrator judge his punishments\? Check ¶12\./.test(near.hint));
+  const near=cg.checkProof(world,passages,clue,line("p011",3),q,2);assert.ok(!near.ok&&/How does the narrator judge his fairness\? Check ¶12\./.test(near.hint));
+  assert.equal(cg.checkProof(world,passages,clue,line("p011",5),q).ok,true,"\"scholars certainly were not spoiled\" also answers it");
   // Points: full, half, none; 25 off per wrong line; a shown answer earns nothing and ends the streak.
   assert.equal(cg.earn(undefined,"proof","a").points,100);
   assert.equal(cg.earn(undefined,"proof","a",{tries:1,wrong:1}).points,25);

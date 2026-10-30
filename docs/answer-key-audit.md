@@ -22,22 +22,25 @@ The second review's report came in while the first was being finished, so the fi
 
 ### Flags
 
+Update: you approved fixes #4 to #7 and #9 to #14, with the hat kept as a decoy. They are made, and validate:worlds checks every line. The R2 question now reads "Maybe he just left on his own." Which line hints he might have gone?
+
+
 | # | Question (as students see it) | Problem | Proposed fix | Found by | Status |
 |---|---|---|---|---|---|
 | 1 | R2 (Brom): "Ghost or man, I wonder." What detail by the stream hints a person was there? | Only "close beside it a shattered pumpkin" counted. "a shattered pumpkin" was marked wrong. | Any span holding the key words "shattered pumpkin" counts. A span missing them says "Right line! Mark the words that prove it" with no try used. Key words were authored for all 66 exact-words answers in the three stories. | Both, and you | Fixed on answer-key-fixes |
 | 2 | R2: "I wonder if the town looked hard at the facts." Which line shows how they reached a verdict? | The exact words were only "compared them … shook their heads". "The stories of Brouwer, of Bones … were called to mind" is the real proof of matching old tales. | Keys: "compared them with the symptoms" or "stories of Brouwer, of Bones". | Both | Fixed on answer-key-fixes |
 | 3 | R4: every Build the case theory | Each theory accepted only its 2 or 3 authored lines. ¶70.2 ("Knots of gazers…") was listed as support for "The Headless Horseman" and "Something took him", but a crowd gathering supports neither. | Broad lists (below). Any 2 lines from the list count. ¶70.2 is now used only for "The hat and pumpkin". | Both, and you | Fixed on answer-key-fixes; please review the lists |
-| 4 | R1: Tap 3 lines that show what Ichabod owned that was left behind. | ¶69.5 ("These magic books and the poetic scrawl were … consigned to the flames") is his property, left behind, and marked wrong. Both near-miss hints say "Check ¶66", which isn't in the reading. | Accept ¶69.5. Change the hints to "That saddle was Hans's, not Ichabod's. Check ¶69." | Both | Proposed |
-| 5 | R2: "Maybe he just packed up and left." Which line hints he might have gone on his own? | "Packed up" clashes with ¶69.2–3: his whole bundle was left behind. ¶69.1 ("The brook was searched, but the body … was not to be discovered") also fairly hints he left alive. | Reword to "Maybe he just left on his own." Which line hints he might have gone? Accept ¶69.1 (key "not to be discovered"). | Both | Proposed |
-| 6 | Clue · Belongings: Apart from reading material, what did Ichabod own? Name what he wore. | It says "apart from reading material", but the answer line includes a psalm book, and "what he wore" includes a razor and a pitch-pipe. The old exact words left out the corduroy small-clothes. | Reword to "What clothes were in his bundle?" Keys: any clothing item, including small-clothes (already authored). | Both | Rewording proposed (keys fixed) |
-| 7 | Clue · Empty schoolhouse: What kind of teacher was Ichabod with children who misbehaved? | ¶11.6 ("Ichabod Crane's scholars certainly were not spoiled") answers it (strict) but isn't accepted. ¶11.4 (menace and the birch) is a near miss, but it fairly shows a strict teacher. | Accept ¶11.6. Keep ¶11.4 as a near miss with a fairer hint: "That shows he was strict. How does the narrator judge his fairness? Check ¶12." | Both (different fixes) | Proposed |
-| 8 | Clue · Own books: Who was the unfinished poem for? | It's tagged "infer", but the line says it outright. | Retag as locate. Students don't see the tag. | Reviewer | Proposed (cosmetic) |
-| 9 | Your Turn demo · Style Ichabod from his bundle | "His hat, found by the brook" is accepted, but the prompt says to choose only from the bundle. The hat wasn't in it. | Remove the hat piece; there are still 4 real pieces. | Reviewer | Proposed |
-| 10 | Your Turn demo · Ghost or ran away: Hans says "If something took him, we would have found him by now." | The accepted ¶69.1 ("body … not to be discovered") agrees with Hans instead of answering him. | Reword the claim to "He just fell in the brook and drowned, plain and simple." ¶69.1 then answers it. | Reviewer | Proposed |
-| 11 | Your Turn demo · Ghost or ran away: Brom says "A man running away would have taken his things." | ¶69.3 (the list of things left behind) supports Brom's claim instead of rebutting it. | Reword to "He had nothing to run away with." Accept ¶69.6 (his pay was on him). | Reviewer | Proposed |
-| 12 | Your Turn demo · Ghost or ran away: Hans says "Nothing strange happened on that road." | ¶68.1 (the horse came home with no saddle and the bridle under its feet) also answers it. | Accept ¶68.1. | Reviewer | Proposed |
-| 13 | Your Turn · Prove them wrong (full game and demo): "Nobody thought much of him." | ¶14.4, ¶16.2, ¶17.1 and ¶17.2 (he found favor with the mothers, his visits caused a stir, he was "greeted with satisfaction" and "esteemed by the women") also answer it. | Accept them. | Reviewer | Proposed |
-| 14 | Your Turn · Prove them wrong: "He couldn't even earn his keep." | ¶15.4 (he "got on tolerably enough") and ¶13.3 (boarded and lodged by the farmers) also answer it. | Accept them. | Reviewer | Proposed |
+| 4 | R1: Tap 3 lines that show what Ichabod owned that was left behind. | ¶69.5 ("These magic books and the poetic scrawl were … consigned to the flames") is his property, left behind, and marked wrong. Both near-miss hints say "Check ¶66", which isn't in the reading. | Accept ¶69.5. Change the hints to "That saddle was Hans's, not Ichabod's. Check ¶69." | Both | Fixed |
+| 5 | R2: "Maybe he just packed up and left." Which line hints he might have gone on his own? | "Packed up" clashes with ¶69.2–3: his whole bundle was left behind. ¶69.1 ("The brook was searched, but the body … was not to be discovered") also fairly hints he left alive. | Reword to "Maybe he just left on his own." Which line hints he might have gone? Accept ¶69.1 (key "not to be discovered"). | Both | Fixed |
+| 6 | Clue · Belongings: Apart from reading material, what did Ichabod own? Name what he wore. | It says "apart from reading material", but the answer line includes a psalm book, and "what he wore" includes a razor and a pitch-pipe. The old exact words left out the corduroy small-clothes. | Reword to "What clothes were in his bundle?" Keys: any clothing item, including small-clothes (already authored). | Both | Fixed: now "Which items in his bundle could he wear?" |
+| 7 | Clue · Empty schoolhouse: What kind of teacher was Ichabod with children who misbehaved? | ¶11.6 ("Ichabod Crane's scholars certainly were not spoiled") answers it (strict) but isn't accepted. ¶11.4 (menace and the birch) is a near miss, but it fairly shows a strict teacher. | Accept ¶11.6. Keep ¶11.4 as a near miss with a fairer hint: "That shows he was strict. How does the narrator judge his fairness? Check ¶12." | Both (different fixes) | Fixed |
+| 8 | Clue · Own books: Who was the unfinished poem for? | It's tagged "infer", but the line says it outright. | Retag as locate. Students don't see the tag. | Reviewer | Not done (cosmetic; students don't see the tag) |
+| 9 | Your Turn demo · Style Ichabod from his bundle | "His hat, found by the brook" is accepted, but the prompt says to choose only from the bundle. The hat wasn't in it. | Keep the hat as a decoy: it is refused with the hint "That hat was found by the brook, not in his bundle. Check ¶68." | Reviewer | Fixed |
+| 10 | Your Turn demo · Ghost or ran away: Hans says "If something took him, we would have found him by now." | The accepted ¶69.1 ("body … not to be discovered") agrees with Hans instead of answering him. | Reword the claim to "He just fell in the brook and drowned, plain and simple." ¶69.1 then answers it. | Reviewer | Fixed |
+| 11 | Your Turn demo · Ghost or ran away: Brom says "A man running away would have taken his things." | ¶69.3 (the list of things left behind) supports Brom's claim instead of rebutting it. | Reword to "He had nothing to run away with." Accept ¶69.6 (his pay was on him). | Reviewer | Fixed |
+| 12 | Your Turn demo · Ghost or ran away: Hans says "Nothing strange happened on that road." | ¶68.1 (the horse came home with no saddle and the bridle under its feet) also answers it. | Accept ¶68.1. | Reviewer | Fixed |
+| 13 | Your Turn · Prove them wrong (full game and demo): "Nobody thought much of him." | ¶14.4, ¶16.2, ¶17.1 and ¶17.2 (he found favor with the mothers, his visits caused a stir, he was "greeted with satisfaction" and "esteemed by the women") also answer it. | Accept them. | Reviewer | Fixed |
+| 14 | Your Turn · Prove them wrong: "He couldn't even earn his keep." | ¶15.4 (he "got on tolerably enough") and ¶13.3 (boarded and lodged by the farmers) also answer it. | Accept them. | Reviewer | Fixed |
 | 15 | Clue · Searchers' report and Own books: near misses from ¶69 and ¶70 | The reviewer thought these paragraphs couldn't be tapped. | No change. The clue screen shows the clue's paragraphs plus their neighbors, so these lines can be tapped. | Disagreement (see below) | No change |
 
 ### Where the two reviews disagree
@@ -397,24 +400,31 @@ Method: two independent reviewers per story, each blind to the other, checked ev
 - **Both** marks a flag both reviewers raised.
 - **A only** and **B only** mark disagreements, flags one reviewer raised and the other passed.
 
-Status: everything below is **Proposed**. Nothing has changed in these keys yet. These scenes have no Story Mode, so the Round 1 and Round 4 checks don't apply.
+Status: every **Both** flag below is **fixed**, and validate:worlds checks every line. The **A only** and **B only** flags are waiting for your decision. Three questions were reworded so they no longer share a word with their new answers:
+- "What went wrong for Ichabod on horseback as he fled?"
+- "What does the doubter first want answered?"
+- "What does her concern for her canning suggest about her?"
+
+Two one-reviewer rewordings had to happen for the same reason:
+- Tell-Tale Heart: "Did he stop after the old man stirred?"
+- Trifles: "What does she finally admit stopped her from visiting?" These scenes have no Story Mode, so the Round 1 and Round 4 checks don't apply.
 
 ### Sleepy Hollow · Scene 2 (Van Tassel party)
 
 | Question | Problem | Proposed fix | Found by |
 |---|---|---|---|
-| Off claim: "ate like a bird" | ¶45.1 ("He was a kind and thankful creature… spirits rose with eating") also disproves it. | Accept ¶45.1. | Both |
-| What would he do to his old job and his old employer? | The key "snap his fingers" covers only the employer half. | Add key "turn his back upon the old schoolhouse". | Both |
-| Off claim: Brom "never played a single trick" | ¶33.3–¶33.5 (smoked out the singing school, the dog taught to whine) prove tricks more directly than the accepted line. | Accept them. | Both |
-| Why didn't the two men have it out with their fists? | The key misses "too wary to give him an opportunity" and "double the schoolmaster up". | Add keys "too wary" and "double the schoolmaster up". | Both (B named both) |
-| In Brom's tale, where did the rider disappear? | The keys don't name a place. A span on "the church bridge", the actual answer, fails. | Add key "church bridge". Drop "the Hessian bolted". | Both |
-| Why share the boast with Ichabod in the room? | ¶55.2 ("He affirmed that… church bridge…") plants the idea the Prove it names, but it isn't accepted. | Accept ¶55.2. | Both |
-| Off claim: Ichabod "came out grinning" | ¶57.11 ("stole forth with the air of one who had been sacking a henroost") also disproves it. | Accept ¶57.11 (and ¶57.12). | Both |
-| Your Turn · Money: "Turn his back on the schoolhouse" filed as a cost | The text shows it as a gleeful wish. | Relabel it as a want, or reword it to "Give up his only steady job". | Both |
+| Off claim: "ate like a bird" | ¶45.1 ("He was a kind and thankful creature… spirits rose with eating") also disproves it. | Accept ¶45.1. | Both · fixed |
+| What would he do to his old job and his old employer? | The key "snap his fingers" covers only the employer half. | Add key "turn his back upon the old schoolhouse". | Both · fixed |
+| Off claim: Brom "never played a single trick" | ¶33.3–¶33.5 (smoked out the singing school, the dog taught to whine) prove tricks more directly than the accepted line. | Accept them. | Both · fixed |
+| Why didn't the two men have it out with their fists? | The key misses "too wary to give him an opportunity" and "double the schoolmaster up". | Add keys "too wary" and "double the schoolmaster up". | Both (B named both) · fixed |
+| In Brom's tale, where did the rider disappear? | The keys don't name a place. A span on "the church bridge", the actual answer, fails. | Add key "church bridge". Drop "the Hessian bolted". | Both · fixed |
+| Why share the boast with Ichabod in the room? | ¶55.2 ("He affirmed that… church bridge…") plants the idea the Prove it names, but it isn't accepted. | Accept ¶55.2. | Both · fixed |
+| Off claim: Ichabod "came out grinning" | ¶57.11 ("stole forth with the air of one who had been sacking a henroost") also disproves it. | Accept ¶57.11 (and ¶57.12). | Both · fixed |
+| Your Turn · Money: "Turn his back on the schoolhouse" filed as a cost | The text shows it as a gleeful wish. | Relabel it as a want, or reword it to "Give up his only steady job". | Both · fixed |
 | Your Turn · Money: "Take on a powerful rival" | ¶30.1 ("Such was the formidable rival…") fits better. | Accept ¶30.1. | B only |
-| Your Turn · Money: "Eat like a king" | ¶24.3 (the porkers and bacon) is the same daydream. | Accept ¶24.3. | Both |
-| Your Turn · Loyalty: "Katrina stood by him" | ¶71.1 ("dismissed by the heiress") is the most direct rebuttal. | Accept ¶71.1 (and ¶57.9). | Both |
-| Your Turn · Loyalty: "His old horse never let him down" | ¶62 (the "perverse old animal") and ¶65 (Gunpowder "possessed with a demon") answer it better than ¶68. | Accept ¶62.1 and ¶65.1. | Both |
+| Your Turn · Money: "Eat like a king" | ¶24.3 (the porkers and bacon) is the same daydream. | Accept ¶24.3. | Both · fixed |
+| Your Turn · Loyalty: "Katrina stood by him" | ¶71.1 ("dismissed by the heiress") is the most direct rebuttal. | Accept ¶71.1 (and ¶57.9). | Both · fixed |
+| Your Turn · Loyalty: "His old horse never let him down" | ¶62 (the "perverse old animal") and ¶65 (Gunpowder "possessed with a demon") answer it better than ¶68. | Accept ¶62.1 and ¶65.1. | Both · fixed |
 | Wants Katrina or her family's wealth? | The key misses "Not those of the bevy of buxom lasses". | Add that key. | A only |
 | What pranks? | The keys miss "turned everything topsy-turvy" and "turning him into ridicule". | Add both keys. | A only |
 | Mood leaving the house | ¶57.12 also shows it. | Accept it. | A only |
@@ -425,14 +435,14 @@ Status: everything below is **Proposed**. Nothing has changed in these keys yet.
 
 | Question | Problem | Proposed fix | Found by |
 |---|---|---|---|
-| Why was he frightened before the landmark? | ¶59.4 ("approaching the very place where many of the scenes of the ghost stories had been laid") answers it directly. | Accept ¶59.4. | Both |
-| Off claim: the rider "chatted… friendly" | ¶63.12 ("made no offer of molestation or sociability") and ¶63.5 and ¶63.7 ("no reply", "no answer") disprove it. | Accept them. | Both |
-| How did the figure respond when called? | The near-miss hint asks "What did he see there?", which doesn't fit the question. | Change the hint to "That's history. How did it answer him? Check ¶63." | Both |
-| Details that fit a flesh-and-blood rider | ¶62.4 (the "plashy tramp" of hoofs), ¶63.9 and ¶63.12 fit a real rider. | Accept them. | Both |
-| What went wrong with Ichabod's seat as he fled? | ¶66.3 ("he had much ado to maintain his seat") literally answers it. | Accept ¶66.3, or reword to "What happened to the saddle as he fled?" | Both |
-| Your Turn · Road home: "prove each danger" | The danger lines aren't accepted: ¶59.8 (André's tree), ¶61.6 (the "haunted stream"), and ¶65.2 and ¶67.7/¶67.8 (the bridge). The accepted lines mostly give locations. | Accept the danger lines. | Both |
-| Your Turn · Ballad lines | The paragraph list skips ¶62, ¶65 and ¶66, the core of the ride. | Widen the list to ¶58–¶67. | Both |
-| Your Turn · Replay: "The rider appears" | ¶62.4 and ¶63.9 aren't accepted. | Accept them. | Both |
+| Why was he frightened before the landmark? | ¶59.4 ("approaching the very place where many of the scenes of the ghost stories had been laid") answers it directly. | Accept ¶59.4. | Both · fixed |
+| Off claim: the rider "chatted… friendly" | ¶63.12 ("made no offer of molestation or sociability") and ¶63.5 and ¶63.7 ("no reply", "no answer") disprove it. | Accept them. | Both · fixed |
+| How did the figure respond when called? | The near-miss hint asks "What did he see there?", which doesn't fit the question. | Change the hint to "That's history. How did it answer him? Check ¶63." | Both · fixed |
+| Details that fit a flesh-and-blood rider | ¶62.4 (the "plashy tramp" of hoofs), ¶63.9 and ¶63.12 fit a real rider. | Accept them. | Both · fixed |
+| What went wrong with Ichabod's seat as he fled? | ¶66.3 ("he had much ado to maintain his seat") literally answers it. | Accept ¶66.3, or reword to "What happened to the saddle as he fled?" | Both · fixed |
+| Your Turn · Road home: "prove each danger" | The danger lines aren't accepted: ¶59.8 (André's tree), ¶61.6 (the "haunted stream"), and ¶65.2 and ¶67.7/¶67.8 (the bridge). The accepted lines mostly give locations. | Accept the danger lines. | Both · fixed |
+| Your Turn · Ballad lines | The paragraph list skips ¶62, ¶65 and ¶66, the core of the ride. | Widen the list to ¶58–¶67. | Both · fixed |
+| Your Turn · Replay: "The rider appears" | ¶62.4 and ¶63.9 aren't accepted. | Accept them. | Both · fixed |
 | What did Ichabod notice about the stranger on the slope? | The key misses "carried before him on the pommel". | Add that key. | A only |
 | Off claim: the tree was "skinny" and he rode "right past" | ¶59.6 and ¶59.7 disprove it. | Accept them. | A only |
 | Off claim: the head was thrown before the bridge | ¶67.8 also corrects it. | Accept it. | A only |
@@ -442,8 +452,8 @@ Status: everything below is **Proposed**. Nothing has changed in these keys yet.
 
 | Question | Problem | Proposed fix | Found by |
 |---|---|---|---|
-| What careers did he take up afterward? | A span on "written for the newspapers", "justice of the Ten Pound Court" or "kept school" fails. | Add those keys. | Both |
-| What does the doubter want to know? | ¶80.2 (his "doubts") fairly answers it as worded. Only the hint says "first". | Reword to "What does the doubter first demand to know?" | Both |
+| What careers did he take up afterward? | A span on "written for the newspapers", "justice of the Ten Pound Court" or "kept school" fails. | Add those keys. | Both · fixed |
+| What does the doubter want to know? | ¶80.2 (his "doubts") fairly answers it as worded. Only the hint says "first". | Reword to "What does the doubter first demand to know?" | Both · fixed |
 | Your Turn · Rebuttal: "Children still learn in his old schoolhouse" | ¶70.4 (the school was moved) refutes it. | Accept ¶70.4. | B only (and the scene 1 reviewer) |
 | How does Brom react each time it's retold? | The key misses "look exceedingly knowing". | Add that key. | A only |
 | One listener's reaction while others laughed | ¶75.5 ("never laugh but upon good grounds") also answers it. | Accept it. | B only |
@@ -452,17 +462,17 @@ Status: everything below is **Proposed**. Nothing has changed in these keys yet.
 
 | Question | Problem | Proposed fix | Found by |
 |---|---|---|---|
-| S2 · What feature of the old man bothered him? | ¶2.10 ("Whenever it fell upon me, my blood ran cold…") also answers it. | Accept it. | Both |
-| S3 · Did he stop? (shutters) | The near miss ¶9.2 ends "I kept on pushing it steadily", which is the answer. "When he got close" doesn't match the text. | Accept ¶9.2 with key "kept on pushing it steadily". Reword to "Did he stop after the old man stirred?" | Both (A reworded it) |
-| S3 · How was his last visit different? | ¶8.2 (slower than a minute-hand) and ¶8.3 ("Never, before that night…") answer it. | Accept them. | Both |
-| S3 · How does his mood change? | ¶8.6 ("I fairly chuckled at the idea") isn't accepted. | Accept it. | Both |
-| S3 · What does the seat choice reveal? | Only "wild audacity" counts. | Add keys "enthusiasm of my confidence" and "perfect triumph". | Both |
-| S3 · Where did he choose to sit? | The key misses "beneath which reposed the corpse". | Add that key. | Both |
-| S3 · Why walk us through every step? | The key misses "think so no longer". | Add that key. | Both |
-| S3 · Bragging rather than reporting | ¶23.1 and ¶24.3 ("I had been too wary for that") are boasts. | Accept them. | Both |
-| S4 · Why might the sound be coming from inside him? | The accepted ¶33.3 ("They heard! — they suspected!") argues the opposite. Better lines aren't accepted: ¶32.7 (they "chatted pleasantly"), ¶33.1 and ¶29.6. | Remove ¶33.3. Accept ¶32.7 and ¶33.1, and consider ¶29.6. | Both |
-| S4 · What pushes him to the breaking point? | ¶33.5 and ¶33.6 (the "hypocritical smiles", the "derision") are also what pushes him. | Accept them. Change the Prove it to "The sound and their smiles". | Both |
-| S4 · Spot the Lie: "the officers had stopped talking" | ¶29.6 ("still they sat and still chatted") also disproves it. | Accept it. | Both |
+| S2 · What feature of the old man bothered him? | ¶2.10 ("Whenever it fell upon me, my blood ran cold…") also answers it. | Accept it. | Both · fixed |
+| S3 · Did he stop? (shutters) | The near miss ¶9.2 ends "I kept on pushing it steadily", which is the answer. "When he got close" doesn't match the text. | Accept ¶9.2 with key "kept on pushing it steadily". Reword to "Did he stop after the old man stirred?" | Both (A reworded it) · fixed |
+| S3 · How was his last visit different? | ¶8.2 (slower than a minute-hand) and ¶8.3 ("Never, before that night…") answer it. | Accept them. | Both · fixed |
+| S3 · How does his mood change? | ¶8.6 ("I fairly chuckled at the idea") isn't accepted. | Accept it. | Both · fixed |
+| S3 · What does the seat choice reveal? | Only "wild audacity" counts. | Add keys "enthusiasm of my confidence" and "perfect triumph". | Both · fixed |
+| S3 · Where did he choose to sit? | The key misses "beneath which reposed the corpse". | Add that key. | Both · fixed |
+| S3 · Why walk us through every step? | The key misses "think so no longer". | Add that key. | Both · fixed |
+| S3 · Bragging rather than reporting | ¶23.1 and ¶24.3 ("I had been too wary for that") are boasts. | Accept them. | Both · fixed |
+| S4 · Why might the sound be coming from inside him? | The accepted ¶33.3 ("They heard! — they suspected!") argues the opposite. Better lines aren't accepted: ¶32.7 (they "chatted pleasantly"), ¶33.1 and ¶29.6. | Remove ¶33.3. Accept ¶32.7 and ¶33.1, and consider ¶29.6. | Both · fixed |
+| S4 · What pushes him to the breaking point? | ¶33.5 and ¶33.6 (the "hypocritical smiles", the "derision") are also what pushes him. | Accept them. Change the Prove it to "The sound and their smiles". | Both · fixed |
+| S4 · Spot the Lie: "the officers had stopped talking" | ¶29.6 ("still they sat and still chatted") also disproves it. | Accept it. | Both · fixed |
 | S1 · Spot the Lie: "knocked just after midnight" | ¶25's "As the bell sounded the hour" line also helps disprove it. | Accept both ¶25 lines. | A only |
 | S1 · Someone next door noticed | The key misses "A shriek had been heard". | Add that key. | A only |
 | S2 · What did he say he wanted? | The question assumes he wanted something. The answer is that he wanted nothing. | Reword to "Did he say he wanted anything from the old man?" | A only |
@@ -473,19 +483,19 @@ Status: everything below is **Proposed**. Nothing has changed in these keys yet.
 
 | Question | Problem | Proposed fix | Found by |
 |---|---|---|---|
-| S1 · What does her concern for these jars suggest? | The near miss ¶58.5 ("her jars would break") shows the concern too, and its hint doesn't fit. | Accept ¶58.5. | Both |
-| S1 · Why is a cage with no pet strange? | ¶205 "It's broke." isn't accepted, but "One hinge is pulled apart" is. | Accept "It's broke." | Both |
-| S1 · Why hide it among sewing things? | The question asks why, but the answer ("It's the bird.") says what. | Reword to "What was hidden among the sewing things?" Keep the why for Prove it. | Both |
-| S2 · Why does Mrs. Hale think Minnie is innocent? | The accepted "Well, I don't think she did" is her conclusion, not her reason. The near miss "Worrying about her fruit" is the reason. | Swap them, and reword the question to "What makes Mrs. Hale doubt Minnie did it?" | Both |
-| S2 · What kept her from visiting? | ¶220 ("I've never liked this place", "a lonesome place") isn't accepted. ¶82 ("Farmers' wives have their hands full") fairly answers it as worded. | Accept ¶220. Reword to "What does she finally admit kept her away?" | Both |
-| S2 · What does Mrs. Hale regret? | ¶216 ("wish I had") and ¶220 aren't accepted. The Prove it answer doesn't answer "regret". | Accept them. Change the Prove it to "Not visiting Minnie when she was lonely." | Both |
-| S2 · Her opinion of him vs. his reputation | ¶229.4 ("Like a raw wind that gets to the bone") isn't accepted. | Accept it. | Both |
-| S3 · What does Mrs. Peters say must happen to wrongdoers? | "The law is the law" doesn't say what must happen. The near miss points to ¶292, which can't be tapped. | Reword to "What does Mrs. Peters say about the law?" Point the near miss at ¶296.1. | Both |
-| S3 · What does Mrs. Hale call the real wrong? | "That was a crime!" appears twice, and only one is accepted. The "I wish I'd come over" line isn't accepted. | Accept both "crime" lines and ¶298.4. | Both |
-| S3 · Why does she repeat those words? | ¶285.2 ("Choked the life out of him") isn't accepted. | Accept it. | Both |
-| S4 · What evidence does he hope for? | ¶309.3 ("If there was some definite thing") isn't accepted. | Accept it. | Both |
-| S4 · Why can Mrs. Peters go unwatched? | ¶319 ("doesn't need supervising") is the decision, not the reason. | Make it a near miss. | Both |
-| S4 · Spot the Lie: the attorney calls the sheriff away | The claim has two false details. ¶323.4 disproves one of them but isn't accepted. | Accept ¶323.4, or change the claim so only one detail is false. | Both |
+| S1 · What does her concern for these jars suggest? | The near miss ¶58.5 ("her jars would break") shows the concern too, and its hint doesn't fit. | Accept ¶58.5. | Both · fixed |
+| S1 · Why is a cage with no pet strange? | ¶205 "It's broke." isn't accepted, but "One hinge is pulled apart" is. | Accept "It's broke." | Both · fixed |
+| S1 · Why hide it among sewing things? | The question asks why, but the answer ("It's the bird.") says what. | Reword to "What was hidden among the sewing things?" Keep the why for Prove it. | Both · fixed |
+| S2 · Why does Mrs. Hale think Minnie is innocent? | The accepted "Well, I don't think she did" is her conclusion, not her reason. The near miss "Worrying about her fruit" is the reason. | Swap them, and reword the question to "What makes Mrs. Hale doubt Minnie did it?" | Both · fixed |
+| S2 · What kept her from visiting? | ¶220 ("I've never liked this place", "a lonesome place") isn't accepted. ¶82 ("Farmers' wives have their hands full") fairly answers it as worded. | Accept ¶220. Reword to "What does she finally admit kept her away?" | Both · fixed |
+| S2 · What does Mrs. Hale regret? | ¶216 ("wish I had") and ¶220 aren't accepted. The Prove it answer doesn't answer "regret". | Accept them. Change the Prove it to "Not visiting Minnie when she was lonely." | Both · fixed |
+| S2 · Her opinion of him vs. his reputation | ¶229.4 ("Like a raw wind that gets to the bone") isn't accepted. | Accept it. | Both · fixed |
+| S3 · What does Mrs. Peters say must happen to wrongdoers? | "The law is the law" doesn't say what must happen. The near miss points to ¶292, which can't be tapped. | Reword to "What does Mrs. Peters say about the law?" Point the near miss at ¶296.1. | Both · fixed |
+| S3 · What does Mrs. Hale call the real wrong? | "That was a crime!" appears twice, and only one is accepted. The "I wish I'd come over" line isn't accepted. | Accept both "crime" lines and ¶298.4. | Both · fixed |
+| S3 · Why does she repeat those words? | ¶285.2 ("Choked the life out of him") isn't accepted. | Accept it. | Both · fixed |
+| S4 · What evidence does he hope for? | ¶309.3 ("If there was some definite thing") isn't accepted. | Accept it. | Both · fixed |
+| S4 · Why can Mrs. Peters go unwatched? | ¶319 ("doesn't need supervising") is the decision, not the reason. | Make it a near miss. | Both · fixed |
+| S4 · Spot the Lie: the attorney calls the sheriff away | The claim has two false details. ¶323.4 disproves one of them but isn't accepted. | Accept ¶323.4, or change the claim so only one detail is false. | Both · fixed |
 | S2 · What did Mrs. Wright request? | ¶138 ("Asking for an apron and her little shawl") isn't accepted. | Accept it. | A only |
 | S3 · What would the quiet feel like? | The key misses "still, after the bird was still". | Add that key. | B only |
 | S1 · Hauling "to market" and "his son" | The text says "to town" and never says the boy is his son. | Reword to "hauling to town" and "Hale and Harry". | B only (wording note) |
