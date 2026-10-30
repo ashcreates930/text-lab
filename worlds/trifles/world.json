@@ -469,7 +469,8 @@
               "answers": [
                 {
                   "line": "I wasn’t sure, I’m not sure yet, but I opened the door--this door\n[_indicating the door by which the two women are still standing_] and\nthere in that rocker--[_pointing to it_] sat Mrs. Wright.",
-                  "phrase": "sat Mrs. Wright"
+                  "phrase": "sat Mrs. Wright",
+                  "key": "sat Mrs. Wright"
                 }
               ],
               "near_misses": [
@@ -497,7 +498,11 @@
                 },
                 {
                   "line": "I wasn’t sure, I’m not sure yet, but I opened the door--this door\n[_indicating the door by which the two women are still standing_] and\nthere in that rocker--[_pointing to it_] sat Mrs. Wright.",
-                  "phrase": "I wasn’t sure, I’m not sure yet"
+                  "phrase": "I wasn’t sure, I’m not sure yet",
+                  "key": [
+                    "I wasn’t sure",
+                    "I’m not sure yet"
+                  ]
                 }
               ],
               "near_misses": [
@@ -661,18 +666,16 @@
             {
               "id": "cared",
               "ladder": "infer",
-              "question": "What does her concern for these jars suggest about her?",
+              "question": "What does her concern for her canning suggest about her?",
               "answers": [
                 {
                   "line": "She worried about that when it turned so cold."
-                }
-              ],
-              "near_misses": [
+                },
                 {
-                  "line": "She said the\nfire’d go out and her jars would break.",
-                  "hint": "That's what she said would happen. Who was thinking about it? Check ¶58."
+                  "line": "She said the\nfire’d go out and her jars would break."
                 }
               ],
+              "near_misses": [],
               "prove": {
                 "right": "She cared about her everyday work at home.",
                 "wrong": [
@@ -1008,6 +1011,9 @@
                 },
                 {
                   "line": "One hinge\nis pulled apart."
+                },
+                {
+                  "line": "It’s broke."
                 }
               ],
               "near_misses": [
@@ -1172,7 +1178,7 @@
             {
               "id": "why-hide",
               "ladder": "infer",
-              "question": "Why would someone hide this among sewing things?",
+              "question": "What was hidden among the sewing things?",
               "answers": [
                 {
                   "line": "It’s the bird."
@@ -1409,7 +1415,8 @@
               "answers": [
                 {
                   "line": "She--come to think of it, she was kind of like a bird\nherself--real sweet and pretty, but kind of timid and--fluttery.",
-                  "phrase": "she was kind of like a bird herself"
+                  "phrase": "she was kind of like a bird herself",
+                  "key": "kind of like a bird"
                 }
               ],
               "near_misses": [
@@ -1577,19 +1584,19 @@
             {
               "id": "innocent",
               "ladder": "infer",
-              "question": "Why does Mrs. Hale believe these requests mean Minnie is innocent?",
+              "question": "What makes Mrs. Hale doubt Minnie did it?",
               "answers": [
                 {
-                  "line": "Well, I don’t think she did."
+                  "line": "Asking for an apron and her little shawl."
                 },
                 {
-                  "line": "Asking for an apron and her little shawl."
+                  "line": "Worrying about her fruit."
                 }
               ],
               "near_misses": [
                 {
-                  "line": "Worrying about her fruit.",
-                  "hint": "That's the fruit. What does she conclude? Check ¶138."
+                  "line": "Well, I don’t think she did.",
+                  "hint": "That's what she concludes. What makes her think so? Check ¶138."
                 }
               ],
               "prove": {
@@ -1727,13 +1734,19 @@
             {
               "id": "kept-away",
               "ladder": "locate",
-              "question": "What kept her from visiting?",
+              "question": "What does she finally admit stopped her from visiting?",
               "answers": [
                 {
                   "line": "I stayed away because it weren’t cheerful--and that’s\nwhy I ought to have come."
                 },
                 {
                   "line": "It never seemed a very cheerful place."
+                },
+                {
+                  "line": "I--I’ve never liked this place."
+                },
+                {
+                  "line": "I dunno what it is,\nbut it’s a lonesome place and always was."
                 }
               ],
               "near_misses": [
@@ -1761,6 +1774,9 @@
                 },
                 {
                   "line": "I wish I had come over sometimes when _she_ was\nhere."
+                },
+                {
+                  "line": "I stayed away because it weren’t cheerful--and that’s\nwhy I ought to have come."
                 }
               ],
               "near_misses": [
@@ -1770,7 +1786,7 @@
                 }
               ],
               "prove": {
-                "right": "Minnie was lonely, and no one visited her.",
+                "right": "Not visiting Minnie when she was lonely.",
                 "wrong": [
                   "Minnie was too busy for friends.",
                   "Minnie had many visitors.",
@@ -1933,6 +1949,9 @@
                 },
                 {
                   "line": "They say he was a good man."
+                },
+                {
+                  "line": "Like a raw wind that gets\nto the bone."
                 }
               ],
               "near_misses": [
@@ -2114,7 +2133,7 @@
             {
               "id": "the-law",
               "ladder": "locate",
-              "question": "What does Mrs. Peters say must happen to wrongdoers?",
+              "question": "What rule does Mrs. Peters insist on?",
               "answers": [
                 {
                   "line": "The law has got to\npunish crime, Mrs. Hale."
@@ -2169,6 +2188,9 @@
               "answers": [
                 {
                   "line": "That was a crime!"
+                },
+                {
+                  "line": "Oh, I _wish_ I’d come over here\nonce in a while!"
                 }
               ],
               "near_misses": [
@@ -2314,7 +2336,8 @@
               "answers": [
                 {
                   "line": "If there’d been years and years of\nnothing, then a bird to sing to you, it would be awful--still, after\nthe bird was still.",
-                  "phrase": "then a bird to sing to you, it would be awful"
+                  "phrase": "then a bird to sing to you, it would be awful",
+                  "key": "it would be awful"
                 }
               ],
               "near_misses": [
@@ -2515,6 +2538,9 @@
                 },
                 {
                   "line": "[_Her hand goes out and rests on the bird-cage._"
+                },
+                {
+                  "line": "Choked the life out of him."
                 }
               ],
               "near_misses": [
@@ -2636,7 +2662,8 @@
               "answers": [
                 {
                   "line": "When I was a girl--my kitten--there was a boy took a\nhatchet, and before my eyes--and before I could get there--[_Covers her\nface an instant._]",
-                  "phrase": "there was a boy took a hatchet, and before my eyes"
+                  "phrase": "there was a boy took a hatchet, and before my eyes",
+                  "key": "took a hatchet"
                 }
               ],
               "near_misses": [
@@ -2901,6 +2928,9 @@
               "answers": [
                 {
                   "line": "Something to show--something to make a story about--a thing that\nwould connect up with this strange way of doing it--"
+                },
+                {
+                  "line": "If there was some definite\nthing."
                 }
               ],
               "near_misses": [
@@ -3046,9 +3076,6 @@
               "question": "Why does he decide Mrs. Peters can go unwatched?",
               "answers": [
                 {
-                  "line": "No, Mrs. Peters doesn’t need supervising."
-                },
-                {
                   "line": "For that matter, a sheriff’s wife is married to the law."
                 }
               ],
@@ -3056,6 +3083,10 @@
                 {
                   "line": "Not--just that way.",
                   "hint": "That's her reply. What's his reason? Check ¶319."
+                },
+                {
+                  "line": "No, Mrs. Peters doesn’t need supervising.",
+                  "hint": "That's what he decides. What's his reason? Check ¶319."
                 }
               ],
               "prove": {
@@ -3449,7 +3480,10 @@
         "truth_paragraph": "p323",
         "truth_line": "We ought to take a look at these windows.",
         "explanation": "Mr. Hale said they went to look at the back door, but the story says they went to look at the windows.",
-        "topic": "what the men went to look at"
+        "topic": "what the men went to look at",
+        "also_truth": [
+          "I\njust want you to come in here a minute, George."
+        ]
       }
     }
   ],

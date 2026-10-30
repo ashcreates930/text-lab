@@ -121,7 +121,7 @@ export async function playRound(store: StoryStore, world: WorldPack, passages: S
     await store.saveRun(run.id, { state });
     const updated: StoryRun = { ...run, state };
     const reaction = input.kind === "confront" && r.status === "notYet" ? reactionTo(scene, false) : null;
-    return { run: updated, ...(r.status === "notYet" ? { notYet: { tryNo: r.tryNo, hint: r.hint, locked: r.attempt.locked.map((l) => l.line) } } : { step: { name: r.step, choices: r.choices ?? null, shown: r.shown ?? null, phrase: r.phrase ?? null } }), reaction } as const;
+    return { run: updated, ...(r.status === "notYet" ? { notYet: { tryNo: r.tryNo, hint: r.hint, locked: r.attempt.locked.map((l) => l.line) } } : { step: { name: r.step, choices: r.choices ?? null, shown: r.shown ?? null, phrase: r.phrase ?? null, note: r.note ?? null } }), reaction } as const;
   }
   const score = { ...r.score, grace: late && !r.score.shown, base: late && !r.score.shown ? Math.round(r.score.base / 2) : r.score.base };
   const next: RunState = applyRound(withTrust(s), score, input.kind === "read" ? { pouch: score.proof } : {});

@@ -12,7 +12,7 @@ const offClaim=z.object({character_id:z.string(),claim:z.string().min(1),paragra
 const ytLine=z.object({paragraph:z.string().regex(/^p\d{3}$/),line:z.string().min(1)});
 const ytExchange=z.object({say:z.string().min(1),accept:z.array(ytLine)});
 const ytContent={character_id:z.string().nullable().optional(),exchanges:z.array(ytExchange).optional(),sides:z.record(z.string(),z.object({character_id:z.string(),exchanges:z.array(ytExchange)})).optional(),
- need:z.number().int().min(1).max(5).optional(),groups:z.record(z.string(),z.string()).optional(),items:z.array(z.object({id:z.string(),label:z.string().min(1),icon:z.string().optional(),group:z.string().optional(),accept:z.array(ytLine)})).optional(),
+ need:z.number().int().min(1).max(5).optional(),groups:z.record(z.string(),z.string()).optional(),items:z.array(z.object({id:z.string(),label:z.string().min(1),icon:z.string().optional(),group:z.string().optional(),accept:z.array(ytLine),hint:z.string().min(1).optional()})).optional(),
  posts:z.array(z.object({author:z.string(),text:z.string().min(1),false:z.boolean(),accept:z.array(ytLine).optional()})).optional()};
 // demo: the version for the public demo's ending after the start scene, authored from that scene's lines only (it
 // replaces the fields it names; lib/your-turn.ts sceneYourTurn).
@@ -24,11 +24,13 @@ const yourTurnActivity=z.object({title:z.string().min(1),minutes:z.number().int(
 // share with its answers (reviewed by hand).
 const nearMiss=z.object({line:z.string(),hint:z.string().min(1)});
 const proveIt=z.object({right:z.string().min(1),wrong:z.array(z.string().min(1)).length(3)});
-const bankAnswer=z.object({line:z.string(),phrase:z.string().optional()});
+// key: the proof words inside the line (one, or any of several); a marked span that holds one of them counts.
+const bankAnswer=z.object({line:z.string(),phrase:z.string().optional(),key:z.union([z.string().min(1),z.array(z.string().min(1)).min(1)]).optional()});
 const bankQuestion=z.object({id:z.string(),ladder:z.enum(["locate","infer"]),question:z.string().min(1),answers:z.array(bankAnswer).min(1),near_misses:z.array(nearMiss).default([]),prove:proveIt.nullable(),shared_ok:z.array(z.string()).optional()});
 const artifact = z.object({off_claim:offClaim.optional(),bank:z.array(bankQuestion).optional(),id:z.string(),name:z.string(),scene_id:z.string(),evidence_type:z.enum(["observed","claimed","reported"]),secondary_evidence_type:z.enum(["observed","claimed","reported"]).optional(),position,image:z.string().optional(),closeup_image:z.string().optional(),source_anchor:z.array(z.string()),unlock_condition:z.string().nullable(),questions:z.array(artifactQuestion).length(3)});
 // Spot the Lie: once per scene, a character testifies with one false claim that one line of the story disproves.
-const lie=z.object({clue_id:z.string(),character_id:z.string(),testimony:z.string(),false_claim:z.string(),truth_paragraph:z.string().regex(/^p\d{3}$/),truth_line:z.string(),explanation:z.string(),topic:z.string()});
+// also_truth: other exact lines that also disprove it (accepted as well).
+const lie=z.object({clue_id:z.string(),character_id:z.string(),testimony:z.string(),false_claim:z.string(),truth_paragraph:z.string().regex(/^p\d{3}$/),truth_line:z.string(),also_truth:z.array(z.string().min(1)).optional(),explanation:z.string(),topic:z.string()});
 // The Final Verdict: the question the student answers after the last scene, with three theories the text can support.
 const verdict=z.object({question:z.string(),theories:z.array(z.object({id:z.string(),name:z.string(),description:z.string()})).length(3)});
 // Story Mode (lib/story-mode.ts): a scene played as four rounds, each with a bank of authored questions (a student gets

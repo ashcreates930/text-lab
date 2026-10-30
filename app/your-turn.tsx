@@ -106,7 +106,8 @@ function Pick({passages,a,onDone}:{passages:SourcePassage[];a:YourTurnActivity;o
   const it=items.find(i=>i.id===active);if(!it)return;
   const c=checkAnswer(it.accept as AcceptLine[],l.text);
   setTries(t=>[...t,{label:it.label,line:l.text,ok:c.ok}]);
-  if(!c.ok){setMsg({ok:false,text:c.hint});return}
+  // A decoy piece can carry its own hint (why the story refuses it).
+  if(!c.ok){setMsg({ok:false,text:!it.accept.length&&"hint" in it&&it.hint?it.hint:c.hint});return}
   setDone(d=>[...d,{id:it.id,line:l.text}]);setActive(null);setMsg({ok:true,text:`${it.label}: that holds up.`});
  }
  return <div className="mt-3 space-y-3">

@@ -35,10 +35,12 @@ export function evidenceSentences(text: string) {
 // Compare lines by their words: line breaks, spacing, curly quotes and stage-direction marks don't matter.
 export const lineWords = (text: string) =>
   text.replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[_[\]]/g, " ").replace(/\s+/g, " ").trim().toLowerCase();
-export const isTruthLine = (lie: Lie, tapped: string) => {
+// The authored truth line, or one of the other lines that also disproves the claim.
+const isPrimaryTruth = (lie: Pick<Lie, "truth_line">, tapped: string) => {
   const truth = lineWords(lie.truth_line);
   return !!truth && lineWords(tapped).includes(truth);
 };
+export const isTruthLine = (lie: Lie, tapped: string) => isPrimaryTruth(lie, tapped) || (lie.also_truth ?? []).some((t) => isPrimaryTruth({ truth_line: t }, tapped));
 
 export const lieFor = (scene: { lie?: Lie }, clueId: string) => (scene.lie?.clue_id === clueId ? scene.lie : undefined);
 
@@ -101,7 +103,8 @@ export function lieProblems(world: WorldPack, passages: SourcePassage[]): string
     if (!lineWords(paragraph.text).includes(lineWords(lie.truth_line))) problems.push(`${where}: truth_line does not appear word for word in ${lie.truth_paragraph}`);
     else if (!evidenceSentences(paragraph.text).some((s) => isTruthLine(lie, s))) problems.push(`${where}: truth_line is not one of the evidence lines a student can tap`);
     // Exactly one line among the clue's evidence lines may be the answer.
-    const matches = passages.filter((p) => clue.source_anchor.includes(p.id)).flatMap((p) => evidenceSentences(p.text)).filter((s) => isTruthLine(lie, s));
+    for (const t of lie.also_truth ?? []) if (!passages.some((p) => evidenceSentences(p.text).some((s) => isPrimaryTruth({ truth_line: t }, s)))) problems.push(`${where}: an also_truth line is not an exact evidence line`);
+    const matches = passages.filter((p) => clue.source_anchor.includes(p.id)).flatMap((p) => evidenceSentences(p.text)).filter((s) => isPrimaryTruth(lie, s));
     if (matches.length > 1) problems.push(`${where}: ${matches.length} evidence lines match truth_line; it must be exactly one`);
   }
   if (world.verdict) {

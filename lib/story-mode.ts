@@ -13,7 +13,7 @@ import { contentNotes } from "./content-notes.ts";
 import { isTruthLine, lieProblems, lineWords, type Lie } from "./lies.ts";
 import { evidenceLines, matchEvidence } from "./evidence-check.ts";
 import { soundExplanation } from "./live/engine.ts";
-import { MAX_TRIES, afterWrongLines, levelPoints, answerFor, missHint, nameWords, nearMissFor, needsPhrase, phraseMatches, phraseRange, pickQuestion, proveChoices, proveRight, questionProblems, speedFlags, tryFactor, typedProof, type SpeedFlag } from "./fair-play.ts";
+import { MARK_AGAIN, MAX_TRIES, afterWrongLines, levelPoints, answerFor, missHint, nameWords, nearMissFor, needsPhrase, phraseMatches, phraseRange, pickQuestion, proveChoices, proveRight, questionProblems, speedFlags, tryFactor, typedProof, type SpeedFlag } from "./fair-play.ts";
 
 export type Scene = WorldPack["scenes"][number];
 export type StoryContent = NonNullable<Scene["story_mode"]>;
@@ -93,7 +93,7 @@ export type Timing = { elapsedMs: number; grace: boolean };
 export type RoundScore = { kind: RoundKind; base: number; speed: number; valid: boolean; coinsEarned: number; detail: string; choice: string; proof: string[]; grace?: boolean; tries: number; wrong: number; shown: boolean; qid: string; typed?: string; flags?: SpeedFlag[]; explanation?: string };
 export type AttemptResult =
   | { status: "notYet"; attempt: Attempt; tryNo: number; hint: string }
-  | { status: "next"; attempt: Attempt; step: "phrase" | "prove" | "explain"; choices?: string[]; shown?: string[]; phrase?: [number, number] }
+  | { status: "next"; attempt: Attempt; step: "phrase" | "prove" | "explain"; choices?: string[]; shown?: string[]; phrase?: [number, number]; note?: string }
   | { status: "done"; attempt: Attempt; score: RoundScore; shown?: string[] }
   | { status: "invalid"; message: string };
 
@@ -149,10 +149,9 @@ export function attemptRound(world: WorldPack, passages: SourcePassage[], scene:
     }
     const hit = answerFor(q, a.line)!;
     if (needsPhrase(hit.line) && hit.phrase && !a.phraseOk && !a.shown) {
-      if (input.marked && phraseMatches(hit.line, hit.phrase, input.marked)) return { status: "next", attempt: { ...a, phraseOk: true }, step: "prove", choices: choices() };
-      const m = { ...miss(0), trust: (a.trust ?? 0) - 1 };
-      if (m.tries >= maxTries) return toShown(m);
-      return { status: "notYet", attempt: m, tryNo: m.tries + 1, hint: "Right line. Now mark only the words that prove it." };
+      if (input.marked && phraseMatches(hit.line, hit, input.marked)) return { status: "next", attempt: { ...a, phraseOk: true }, step: "prove", choices: choices() };
+      // The line is right: marking again never costs a try, trust, or a reaction.
+      return { status: "next", attempt: a, step: "phrase", note: MARK_AGAIN };
     }
     const typed = typedProof(input.prove?.proves ?? "", input.prove?.because ?? "");
     if (typed || (input.prove?.choice && proveRight(q.prove, input.prove.choice))) {

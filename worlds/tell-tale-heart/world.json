@@ -579,7 +579,8 @@
               "answers": [
                 {
                   "line": "A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises.",
-                  "phrase": "A shriek had been heard by a neighbor during the night"
+                  "phrase": "A shriek had been heard by a neighbor during the night",
+                  "key": "shriek had been heard by a neighbor"
                 }
               ],
               "near_misses": [],
@@ -599,7 +600,8 @@
               "answers": [
                 {
                   "line": "A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises.",
-                  "phrase": "they (the officers) had been deputed to search the premises"
+                  "phrase": "they (the officers) had been deputed to search the premises",
+                  "key": "search the premises"
                 }
               ],
               "near_misses": [],
@@ -619,7 +621,8 @@
               "answers": [
                 {
                   "line": "A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises.",
-                  "phrase": "A shriek had been heard by a neighbor during the night"
+                  "phrase": "A shriek had been heard by a neighbor during the night",
+                  "key": "heard by a neighbor"
                 }
               ],
               "near_misses": [],
@@ -976,6 +979,11 @@
                 },
                 {
                   "line": "He had the eye of a vulture — a pale blue eye, with a film over it."
+                },
+                {
+                  "line": "Whenever it fell upon me, my blood ran cold; and so, by degrees — very gradually — I made up my mind to take the life of the old man, and thus rid myself of the eye forever.",
+                  "phrase": "my blood ran cold",
+                  "key": "my blood ran cold"
                 }
               ],
               "near_misses": [
@@ -1000,7 +1008,8 @@
               "answers": [
                 {
                   "line": "Whenever it fell upon me, my blood ran cold; and so, by degrees — very gradually — I made up my mind to take the life of the old man, and thus rid myself of the eye forever.",
-                  "phrase": "I made up my mind to take the life of the old man, and thus rid myself of the eye forever"
+                  "phrase": "I made up my mind to take the life of the old man, and thus rid myself of the eye forever",
+                  "key": "take the life of the old man"
                 }
               ],
               "near_misses": [
@@ -1171,7 +1180,8 @@
               "answers": [
                 {
                   "line": "It took me an hour to place my whole head within the opening so far that I could see the old man as he lay upon his bed.",
-                  "phrase": "It took me an hour to place my whole head within the opening"
+                  "phrase": "It took me an hour to place my whole head within the opening",
+                  "key": "It took me an hour"
                 }
               ],
               "near_misses": [
@@ -1196,7 +1206,8 @@
               "answers": [
                 {
                   "line": "And then, when my head was well in the room, I undid the lantern cautiously — oh, so cautiously (for the hinges creaked) — I undid it just so much that a single thin ray fell upon the vulture eye.",
-                  "phrase": "a single thin ray fell upon the vulture eye"
+                  "phrase": "a single thin ray fell upon the vulture eye",
+                  "key": "fell upon the vulture eye"
                 }
               ],
               "near_misses": [
@@ -1361,6 +1372,12 @@
               "answers": [
                 {
                   "line": "Upon the eighth night I was more than usually cautious in opening the door."
+                },
+                {
+                  "line": "A watch's minute-hand moves more quickly than did mine."
+                },
+                {
+                  "line": "Never, before that night, had I felt the extent of my own powers — of my sagacity."
                 }
               ],
               "near_misses": [
@@ -1388,6 +1405,9 @@
                 },
                 {
                   "line": "Never, before that night, had I felt the extent of my own powers — of my sagacity."
+                },
+                {
+                  "line": "I fairly chuckled at the idea."
                 }
               ],
               "near_misses": [
@@ -1666,7 +1686,8 @@
               "answers": [
                 {
                   "line": "In the enthusiasm of my confidence, I brought chairs into the room, and desired them here to rest from their fatigues; while I myself, in the wild audacity of my perfect triumph, placed my own seat upon the very spot beneath which reposed the corpse of the victim.",
-                  "phrase": "I brought chairs into the room"
+                  "phrase": "I brought chairs into the room",
+                  "key": "brought chairs"
                 }
               ],
               "near_misses": [],
@@ -1686,7 +1707,11 @@
               "answers": [
                 {
                   "line": "In the enthusiasm of my confidence, I brought chairs into the room, and desired them here to rest from their fatigues; while I myself, in the wild audacity of my perfect triumph, placed my own seat upon the very spot beneath which reposed the corpse of the victim.",
-                  "phrase": "placed my own seat upon the very spot beneath which reposed the corpse of the victim"
+                  "phrase": "placed my own seat upon the very spot beneath which reposed the corpse of the victim",
+                  "key": [
+                    "upon the very spot",
+                    "beneath which reposed the corpse"
+                  ]
                 }
               ],
               "near_misses": [],
@@ -1706,7 +1731,12 @@
               "answers": [
                 {
                   "line": "In the enthusiasm of my confidence, I brought chairs into the room, and desired them here to rest from their fatigues; while I myself, in the wild audacity of my perfect triumph, placed my own seat upon the very spot beneath which reposed the corpse of the victim.",
-                  "phrase": "in the wild audacity of my perfect triumph"
+                  "phrase": "in the wild audacity of my perfect triumph",
+                  "key": [
+                    "wild audacity",
+                    "enthusiasm of my confidence",
+                    "perfect triumph"
+                  ]
                 }
               ],
               "near_misses": [],
@@ -1866,7 +1896,11 @@
               "answers": [
                 {
                   "line": "If, still, you think me mad, you will think so no longer when I describe the wise precautions I took for the concealment of the body.",
-                  "phrase": "you will think so no longer when I describe the wise precautions"
+                  "phrase": "you will think so no longer when I describe the wise precautions",
+                  "key": [
+                    "wise precautions",
+                    "think so no longer"
+                  ]
                 }
               ],
               "near_misses": [
@@ -2032,6 +2066,14 @@
                 },
                 {
                   "line": "I then replaced the boards so cleverly, so cunningly, that no human eye — not even his — could have detected anything wrong."
+                },
+                {
+                  "line": "If, still, you think me mad, you will think so no longer when I describe the wise precautions I took for the concealment of the body.",
+                  "phrase": "wise precautions",
+                  "key": "wise precautions"
+                },
+                {
+                  "line": "I had been too wary for that."
                 }
               ],
               "near_misses": [
@@ -2146,7 +2188,8 @@
               "answers": [
                 {
                   "line": "His room was as black as pitch with the thick darkness, (for the shutters were close fastened, through fear of robbers,) and so I knew that he could not see the opening of the door, and I kept on pushing it steadily, steadily.",
-                  "phrase": "the shutters were close fastened, through fear of robbers"
+                  "phrase": "the shutters were close fastened, through fear of robbers",
+                  "key": "shutters were close fastened"
                 }
               ],
               "near_misses": [
@@ -2167,18 +2210,18 @@
             {
               "id": "no-stopping",
               "ladder": "locate",
-              "question": "Did he stop when he got close?",
+              "question": "Did he stop after the old man stirred?",
               "answers": [
                 {
                   "line": "Now you may think that I drew back — but no."
-                }
-              ],
-              "near_misses": [
+                },
                 {
                   "line": "His room was as black as pitch with the thick darkness, (for the shutters were close fastened, through fear of robbers,) and so I knew that he could not see the opening of the door, and I kept on pushing it steadily, steadily.",
-                  "hint": "That explains the dark. Did he stop? Check ¶9."
+                  "phrase": "kept on pushing it steadily",
+                  "key": "kept on pushing it steadily"
                 }
               ],
+              "near_misses": [],
               "prove": {
                 "right": "He kept going instead of pulling back.",
                 "wrong": [
@@ -2195,7 +2238,8 @@
               "answers": [
                 {
                   "line": "His room was as black as pitch with the thick darkness, (for the shutters were close fastened, through fear of robbers,) and so I knew that he could not see the opening of the door, and I kept on pushing it steadily, steadily.",
-                  "phrase": "I knew that he could not see the opening of the door"
+                  "phrase": "I knew that he could not see the opening of the door",
+                  "key": "could not see the opening of the door"
                 }
               ],
               "near_misses": [
@@ -2552,6 +2596,12 @@
               "answers": [
                 {
                   "line": "I felt that I must scream or die! — and now — again! — hark! louder! louder! louder! louder!"
+                },
+                {
+                  "line": "I could bear those hypocritical smiles no longer!"
+                },
+                {
+                  "line": "Anything was more tolerable than this derision!"
                 }
               ],
               "near_misses": [
@@ -2561,7 +2611,7 @@
                 }
               ],
               "prove": {
-                "right": "The sound grows unbearable and he must scream.",
+                "right": "The sound and their smiles become unbearable.",
                 "wrong": [
                   "The officers accuse him.",
                   "The old man walks in.",
@@ -2670,7 +2720,8 @@
               "answers": [
                 {
                   "line": "The ringing became more distinct: I talked more freely, to get rid of the feeling; but it continued and gained definiteness — until, at length, I found that the noise was not within my ears.",
-                  "phrase": "I found that the noise was not within my ears"
+                  "phrase": "I found that the noise was not within my ears",
+                  "key": "not within my ears"
                 }
               ],
               "near_misses": [
@@ -2721,7 +2772,10 @@
                   "line": "I gasped for breath — and yet the officers heard it not."
                 },
                 {
-                  "line": "They heard! — they suspected! — they knew! — they were making a mockery of my horror! — this I thought, and this I think."
+                  "line": "And still the men chatted pleasantly, and smiled."
+                },
+                {
+                  "line": "Was it possible they heard not?"
                 }
               ],
               "near_misses": [
@@ -2756,7 +2810,10 @@
         "truth_paragraph": "p032",
         "truth_line": "And still the men chatted pleasantly, and smiled.",
         "explanation": "The narrator said the officers had stopped talking, but the story says they kept chatting and smiling.",
-        "topic": "what the officers were doing"
+        "topic": "what the officers were doing",
+        "also_truth": [
+          "My head ached, and I fancied a ringing in my ears: but still they sat and still chatted."
+        ]
       }
     }
   ],

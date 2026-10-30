@@ -1719,11 +1719,15 @@ test("fair play rules: word roots, exact words, hints, question picks, goal leve
   assert.deepEqual(fp.sharedRoots("Which belongings did he leave?",[line("p069",3)],names),[fp.wordRoot("belonged")]);
   assert.deepEqual(fp.sharedRoots("What did Ichabod own?",[line("p069",2)],names),[],"a name in both is fine");
   assert.deepEqual(fp.sharedRoots("What was found on the stream bank?",[line("p068",5)],names,["found","bank"]),[],"reviewed exceptions");
-  // Exact words: Irving's "--" stands alone; 2 words of tolerance at each edge, not 3.
+  // Exact words: Irving's "--" stands alone; any span holding a key phrase counts, a span missing it doesn't.
   const l=line("p067",9),r=fp.phraseRange(l,"he was tumbled headlong into the dust")!;
   assert.ok(r);assert.equal(fp.lineTokens(l).slice(r[0],r[1]+1).join(" "),"he was tumbled headlong into the dust,");
-  assert.equal(fp.phraseMatches(l,"he was tumbled headlong into the dust",[r[0]-2,r[1]+2]),true);
-  assert.equal(fp.phraseMatches(l,"he was tumbled headlong into the dust",[r[0]+3,r[1]]),false);
+  const ans={phrase:"he was tumbled headlong into the dust",key:"tumbled headlong"};
+  assert.equal(fp.phraseMatches(l,ans,[r[0]-2,r[1]+2]),true);assert.equal(fp.phraseMatches(l,ans,[r[0]+2,r[0]+3]),true,"just the key words");
+  assert.equal(fp.phraseMatches(l,ans,[r[0]+3,r[1]]),false,"misses the key words");
+  // The demo's pumpkin: "a shattered pumpkin" holds the key.
+  const pl=line("p068",5),pr=fp.phraseRange(pl,"a shattered pumpkin")!;
+  assert.equal(fp.phraseMatches(pl,{phrase:"close beside it a shattered pumpkin",key:"shattered pumpkin"},pr),true);
   assert.equal(fp.needsPhrase(line("p068",5)),true);assert.equal(fp.needsPhrase(line("p069",1)),false);
   // Tries: full, half, none; wrong lines cost 25, never below 0.
   assert.deepEqual([1,2,3,4].map(fp.tryFactor),[1,0.5,0,0]);
@@ -1732,7 +1736,7 @@ test("fair play rules: word roots, exact words, hints, question picks, goal leve
   const target={pid:"p069",line:line("p069",5)};
   assert.equal(fp.missHint(2,target,passages),"Not that one. Look again in ¶69.");
   assert.equal(fp.missHint(3,target,passages),"Look in the last part of ¶69.");
-  assert.equal(fp.missHint(2,target,passages,"Whose saddle was it? Check ¶66."),"Whose saddle was it? Check ¶66.");
+  assert.equal(fp.missHint(2,target,passages,"That saddle was Hans's, not Ichabod's. Check ¶69."),"That saddle was Hans's, not Ichabod's. Check ¶69.");
   // Picks: a replay gets an unseen question; neighbors in the roster get different ones; a squad chunk is respected.
   const bank=[{id:"a",pids:["p1"]},{id:"b",pids:["p2"]},{id:"c",pids:["p3"]}];
   assert.equal(fp.pickQuestion(bank,{seed:"x",seen:["a","b"]}).id,"c");
@@ -1758,7 +1762,7 @@ test("story mode round 1, locate: lines lock as they're found, Not yet in betwee
   // Two right and a saddle line: Not yet, try 2, with the saddle hint; the two right lines stay locked.
   const t1=go(sm.newAttempt(),[line("p068",5),line("p069",1),line("p068",0)]);
   assert.ok(t1.status==="notYet");if(t1.status!=="notYet")return;
-  assert.equal(t1.tryNo,2);assert.match(t1.hint,/Whose saddle was it\? Check ¶66\./);assert.match(t1.hint,/One more line to find/);
+  assert.equal(t1.tryNo,2);assert.match(t1.hint,/That saddle was Hans's, not Ichabod's\. Check ¶69\./);assert.match(t1.hint,/One more line to find/);
   assert.equal(t1.attempt.locked.length,2);
   // The third line on try 2: 100 + 100 + 50, minus 25 for the wrong line.
   const t2=go(t1.attempt,[line("p068",5),line("p069",1),line("p069",3)]);
@@ -1783,10 +1787,16 @@ test("story mode round 2, infer: the line, its exact words, then Prove it; Brom'
   // The right line (over 25 words): mark the words next.
   const s1=go(m1.attempt,{line:answer.line});assert.ok(s1.status==="next"&&s1.step==="phrase");if(s1.status!=="next")return;
   const range=fp.phraseRange(answer.line,answer.phrase!)!;
-  const m2=go(s1.attempt,{line:answer.line,marked:[0,5]});assert.ok(m2.status==="notYet");if(m2.status!=="notYet")return;assert.match(m2.hint,/mark only the words/);
+  // Words that miss the proof: mark again, with no try, no trust lost and no reaction.
+  const m2=go(s1.attempt,{line:answer.line,marked:[0,5]});assert.ok(m2.status==="next"&&m2.step==="phrase");if(m2.status!=="next")return;
+  assert.equal(m2.note,fp.MARK_AGAIN);assert.deepEqual([m2.attempt.tries,m2.attempt.trust],[s1.attempt.tries,s1.attempt.trust]);
+  // Any span holding a key phrase counts: the whole line, or just the key words.
+  for(const k of fp.phraseKeys(answer)){const kr=fp.phraseRange(answer.line,k)!;const ok=go(m2.attempt,{line:answer.line,marked:kr});assert.ok(ok.status==="next"&&ok.step==="prove",k)}
+  const whole=go(m2.attempt,{line:answer.line,marked:[0,fp.lineTokens(answer.line).length-1]});assert.ok(whole.status==="next"&&whole.step==="prove");
   const s2=go(m2.attempt,{line:answer.line,marked:range});assert.ok(s2.status==="next"&&s2.step==="prove"&&s2.choices!.length===4);if(s2.status!=="next")return;
-  // A wrong choice is a miss: that's three, so the answer is shown and Prove it still comes.
-  const shown=go(s2.attempt,{line:answer.line,prove:{choice:q.prove.wrong[0]}});
+  // Wrong choices are misses: the third miss shows the answer and Prove it still comes.
+  const m3=go(s2.attempt,{line:answer.line,prove:{choice:q.prove.wrong[0]}});assert.ok(m3.status==="notYet");if(m3.status!=="notYet")return;
+  const shown=go(m3.attempt,{line:answer.line,prove:{choice:q.prove.wrong[1]}});
   assert.ok(shown.status==="next"&&shown.step==="prove"&&shown.shown?.length===1);if(shown.status!=="next")return;
   const done=go(shown.attempt,{line:answer.line,prove:{choice:q.prove.right}});
   assert.ok(done.status==="done");if(done.status==="done")assert.deepEqual([done.score.base,done.score.valid,done.score.shown],[0,false,true]);
@@ -2242,7 +2252,7 @@ test("off claims accept their alternative correcting lines (#6 and #12), and #5 
   assert.match(clue("party-feast").off_claim!.line,/did ample justice to every dainty/);
   assert.ok(cg.checkProof(world,passages,clue("party-feast"),clue("party-feast").off_claim!.line).ok,"the feast clue includes ¶44");
   assert.ok(cg.correctsOffClaim(clue("broms-corner"),clue("broms-corner").off_claim!.also![0].line));
-  assert.match(clue("broms-corner").off_claim!.also![0].line.replace(/\s+/g," "),/smoked out his singing school/);
+  assert.ok(clue("broms-corner").off_claim!.also!.some(a=>/smoked out his singing school/.test(a.line.replace(/\s+/g," "))));
   assert.ok(cg.correctsOffClaim(clue("hurled-head"),clue("hurled-head").off_claim!.also![0].line));
   assert.match(clue("fallen-saddle").off_claim!.line.replace(/\s+/g," "),/\(unskilful rider that he was!\) he had much ado/);
 });
@@ -2418,7 +2428,8 @@ test("fair play on the clue screen: bank questions, first-try points, shown answ
   assert.equal(cg.checkProof(world,passages,clue,line("p012",0),q).ok,true);
   const m2=cg.checkProof(world,passages,clue,line("p011",0),q,2),m3=cg.checkProof(world,passages,clue,line("p011",0),q,3);
   assert.ok(!m2.ok&&/¶11/.test(m2.hint));assert.ok(!m3.ok&&/part of ¶11/.test(m3.hint));
-  const near=cg.checkProof(world,passages,clue,line("p011",3),q,2);assert.ok(!near.ok&&/How does the narrator judge his punishments\? Check ¶12\./.test(near.hint));
+  const near=cg.checkProof(world,passages,clue,line("p011",3),q,2);assert.ok(!near.ok&&/How does the narrator judge his fairness\? Check ¶12\./.test(near.hint));
+  assert.equal(cg.checkProof(world,passages,clue,line("p011",5),q).ok,true,"\"scholars certainly were not spoiled\" also answers it");
   // Points: full, half, none; 25 off per wrong line; a shown answer earns nothing and ends the streak.
   assert.equal(cg.earn(undefined,"proof","a").points,100);
   assert.equal(cg.earn(undefined,"proof","a",{tries:1,wrong:1}).points,25);
@@ -2619,4 +2630,16 @@ test("test runs are tagged and never share a leaderboard with real players", asy
   const {PlayFeedbackSchema}=await import("../lib/feedback.ts");
   assert.equal(PlayFeedbackSchema.safeParse({world:"sleepy-hollow"}).success,false,"at least one answer");
   assert.equal(PlayFeedbackSchema.safeParse({world:"sleepy-hollow",fun:"kind_of",playAgain:"yes"}).success,true);
+});
+
+test("build the case: any 2 lines from a theory's authored list count, and the third miss shows the answer", async()=>{
+  const {world,passages,scene,sm}=await storyKit();
+  const q=scene.story_mode!.call.bank.find(b=>b.id==="key-clue")!,th=q.theories.find(t=>t.id==="hat-pumpkin")!;
+  assert.ok(th.supports.length>=3,"a broad list");
+  const PICKS={...sm.pickRound(scene,{seed:"x",seen:[],seat:null}),call:q.id};
+  const go=(a:import("../lib/story-mode.ts").Attempt,pins:string[])=>sm.attemptRound(world,passages,scene,PICKS,a,{kind:"call",theoryId:th.id,pins},{seed:"t"});
+  for(const pair of [[th.supports[0],th.supports[1]],[th.supports[1],th.supports[2]],[th.supports[0],th.supports[2]]]){const r=go(sm.newAttempt(),pair);assert.equal(r.status,"done");if(r.status==="done")assert.equal(r.score.valid,true)}
+  const off="Ichabod did not make his appearance at breakfast; dinner-hour\ncame, but no Ichabod.";
+  let a=sm.newAttempt();for(let i=0;i<2;i++){const r=go(a,[th.supports[0],off]);assert.equal(r.status,"notYet");if(r.status==="notYet")a=r.attempt}
+  const last=go(a,[th.supports[0],off]);assert.equal(last.status,"done");if(last.status==="done")assert.deepEqual([last.score.valid,last.score.shown],[false,true]);
 });
