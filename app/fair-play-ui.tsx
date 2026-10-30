@@ -47,7 +47,7 @@ export function PointsGoal({max}:{max:number}){
 }
 
 // ---------- Exact words ----------
-// Tap the first word that proves it, then the last; the words between are marked. Keyboard and screen reader users get
+// Tap the first word that proves it, then the last, or drag across the words; the words between are marked. Keyboard and screen reader users get
 // buttons instead: step to a word, then "Start here" and "End here". shownRange: the authored words, shown after three
 // misses (read only).
 export function PhrasePicker({line,onLock,busy,shownRange}:{line:string;onLock?:(range:[number,number])=>void;busy?:boolean;shownRange?:[number,number]|null}){
@@ -58,9 +58,15 @@ export function PhrasePicker({line,onLock,busy,shownRange}:{line:string;onLock?:
  const marked=(i:number)=>lo!==null&&hi!==null&&i>=lo&&i<=hi;
  const readOnly=!!shownRange;
  function tap(i:number){if(readOnly)return;if(start===null||end!==null){setStart(i);setEnd(null)}else setEnd(i)}
+ // Drag: press on a word and move across others to mark them; a press without moving is a tap.
+ const drag=useRef<{from:number;moved:boolean}|null>(null);
+ const wordAt=(x:number,y:number)=>{const el=document.elementFromPoint(x,y)?.closest<HTMLElement>("[data-word]");return el?Number(el.dataset.word):null};
+ function down(e:React.PointerEvent){if(readOnly||buttons)return;const i=wordAt(e.clientX,e.clientY);if(i===null)return;drag.current={from:i,moved:false};(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId)}
+ function move(e:React.PointerEvent){const d=drag.current;if(!d)return;const i=wordAt(e.clientX,e.clientY);if(i===null||(!d.moved&&i===d.from))return;d.moved=true;setStart(d.from);setEnd(i)}
+ function up(e:React.PointerEvent){const d=drag.current;drag.current=null;if(!d)return;if(!d.moved){const i=wordAt(e.clientX,e.clientY);tap(i??d.from)}}
  return <div className="mt-3">
-  {!readOnly&&<p className="text-[16px] font-semibold">Mark the exact words that prove it: tap the first word, then the last.</p>}
-  <p className="mt-2 rounded-2xl bg-[#FFFDF8] p-4 font-serif text-[18px] leading-9 ring-1 ring-[#E4DCCB]" aria-hidden={buttons||undefined}>{words.map((w,i)=><span key={i}>{i>0?" ":""}<button type="button" tabIndex={buttons||readOnly?-1:0} onClick={()=>tap(i)} aria-pressed={marked(i)} className={`rounded px-0.5 ${marked(i)?"bg-[#A0472C] text-white":readOnly?"":"hover:bg-[#F4E1D6]"}`}>{w}</button></span>)}</p>
+  {!readOnly&&<p className="text-[16px] font-semibold">Mark the exact words that prove it: tap the first word, then the last, or drag across them.</p>}
+  <p onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={()=>{drag.current=null}} className={`mt-2 select-none rounded-2xl bg-[#FFFDF8] p-3 font-serif text-[18px] leading-[2.6] ring-1 ring-[#E4DCCB] ${readOnly?"":"touch-none"}`} aria-hidden={buttons||undefined}>{words.map((w,i)=><span key={i}>{i>0?" ":""}<button type="button" data-word={i} tabIndex={buttons||readOnly?-1:0} onClick={e=>{if(e.detail===0)tap(i)}} aria-pressed={marked(i)} className={`-my-1 inline-block min-h-10 min-w-8 rounded-lg px-1.5 py-1 ${marked(i)?"bg-[#A0472C] text-white":readOnly?"":"hover:bg-[#F4E1D6]"}`}>{w}</button></span>)}</p>
   {!readOnly&&<>
    <button type="button" onClick={()=>setButtons(v=>!v)} aria-expanded={buttons} className="mt-2 min-h-11 text-[15px] font-semibold text-[#8A3B23] underline underline-offset-4">{buttons?"Use tapping instead":"Use buttons instead (keyboard or screen reader)"}</button>
    {buttons&&<div className="mt-2 rounded-2xl bg-[#EFE8D8] p-3" role="group" aria-label="Mark words with buttons">

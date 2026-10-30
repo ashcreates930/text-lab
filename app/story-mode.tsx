@@ -25,7 +25,7 @@ import {focusScreenTop} from "./screen-focus";
 import {getBrowserSupabase} from "@/lib/supabase-browser";
 import {MAX_TRIES} from "@/lib/fair-play";
 import {NotYet,PhrasePicker,PointsGoal,PointsMeter,ProveIt,useSpeedMeta} from "./fair-play-ui";
-import {collectPieces,missionFor} from "@/lib/missions";
+import {collectPieces,missionFor,pieceForLine} from "@/lib/missions";
 import {MissionTracker} from "./missions";
 import {FaceOff,RivalEmblem,playMode} from "./mode-screens";
 import {newClueGame} from "@/lib/clue-game";
@@ -76,14 +76,16 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
  const callbacks=useRef({onJumped,onUnavailable});callbacks.current={onJumped,onUnavailable};
  const rival=playMode(demo)==="rival";
  const [race,setRace]=useState<Race|null>(null),[raceWon,setRaceWon]=useState<"you"|"rival"|null>(null);
+ // Mission pieces this round's proof just earned (the "+1 piece" moment on the results screen).
+ const [pieceGain,setPieceGain]=useState<{count:number;title:string}|null>(null);
  // What plays over the round before the student starts: the tips (first visit), then the face-off (Rival).
  const [overlay,setOverlay]=useState<Overlay[]>([]);
  const plan=useRef({rival,seen:howToSeen(demo)});plan.current={rival,seen:howToSeen(demo)};
- const enterRound=useCallback((resumed:boolean)=>{setRaceWon(null);setRace(null);setStage("play");
+ const enterRound=useCallback((resumed:boolean)=>{setRaceWon(null);setRace(null);setPieceGain(null);setStage("play");
   setOverlay([...(plan.current.seen?[]:["tips" as const]),...(plan.current.rival&&!resumed?["faceoff" as const]:[])])},[]);
  const start=useCallback(async(restart=false)=>{
   setStage("loading");setError("");
-  try{const j=await post("/api/story/run",{worldId:world.id,sceneId:scene.id,restart,...(jump.current&&!restart?{startAt:jump.current}:{})});
+  try{const j=await post("/api/story/run",{worldId:world.id,sceneId:scene.id,restart,...(demo.mission?{missionId:demo.mission}:{}),...(jump.current&&!restart?{startAt:jump.current}:{})});
    if(j.unavailable){callbacks.current.onUnavailable();return}
    if(jump.current)callbacks.current.onJumped?.();
    setRun(j.run);setMode(j.leaderboard);setResult(null);setResume(j.resume??null);
@@ -130,6 +132,7 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
   const lie=lieOf(scene,r.run.state.picks);
   // Mission pieces: the round's proof lines (shown ones marked shown).
   const shownLines=r.shown??[];
+  {const m=missionFor(world,demo.mission);const gained=m?new Set([...r.record.proof,...shownLines].map(l=>pieceForLine(m,l)).filter(p=>p&&!demo.missionPieces?.[p.id]).map(p=>p!.id)):new Set<string>();setPieceGain(m&&gained.size?{count:gained.size,title:m.title}:null)}
   setDemo(d=>{const m=missionFor(world,d.mission);const a=collectPieces(m,d.missionPieces,r.record.proof.filter(l=>!shownLines.includes(l)),{via:`story:${r.record.kind}`});const b=collectPieces(m,a??d.missionPieces,shownLines,{shown:true,via:`story:${r.record.kind}`});return a||b?{...d,missionPieces:b??a!}:d});
   setDemo(d=>({...d,story:{...(d.story??{}),[scene.id]:{runId:r.run.id,total:r.run.total,bestStreak:r.run.state.bestStreak,trust:r.run.state.trust,pouch:r.run.state.pouch,cleared:r.run.finished,max:r.run.goal.max,level:(r.run.goal.level as "opened"|"built"|"cracked"|null)}},
    ...(input.kind==="lie"&&r.record.valid&&scene.lie&&lie.clue_id===scene.lie.clue_id?{lies:{...(d.lies??{}),[scene.id]:{clue_id:scene.lie.clue_id,caught:true,misses:r.record.tries,caught_at:new Date().toISOString()}},...(input.explanation?.trim()?{artifactAnswers:{...d.artifactAnswers,[scene.lie.clue_id]:{notice:r.record.proof[0]??input.line,interpret:input.explanation.trim(),craft:"contradicts",technique:"",revisions:d.artifactAnswers[scene.lie.clue_id]?.revisions??[]}}}:{})}:{})}));
@@ -160,6 +163,7 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
   {stage==="welcome"&&run&&kind&&<WelcomeBack world={world} round={round} kind={kind} run={run} midTry={!!resume} onKeep={()=>{welcomed.add(run.id);enterRound(!!resume)}} onStartOver={()=>{welcomed.add(run.id);start(true)}}/>}
   {stage==="play"&&run&&kind&&<><RoundTracker round={round} skipped={run.state.skipped??0} compact/><MissionTracker world={world} demo={demo} compact/></>}
   {stage==="play"&&run&&kind&&race&&<RaceStrip race={race} name={rivalName} emblem={world.computer_players?.rival.emblem??"lantern"} wins={demo.game?.rivalWins??0} losses={demo.game?.rivalLosses??0}/>}
+  {stage==="results"&&pieceGain&&<p role="status" className="piece-pop mt-4 flex items-center gap-3 rounded-2xl bg-[#2A2620] px-4 py-3 text-[17px] font-bold text-[#FFFDF8]"><span aria-hidden className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#A0472C] text-[20px]">+{pieceGain.count}</span>{pieceGain.count===1?"+1 piece":`+${pieceGain.count} pieces`} for {pieceGain.title}</p>}
   {stage==="results"&&raceWon&&<p role="status" className={`mt-4 flex items-center gap-3 rounded-2xl px-4 py-3 text-[16px] font-semibold ${raceWon==="you"?"bg-[#E8F2E7] text-[#2F6B3A]":"bg-[#E8EEF5] text-[#2E3B4E]"}`}><span className="h-10 w-10 shrink-0 overflow-hidden rounded-full"><RivalEmblem kind={world.computer_players?.rival.emblem??"lantern"} size={40}/></span>{raceWon==="you"?`You beat ${rivalName} to the line.`:`${rivalName} won this face-off. Your points still come from your proof.`}</p>}
   {stage==="play"&&run&&kind&&bar&&<RoundPlay key={round} world={world} scene={scene} passages={passages} kind={kind} run={run} setting={setting} sound={soundOn} sandboxId={demo.id} resume={resume} send={send} onError={m=>setNotice(m)} bar={bar} hold={overlay.length>0}/>}
   {stage==="results"&&result&&run&&<Results world={world} scene={scene} result={result} mode={mode} run={run} headers={headers} sandboxId={demo.id} onNext={()=>{setResult(null);if(run.finished)setStage("cleared");else enterRound(false)}}/>}
@@ -198,12 +202,12 @@ function WelcomeBack({world,round,kind,run,midTry,onKeep,onStartOver}:{world:Wor
  </section>;
 }
 
-// ---------- How to play: three tips over the round, each closed with one tap ----------
+// ---------- How to play: one short card over the round; the rest are inline tips at the moment they matter ----------
 const TIPS=[
- {title:"Read the passage",body:"The story is right here. Read it, then tap the lines that answer the question at the top."},
- {title:"Fill your pouch",body:"Each line you tap goes in your Evidence pouch below. Tap the × on a line to take it out."},
- {title:"Lock in your proof",body:"A wrong line means 'Not yet': look again and try once more. Points come from proof, never speed. The timer starts when you tap your first line."},
+ {title:"Read, then tap the proof",body:"Read the passage, then tap the lines that answer the question at the top. The timer starts at your first tap."},
 ];
+// Inline tips on the first round: when the first line goes in the pouch, and when the pouch is full.
+export const INLINE_TIPS={pouch:"Tip: tap the × on a chip to take a line out.",lock:"Tip: lock in when you're ready. A wrong line means Not yet: look again. Points come from proof, never speed."};
 function HowToPlay({rival,onDone}:{rival:string|null;onDone:()=>void}){
  const [i,setI]=useState(0),h=useRef<HTMLHeadingElement>(null);
  useEffect(()=>{h.current?.focus({preventScroll:true})},[i]);
@@ -212,7 +216,7 @@ function HowToPlay({rival,onDone}:{rival:string|null;onDone:()=>void}){
  return <div className="flex min-h-full items-end justify-center">
   <div aria-hidden className="fixed inset-0 bg-[#2A2620]/40"/>
   <div className="relative m-3 w-full max-w-md rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_-12px_30px_-10px_rgba(0,0,0,.35)]">
-   <p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">How to play · {i+1} of {TIPS.length}</p>
+   <p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">How to play</p>
    <h2 id="howto-h" ref={h} tabIndex={-1} className="mt-1 text-[24px] font-bold leading-tight outline-none">{tip.title}</h2>
    <p className="mt-2 text-[17px] leading-7 text-[#4A4438]">{tip.body}{last&&rival?` Then the face-off with ${rival} starts.`:""}</p>
    <button type="button" onClick={()=>last?onDone():setI(i+1)} className="case-primary mt-4 min-h-[52px] w-full justify-center text-[17px]">{last?"Start reading":"Next"} <ArrowRight size={18}/></button>
@@ -271,12 +275,10 @@ function RaceStrip({race,name,emblem,wins,losses}:{race:Race;name:string;emblem:
  const [now,setNow]=useState(Date.now());
  useEffect(()=>{const t=setInterval(()=>setNow(Date.now()),250);return()=>clearInterval(t)},[]);
  const done=now-race.start>=race.rivalMs,short=name.replace(/^The /,"");
- // The rival pulls the bar its way while it reads; the tally is the wins this story.
- const share=done?0.3:Math.max(0.35,0.5-((now-race.start)/race.rivalMs)*0.15);
+ // The score is face-off wins this story, in plain words: "You 1 · Lantern Ghost 1".
  return <div className="mt-1.5 rounded-xl bg-[#FFFDF8] px-3 py-1 shadow-[0_1px_6px_-3px_rgba(42,38,32,.3)]">
-  <div className="flex items-center gap-2 text-[12.5px] font-bold"><span className="h-5 w-5 shrink-0 overflow-hidden rounded-full"><RivalEmblem kind={emblem} size={20}/></span><p className="shrink-0 font-semibold text-[#2E3B4E]" aria-live="polite">{done?`${short} locked in a line.`:`${short} is reading...`}<span className="sr-only"> (computer rival)</span></p><span className="ml-auto text-[#8A3B23]">You {wins}</span>
-   <div className="relative h-2.5 min-w-10 flex-1 overflow-hidden rounded-full bg-[#5E7FA8]" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(share*100)} aria-label={`Face-off with ${name}, computer rival`}><div className="h-full bg-[#A0472C] transition-[width] duration-500 motion-reduce:transition-none" style={{width:`${share*100}%`}}/><span aria-hidden className="absolute inset-y-0 left-1/2 w-[2px] bg-white"/></div>
-   <span className="text-[#3E5F86]">{losses}<span className="sr-only"> rival wins</span></span></div>
+  <div className="flex items-center gap-2 text-[12.5px] font-bold"><span className="h-5 w-5 shrink-0 overflow-hidden rounded-full"><RivalEmblem kind={emblem} size={20}/></span><p className="shrink-0 font-semibold text-[#2E3B4E]" aria-live="polite">{done?`${short} locked in a line.`:`${short} is reading...`}<span className="sr-only"> (computer rival)</span></p><span className="ml-auto whitespace-nowrap text-[#2A2620]">You {wins} · {short} {losses}</span>
+</div>
  </div>;
 }
 
@@ -373,7 +375,7 @@ function ReadRound({world,scene,passages,run,setting,sound,resume,send,onError,b
  }
  if(notYet)return <NotYet tryNo={tryNo} hint={notYet.hint} onTryAgain={()=>{setNotYet(null);setStarted(false)}} extra={locked.length?<FoundSoFar lines={locked}/>:null}/>;
  const firstEver=tryNo===1&&run.state.round===(run.state.skipped??0);
- const need=Math.max(1,q.answers.length-locked.length);
+ const need=Math.max(1,POUCH_MAX-locked.length);
  return <TimedTry key={tryNo} kind="read" tryNo={tryNo} setting={setting} paused={noteOpen||hold} waiting={!started} onOver={(e,g)=>lockIn(e,g,true)}>{t=><section className="mt-2" aria-labelledby="play-h">
   {/* The question and goal as a short banner; the passage is the main panel. */}
   <RoundBanner bar={bar} started={started} label={`Round 1 · ${ROUND_NAMES.read}${tryNo>1?` · Try ${tryNo} of ${MAX_TRIES}`:""}`} question={q.focus} clock={clockOf(t,trySeconds("read",tryNo,setting).seconds,!started)}/>
@@ -385,6 +387,7 @@ function ReadRound({world,scene,passages,run,setting,sound,resume,send,onError,b
   </div>
   <div ref={fit.dock} className="pt-2">
    <PouchChips pouch={pouch} locked={locked} full={full} onRemove={x=>tap({text:x})}/>
+   {firstEver&&pouch.length>locked.length&&<p role="status" className="mt-1 text-[12.5px] font-semibold text-[#8A3B23]">{pouch.length>=POUCH_MAX?INLINE_TIPS.lock:INLINE_TIPS.pouch}</p>}
    <div className="mt-2 flex gap-2">
     {shown<chunks.length&&<button type="button" onClick={()=>setShown(n=>n+1)} disabled={noteOpen} className="case-secondary min-h-[48px] min-w-0 flex-1 justify-center whitespace-nowrap px-3 text-[14px]">Next part <span className="text-[13px] font-semibold opacity-75">{shown+1}/{chunks.length}</span><ArrowRight size={18}/></button>}
     <button type="button" disabled={busy||pouch.length===locked.length} onClick={()=>lockIn(t.elapsed,t.grace)} className="case-primary min-h-[48px] min-w-0 flex-[1.3] justify-center whitespace-nowrap px-3 text-[14px] disabled:opacity-50">{pouch.length===locked.length?`Tap ${need} line${need===1?"":"s"} to lock in`:`Lock in ${pouch.length} line${pouch.length===1?"":"s"}`}</button>

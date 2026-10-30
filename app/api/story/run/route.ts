@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
   if (who.scope === "class" && story.world.id !== who.worldId) return NextResponse.json({ error: "That isn't your class's story." }, { status: 400 });
   const startAt = ROUNDS.includes(body.startAt) ? (body.startAt as RoundKind) : undefined;
   let run;
-  try { run = await startRun(store, story.world, story.scene, who, body.restart === true, startAt, request.headers.get("x-textlab-test") === "1"); }
+  try { run = await startRun(store, story.world, story.scene, who, body.restart === true, startAt, request.headers.get("x-textlab-test") === "1", typeof body.missionId === "string" ? body.missionId.slice(0, 60) : undefined); }
   catch (e) { return unavailable(e); }
   if (typeof run === "string") return NextResponse.json({ error: run }, { status: 429 });
   // resume: the round in progress (its try number and step), so a reload picks up where the student was.

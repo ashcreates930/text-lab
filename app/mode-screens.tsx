@@ -108,7 +108,7 @@ export function FaceOff({world,demo,clueName,onGo,auto=false,rules}:{world:World
    <span className="text-[40px] font-bold italic text-[#A0472C]" aria-hidden>VS</span>
    <div className="w-32 text-center"><span className="mx-auto block h-[84px] w-[84px] overflow-hidden rounded-full border-4 border-white shadow-lg"><RivalEmblem kind={rival.emblem}/></span><p className="mt-2 text-[15px] font-bold leading-tight">{rival.name}</p><p className="text-[12px] font-semibold text-[#6B6457]">Computer rival · {g.rivalLosses} win{g.rivalLosses===1?"":"s"}</p></div>
   </div>
-  <TugBar share={share} you={g.rivalWins} them={g.rivalLosses} label="Wins this story"/>
+  <TugBar share={share} you={g.rivalWins} them={g.rivalLosses} label="Wins this story" rival={rival.name}/>
   {g.freezeHeld&&<p className="mt-3 rounded-2xl border-2 border-[#9CC3E0] bg-[#E8F2FA] px-4 py-2 text-center text-[14px] font-bold text-[#2F5D80]">❄ You have a Freeze: pause {rival.name}'s taps for 5 seconds once this face-off.</p>}
   <div className="mt-6 flex flex-1 items-center justify-center">{count===null
    ?<button type="button" onClick={()=>setCount(3)} className="case-primary min-h-[56px] px-10 text-[18px]">I'm ready</button>
@@ -116,10 +116,10 @@ export function FaceOff({world,demo,clueName,onGo,auto=false,rules}:{world:World
   <p className="text-center text-[13px] text-[#6B6457]">Points come from the right line, never from speed alone.</p>
  </div>;
 }
-export function TugBar({share,you,them,label}:{share:number;you:number;them:number;label:string}){
- return <div className="mt-5"><div className="relative h-5 overflow-hidden rounded-full bg-[#5E7FA8]" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(share*100)} aria-label={`${label}: you ${you}, rival ${them}`}>
+export function TugBar({share,you,them,label,rival="Rival"}:{share:number;you:number;them:number;label:string;rival?:string}){
+ return <div className="mt-5"><div className="relative h-5 overflow-hidden rounded-full bg-[#5E7FA8]" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(share*100)} aria-label={`${label}: you ${you}, ${rival} ${them}`}>
   <div className="h-full bg-[#A0472C] transition-[width] duration-500 motion-reduce:transition-none" style={{width:`${share*100}%`}}/><span aria-hidden className="absolute inset-y-[-3px] left-1/2 w-[3px] bg-white"/></div>
-  <div aria-hidden className="mt-1 flex justify-between text-[12px] font-bold"><span className="text-[#8A3B23]">You {you}</span><span className="text-[#3E5F86]">{them} Rival</span></div></div>;
+  <div aria-hidden className="mt-1 flex justify-between text-[12px] font-bold"><span className="text-[#8A3B23]">You {you}</span><span className="text-[#3E5F86]">{rival.replace(/^The /,"")} {them}</span></div></div>;
 }
 
 // ---------- Squad: the team huddle ----------

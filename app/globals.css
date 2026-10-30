@@ -157,3 +157,8 @@ main:has([data-fill-screen]) > footer { display: none; }
 @keyframes count-bump{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
 .line-pop{animation:line-pop .22s ease-out}.count-bump{display:inline-block;animation:count-bump .3s ease-out}
 @media (prefers-reduced-motion:reduce){.line-pop,.count-bump{animation:none}}
+
+/* A mission piece earned: a quick pop on the results screen. */
+@keyframes piece-pop{0%{transform:scale(.9);opacity:0}60%{transform:scale(1.03);opacity:1}100%{transform:scale(1)}}
+.piece-pop{animation:piece-pop .35s ease-out}
+@media (prefers-reduced-motion:reduce){.piece-pop{animation:none}}
