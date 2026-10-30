@@ -15,7 +15,11 @@ const ytLine=z.object({paragraph:z.string().regex(/^p\d{3}$/),line:z.string().mi
 const ytExchange=z.object({say:z.string().min(1),accept:z.array(ytLine),weigh:z.object({uncertain:z.array(ytLine).min(1),feedback:z.string().min(1)}).optional()});
 // Proof Race sprints (content only for now): one question answered by one line in a short chunk (paragraphs), with
 // near misses and hints, checked like bank questions.
-const sprint=z.object({id:z.string(),question:z.string().min(1),paragraphs:z.array(z.string().regex(/^p\d{3}$/)).min(1),answers:z.array(z.string().min(1)).min(1),near_misses:z.array(z.object({line:z.string(),hint:z.string().min(1)})).default([])});
+const sprint=z.object({id:z.string(),question:z.string().min(1),paragraphs:z.array(z.string().regex(/^p\d{3}$/)).min(1),answers:z.array(z.string().min(1)).min(1),near_misses:z.array(z.object({line:z.string(),hint:z.string().min(1)})).default([]),
+ // Proof Race chunking: short is the 2 to 4 sentence chunk (1-based, inclusive) for the smaller chunk size; gist is the
+ // "best one-line summary" check (3 options, exactly one best).
+ short:z.object({paragraph:z.string(),from:z.number().int().min(1),to:z.number().int().min(1)}).optional(),
+ gist:z.object({options:z.array(z.object({text:z.string().min(1),best:z.boolean().optional()})).length(3)}).optional()});
 const ytContent={character_id:z.string().nullable().optional(),exchanges:z.array(ytExchange).optional(),sides:z.record(z.string(),z.object({character_id:z.string(),exchanges:z.array(ytExchange)})).optional(),
  need:z.number().int().min(1).max(5).optional(),groups:z.record(z.string(),z.string()).optional(),items:z.array(z.object({id:z.string(),label:z.string().min(1),icon:z.string().optional(),group:z.string().optional(),accept:z.array(ytLine),hint:z.string().min(1).optional()})).optional(),
  posts:z.array(z.object({author:z.string(),text:z.string().min(1),false:z.boolean(),accept:z.array(ytLine).optional()})).optional()};

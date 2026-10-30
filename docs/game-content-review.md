@@ -3880,3 +3880,79 @@ Prove it (✓ is right; shuffled on screen):
 Twelve sprint questions, approved. They are in `worlds/sleepy-hollow/world.json` (`scenes[0].sprints`), and `validate:worlds` checks each one: exact lines, near misses in the chunk with a ¶ hint, one thing per question, and no word roots shared with the answer.
 
 **Teacher note for sprint #4** ("Which figures from long ago are blamed for the magic over this land?", ¶5.3): Irving's 1820 description of Native people reflects his era; pause here for discussion.
+
+### Proof Race chunks: Gist checks and chunk sizes
+
+Each chunk is the sprint question's paragraph (or the 2 to 4 sentence chunk for the smaller size). Gist shows these 3 summaries; the best one is marked ✓. The wrong ones are meant to be plausible: each misreads a detail of the chunk rather than being silly. validate:worlds checks there are 3 different summaries with exactly one best, and that the short chunk is 2 to 4 sentences of the paragraph and holds the answer.
+
+**1. About how long a walk is it from the river port to the hollow?** (chunk: ¶3, short: sentences 1 to 4)
+
+1. A busy river town is known for its noisy market days.
+2. A quiet valley lies a short way from a small river town. ✓
+3. A traveler gets lost on the river and ends up in a strange valley.
+
+**2. Which birds are nearly the only noise in that glen?** (chunk: ¶3, short: sentences 4 to 5)
+
+1. A busy river town is known for its noisy market days.
+2. A traveler gets lost on the river and ends up in a strange valley.
+3. A quiet valley lies a short way from a small river town. ✓
+
+**3. What scared the narrator on his first hunt as a boy?** (chunk: ¶4, short: sentences 1 to 2)
+
+1. The narrator remembers how still the valley was, even to a boy out hunting. ✓
+2. The narrator remembers being chased out of the valley by a ghost one night.
+3. The narrator remembers hunting with his father every Sunday in the valley.
+
+**4. Which figures from long ago are blamed for the magic over this land?** (chunk: ¶5, short: sentences 2 to 4)
+
+1. People say a spell hangs over the valley and makes its people dreamy and full of strange beliefs. ✓
+2. The people of the valley laugh at magic and ignore the old stories.
+3. A doctor and a chief fought over who would rule the valley.
+
+**5. Which ghost outranks every other in these parts?** (chunk: ¶6, short: sentences 1 to 3)
+
+1. The valley's main ghost is a soldier who guards travelers on the church road.
+2. The valley's main ghost is a headless horseman said to ride out searching for his head. ✓
+3. Historians proved that a Hessian soldier still lives near the old church.
+
+**6. How was the rider wounded long ago?** (chunk: ¶6, short: sentences 2 to 4)
+
+1. The valley's main ghost is a soldier who guards travelers on the church road.
+2. Historians proved that a Hessian soldier still lives near the old church.
+3. The valley's main ghost is a headless horseman said to ride out searching for his head. ✓
+
+**7. What is the phantom searching for after dark?** (chunk: ¶6, short: sentences 2 to 4)
+
+1. The valley's main ghost is a headless horseman said to ride out searching for his head. ✓
+2. The valley's main ghost is a soldier who guards travelers on the church road.
+3. Historians proved that a Hessian soldier still lives near the old church.
+
+**8. What happens to people who move here from elsewhere?** (chunk: ¶8, short: sentences 1 to 2)
+
+1. Newcomers are the only people in the valley who never see ghosts.
+2. Even newcomers to the valley soon start dreaming and seeing ghosts. ✓
+3. The valley's people send strangers away before the spell can reach them.
+
+**9. Where was Ichabod born?** (chunk: ¶10, short: sentences 1 to 2)
+
+1. Ichabod Crane, a farmer born in the valley, is short and strong.
+2. Ichabod Crane is a handsome soldier who came to teach after the war.
+3. Ichabod Crane, a schoolteacher from Connecticut, is tall, skinny and odd-looking. ✓
+
+**10. How was Ichabod built?** (chunk: ¶10, short: sentences 4 to 5)
+
+1. Ichabod Crane, a schoolteacher from Connecticut, is tall, skinny and odd-looking. ✓
+2. Ichabod Crane, a farmer born in the valley, is short and strong.
+3. Ichabod Crane is a handsome soldier who came to teach after the war.
+
+**11. How did Ichabod get his meals and a bed?** (chunk: ¶13, short: sentences 1 to 4)
+
+1. Ichabod's pay was so large that he rented the finest house in the valley.
+2. Ichabod's pay was small, so he lived with his students' families, a week at each house. ✓
+3. Ichabod lived alone in the schoolhouse and cooked his own meals.
+
+**12. What did Ichabod teach on the side for coins?** (chunk: ¶15, short: sentences 1 to 2)
+
+1. Ichabod disliked singing and stayed away from church on Sundays.
+2. Ichabod earned his living mainly by preaching in the village church.
+3. Ichabod also earned money teaching singing, and he was proud of his voice in church. ✓

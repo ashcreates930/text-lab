@@ -207,7 +207,17 @@ export function sprintProblems(world: WorldPack, passages: SourcePassage[], read
       const chunk = new Set(s.paragraphs);
       const onChunk = (line: string) => { const p = passages.find((x) => chunk.has(x.id) && evidenceSentences(x.text).includes(line)); return p ? { text: line, pid: p.id } : null; };
       problems.push(...questionProblems(at, { question: s.question, answers: s.answers, near_misses: s.near_misses }, names, onChunk, (line) => onChunk(line)?.pid ?? null, false));
-      if ([s.question, ...s.near_misses.map((n) => n.hint)].some((t) => dash.test(t))) problems.push(`${at}: no em dashes`);
+      if ([s.question, ...s.near_misses.map((n) => n.hint), ...(s.gist?.options.map((o) => o.text) ?? [])].some((t) => dash.test(t))) problems.push(`${at}: no em dashes`);
+      // Gist: exactly one best summary, all three different.
+      if (s.gist && (s.gist.options.filter((o) => o.best).length !== 1 || new Set(s.gist.options.map((o) => o.text)).size !== 3)) problems.push(`${at}: the gist needs 3 different summaries, exactly one best`);
+      // Short chunk: 2 to 4 sentences of one of its paragraphs, holding every answer that is in that paragraph.
+      if (s.short) {
+        const p = passages.find((x) => x.id === s.short!.paragraph), lines = p ? evidenceSentences(p.text) : [];
+        const n = s.short.to - s.short.from + 1, inShort = lines.slice(s.short.from - 1, s.short.to);
+        if (!s.paragraphs.includes(s.short.paragraph) || !p) problems.push(`${at}: the short chunk must be one of the sprint's paragraphs`);
+        else if (n < 2 || n > 4 || s.short.to > lines.length) problems.push(`${at}: the short chunk is 2 to 4 sentences of ${s.short.paragraph}`);
+        else if (s.answers.some((a) => lines.includes(a) && !inShort.includes(a))) problems.push(`${at}: the short chunk leaves out an answer`);
+      }
     }
   });
   return problems;

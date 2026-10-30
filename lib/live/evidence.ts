@@ -8,10 +8,11 @@ import { ROLE_INFO, objectionResult, roundLie, scoreLieRound, scoreVerdictRound,
 export type LiveMemberEvidence = { nickname: string; studentId: string | null; actions: string[] };
 export type LiveSquadEvidence = { name: string; members: LiveMemberEvidence[]; answer: string; explanation: string; flagged: boolean; result: string; points: number };
 // freezes: every Freeze in the round (who, whom, when), so a teacher can spot a squad being targeted.
-export type LiveRoundEvidence = { sessionId: string; date: string; number: number; type: string; prompt: string; squads: LiveSquadEvidence[]; freezes?: string[] };
+// questions: Proof Race's "Your question" chunks, every student question with its chunk (flagged ones marked).
+export type LiveRoundEvidence = { sessionId: string; date: string; number: number; type: string; prompt: string; squads: LiveSquadEvidence[]; freezes?: string[]; questions?: { nickname: string; chunk: number; text: string; flagged: boolean }[] };
 export type LiveSessionInput = { session: LiveSession; world: WorldPack; squads: LiveSquad[]; players: LivePlayer[]; responses: LiveResponse[]; absent?: string[] };
 
-const TYPE_NAMES = { lie: "Live Spot the Lie", verdict: "Verdict Vote", objection: "Objection!", story: "Story Mode" } as const;
+const TYPE_NAMES = { lie: "Live Spot the Lie", verdict: "Verdict Vote", objection: "Objection!", story: "Story Mode", race: "Proof Race" } as const;
 const text = (r: LiveResponse | undefined, key: string) => (r ? String(r.payload[key] ?? "") : "");
 
 function actionLine(r: LiveResponse, world: WorldPack) {
@@ -31,6 +32,9 @@ function actionLine(r: LiveResponse, world: WorldPack) {
     case "story_freeze": return `Round ${Number(r.payload.step) + 1}: froze ${text(r, "targetName")}`;
     case "story_vote": return `Round ${Number(r.payload.step) + 1}: voted for "${text(r, "line").replace(/\s+/g, " ")}"`;
     case "story": { const rec = r.payload.record as { round?: number; points?: number; detail?: string; proof?: string[] } | undefined; return `Story Mode round ${rec?.round ?? Number(r.payload.step) + 1}: ${rec?.points ?? 0} pts${rec?.detail ? ` (${rec.detail})` : ""}${rec?.proof?.length ? `, proof: ${rec.proof.map((p) => `"${p.replace(/\s+/g, " ")}"`).join(" | ")}` : ""}`; }
+    case "race_gist": return `Chunk ${Number(r.payload.step) + 1}: summary ${Number(r.payload.points) > 0 ? "right" : "missed"} (${Number(r.payload.points ?? 0)} pts)`;
+    case "race_question": return `Chunk ${Number(r.payload.step) + 1}: asked "${text(r, "text")}"${r.flagged ? " (flagged)" : ""}`;
+    case "race_tap": return `Chunk ${Number(r.payload.step) + 1}: ${({ right: "found the line", retryRight: "found it on the retry", near: "near miss", wrong: "missed" } as Record<string, string>)[text(r, "result")] ?? "answered"}${Number(r.payload.points) ? ` (${Number(r.payload.points)} pts)` : ""}: "${text(r, "line").replace(/\s+/g, " ")}"`;
     default: return "";
   }
 }
@@ -53,6 +57,8 @@ export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] 
     } else if (round.type === "verdict") {
       prompt = world.verdict?.question ?? "";
       for (const s of scoreVerdictRound(squads, responses, i)) results.set(s.squadId, { result: s.theoryId ? `${world.verdict?.theories.find((t) => t.id === s.theoryId)?.name ?? s.theoryId} · ${s.detail}` : s.detail, points: s.points });
+    } else if (round.type === "race") {
+      prompt = `Proof Race · ${round.settings.chunks} chunks`;
     } else if (round.type === "story") {
       prompt = `Story Mode · ${world.scenes.find((sc) => sc.id === round.sceneId)?.story_mode?.call.bank[0].question ?? round.sceneId}`;
       for (const s of storySquadScores(squads, responses, i, players, absent)) results.set(s.squadId, { result: `Members' average: ${s.points}`, points: s.points });
@@ -64,9 +70,11 @@ export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] 
       results.set(round.defendSquadId, { result: `Defended · ${o.sustained ? "objection sustained" : "evidence held"}`, points: o.scores[1].points });
     }
     const verdict = round.type === "verdict";
-    const squadRows = squads.flatMap((sq): LiveSquadEvidence[] => {
+    // Proof Race without squads: every player in one group, with their points.
+    const groups = round.type === "race" && !players.some((p) => p.squadId) ? [{ id: "__all", name: "Everyone", position: 0 }] : squads;
+    const squadRows = groups.flatMap((sq): LiveSquadEvidence[] => {
       // Roster order: current members, then anyone who acted for this squad and has since moved.
-      const memberIds = new Set(players.filter((p) => p.squadId === sq.id).map((p) => p.id));
+      const memberIds = new Set(players.filter((p) => sq.id === "__all" || p.squadId === sq.id).map((p) => p.id));
       for (const r of rows) if (r.squadId === sq.id && r.playerId) memberIds.add(r.playerId);
       if (!memberIds.size) return [];
       const evidence = verdict ? latest(sq.id, "pins") : latest(sq.id, "pin");
@@ -83,7 +91,8 @@ export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] 
       }];
     });
     const freezes = rows.filter((r) => r.kind === "story_freeze").map((r) => freezeLine({ by: `${players.find((p) => p.id === r.playerId)?.nickname ?? "A player"} (${squads.find((q) => q.id === r.squadId)?.name ?? "a squad"})`, target: text(r, "targetName"), at: r.createdAt, where: `Story Mode round ${Number(r.payload.step) + 1}` }));
-    out.push({ sessionId: session.id, date, number: i + 1, type: TYPE_NAMES[round.type], prompt, squads: squadRows, ...(freezes.length ? { freezes } : {}) });
+    const questions = rows.filter((r) => r.kind === "race_question").map((r) => ({ nickname: players.find((p) => p.id === r.playerId)?.nickname ?? "A player", chunk: Number(r.payload.step) + 1, text: text(r, "text"), flagged: r.flagged }));
+    out.push({ sessionId: session.id, date, number: i + 1, type: TYPE_NAMES[round.type], prompt, squads: squadRows, ...(freezes.length ? { freezes } : {}), ...(questions.length ? { questions } : {}) });
   });
   return out;
 }
