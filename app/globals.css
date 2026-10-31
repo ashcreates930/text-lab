@@ -49,6 +49,8 @@ h1[tabindex="-1"]:focus{outline:none}
 .panel{background:var(--color-panel);border:1px solid var(--color-edge);border-radius:22px}
 /* The reading card: cream paper, story type, white line rows (app/reading-panel.tsx). */
 .reading-card{background:var(--color-reading);color:var(--color-reading-ink);border-radius:20px}
+/* Passage text is always left-aligned: never justified, never stretched between words. */
+.reading-card,.reading-card *,.story-copy,.font-serif{text-align:left;text-justify:none;word-spacing:normal;hyphens:manual}
 .line-row{background:var(--color-line-row);border:3px solid var(--color-line-edge);border-radius:12px;color:var(--color-reading-ink)}
 .line-row[aria-pressed="true"],.line-row.is-picked{background:var(--color-line-picked);border-color:var(--color-primary)}
 /* Scene art is shown brighter so students can inspect it; a text shadow keeps the scene title readable. */

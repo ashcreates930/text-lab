@@ -20,7 +20,7 @@ const ytExchange=z.object({say:z.string().min(1),accept:z.array(ytLine),weigh:z.
 export const QUESTION_TYPES=["word_detective","shades","between_lines","whose_eyes","figure_it_out","character_clue","theme_thread","gist","find_it","catch_lie","make_call"] as const;
 export const BENCHMARK_FAMILY_IDS=["R.1.1","R.1.2","R.1.3","R.3.1","R.3.2","V.1.3","K12.EE.1.1","K12.EE.3.1","K12.EE.4.1"] as const;
 const expChoice=z.object({text:z.string().min(1),best:z.boolean().optional()});
-const expQuestion=z.object({type:z.enum(QUESTION_TYPES),prompt:z.string().min(1),keywords:z.array(z.string().min(1)).default([]),
+const expQuestion=z.object({type:z.enum(QUESTION_TYPES),prompt:z.string().min(1),keywords:z.array(z.string().min(1)).default([]),focus:z.string().min(1).optional(),
  choices:z.array(expChoice).length(3).optional(),choices2:z.object({prompt:z.string().min(1),options:z.array(expChoice).length(3)}).optional(),
  proof:z.object({lines:z.array(z.string().min(1)).optional(),words:z.array(z.string().min(1)).optional()}).optional(),
  testimony:z.object({speaker:z.string(),text:z.string().min(1)}).optional(),

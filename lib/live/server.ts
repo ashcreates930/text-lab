@@ -159,7 +159,7 @@ function publicRace(st: LiveState, round: LiveRaceRound) {
     beatMs: beatMs(round, c, "1"), expedition: { id: round.settings.expeditionId, title: exp?.title ?? "" }, gradeBand: round.settings.gradeBand, highlighter: round.settings.highlighter,
     chunk: { id: c.id, index: c.index, passages: c.passages, lines: c.lines, gist: strip(c.chunk.gist.options), discovery: { phrase: c.chunk.discovery.phrase, note: c.chunk.discovery.note } },
     question: round.beat === "race" || after ? {
-      type: q.type, name: info.name, steps: info.steps, prompt: q.prompt, keywords: q.keywords, choices: q.choices ? strip(q.choices) : null,
+      type: q.type, name: info.name, steps: info.steps, prompt: q.prompt, keywords: q.keywords, focus: q.focus ?? null, choices: q.choices ? strip(q.choices) : null,
       choices2: q.choices2 ? { prompt: q.choices2.prompt, options: strip(q.choices2.options) } : null, theories: q.theories?.map((t) => ({ id: t.id, name: t.name })) ?? null,
       testimony: q.testimony ? { speaker: st.world.characters.find((x) => x.id === q.testimony!.speaker)?.name ?? "A witness", text: q.testimony.text } : null,
       proof: (q.proof?.words?.length ? "words" : q.proof?.lines?.length ? "lines" : "none") as "words" | "lines" | "none",

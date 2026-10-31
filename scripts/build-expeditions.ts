@@ -5,7 +5,7 @@ import { parseSourcePassages } from "../lib/source-passages.ts";
 import { evidenceSentences } from "../lib/lies.ts";
 
 type Ref = [string, number];
-type Q = { type: string; prompt: string; keywords?: string[]; choices?: [string, boolean?][]; choices2?: { prompt: string; options: [string, boolean?][] }; lines?: Ref[]; words?: string[]; testimony?: { speaker: string; text: string }; theories?: { id: string; name: string; lines: Ref[] }[]; hint: string; why: string; standards: string[]; reviewed?: boolean };
+type Q = { type: string; prompt: string; keywords?: string[]; focus?: string; choices?: [string, boolean?][]; choices2?: { prompt: string; options: [string, boolean?][] }; lines?: Ref[]; words?: string[]; testimony?: { speaker: string; text: string }; theories?: { id: string; name: string; lines: Ref[] }[]; hint: string; why: string; standards: string[]; reviewed?: boolean };
 type C = { seg: [string, number, number][]; gist: [string, boolean?][]; discovery: [string, "figurative" | "vocabulary", string]; q: Q };
 type E = { id: string; title: string; chunks: C[] };
 
@@ -28,19 +28,19 @@ const SPEC: Record<string, { front_matter: string[]; expeditions: E[] }> = {
         { seg: [["p004", 0, 2]],
           gist: [["The narrator remembers how still the valley was, even to a boy out hunting.", true], ["The narrator remembers being chased out of the valley by a ghost one night."], ["The narrator remembers hunting with his father every Sunday in the valley."]],
           discovery: ["angry echoes", "figurative", "Angry echoes: the echoes get a human feeling, as if the quiet woods were annoyed by the noise."],
-          q: { type: "shades", prompt: "The narrator calls his younger self a stripling. Why that word instead of plain boy?", keywords: ["stripling", "instead of plain boy"],
+          q: { type: "shades", focus: "stripling", prompt: "The narrator calls his younger self a stripling. Why that word instead of plain boy?", keywords: ["stripling", "instead of plain boy"],
             choices: [["It makes him sound young and untested, new at hunting", true], ["It shows he was the best hunter in the valley"], ["It means he was sickly and weak"]],
             words: ["my first exploit"], hint: "Would an old hand call it his first try? Find his own words about the hunt.", why: "Stripling paints a young, untested boy, and he calls the hunt his first exploit.", standards: ["V.1.3", "R.3.1"], reviewed: true } },
         { seg: [["p005", 0, 1]],
           gist: [["The valley's sleepy mood gave Sleepy Hollow its name.", true], ["The Dutch settlers left the Hollow because it was too quiet."], ["Boys from the Hollow are known for their hard work."]],
           discovery: ["sequestered glen", "vocabulary", "Sequestered glen: a hidden, out-of-the-way valley."],
-          q: { type: "word_detective", prompt: "In this chunk, what does listless mean?", keywords: ["listless"],
+          q: { type: "word_detective", focus: "listless", prompt: "In this chunk, what does listless mean?", keywords: ["listless"],
             choices: [["Lacking energy; slow and sleepy", true], ["Without a list or a plan"], ["Full of nervous worry"]],
             words: ["drowsy, dreamy influence", "repose", "drowsy", "dreamy"], hint: "Find the words around it that feel sleepy.", why: "Repose and a drowsy, dreamy influence tell you listless means low on energy.", standards: ["V.1.3", "K12.EE.1.1"], reviewed: true } },
         { seg: [["p005", 2, 3]],
           gist: [["People blame old magic for the spell that still hangs over the valley.", true], ["A doctor cured the settlers of a strange sleeping sickness."], ["Henry Hudson drove a wizard out of the valley."]],
           discovery: ["continual reverie", "vocabulary", "Reverie: a daydream. A continual reverie means drifting through life half-dreaming."],
-          q: { type: "figure_it_out", prompt: "Read the words holds a spell over the minds of the good people. What kind of figurative language is this?", keywords: ["holds a spell over the minds"],
+          q: { type: "figure_it_out", focus: "holds a spell over the minds of the good people", prompt: "Read the words holds a spell over the minds of the good people. What kind of figurative language is this?", keywords: ["holds a spell over the minds"],
             choices: [["Metaphor: the valley's mood is called a spell, without like or as", true], ["Simile: a comparison that uses like or as"], ["Hyperbole: a wild exaggeration for a laugh"]],
             choices2: { prompt: "What does it mean?", options: [["Something about the place shapes what people think and believe", true], ["A real witch is casting spells on the town"], ["The people are tired from working too hard"]] },
             hint: "Does a spell have to be real magic? Think about what keeps their minds dreamy.", why: "The spell stands for the dreamy mood that rules how people think.", standards: ["R.3.1"], reviewed: true } },
@@ -92,7 +92,7 @@ for (const [worldId, spec] of Object.entries(SPEC)) {
     const q = c.q;
     return { id: `${e.id}-${String(k + 1).padStart(2, "0")}`, segments: c.seg.map(([p, from, to]) => ({ p, from, to })), gist: { options: opts(c.gist) },
       discovery: { phrase: c.discovery[0], kind: c.discovery[1], note: c.discovery[2] },
-      question: { type: q.type, prompt: q.prompt, keywords: q.keywords ?? [], ...(q.choices ? { choices: opts(q.choices) } : {}), ...(q.choices2 ? { choices2: { prompt: q.choices2.prompt, options: opts(q.choices2.options) } } : {}),
+      question: { type: q.type, prompt: q.prompt, keywords: q.keywords ?? [], ...(q.focus ? { focus: q.focus } : {}), ...(q.choices ? { choices: opts(q.choices) } : {}), ...(q.choices2 ? { choices2: { prompt: q.choices2.prompt, options: opts(q.choices2.options) } } : {}),
         ...(q.lines || q.words ? { proof: { ...(q.lines ? { lines: q.lines.map(line) } : {}), ...(q.words ? { words: q.words } : {}) } } : {}),
         ...(q.testimony ? { testimony: q.testimony } : {}), ...(q.theories ? { theories: q.theories.map((t) => ({ id: t.id, name: t.name, lines: t.lines.map(line) })) } : {}),
         hint: q.hint, why: q.why, standards: q.standards, ...(q.reviewed ? { reviewed: true } : {}) } };

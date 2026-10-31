@@ -100,6 +100,16 @@ export function scoreAnswer(q: ExpQuestion, a: Answer, tokens: Token[], elapsedM
 }
 export const gistPoints = (chunk: Pick<ExpChunk, "gist">, choice: number | null) => (choice !== null && chunk.gist.options[choice]?.best ? POINTS.gist : 0);
 
+// The word or phrase a question is about, as token positions (highlighted in the passage from the start).
+export function focusTokens(tokens: Token[], focus: string | null | undefined) {
+  const r = focus ? phraseRange(tokens, focus) : null; return r ? Array.from({ length: r[1] - r[0] + 1 }, (_, k) => r[0] + k) : [];
+}
+// The proof as token positions in this chunk: its words, or every word of its proof lines. Lit up after the answer only.
+export function proofTokens(q: ExpQuestion, tokens: Token[], lines: { text: string }[]) {
+  const words = proofShown(q, tokens).words; if (words.length) return words;
+  const want = new Set((q.proof?.lines ?? []).map(norm)), idx = new Set(lines.map((l, i) => (want.has(norm(l.text)) ? i : -1)).filter((i) => i >= 0));
+  return tokens.filter((t) => idx.has(t.line)).map((t) => t.i);
+}
 // What the result screen shows as the proof: the lines, or the words (with their line).
 export function proofShown(q: ExpQuestion, tokens: Token[]) {
   if (q.type === "make_call") return { lines: q.theories?.flatMap((t) => t.lines).slice(0, 2) ?? [], words: [] as number[] };

@@ -3,10 +3,11 @@ import type { SourcePassage } from "./source-passages.ts";
 import { evidenceSentences } from "./lies.ts";
 import { sharedRoots } from "./fair-play.ts";
 import type { WorldPack } from "./world-schema.ts";
-import { MIN_TYPES, TYPE_INFO, chunkTokens, expeditionChunks, norm, phraseRange } from "./expedition.ts";
+import { MIN_TYPES, TYPE_INFO, chunkTokens, expeditionChunks, norm, phraseRange, proofTokens } from "./expedition.ts";
 
 export const CHUNK_WORDS = { min: 50, max: 150, target: [60, 120] as const }, MAX_SENTENCES = 5;
 const CHOICE_TYPES = new Set(["word_detective", "shades", "between_lines", "whose_eyes", "figure_it_out", "character_clue", "theme_thread", "gist"]);
+const FOCUS_TYPES = new Set(["word_detective", "shades", "figure_it_out"]);
 const PROOF_TYPES = new Set(["word_detective", "shades", "between_lines", "whose_eyes", "character_clue", "theme_thread", "find_it", "catch_lie"]);
 const words = (s: string) => s.split(/\s+/).filter(Boolean).length;
 
@@ -65,6 +66,11 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
         if (!q.theories) out.push(`${at}: Make the Call needs 3 theories`);
         for (const t of q.theories ?? []) for (const l of t.lines) if (!allLines.includes(l)) out.push(`${at}: theory ${t.id} line "${l.replace(/\s+/g, " ").slice(0, 50)}" is not in this expedition`);
       }
+      if (q.focus) {
+        const fr = phraseRange(tokens, q.focus);
+        if (!fr) out.push(`${at}: focus "${q.focus}" is not in the chunk`);
+        else { const proof = new Set(proofTokens(q, tokens, rc.lines)); for (let k = fr[0]; k <= fr[1]; k++) if (proof.has(k)) { out.push(`${at}: focus "${q.focus}" overlaps the proof; it would point to the answer`); break; } }
+      } else if (FOCUS_TYPES.has(q.type)) out.push(`${at}: ${q.type} is about a word or phrase; name it as focus`);
       for (const kw of q.keywords) if (!q.prompt.toLowerCase().includes(kw.toLowerCase())) out.push(`${at}: key word "${kw}" is not in the question`);
       if (!q.standards.some((s) => TYPE_INFO[q.type].standards.includes(s))) out.push(`${at}: standards must include one of ${TYPE_INFO[q.type].standards.join(", ")}`);
       if (/,\s+and\s+(what|why|how|where|who|whose|when|which)\b/i.test(q.prompt) || (q.prompt.match(/\?/g) ?? []).length > 1) out.push(`${at}: ask one thing per question`);

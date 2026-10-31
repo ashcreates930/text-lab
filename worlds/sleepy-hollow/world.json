@@ -7868,6 +7868,7 @@
               "stripling",
               "instead of plain boy"
             ],
+            "focus": "stripling",
             "choices": [
               {
                 "text": "It makes him sound young and untested, new at hunting",
@@ -7928,6 +7929,7 @@
             "keywords": [
               "listless"
             ],
+            "focus": "listless",
             "choices": [
               {
                 "text": "Lacking energy; slow and sleepy",
@@ -7991,6 +7993,7 @@
             "keywords": [
               "holds a spell over the minds"
             ],
+            "focus": "holds a spell over the minds of the good people",
             "choices": [
               {
                 "text": "Metaphor: the valley's mood is called a spell, without like or as",
