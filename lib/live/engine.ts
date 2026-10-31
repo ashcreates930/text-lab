@@ -42,7 +42,7 @@ export type LivePlayer = { id: string; nickname: string; squadId: string | null;
 export type ResponseKind = "pin" | "explain" | "approve" | "object" | "submit" | "vote" | "pins" | "argument" | "judged" | "counter_vote" | "override" | "witness" | "story" | "story_try" | "mission" | "mission_pick" | "story_pin" | "story_react" | "story_vote" | "story_freeze" | "your_turn_start" | "your_turn_angle" | "your_turn"
   // Proof Race (lib/live/race.ts) and the lobby: a player's avatar (a story character), the host's extra time for a
   // player, a pinned student question.
-  | "race_ready" | "race_gist" | "race_question" | "race_tap" | "race_pin" | "avatar" | "player_time";
+  | "race_ready" | "race_gist" | "race_question" | "race_tap" | "race_unknown" | "race_pin" | "avatar" | "player_time";
 export type LiveResponse = {
   id: string; roundIndex: number; squadId: string | null; playerId: string | null; role: Role | "host" | "system" | null;
   kind: ResponseKind; payload: Record<string, unknown>; flagged: boolean; createdAt: string;

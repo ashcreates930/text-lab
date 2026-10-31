@@ -25,6 +25,8 @@ export const TYPE_INFO: Record<QuestionType, { name: string; steps: 1 | 2; secon
   make_call: { name: "Make the Call", steps: 2, seconds: 90, standards: ["K12.EE.1.1", "K12.EE.3.1"], skill: "Case Closer" },
 };
 export const GIST_SECONDS = 20, TYPED_SECONDS = 60;
+// Catch the Lie: the testimony plays for about this long before its timer starts.
+export const TESTIMONY_MS = 3200;
 // After an answer: the result moment, then the leaderboard, then a countdown to the next chunk (milliseconds).
 export const SCREEN_MS = { result: 3000, board: 5000, countdown: 3000 } as const;
 
@@ -68,7 +70,7 @@ export function wordsProve(tokens: Token[], selected: number[], accepted: string
   return accepted.some((p) => { const r = phraseRange(tokens, p); if (!r) return false; for (let k = r[0]; k <= r[1]; k++) if (!sel.has(k)) return false; return sel.size - (r[1] - r[0] + 1) <= 4; });
 }
 // A tap on the chunk's hidden discovery (a figurative phrase or a rich word).
-export function isDiscovery(tokens: Token[], chunk: Pick<ExpChunk, "discovery">, tokenIndex: number) {
+export function isDiscovery(tokens: Token[], chunk: { discovery: { phrase: string } }, tokenIndex: number) {
   const r = phraseRange(tokens, chunk.discovery.phrase); return !!r && tokenIndex >= r[0] && tokenIndex <= r[1];
 }
 

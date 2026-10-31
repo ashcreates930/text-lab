@@ -6,9 +6,9 @@
 // every automatic screen. Screen readers hear the result and the new rank before anything moves.
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
 import {ArrowRight,Check,Flame,Highlighter,Pause,Play,Star,Timer,Volume2,VolumeX,X} from "lucide-react";
-import type {ExpQuestion,WorldPack} from "@/lib/world-schema";
+import type {ExpQuestion,QuestionType,WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
-import {DISCOVERY_COINS,GIST_SECONDS,TYPE_INFO,chunkTokens,expeditionChunks,ghostPlay,gistPoints,isDiscovery,keywordParts,limitMs,phraseRange,proofShown,scoreAnswer,screenMs,type Answer,type RaceChunk,type Token} from "@/lib/expedition";
+import {DISCOVERY_COINS,GIST_SECONDS,TESTIMONY_MS,TYPE_INFO,chunkTokens,expeditionChunks,ghostPlay,gistPoints,isDiscovery,keywordParts,limitMs,phraseRange,proofShown,scoreAnswer,screenMs,type Answer,type RaceChunk,type Token} from "@/lib/expedition";
 import {raceBoard,type BoardRow} from "@/lib/proof-race";
 import {contentNotes} from "@/lib/content-notes";
 import {Pill} from "./game-ui";
@@ -44,13 +44,14 @@ export function TimerTrack({left,seconds}:{left:number|null;seconds:number}){
 // Words to Know get a soft violet highlight and a dotted underline (never color alone, never the orange of a picked
 // line); a tap shows the definition. Every other word can be tapped too: the hidden discovery pays coins, and with the
 // highlighter on, a tap marks a word the student doesn't know.
-export function ChunkText({chunk,world,tokens,highlighter,marking,unknown,onUnknown,onDiscover,found,shown=[],large=false}:{chunk:RaceChunk;world:WorldPack;tokens:Token[];highlighter?:boolean;marking?:boolean;unknown?:Set<number>;onUnknown?:(i:number)=>void;onDiscover?:()=>void;found?:boolean;shown?:number[];large?:boolean}){
+export type ChunkView={lines:{pid:string;index:number;text:string}[];discovery:{phrase:string;note:string}};
+export function ChunkText({chunk,world,tokens,highlighter,marking,unknown,onUnknown,onDiscover,found,shown=[],large=false}:{chunk:ChunkView;world:WorldPack;tokens:Token[];highlighter?:boolean;marking?:boolean;unknown?:Set<number>;onUnknown?:(i:number)=>void;onDiscover?:()=>void;found?:boolean;shown?:number[];large?:boolean}){
  const [open,setOpen]=useState<string|null>(null);
  const vocab=useMemo(()=>{const m=new Map<number,{term:string;def:string}>();for(const g of world.glossary){const r=phraseRange(tokens,g.term);if(r)for(let k=r[0];k<=r[1];k++)m.set(k,{term:g.term,def:g.student_friendly_definition})}return m},[tokens,world.glossary]);
  const card=world.glossary.find(g=>g.term===open);
  const notes=useMemo(()=>contentNotes(world),[world]);
  const notesHere=[...new Set(chunk.lines.map(l=>l.pid))].map(p=>notes.get(p)).filter(Boolean) as string[];
- const tap=(i:number)=>{if(marking&&onUnknown){onUnknown(i);return}if(onDiscover&&isDiscovery(tokens,chunk.chunk,i))onDiscover()};
+ const tap=(i:number)=>{if(marking&&onUnknown){onUnknown(i);return}if(onDiscover&&isDiscovery(tokens,chunk,i))onDiscover()};
  const showSet=new Set(shown);
  let line=-1;
  return <div className="reading-scope reading-card p-4">
@@ -62,7 +63,7 @@ export function ChunkText({chunk,world,tokens,highlighter,marking,unknown,onUnkn
     ?<button type="button" onClick={()=>{setOpen(o=>o===v.term?null:v.term);tap(t.i)}} aria-expanded={open===v.term} className={`rounded bg-violet-soft px-0.5 underline decoration-dotted decoration-2 underline-offset-4 ${cls}`}>{t.text}<span className="sr-only"> (word to know)</span></button>
     :<span onClick={()=>tap(t.i)} className={`${marking?"cursor-pointer rounded hover:bg-gold-soft":""} ${cls}`}>{t.text}</span>}</span>})}</p>
   {card&&<div role="note" aria-live="polite" className="mt-3 flex items-start justify-between gap-2 rounded-row bg-violet-soft px-3 py-2"><p className="text-[15px] leading-6 text-ink"><b>{card.term}:</b> {card.student_friendly_definition}</p><button type="button" onClick={()=>setOpen(null)} aria-label="Close the word card" className="grid h-11 w-11 shrink-0 place-items-center rounded-full"><X size={16} aria-hidden/></button></div>}
-  {found&&<p role="status" className="mt-3 rounded-row bg-gold-soft px-3 py-2 text-[15px] font-bold text-ink">Discovery! +{DISCOVERY_COINS} coins. {chunk.chunk.discovery.note}</p>}
+  {found&&<p role="status" className="mt-3 rounded-row bg-gold-soft px-3 py-2 text-[15px] font-bold text-ink">Discovery! +{DISCOVERY_COINS} coins. {chunk.discovery.note}</p>}
   {highlighter&&<p className="mt-2 text-[13px] text-muted">{marking?"Tap the words you don't know. They're saved for your teacher.":""}</p>}
  </div>;
 }
@@ -73,12 +74,42 @@ export function AnswerBars({options,picked,onPick,disabled,label}:{options:{text
   className={`flex min-h-[60px] items-center gap-3 rounded-button border-[3px] px-4 py-3 text-left text-[17px] font-bold leading-snug transition-transform active:translate-y-1 motion-reduce:transition-none ${picked===i?"border-primary bg-primary text-on-primary":"border-edge bg-panel text-ink hover:border-primary"}`}>
   <span aria-hidden className={`grid h-8 w-8 shrink-0 place-items-center rounded-row font-display text-[16px] ${picked===i?"bg-on-primary text-highlight":"bg-panel-2 text-muted"}`}>{String.fromCharCode(65+i)}</span>{o.text}</button>)}</div></fieldset>;
 }
-function WordProof({tokens,selected,onToggle,disabled}:{tokens:Token[];selected:number[];onToggle:(i:number)=>void;disabled?:boolean}){
+export function WordProof({tokens,selected,onToggle,disabled}:{tokens:Token[];selected:number[];onToggle:(i:number)=>void;disabled?:boolean}){
  const sel=new Set(selected);
  return <div className="reading-scope reading-card mt-3 p-3"><p className="font-serif text-[18px] leading-[2.4] text-reading-ink">{tokens.map(t=><span key={t.i}>{t.i>0?" ":""}<button type="button" disabled={disabled} aria-pressed={sel.has(t.i)} onClick={()=>onToggle(t.i)} className={`-my-1 inline-block min-h-10 rounded-lg px-1 ${sel.has(t.i)?"bg-primary text-on-primary":"hover:bg-line-picked"}`}>{t.text}</button></span>)}</p></div>;
 }
-function KeywordPrompt({q,className=""}:{q:ExpQuestion;className?:string}){
- return <>{keywordParts(q.prompt,q.keywords).map((p,i)=>p.key?<mark key={i} className="rounded-md bg-highlight/25 px-1 text-ink underline decoration-highlight decoration-2 underline-offset-4">{p.text}</mark>:<span key={i} className={className}>{p.text}</span>)}</>;
+// The question as players see it (no best answers): built from the world for solo, sent by the server for live phones.
+export type ViewQuestion={type:QuestionType;name:string;steps:1|2;prompt:string;keywords:string[];choices:string[]|null;choices2:{prompt:string;options:string[]}|null;theories:{id:string;name:string}[]|null;testimony:{speaker:string;text:string}|null;proof:"words"|"lines"|"none";callPassages:{id:string;text:string}[]|null};
+export function viewQuestion(q:ExpQuestion,world:WorldPack,callPassages:{id:string;text:string}[]):ViewQuestion{
+ const info=TYPE_INFO[q.type];
+ return {type:q.type,name:info.name,steps:info.steps,prompt:q.prompt,keywords:q.keywords,choices:q.choices?.map(o=>o.text)??null,choices2:q.choices2?{prompt:q.choices2.prompt,options:q.choices2.options.map(o=>o.text)}:null,theories:q.theories?.map(t=>({id:t.id,name:t.name}))??null,
+  testimony:q.testimony?{speaker:world.characters.find(x=>x.id===q.testimony!.speaker)?.name??"A witness",text:q.testimony.text}:null,proof:q.proof?.words?.length?"words":q.proof?.lines?.length?"lines":"none",callPassages:q.type==="make_call"?callPassages:null};
+}
+export function KeywordPrompt({prompt,keywords}:{prompt:string;keywords:string[]}){
+ return <>{keywordParts(prompt,keywords).map((p,i)=>p.key?<mark key={i} className="rounded-md bg-highlight/25 px-1 text-ink underline decoration-highlight decoration-2 underline-offset-4">{p.text}</mark>:<span key={i}>{p.text}</span>)}</>;
+}
+// One question, one shot: step 1 the answer (or the call), step 2 the proof (words, a line, the meaning, or two pinned
+// lines). Used by the solo race and by every phone in a live game.
+export function QuestionPanel({vq,passages,tokens,glossary,testifying,draft,setDraft,step,setStep,onLock,headingId="ex-h"}:{vq:ViewQuestion;passages:{id:string;text:string}[];tokens:Token[];glossary:WorldPack["glossary"];testifying:boolean;draft:Answer;setDraft:React.Dispatch<React.SetStateAction<Answer>>;step:1|2;setStep:(s:1|2)=>void;onLock:(a:Answer)=>void;headingId?:string}){
+ const twoStep=vq.steps===2,needsProofStep=twoStep&&vq.type!=="figure_it_out"&&vq.type!=="make_call";
+ const pinned=draft.lines??[];
+ return <>
+  <p className="mt-3 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{vq.name}{twoStep?` · Step ${step} of 2`:""}</p>
+  <h1 id={headingId} className="text-[24px] leading-tight outline-none"><KeywordPrompt prompt={vq.prompt} keywords={vq.keywords}/></h1>
+  {vq.testimony&&<blockquote className={`mt-3 rounded-card bg-violet p-4 text-on-violet shadow-[0_6px_0_var(--color-violet-shadow)] ${reducedMotion()?"":"rise-in"}`}><p className="text-[12px] font-extrabold uppercase tracking-[.08em]">{vq.testimony.speaker} testifies</p><p className="mt-1 text-[17px] font-bold leading-snug">“{vq.testimony.text}”</p>{testifying&&<p role="status" className="mt-2 text-[13px] font-extrabold">Listen to the whole testimony. The timer starts when it ends.</p>}</blockquote>}
+  {step===1&&vq.choices&&<AnswerBars label={vq.prompt} options={vq.choices.map(t=>({text:t}))} picked={draft.choice??null} onPick={i=>{setDraft(d=>({...d,choice:i}));if(twoStep)setStep(2);else onLock({...draft,choice:i})}}/>}
+  {step===1&&vq.theories&&<AnswerBars label="Your call" options={vq.theories.map(t=>({text:t.name}))} picked={vq.theories.findIndex(t=>t.id===draft.theory)} onPick={i=>{setDraft(d=>({...d,theory:vq.theories![i].id}));setStep(2)}}/>}
+  {step===2&&vq.choices2&&<><p className="mt-3 font-display text-[20px] font-semibold">{vq.choices2.prompt}</p><AnswerBars label={vq.choices2.prompt} options={vq.choices2.options.map(t=>({text:t}))} picked={draft.choice2??null} onPick={i=>onLock({...draft,choice2:i})}/></>}
+  {((step===2&&needsProofStep)||vq.type==="find_it"||vq.type==="catch_lie")&&!testifying&&<>
+   <p className="mt-3 text-[15px] font-bold text-muted">{vq.proof==="words"?"Tap the words that prove it, then lock in.":"Tap the line that proves it, then lock in."}</p>
+   {vq.proof==="words"
+    ?<WordProof tokens={tokens} selected={draft.words??[]} onToggle={i=>setDraft(d=>{const w=new Set(d.words??[]);if(w.has(i))w.delete(i);else w.add(i);return {...d,words:[...w].sort((a,b)=>a-b)}})}/>
+    :<ReadingPanel className="mt-2" glossary={glossary} passages={passages as SourcePassage[]} selected={draft.lines?.[0]} kept={[]} onTap={l=>setDraft(d=>({...d,lines:[l.text]}))}/>}
+   <button type="button" disabled={!(draft.words?.length||draft.lines?.length)} onClick={()=>onLock(draft)} className="case-primary mt-3 min-h-[56px] w-full justify-center text-[18px]">Lock in <ArrowRight size={18} aria-hidden/></button></>}
+  {step===2&&vq.type==="make_call"&&<><p className="mt-3 text-[15px] font-bold text-muted">Pin 2 lines from the expedition that back your call ({pinned.length} of 2).</p>
+   <ReadingPanel className="mt-2 max-h-[55dvh]" glossary={glossary} passages={(vq.callPassages??passages) as SourcePassage[]} kept={pinned} onTap={l=>setDraft(d=>{const ls=d.lines??[];return {...d,lines:ls.includes(l.text)?ls.filter(x=>x!==l.text):ls.length>=2?ls:[...ls,l.text]}})}/>
+   <button type="button" disabled={pinned.length!==2} onClick={()=>onLock(draft)} className="case-primary mt-3 min-h-[56px] w-full justify-center text-[18px]">Lock in my call <ArrowRight size={18} aria-hidden/></button></>}
+ </>;
 }
 // The countdown ring to the next chunk.
 export function CountdownRing({ms,total,label}:{ms:number;total:number;label:string}){
@@ -114,7 +145,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
  function startChunk(n:number){setK(n);setGist(null);setStep(1);setDraft({});setMarking(false);setUnknown(new Set());setFound(false);setPaused(false);go("read")}
  function toQuestion(){setStep(1);setDraft({});const isLie=c?.chunk.question.type==="catch_lie";setTestifying(isLie);go("question")}
  // Catch the Lie: the testimony plays first (about 3 seconds, or at once with reduced motion), then its 45 seconds start.
- useEffect(()=>{if(!testifying)return;const t=setTimeout(()=>{setTestifying(false);setStartedAt(Date.now())},reducedMotion()?0:3200);return()=>clearTimeout(t)},[testifying]);
+ useEffect(()=>{if(!testifying)return;const t=setTimeout(()=>{setTestifying(false);setStartedAt(Date.now())},reducedMotion()?0:TESTIMONY_MS);return()=>clearTimeout(t)},[testifying]);
  // Gist: a pick (or time) moves on to the question after a beat.
  useEffect(()=>{if(beat!=="gist")return;if(gistLeft===0)toQuestion()},[gistLeft,beat]);// eslint-disable-line react-hooks/exhaustive-deps
  function pickGist(i:number){if(gist!==null)return;setGist(i);cue(sound,gistPoints(c.chunk,i)?"chime":"tick");setTimeout(toQuestion,reducedMotion()?200:900)}
@@ -145,37 +176,19 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
  const shown=proofShown(q,tokens);
  // The lines a proof step taps: this chunk's, or for Make the Call every chunk of the expedition so far.
  const callPassages=chunks.slice(0,k+1).flatMap(x=>x.passages);
- const pinned=draft.lines??[];
- const needsProofStep=info.steps===2&&q.type!=="figure_it_out"&&q.type!=="make_call";
 
  return <div className="case-ui mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-16 pt-3">
   {hud}
   {beat==="read"&&<section aria-labelledby="ex-h"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Read · no timer</p><h1 id="ex-h" className="text-[28px] outline-none">Read the chunk</h1>
    {highlighter&&<button type="button" aria-pressed={marking} onClick={()=>setMarking(m=>!m)} className={`mt-2 inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-[15px] font-bold ${marking?"bg-gold text-on-gold":"bg-panel text-ink"}`}><Highlighter size={16} aria-hidden/>{marking?"Done marking":"Mark words I don't know"}</button>}
-   <div className="mt-3"><ChunkText chunk={c} world={world} tokens={tokens} highlighter={highlighter} marking={marking} unknown={unknown} onUnknown={i=>setUnknown(s=>{const n=new Set(s);if(n.has(i))n.delete(i);else n.add(i);return n})} onDiscover={()=>{if(!found){setFound(true);cue(sound,"chime",0.3)}}} found={found}/></div>
+   <div className="mt-3"><ChunkText chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} highlighter={highlighter} marking={marking} unknown={unknown} onUnknown={i=>setUnknown(s=>{const n=new Set(s);if(n.has(i))n.delete(i);else n.add(i);return n})} onDiscover={()=>{if(!found){setFound(true);cue(sound,"chime",0.3)}}} found={found}/></div>
    <button type="button" onClick={()=>go("gist")} className="case-primary mt-4 min-h-[56px] w-full justify-center text-[18px]">Ready <ArrowRight size={18} aria-hidden/></button></section>}
 
   {beat==="gist"&&<section aria-labelledby="ex-h"><TimerTrack left={gistLeft} seconds={gSeconds}/><p className="mt-3 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Gist check · {GIST_SECONDS} seconds</p><h1 id="ex-h" className="text-[28px] outline-none">Which is the best summary?</h1>
    <AnswerBars label="Which is the best summary?" options={c.chunk.gist.options} picked={gist} onPick={pickGist} disabled={gist!==null}/></section>}
 
   {beat==="question"&&<section aria-labelledby="ex-h"><TimerTrack left={testifying?qSeconds:qLeft} seconds={qSeconds}/>
-   <p className="mt-3 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{info.name}{info.steps===2?` · Step ${step} of 2`:""}</p>
-   <h1 id="ex-h" className="text-[24px] leading-tight outline-none"><KeywordPrompt q={q}/></h1>
-   {q.type==="catch_lie"&&q.testimony&&<blockquote className={`mt-3 rounded-card bg-violet p-4 text-on-violet shadow-[0_6px_0_var(--color-violet-shadow)] ${reducedMotion()?"":"rise-in"}`}><p className="text-[12px] font-extrabold uppercase tracking-[.08em]">{world.characters.find(x=>x.id===q.testimony!.speaker)?.name??"A witness"} testifies</p><p className="mt-1 text-[17px] font-bold leading-snug">“{q.testimony.text}”</p>{testifying&&<p role="status" className="mt-2 text-[13px] font-extrabold">Listen to the whole testimony. The timer starts when it ends.</p>}</blockquote>}
-   {/* Step 1: the answer. */}
-   {step===1&&q.choices&&<AnswerBars label={q.prompt} options={q.choices} picked={draft.choice??null} onPick={i=>{setDraft(d=>({...d,choice:i}));if(info.steps===2)setStep(2);else lockIn({...draft,choice:i})}}/>}
-   {step===1&&q.type==="make_call"&&q.theories&&<AnswerBars label="Your call" options={q.theories.map(t=>({text:t.name}))} picked={q.theories.findIndex(t=>t.id===draft.theory)} onPick={i=>{setDraft(d=>({...d,theory:q.theories![i].id}));setStep(2)}}/>}
-   {/* Step 2 (or the only step): the proof. */}
-   {step===2&&q.type==="figure_it_out"&&q.choices2&&<><p className="mt-3 font-display text-[20px] font-semibold">{q.choices2.prompt}</p><AnswerBars label={q.choices2.prompt} options={q.choices2.options} picked={draft.choice2??null} onPick={i=>lockIn({...draft,choice2:i})}/></>}
-   {((step===2&&needsProofStep)||q.type==="find_it"||q.type==="catch_lie")&&!testifying&&<>
-    <p className="mt-3 text-[15px] font-bold text-muted">{q.proof?.words?.length?"Tap the words that prove it, then lock in.":"Tap the line that proves it, then lock in."}</p>
-    {q.proof?.words?.length
-     ?<WordProof tokens={tokens} selected={draft.words??[]} onToggle={i=>setDraft(d=>{const w=new Set(d.words??[]);if(w.has(i))w.delete(i);else w.add(i);return {...d,words:[...w].sort((a,b)=>a-b)}})}/>
-     :<ReadingPanel className="mt-2" glossary={world.glossary} passages={c.passages as SourcePassage[]} selected={draft.lines?.[0]} kept={[]} onTap={l=>setDraft(d=>({...d,lines:[l.text]}))}/>}
-    <button type="button" disabled={!(draft.words?.length||draft.lines?.length)} onClick={()=>lockIn(draft)} className="case-primary mt-3 min-h-[56px] w-full justify-center text-[18px]">Lock in <ArrowRight size={18} aria-hidden/></button></>}
-   {step===2&&q.type==="make_call"&&<><p className="mt-3 text-[15px] font-bold text-muted">Pin 2 lines from the expedition that back your call ({pinned.length} of 2).</p>
-    <ReadingPanel className="mt-2 max-h-[55dvh]" glossary={world.glossary} passages={callPassages as SourcePassage[]} kept={pinned} onTap={l=>setDraft(d=>{const ls=d.lines??[];return {...d,lines:ls.includes(l.text)?ls.filter(x=>x!==l.text):ls.length>=2?ls:[...ls,l.text]}})}/>
-    <button type="button" disabled={pinned.length!==2} onClick={()=>lockIn(draft)} className="case-primary mt-3 min-h-[56px] w-full justify-center text-[18px]">Lock in my call <ArrowRight size={18} aria-hidden/></button></>}
+   <QuestionPanel vq={viewQuestion(q,world,callPassages)} passages={c.passages} tokens={tokens} glossary={world.glossary} testifying={testifying} draft={draft} setDraft={setDraft} step={step} setStep={setStep} onLock={lockIn}/>
   </section>}
 
   {beat==="result"&&record&&<section aria-labelledby="ex-h" aria-live="assertive">
@@ -184,7 +197,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
      <div className="moment-pop w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{info.name}{streak>1?` · Streak x${streak}`:""}</p><h1 id="ex-h" className="mt-1 text-[40px] leading-none outline-none">Proof!<span className="sr-only"> Plus {record.points} points.</span></h1><p className="mt-2 text-[16px] font-bold">{q.why}</p></div></div>
     :<div className="notyet-shake mt-3 rounded-[24px] bg-notyet p-5 text-on-notyet shadow-[0_8px_0_var(--color-notyet-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{info.name}{record.late?" · Time's up":""}</p><h1 id="ex-h" className="mt-1 text-[36px] leading-none outline-none">Not yet.</h1><p className="mt-2 text-[17px] font-bold">You'll get another shot in the Refresher.</p></div>}
    <p className="mt-3 text-[13px] font-extrabold uppercase tracking-[.08em] text-highlight">The proof</p>
-   {shown.words.length?<div className="mt-1"><ChunkText chunk={c} world={world} tokens={tokens} shown={shown.words}/></div>
+   {shown.words.length?<div className="mt-1"><ChunkText chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} shown={shown.words}/></div>
     :<ReadingPanel className="mt-1" glossary={world.glossary} passages={(q.type==="make_call"?callPassages:c.passages) as SourcePassage[]} results={shown.lines.map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/>}
   </section>}
 

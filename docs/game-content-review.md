@@ -3956,3 +3956,156 @@ Each chunk is the sprint question's paragraph (or the 2 to 4 sentence chunk for 
 1. Ichabod disliked singing and stayed away from church on Sundays.
 2. Ichabod earned his living mainly by preaching in the village church.
 3. Ichabod also earned money teaching singing, and he was proud of his voice in church. ✓
+
+<!-- expeditions:start -->
+## Proof Race expeditions
+
+Generated from world.json by `scripts/content-review.ts`. ✓ marks the best option. Standards are verified B.E.S.T. benchmarks (grade 7 codes shown; the class's grade picks the code).
+
+### The Legend of Sleepy Hollow
+
+#### Expedition: Into the Hollow (10 chunks)
+
+##### Whose Eyes?
+
+**Chunk 1** (¶3 sentences 1 to 3; 138 words)
+
+- Question: How sure is the storyteller about where the town's name came from?
+- Key words highlighted: How sure, storyteller
+- Choices: Not sure: he passes on a story he heard without promising it's true ✓ / Completely sure, because he was there when it was named / Sure, because the housewives told him themselves
+- Proof words (any one): "I do not vouch for the fact"
+- Refresher hint: Read his own words closely. Does he ever promise the story is true?
+- Why: He says he does not vouch for the fact, so he is repeating a story, not swearing to it.
+- Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
+- Gist check: A river town got its name, the narrator says, from husbands who lingered at the tavern. ✓ / A river town is famous for sailors who pray to St. Nicholas. / The narrator proves exactly how Tarry Town got its name.
+- Discovery (vocabulary): "inveterate propensity". Inveterate propensity: a habit so old and strong it can't be broken.
+
+##### Find It
+
+**Chunk 2** (¶3 sentences 4 to 5; 73 words)
+
+- Question: About how long a walk is it from the river port to the hollow?
+- Key words highlighted: how long a walk
+- Proof line: "Not far from this village, perhaps about two miles, there is a little valley or rather lap of land among high hills, which is one of the quietest places in the whole world."
+- Refresher hint: Look for a distance, counted in miles.
+- Why: The valley is perhaps about two miles from the village.
+- Standards: ELA.K12.EE.1.1
+- Gist check: A very quiet valley sits about two miles from the village. ✓ / A noisy brook floods the valley every spring. / The valley is far away and hard to reach.
+- Discovery (figurative): "lull one to repose". Lull one to repose: the brook is so soft it could rock you to sleep.
+
+##### Shades of Meaning
+
+**Chunk 3** (¶4 sentences 1 to 3; 102 words) · shared words reviewed
+
+- Question: The narrator calls his younger self a stripling. Why that word instead of plain boy?
+- Key words highlighted: stripling, instead of plain boy
+- Choices: It makes him sound young and untested, new at hunting ✓ / It shows he was the best hunter in the valley / It means he was sickly and weak
+- Proof words (any one): "my first exploit"
+- Refresher hint: Would an old hand call it his first try? Find his own words about the hunt.
+- Why: Stripling paints a young, untested boy, and he calls the hunt his first exploit.
+- Standards: ELA.7.V.1.3, ELA.7.R.3.1
+- Gist check: The narrator remembers how still the valley was, even to a boy out hunting. ✓ / The narrator remembers being chased out of the valley by a ghost one night. / The narrator remembers hunting with his father every Sunday in the valley.
+- Discovery (figurative): "angry echoes". Angry echoes: the echoes get a human feeling, as if the quiet woods were annoyed by the noise.
+
+##### Word Detective
+
+**Chunk 4** (¶5 sentences 1 to 2; 66 words) · shared words reviewed
+
+- Question: In this chunk, what does listless mean?
+- Key words highlighted: listless
+- Choices: Lacking energy; slow and sleepy ✓ / Without a list or a plan / Full of nervous worry
+- Proof words (any one): "drowsy, dreamy influence", "repose", "drowsy", "dreamy"
+- Refresher hint: Find the words around it that feel sleepy.
+- Why: Repose and a drowsy, dreamy influence tell you listless means low on energy.
+- Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
+- Gist check: The valley's sleepy mood gave Sleepy Hollow its name. ✓ / The Dutch settlers left the Hollow because it was too quiet. / Boys from the Hollow are known for their hard work.
+- Discovery (vocabulary): "sequestered glen". Sequestered glen: a hidden, out-of-the-way valley.
+
+##### Figure It Out
+
+**Chunk 5** (¶5 sentences 3 to 4; 78 words) · shared words reviewed
+
+- Question: Read the words holds a spell over the minds of the good people. What kind of figurative language is this?
+- Key words highlighted: holds a spell over the minds
+- Choices: Metaphor: the valley's mood is called a spell, without like or as ✓ / Simile: a comparison that uses like or as / Hyperbole: a wild exaggeration for a laugh
+- What does it mean? Something about the place shapes what people think and believe ✓ / A real witch is casting spells on the town / The people are tired from working too hard
+- Refresher hint: Does a spell have to be real magic? Think about what keeps their minds dreamy.
+- Why: The spell stands for the dreamy mood that rules how people think.
+- Standards: ELA.7.R.3.1
+- Gist check: People blame old magic for the spell that still hangs over the valley. ✓ / A doctor cured the settlers of a strange sleeping sickness. / Henry Hudson drove a wizard out of the valley.
+- Discovery (vocabulary): "continual reverie". Reverie: a daydream. A continual reverie means drifting through life half-dreaming.
+
+##### Read Between the Lines
+
+**Chunk 6** (¶5 sentences 5 to 6; 74 words)
+
+- Question: What can you infer about the people of the Hollow?
+- Key words highlighted: infer
+- Choices: They are quick to accept the uncanny as real ✓ / They are afraid to leave home after dark / They don't trust tales they hear
+- Proof line: "They are given to all kinds of marvellous beliefs, are subject to trances and visions, and frequently see strange sights, and hear music and voices in the air."
+- Proof line: "The whole neighborhood abounds with local tales, haunted spots, and twilight superstitions; stars shoot and meteors glare oftener across the valley than in any other part of the country, and the nightmare, with her whole ninefold, seems to make it the favorite scene of her gambols."
+- Refresher hint: Look at what they see and hear that nobody else does.
+- Why: They hold marvellous beliefs and see strange sights, so they accept the uncanny easily.
+- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Gist check: The people of the Hollow accept strange sights, and the valley is full of spooky tales. ✓ / The people of the Hollow laugh at ghost stories. / Scientists come to the valley to study stars and meteors.
+- Discovery (figurative): "with her whole ninefold". The nightmare is pictured as a creature with her nine children, playing over the valley at night.
+
+##### Catch the Lie
+
+**Chunk 7** (¶6 sentences 1 to 2; 88 words)
+
+- Question: Brom Bones tells the tale. One thing he says is false. Tap the line that proves it.
+- Key words highlighted: false
+- Testimony (Brom Bones): "Every child in the Hollow knows this one. The Headless Horseman was a Hessian trooper who lost his head to a sword in some battle, and folks see him tearing through the dark at night."
+- Proof line: "It is said by some to be the ghost of a Hessian trooper, whose head had been carried away by a cannon-ball, in some nameless battle during the Revolutionary War, and who is ever and anon seen by the country folk hurrying along in the gloom of night, as if on the wings of the wind."
+- Refresher hint: Brom tells it with flair. Check exactly what took the trooper's head.
+- Why: The story says a cannon-ball carried his head away, not a sword.
+- Standards: ELA.K12.EE.1.1
+- Gist check: The valley's main ghost is a headless horseman, said to be a soldier killed in battle. ✓ / A general of the Revolutionary War still rides through the Hollow. / The ghost is a farmer who lost his horse in a storm.
+- Discovery (figurative): "on the wings of the wind". As if on the wings of the wind: the rider moves so fast he seems to fly.
+
+##### Character Clue
+
+**Chunk 8** (¶6 sentences 3 to 4; 115 words)
+
+- Question: Which trait fits the headless spirit in this chunk?
+- Key words highlighted: trait
+- Choices: Driven and pressed for time, racing to beat the dawn ✓ / Calm and patient with travelers / Lost, unable to find his way home
+- Proof words (any one): "in a hurry to get back to the churchyard before daybreak", "rushing speed"
+- Refresher hint: Look at how fast he moves, and why.
+- Why: He passes with rushing speed, in a hurry to get back to the churchyard before daybreak.
+- Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
+- Gist check: The ghost rides out each night to look for his head and hurries back before dawn. ✓ / The ghost guards the church so no one can go inside. / Historians proved the ghost is only a story.
+- Discovery (figurative): "like a midnight blast". Like a midnight blast: a simile. The rider rushes past like a sudden gust of night wind.
+
+##### Theme Thread
+
+**Chunk 9** (¶7 sentences 1 to 1, ¶8 sentences 1 to 2; 115 words)
+
+- Question: Which idea keeps coming back in the story so far?
+- Key words highlighted: keeps coming back
+- Choices: This valley's dreamy spell takes hold of anyone who stays there ✓ / Hard work always wins in the end / Strangers are never welcome in small towns
+- Proof line: "However wide awake they may have been before they entered that sleepy region, they are sure, in a little time, to inhale the witching influence of the air, and begin to grow imaginative, to dream dreams, and see apparitions."
+- Proof line: "It is remarkable that the visionary propensity I have mentioned is not confined to the native inhabitants of the valley, but is unconsciously imbibed by every one who resides there for a time."
+- Refresher hint: Even folks who arrive wide awake don't stay that way. Find where it says so.
+- Why: The same dreamy spell shows up again: anyone who stays begins to dream dreams and see apparitions.
+- Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
+- Gist check: Everyone who lives in the Hollow, even newcomers, soon starts to dream and see ghosts. ✓ / Newcomers to the Hollow stay wide awake and laugh at the legend. / The Headless Horseman story is only told to children.
+- Discovery (figurative): "region of shadows". Region of shadows: a dark, mysterious place where wild stories grow.
+
+##### Make the Call
+
+**Chunk 10** (¶9 sentences 1 to 3; 138 words)
+
+- Question: Make the call: what is the Headless Horseman?
+- Key words highlighted: Make the call
+- Theory: A real ghost haunts the Hollow. Backed by: "The dominant spirit, however, that haunts this enchanted region, and seems to be…"; "It is said by some to be the ghost of a Hessian trooper, whose head had been car…"; "Indeed, certain of the most authentic historians of those parts, who have been c…"
+- Theory: A story the dreamy valley tells itself. Backed by: "Certain it is, the place still continues under the sway of some witching power, …"; "They are given to all kinds of marvellous beliefs, are subject to trances and vi…"; "However wide awake they may have been before they entered that sleepy region, th…"; "Such is the general purport of this legendary superstition, which has furnished …"
+- Theory: A real soldier's death that grew into a legend. Backed by: "It is said by some to be the ghost of a Hessian trooper, whose head had been car…"; "Such is the general purport of this legendary superstition, which has furnished …"; "The whole neighborhood abounds with local tales, haunted spots, and twilight sup…"
+- Refresher hint: Any call can win. Pin the two lines that back yours best.
+- Why: Each theory has lines that support it; the proof decides.
+- Standards: ELA.K12.EE.1.1, ELA.K12.EE.3.1
+- Gist check: The narrator praises the Hollow as a quiet place that never seems to change. ✓ / The narrator warns that the Hollow is changing too fast. / The narrator says he never wants to see the Hollow again.
+- Discovery (figurative): "nooks of still water". Nooks of still water: the valley is a calm pool beside a rushing river of change.
+
+<!-- expeditions:end -->

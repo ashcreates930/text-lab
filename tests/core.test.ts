@@ -2708,65 +2708,79 @@ test("proof race: chunks, settings, scoring (speed bonus, near-miss retry, exten
   assert.deepEqual(pr.rivalPlay("x",3,limit),pr.rivalPlay("x",3,limit));
 });
 
-test("proof race live: beats, readiness, gist and question saving, taps scored on the server with extra time, the board and podium", async()=>{
+test("proof race live: expedition beats, readiness, gist and question saving, one-shot answers scored on the server with extra time, pause, the board and podium", async()=>{
   process.env.CLASSROOM_DEV_STORE="memory";
   const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");const {liveRoundEvidence}=await import("../lib/live/evidence.ts");
+  const {chunkTokens,phraseRange}=await import("../lib/expedition.ts");
   const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
   const s=await store.createSession({code:"RACE01",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
   const ids:string[]=[];for(const n of ["Ana Ruiz","Ben Cole","Cy Park"]){const r=await server.join(store,s,{nickname:n,studentId:null});ids.push(r.player!.id)}
   let st=(await server.loadState(store,s.id))!;
   const act=async(pid:string,kind:string,payload:Record<string,unknown>={},timeSetting="1")=>{st=(await server.loadState(store,s.id))!;const e=await server.playerAct(store,st,pid,{kind:kind as never,payload},{judgeAllowed:async()=>false,timeSetting:timeSetting as never});st=(await server.loadState(store,s.id))!;return e};
   const host=async(a:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;const e=await server.hostAct(store,st,a as never);st=(await server.loadState(store,s.id))!;return e};
-  type Pub={beat:string;step:number;question:string|null;total:number;reveal:{pct:number}|null;board:{top:{name:string;rank:number}[]}|null;pinned:string|null;finish:{podium:{name:string}[];stats:{rows:unknown[];hardest:unknown[]}}|null};
+  type Pub={beat:string;step:number;total:number;beatMs:number|null;question:{type:string;choices:string[]|null}|null;reveal:{pct:number;lines:string[];words:number[]}|null;board:{top:{name:string;rank:number}[]}|null;pinned:string|null;finish:{podium:{name:string}[];stats:{rows:unknown[];hardest:unknown[]}}|null};
   const pub=()=>server.hostView(st).round as unknown as Pub;
   // Lobby: an avatar from the story's characters, before any round.
   assert.equal(await act(ids[0],"avatar",{characterId:"brom-bones"}),null);assert.match((await act(ids[0],"avatar",{characterId:"nobody"}))??"",/Pick one/);
   assert.equal(server.hostView(st).lobby.find(p=>p.id===ids[0])!.avatar!.name,"Brom Bones");
-  // Start without squads; extra time for Cy from the host.
-  assert.equal(await host({action:"round.start",type:"race",settings:{chunks:6,gist:true,questions:true,seconds:20}}),null);
+  // Start expedition 1 without squads; extra time for Cy from the host.
+  assert.equal(await host({action:"round.start",type:"race",settings:{expeditionId:"into-the-hollow",gradeBand:"6-8",questions:true}}),null);
   assert.equal(await host({action:"player.time",playerId:ids[2],setting:"2"}),null);
-  assert.deepEqual([pub().beat,pub().step,pub().total,pub().question],["read",0,6,null],"no question while reading");
+  assert.deepEqual([pub().beat,pub().step,pub().total,pub().question,pub().beatMs],["read",0,10,null,null],"no question and no timer while reading");
   // Reading: ready, and the host sees the count.
   assert.equal(await act(ids[0],"race_ready"),null);assert.match((await act(ids[0],"race_ready"))??"",/already/);
-  assert.match((await act(ids[0],"race_tap",{line:"x"}))??"",/isn't open/);
+  assert.match((await act(ids[0],"race_tap",{answer:{lines:["x"]}}))??"",/isn't open/);
   assert.deepEqual(server.hostView(st).race!.ready,{ready:1,total:3,advance:false});
-  // Gist (chunk 1).
-  assert.equal(await host({action:"race.next"}),null);assert.equal(pub().beat,"process");
+  // Gist check (20 seconds).
+  assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["process",20000]);
+  const exp=st.world.expeditions![0],c0=exp.chunks[0],best=c0.gist.options.findIndex(o=>o.best);
+  assert.equal(await act(ids[0],"race_gist",{choice:best}),null);
+  assert.equal(await act(ids[1],"race_gist",{choice:(best+1)%3}),null);
+  assert.match((await act(ids[1],"race_gist",{choice:best}))??"",/already/);
+  // The question (Whose Eyes?, 45 seconds): the phones get the choices but never which one is best.
+  assert.equal(await host({action:"race.next"}),null);assert.equal(pub().beat,"race");assert.equal(pub().beatMs,45000);
+  assert.equal(pub().question!.type,"whose_eyes");assert.ok(!JSON.stringify(pub().question).includes("\"best\""));
   const chunks=(await import("../lib/live/race.ts")).liveRaceChunks(st.world,st.passages!,st.session.rounds.at(-1) as never);
-  assert.equal(await act(ids[0],"race_gist",{choice:chunks[0].gist!.best}),null);
-  assert.equal(await act(ids[1],"race_gist",{choice:(chunks[0].gist!.best+1)%3}),null);
-  // The race: right fast, a near miss then the retry, and Cy with double time.
-  assert.equal(await host({action:"race.next"}),null);assert.ok(pub().question);
-  assert.equal(await act(ids[0],"race_tap",{line:chunks[0].answers[0]}),null);
-  assert.equal(await act(ids[1],"race_tap",{line:chunks[0].nearMisses[0].line}),null);
-  assert.ok(server.playerView(st,ids[1]).race!.mine.near,"the near miss shows its hint");
-  assert.equal(await act(ids[1],"race_tap",{line:chunks[0].answers[0]}),null);
-  assert.match((await act(ids[1],"race_tap",{line:chunks[0].answers[0]}))??"",/already answered/);
-  assert.equal(await act(ids[2],"race_tap",{line:chunks[0].answers[0]},"2"),null);
-  assert.equal(server.playerView(st,ids[2]).race!.extraTime,true);
+  const tokens=chunkTokens(chunks[0].lines),r=phraseRange(tokens,c0.question.proof!.words![0])!,proof=Array.from({length:r[1]-r[0]+1},(_,k)=>r[0]+k);
+  const right=c0.question.choices!.findIndex(o=>o.best);
+  assert.equal(await act(ids[0],"race_tap",{answer:{choice:right,words:proof}}),null);
+  // Ben: the right answer with the wrong proof scores 0. One shot: no second try.
+  assert.equal(await act(ids[1],"race_tap",{answer:{choice:right,words:[0,1]}}),null);
+  assert.match((await act(ids[1],"race_tap",{answer:{choice:right,words:proof}}))??"",/already answered/);
+  assert.equal(await act(ids[2],"race_tap",{answer:{choice:right,words:proof}},"2"),null);
+  assert.equal(server.playerView(st,ids[2]).race!.extraTime,true);assert.equal(server.playerView(st,ids[2]).race!.scale,2);
   const tot=(pid:string)=>server.playerView(st,pid).race!.total;
-  assert.ok(tot(ids[0])>=1090&&tot(ids[0])<=1100,`fast right plus gist: ${tot(ids[0])}`);assert.equal(tot(ids[1]),350);assert.ok(tot(ids[2])>=990);
-  // Reveal and board.
-  assert.equal(await host({action:"race.next"}),null);assert.equal(pub().reveal!.pct,100);
-  assert.equal(await host({action:"race.next"}),null);
+  assert.ok(tot(ids[0])>=1090&&tot(ids[0])<=1100,`fast right plus gist: ${tot(ids[0])}`);assert.equal(tot(ids[1]),0);assert.ok(tot(ids[2])>=990);
+  assert.equal(server.playerView(st,ids[1]).race!.mine.tap!.answerRight,true);assert.equal(server.playerView(st,ids[1]).race!.mine.tap!.proofRight,false);
+  // Pause holds the beat clock: resuming moves the beat's start by the time paused.
+  const before=(st.session.rounds.at(-1) as {beatStartedAt:string}).beatStartedAt;
+  assert.equal(await host({action:"pause"}),null);assert.equal(pub().beat,"race");
+  await new Promise(res=>setTimeout(res,40));
+  assert.equal(await host({action:"resume"}),null);
+  assert.ok(Date.parse((st.session.rounds.at(-1) as {beatStartedAt:string}).beatStartedAt)>Date.parse(before),"the clock moved forward");
+  // The proof (3 seconds), the board (5) and the countdown (3).
+  assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["reveal",3000]);
+  assert.equal(pub().reveal!.pct,67);assert.ok(pub().reveal!.words.length>0);
+  assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["board",5000]);
   assert.equal(pub().board!.top[0].name,"Ana Ruiz");assert.equal(pub().board!.top.at(-1)!.name,"Ben Cole");
   assert.equal(server.playerView(st,ids[1]).race!.place!.rank,3);
-  // Chunk 3 asks for a question: saved, screened, and the host can pin it.
-  for(let k=0;k<20&&pub().step<2;k++)await host({action:"race.next"});
-  for(let k=0;k<5&&pub().beat!=="process";k++)await host({action:"race.next"});
-  assert.equal(pub().beat,"process");
+  assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["countdown",3000]);
+  // Chunk 3 asks for a question (60 seconds): saved, screened, and the host can pin it.
+  for(let k=0;k<30&&!(pub().step===2&&pub().beat==="ask");k++)await host({action:"race.next"});
+  assert.deepEqual([pub().step,pub().beat,pub().beatMs],[2,"ask",60000]);
   assert.equal(await act(ids[0],"race_question",{text:"Why did the narrator go hunting alone?"}),null);
   assert.equal(await act(ids[1],"race_question",{text:"Where do you live?"}),null);
   assert.equal(await act(ids[2],"race_question",{text:"this story is stupid and so are you"}),null);
   const qs=server.hostView(st).race!.questions;assert.equal(qs.length,1,"a flagged question never reaches the board");
   assert.equal(await host({action:"race.pin",questionId:qs[0].id}),null);assert.equal(pub().pinned,"Why did the narrator go hunting alone?");
-  // Finish: the podium and class stats; the Evidence view keeps every question, flagged ones marked.
-  for(let k=0;k<40&&st.session.status!=="ended";k++)await host({action:"race.next"});
+  // Finish: the podium and class stats; the Evidence view keeps every question, flagged ones marked, and each answer.
+  for(let k=0;k<80&&st.session.status!=="ended";k++)await host({action:"race.next"});
   const fin=pub().finish!;
-  assert.equal(fin.podium[0].name,"Ana Ruiz");assert.equal(fin.stats.rows.length,6);assert.equal(fin.stats.hardest.length,3);
+  assert.equal(fin.podium[0].name,"Ana Ruiz");assert.equal(fin.stats.rows.length,10);assert.equal(fin.stats.hardest.length,3);
   const ev=liveRoundEvidence({session:st.session,world:st.world,squads:st.squads,players:st.players,responses:st.responses});
-  const race=ev.find(r=>r.type==="Proof Race")!;assert.equal(race.questions!.length,3);assert.equal(race.questions!.filter(q=>q.flagged).length,2);assert.equal(race.questions!.find(q=>q.flagged)!.text,"Where do you live?");
-  assert.ok(race.squads[0].members.find(m=>m.nickname==="Ben Cole")!.actions.some(a=>/near miss/.test(a)));
+  const race=ev.find(rd=>rd.type==="Proof Race")!;assert.equal(race.questions!.length,3);assert.equal(race.questions!.filter(q=>q.flagged).length,2);assert.equal(race.questions!.find(q=>q.flagged)!.text,"Where do you live?");
+  assert.ok(race.squads[0].members.find(m=>m.nickname==="Ben Cole")!.actions.some(a=>/right answer, proof missed/.test(a)));
+  assert.match(race.prompt,/Into the Hollow · grades 6 to 8/);
 });
 
 test("production fixes: mission questions hold the student's pieces, and round 1 counts the pouch's 3 lines", async()=>{

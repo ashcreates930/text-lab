@@ -35,7 +35,9 @@ function actionLine(r: LiveResponse, world: WorldPack) {
     case "story": { const rec = r.payload.record as { round?: number; points?: number; detail?: string; proof?: string[] } | undefined; return `Story Mode round ${rec?.round ?? Number(r.payload.step) + 1}: ${rec?.points ?? 0} pts${rec?.detail ? ` (${rec.detail})` : ""}${rec?.proof?.length ? `, proof: ${rec.proof.map((p) => `"${p.replace(/\s+/g, " ")}"`).join(" | ")}` : ""}`; }
     case "race_gist": return `Chunk ${Number(r.payload.step) + 1}: summary ${Number(r.payload.points) > 0 ? "right" : "missed"} (${Number(r.payload.points ?? 0)} pts)`;
     case "race_question": return `Chunk ${Number(r.payload.step) + 1}: asked "${text(r, "text")}"${r.flagged ? " (flagged)" : ""}`;
-    case "race_tap": return `Chunk ${Number(r.payload.step) + 1}: ${({ right: "found the line", retryRight: "found it on the retry", near: "near miss", wrong: "missed" } as Record<string, string>)[text(r, "result")] ?? "answered"}${Number(r.payload.points) ? ` (${Number(r.payload.points)} pts)` : ""}: "${text(r, "line").replace(/\s+/g, " ")}"`;
+    case "race_tap": { const p = r.payload as { step: number; correct?: boolean; late?: boolean; answerRight?: boolean; proofRight?: boolean; points?: number };
+      return `Chunk ${Number(p.step) + 1}: ${p.correct ? `proved it (${Number(p.points ?? 0)} pts)` : p.late ? "time ran out" : p.answerRight && !p.proofRight ? "right answer, proof missed" : "missed"}`; }
+    case "race_unknown": return `Chunk ${Number(r.payload.step) + 1}: marked words they don't know: ${((r.payload.words as string[] | undefined) ?? []).join(", ")}`;
     default: return "";
   }
 }
@@ -59,7 +61,7 @@ export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] 
       prompt = world.verdict?.question ?? "";
       for (const s of scoreVerdictRound(squads, responses, i)) results.set(s.squadId, { result: s.theoryId ? `${world.verdict?.theories.find((t) => t.id === s.theoryId)?.name ?? s.theoryId} · ${s.detail}` : s.detail, points: s.points });
     } else if (round.type === "race") {
-      prompt = `Proof Race · ${round.settings.chunks} chunks`;
+      prompt = `Proof Race · ${world.expeditions?.find((e) => e.id === round.settings.expeditionId)?.title ?? "Expedition"} · grades ${round.settings.gradeBand.replace("-", " to ")}`;
     } else if (round.type === "story") {
       prompt = `Story Mode · ${world.scenes.find((sc) => sc.id === round.sceneId)?.story_mode?.call.bank[0].question ?? round.sceneId}`;
       for (const s of storySquadScores(squads, responses, i, players, absent)) results.set(s.squadId, { result: `Members' average: ${s.points}`, points: s.points });
