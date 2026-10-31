@@ -1,4 +1,5 @@
 "use client";
+import {LEGACY_MODES} from "@/lib/feature-flags";
 // Ways into a live round: the Demo room (sample classroom), "Start a live round" (a teacher's class), the one-tap
 // "Join live round" banner (class students), and the weekly period vs. period board (classes, never students).
 import {useCallback,useEffect,useState} from "react";
@@ -26,7 +27,7 @@ export function StartLiveRound({classId,fetcher}:{classId:string;fetcher:(path:s
  const [busy,setBusy]=useState(false),[error,setError]=useState("");
  async function start(){if(busy)return;setBusy(true);setError("");const r=await fetcher("/api/live/sessions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({classId})});setBusy(false);if(r.ok&&r.body.id&&r.body.hostToken)openHost(r.body.id,r.body.hostToken);else setError(r.body.error||"Could not start a live round.")}
  return <div><button type="button" onClick={start} aria-busy={busy} className="gold-button flex min-h-[60px] items-center gap-3 px-7 py-3 text-lg font-bold"><Radio size={22}/>{busy?"Opening…":"Start a live round"}</button>
-  <p className="mt-2 text-sm text-muted">Squads play Spot the Lie, Verdict Vote and Objection! on their phones. Students tap "Join live round" on their class screen.</p>
+  <p className="mt-2 text-sm text-muted">{LEGACY_MODES?"Squads play Spot the Lie, Verdict Vote and Objection! on their phones.":"The class plays Proof Race together on their phones."} Students tap "Join live round" on their class screen.</p>
   {error&&<p role="alert" className="mt-2 text-sm text-muted">{error}</p>}</div>;
 }
 

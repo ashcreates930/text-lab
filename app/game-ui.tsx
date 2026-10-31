@@ -35,9 +35,9 @@ export function Card({tone="panel",className,children,...p}:React.HTMLAttributes
 export function ReadingCard({label,className,children}:{label?:string;className?:string;children:React.ReactNode}){
  return <div className={cx("reading-scope reading-card flex flex-col gap-2 p-2.5",className)}>{label&&<span className="px-1 text-[12px] font-extrabold text-muted">{label}</span>}{children}</div>;
 }
-export function LineRow({picked=false,result,onPick,children,disabled}:{picked?:boolean;result?:"right"|"wrong";onPick?:()=>void;children:React.ReactNode;disabled?:boolean}){
+export function LineRow({picked=false,result,onPick,children,disabled,className}:{picked?:boolean;result?:"right"|"wrong";onPick?:()=>void;children:React.ReactNode;disabled?:boolean;className?:string}){
  const tone=result==="right"?"border-line-right-edge bg-line-right":result==="wrong"?"border-dashed border-line-wrong-edge bg-line-wrong":picked?"border-primary bg-line-picked":"border-line-edge bg-line-row";
- return <button type="button" aria-pressed={picked} disabled={disabled} onClick={onPick} className={cx("min-h-11 w-full rounded-row border-[3px] px-3 py-2.5 text-left font-serif text-[15px] font-normal leading-[1.45] text-reading-ink transition-transform active:translate-y-[2px] motion-reduce:transition-none",tone)}>{children}</button>;
+ return <button type="button" aria-pressed={picked} disabled={disabled} onClick={onPick} className={cx("min-h-11 w-full rounded-row border-[3px] px-3 py-2.5 text-left font-serif text-[15px] font-normal leading-[1.45] text-reading-ink transition-transform active:translate-y-[2px] motion-reduce:transition-none",tone,className)}>{children}</button>;
 }
 
 // ---------- HUD: score, streak, coins, sound ----------

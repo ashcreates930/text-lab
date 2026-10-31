@@ -10,6 +10,7 @@ import {DEFAULT_RACE,PROCESS_SECONDS,gistPoints,raceChunks,raceBoard,raceLimitMs
 import {wordsToKnow} from "@/lib/fair-play";
 import {narrationFile,playNarration} from "@/lib/narration";
 import {Pill} from "./game-ui";
+import {LEGACY_MODES} from "@/lib/feature-flags";
 import {screenBoardText} from "@/lib/safety";
 import {lineWords} from "@/lib/lies";
 import {ReadingPanel,WordCards} from "./reading-panel";
@@ -155,6 +156,6 @@ export function ProofRaceSolo({world,passages,preset,onExit}:{world:WorldPack;pa
    <button type="button" onClick={nextChunk} className="case-primary mt-5 min-h-[52px] w-full justify-center">{k+1>=chunks.length?"Final results":"Next chunk"} <ArrowRight size={18}/></button></section>}
   {beat==="finish"&&<section className="mt-4"><Podium main sound={sound} entries={board.map(r=>({id:r.id,name:r.name,points:r.points}))} title="Final results"/>
    <p className="mt-6 text-center text-[16px] text-muted">Every point came from a line you proved in the story.</p>
-   <button type="button" onClick={onExit} className="case-primary mt-5 min-h-[52px] w-full justify-center">Play the case <ArrowRight size={18}/></button></section>}
+   <button type="button" onClick={onExit} className="case-primary mt-5 min-h-[52px] w-full justify-center">{LEGACY_MODES?"Play the case":"Done"} <ArrowRight size={18}/></button></section>}
  </div>;
 }

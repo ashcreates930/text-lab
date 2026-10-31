@@ -1,4 +1,5 @@
 "use client";
+import {LEGACY_MODES} from "@/lib/feature-flags";
 // Read-only sample classroom for visitors who choose "I'm a teacher". No sign-in, no AI calls, no database writes:
 // everything comes from lib/sample-classroom.ts and the story's static world file, and it resets on reload.
 import {useEffect,useMemo,useState} from "react";
@@ -11,7 +12,8 @@ import {EvidenceView} from "./evidence-view";
 import {DemoRoomButton} from "./live/entry";
 
 type Tab="evidence"|"overview"|"casefile"|"frames"|"live"|"code";
-const tabs:[Tab,string][]=[["evidence","Evidence"],["overview","Class overview"],["casefile","Case file"],["frames","Picture frames"],["live","Live lesson"],["code","Class code"]];
+// The case file and storyboard frames belong to the legacy modes (LEGACY_MODES).
+const tabs:[Tab,string][]=[["evidence","Evidence"],["overview","Class overview"],...(LEGACY_MODES?[["casefile","Case file"],["frames","Picture frames"]] as [Tab,string][]:[]),["live","Live lesson"],["code","Class code"]];
 
 // embedded: shown inside the teacher and parent hub, under its own page heading, so the class name is an h2.
 export function TeacherDemo({onSignIn,embedded=false}:{onSignIn:()=>void;embedded?:boolean}){

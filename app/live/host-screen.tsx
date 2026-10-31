@@ -6,6 +6,7 @@ import {Check,Gavel,MessageCircle,Pause,Play,Search,Shuffle,Sparkles,Square,User
 import type {hostView} from "@/lib/live/server";
 import {ROLE_INFO,OBJECTION_SECONDS,type Role} from "@/lib/live/engine";
 import {hostKey,postJson,readStored,useLive,useScreenTop,useStory} from "./use-live";
+import {LEGACY_MODES} from "@/lib/feature-flags";
 import {LobbyBoard,LobbyMusic,RaceFinishHost,RaceHost,RacePick,isRace} from "./race-live";
 import {Podium} from "../proof-race";
 
@@ -52,7 +53,7 @@ const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|nul
   {s.status==="round"&&round&&!isRace(round)&&<LiveRound state={state} act={act} sessionId={sessionId}/>}
   {s.status==="reveal"&&round&&<Reveal state={state} act={act}/>}
   {(s.status==="reveal"||s.status==="lobby")&&(state.squads.some(q=>q.members.length)||(state.proofRace&&state.counters.players>0))&&<RoundPicker state={state} act={act} first={s.status==="lobby"}/>}
-  {(s.status==="reveal"||s.status==="ended")&&state.yourTurn&&<YourTurnHost yourTurn={state.yourTurn} players={state.counters.players} act={act}/>}
+  {LEGACY_MODES&&(s.status==="reveal"||s.status==="ended")&&state.yourTurn&&<YourTurnHost yourTurn={state.yourTurn} players={state.counters.players} act={act}/>}
   {s.status!=="lobby"&&<Scoreboard state={state}/>}
   {s.status!=="ended"&&s.status!=="lobby"&&<p className="mt-8 text-[18px] text-muted">Join at {joinUrl.replace(/^https?:\/\//,"")}</p>}
  </Shell>;
@@ -115,6 +116,8 @@ function RoundPicker({state,act,first}:{state:View;act:(b:Record<string,unknown>
   <h2 id="pick-h" className="text-[24px] font-bold">{first?"Start the first round":"Next round"}</h2>
   <div className="mt-4 grid gap-3 md:grid-cols-3">
    {state.proofRace&&<RacePick state={state} act={act}/>}
+   {/* The other live modes stay in the code behind LEGACY_MODES; live games run Proof Race only. */}
+   {LEGACY_MODES&&<>
    {state.storyScenes.length>0&&<StoryPick state={state} act={act}/>}
    {state.missions&&<MissionPick state={state} act={act}/>}
    <div className="rounded-2xl bg-deep p-4"><p className="flex items-center gap-2 text-[22px] font-bold"><Search size={22}/> Spot the Lie</p><p className="mt-1 text-[16px] text-muted">A character testifies. Squads find the line that disproves them.</p>
@@ -127,6 +130,7 @@ function RoundPicker({state,act,first}:{state:View;act:(b:Record<string,unknown>
    <div className="rounded-2xl bg-deep p-4"><p className="flex items-center gap-2 text-[22px] font-bold"><MessageCircle size={22}/> Objection!</p><p className="mt-1 text-[16px] text-muted">One squad counters another squad's evidence in {OBJECTION_SECONDS} seconds. The class decides.</p>
     <button type="button" disabled={!state.canObjection} onClick={()=>act({action:"round.start",type:"objection"})} className="host-btn mt-3 w-full">Start<span className="sr-only"> Objection!</span></button>
     {!state.canObjection&&<p className="mt-2 text-[14px] text-muted">Play a Verdict Vote with at least two squads first.</p>}</div>
+   </>}
   </div>
  </section>;
 }

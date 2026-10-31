@@ -239,11 +239,8 @@ export default function Home() {
   // Student front door: "Try the demo" and "I'm a student" land on the shelf, keeping any demo already in progress.
   function openShelf(){if(demo.preset==="student_first_visit"&&!demo.classAuth)setView("shelf");else start("student_first_visit")}
   // Try the Demo: one click straight into the Sleepy Hollow scene game (keeps progress if the student was already there).
-  // Home page "Catch the lie": the demo story, opened at its first Spot the Lie testimony (CaseFlow startAtLie).
+  // CaseFlow startAtLie: open at the first Spot the Lie testimony (a legacy entry point; the home page no longer sets it).
   const [startAtLie,setStartAtLie]=useState(false);
-  function catchTheLie(){tryDemo();setStartAtLie(true)}
-  // Home page "Try Proof Race": the demo story, straight into solo Proof Race.
-  function tryProofRace(){tryDemo();setDemo(d=>({...d,roleIntroSeen:true,angle:{...(d.angle??{}),style:"race"}}))}
   // Scene screen "Start over" (demo only): a fresh demo in the same story.
   // Starting over keeps which clue questions were seen, so the replay asks new ones.
   function startDemoOver(){const fresh=newDemo("student_first_visit");const seen={...(demo.clueSeen??{})};for(const [c,q] of Object.entries(demo.clueQs??{}))seen[c]=[...new Set([...(seen[c]??[]),q])];setDemo({...fresh,worldId:demo.worldId,course:"all",grade:null,think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:0,clueSeen:seen})}
@@ -278,7 +275,7 @@ export default function Home() {
       </div>
     </header>}
     {demoViews.includes(view) && view !== "play" && !classSession && <FeedbackBanner onOpen={() => setForm({ step: 1, join: false })} />}
-    {view === "landing" && <Landing brand={brand} onStart={tryDemo} onCatchLie={catchTheLie} onProofRace={tryProofRace} onPreset={start} onJoin={() => { chooseSide("student"); setView("join"); }} onWaitlist={() => setView("waitlist")} onPricing={() => setView("pricing")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} onClassroom={() => { chooseSide("teacher"); setView("hub"); }} onApproach={() => setView("approach")} onFeedback={() => setForm({ step: 1, join: false })} />}
+    {view === "landing" && <Landing brand={brand} onStart={tryDemo} onPreset={start} onJoin={() => { chooseSide("student"); setView("join"); }} onWaitlist={() => setView("waitlist")} onPricing={() => setView("pricing")} onLessons={() => { setActiveLesson(""); setView("lessons"); }} onClassroom={() => { chooseSide("teacher"); setView("hub"); }} onApproach={() => setView("approach")} onFeedback={() => setForm({ step: 1, join: false })} />}
     {view === "book" && <BookSpread lastSide={side} onCover={() => setView("landing")} onStartReading={() => { chooseSide("student"); openShelf(); }} onJoinCode={code => { chooseSide("student"); setJoinCode(code); setView("join"); }} onTeacher={() => { chooseSide("teacher"); setView("hub"); }} onApproach={() => setView("approach")} onPricing={() => setView("pricing")} />}
     {view === "hub" && <TeacherHub onSignIn={() => setView("classroom")} onPricing={() => setView("pricing")} onApproach={() => setView("approach")} onKeepReading={keepReading} />}
     {view === "lessons" && <section className="mx-auto max-w-7xl px-5 py-10 md:px-10 md:py-14">{activeLesson ? <LessonPlayer lessonId={activeLesson} grade={demo.grade} onClose={() => { setActiveLesson(""); window.scrollTo(0, 0); }} onFinish={(id, record) => setDemo(d => ({ ...d, lessonsDone: { ...(d.lessonsDone ?? {}), [id]: record } }))} /> : <><button onClick={() => backToPreviousScreen(() => setView("landing"))} className="mb-8 inline-flex items-center gap-2 text-xs text-muted hover:text-ink">← Back</button><h1 className="sr-only">Mini lessons</h1><MiniLessonLibrary grade={demo.grade} done={demo.lessonsDone ?? {}} onOpen={id => { setActiveLesson(id); window.scrollTo(0, 0); }} /><button onClick={() => setView("story")} className="gold-button mt-10 px-6 py-4 text-sm">Ready? Pick a story →</button></>}</section>}
@@ -286,7 +283,7 @@ export default function Home() {
     {view === "level" && <ChooseLevel worldId={demo.worldId} course={demo.course??"all"} onBack={()=>backToPreviousScreen(()=>setView("story"))} onChoose={chooseGrade} />}
     {classSession && demo.classAuth && (["play","classhome","shelf"] as View[]).includes(view) && <JoinLiveRoundBanner auth={demo.classAuth} />}
     {view === "play" && classSession && demo.classAuth && <ClassBar auth={demo.classAuth} onLive={() => setView("classlive")} onLessons={() => setView("classhome")} onDismissPhrase={() => setDemo(d => ({ ...d, classAuth: d.classAuth && { ...d.classAuth, resumePhrase: null } }))} />}
-    {view === "play" && <CaseFlow demo={demo} setDemo={setDemo} startAtLie={startAtLie} onStarted={()=>setStartAtLie(false)} onStartOver={classSession ? undefined : startDemoOver} onFeedback={classSession ? undefined : () => setForm({ step: 1, join: false })} onTutorial={() => showTutorial("play")} onExit={()=>setView("shelf")} onAnotherStory={()=>{setDemo(d=>({...d,submitted:false,scene:0}));setView("shelf")}} />}
+    {view === "play" && <CaseFlow onJoinLive={classSession ? () => setView("classlive") : undefined} demo={demo} setDemo={setDemo} startAtLie={startAtLie} onStarted={()=>setStartAtLie(false)} onStartOver={classSession ? undefined : startDemoOver} onFeedback={classSession ? undefined : () => setForm({ step: 1, join: false })} onTutorial={() => showTutorial("play")} onExit={()=>setView("shelf")} onAnotherStory={()=>{setDemo(d=>({...d,submitted:false,scene:0}));setView("shelf")}} />}
     {view === "shelf" && <Shelf demo={demo} setDemo={setDemo} onOpen={openStory} onlyWorld={classSession ? demo.worldId : undefined} heading={classSession ? "Your class shelf" : "Your shelf"} />}
     {view === "teacherdemo" && <TeacherDemo onSignIn={() => setView("classroom")} />}
     {view === "teacher" && <Teacher demo={demo} setDemo={setDemo} onStudent={() => setView("play")} onPreset={start} onClassroom={() => setView("classroom")} />}

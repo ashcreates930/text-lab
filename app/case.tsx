@@ -31,6 +31,8 @@ import {RoleIntro,UnlockChallenge} from "./role-intro";
 import {demoEndingDue,firstClue,preGameScreen} from "@/lib/pregame";
 import {DemoEnding} from "./demo-ending";
 import {ProofRaceSolo} from "./proof-race";
+import {LaunchScreen} from "./launch-screen";
+import {LEGACY_MODES} from "@/lib/feature-flags";
 import {hasProofRace} from "@/lib/proof-race";
 import {StoryMode} from "./story-mode";
 import {ClueScreen} from "./clue-screen";
@@ -45,12 +47,14 @@ import {DEFAULT_PERSONAL,choiceFrame,partName,type StoryPersonalSettings} from "
 
 // startAtLie: open straight to the story's first Spot the Lie clue (the home page's "Catch the lie"). onStartOver: clear
 // this demo's progress (demo visitors only; the scene screen asks first).
-type CaseProps={demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void;onTutorial?:()=>void;onFeedback?:()=>void;startAtLie?:boolean;onStarted?:()=>void;onStartOver?:()=>void};
+type CaseProps={demo:Demo;setDemo:React.Dispatch<React.SetStateAction<Demo>>;onExit:()=>void;onAnotherStory:()=>void;onTutorial?:()=>void;onFeedback?:()=>void;startAtLie?:boolean;onStarted?:()=>void;onStartOver?:()=>void;onJoinLive?:()=>void};
 export function CaseFlow(props:CaseProps){
  return <BilingualProvider worldId={props.demo.worldId} lang={props.demo.homeLanguage??null}><CaseInner {...props}/></BilingualProvider>;
 }
 
-function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,startAtLie,onStarted,onStartOver}:CaseProps){
+function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,startAtLie,onStarted,onStartOver,onJoinLive}:CaseProps){
+ // racing: Proof Race is open (the one way to play when LEGACY_MODES is off).
+ const [racing,setRacing]=useState(false);
  const [world,setWorld]=useState<WorldPack|null>(null),[passages,setPassages]=useState<SourcePassage[]>([]),[error,setError]=useState("");
  const [openClue,setOpenClue]=useState<string>(""),[openFrame,setOpenFrame]=useState(""),[openWriting,setOpenWriting]=useState(false),[openLeadsFor,setOpenLeadsFor]=useState(""),[verdictOpen,setVerdictOpen]=useState(false),[toast,setToast]=useState(""),[celebrate,setCelebrate]=useState<{sceneId:string;rankUp:string|null}|null>(null),[justProven,setJustProven]=useState(""),[plantClue,setPlantClue]=useState("");
  // Opening a clue or a storyboard frame, or going back to the scene, is a new screen: start at the top with focus on its heading.
@@ -84,6 +88,11 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  if(error)return <div className="case-ui mx-auto max-w-xl px-6 py-24 text-center"><p className="text-lg">{error}</p></div>;
  if(!world||!world.roles.some(r=>r.id===demo.role))return <div className="case-ui grid min-h-[60vh] place-items-center"><p className="text-[15px] text-muted">Opening the story…</p></div>;
  const sceneIndex=Math.min(demo.scene,world.scenes.length-1),scene=world.scenes[sceneIndex],role=world.roles.find(r=>r.id===demo.role)!;
+ // One way to play (LEGACY_MODES off): the launch screen, then Proof Race. The case flow below stays behind the flag.
+ if(!LEGACY_MODES){
+  if(racing&&passages.length&&hasProofRace(world))return <ProofRaceSolo world={world} passages={passages} preset={demo.preset} onExit={()=>setRacing(false)}/>;
+  return <LaunchScreen world={world} ready={passages.length>0&&hasProofRace(world)} onStart={()=>setRacing(true)} onJoinLive={onJoinLive}/>;
+ }
  const finished=demo.submitted;
  if(finished)return <CaseSummary world={world} demo={demo} passages={passages} onAnotherStory={onAnotherStory} personal={personal??DEFAULT_PERSONAL} setDemo={setDemo}/>;
  // Before the game, once (after saved progress has loaded): one screen with the role story and the mode cards, then
