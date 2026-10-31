@@ -120,21 +120,22 @@ export function Join({initialCode="",onJoined}:{initialCode?:string;onJoined:(se
 // with that plan selected. There is no checkout.
 export function Pricing({onJoin,onApproach}:{onJoin:(plan:PlanId)=>void;onApproach?:()=>void}) {
   const pilot=planById("pilot")!,pd=planById("pd")!;
-  return <section className="case-ui mx-auto max-w-7xl px-4 py-14 md:px-8">
-    <p className="text-center text-[14px] font-semibold uppercase tracking-wide text-highlight">CLEAR PLANS · NO CHECKOUT</p>
-    <h1 className="mt-4 text-center text-[42px] leading-tight md:text-5xl">Room to grow.</h1>
-    {onApproach&&<p className="mt-3 text-center text-[15px] text-muted">Wondering why we built this? <button onClick={onApproach} className="font-semibold text-highlight underline-offset-4 hover:underline">Read our approach</button>.</p>}
-    <ul className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">{planCards.map(p=><li key={p.id} className={`flex flex-col rounded-3xl bg-panel p-6 ${p.highlight?"ring-2 ring-primary":""}`}>
+  // Side by side and short: each plan shows its price, one line and its first three features.
+  return <section className="case-ui mx-auto max-w-7xl px-4 py-8 md:px-8 md:py-10">
+    <p className="text-[13px] font-extrabold uppercase tracking-[.08em] text-highlight">Clear plans · No checkout</p>
+    <h1 className="mt-2 text-[34px] leading-tight md:text-[42px]">Room to grow.</h1>
+    {onApproach&&<p className="mt-2 text-[15px] text-muted">Wondering why we built this? <button onClick={onApproach} className="font-semibold text-highlight underline-offset-4 hover:underline">Read our approach</button>.</p>}
+    <ul className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-5">{planCards.map(p=><li key={p.id} className={`flex flex-col rounded-card bg-panel p-4 ${p.highlight?"ring-[3px] ring-primary":""}`}>
       {p.highlight&&<p className="mb-2 w-fit rounded-full bg-primary px-3 py-1 text-[12px] font-bold uppercase tracking-wide text-on-primary">Most popular</p>}
       <h2 className="text-[14px] font-bold uppercase tracking-wide text-highlight">{p.name}</h2>
-      <p className="mt-3 text-[34px] font-bold leading-none">{p.price}</p><p className="mt-1 min-h-[20px] text-[14px] text-muted">{p.cadence}</p>
-      <p className="mt-3 text-[16px] font-semibold">{p.detail}</p>
-      <ul className="mt-4 flex-1 space-y-2 border-t border-edge pt-4">{p.features.map(f=><li key={f} className="flex gap-2 text-[15px] leading-6"><Check className="mt-1 shrink-0 text-highlight" size={15}/>{f}</li>)}</ul>
-      <button onClick={()=>onJoin(p.id)} className={`mt-6 w-full ${p.highlight?"case-primary":"case-secondary justify-center"}`}>Join the waitlist</button>
+      <p className="mt-2 font-display text-[28px] font-bold leading-none">{p.price}</p><p className="mt-1 min-h-[20px] text-[13px] text-muted">{p.cadence}</p>
+      <p className="mt-2 text-[14px] font-bold leading-snug">{p.detail}</p>
+      <ul className="mt-3 flex-1 space-y-1.5 border-t border-edge pt-3">{p.features.slice(0,3).map(f=><li key={f} className="flex gap-2 text-[13px] leading-5 text-muted"><Check className="mt-0.5 shrink-0 text-highlight" size={14} aria-hidden/>{f}</li>)}</ul>
+      <button onClick={()=>onJoin(p.id)} className={`mt-4 w-full !min-h-11 !px-3 !text-[15px] ${p.highlight?"case-primary":"case-secondary justify-center"}`}>Join the waitlist<span className="sr-only">: {p.name}</span></button>
     </li>)}</ul>
-    <div className="mt-6 grid gap-4">
-      <div className="flex flex-col items-start justify-between gap-4 rounded-3xl bg-deep p-6 text-ink md:flex-row md:items-center md:p-8"><div><p className="text-[14px] font-bold uppercase tracking-wide text-muted">{pilot.name}</p><p className="mt-2 text-[18px] leading-7">{pilot.price} for the 2026-27 school year. Limited to 5 schools. Includes onboarding and a feedback session.</p></div><button onClick={()=>onJoin("pilot")} className="case-primary shrink-0">Apply for the pilot</button></div>
-      <div className="flex flex-col items-start justify-between gap-4 rounded-3xl bg-primary-soft p-6 md:flex-row md:items-center md:p-8"><div><p className="text-[14px] font-bold uppercase tracking-wide text-highlight">{pd.name} by AmplifiED</p><p className="mt-2 text-[18px] leading-7">Bring TextLab to your staff with training led by a classroom teacher. Virtual half day: $1,500 · On-site full day: from $3,500.</p></div><button onClick={()=>onJoin("pd")} className="case-secondary shrink-0">Ask about training</button></div>
+    <div className="mt-3 grid gap-3 md:grid-cols-2">
+      <div className="flex flex-col items-start gap-3 rounded-card bg-panel-2 p-4"><p className="text-[13px] font-extrabold uppercase tracking-[.08em] text-muted">{pilot.name}</p><p className="text-[15px] leading-snug">{pilot.price} for 2026-27. Five schools, with onboarding and feedback.</p><button onClick={()=>onJoin("pilot")} className="case-primary !min-h-11 !text-[15px]">Apply for the pilot</button></div>
+      <div className="flex flex-col items-start gap-3 rounded-card bg-panel-2 p-4"><p className="text-[13px] font-extrabold uppercase tracking-[.08em] text-highlight">{pd.name} by AmplifiED</p><p className="text-[15px] leading-snug">Teacher-led training: virtual half day $1,500, on-site day from $3,500.</p><button onClick={()=>onJoin("pd")} className="case-secondary !min-h-11 !text-[15px]">Ask about training</button></div>
     </div>
   </section>;
 }

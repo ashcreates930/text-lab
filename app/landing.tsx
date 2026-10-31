@@ -29,7 +29,7 @@ export function Landing({ brand, onStart, onPreset, onJoin, onWaitlist, onPricin
   return <div className="case-ui">
     <nav className="flex h-[70px] items-center justify-between px-4 md:px-14"><a className="text-2xl no-underline" href="#top"><Wordmark byline/></a><div className="hidden items-center gap-7 text-[14px] font-medium text-muted lg:flex"><a href="#how" className="hover:text-highlight">How it works</a><a href="#who" className="hover:text-highlight">Who it's for</a><button onClick={onLessons} className="hover:text-highlight">Mini lessons</button><button onClick={onPricing} className="hover:text-highlight">Pricing</button><button onClick={onClassroom} className="hover:text-highlight">Teacher sign in</button></div><div className="flex items-center gap-2"><button type="button" onClick={onFeedback} className="min-h-11 whitespace-nowrap rounded-full px-2 text-[14px] font-semibold text-highlight underline-offset-4 hover:underline sm:px-3">Give feedback</button><button className="case-primary !min-h-11 whitespace-nowrap !px-4 !text-[15px] sm:!px-5" onClick={onStart}>Try the demo <ArrowRight size={16}/></button></div></nav>
 
-    <section id="top" className="mx-auto grid max-w-7xl items-center gap-8 px-4 pb-10 pt-4 md:grid-cols-[1.1fr_1fr] md:px-14 md:pb-12 md:pt-8">
+    <section id="top" className="mx-auto grid max-w-7xl items-center gap-5 px-4 pb-8 pt-4 md:gap-8 md:grid-cols-[1.1fr_1fr] md:px-14 md:pb-12 md:pt-8">
       <div>
         <p className={eyebrow}>For grades 6 to 12 English classrooms</p>
         <h1 className="mt-3 text-[42px] leading-[1.02] md:text-[60px]">Step into the story.<br/><span className="text-highlight">Decide what to believe.</span></h1>

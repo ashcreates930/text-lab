@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Leaderboard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0C22}
+a{color:#FFB65C}a:hover{color:#FFD9A8}
+@keyframes slideIn{from{transform:translateX(-40px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes climb{from{transform:translateY(120px)}to{transform:translateY(0)}}
+.tl-row{animation:slideIn .4s ease-out both}
+.tl-climb{animation:climb .7s cubic-bezier(.2,.9,.3,1.2) both}
+@media (prefers-reduced-motion: reduce){.tl-row,.tl-climb{animation:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #15122E; color: #FFFFFF; font-family: 'Nunito', system-ui, sans-serif; display: flex; flex-direction: column; padding: 20px 16px; gap: 14px">
+
+  <div style="display: flex; flex-direction: column; gap: 4px; align-items: center; text-align: center">
+    <span style="font-size: 12px; font-weight: 800; letter-spacing: .08em; color: #FFB65C">AFTER QUESTION 6 OF 10</span>
+    <h1 style="margin: 0; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 32px">Leaderboard</h1>
+  </div>
+
+  <div style="display: flex; gap: 10px">
+    <div style="flex: 1; background: #34E0C0; color: #062B24; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; box-shadow: 0 5px 0 #12917A">
+      <span style="font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 28px">+940</span>
+      <span style="font-size: 13px; font-weight: 800">your points</span>
+    </div>
+    <div style="flex: 1; background: #FFCF3F; color: #2B1F00; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; box-shadow: 0 5px 0 #B88700">
+      <span style="font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 28px">Up 2</span>
+      <span style="font-size: 13px; font-weight: 800">now #2 of 24</span>
+    </div>
+    <div style="flex: 1; background: #2A2552; color: #FFFFFF; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; box-shadow: 0 5px 0 #0B0920">
+      <span style="font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 28px">78%</span>
+      <span style="font-size: 13px; font-weight: 800; color: #C9C3F0">found it</span>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <sc-for list="{{rows}}" as="row" hint-placeholder-count="5">
+      <div class="{{row.cls}}" style="{{row.style}}">
+        <span style="font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 22px; width: 28px; text-align: center">{{row.rank}}</span>
+        <div style="{{row.avatarStyle}}">{{row.initial}}</div>
+        <div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0">
+          <span style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px">{{row.name}}</span>
+          <span style="{{row.moveStyle}}">{{row.move}}</span>
+        </div>
+        <span style="font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 20px">{{row.points}}</span>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="background: #1F1B40; border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px">
+    <span style="font-size: 12px; font-weight: 800; letter-spacing: .08em; color: #FFB65C">THE PROOF</span>
+    <span style="font-size: 15px; font-weight: 700; line-height: 1.35">“…whose head had been carried away by a cannon-ball…” ¶6</span>
+  </div>
+
+  <div style="flex-grow: 1"></div>
+
+  <a href="Main.dc.html" style="height: 60px; border-radius: 16px; background: #FF8A1F; color: #1A0F00; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 22px; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 6px 0 #9A4A00">Next chunk</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const data = [
+      { name: 'Sleuth Thistle', points: '3,210', move: 'Held #1', up: 0, color: '#8C7CFF' },
+      { name: 'Agent Fox (you)', points: '3,080', move: 'Up 2', up: 1, color: '#FF8A1F', you: true },
+      { name: 'Constable Wren', points: '2,960', move: 'Down 1', up: -1, color: '#34E0C0' },
+      { name: 'Detective Ember', points: '2,700', move: 'Down 1', up: -1, color: '#FFCF3F' },
+      { name: 'Inspector Moss', points: '2,515', move: 'Up 1', up: 1, color: '#FF7A93' }
+    ];
+    const rows = data.map((d, i) => ({
+      rank: String(i + 1),
+      name: d.name,
+      points: d.points,
+      move: d.move,
+      initial: d.name.charAt(0),
+      cls: d.you ? 'tl-row tl-climb' : 'tl-row',
+      style: 'display: flex; align-items: center; gap: 10px; border-radius: 16px; padding: 10px 12px; ' + (d.you ? 'background: #FF8A1F; color: #1A0F00; box-shadow: 0 5px 0 #9A4A00;' : 'background: #2A2552; color: #FFFFFF;') + ' animation-delay: ' + (i * 0.08) + 's',
+      avatarStyle: 'width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: Fredoka, sans-serif; font-weight: 700; font-size: 20px; color: #120A3A; background: ' + (d.you ? '#FFF8EC' : d.color),
+      moveStyle: 'font-size: 13px; font-weight: 800; color: ' + (d.you ? '#3A1F00' : (d.up > 0 ? '#34E0C0' : (d.up < 0 ? '#FF9DB0' : '#C9C3F0')))
+    }));
+    return { rows };
+  }
+}
+</script>
+</body>
+</html>
