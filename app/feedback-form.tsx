@@ -16,7 +16,7 @@ type Choice=readonly (readonly [string,string])[];
 function Choices({legend,options,value,onChange,required,error}:{legend:string;options:Choice;value:string|undefined;onChange:(v:string)=>void;required?:boolean;error?:string}){
  const name=useId();
  return <fieldset aria-describedby={error?`${name}-err`:undefined}><legend className="text-[16px] font-semibold">{legend}{required&&<span className="text-highlight"> (required)</span>}</legend>
-  <div className="mt-2 flex flex-wrap gap-2">{options.map(([v,l])=><label key={v} className={`cursor-pointer rounded-2xl px-4 py-2.5 text-[15px] font-semibold focus-within:ring-2 focus-within:ring-primary ${value===v?"bg-deep text-ink":"bg-panel-2 text-ink hover:bg-panel-2"}`}><input type="radio" className="sr-only" name={name} value={v} checked={value===v} onChange={()=>onChange(v)}/>{l}</label>)}</div>
+  <div className="mt-2 flex flex-wrap gap-2">{options.map(([v,l])=><label key={v} className={`cursor-pointer rounded-2xl px-4 py-2.5 text-[15px] font-semibold focus-within:ring-2 focus-within:ring-primary ${value===v?"bg-primary text-on-primary":"bg-panel-2 text-ink hover:bg-panel-2"}`}><input type="radio" className="sr-only" name={name} value={v} checked={value===v} onChange={()=>onChange(v)}/>{l}</label>)}</div>
   {error&&<p id={`${name}-err`} className="mt-1 text-[14px] text-highlight">{error}</p>}
  </fieldset>;
 }

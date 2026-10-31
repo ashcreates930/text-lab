@@ -61,7 +61,7 @@ function MiniVerdict({world,reading,demo,setDemo,sceneIndex,onSaved}:{world:Worl
   <h1 className="mt-1 text-[28px] font-bold leading-tight outline-none">Your verdict so far</h1>
   <p className="mt-1 text-[16px] leading-6 text-muted">{m.problem} Use what scene {sceneIndex+1} showed you.</p>
   <fieldset className="mt-5"><legend className="text-[18px] font-bold">1. Your theory</legend>
-   <div className="mt-2 grid gap-2">{m.theories.map(t=><label key={t.id} className={`flex min-h-[56px] cursor-pointer items-start gap-3 rounded-2xl px-4 py-3 ${theory===t.id?"bg-deep text-ink":"bg-panel ring-1 ring-edge"}`}><input type="radio" name="mini-theory" value={t.id} checked={theory===t.id} onChange={()=>setTheory(t.id)} className="mt-1 h-5 w-5 accent-primary"/><span><b className="block text-[17px]">{t.name}</b><span className="text-[15px] leading-5 opacity-90">{t.description}</span></span></label>)}</div>
+   <div className="mt-2 grid gap-2">{m.theories.map(t=><label key={t.id} className={`flex min-h-[56px] cursor-pointer items-start gap-3 rounded-2xl px-4 py-3 ${theory===t.id?"bg-primary text-on-primary":"bg-panel ring-1 ring-edge"}`}><input type="radio" name="mini-theory" value={t.id} checked={theory===t.id} onChange={()=>setTheory(t.id)} className="mt-1 h-5 w-5 accent-primary"/><span><b className="block text-[17px]">{t.name}</b><span className="text-[15px] leading-5 opacity-90">{t.description}</span></span></label>)}</div>
   </fieldset>
   <section className="mt-5" aria-labelledby="mini-pins-h"><h2 id="mini-pins-h" className="text-[18px] font-bold">2. Pin your evidence (at least {MIN_PINS})</h2>
    {found.map(p=><PinLine key={p.id} line={p.line} on={pinned.some(x=>same(x,p.line))} onTap={toggle} tag={`Piece · ${paragraphLabel(pidOf(reading,p.line))}`}/>)}

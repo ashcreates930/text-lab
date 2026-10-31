@@ -9,7 +9,7 @@ import {StudentPreview} from "./home";
 type Tab="classroom"|"students";
 export function TeacherHub({onSignIn,onPricing,onApproach,onKeepReading}:{onSignIn:()=>void;onPricing:()=>void;onApproach:()=>void;onKeepReading:()=>void}){
  const [tab,setTab]=useState<Tab>("classroom");
- const tabButton=(id:Tab,label:string,icon:React.ReactNode)=><button type="button" role="tab" aria-selected={tab===id} aria-controls="hub-panel" onClick={()=>setTab(id)} className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full px-4 text-[15px] font-semibold ${tab===id?"bg-deep text-ink":"bg-panel-2 text-ink hover:bg-panel-2"}`}>{icon}{label}</button>;
+ const tabButton=(id:Tab,label:string,icon:React.ReactNode)=><button type="button" role="tab" aria-selected={tab===id} aria-controls="hub-panel" onClick={()=>setTab(id)} className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full px-4 text-[15px] font-semibold ${tab===id?"bg-primary text-on-primary":"bg-panel-2 text-ink hover:bg-panel-2"}`}>{icon}{label}</button>;
  const link=(label:string,icon:React.ReactNode,go:()=>void)=><button type="button" onClick={go} className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-edge bg-panel px-4 text-[15px] font-semibold text-highlight hover:border-primary">{icon}{label} <ArrowRight size={15}/></button>;
  return <div className="case-ui">
   <section className="mx-auto max-w-6xl px-4 pt-6 md:px-8">

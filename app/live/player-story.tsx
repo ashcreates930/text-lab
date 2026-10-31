@@ -115,7 +115,7 @@ function ReactBox({line,onSend,onClose}:{line:string;onSend:(stem:ReactionStem,b
  function send(){const t=body.trim();if(!t)return;const r=screenMessage(t);if(r.action!=="allow"){setErr(r.message??"Try different words.");return}onSend(stem,t)}
  return <div className="mt-3 rounded-2xl bg-panel p-3 ring-2 ring-primary" role="group" aria-label="Your reaction">
   <p className="line-clamp-2 font-serif text-[14px] italic">{displayLine(line)}</p>
-  <div className="mt-2 grid grid-cols-3 gap-1.5" role="radiogroup" aria-label="Sentence starter">{(Object.keys(REACTION_STEMS) as ReactionStem[]).map(k=><button key={k} type="button" role="radio" aria-checked={stem===k} onClick={()=>setStem(k)} className={`min-h-11 rounded-xl px-1 text-[12px] font-bold ${stem===k?"bg-deep text-ink":"bg-primary-soft text-highlight"}`}>{REACTION_STEMS[k]}</button>)}</div>
+  <div className="mt-2 grid grid-cols-3 gap-1.5" role="radiogroup" aria-label="Sentence starter">{(Object.keys(REACTION_STEMS) as ReactionStem[]).map(k=><button key={k} type="button" role="radio" aria-checked={stem===k} onClick={()=>setStem(k)} className={`min-h-11 rounded-xl px-1 text-[12px] font-bold ${stem===k?"bg-primary text-on-primary":"bg-primary-soft text-highlight"}`}>{REACTION_STEMS[k]}</button>)}</div>
   <label htmlFor="live-react" className="mt-2 block text-[14px] font-bold">{REACTION_STEMS[stem]}</label>
   <input id="live-react" autoFocus value={body} onChange={e=>{setBody(e.target.value);setErr("")}} maxLength={REACTION_MAX} placeholder="finish the sentence" className="mt-1 min-h-11 w-full rounded-xl border border-edge bg-panel px-3 text-[16px]"/>
   {err&&<p role="alert" className="mt-1 text-[13px] text-notyet">{err}</p>}
@@ -159,7 +159,7 @@ function CallControls({head,timer,call,pouch,chunks,onSend,reading,act,held}:{he
  const [theory,setTheory]=useState(""),[pins,setPins]=useState<string[]>([]);
  const toggle=(l:string)=>{if(!pins.some(x=>key(x)===key(l)))pinFor({reading,act,held},l);setPins(p=>p.some(x=>key(x)===key(l))?p.filter(x=>key(x)!==key(l)):p.length>=2?[p[1],l]:[...p,l])};
  return <section className="mt-5">{head}<h1 className="mt-1 text-[24px] font-bold">{call.question}</h1>{timer}
-  <div className="mt-3 grid gap-2">{call.theories.map(t=><button key={t.id} type="button" aria-pressed={theory===t.id} onClick={()=>setTheory(t.id)} className={`rounded-2xl p-3 text-left ${theory===t.id?"bg-deep text-ink":"bg-panel ring-1 ring-edge"}`}><span className="block text-[17px] font-bold">{t.name}</span></button>)}</div>
+  <div className="mt-3 grid gap-2">{call.theories.map(t=><button key={t.id} type="button" aria-pressed={theory===t.id} onClick={()=>setTheory(t.id)} className={`rounded-2xl p-3 text-left ${theory===t.id?"bg-primary text-on-primary":"bg-panel ring-1 ring-edge"}`}><span className="block text-[17px] font-bold">{t.name}</span></button>)}</div>
   <p className="mt-3 text-[15px] font-semibold">Pin 2 lines that support it</p><PouchView pouch={pouch} picked={pins} onPick={toggle}/>
   {chunks.length>0&&<details className="mt-3 rounded-2xl bg-panel p-3 ring-1 ring-edge" open={pouch.length<2}><summary className="cursor-pointer text-[15px] font-semibold text-highlight">Or pin a line from the reading</summary><ReadingPanel className="mt-2 max-h-[40vh] shadow-none" passages={chunks} kept={pins} onTap={l=>toggle(l.text)}/></details>}
   {reading&&<Together reading={reading} act={act}/>}

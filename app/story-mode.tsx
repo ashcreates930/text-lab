@@ -255,7 +255,7 @@ function PowerUps({kind,run,onBuy}:{kind:RoundKind;run:PublicRun;onBuy:(p:PowerU
  const s=run.state,usable=(p:PowerUp)=>p==="second-look"?kind!=="read":true;
  return <ul className="mt-2 grid gap-2 sm:grid-cols-3">{(Object.keys(POWER_UPS) as PowerUp[]).map(p=>{const on=(p==="lantern"&&s.lantern)||(p==="double-down"&&s.doubleDown);const short=s.coins<POWER_UPS[p].cost;const can=!on&&!short&&usable(p);
   // Can't afford it yet: a plain card that says what it takes, so it never looks used or done.
-  return <li key={p}><button type="button" aria-disabled={!can} onClick={()=>can&&onBuy(p)} aria-pressed={on} className={`flex h-full w-full flex-col rounded-2xl p-3 text-left ${on?"bg-deep text-ink":can?"bg-primary-soft hover:bg-primary-soft":short&&usable(p)?"border-2 border-dashed border-edge bg-panel text-ink":"bg-panel-2 text-muted"}`}><span className="text-[16px] font-bold">{POWER_UPS[p].name} · {POWER_UPS[p].cost}</span><span className="mt-1 text-[13px] leading-5">{on?"Ready for this round.":!usable(p)?"Not used in this round.":short?<><b className="block text-highlight">Need {POWER_UPS[p].cost} coin{POWER_UPS[p].cost===1?"":"s"}</b>{POWER_UPS[p].what}</>:POWER_UPS[p].what}</span></button></li>})}</ul>;
+  return <li key={p}><button type="button" aria-disabled={!can} onClick={()=>can&&onBuy(p)} aria-pressed={on} className={`flex h-full w-full flex-col rounded-2xl p-3 text-left ${on?"bg-primary text-on-primary":can?"bg-primary-soft hover:bg-primary-soft":short&&usable(p)?"border-2 border-dashed border-edge bg-panel text-ink":"bg-panel-2 text-muted"}`}><span className="text-[16px] font-bold">{POWER_UPS[p].name} · {POWER_UPS[p].cost}</span><span className="mt-1 text-[13px] leading-5">{on?"Ready for this round.":!usable(p)?"Not used in this round.":short?<><b className="block text-highlight">Need {POWER_UPS[p].cost} coin{POWER_UPS[p].cost===1?"":"s"}</b>{POWER_UPS[p].what}</>:POWER_UPS[p].what}</span></button></li>})}</ul>;
 }
 
 function RoundHeading({round,kind,tryNo}:{round:number;kind:RoundKind;tryNo:number}){
@@ -554,7 +554,7 @@ function CallRound({world,scene,passages,run,setting,resume,send,onError,bar,hol
   <TimerBar t={t} seconds={trySeconds("call",tryNo,setting).seconds} compact waiting={!started}/>
   <LanternNote world={world} passages={passages} scene={scene} kind="call" run={run}/>
   <fieldset className="mt-2"><legend className="text-[14px] font-bold uppercase tracking-wide text-highlight">1 · Your theory</legend>
-   <div className="mt-1 grid grid-cols-3 gap-1.5">{q.theories.map(th=><button key={th.id} type="button" aria-pressed={theory===th.id} aria-label={`Theory: ${th.name}. ${th.description}`} onClick={()=>{setStarted(true);setTheory(th.id)}} className={`min-h-[48px] rounded-xl px-2 py-1.5 text-center text-[14px] font-bold leading-tight ${theory===th.id?"bg-deep text-ink":"bg-panel ring-1 ring-edge hover:ring-primary"}`}>{th.name}</button>)}</div>
+   <div className="mt-1 grid grid-cols-3 gap-1.5">{q.theories.map(th=><button key={th.id} type="button" aria-pressed={theory===th.id} aria-label={`Theory: ${th.name}. ${th.description}`} onClick={()=>{setStarted(true);setTheory(th.id)}} className={`min-h-[48px] rounded-xl px-2 py-1.5 text-center text-[14px] font-bold leading-tight ${theory===th.id?"bg-primary text-on-primary":"bg-panel ring-1 ring-edge hover:ring-primary"}`}>{th.name}</button>)}</div>
    {picked&&<p className="mt-1 text-[13.5px] leading-5 text-muted">{picked.description}</p>}</fieldset>
   <p className="mt-2 text-[14px] font-bold uppercase tracking-wide text-highlight">2 · Pin 2 lines that support it <span className="normal-case tracking-normal text-ink">· {pins.length}/2</span></p>
   {fromPouch.length>0&&<div className="mt-1 flex items-center gap-1 overflow-x-auto [scrollbar-width:none]" role="group" aria-label="Lines from your pouch"><span className="shrink-0 text-[12.5px] font-semibold text-muted">Your pouch:</span>{fromPouch.map(l=><button key={l} type="button" onClick={()=>togglePin(l)} aria-label={`Pin from your pouch: ${displayLine(l).split(/\s+/).slice(0,6).join(" ")}…`} className="inline-flex min-h-8 shrink-0 items-center rounded-full bg-primary-soft px-2.5 text-[12.5px] font-semibold text-highlight">+ {displayLine(l).split(/\s+/).slice(0,3).join(" ")}…</button>)}</div>}
@@ -594,13 +594,17 @@ function Results({world,scene,result,mode,run,headers,sandboxId,onNext}:{world:W
  const mustKeep=(r.kind==="read"||r.kind==="call")&&shownLines.length>0&&shownLines.some(l=>!kept.includes(l));
  const ok=r.valid;
  return <section className="mt-5" aria-labelledby="res-h">
-  <p className="text-[14px] font-semibold uppercase tracking-wide text-highlight">Round {r.round} · {ROUND_NAMES[r.kind]}</p>
+  {/* A right answer with points is the Proof! moment: the points float up over a teal card. */}
+  {ok&&r.points>0&&<p aria-hidden className="float-up mt-6 text-center font-display text-[56px] font-bold leading-none tabular-nums text-gold">+{r.points}</p>}
+  <div className={ok&&r.points>0?"moment-pop mt-2 rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]":"rounded-card bg-panel p-5"}>
+  <p className="text-[13px] font-extrabold uppercase tracking-[.08em]">Round {r.round} · {ROUND_NAMES[r.kind]}</p>
   {ok&&r.points===0?<h1 id="res-h" className="mt-1 text-[32px] font-bold leading-tight">Found it</h1>
-   :ok?<h1 id="res-h" className="mt-1 text-[40px] font-bold leading-none tabular-nums">+{r.points}</h1>
+   :ok?<h1 id="res-h" className="mt-1 text-[40px] font-bold leading-none">Proof!<span className="sr-only"> Plus {r.points} points.</span></h1>
    :<h1 id="res-h" className="mt-1 text-[32px] font-bold leading-tight">Here's what proves it</h1>}
-  <p className="mt-2 text-[17px]">{ok&&r.points===0?`${r.detail} on try ${r.tries+1}. Points come on the first two tries.`:ok?`${r.detail}${r.tries?` · found on try ${r.tries+1}`:""}${r.grace?" · half points after time":""}`:r.points>0?`+${r.points} for the lines you found. The rest are shown below.`:"0 points this round. Read the line below: it's the proof."}</p>
+  <p className="mt-2 text-[17px] font-bold">{ok&&r.points===0?`${r.detail} on try ${r.tries+1}. Points come on the first two tries.`:ok?`${r.detail}${r.tries?` · found on try ${r.tries+1}`:""}${r.grace?" · half points after time":""}`:r.points>0?`+${r.points} for the lines you found. The rest are shown below.`:"0 points this round. Read the line below: it's the proof."}</p>
+  </div>
   {ok&&<ul className="mt-3 flex flex-wrap gap-2 text-[14px] font-semibold">
-   <li className="rounded-full bg-panel-2 px-3 py-1">Proof {r.base}</li>
+   <li className="rounded-full bg-panel px-3 py-1">Proof {r.base}</li>
    {r.multiplier>1&&<li className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-on-primary"><Flame size={14}/>Streak x{r.multiplier}</li>}
    {r.doubled&&<li className="rounded-full bg-deep px-3 py-1 text-ink">Doubled</li>}
    {r.coinsEarned>0&&<li className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-3 py-1 text-highlight"><Coins size={14}/>+{r.coinsEarned} coin{r.coinsEarned===1?"":"s"}</li>}
@@ -610,7 +614,7 @@ function Results({world,scene,result,mode,run,headers,sandboxId,onNext}:{world:W
    :<p className="mt-3 text-[16px]">Streak reset: streaks count rounds right on the first try.</p>}
   {result.reaction&&<Reacts world={world} who={who} reaction={result.reaction} trust={trust}/>}
   {shownLines.length>0&&(r.kind==="read"||r.kind==="call")&&<div className="mt-4 rounded-3xl border-2 border-gold bg-gold-soft p-4"><p className="text-[16px] font-bold">Shown answer{shownLines.length>1?"s":""}: tap each line to keep it</p>
-   <ul className="mt-2 space-y-2">{shownLines.map(l=>{const on=kept.includes(l);return <li key={l}><button type="button" aria-pressed={on} onClick={()=>setKept(k=>on?k.filter(x=>x!==l):[...k,l])} className={`w-full rounded-2xl px-4 py-3 text-left font-serif text-[16px] leading-6 ${on?"bg-deep text-ink":"bg-panel ring-1 ring-gold"}`}>{on&&<Check size={16} className="mr-1 inline"/>}{displayLine(l)}</button></li>})}</ul></div>}
+   <ul className="mt-2 space-y-2">{shownLines.map(l=>{const on=kept.includes(l);return <li key={l}><button type="button" aria-pressed={on} onClick={()=>setKept(k=>on?k.filter(x=>x!==l):[...k,l])} className={`w-full rounded-2xl px-4 py-3 text-left font-serif text-[16px] leading-6 ${on?"bg-primary text-on-primary":"bg-panel ring-1 ring-gold"}`}>{on&&<Check size={16} className="mr-1 inline"/>}{displayLine(l)}</button></li>})}</ul></div>}
   {r.proof.length>0&&ok&&<div className="mt-4"><p className="text-[14px] font-semibold uppercase tracking-wide text-highlight">{r.kind==="read"?"Your pouch":"Your proof"}</p>{r.proof.map(p=><blockquote key={p} className="mt-2 border-l-4 border-primary pl-3 font-serif text-[15px] italic leading-6">“{p.replace(/\s+/g," ")}”</blockquote>)}</div>}
   <PointsMeter total={run.total} max={run.goal.max}/>
   <BoardView board={board} mode={mode}/>

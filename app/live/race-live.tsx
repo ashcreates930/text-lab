@@ -85,9 +85,9 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
    {round.chunk.process==="gist"&&round.chunk.gist?<ol className="mt-3 grid gap-2">{round.chunk.gist.map((g,i)=><li key={i} className="rounded-2xl bg-ink/10 px-5 py-3 text-[clamp(18px,1.8vw,28px)]">{String.fromCharCode(65+i)}. {g}</li>)}</ol>
     :questions}</div>}
   {round.pinned&&<p className="mt-3 rounded-2xl bg-primary-soft px-5 py-3 text-[clamp(18px,1.8vw,26px)] font-bold text-ink"><Pin size={20} className="mr-2 inline"/>For discussion: {round.pinned}</p>}
-  {round.beat==="race"&&<div className="mt-3"><p className="text-[clamp(24px,2.6vw,42px)] font-bold leading-tight">{round.question}</p><div className="mt-2"><ClockBar left={baseLeft} seconds={round.seconds}/></div>
+  {round.beat==="race"&&<div className="mt-3"><p className="font-display text-[clamp(26px,2.8vw,44px)] font-bold leading-tight">{round.question}</p><div className="mt-2"><ClockBar left={baseLeft} seconds={round.seconds}/></div>
    <p className="mt-2 text-[20px] text-muted">{race.answered} of {state.counters.players} answered{maxScale>1?" · extra time still running for some":""}</p>
-   <div className="mt-3 rounded-3xl bg-panel px-6 py-4 font-serif text-[clamp(20px,2vw,32px)] leading-[1.6] text-ink">{round.chunk.passages.map(p=><p key={p.id}>{p.text.replace(/\s+/g," ")}</p>)}</div></div>}
+   <div className="reading-scope reading-card mt-3 px-6 py-4 font-serif text-[clamp(20px,2vw,32px)] leading-[1.6] text-reading-ink">{round.chunk.passages.map(p=><p key={p.id}>{p.text.replace(/\s+/g," ")}</p>)}</div></div>}
   {(round.beat==="reveal")&&round.reveal&&<div className="mt-3"><p className="text-[clamp(24px,2.6vw,40px)] font-bold">{round.reveal.pct}% found the proof</p><p className="text-[20px] text-muted">{round.question}</p>
    <div className="mt-3 [&_button]:text-[clamp(18px,1.8vw,28px)]"><ReadingPanel passages={round.chunk.passages as SourcePassage[]} results={[{line:round.reveal.line,ok:true}]} onTap={()=>{}} locked/></div>
    {round.chunk.process==="question"&&race.questions.length>0&&questions}</div>}
@@ -139,15 +139,19 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
    {m.gist!==null&&<p role="status" className="mt-3 text-[16px] font-semibold text-success">Locked in. Get ready to race.</p>}</>}
   {round.beat==="race"&&<><h1 id="rp-h" className="mt-1 text-[22px] font-bold leading-tight outline-none">{round.question}</h1><ClockBar left={raceLeft} seconds={race.limitMs/1000}/>
    {m.done?<p role="status" className="mt-3 rounded-2xl bg-deep px-4 py-3 text-[17px] font-semibold text-ink">Locked in. Eyes on the board.</p>
-    :<>{m.near?<p role="status" className="mt-2 rounded-2xl bg-gold-soft px-4 py-2 text-[16px] font-semibold text-gold">Near miss: {m.near} One more try for 350.</p>:<p className="mt-2 flex items-center gap-1.5 text-[14px] font-semibold text-highlight"><Hand size={15} aria-hidden/>Tap the line that answers it.</p>}
+    :<>{m.near?<p role="status" className="rise-in mt-2 rounded-card bg-notyet px-4 py-3 text-[16px] font-bold text-on-notyet shadow-[0_5px_0_var(--color-notyet-shadow)]"><span className="font-display text-[20px]">Near miss.</span> {m.near} One more try for 350.</p>:<p className="mt-2 flex items-center gap-1.5 text-[14px] font-semibold text-highlight"><Hand size={15} aria-hidden/>Tap the line that answers it.</p>}
      <ReadingPanel className="mt-2" glossary={world.glossary} passages={round.chunk.passages as SourcePassage[]} kept={[]} onTap={l=>act("race_tap",{line:l.text})}/></>}</>}
-  {round.beat==="reveal"&&<><h1 id="rp-h" className="mt-1 text-[28px] font-bold outline-none">{m.correct?`+${chunkPts.toLocaleString()}`:"Not this time"}</h1>
-   <p className="text-[16px] text-muted">{m.correct?(lastTap?.result==="retryRight"?"Found on the retry.":"Right line, with a speed bonus."):"Here's the line that proves it."}</p>
+  {round.beat==="reveal"&&<>{m.correct
+   ?<div className="mt-8 flex flex-col items-center gap-3"><p aria-hidden className="float-up font-display text-[56px] font-bold leading-none text-gold">+{chunkPts.toLocaleString()}</p>
+    <div className="moment-pop w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><h1 id="rp-h" className="text-[40px] leading-none outline-none">Proof!<span className="sr-only"> Plus {chunkPts} points.</span></h1><p className="mt-2 text-[16px] font-bold">{lastTap?.result==="retryRight"?"Found on the retry.":"Right line, with a speed bonus."}</p></div></div>
+   :<div className="mt-2 rounded-card bg-panel p-5"><h1 id="rp-h" className="text-[32px] leading-none outline-none">Not this time</h1><p className="mt-2 text-[16px] text-muted">Here's the line that proves it.</p></div>}
    {round.reveal&&<div className="mt-3"><ReadingPanel passages={round.chunk.passages as SourcePassage[]} results={[{line:round.reveal.line,ok:true}]} onTap={()=>{}} locked/></div>}</>}
-  {round.beat==="board"&&race.place&&<div className="mt-3 rounded-3xl bg-panel p-5 text-center"><h1 id="rp-h" className="text-[14px] font-bold uppercase tracking-wide text-highlight outline-none">Your place</h1>
-   <p className="mt-1 text-[56px] font-bold leading-none">#{race.place.rank}</p><p className="text-[16px]">of {race.place.of}</p>
-   {race.place.move>0&&<p className="mt-1 text-[18px] font-bold text-success">up {race.place.move}</p>}{race.place.move<0&&<p className="mt-1 text-[18px] font-bold text-muted">down {-race.place.move}</p>}
-   <p className="mt-2 text-[18px] font-bold tabular-nums">+{race.place.gained.toLocaleString()} this chunk · {race.total.toLocaleString()} total</p></div>}
+  {round.beat==="board"&&race.place&&<div className="mt-3"><h1 id="rp-h" className="text-center text-[32px] outline-none">Your place</h1>
+   <div className="mt-3 grid grid-cols-3 gap-2.5 text-center">
+    <div className="flex flex-col items-center rounded-[18px] bg-success p-3 text-on-success shadow-[0_5px_0_var(--color-success-shadow)]"><span className="font-display text-[26px] font-bold tabular-nums">+{race.place.gained.toLocaleString()}</span><span className="text-[13px] font-extrabold">this chunk</span></div>
+    <div className="flex flex-col items-center rounded-[18px] bg-gold p-3 text-on-gold shadow-[0_5px_0_var(--color-gold-shadow)]"><span className="font-display text-[26px] font-bold">{race.place.move>0?`Up ${race.place.move}`:race.place.move<0?`Down ${-race.place.move}`:`#${race.place.rank}`}</span><span className="text-[13px] font-extrabold">now #{race.place.rank} of {race.place.of}</span></div>
+    <div className="flex flex-col items-center rounded-[18px] bg-panel p-3 text-ink shadow-[0_5px_0_#0B0920]"><span className="font-display text-[26px] font-bold tabular-nums">{race.total.toLocaleString()}</span><span className="text-[13px] font-extrabold text-muted">total</span></div>
+   </div></div>}
  </section>;
 }
 export function RaceEndedPlayer({state}:{state:PlayerView}){

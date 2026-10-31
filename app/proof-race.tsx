@@ -79,7 +79,7 @@ export function Leaderboard({rows,meId,dark=false,title="Leaderboard",main=false
     <span className={`w-8 text-center font-display font-bold tabular-nums ${dark?"text-[30px]":"text-[22px]"}`}>{r.rank}</span>
     <span aria-hidden className={`grid shrink-0 place-items-center rounded-row font-display font-bold ${dark?"h-12 w-12 text-[24px]":"h-10 w-10 text-[20px]"} ${me?"bg-reading text-reading-ink":tile}`}>{r.name.slice(0,1)}</span>
     <span className="flex min-w-0 flex-1 flex-col"><span className={`truncate font-display font-semibold ${dark?"text-[clamp(20px,2vw,30px)]":"text-[18px]"}`}>{r.name}</span>
-     <span className={`text-[13px] font-extrabold ${me?"":r.move>0?"text-success":r.move<0?"text-notyet":"text-muted"}`}>{r.move>0?`Up ${r.move}`:r.move<0?`Down ${-r.move}`:r.prevRank===null?"New":`Held #${r.rank}`}</span></span>
+     <span className={`text-[13px] font-extrabold ${me?"":r.move>0?"text-success":r.move<0?"text-notyet":"text-muted"}`}>{r.move>0?`Up ${r.move}`:r.move<0?`Down ${-r.move}`:r.prevRank===null?"":`Held #${r.rank}`}</span></span>
     <span className={`font-display font-bold tabular-nums ${dark?"text-[clamp(22px,2.2vw,32px)]":"text-[20px]"}`}>{r.points.toLocaleString()}</span></li>})}</ol>
  </section>;
 }

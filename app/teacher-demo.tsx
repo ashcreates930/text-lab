@@ -25,7 +25,7 @@ export function TeacherDemo({onSignIn,embedded=false}:{onSignIn:()=>void;embedde
   {/* The Evidence tab shows its own sample class (Sleepy Hollow); the other tabs show the Tell-Tale Heart class. */}
   <Heading className="mt-1 text-[32px] font-bold leading-tight md:text-[38px]">{tab==="evidence"?sampleEvidenceClass.name:sampleClass.name}</Heading>
   <p className="mt-1 text-[16px] text-muted">{tab==="evidence"?`The Legend of Sleepy Hollow · ${sampleEvidenceStudents.length} students`:`${world?.title??"The Tell-Tale Heart"} · ${sampleStudents.length} students`} · fictional names</p>
-  <div role="tablist" aria-label="Sample classroom" className="mt-6 flex gap-2 overflow-x-auto pb-1">{tabs.map(([id,label])=><button key={id} role="tab" type="button" aria-selected={tab===id} onClick={()=>setTab(id)} className={`min-h-11 shrink-0 rounded-full px-4 text-[15px] font-semibold ${tab===id?"bg-deep text-ink":"bg-panel-2 text-ink hover:bg-panel-2"}`}>{label}</button>)}</div>
+  <div role="tablist" aria-label="Sample classroom" className="mt-6 flex gap-2 overflow-x-auto pb-1">{tabs.map(([id,label])=><button key={id} role="tab" type="button" aria-selected={tab===id} onClick={()=>setTab(id)} className={`min-h-11 shrink-0 rounded-full px-4 text-[15px] font-semibold ${tab===id?"bg-primary text-on-primary":"bg-panel-2 text-ink hover:bg-panel-2"}`}>{label}</button>)}</div>
   <div role="tabpanel" className="mt-6">{tab==="evidence"?<SampleEvidence/>:!world?<p className="text-[16px] text-muted">Opening the sample class…</p>
    :tab==="overview"?<Overview world={world} onCaseFile={()=>setTab("casefile")}/>
    :tab==="casefile"?<CaseFile world={world}/>
