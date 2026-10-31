@@ -1,0 +1,20 @@
+{
+ "character": "brom",
+ "file": "public/characters/brom/brom.glb",
+ "megabytes": 1.23,
+ "triangles": 50000,
+ "meshes": 1,
+ "skins": 1,
+ "joints": 28,
+ "textures": [
+  "image/webp 1024x1024",
+  "image/webp 2048x2048"
+ ],
+ "clips": [
+  "talking (23 tracks)",
+  "laughing (23 tracks)",
+  "head-shake (23 tracks)"
+ ],
+ "fingerTracksRemoved": 18,
+ "fingerTracksLeft": 0
+}
