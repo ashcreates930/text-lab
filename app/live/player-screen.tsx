@@ -11,7 +11,7 @@ import {playerKey,postJson,readStored,store,useLive,useScreenTop,useStory} from 
 import {YourTurn} from "../your-turn";
 import {UnlockChallenge} from "../role-intro";
 import {PlayerStory} from "./player-story";
-import {AvatarPick,RaceEndedPlayer,RacePlayer,WordsWhileWaiting,isRace} from "./race-live";
+import {AvatarPick,BonusPlayer,RaceEndedPlayer,RacePlayer,WordsWhileWaiting,isRace} from "./race-live";
 
 type View=ReturnType<typeof playerView>;
 type Seat={sessionId:string;playerToken:string;nickname:string};
@@ -60,7 +60,8 @@ function Play({seat,onLeave}:{seat:Seat;onLeave:()=>void}){
   {s.paused&&<p className="mt-3 rounded-2xl bg-deep px-4 py-3 text-[17px] font-semibold text-ink">Paused. Eyes on the board.</p>}
   <div aria-live="polite">
    {state.yourTurn&&s.status!=="round"&&world?<YourTurnPhone state={state} world={world} passages={passages} seat={seat}/>
-   :s.status==="ended"&&isRace(round)?<RaceEndedPlayer state={state}/>
+   :s.status==="ended"&&isRace(round)?<RaceEndedPlayer state={state} world={world} act={act}/>
+   :round&&(round as {type?:string}).type==="bonus"?<BonusPlayer state={state} world={world} act={act}/>
    :s.status==="ended"?<Ended state={state}/>
    :s.status==="lobby"||!round?<><Waiting state={state}/><AvatarPick state={state} act={act}/><WordsWhileWaiting world={world}/></>
    :isRace(round)?<RacePlayer state={state} world={world} act={act}/>

@@ -17,8 +17,11 @@ import {ReadingPanel} from "./reading-panel";
 import {Leaderboard,Podium,cue,reducedMotion,useBeatClock} from "./proof-race";
 import {useSoundPref} from "./game-feel";
 import {focusScreenTop} from "./screen-focus";
+import {CaseNotesView,Refresher,type RefresherView} from "./after-race";
+import {caseNotes,refresherAward,refresherCorrect,refresherItems,refresherTask,type ChunkResult} from "@/lib/case-notes";
+import {evidenceSentences} from "@/lib/lies";
 
-type Beat="read"|"gist"|"question"|"result"|"board"|"countdown"|"finish";
+type Beat="read"|"gist"|"question"|"result"|"board"|"countdown"|"finish"|"refresher"|"notes";
 export type ChunkRecord={gist:number|null;answer:Answer;correct:boolean;points:number;late:boolean;coins:number;unknown:string[];discovered:boolean};
 const AUTO:Partial<Record<Beat,"result"|"board"|"countdown">>={result:"result",board:"board",countdown:"countdown"};
 
@@ -142,6 +145,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
  const [gist,setGist]=useState<number|null>(null),[step,setStep]=useState<1|2>(1),[draft,setDraft]=useState<Answer>({});
  const [marking,setMarking]=useState(false),[unknown,setUnknown]=useState<Set<number>>(new Set()),[found,setFound]=useState(false);
  const [testifying,setTestifying]=useState(false),[paused,setPaused]=useState(false),[autoLeft,setAutoLeft]=useState(0);
+ const [fixed,setFixed]=useState<boolean[]>([]),[notesText,setNotesText]=useState<Record<number,string>>({});
  const c=chunks[k];const tokens=useMemo(()=>c?chunkTokens(c.lines):[],[c]);const q=c?.chunk.question;
  const go=useCallback((b:Beat)=>{setBeat(b);setStartedAt(Date.now())},[]);
  useLayoutEffect(()=>{focusScreenTop()},[beat,k,step]);
@@ -180,6 +184,13 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
    if(beat==="result")go("board");else if(beat==="board")go("countdown");else if(beat==="countdown"){if(k+1>=chunks.length){go("finish");onFinish?.(records)}else startChunk(k+1)}}},100);
   return()=>clearInterval(t)},[beat,paused,k]);// eslint-disable-line react-hooks/exhaustive-deps
 
+ // After the race: the results for Case Notes, and the Refresher (misses only, up to 4).
+ const results:ChunkResult[]=records.map((r,i)=>({index:i,answer:r?.answer??null,correct:!!r?.correct,late:!!r?.late,gist:r?.gist??null,typed:null,unknown:r?.unknown??[]}));
+ const refItems=refresherItems(chunks,results);
+ const callAll=chunks.flatMap(x=>x.passages);
+ const refViews:RefresherView[]=refItems.map(it=>{const ch=chunks[it.index],qq=ch.chunk.question,task=refresherTask(it,qq);
+  return {kind:it.kind,chunk:it.index+1,task,typeName:TYPE_INFO[qq.type].name,prompt:task==="meaning"?qq.choices2!.prompt+" "+qq.prompt:qq.prompt,hint:it.kind==="gist"?"Which choice tells the whole chunk, not just one detail?":qq.hint,
+   chunkView:{lines:ch.lines,discovery:ch.chunk.discovery},passages:ch.passages,options:task==="gist"?ch.chunk.gist.options.map(x=>x.text):task==="meaning"?qq.choices2!.options.map(x=>x.text):null,callPassages:task==="pin2"?callAll:null}});
  if(!c||!q||!exp)return null;
  const info=TYPE_INFO[q.type];
  const names=new Map([["me","You"],["ghost",rivalName]]);
@@ -192,7 +203,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
  const callPassages=chunks.slice(0,k+1).flatMap(x=>x.passages);
 
  return <div className="case-ui mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-16 pt-3">
-  {hud}
+  {beat!=="refresher"&&beat!=="notes"&&hud}
   {beat==="read"&&<section aria-labelledby="ex-h"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Read · no timer</p><h1 id="ex-h" className="text-[28px] outline-none">Read the chunk</h1>
    {highlighter&&<button type="button" aria-pressed={marking} onClick={()=>setMarking(m=>!m)} className={`mt-2 inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-[15px] font-bold ${marking?"bg-gold text-on-gold":"bg-panel text-ink"}`}><Highlighter size={16} aria-hidden/>{marking?"Done marking":"Mark words I don't know"}</button>}
    <div className="mt-3"><ChunkText explore chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} highlighter={highlighter} marking={marking} unknown={unknown} onUnknown={i=>setUnknown(s=>{const n=new Set(s);if(n.has(i))n.delete(i);else n.add(i);return n})} onDiscover={()=>{if(!found){setFound(true);cue(sound,"chime",0.3)}}} found={found}/></div>
@@ -231,6 +242,9 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
 
   {beat==="finish"&&<section className="mt-4"><Podium main sound={sound} entries={board.map(r=>({id:r.id,name:r.name,points:r.points}))} title="Final results"/>
    <p className="mt-6 text-center text-[16px] text-muted">Every point came from a line you proved in the story.</p>
-   <button type="button" onClick={onExit} className="case-primary mt-5 min-h-[52px] w-full justify-center">Done <ArrowRight size={18} aria-hidden/></button></section>}
+   <button type="button" onClick={()=>go("refresher")} className="case-primary mt-5 min-h-[52px] w-full justify-center">{refItems.length?`Refresher: fix ${refItems.length}`:"Refresher"} <ArrowRight size={18} aria-hidden/></button></section>}
+  {beat==="refresher"&&<Refresher items={refViews} world={world} check={(i,a)=>{const it=refItems[i],ch=chunks[it.index],t=chunkTokens(ch.lines);return {fixed:refresherCorrect(it,ch,a,callAll.flatMap(p=>evidenceSentences(p.text))),shown:it.kind==="gist"?[]:proofTokens(ch.chunk.question,t,ch.lines),lines:ch.chunk.question.type==="make_call"?proofShown(ch.chunk.question,t).lines:[]}}} onDone={f=>{setFixed(f);go("notes")}}/>}
+  {beat==="notes"&&<CaseNotesView student="You" story={world.title} expedition={exp.title} notes={caseNotes(chunks,results,{items:refItems,fixed},notesText)} award={refresherAward(refItems,fixed)} onNote={(i,t)=>setNotesText(n=>({...n,[i]:t}))}
+   bonus={<p className="no-print rounded-card bg-violet-soft p-4 text-[16px] font-bold">Bonus Round: in class, your squad compares Case Notes and agrees on the best proof for every question you answered differently.</p>} onDone={onExit}/>}
  </div>;
 }

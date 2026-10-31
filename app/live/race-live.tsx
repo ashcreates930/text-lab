@@ -4,8 +4,8 @@
 // countdown); the teacher can pause any screen or skip ahead. Every phone follows the board's timing with its own extra
 // time and the same screens as the solo race (app/expedition-race.tsx). The lobby shows names and character avatars
 // popping in, with a quiet music loop the host can mute; the game ends on a podium with class stats.
-import {useEffect,useRef,useState} from "react";
-import {ArrowRight,Check,Highlighter,Pin,Volume2,VolumeX,Zap} from "lucide-react";
+import {useEffect,useLayoutEffect,useRef,useState} from "react";
+import {ArrowRight,Check,Download,Highlighter,Pin,Printer,Volume2,VolumeX,Zap} from "lucide-react";
 import type {hostView,playerView} from "@/lib/live/server";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
@@ -15,6 +15,9 @@ import {DISCOVERY_COINS,TESTIMONY_MS,chunkTokens,focusTokens,norm,type Answer,ty
 const proofTokensOf=(tokens:Token[],lines:{text:string}[],proof:string[])=>{const want=new Set(proof.map(norm)),idx=new Set(lines.map((l,i)=>(want.has(norm(l.text))?i:-1)).filter(i=>i>=0));return tokens.filter(t=>idx.has(t.line)).map(t=>t.i)};
 import {ReadingPanel} from "../reading-panel";
 import {Leaderboard,Podium,QuestionAsk,cue,useBeatClock,type PodiumEntry} from "../proof-race";
+import {CaseNotesView,Refresher} from "../after-race";
+import {BONUS_STEMS,squadCaseFilePdf,type SquadCaseFile} from "@/lib/case-notes";
+import {focusScreenTop} from "../screen-focus";
 import {AnswerBars,ChunkText,CountdownRing,KeywordPrompt,QuestionPanel,RaceHud,TimerTrack} from "../expedition-race";
 
 type HostView=ReturnType<typeof hostView>;
@@ -109,13 +112,14 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
  </section>;
 }
 
-export function RaceFinishHost({state,round}:{state:HostView;round:RaceRound}){
+export function RaceFinishHost({state,round,act}:{state:HostView;round:RaceRound;act?:(b:Record<string,unknown>)=>void}){
  const f=round.finish;if(!f)return null;
  const portrait=(id:string)=>state.lobby.find(p=>p.id===id)?.avatar?.portrait??null;
  const entries:PodiumEntry[]=f.podium.map(r=>({id:r.id,name:r.name,points:r.points,portrait:f.kind==="player"?portrait(r.id):null}));
  return <section className="mt-6"><Podium entries={entries} dark sound title={f.kind==="squad"?"Top squads":"Top detectives"}/>
   <div className="mt-8 rounded-3xl bg-panel p-5"><h2 className="text-[24px] font-bold">Class stats</h2>
    <p className="mt-1 text-[16px] text-muted">The share who proved each chunk. The 3 hardest: {f.stats.hardest.map(h=>`chunk ${h.index+1} (${h.pct}%)`).join(", ")}.</p>
+   {act&&<button type="button" onClick={()=>act({action:"bonus.start"})} className="host-btn mt-2">Start the Bonus Round <ArrowRight size={22} aria-hidden/></button>}
    <ol className="mt-3 grid gap-1.5 md:grid-cols-2">{f.stats.rows.map(r=><li key={r.index} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 text-[16px]"><span className="tabular-nums">{r.index+1}</span><span className="truncate">{r.type}: {r.question}</span><span className="font-bold tabular-nums">{r.pct}%</span></li>)}</ol></div>
  </section>;
 }
@@ -188,12 +192,76 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
     :left!==null&&myMs!==null&&<div className="mt-4"><CountdownRing ms={left*1000} total={myMs} label={round.step+1>=round.total?"Final results":`Chunk ${round.step+2} of ${round.total}`}/></div>}</>}
  </section>;
 }
-export function RaceEndedPlayer({state}:{state:PlayerView}){
- const round=state.round as RaceRound|null;const f=round?.finish;if(!f||!state.race)return null;
+// After the race, on each phone: the podium, then the Refresher (checked on the server), then Case Notes.
+export function RaceEndedPlayer({state,world,act}:{state:PlayerView;world:WorldPack|null;act:(k:string,p?:Record<string,unknown>)=>Promise<string|null>|void}){
+ const round=state.round as RaceRound|null;const f=round?.finish;
+ const [stage,setStage]=useState<"podium"|"refresher"|"notes">("podium");
+ if(!f||!state.race||!world)return null;
+ const after=state.after;
  const mine=f.kind==="squad"?null:f.podium.findIndex(r=>r.id===state.me.id);
+ if(stage==="refresher"&&after)return <Refresher items={after.refresher} world={world} check={async(k,a)=>{await act("race_refresh",{k,answer:a})}} onDone={()=>setStage("notes")}/>;
+ if(stage==="notes"&&after)return <CaseNotesView notes={after.notes} student={state.me.nickname} story={world.title} expedition={round.expedition.title} award={after.award} onNote={(i,t)=>act("race_note",{index:i,text:t})}
+  bonus={<p className="no-print rounded-card bg-violet-soft p-4 text-[16px] font-bold">Bonus Round: when your teacher starts it, your squad compares Case Notes and agrees on the best proof.</p>}/>;
  return <section className="mt-6 text-center"><h1 className="text-[30px] font-bold outline-none">Race over</h1>
   {state.race.place&&<p className="mt-2 text-[20px]">You finished <b>#{state.race.place.rank}</b> of {state.race.place.of} with {state.race.total.toLocaleString()} points.</p>}
   {mine!==null&&mine>=0&&<p className="mt-2 text-[20px] font-bold text-highlight">You're on the podium!</p>}
   <div className="mt-5"><Podium entries={f.podium.map(r=>({id:r.id,name:r.name,points:r.points,portrait:r.portrait}))}/></div>
-  <p className="mt-4 text-[15px] text-muted">Every point came from a line proved in the story.</p></section>;
+  <p className="mt-4 text-[15px] text-muted">Every point came from a line proved in the story.</p>
+  {after&&<button type="button" onClick={()=>setStage(after.refresher.length?"refresher":"refresher")} className="case-primary mt-5 w-full justify-center">{after.refresher.length?`Refresher: fix ${after.refresher.length}`:"Refresher"} <ArrowRight size={18} aria-hidden/></button>}</section>;
+}
+
+// ---------- The Bonus Round ----------
+type BonusView=NonNullable<PlayerView["bonus"]>;
+// A phone in the Bonus Round: the squad's flagged questions side by side; pick a teammate's answer, defend it with a
+// sentence stem; the Reporter hands in the Squad Case File.
+export function BonusPlayer({state,world,act}:{state:PlayerView;world:WorldPack|null;act:(k:string,p?:Record<string,unknown>)=>Promise<string|null>|void}){
+ const b=state.bonus as BonusView|null;
+ const [open,setOpen]=useState<number|null>(null),[from,setFrom]=useState<string>(""),[stem,setStem]=useState<string>(BONUS_STEMS[0]),[reason,setReason]=useState(""),[error,setError]=useState("");
+ useLayoutEffect(()=>{focusScreenTop()},[b?.status,b?.submitted]);
+ if(!b||!world)return <section className="mt-5"><h1 className="text-[26px] outline-none">Bonus Round</h1><p className="mt-2 text-[17px] text-muted">Your teacher is putting squads together.</p></section>;
+ const role=b.roles[state.me.id];
+ if(b.status==="reveal"||b.submitted)return <section aria-labelledby="sq-h" className="mt-4 flex flex-col gap-3"><SquadFileCard file={b.file} story={world.title} expedition={(state.round as {raceIndex?:number}|null)?"Proof Race":""} headingId="sq-h"/></section>;
+ async function pick(){const e=await act("bonus_pick",{index:open,from,stem,reason});if(e){setError(e);return}setError("");setOpen(null);setReason("")}
+ return <section aria-labelledby="bn-h" className="mt-4 flex flex-col gap-3">
+  <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Bonus Round · {b.name}</p>
+  <h1 id="bn-h" className="text-[28px] leading-tight outline-none">Agree on the strongest proof</h1>
+  <p className="rounded-card bg-panel-2 px-4 py-3 text-[16px] font-bold">Your role: {role}{role==="Reporter"?". You hand in the Squad Case File.":role==="Skeptic"?". Ask: does the text really say that?":role==="Evidence Keeper"?". Check every proof against the passage.":". Keep the squad moving."}</p>
+  <ul className="flex flex-wrap gap-2 text-[14px]">{b.members.map(m=><li key={m.id} className="rounded-full bg-panel px-3 py-1 font-bold">{m.nickname}: {b.roles[m.id]}</li>)}</ul>
+  <ol className="flex flex-col gap-3">{b.flagged.map(q=>{const p=b.picks.find(x=>x.index===q.index);return <li key={q.index} className="rounded-card bg-panel p-4">
+   <p className="font-display text-[18px] font-bold">Chunk {q.chunk} · {q.type}</p><p className="mt-1 text-[16px]">{q.question}</p>
+   <ul className="mt-2 grid gap-2">{q.answers.map(a=><li key={a.id} className="rounded-row bg-panel-2 px-3 py-2 text-[15px]"><b>{a.nickname}:</b> {a.answer}{a.proof?<> · <span className="font-serif">{a.proof}</span></>:null}</li>)}</ul>
+   {p?<p className="mt-2 rounded-row bg-success px-3 py-2 text-[15px] font-bold text-on-success"><Check size={16} className="mr-1 inline" aria-hidden/>Agreed: {b.members.find(m=>m.id===p.from)?.nickname}'s answer, defended by {p.defenderName}: {p.stem} {p.reason}</p>:null}
+   {open===q.index?<div className="mt-3 flex flex-col gap-2 rounded-row bg-panel-2 p-3">
+    <fieldset><legend className="text-[14px] font-extrabold">Use whose answer?</legend><div className="mt-1 flex flex-wrap gap-2">{q.answers.filter(a=>a.raw).map(a=><button key={a.id} type="button" aria-pressed={from===a.id} onClick={()=>setFrom(a.id)} className={`min-h-11 rounded-full px-4 text-[15px] font-bold ${from===a.id?"bg-primary text-on-primary":"bg-panel text-ink"}`}>{a.nickname}</button>)}</div></fieldset>
+    <label className="text-[14px] font-extrabold">Sentence stem<select value={stem} onChange={e=>setStem(e.target.value)} className="mt-1 w-full rounded-row border-2 border-edge bg-panel px-3 py-2 text-[15px]">{BONUS_STEMS.map(x=><option key={x}>{x}</option>)}</select></label>
+    <label className="text-[14px] font-extrabold">Finish it<textarea value={reason} onChange={e=>setReason(e.target.value)} rows={2} maxLength={200} className="mt-1 w-full rounded-row border-2 border-edge bg-panel px-3 py-2 text-[15px]"/></label>
+    {error&&<p role="alert" className="text-[15px] font-bold text-notyet">{error}</p>}
+    <button type="button" disabled={!from||reason.trim().length<3} onClick={pick} className="case-primary w-full justify-center">I'll defend this</button></div>
+   :<button type="button" onClick={()=>{setOpen(q.index);setFrom(p?.from??"");setError("")}} className="case-secondary mt-3 !min-h-11">{p?"Change it":"Pick and defend"}</button>}
+  </li>})}</ol>
+  {b.problems.length>0&&<ul className="rounded-card bg-panel-2 p-4 text-[15px]">{b.problems.map(x=><li key={x}>• {x}</li>)}</ul>}
+  {role==="Reporter"&&<button type="button" disabled={b.problems.length>0} onClick={async()=>{const e=await act("bonus_submit");if(e)setError(e)}} className="case-primary w-full justify-center">Hand in the Squad Case File</button>}
+ </section>;
+}
+// A Squad Case File: agreed answers, proof, the final call and who contributed what; print or save as a PDF.
+export function SquadFileCard({file,story,expedition,headingId,dark=false}:{file:SquadCaseFile;story:string;expedition:string;headingId?:string;dark?:boolean}){
+ return <div className={`case-notes rounded-card ${dark?"bg-panel":"bg-panel"} p-4`}>
+  <div className="flex flex-wrap items-center justify-between gap-2"><h2 id={headingId} tabIndex={headingId?-1:undefined} className="text-[24px] outline-none">Squad Case File: {file.squad}</h2><span className="rounded-full bg-gold px-3 py-1 font-display text-[16px] font-bold text-on-gold">+{file.points} bonus</span></div>
+  <ul className="mt-2 text-[15px]">{file.members.map(m=><li key={m.name}><b>{m.name}</b>, {m.role}: defended chunk{m.defended.length===1?"":"s"} {m.defended.join(", ")||"none"}</li>)}</ul>
+  <ol className="mt-3 grid gap-2">{file.items.map(i=><li key={i.chunk} className="rounded-row bg-panel-2 px-3 py-2 text-[15px]"><p className="font-bold">Chunk {i.chunk}: {i.question}</p><p>Agreed: {i.agreed}{i.proof?<> · <span className="font-serif">{i.proof}</span></>:null} <span className={`ml-1 rounded-full px-2 py-0.5 text-[12px] font-extrabold ${i.right?"bg-success text-on-success":"bg-notyet text-on-notyet"}`}>{i.right?"Holds up":"Doesn't hold up"}</span></p><p className="text-muted">From {i.from}'s notes; defended by {i.defender}: {i.why}</p></li>)}</ol>
+  <p className="mt-3 font-display text-[18px] font-bold">The final call: {file.finalCall??"not made"}</p>
+  <div className="no-print mt-3 flex flex-wrap gap-2"><button type="button" onClick={()=>window.print()} className="case-secondary !min-h-11"><Printer size={18} aria-hidden/>Print</button><button type="button" onClick={()=>squadCaseFilePdf(story,expedition,file).save(`squad-case-file-${file.squad.toLowerCase().replace(/[^a-z0-9]+/g,"-")}.pdf`)} className="case-secondary !min-h-11"><Download size={18} aria-hidden/>Download PDF</button></div>
+ </div>;
+}
+// The host board in the Bonus Round: every squad's progress; then the squad board (bonus points only) and the files.
+export function BonusHost({state,world,act}:{state:HostView;world:WorldPack|null;act:(b:Record<string,unknown>)=>void}){
+ const b=state.bonus;if(!b)return null;
+ const live=state.session.status==="round";
+ return <section className="mt-4" aria-labelledby="bh-h">
+  <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="bh-h" className="text-[clamp(24px,2.4vw,38px)] font-bold">Bonus Round</h2>{live&&<button type="button" onClick={()=>act({action:"bonus.end"})} className="host-btn">End the Bonus Round</button>}</div>
+  <p className="text-[clamp(18px,1.6vw,24px)] text-muted">Squads compare Case Notes and agree on the strongest proof. Every member defends at least one choice.</p>
+  {live?<ul className="mt-4 grid gap-3 md:grid-cols-3">{b.squads.map(q=><li key={q.squadId} className="rounded-card bg-panel p-5"><p className="font-display text-[24px] font-bold">{q.name}</p><p className="mt-1 text-[18px]">{q.agreed} of {q.flagged} agreed</p><p className="text-[16px] text-muted">{q.submitted?"Handed in":q.left?"Still working":"Ready to hand in"}</p></li>)}</ul>
+   :<><div className="mt-4"><Leaderboard rows={b.board.map((x,i)=>({id:x.name,name:x.name,points:x.points,gained:x.points,rank:i+1,prevRank:null,move:0}))} dark title="Squad bonus board"/></div>
+    <div className="mt-6 grid gap-4 md:grid-cols-2">{b.squads.map(q=><SquadFileCard key={q.squadId} file={q.file} story={world?.title??""} expedition="Proof Race" dark/>)}</div></>}
+ </section>;
 }

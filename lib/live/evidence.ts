@@ -13,7 +13,7 @@ export type LiveSquadEvidence = { name: string; members: LiveMemberEvidence[]; a
 export type LiveRoundEvidence = { sessionId: string; date: string; number: number; type: string; prompt: string; squads: LiveSquadEvidence[]; freezes?: string[]; questions?: { nickname: string; chunk: number; text: string; flagged: boolean }[] };
 export type LiveSessionInput = { session: LiveSession; world: WorldPack; squads: LiveSquad[]; players: LivePlayer[]; responses: LiveResponse[]; absent?: string[] };
 
-const TYPE_NAMES = { lie: "Live Spot the Lie", verdict: "Verdict Vote", objection: "Objection!", story: "Story Mode", race: "Proof Race" } as const;
+const TYPE_NAMES = { lie: "Live Spot the Lie", verdict: "Verdict Vote", objection: "Objection!", story: "Story Mode", race: "Proof Race", bonus: "Bonus Round" } as const;
 const text = (r: LiveResponse | undefined, key: string) => (r ? String(r.payload[key] ?? "") : "");
 
 function actionLine(r: LiveResponse, world: WorldPack) {
@@ -37,6 +37,10 @@ function actionLine(r: LiveResponse, world: WorldPack) {
     case "race_question": return `Chunk ${Number(r.payload.step) + 1}: asked "${text(r, "text")}"${r.flagged ? " (flagged)" : ""}`;
     case "race_tap": { const p = r.payload as { step: number; correct?: boolean; late?: boolean; answerRight?: boolean; proofRight?: boolean; points?: number };
       return `Chunk ${Number(p.step) + 1}: ${p.correct ? `proved it (${Number(p.points ?? 0)} pts)` : p.late ? "time ran out" : p.answerRight && !p.proofRight ? "right answer, proof missed" : "missed"}`; }
+    case "race_refresh": return `Refresher, chunk ${Number(r.payload.index) + 1}: ${r.payload.fixed ? "fixed it" : "not yet"}`;
+    case "race_note": return `Case Notes, chunk ${Number(r.payload.index) + 1}: "${text(r, "text")}"`;
+    case "bonus_pick": return `Bonus Round, chunk ${Number(r.payload.index) + 1}: defended "${text(r, "stem")} ${text(r, "reason")}"`;
+    case "bonus_submit": return "Bonus Round: handed in the Squad Case File";
     case "race_unknown": return `Chunk ${Number(r.payload.step) + 1}: marked words they don't know: ${((r.payload.words as string[] | undefined) ?? []).join(", ")}`;
     default: return "";
   }
@@ -62,6 +66,9 @@ export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] 
       for (const s of scoreVerdictRound(squads, responses, i)) results.set(s.squadId, { result: s.theoryId ? `${world.verdict?.theories.find((t) => t.id === s.theoryId)?.name ?? s.theoryId} · ${s.detail}` : s.detail, points: s.points });
     } else if (round.type === "race") {
       prompt = `Proof Race · ${world.expeditions?.find((e) => e.id === round.settings.expeditionId)?.title ?? "Expedition"} · grades ${round.settings.gradeBand.replace("-", " to ")}`;
+    } else if (round.type === "bonus") {
+      prompt = "Bonus Round · squads compare Case Notes and agree on the strongest proof";
+      for (const sq of squads) { const picks = rows.filter((r) => r.kind === "bonus_pick" && r.squadId === sq.id), agreed = new Set(picks.map((r) => Number(r.payload.index))).size, handed = rows.some((r) => r.kind === "bonus_submit" && r.squadId === sq.id); results.set(sq.id, { result: `${agreed} question${agreed === 1 ? "" : "s"} agreed${handed ? " · Squad Case File handed in" : ""}`, points: 0 }); }
     } else if (round.type === "story") {
       prompt = `Story Mode · ${world.scenes.find((sc) => sc.id === round.sceneId)?.story_mode?.call.bank[0].question ?? round.sceneId}`;
       for (const s of storySquadScores(squads, responses, i, players, absent)) results.set(s.squadId, { result: `Members' average: ${s.points}`, points: s.points });

@@ -193,6 +193,9 @@ main:has([data-fill-screen]) > footer { display: none; }
  :is(.btn,.case-primary,.gold-button,.host-btn,.case-secondary,.soft-button,.case-tool,.host-btn-secondary):active:not(:disabled){transform:none}
 }
 
+/* Print-only text (a Case Notes entry's notes) shows on paper, not on screen. */
+.print-only{display:none}
+
 /* ---------- Print: white paper, dark text; no HUD, buttons or motion ---------- */
 @media print{
  :root,.reading-scope{--color-stage:#FFFFFF;--color-deep:#FFFFFF;--color-panel:#FFFFFF;--color-panel-2:#FFFFFF;--color-edge:#999999;--color-ink:#111111;--color-muted:#333333;--color-faint:#333333;--color-highlight:#7A3600;--color-primary-soft:#FFFFFF;--color-success-soft:#FFFFFF;--color-notyet-soft:#FFFFFF;--color-gold-soft:#FFFFFF;--color-violet-soft:#FFFFFF}
@@ -203,4 +206,6 @@ main:has([data-fill-screen]) > footer { display: none; }
  table{border-collapse:collapse;width:100%}th,td{border:1px solid #999!important;padding:4px 6px!important;color:#111!important;background:#fff!important}
  a{color:#111;text-decoration:underline}
  .panel,section,li{break-inside:avoid}
+ .print-only{display:block}
+ .case-notes textarea{display:none!important}
 }

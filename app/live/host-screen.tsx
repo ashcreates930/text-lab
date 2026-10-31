@@ -7,7 +7,8 @@ import type {hostView} from "@/lib/live/server";
 import {ROLE_INFO,OBJECTION_SECONDS,type Role} from "@/lib/live/engine";
 import {hostKey,postJson,readStored,useLive,useScreenTop,useStory} from "./use-live";
 import {LEGACY_MODES} from "@/lib/feature-flags";
-import {LobbyBoard,LobbyMusic,RaceFinishHost,RaceHost,RacePick,isRace} from "./race-live";
+import {BonusHost,LobbyBoard,LobbyMusic,RaceFinishHost,RaceHost,RacePick,isRace} from "./race-live";
+const isBonus=(r:unknown)=>!!r&&(r as {type?:string}).type==="bonus";
 import {Podium} from "../proof-race";
 
 type View=ReturnType<typeof hostView>;
@@ -48,10 +49,11 @@ const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|nul
   {(s.status==="lobby"||(s.status==="reveal"&&!round))&&<Lobby state={state} joinUrl={joinUrl} act={act}/>}
   {s.status==="lobby"&&<LobbyBoard state={state} act={act}/>}
   {s.status==="round"&&isRace(round)&&<RaceHost state={state} round={round} world={world} act={act}/>}
-  {s.status==="ended"&&isRace(round)&&<RaceFinishHost state={state} round={round}/>}
+  {s.status==="ended"&&isRace(round)&&<RaceFinishHost state={state} round={round} act={act}/>}
+  {isBonus(round)&&(s.status==="round"||s.status==="reveal")&&<BonusHost state={state} world={world} act={act}/>}
   {s.status==="ended"&&!isRace(round)&&state.scores.filter(x=>x.points>0).length>0&&<div className="mt-6"><Podium dark sound title="Top squads" entries={state.scores.filter(x=>x.points>0).slice(0,3).map(x=>({id:x.squadId,name:x.name,points:x.points}))}/></div>}
-  {s.status==="round"&&round&&!isRace(round)&&<LiveRound state={state} act={act} sessionId={sessionId}/>}
-  {s.status==="reveal"&&round&&<Reveal state={state} act={act}/>}
+  {s.status==="round"&&round&&!isRace(round)&&!isBonus(round)&&<LiveRound state={state} act={act} sessionId={sessionId}/>}
+  {s.status==="reveal"&&round&&!isBonus(round)&&<Reveal state={state} act={act}/>}
   {(s.status==="reveal"||s.status==="lobby")&&(state.squads.some(q=>q.members.length)||(state.proofRace&&state.counters.players>0))&&<RoundPicker state={state} act={act} first={s.status==="lobby"}/>}
   {LEGACY_MODES&&(s.status==="reveal"||s.status==="ended")&&state.yourTurn&&<YourTurnHost yourTurn={state.yourTurn} players={state.counters.players} act={act}/>}
   {s.status!=="lobby"&&<Scoreboard state={state}/>}
