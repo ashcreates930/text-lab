@@ -18,7 +18,7 @@ test("the case flow returns the launch screen or Proof Race before any legacy sc
   const gate = s.indexOf("if(!LEGACY_MODES){");
   assert.ok(gate > 0, "the case flow checks LEGACY_MODES");
   const block = s.slice(gate, s.indexOf("\n }", gate));
-  assert.match(block, /<ProofRaceSolo /); assert.match(block, /<LaunchScreen /);
+  assert.match(block, /<ExpeditionRace /); assert.match(block, /<LaunchScreen /);
   // Every legacy screen the case flow can show comes after the gate's unconditional return.
   for (const legacy of ["<RoleIntro ", "<MissionPick ", "<StoryMode ", "<ClueScreen ", "<VerdictView ", "<MissionVerdictView ", "<StorybookReader ", "<YourTurn ", "<SceneView ", "<CaseSummary ", "<DemoEnding "]) {
     const at = s.indexOf(legacy); if (at < 0) continue;

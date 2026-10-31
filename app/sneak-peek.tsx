@@ -27,7 +27,7 @@ export function SneakPeek(){
  return <figure className="mx-auto h-[290px] w-[280px] md:h-auto" aria-label="A sneak peek of Proof Race: a student taps the line that proves it, earns Proof! plus 940 points and climbs to second place.">
   <div aria-hidden inert className="relative h-[470px] origin-top scale-[.6] md:scale-100 overflow-hidden rounded-[40px] border-[10px] border-deep bg-stage shadow-[0_10px_0_#0B0920]">
    <div className="flex flex-col gap-2.5 p-3">
-    <div className="flex items-center gap-1.5 text-[13px]"><Pill icon={<Star size={14} className="fill-highlight text-highlight"/>}>{score}</Pill><Pill tone="highlight" icon={<Flame size={14} className="fill-primary text-primary"/>}>x3</Pill><span className="flex-1"/><span className="font-display text-[14px] font-bold">14s</span></div>
+    <div className="flex items-center gap-1.5 text-[13px]"><Pill icon={<Star size={14} className="fill-highlight text-highlight"/>}>{score}</Pill><Pill tone="highlight" icon={<Flame size={14} className="fill-primary text-primary"/>}>x3</Pill><Pill icon={<span className="h-3.5 w-3.5 rounded-full bg-gold ring-2 ring-inset ring-gold-shadow"/>}>{beat>=2?9:6}</Pill><span className="flex-1"/><span className="font-display text-[14px] font-bold">14s</span></div>
     <div className="h-2 overflow-hidden rounded-full bg-panel"><div className={`h-2 rounded-full bg-primary ${reduced?"":"transition-[width] duration-[6000ms] ease-linear"}`} style={{width:beat===0?"92%":beat===1?"70%":"55%"}}/></div>
     <p className="text-[10px] font-extrabold uppercase tracking-[.08em] text-highlight">Proof Race · Chunk 6 of 10</p>
     <p className="font-display text-[17px] font-bold leading-tight">How was the rider wounded long ago?</p>

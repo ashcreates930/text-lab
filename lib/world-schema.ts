@@ -13,6 +13,24 @@ const ytLine=z.object({paragraph:z.string().regex(/^p\d{3}$/),line:z.string().mi
 // weigh: a claim the story leaves open. The student taps a line that supports it (accept), then a line that keeps it
 // uncertain (weigh.uncertain), and gets the feedback; nothing to rebut.
 const ytExchange=z.object({say:z.string().min(1),accept:z.array(ytLine),weigh:z.object({uncertain:z.array(ytLine).min(1),feedback:z.string().min(1)}).optional()});
+// Expeditions (lib/expedition.ts): the story read chunk by chunk, 10 chunks to an expedition. A chunk is whole sentences
+// (segments: paragraph and 0-based sentence range, inclusive) with its Gist check, one hidden discovery and one
+// question. Proof lines are copied exactly from the chunk's lines; proof words are exact text inside them. Standards are
+// B.E.S.T. benchmark families verified in lib/best-standards.ts. reviewed: the question's shared words were checked.
+export const QUESTION_TYPES=["word_detective","shades","between_lines","whose_eyes","figure_it_out","character_clue","theme_thread","gist","find_it","catch_lie","make_call"] as const;
+export const BENCHMARK_FAMILY_IDS=["R.1.1","R.1.2","R.1.3","R.3.1","R.3.2","V.1.3","K12.EE.1.1","K12.EE.3.1","K12.EE.4.1"] as const;
+const expChoice=z.object({text:z.string().min(1),best:z.boolean().optional()});
+const expQuestion=z.object({type:z.enum(QUESTION_TYPES),prompt:z.string().min(1),keywords:z.array(z.string().min(1)).default([]),
+ choices:z.array(expChoice).length(3).optional(),choices2:z.object({prompt:z.string().min(1),options:z.array(expChoice).length(3)}).optional(),
+ proof:z.object({lines:z.array(z.string().min(1)).optional(),words:z.array(z.string().min(1)).optional()}).optional(),
+ testimony:z.object({speaker:z.string(),text:z.string().min(1)}).optional(),
+ theories:z.array(z.object({id:z.string(),name:z.string().min(1),lines:z.array(z.string().min(1)).min(2)})).length(3).optional(),
+ hint:z.string().min(1),why:z.string().min(1),standards:z.array(z.enum(BENCHMARK_FAMILY_IDS)).min(1),reviewed:z.boolean().optional()});
+const expChunk=z.object({id:z.string(),segments:z.array(z.object({p:z.string().regex(/^p\d{3}$/),from:z.number().int().min(0),to:z.number().int().min(0)})).min(1),
+ gist:z.object({options:z.array(expChoice).length(3)}),discovery:z.object({phrase:z.string().min(1),kind:z.enum(["figurative","vocabulary"]),note:z.string().min(1)}),question:expQuestion});
+const expedition=z.object({id:z.string(),title:z.string().min(1),chunks:z.array(expChunk).min(1)});
+export type Expedition=z.infer<typeof expedition>;export type ExpChunk=z.infer<typeof expChunk>;export type ExpQuestion=z.infer<typeof expQuestion>;export type QuestionType=(typeof QUESTION_TYPES)[number];
+
 // Proof Race sprints (content only for now): one question answered by one line in a short chunk (paragraphs), with
 // near misses and hints, checked like bank questions.
 const sprint=z.object({id:z.string(),question:z.string().min(1),paragraphs:z.array(z.string().regex(/^p\d{3}$/)).min(1),answers:z.array(z.string().min(1)).min(1),near_misses:z.array(z.object({line:z.string(),hint:z.string().min(1)})).default([]),
@@ -85,6 +103,8 @@ export const WorldPackSchema = z.object({
   roles:z.array(role),
   // Your Turn (lib/your-turn.ts): one activity per "What's your angle?" option, after the game.
   your_turn:z.object({activities:z.record(z.string(),yourTurnActivity)}).optional(),missions:z.array(mission).optional(),
+  // Expeditions (see above). front_matter: paragraphs that sit before the story (a title, an epigraph), outside every chunk.
+  expeditions:z.array(expedition).optional(),front_matter:z.array(z.string().regex(/^p\d{3}$/)).optional(),
   // Demo rival and squad modes: the computer players' names (clearly labeled as computer players on screen).
   computer_players:z.object({rival:z.object({name:z.string().min(1),emblem:z.enum(["lantern","rider"])}),teammates:z.array(z.string().min(1)).min(2).max(3)}).optional(),
   // Students in the story: the part the student plays (see lib/student-role.ts). never: people the student must never be.

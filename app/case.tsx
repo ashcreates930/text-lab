@@ -32,6 +32,7 @@ import {demoEndingDue,firstClue,preGameScreen} from "@/lib/pregame";
 import {DemoEnding} from "./demo-ending";
 import {ProofRaceSolo} from "./proof-race";
 import {LaunchScreen} from "./launch-screen";
+import {ExpeditionRace} from "./expedition-race";
 import {LEGACY_MODES} from "@/lib/feature-flags";
 import {hasProofRace} from "@/lib/proof-race";
 import {StoryMode} from "./story-mode";
@@ -90,8 +91,9 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  const sceneIndex=Math.min(demo.scene,world.scenes.length-1),scene=world.scenes[sceneIndex],role=world.roles.find(r=>r.id===demo.role)!;
  // One way to play (LEGACY_MODES off): the launch screen, then Proof Race. The case flow below stays behind the flag.
  if(!LEGACY_MODES){
-  if(racing&&passages.length&&hasProofRace(world))return <ProofRaceSolo world={world} passages={passages} preset={demo.preset} onExit={()=>setRacing(false)}/>;
-  return <LaunchScreen world={world} ready={passages.length>0&&hasProofRace(world)} onStart={()=>setRacing(true)} onJoinLive={onJoinLive}/>;
+  const firstExpedition=world.expeditions?.[0]?.id;
+  if(racing&&passages.length&&firstExpedition)return <ExpeditionRace world={world} passages={passages} expeditionId={firstExpedition} preset={demo.preset} onExit={()=>setRacing(false)}/>;
+  return <LaunchScreen world={world} ready={passages.length>0&&!!firstExpedition} onStart={()=>setRacing(true)} onJoinLive={onJoinLive}/>;
  }
  const finished=demo.submitted;
  if(finished)return <CaseSummary world={world} demo={demo} passages={passages} onAnotherStory={onAnotherStory} personal={personal??DEFAULT_PERSONAL} setDemo={setDemo}/>;
