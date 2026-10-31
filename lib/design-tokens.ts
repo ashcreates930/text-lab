@@ -22,7 +22,7 @@ export const READING_SCOPE: Partial<Record<ColorToken, string>> = {
 
 // Print: white paper, dark text.
 export const PRINT_SCOPE: Partial<Record<ColorToken, string>> = {
-  stage: "#FFFFFF", deep: "#FFFFFF", panel: "#FFFFFF", "panel-2": "#F4F4F4", edge: "#999999",
+  stage: "#FFFFFF", deep: "#FFFFFF", panel: "#FFFFFF", "panel-2": "#FFFFFF", edge: "#999999",
   ink: "#111111", muted: "#333333", faint: "#333333", highlight: "#7A3600",
 };
 

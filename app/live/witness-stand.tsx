@@ -37,5 +37,5 @@ export function WitnessStand({sessionId}:{sessionId:string}){
 }
 
 function Shell({children}:{children:React.ReactNode}){
- return <main className="dark-zone min-h-screen bg-black px-5 py-8 text-ink"><div className="mx-auto max-w-md">{children}</div></main>;
+ return <main className="min-h-screen bg-stage px-5 py-8 text-ink"><div className="mx-auto max-w-md">{children}</div></main>;
 }

@@ -193,7 +193,7 @@ main:has([data-fill-screen]) > footer { display: none; }
 
 /* ---------- Print: white paper, dark text; no HUD, buttons or motion ---------- */
 @media print{
- :root,.reading-scope{--color-stage:#FFFFFF;--color-deep:#FFFFFF;--color-panel:#FFFFFF;--color-panel-2:#F4F4F4;--color-edge:#999999;--color-ink:#111111;--color-muted:#333333;--color-faint:#333333;--color-highlight:#7A3600;--color-primary-soft:#FFFFFF;--color-success-soft:#FFFFFF;--color-notyet-soft:#FFFFFF;--color-gold-soft:#FFFFFF;--color-violet-soft:#FFFFFF}
+ :root,.reading-scope{--color-stage:#FFFFFF;--color-deep:#FFFFFF;--color-panel:#FFFFFF;--color-panel-2:#FFFFFF;--color-edge:#999999;--color-ink:#111111;--color-muted:#333333;--color-faint:#333333;--color-highlight:#7A3600;--color-primary-soft:#FFFFFF;--color-success-soft:#FFFFFF;--color-notyet-soft:#FFFFFF;--color-gold-soft:#FFFFFF;--color-violet-soft:#FFFFFF}
  html,body{background:#fff!important;color:#111!important}
  *,*:before,*:after{animation:none!important;transition:none!important;box-shadow:none!important;text-shadow:none!important}
  header,nav,footer,button,.display-settings,.hud,.no-print,[role="dialog"],.corkboard{display:none!important}
