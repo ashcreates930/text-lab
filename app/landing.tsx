@@ -67,7 +67,7 @@ export function Landing({ brand, onStart, onCatchLie, onProofRace, onPreset, onJ
 
     <section className="px-5 py-16 md:px-14"><div className="mx-auto max-w-3xl text-center">
       <p className="text-[14px] font-semibold uppercase tracking-wide text-highlight">Who built this</p>
-      <p className="serif mt-3 text-[28px] leading-snug md:text-[32px]">Built by Ashley Hodges, a high school English teacher on Florida's Treasure Coast and the founder of {brand.organization}.</p>
+      <p className="font-display mt-3 text-[28px] leading-snug md:text-[32px]">Built by Ashley Hodges, a high school English teacher on Florida's Treasure Coast and the founder of {brand.organization}.</p>
       <p className="mt-4 text-[16px] leading-7 text-muted">Every case is built from texts teachers already assign, and every clue is tied to a passage in the original story.</p>
       <div className="mt-8 flex flex-wrap justify-center gap-3"><button onClick={onStart} className="case-primary">Try a case now <ArrowRight size={18}/></button><button onClick={onApproach} className="case-secondary">Read our approach</button></div>
     </div></section>

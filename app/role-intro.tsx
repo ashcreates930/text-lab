@@ -9,13 +9,14 @@ import {ArrowRight,Check,Swords,User,Users,Zap} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import {ANGLE_OPTIONS,INTEREST_STEPS,PLAY_STEP,UNLOCK,type Angle,type StoryPersonalSettings} from "@/lib/student-role";
 
-// One line under each play mode, and its icon.
-const MODE_CARDS:Record<string,{line:string;Icon:typeof User}>={
- solo:{line:"Work the case on your own, at your pace.",Icon:User},
- rival:{line:"Race a computer rival to the right line.",Icon:Swords},
- squad:{line:"Read together with your squad in live class.",Icon:Users},
- race:{line:"Read a chunk, then race the Lantern Ghost to the line that proves it.",Icon:Zap},
+// One line under each play mode, its icon and its card color (Proof Race is the big orange card, first).
+const MODE_CARDS:Record<string,{line:string;Icon:typeof User;tone:string;wide?:boolean}>={
+ race:{line:"Read a chunk, then race the Lantern Ghost to the line that proves it.",Icon:Zap,tone:"bg-primary text-on-primary shadow-[0_8px_0_var(--color-primary-shadow)]",wide:true},
+ solo:{line:"Work the case on your own, at your pace.",Icon:User,tone:"bg-success text-on-success shadow-[0_6px_0_var(--color-success-shadow)]"},
+ rival:{line:"Race a computer rival to the right line.",Icon:Swords,tone:"bg-violet text-on-violet shadow-[0_6px_0_var(--color-violet-shadow)]"},
+ squad:{line:"Read together with your squad in live class.",Icon:Users,tone:"bg-panel text-ink shadow-[0_6px_0_#0B0920]",wide:true},
 };
+const ORDER=["race","solo","rival","squad"];
 const reduced=()=>typeof window!=="undefined"&&!!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 export function RoleIntro({world,settings,onDone}:{world:WorldPack;settings:StoryPersonalSettings;onDone:(angle?:Angle)=>void}){
@@ -47,12 +48,11 @@ export function RoleIntro({world,settings,onDone}:{world:WorldPack;settings:Stor
   </section>}
   <section className={role?"mt-5":"mt-4"} aria-labelledby="play-h">
    {role?<h2 id="play-h" className="text-[24px] font-bold leading-tight">{q.label}</h2>:<h1 id="play-h" className="text-[30px] font-bold leading-tight">{q.label}</h1>}
-   <ul className="mt-3 grid gap-2.5">{Object.entries(q.options).map(([value,text])=>{const card=MODE_CARDS[value],on=picked===value;const Icon=card?.Icon??User;
-    return <li key={value}><button type="button" onClick={()=>pick(value)} aria-pressed={on}
-     className={`relative flex min-h-[84px] w-full items-center gap-4 rounded-3xl border-[3px] bg-panel px-4 py-3 text-left transition duration-150 motion-reduce:transition-none ${on?"scale-[.97] border-primary shadow-none":"border-transparent hover:border-edge active:scale-[.97]"}`}>
-     <span aria-hidden className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${on?"bg-primary text-on-primary":"bg-primary-soft text-highlight"}`}><Icon size={26}/></span>
-     <span className="min-w-0 flex-1"><span className="block text-[21px] font-bold leading-tight text-ink">{text}</span><span className="mt-0.5 block text-[15px] leading-5 text-muted">{card?.line}</span></span>
-     <span aria-hidden className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${on?"bg-primary text-on-primary":"border-2 border-edge"}`}>{on&&<Check size={18}/>}</span>
+   <ul className="mt-3 grid grid-cols-2 gap-3">{Object.entries(q.options).sort(([a],[b])=>(ORDER.indexOf(a)+99)%99-(ORDER.indexOf(b)+99)%99).map(([value,text])=>{const card=MODE_CARDS[value],on=picked===value;const Icon=card?.Icon??User;
+    return <li key={value} className={card?.wide?"col-span-2":""}><button type="button" onClick={()=>pick(value)} aria-pressed={on}
+     className={`relative flex h-full w-full flex-col items-start gap-2 rounded-card p-4 text-left transition-transform duration-100 active:translate-y-1 motion-reduce:transition-none ${card?.tone??"bg-panel text-ink"} ${on?"outline outline-[3px] outline-offset-2 outline-highlight":""} ${card?.wide&&value==="race"?"min-h-[150px]":"min-h-[140px]"}`}>
+     <span className="flex w-full items-start justify-between gap-2"><Icon aria-hidden size={value==="race"?40:30} strokeWidth={2.2}/>{on&&<span className="inline-flex items-center gap-1 rounded-full bg-deep px-2.5 py-1 text-[12px] font-extrabold text-ink"><Check size={14} aria-hidden/>Picked</span>}</span>
+     <span className={`block font-display font-bold leading-none ${value==="race"?"text-[32px]":"text-[22px]"}`}>{text}</span><span className="block text-[15px] font-bold leading-snug">{card?.line}</span>
     </button></li>})}</ul>
   </section>
  </div>;

@@ -38,7 +38,8 @@ function pairs(): Pair[] {
     const texts = tok("text", group); if (!texts.length) continue;
     const bgs = tok("bg", group);
     // Text with no fill of its own sits on the stage or a panel; the lightest of those is the panel.
-    for (const text of texts) for (const bg of bgs.length ? bgs : (["panel"] as ColorToken[])) out.push({ file, text, bg, large: large(group) });
+    // Story text with no fill of its own sits on the reading card.
+    for (const text of texts) for (const bg of bgs.length ? bgs : ([text === "reading-ink" ? "reading" : "panel"] as ColorToken[])) out.push({ file, text, bg, large: large(group) });
   }
   return out;
 }

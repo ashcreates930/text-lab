@@ -28,7 +28,8 @@ input,textarea,select{color-scheme:dark}
 ::placeholder{color:var(--color-faint);opacity:1}
 a{color:inherit}
 :where(p,li,label,small,dd,td) a:not([class]),a.link{color:var(--color-highlight);text-decoration:underline;text-underline-offset:3px}
-.serif,.story-copy{font-family:var(--font-serif);font-weight:400}
+/* Story text is Literata at its own weights (400 and 500), never the interface weight. */
+.serif,.story-copy,.font-serif{font-family:var(--font-serif);font-weight:400}
 .mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 .eyebrow{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--color-highlight)}
 .story-copy{line-height:1.85;color:var(--color-ink)}
@@ -37,6 +38,12 @@ a{color:inherit}
 /* Focus: a 2px highlight ring everywhere. Headings that receive focus for screen readers need no ring. */
 :focus-visible{outline:2px solid #FFB65C;outline-offset:2px}
 h1[tabindex="-1"]:focus{outline:none}
+
+/* Legacy screens: any control drawn without its own radius gets the row radius, so nothing looks square and old. */
+@layer base{
+:where(button,input,select,textarea):not([class*="rounded"]):not(.sb-word):not(.sb-say){border-radius:12px}
+:where(input,select,textarea):not([type=checkbox]):not([type=radio]):not([type=range]){background-color:var(--color-panel-2);color:var(--color-ink);border-color:var(--color-edge)}
+}
 
 /* ---------- Surfaces ---------- */
 .panel{background:var(--color-panel);border:1px solid var(--color-edge);border-radius:22px}

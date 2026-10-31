@@ -3,24 +3,19 @@
 // meter with its goal levels, marking the exact words that prove a long line, and the Prove it step.
 import {useEffect,useMemo,useRef,useState} from "react";
 import {ArrowRight,Check,Lock,PenLine} from "lucide-react";
+import {NotYetMoment} from "./game-ui";
 import {LEVELS,MAX_TRIES,PROVE_FRAME,levelFor,levelPoints,lineTokens} from "@/lib/fair-play";
 
 // ---------- Not yet: a miss is never shown as success ----------
-// Amber, a large "Not yet", no points, the try count and the hint. Next stays locked until the line is found; the one
+// Coral, a large "Not yet", no points, the try count and the hint. Next stays locked until the line is found; the one
 // action is to try again. focusOnMount: a new screen, so focus moves to its heading.
 export function NotYet({tryNo,hint,maxTries=MAX_TRIES,onTryAgain,extra}:{tryNo:number;hint:string;maxTries?:number|null;onTryAgain:()=>void;extra?:React.ReactNode}){
  const h=useRef<HTMLHeadingElement>(null);
  useEffect(()=>{h.current?.focus()},[]);
- return <section aria-labelledby="notyet-h" className="mt-4 rounded-3xl border-2 border-gold bg-gold-soft p-5 text-gold">
-  <p className="text-[14px] font-bold uppercase tracking-wide text-gold">{maxTries?`Try ${tryNo} of ${maxTries}`:`Try ${tryNo}`}</p>
-  <h2 id="notyet-h" ref={h} tabIndex={-1} className="mt-1 text-[40px] font-bold leading-none outline-none">Not yet</h2>
-  <p className="mt-3 text-[18px] leading-7">{hint}</p>
+ return <div className="mt-4"><NotYetMoment headingRef={h} eyebrow={maxTries?`Try ${tryNo} of ${maxTries}`:`Try ${tryNo}`} hint={hint} note="Find the line that proves it to continue.">
   {extra}
-  <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-   <button type="button" onClick={onTryAgain} className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full bg-gold px-6 text-[17px] font-bold text-on-gold hover:bg-gold">Try again <ArrowRight size={18}/></button>
-   <div className="text-right"><button type="button" disabled aria-describedby="notyet-lock" className="inline-flex min-h-11 items-center gap-2 rounded-full bg-gold-soft px-5 text-[15px] font-bold text-muted"><Lock size={15}/>Next</button><p id="notyet-lock" className="mt-1 text-[14px] text-muted">Find the line that proves it to continue.</p></div>
-  </div>
- </section>;
+  <button type="button" onClick={onTryAgain} className="mt-4 flex min-h-14 w-full items-center justify-center gap-2 rounded-button bg-on-notyet font-display text-[21px] font-bold text-notyet">Try again <ArrowRight size={18}/></button>
+ </NotYetMoment></div>;
 }
 
 // ---------- The points meter ----------
