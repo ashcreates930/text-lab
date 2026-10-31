@@ -30,7 +30,7 @@ export function useBeatClock(startedAt:string|number,seconds:number|null){
 }
 export function ClockBar({left,seconds,label}:{left:number|null;seconds:number;label?:string}){
  if(left===null)return <p className="flex items-center gap-2 text-[15px] font-semibold"><Timer size={16} aria-hidden/>No timer</p>;
- return <div className="flex items-center gap-2 text-[15px] font-bold"><Timer size={16} aria-hidden/><div aria-hidden className="h-2.5 flex-1 overflow-hidden rounded-full bg-[#E4DCCB]"><div className="h-full rounded-full bg-[#A0472C] transition-[width] duration-200" style={{width:`${(left/seconds)*100}%`}}/></div><span className="tabular-nums">{Math.ceil(left)}s</span>{label&&<span className="sr-only">{label}</span>}</div>;
+ return <div className="flex items-center gap-2 text-[15px] font-bold"><Timer size={16} aria-hidden/><div aria-hidden className="h-2.5 flex-1 overflow-hidden rounded-full bg-panel-2"><div className="h-full rounded-full bg-primary transition-[width] duration-200" style={{width:`${(left/seconds)*100}%`}}/></div><span className="tabular-nums">{Math.ceil(left)}s</span>{label&&<span className="sr-only">{label}</span>}</div>;
 }
 
 // ---------- Read ----------
@@ -41,11 +41,11 @@ export function ChunkRead({world,sceneId,passages,size="phone",dark=false}:{worl
  const [playing,setPlaying]=useState(false);
  useEffect(()=>()=>soundChannel.stop(),[]);
  async function listen(){if(playing){soundChannel.stop();setPlaying(false);return}setPlaying(true);await playNarration(soundChannel,`race:${passages[0]?.id}`,passages.map(p=>({id:p.id,text:p.text,src:narrationFile(world.id,sceneId,p.id)})),browserNarration);setPlaying(false)}
- return <div className={`rounded-3xl ${dark?"bg-[#FFFDF8] text-[#2A2620]":"bg-[#FFFDF8] shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]"}`}>
-  <div className="flex items-center justify-between gap-2 border-b border-[#EFE8D8] px-4 py-2"><p className="text-[12px] font-bold uppercase tracking-wide text-[#8A3B23]">Read this chunk</p>
-   <button type="button" onClick={listen} aria-pressed={playing} className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-[#EFE8D8] px-3 text-[14px] font-bold"><Volume2 size={16} aria-hidden/>{playing?"Stop":"Listen"}</button></div>
+ return <div className={`rounded-3xl ${dark?"bg-panel text-ink":"bg-panel"}`}>
+  <div className="flex items-center justify-between gap-2 border-b border-edge px-4 py-2"><p className="text-[12px] font-bold uppercase tracking-wide text-highlight">Read this chunk</p>
+   <button type="button" onClick={listen} aria-pressed={playing} className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-panel-2 px-3 text-[14px] font-bold"><Volume2 size={16} aria-hidden/>{playing?"Stop":"Listen"}</button></div>
   {words.length>0&&<WordCards words={words}/>}
-  <div className={`px-5 py-4 font-serif ${size==="board"?"text-[clamp(22px,2.2vw,36px)] leading-[1.6]":"text-[19px] leading-[1.7]"}`}>{passages.map(p=><p key={p.id} className="mb-3 last:mb-0"><span className="mr-2 font-sans text-[13px] font-bold text-[#8A7F6E]">¶{Number(p.id.slice(1))}</span>{p.text.replace(/\s+/g," ")}</p>)}</div>
+  <div className={`px-5 py-4 font-serif ${size==="board"?"text-[clamp(22px,2.2vw,36px)] leading-[1.6]":"text-[19px] leading-[1.7]"}`}>{passages.map(p=><p key={p.id} className="mb-3 last:mb-0"><span className="mr-2 font-sans text-[13px] font-bold text-muted">¶{Number(p.id.slice(1))}</span>{p.text.replace(/\s+/g," ")}</p>)}</div>
  </div>;
 }
 
@@ -53,15 +53,15 @@ export function ChunkRead({world,sceneId,passages,size="phone",dark=false}:{worl
 export function GistPick({options,picked,best,onPick,disabled}:{options:string[];picked:number|null;best?:number|null;onPick:(i:number)=>void;disabled?:boolean}){
  return <fieldset className="mt-3"><legend className="text-[18px] font-bold">Gist: which is the best summary?</legend>
   <div className="mt-2 grid gap-2">{options.map((o,i)=>{const on=picked===i,shown=best!=null&&picked!==null;const right=shown&&i===best;
-   return <button key={i} type="button" disabled={disabled||picked!==null} aria-pressed={on} onClick={()=>onPick(i)} className={`flex min-h-[56px] items-center gap-3 rounded-2xl px-4 py-3 text-left text-[16px] font-semibold leading-snug ${right?"bg-[#E8F2E7] text-[#2F6B3A] ring-2 ring-[#2F6B3A]":on?"bg-[#2A2620] text-white":"bg-[#FFFDF8] ring-1 ring-[#E4DCCB] hover:ring-[#A0472C]"}`}>{right&&<Check size={18} aria-label="best"/>}{shown&&on&&!right&&<X size={18} aria-label="not the best"/>}{o}</button>})}</div>
+   return <button key={i} type="button" disabled={disabled||picked!==null} aria-pressed={on} onClick={()=>onPick(i)} className={`flex min-h-[56px] items-center gap-3 rounded-2xl px-4 py-3 text-left text-[16px] font-semibold leading-snug ${right?"bg-success-soft text-success ring-2 ring-success":on?"bg-deep text-ink":"bg-panel ring-1 ring-edge hover:ring-primary"}`}>{right&&<Check size={18} aria-label="best"/>}{shown&&on&&!right&&<X size={18} aria-label="not the best"/>}{o}</button>})}</div>
  </fieldset>;
 }
 export function QuestionAsk({sent,onSend}:{sent:boolean;onSend:(text:string)=>Promise<string|null>|string|null}){
  const [text,setText]=useState(""),[error,setError]=useState("");
- if(sent)return <p role="status" className="mt-3 rounded-2xl bg-[#E8F2E7] px-4 py-3 text-[17px] font-semibold text-[#2F6B3A]">Your question is in. Your teacher may pick it for discussion.</p>;
+ if(sent)return <p role="status" className="mt-3 rounded-2xl bg-success-soft px-4 py-3 text-[17px] font-semibold text-success">Your question is in. Your teacher may pick it for discussion.</p>;
  return <div className="mt-3"><label htmlFor="race-q" className="text-[18px] font-bold">Your question: what do you wonder about this chunk?</label>
-  <textarea id="race-q" value={text} onChange={e=>setText(e.target.value)} maxLength={200} rows={2} className="mt-2 w-full rounded-2xl border border-[#E4DCCB] bg-white px-4 py-3 text-[17px]" placeholder="I wonder why…"/>
-  {error&&<p role="alert" className="mt-1 text-[15px] font-semibold text-[#A33B20]">{error}</p>}
+  <textarea id="race-q" value={text} onChange={e=>setText(e.target.value)} maxLength={200} rows={2} className="mt-2 w-full rounded-2xl border border-edge bg-panel px-4 py-3 text-[17px]" placeholder="I wonder why…"/>
+  {error&&<p role="alert" className="mt-1 text-[15px] font-semibold text-notyet">{error}</p>}
   <button type="button" disabled={text.trim().length<3} onClick={async()=>{const e=await onSend(text.trim());if(e)setError(e)}} className="case-primary mt-2 min-h-[48px] w-full justify-center disabled:opacity-40">Send my question</button></div>;
 }
 
@@ -73,11 +73,11 @@ export function Leaderboard({rows,meId,dark=false,title="Leaderboard",main=false
  const row=dark?64:56;
  return <section aria-labelledby="lb-h" className={dark?"":"mt-4"}>{(()=>{const H=main?"h1":"h2";return <H id="lb-h" className={`${dark?"text-[clamp(24px,2.4vw,36px)]":"text-[22px]"} font-bold outline-none`}>{title}</H>})()}
   <ol className="relative mt-3" style={{height:top.length*(row+8)}}>{top.map((r,k)=>{const from=r.prevRank!==null&&r.prevRank<=8?(r.prevRank-r.rank)*(row+8):0;
-   return <li key={r.id} className={`absolute inset-x-0 flex items-center gap-3 rounded-2xl px-4 ${r.id===meId?"bg-[#A0472C] text-white":dark?"bg-white/10":"bg-[#FFFDF8] shadow-[0_1px_8px_-4px_rgba(42,38,32,.35)]"}`} style={{height:row,top:k*(row+8),transform:settled?"none":`translateY(${from}px)`,transition:settled&&!reducedMotion()?"transform .7s cubic-bezier(.2,.8,.2,1)":"none"}}>
+   return <li key={r.id} className={`absolute inset-x-0 flex items-center gap-3 rounded-2xl px-4 ${r.id===meId?"bg-primary text-on-primary":dark?"bg-ink/10":"bg-panel"}`} style={{height:row,top:k*(row+8),transform:settled?"none":`translateY(${from}px)`,transition:settled&&!reducedMotion()?"transform .7s cubic-bezier(.2,.8,.2,1)":"none"}}>
     <span className={`w-8 text-center font-bold tabular-nums ${dark?"text-[28px]":"text-[20px]"}`}>{r.rank}</span>
     <span className={`min-w-0 flex-1 truncate font-bold ${dark?"text-[clamp(20px,2vw,30px)]":"text-[17px]"}`}>{r.name}</span>
-    {r.move>0&&<span className="rounded-full bg-[#E8F2E7] px-2 py-0.5 text-[13px] font-bold text-[#2F6B3A]">up {r.move}</span>}
-    {r.move<0&&<span className="rounded-full bg-[#EFE8D8] px-2 py-0.5 text-[13px] font-bold text-[#6B6457]">down {-r.move}</span>}
+    {r.move>0&&<span className="rounded-full bg-success-soft px-2 py-0.5 text-[13px] font-bold text-success">up {r.move}</span>}
+    {r.move<0&&<span className="rounded-full bg-panel-2 px-2 py-0.5 text-[13px] font-bold text-muted">down {-r.move}</span>}
     <span className={`font-bold tabular-nums ${dark?"text-[clamp(20px,2vw,30px)]":"text-[17px]"}`}>{r.points.toLocaleString()}</span></li>})}</ol>
  </section>;
 }
@@ -91,10 +91,10 @@ export function Podium({entries,dark=false,sound=false,title="Top detectives",ma
   <p className="sr-only">{entries.map((e,k)=>`${k+1}: ${e.name}, ${e.points} points`).join(". ")}</p>
   <div aria-hidden className="mt-6 flex items-end justify-center gap-3">{order.map(k=>{const e=entries[k];if(!e)return null;const visible=shown>=3-k;
    return <div key={k} className="flex w-[28%] max-w-[180px] flex-col items-center" style={{opacity:visible?1:0,transform:visible?"none":"translateY(24px)",transition:reducedMotion()?"none":"all .5s ease-out"}}>
-    {k===0&&<Crown size={28} className="mb-1 text-[#E7B54A]"/>}
-    {e.portrait?<img src={e.portrait} alt="" className="h-16 w-16 rounded-full border-4 border-white object-cover"/>:<span className="grid h-16 w-16 place-items-center rounded-full border-4 border-white bg-[#F4E1D6] text-[22px] font-bold text-[#8A3B23]">{e.name.slice(0,1)}</span>}
+    {k===0&&<Crown size={28} className="mb-1 text-gold"/>}
+    {e.portrait?<img src={e.portrait} alt="" className="h-16 w-16 rounded-full border-4 border-edge object-cover"/>:<span className="grid h-16 w-16 place-items-center rounded-full border-4 border-edge bg-primary-soft text-[22px] font-bold text-highlight">{e.name.slice(0,1)}</span>}
     <p className={`mt-2 w-full truncate font-bold ${dark?"text-[clamp(18px,1.8vw,26px)]":"text-[16px]"}`}>{e.name}</p><p className="text-[14px] tabular-nums opacity-80">{e.points.toLocaleString()}</p>
-    <div className={`mt-2 grid w-full place-items-center rounded-t-2xl text-[30px] font-bold text-white ${k===0?"bg-[#A0472C]":k===1?"bg-[#8B8478]":"bg-[#6E4B2A]"}`} style={{height:heights[k]*(dark?1:0.6)}}>{k+1}</div></div>})}</div>
+    <div className={`mt-2 grid w-full place-items-center rounded-t-2xl text-[30px] font-bold text-ink ${k===0?"bg-primary":k===1?"bg-edge":"bg-violet"}`} style={{height:heights[k]*(dark?1:0.6)}}>{k+1}</div></div>})}</div>
  </section>;
 }
 
@@ -123,11 +123,11 @@ export function ProofRaceSolo({world,passages,preset,onExit}:{world:WorldPack;pa
  if(!c)return null;
  const names=new Map([["me","You"],["ghost",rivalName]]);
  const board=raceBoard(new Map([["me",sum(me,k-1)],["ghost",sum(ghost,k-1)]]),new Map([["me",sum(me)],["ghost",sum(ghost)]]),names);
- const header=<div className="flex items-center justify-between gap-2"><p className="text-[12px] font-bold uppercase tracking-wide text-[#8A3B23]">Proof Race · Chunk {k+1} of {chunks.length}</p>
+ const header=<div className="flex items-center justify-between gap-2"><p className="text-[12px] font-bold uppercase tracking-wide text-highlight">Proof Race · Chunk {k+1} of {chunks.length}</p>
   <p className="flex items-center gap-1.5 whitespace-nowrap text-[13px] font-bold">You {sum(me).toLocaleString()} · <span className="h-5 w-5 overflow-hidden rounded-full"><RivalEmblem kind={emblem} size={20}/></span>{rivalName.replace(/^The /,"")} {sum(ghost).toLocaleString()}</p></div>;
  return <div className="case-ui mx-auto max-w-2xl px-4 pb-20 pt-4">
   {header}
-  {beat==="read"&&<section aria-labelledby="pr-h"><h1 id="pr-h" className="mt-2 text-[26px] font-bold outline-none">Read</h1><p className="text-[15px] text-[#4A4438]">No timer. Read the chunk, then tap Ready.</p>
+  {beat==="read"&&<section aria-labelledby="pr-h"><h1 id="pr-h" className="mt-2 text-[26px] font-bold outline-none">Read</h1><p className="text-[15px] text-muted">No timer. Read the chunk, then tap Ready.</p>
    <div className="mt-3"><ChunkRead world={world} sceneId={c.sceneId} passages={c.passages}/></div>
    <button type="button" onClick={()=>go(c.process?"process":"race")} className="case-primary mt-4 min-h-[56px] w-full justify-center text-[18px]">Ready <ArrowRight size={18}/></button></section>}
   {beat==="process"&&<section aria-labelledby="pr-h"><h1 id="pr-h" className="mt-2 text-[26px] font-bold outline-none">{c.process==="gist"?"Gist":"Your question"}</h1>
@@ -137,16 +137,16 @@ export function ProofRaceSolo({world,passages,preset,onExit}:{world:WorldPack;pa
    {(gist!==null||asked)&&<button type="button" onClick={()=>go("race")} className="case-primary mt-4 min-h-[52px] w-full justify-center">To the race <ArrowRight size={18}/></button>}</section>}
   {beat==="race"&&<section aria-labelledby="pr-h"><h1 id="pr-h" className="mt-2 text-[24px] font-bold leading-tight outline-none">{c.question}</h1>
    <ClockBar left={raceLeft} seconds={limit/1000}/>
-   {near?<p role="status" className="mt-2 rounded-2xl bg-[#FFF4D6] px-4 py-2 text-[16px] font-semibold text-[#3D2E0A]">Near miss: {near} One more try for 350.</p>:<p className="mt-2 flex items-center gap-1.5 text-[14px] font-semibold text-[#8A3B23]"><Hand size={15} aria-hidden/>Tap the line that answers it.</p>}
+   {near?<p role="status" className="mt-2 rounded-2xl bg-gold-soft px-4 py-2 text-[16px] font-semibold text-gold">Near miss: {near} One more try for 350.</p>:<p className="mt-2 flex items-center gap-1.5 text-[14px] font-semibold text-highlight"><Hand size={15} aria-hidden/>Tap the line that answers it.</p>}
    <ReadingPanel className="mt-2" glossary={world.glossary} passages={c.passages as SourcePassage[]} kept={[]} onTap={l=>tapLine(l.text)}/></section>}
   {beat==="reveal"&&tap&&<section aria-labelledby="pr-h"><h1 id="pr-h" className="mt-2 text-[26px] font-bold outline-none">{tap.points>0?`+${tap.points.toLocaleString()}`:tap.result==="none"?"Time's up":"Not this time"}</h1>
-   <p className="text-[16px] text-[#4A4438]">{tap.result==="right"?"Right line, with a speed bonus.":tap.result==="retryRight"?"Found it on the retry.":"Here's the line that proves it."}</p>
+   <p className="text-[16px] text-muted">{tap.result==="right"?"Right line, with a speed bonus.":tap.result==="retryRight"?"Found it on the retry.":"Here's the line that proves it."}</p>
    <ReadingPanel className="mt-3" glossary={world.glossary} passages={c.passages as SourcePassage[]} results={[...c.answers.map(a=>({line:a,ok:true})),...(tap.line&&!c.answers.some(a=>lineWords(a)===lineWords(tap.line))?[{line:tap.line,ok:false}]:[])]} onTap={()=>{}} locked/>
    <button type="button" onClick={()=>go("board")} className="case-primary mt-4 min-h-[52px] w-full justify-center">Leaderboard <ArrowRight size={18}/></button></section>}
   {beat==="board"&&<section><Leaderboard main rows={board} meId="me"/>
    <button type="button" onClick={nextChunk} className="case-primary mt-5 min-h-[52px] w-full justify-center">{k+1>=chunks.length?"Final results":"Next chunk"} <ArrowRight size={18}/></button></section>}
   {beat==="finish"&&<section className="mt-4"><Podium main sound={sound} entries={board.map(r=>({id:r.id,name:r.name,points:r.points}))} title="Final results"/>
-   <p className="mt-6 text-center text-[16px] text-[#4A4438]">Every point came from a line you proved in the story.</p>
+   <p className="mt-6 text-center text-[16px] text-muted">Every point came from a line you proved in the story.</p>
    <button type="button" onClick={onExit} className="case-primary mt-5 min-h-[52px] w-full justify-center">Play the case <ArrowRight size={18}/></button></section>}
  </div>;
 }

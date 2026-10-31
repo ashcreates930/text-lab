@@ -1,4 +1,8 @@
-// The Text Lab wordmark: bold geometric letters, teal fading to slate, matching the chosen logo.
-export function Wordmark({className=""}:{className?:string}){
- return <span aria-label="Text Lab" className={`inline-block bg-clip-text font-sans font-extrabold tracking-[-.03em] text-transparent ${className}`} style={{backgroundImage:"linear-gradient(90deg,#A0472C 0%,#B8583A 50%,#8C6E52 100%)"}}>TextLab</span>;
+import {brand} from "@/config/brand";
+// The Text Lab wordmark: "Text" in white and "Lab" in lantern orange, Fredoka 700, with "by AmplifiED" small in muted text.
+export function Wordmark({className="",byline=false}:{className?:string;byline?:boolean}){
+ return <span className={`inline-flex flex-col items-start leading-none ${className}`}>
+  <span aria-label="Text Lab" className="font-display font-bold tracking-[-.01em] text-ink">Text<span className="text-primary">Lab</span></span>
+  {byline&&<span className="mt-0.5 font-sans text-[12px] font-bold text-muted">by {brand.organization}</span>}
+ </span>;
 }

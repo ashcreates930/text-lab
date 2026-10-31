@@ -23,12 +23,12 @@ export function Shelf({demo,setDemo,onOpen,onlyWorld,heading="Your shelf"}:{demo
  const cont=continueFor(demo,entries,pageNames);
  return <section className="case-ui mx-auto max-w-6xl px-4 pb-20 pt-6 md:px-8" aria-labelledby="shelf-h">
   <div className="flex flex-wrap items-end justify-between gap-4">
-   <div><p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Pick a book</p><h1 id="shelf-h" className="mt-1 text-[32px] font-bold leading-tight md:text-[38px]">{heading}</h1></div>
+   <div><p className="text-[14px] font-semibold uppercase tracking-wide text-highlight">Pick a book</p><h1 id="shelf-h" className="mt-1 text-[32px] font-bold leading-tight md:text-[38px]">{heading}</h1></div>
    <button type="button" onClick={()=>setSettings(true)} className="case-secondary !min-h-12"><Type size={18}/> Reading settings</button>
   </div>
-  {cont&&<button type="button" onClick={()=>onOpen(cont.worldId)} className="shelf-bookmark mt-6 flex w-full items-center gap-4 rounded-2xl bg-[#FFFDF8] p-4 pr-5 text-left shadow-[0_6px_24px_-12px_rgba(42,38,32,.45)] hover:-translate-y-0.5 md:w-fit">
-   <span className="grid h-12 w-10 shrink-0 place-items-center bg-[#A0472C] text-white [clip-path:polygon(0_0,100%_0,100%_100%,50%_78%,0_100%)]"><Bookmark size={18}/></span>
-   <span><span className="block text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Continue</span><span className="block text-[18px] font-bold leading-snug">{cont.label}</span></span><ArrowRight size={20} className="ml-2 shrink-0 text-[#A0472C]"/>
+  {cont&&<button type="button" onClick={()=>onOpen(cont.worldId)} className="shelf-bookmark mt-6 flex w-full items-center gap-4 rounded-2xl bg-panel p-4 pr-5 text-left hover:-translate-y-0.5 md:w-fit">
+   <span className="grid h-12 w-10 shrink-0 place-items-center bg-primary text-on-primary [clip-path:polygon(0_0,100%_0,100%_100%,50%_78%,0_100%)]"><Bookmark size={18}/></span>
+   <span><span className="block text-[13px] font-semibold uppercase tracking-wide text-highlight">Continue</span><span className="block text-[18px] font-bold leading-snug">{cont.label}</span></span><ArrowRight size={20} className="ml-2 shrink-0 text-highlight"/>
   </button>}
   <ul className="shelf-row mt-8 grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">{open.map(e=><li key={e.id}><Book entry={e} art={covers[e.id]} hasStorybook={e.id in covers} onOpen={()=>onOpen(e.id)} onPeek={()=>setPeek(e.id)}/></li>)}</ul>
   {sealed.length>0&&<><h2 className="mt-14 text-[22px] font-bold">Coming soon</h2><ul className="shelf-row mt-5 grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 lg:grid-cols-6">{sealed.map(e=><li key={e.id}><SealedBook entry={e}/></li>)}</ul></>}
@@ -57,11 +57,11 @@ function Book({entry,art,hasStorybook,onOpen,onPeek}:{entry:Entry;art:string|nul
  const clear=()=>{if(timer.current)window.clearTimeout(timer.current);timer.current=null};
  const alt=`Cover of ${entry.title} by ${entry.author}`;
  return <div className="flex flex-col items-center">
-  <button type="button" onClick={()=>{if(!held.current)onOpen();held.current=false}} onPointerDown={down} onPointerUp={clear} onPointerLeave={clear} onPointerCancel={clear} onContextMenu={e=>{if(held.current)e.preventDefault()}} aria-label={`Open ${entry.title}`} className="shelf-book group relative aspect-[2/3] w-full max-w-[200px] overflow-hidden rounded-r-xl rounded-l-sm text-left shadow-[6px_10px_24px_-10px_rgba(42,38,32,.55)] transition hover:-translate-y-1">
+  <button type="button" onClick={()=>{if(!held.current)onOpen();held.current=false}} onPointerDown={down} onPointerUp={clear} onPointerLeave={clear} onPointerCancel={clear} onContextMenu={e=>{if(held.current)e.preventDefault()}} aria-label={`Open ${entry.title}`} className="shelf-book group relative aspect-[2/3] w-full max-w-[200px] overflow-hidden rounded-r-xl rounded-l-sm text-left transition hover:-translate-y-1">
    {hasStorybook?<ArtCover entry={entry} art={art} alt={alt}/>:<TypeCover entry={entry} alt={alt}/>}
-   <span aria-hidden className="absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/30 to-transparent"/>
+   <span aria-hidden className="absolute inset-y-0 left-0 w-3 bg-deep/30"/>
   </button>
-  <div className="mt-3 flex w-full max-w-[200px] items-start justify-between gap-2"><div className="min-w-0"><p className="text-[16px] font-bold leading-snug">{entry.title}</p><p className="text-[14px] text-[#6B6457]">Grades {entry.grade_band.min} to {entry.grade_band.max}</p></div><button type="button" onClick={onPeek} aria-label={`Peek inside ${entry.title}`} className="inline-flex min-h-10 shrink-0 items-center gap-1 rounded-full bg-[#EFE8D8] px-3 text-[14px] font-semibold hover:bg-[#E4DCCB]"><Eye size={15}/> Peek</button></div>
+  <div className="mt-3 flex w-full max-w-[200px] items-start justify-between gap-2"><div className="min-w-0"><p className="text-[16px] font-bold leading-snug">{entry.title}</p><p className="text-[14px] text-muted">Grades {entry.grade_band.min} to {entry.grade_band.max}</p></div><button type="button" onClick={onPeek} aria-label={`Peek inside ${entry.title}`} className="inline-flex min-h-10 shrink-0 items-center gap-1 rounded-full bg-panel-2 px-3 text-[14px] font-semibold hover:bg-panel-2"><Eye size={15}/> Peek</button></div>
  </div>;
 }
 
@@ -69,40 +69,40 @@ function ArtCover({entry,art,alt}:{entry:Entry;art:string|null|undefined;alt:str
  const [broken,setBroken]=useState(false);
  return <span role="img" aria-label={alt} className="absolute inset-0 block">
   {art&&!broken?<img src={art} alt="" onError={()=>setBroken(true)} className="shelf-pan absolute inset-0 h-full w-full object-cover"/>:<span className="sb-placeholder shelf-pan absolute inset-0 block"/>}
-  <span className="absolute inset-x-0 bottom-0 block bg-gradient-to-t from-[#2A2620]/85 via-[#2A2620]/40 to-transparent p-3 pt-14"><span className="block font-serif text-[19px] font-bold leading-tight text-white">{entry.title}</span><span className="mt-1 block text-[12px] uppercase tracking-wide text-[#F3C9B2]">{entry.author}</span></span>
+  <span className="absolute inset-x-0 bottom-0 block bg-deep/80 p-3 pt-14"><span className="block font-serif text-[19px] font-bold leading-tight text-ink">{entry.title}</span><span className="mt-1 block text-[12px] uppercase tracking-wide text-muted">{entry.author}</span></span>
  </span>;
 }
 
 // Typographic covers: the deliberate standard for stories without art.
 function TypeCover({entry,alt}:{entry:Entry;alt:string}){
- return <span role="img" aria-label={alt} className="absolute inset-0 flex flex-col justify-between bg-[#FBF5EA] p-4">
-  <span className="block h-1.5 w-10 bg-[#A0472C]"/>
-  <span className="block"><span className="block font-serif text-[21px] font-bold leading-tight text-[#2A2620]">{entry.title}</span><span aria-hidden className="mt-3 block text-[16px] text-[#A0472C]">❦</span></span>
-  <span className="block border-t border-[#A0472C]/40 pt-2 text-[11px] font-semibold uppercase tracking-[.14em] text-[#8A3B23]">{entry.author}</span>
+ return <span role="img" aria-label={alt} className="absolute inset-0 flex flex-col justify-between bg-panel-2 p-4">
+  <span className="block h-1.5 w-10 bg-primary"/>
+  <span className="block"><span className="block font-serif text-[21px] font-bold leading-tight text-ink">{entry.title}</span><span aria-hidden className="mt-3 block text-[16px] text-highlight">❦</span></span>
+  <span className="block border-t border-primary/40 pt-2 text-[11px] font-semibold uppercase tracking-[.14em] text-highlight">{entry.author}</span>
  </span>;
 }
 
 function SealedBook({entry}:{entry:Entry}){
  return <div className="flex flex-col items-center" aria-label={`${entry.title}, coming soon`} role="group">
-  <div className="relative aspect-[2/3] w-full max-w-[140px] overflow-hidden rounded-r-lg rounded-l-sm bg-[#EFE8D8] p-3 shadow-[4px_8px_18px_-10px_rgba(42,38,32,.45)]">
-   <p className="font-serif text-[14px] font-bold leading-tight text-[#6B6457]">{entry.title}</p>
-   <span aria-hidden className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[#A0472C] text-white shadow-md"><Lock size={18}/></span>
-   <span className="absolute inset-x-2 bottom-2 rounded-full bg-[#FFFDF8]/90 py-1 text-center text-[11px] font-bold uppercase tracking-wide text-[#8A3B23]">Coming soon</span>
+  <div className="relative aspect-[2/3] w-full max-w-[140px] overflow-hidden rounded-r-lg rounded-l-sm bg-panel-2 p-3">
+   <p className="font-serif text-[14px] font-bold leading-tight text-muted">{entry.title}</p>
+   <span aria-hidden className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-primary text-on-primary shadow-md"><Lock size={18}/></span>
+   <span className="absolute inset-x-2 bottom-2 rounded-full bg-panel/90 py-1 text-center text-[11px] font-bold uppercase tracking-wide text-highlight">Coming soon</span>
   </div>
-  <p className="mt-2 max-w-[140px] text-center text-[13px] text-[#6B6457]">{entry.author}</p>
+  <p className="mt-2 max-w-[140px] text-center text-[13px] text-muted">{entry.author}</p>
  </div>;
 }
 
 function PeekCard({worldId,roleId,onOpen}:{worldId:string;roleId:string;onOpen:()=>void}){
  const [data,setData]=useState<{world:WorldPack;opening:string}|null>(null);
  useEffect(()=>{Promise.all([fetch(`/worlds/${worldId}/world.json`).then(r=>r.json()),fetch(`/worlds/${worldId}/source.md`).then(r=>r.ok?r.text():"")]).then(([w,md])=>{const world=WorldPackSchema.parse(w);setData({world,opening:openingLines(world,parseSourcePassages(md))})}).catch(()=>{})},[worldId]);
- if(!data)return <p className="text-[16px] text-[#6B6457]">Opening the book…</p>;
+ if(!data)return <p className="text-[16px] text-muted">Opening the book…</p>;
  const role=data.world.roles.find(r=>r.id===roleId)??data.world.roles[0];
  return <div className="space-y-5">
   <p className="text-[24px] font-bold leading-tight">{data.world.title}</p>
-  {data.opening&&<div><p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">How it opens</p><blockquote className="mt-2 border-l-4 border-[#A0472C] pl-4 font-serif text-[17px] leading-7">{data.opening}</blockquote></div>}
-  <div><p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">The case</p><p className="mt-1 text-[17px] leading-7">{role.goal}</p></div>
-  <div><p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Your role</p><p className="mt-1 text-[17px] leading-7"><b>{role.name}.</b> {role.description}</p></div>
+  {data.opening&&<div><p className="text-[13px] font-semibold uppercase tracking-wide text-highlight">How it opens</p><blockquote className="mt-2 border-l-4 border-primary pl-4 font-serif text-[17px] leading-7">{data.opening}</blockquote></div>}
+  <div><p className="text-[13px] font-semibold uppercase tracking-wide text-highlight">The case</p><p className="mt-1 text-[17px] leading-7">{role.goal}</p></div>
+  <div><p className="text-[13px] font-semibold uppercase tracking-wide text-highlight">Your role</p><p className="mt-1 text-[17px] leading-7"><b>{role.name}.</b> {role.description}</p></div>
   <button type="button" onClick={onOpen} className="case-primary w-full">Open the book <ArrowRight size={18}/></button>
  </div>;
 }

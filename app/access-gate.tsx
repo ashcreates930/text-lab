@@ -9,16 +9,16 @@ export function AccessGate({brand,onGranted,onPricing,onWaitlist,onJoinClass,onA
  return <section className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-5 py-12">
   <p className="eyebrow">EARLY PREVIEW</p>
   <h1 className="mt-3 text-4xl md:text-5xl"><Wordmark/></h1>
-  <p className="mt-1 text-xs text-white/45">by {brand.organization}</p>
-  <p className="mt-3 text-sm leading-6 text-white/60">This preview is open to invited educators. Enter the access code from your invitation.</p>
+  <p className="mt-1 text-xs text-muted">by {brand.organization}</p>
+  <p className="mt-3 text-sm leading-6 text-muted">This preview is open to invited educators. Enter the access code from your invitation.</p>
   <form onSubmit={submit} className="panel mt-8 p-5" noValidate>
    <label htmlFor="demo-access-code" className="eyebrow">ACCESS CODE</label>
-   <input id="demo-access-code" value={code} onChange={e=>{setCode(e.target.value);if(error)setError("")}} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-invalid={!!error} aria-describedby={error?"demo-access-error":undefined} className="mt-2 block w-full border border-white/15 bg-[#F6F0E3] px-3 py-3 text-base"/>
-   {error&&<p id="demo-access-error" role="alert" className="mt-3 text-sm text-[#A33B20]">{error}</p>}
+   <input id="demo-access-code" value={code} onChange={e=>{setCode(e.target.value);if(error)setError("")}} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-invalid={!!error} aria-describedby={error?"demo-access-error":undefined} className="mt-2 block w-full border border-edge bg-panel-2 px-3 py-3 text-base"/>
+   {error&&<p id="demo-access-error" role="alert" className="mt-3 text-sm text-notyet">{error}</p>}
    <button type="submit" disabled={busy||!code.trim()} className="gold-button mt-5 inline-flex w-full items-center justify-center gap-2 rounded-sm px-6 py-4 text-xs tracking-wider disabled:opacity-60">{busy?"CHECKING…":"ENTER THE PREVIEW"}<ArrowRight size={13}/></button>
   </form>
-  <p className="mt-6 text-xs text-white/50">Joining your class? <button type="button" onClick={onJoinClass} className="text-[#A0472C] underline-offset-4 hover:underline">Enter your class code</button>.</p>
-  <p className="mt-2 text-xs text-white/50">No code? <button type="button" onClick={onWaitlist} className="text-[#A0472C] underline-offset-4 hover:underline">Join the waitlist</button> or <button type="button" onClick={onPricing} className="text-[#A0472C] underline-offset-4 hover:underline">see pricing</button>.</p>
-  {onApproach&&<p className="mt-2 text-xs text-white/50">New here? <button type="button" onClick={onApproach} className="text-[#A0472C] underline-offset-4 hover:underline">Read why we built {brand.name}</button>.</p>}
+  <p className="mt-6 text-xs text-muted">Joining your class? <button type="button" onClick={onJoinClass} className="text-highlight underline-offset-4 hover:underline">Enter your class code</button>.</p>
+  <p className="mt-2 text-xs text-muted">No code? <button type="button" onClick={onWaitlist} className="text-highlight underline-offset-4 hover:underline">Join the waitlist</button> or <button type="button" onClick={onPricing} className="text-highlight underline-offset-4 hover:underline">see pricing</button>.</p>
+  {onApproach&&<p className="mt-2 text-xs text-muted">New here? <button type="button" onClick={onApproach} className="text-highlight underline-offset-4 hover:underline">Read why we built {brand.name}</button>.</p>}
  </section>;
 }

@@ -16,63 +16,63 @@ export function Landing({ brand, onStart, onCatchLie, onProofRace, onPreset, onJ
     ["SCHOOLS AND DISTRICTS","AI literacy inside ELA","Students learn that AI is a resource, not the source, by checking every AI answer against the text.",["School and district plans with an admin view","Professional development for teachers","Built by a practicing English teacher"],["See plans",onPricing]],
   ];
   return <div className="case-ui">
-    <nav className="flex h-[70px] items-center justify-between px-5 md:px-14"><a className="text-2xl" href="#top"><Wordmark/></a><div className="hidden items-center gap-7 text-[14px] font-medium text-[#4A4438] lg:flex"><a href="#how" className="hover:text-[#A0472C]">How it works</a><a href="#who" className="hover:text-[#A0472C]">Who it's for</a><button onClick={onLessons} className="hover:text-[#A0472C]">Mini lessons</button><button onClick={onPricing} className="hover:text-[#A0472C]">Pricing</button><button onClick={onClassroom} className="hover:text-[#A0472C]">Teacher sign in</button></div><div className="flex items-center gap-2"><button type="button" onClick={onFeedback} className="min-h-11 rounded-full px-3 text-[14px] font-semibold text-[#8A3B23] underline-offset-4 hover:underline">Give feedback</button><button className="case-primary !min-h-11 !px-5 !text-[15px]" onClick={onStart}>Try the demo <ArrowRight size={16}/></button></div></nav>
+    <nav className="flex h-[70px] items-center justify-between px-5 md:px-14"><a className="text-2xl no-underline" href="#top"><Wordmark byline/></a><div className="hidden items-center gap-7 text-[14px] font-medium text-muted lg:flex"><a href="#how" className="hover:text-highlight">How it works</a><a href="#who" className="hover:text-highlight">Who it's for</a><button onClick={onLessons} className="hover:text-highlight">Mini lessons</button><button onClick={onPricing} className="hover:text-highlight">Pricing</button><button onClick={onClassroom} className="hover:text-highlight">Teacher sign in</button></div><div className="flex items-center gap-2"><button type="button" onClick={onFeedback} className="min-h-11 whitespace-nowrap rounded-full px-2 text-[14px] font-semibold text-highlight underline-offset-4 hover:underline sm:px-3">Give feedback</button><button className="case-primary !min-h-11 whitespace-nowrap !px-4 !text-[15px] sm:!px-5" onClick={onStart}>Try the demo <ArrowRight size={16}/></button></div></nav>
 
     <section id="top" className="mx-auto grid max-w-7xl items-center gap-12 px-5 pb-16 pt-8 md:grid-cols-[1fr_1.05fr] md:px-14 md:pb-24 md:pt-14">
       <div>
-        <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">For grades 6 to 12 English classrooms</p>
-        <h1 className="serif mt-4 text-[46px] leading-[1.05] tracking-[-.03em] md:text-[68px]">Step into the story.<br/><span className="italic text-[#A0472C]">Decide what to believe.</span></h1>
-        <p className="mt-6 max-w-[560px] text-[20px] font-semibold leading-8 text-[#2A2620]">Text Lab is a reading game for middle and high school students. They solve mysteries inside classic stories by finding proof in the text.</p>
-        <p className="mt-3 max-w-[540px] text-[17px] leading-7 text-[#4A4438]">Students question the characters, check every answer against the story, and close the case. Teachers see who found real evidence.</p>
+        <p className="text-[14px] font-semibold uppercase tracking-wide text-highlight">For grades 6 to 12 English classrooms</p>
+        <h1 className="mt-4 text-[46px] leading-[1.05] tracking-[-.03em] md:text-[68px]">Step into the story.<br/><span className="italic text-highlight">Decide what to believe.</span></h1>
+        <p className="mt-6 max-w-[560px] text-[20px] font-semibold leading-8 text-ink">Text Lab is a reading game for middle and high school students. They solve mysteries inside classic stories by finding proof in the text.</p>
+        <p className="mt-3 max-w-[540px] text-[17px] leading-7 text-muted">Students question the characters, check every answer against the story, and close the case. Teachers see who found real evidence.</p>
         <div className="mt-8 flex flex-wrap gap-3"><button onClick={onStart} className="case-primary">Try a case now <ArrowRight size={18}/></button><button onClick={onClassroom} className="case-secondary">I'm a teacher</button></div>
-        <p className="mt-4 text-[14px] text-[#6B6457]">The demo needs no account. <button onClick={onJoin} className="font-semibold text-[#8A3B23] underline underline-offset-4">Students with a class code, join here.</button></p>
+        <p className="mt-4 text-[14px] text-muted">The demo needs no account. <button onClick={onJoin} className="font-semibold text-highlight underline underline-offset-4">Students with a class code, join here.</button></p>
       </div>
       <div className="relative">
-        <div className="relative overflow-hidden rounded-3xl shadow-[0_24px_60px_-20px_rgba(42,38,32,.45)]">
+        <div className="relative overflow-hidden rounded-3xl">
           <div className="case-art aspect-[4/3] w-full" style={{backgroundImage:"url('/worlds/sleepy-hollow/empty-schoolhouse.png')"}} role="img" aria-label="A scene from The Legend of Sleepy Hollow: the empty schoolhouse"/>
           <div aria-hidden className="case-stamp case-stamp-static">Scene solved</div>
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent p-5 pb-16 pt-16"><p className="text-[12px] font-semibold uppercase tracking-wide text-[#F3C9B2]">The Legend of Sleepy Hollow · Scene 1</p><p className="mt-1 text-[20px] font-semibold text-white">Figure out what really happened to Ichabod.</p></div>
+          <div className="absolute inset-x-0 bottom-0 bg-deep/80 p-5 pb-16 pt-16"><p className="text-[12px] font-semibold uppercase tracking-wide text-muted">The Legend of Sleepy Hollow · Scene 1</p><p className="mt-1 text-[20px] font-semibold text-ink">Figure out what really happened to Ichabod.</p></div>
         </div>
-        <div className="absolute -bottom-6 left-4 right-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-[#FFFDF8] px-4 py-3 shadow-[0_10px_30px_-12px_rgba(42,38,32,.4)] md:left-8 md:right-auto md:min-w-[340px]">
-          <div className="min-w-[150px] flex-1"><p className="text-[13px] font-semibold text-[#2A2620]">4 of 4 clues proven</p><div className="mt-1.5 flex gap-1">{[0,1,2,3].map(i=><span key={i} className="h-2 flex-1 rounded-full bg-[#A0472C]"/>)}</div></div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2A2620] px-3 py-1 text-[13px] font-semibold text-white">Investigator</span>
+        <div className="absolute -bottom-6 left-4 right-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-panel px-4 py-3 md:left-8 md:right-auto md:min-w-[340px]">
+          <div className="min-w-[150px] flex-1"><p className="text-[13px] font-semibold text-ink">4 of 4 clues proven</p><div className="mt-1.5 flex gap-1">{[0,1,2,3].map(i=><span key={i} className="h-2 flex-1 rounded-full bg-primary"/>)}</div></div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-deep px-3 py-1 text-[13px] font-semibold text-ink">Investigator</span>
         </div>
       </div>
     </section>
 
     <NewStrip onCatchLie={onCatchLie} onProofRace={onProofRace}/>
 
-    <section id="how" className="border-t border-[#E4DCCB] bg-[#FFFDF8] px-5 py-16 md:px-14 md:py-20"><div className="mx-auto max-w-7xl">
-      <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">How a case works</p>
-      <h2 className="serif mt-3 max-w-3xl text-[34px] leading-tight md:text-[44px]">AI can summarize any book. Text Lab makes students prove what's true.</h2>
-      <ol className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">{steps.map(([n,t,d])=><li key={n} className="rounded-3xl border border-[#E4DCCB] p-6"><span className="grid h-10 w-10 place-items-center rounded-full bg-[#A0472C] text-[15px] font-bold text-white">{n}</span><h3 className="mt-5 text-[21px] font-bold">{t}</h3><p className="mt-2 text-[16px] leading-7 text-[#4A4438]">{d}</p></li>)}</ol>
+    <section id="how" className="border-t border-edge bg-panel px-5 py-16 md:px-14 md:py-20"><div className="mx-auto max-w-7xl">
+      <p className="text-[14px] font-semibold uppercase tracking-wide text-highlight">How a case works</p>
+      <h2 className="mt-3 max-w-3xl text-[34px] leading-tight md:text-[44px]">AI can summarize any book. Text Lab makes students prove what's true.</h2>
+      <ol className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">{steps.map(([n,t,d])=><li key={n} className="rounded-3xl border border-edge p-6"><span className="grid h-10 w-10 place-items-center rounded-full bg-primary text-[15px] font-bold text-on-primary">{n}</span><h3 className="mt-5 text-[21px] font-bold">{t}</h3><p className="mt-2 text-[16px] leading-7 text-muted">{d}</p></li>)}</ol>
     </div></section>
 
     <section id="who" className="px-5 py-16 md:px-14 md:py-20"><div className="mx-auto max-w-7xl">
-      <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Who it's for</p>
-      <h2 className="serif mt-3 text-[34px] leading-tight md:text-[44px]">Built for the classroom, from the classroom.</h2>
-      <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">{audiences.map(([eyebrow,sub,lead,points,[cta,go]])=><div key={eyebrow} className="flex flex-col rounded-3xl bg-[#FFFDF8] p-7 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]">
-        <p className="text-[13px] font-bold tracking-[.12em] text-[#8A3B23]">{eyebrow}</p><p className="mt-1 text-[15px] text-[#6B6457]">{sub}</p>
+      <p className="text-[14px] font-semibold uppercase tracking-wide text-highlight">Who it's for</p>
+      <h2 className="mt-3 text-[34px] leading-tight md:text-[44px]">Built for the classroom, from the classroom.</h2>
+      <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">{audiences.map(([eyebrow,sub,lead,points,[cta,go]])=><div key={eyebrow} className="flex flex-col rounded-3xl bg-panel p-7">
+        <p className="text-[13px] font-bold tracking-[.12em] text-highlight">{eyebrow}</p><p className="mt-1 text-[15px] text-muted">{sub}</p>
         <h3 className="mt-4 text-[22px] font-bold leading-snug">{lead}</h3>
-        <ul className="mt-5 flex-1 space-y-3">{points.map(pt=><li key={pt} className="flex gap-3 text-[16px] leading-6 text-[#4A4438]"><Check size={18} className="mt-0.5 shrink-0 text-[#A0472C]"/>{pt}</li>)}</ul>
+        <ul className="mt-5 flex-1 space-y-3">{points.map(pt=><li key={pt} className="flex gap-3 text-[16px] leading-6 text-muted"><Check size={18} className="mt-0.5 shrink-0 text-highlight"/>{pt}</li>)}</ul>
         <button onClick={go} className="case-secondary mt-7 w-fit">{cta} <ArrowRight size={16}/></button>
       </div>)}</div>
-      <p className="mt-6 text-[15px] text-[#6B6457]">Teachers: want to see the data first? <button onClick={()=>onPreset("teacher_end_unit")} className="font-semibold text-[#8A3B23] underline underline-offset-4">Open a sample class report.</button></p>
+      <p className="mt-6 text-[15px] text-muted">Teachers: want to see the data first? <button onClick={()=>onPreset("teacher_end_unit")} className="font-semibold text-highlight underline underline-offset-4">Open a sample class report.</button></p>
     </div></section>
 
-    <section className="border-t border-[#E4DCCB] bg-[#FFFDF8] px-5 py-16 md:px-14"><div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1fr_1.2fr] md:items-center">
-      <div><p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Ready now</p><h2 className="serif mt-3 text-[34px] leading-tight">Three cases to open today. Twenty-four more on the way.</h2><p className="mt-4 text-[16px] leading-7 text-[#4A4438]">Classic stories from the texts teachers already assign, each built as a four-scene case with clues tied to the original text.</p></div>
-      <ul className="grid gap-3">{stories.map(([t,a,g])=><li key={t}><button onClick={onStart} className="flex w-full items-center justify-between gap-4 rounded-2xl border border-[#E4DCCB] bg-[#F6F0E3] px-5 py-4 text-left transition hover:border-[#A0472C]"><span><span className="block text-[18px] font-bold">{t}</span><span className="text-[15px] text-[#6B6457]">{a} · {g}</span></span><ArrowRight size={18} className="shrink-0 text-[#A0472C]"/></button></li>)}</ul>
+    <section className="border-t border-edge bg-panel px-5 py-16 md:px-14"><div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1fr_1.2fr] md:items-center">
+      <div><p className="text-[14px] font-semibold uppercase tracking-wide text-highlight">Ready now</p><h2 className="mt-3 text-[34px] leading-tight">Three cases to open today. Twenty-four more on the way.</h2><p className="mt-4 text-[16px] leading-7 text-muted">Classic stories from the texts teachers already assign, each built as a four-scene case with clues tied to the original text.</p></div>
+      <ul className="grid gap-3">{stories.map(([t,a,g])=><li key={t}><button onClick={onStart} className="flex w-full items-center justify-between gap-4 rounded-2xl border border-edge bg-panel-2 px-5 py-4 text-left transition hover:border-primary"><span><span className="block text-[18px] font-bold">{t}</span><span className="text-[15px] text-muted">{a} · {g}</span></span><ArrowRight size={18} className="shrink-0 text-highlight"/></button></li>)}</ul>
     </div></section>
 
     <section className="px-5 py-16 md:px-14"><div className="mx-auto max-w-3xl text-center">
-      <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Who built this</p>
+      <p className="text-[14px] font-semibold uppercase tracking-wide text-highlight">Who built this</p>
       <p className="serif mt-3 text-[28px] leading-snug md:text-[32px]">Built by Ashley Hodges, a high school English teacher on Florida's Treasure Coast and the founder of {brand.organization}.</p>
-      <p className="mt-4 text-[16px] leading-7 text-[#4A4438]">Every case is built from texts teachers already assign, and every clue is tied to a passage in the original story.</p>
+      <p className="mt-4 text-[16px] leading-7 text-muted">Every case is built from texts teachers already assign, and every clue is tied to a passage in the original story.</p>
       <div className="mt-8 flex flex-wrap justify-center gap-3"><button onClick={onStart} className="case-primary">Try a case now <ArrowRight size={18}/></button><button onClick={onApproach} className="case-secondary">Read our approach</button></div>
     </div></section>
 
-    <footer className="flex flex-wrap justify-between gap-4 border-t border-[#E4DCCB] px-5 py-7 text-[13px] text-[#6B6457] md:px-14"><span>{brand.organization} · {brand.principle}.</span><div className="flex flex-wrap gap-5"><button onClick={onApproach}>Our approach</button><button onClick={onPricing}>Pricing</button><button onClick={onWaitlist}>Join the waitlist</button><button onClick={onFeedback}>Give feedback</button></div></footer>
+    <footer className="flex flex-wrap justify-between gap-4 border-t border-edge px-5 py-7 text-[13px] text-muted md:px-14"><span>{brand.organization} · {brand.principle}.</span><div className="flex flex-wrap gap-5"><button onClick={onApproach}>Our approach</button><button onClick={onPricing}>Pricing</button><button onClick={onWaitlist}>Join the waitlist</button><button onClick={onFeedback}>Give feedback</button></div></footer>
   </div>;
 }
 
@@ -80,21 +80,21 @@ export function Landing({ brand, onStart, onCatchLie, onProofRace, onPreset, onJ
 function NewStrip({onCatchLie,onProofRace}:{onCatchLie:()=>void;onProofRace?:()=>void}){
   const [busy,setBusy]=useState(false),[error,setError]=useState("");
   async function playLive(){if(busy)return;setBusy(true);setError("");setError(await openDemoRoom());setBusy(false)}
-  const card="flex flex-col rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]";
+  const card="flex flex-col rounded-3xl bg-panel p-6";
   return <section aria-labelledby="new-h" className="px-5 pb-16 md:px-14"><div className="mx-auto max-w-7xl">
-    <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">New</p>
-    <h2 id="new-h" className="serif mt-2 text-[30px] leading-tight md:text-[36px]">More ways to prove what's true</h2>
+    <p className="text-[14px] font-semibold uppercase tracking-wide text-highlight">New</p>
+    <h2 id="new-h" className="mt-2 text-[30px] leading-tight md:text-[36px]">More ways to prove what's true</h2>
     <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-      {onProofRace&&<div className={card}><Zap size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Proof Race</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-[#4A4438]">Read a short chunk with no timer, check the gist, then race to tap the line that answers the question. Points come only from the right line, with a bonus for speed. Play live with your class, or solo against the Lantern Ghost.</p>
+      {onProofRace&&<div className={card}><Zap size={26} className="text-highlight"/><h3 className="mt-3 text-[21px] font-bold">Proof Race</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-muted">Read a short chunk with no timer, check the gist, then race to tap the line that answers the question. Points come only from the right line, with a bonus for speed. Play live with your class, or solo against the Lantern Ghost.</p>
         <button type="button" onClick={onProofRace} className="case-primary mt-5 w-full sm:w-fit">Try Proof Race <ArrowRight size={18}/></button></div>}
-      <div className={card}><Radio size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Play live with your class</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-[#4A4438]">Squads join on their phones with a QR code. Each member reads a different part of the passage and has a job: Reader, Fact-checker or Connector. Teammates pin lines, react with sentence stems and vote on their best proof.</p>
+      <div className={card}><Radio size={26} className="text-highlight"/><h3 className="mt-3 text-[21px] font-bold">Play live with your class</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-muted">Squads join on their phones with a QR code. Each member reads a different part of the passage and has a job: Reader, Fact-checker or Connector. Teammates pin lines, react with sentence stems and vote on their best proof.</p>
         <button type="button" onClick={playLive} aria-busy={busy} className="case-primary mt-5 w-full sm:w-fit">{busy?"Opening the demo room…":"Open a demo room"} <ArrowRight size={18}/></button>
-        {error&&<p role="alert" className="mt-2 text-[15px] text-[#A33B20]">{error}</p>}</div>
-      <div className={card}><MessageCircle size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Catch the lie</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-[#4A4438]">Hans Van Ripper swears he knows what was in Ichabod's bundle. One thing he says is false. Find the line in the story that proves it.</p>
+        {error&&<p role="alert" className="mt-2 text-[15px] text-notyet">{error}</p>}</div>
+      <div className={card}><MessageCircle size={26} className="text-highlight"/><h3 className="mt-3 text-[21px] font-bold">Catch the lie</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-muted">Hans Van Ripper swears he knows what was in Ichabod's bundle. One thing he says is false. Find the line in the story that proves it.</p>
         <button type="button" onClick={onCatchLie} className="case-primary mt-5 w-full sm:w-fit">Hear his testimony <ArrowRight size={18}/></button></div>
-      <div className={card}><Sparkles size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Characters as holograms</h3><p className="mt-2 text-[16px] leading-7 text-[#4A4438]">Tap a character's portrait to open their card, with traits quoted from the story. Tap Hologram, set your phone under a clear pyramid, and the character appears.</p>
+      <div className={card}><Sparkles size={26} className="text-highlight"/><h3 className="mt-3 text-[21px] font-bold">Characters as holograms</h3><p className="mt-2 text-[16px] leading-7 text-muted">Tap a character's portrait to open their card, with traits quoted from the story. Tap Hologram, set your phone under a clear pyramid, and the character appears.</p>
         <MiniHologram/></div>
-      <div className={card}><PenLine size={26} className="text-[#A0472C]"/><h3 className="mt-3 text-[21px] font-bold">Your Turn</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-[#4A4438]">After the case, each student gets a personal activity, like styling a character or debating one, that sends them back to the text to cite their proof.</p></div>
+      <div className={card}><PenLine size={26} className="text-highlight"/><h3 className="mt-3 text-[21px] font-bold">Your Turn</h3><p className="mt-2 flex-1 text-[16px] leading-7 text-muted">After the case, each student gets a personal activity, like styling a character or debating one, that sends them back to the text to cite their proof.</p></div>
     </div>
   </div></section>;
 }

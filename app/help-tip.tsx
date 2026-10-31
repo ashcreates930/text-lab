@@ -7,7 +7,7 @@ import {CircleHelp} from "lucide-react";
 export function HelpTip({label,children}:{label:string;children:React.ReactNode}){
  const [open,setOpen]=useState(false),id=useId();
  return <span className="inline">
-  <button type="button" aria-expanded={open} aria-controls={id} onClick={()=>setOpen(o=>!o)} className="help-tip-button ml-1 inline-flex items-center gap-1 rounded-full border border-[#A0472C]/50 px-2 py-0.5 align-middle text-xs text-[#8A3B23] hover:bg-[#A0472C]/15"><CircleHelp size={13} aria-hidden="true"/>{label}</button>
-  {open&&<span id={id} role="note" className="mt-2 block border-l-2 border-[#A0472C] bg-[#A0472C]/[.08] px-3 py-2 text-sm leading-6 text-[#2A2620]">{children}</span>}
+  <button type="button" aria-expanded={open} aria-controls={id} onClick={()=>setOpen(o=>!o)} className="help-tip-button ml-1 inline-flex items-center gap-1 rounded-full border border-primary/50 px-2 py-0.5 align-middle text-xs text-highlight hover:bg-primary/15"><CircleHelp size={13} aria-hidden="true"/>{label}</button>
+  {open&&<span id={id} role="note" className="mt-2 block border-l-2 border-primary bg-primary/[.08] px-3 py-2 text-sm leading-6 text-ink">{children}</span>}
  </span>;
 }

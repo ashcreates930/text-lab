@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "eslint .",
     "pretest": "npm run sync:worlds",
-    "test": "node --experimental-strip-types --test tests/core.test.ts",
+    "test": "node --experimental-strip-types --test tests/core.test.ts tests/design-tokens.test.ts",
     "validate:worlds": "node --experimental-strip-types scripts/validate-worlds.ts",
     "assets": "node --experimental-strip-types scripts/generate-assets.ts",
     "sync:worlds": "node --experimental-strip-types scripts/generate-assets.ts --sync-only",

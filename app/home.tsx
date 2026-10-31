@@ -27,15 +27,15 @@ export function StudentPreview({onKeepReading}:{onKeepReading:()=>void}){
  const role=world?.roles[0];
  return <section aria-labelledby="preview-h" className="case-ui">
   <h2 id="preview-h" className="text-[26px] font-bold leading-tight">See what students see</h2>
-  <p className="mt-1 max-w-2xl text-[17px] leading-7 text-[#4A4438]">This is page 1 of <i>The Tell-Tale Heart</i>, exactly as a student reads it. Turn the page, tap an underlined word, or tap Say it again.</p>
+  <p className="mt-1 max-w-2xl text-[17px] leading-7 text-muted">This is page 1 of <i>The Tell-Tale Heart</i>, exactly as a student reads it. Turn the page, tap an underlined word, or tap Say it again.</p>
   <div ref={box} className="relative mt-4 h-[min(640px,76svh)] min-h-[500px]">
    {world&&role&&passages.length?<StorybookReader mode="preview" previewPages={2} world={world} role={role} passages={passages} demo={demo} setDemo={setDemo} onExit={()=>{}} onKeepReading={onKeepReading}/>
-   :<div className="sb-placeholder grid h-full place-items-center rounded-3xl"><p className="rounded-2xl bg-[#FFFDF8]/85 px-4 py-2 text-[16px] text-[#6B6457]">Opening the story…</p></div>}
+   :<div className="sb-placeholder grid h-full place-items-center rounded-3xl"><p className="rounded-2xl bg-panel/85 px-4 py-2 text-[16px] text-muted">Opening the story…</p></div>}
    {tour>=0&&<Tour root={box} step={tour} onNext={()=>tour>=2?endTour():setTour(tour+1)} onSkip={endTour}/>}
   </div>
   <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
    <button type="button" onClick={onKeepReading} className="case-primary">Keep reading as a student <ArrowRight size={18}/></button>
-   <button type="button" onClick={()=>setTour(0)} className="min-h-11 text-[15px] font-semibold text-[#8A3B23] underline underline-offset-4">Replay tour</button>
+   <button type="button" onClick={()=>setTour(0)} className="min-h-11 text-[15px] font-semibold text-highlight underline underline-offset-4">Replay tour</button>
   </div>
  </section>;
 }
@@ -55,11 +55,11 @@ function Tour({root,step,onNext,onSkip}:{root:React.RefObject<HTMLDivElement|nul
  const left=rect?Math.min(Math.max(12,rect.x+rect.w/2-tipW/2),W-tipW-12):12,top=rect?(below?rect.y+rect.h+12:Math.max(12,rect.y-12-170)):12;
  return <div className="pointer-events-none absolute inset-0 z-50">
   {rect&&<span aria-hidden className="tour-ring absolute rounded-2xl" style={{left:rect.x-6,top:rect.y-6,width:rect.w+12,height:rect.h+12}}/>}
-  <div role="dialog" aria-label={`Tour step ${step+1} of ${steps.length}: ${steps[step].title}`} className="pointer-events-auto absolute rounded-2xl bg-[#2A2620] p-4 text-white shadow-2xl" style={{left,top,width:tipW}}>
-   <p className="text-[12px] font-semibold uppercase tracking-wide text-[#F3C9B2]">Tour · {step+1} of {steps.length}</p>
+  <div role="dialog" aria-label={`Tour step ${step+1} of ${steps.length}: ${steps[step].title}`} className="pointer-events-auto absolute rounded-2xl bg-deep p-4 text-ink shadow-2xl" style={{left,top,width:tipW}}>
+   <p className="text-[12px] font-semibold uppercase tracking-wide text-muted">Tour · {step+1} of {steps.length}</p>
    <p className="mt-1 text-[17px] font-bold leading-snug">{steps[step].title}</p>
-   <p className="mt-1 text-[15px] leading-6 text-white/85">{steps[step].text}</p>
-   <div className="mt-3 flex items-center justify-between gap-3"><button type="button" onClick={onSkip} className="min-h-10 text-[14px] font-semibold text-white/80 underline underline-offset-4">Skip tour</button><button type="button" onClick={onNext} className="min-h-10 rounded-full bg-[#A0472C] px-4 text-[15px] font-semibold">{step>=steps.length-1?"Done":"Next"}</button></div>
+   <p className="mt-1 text-[15px] leading-6 text-ink">{steps[step].text}</p>
+   <div className="mt-3 flex items-center justify-between gap-3"><button type="button" onClick={onSkip} className="min-h-10 text-[14px] font-semibold text-muted underline underline-offset-4">Skip tour</button><button type="button" onClick={onNext} className="min-h-10 rounded-full bg-primary px-4 text-[15px] font-semibold">{step>=steps.length-1?"Done":"Next"}</button></div>
   </div>
  </div>;
 }

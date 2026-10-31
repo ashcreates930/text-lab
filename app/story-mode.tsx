@@ -144,10 +144,10 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
 
  // One short row, so the passage keeps the room on a phone.
  const header=<div className="flex items-center justify-between gap-2">
-  <button type="button" onClick={howToPlay} className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-[#FFFDF8] px-3 text-[14px] font-bold text-[#8A3B23] shadow-[0_1px_6px_-3px_rgba(42,38,32,.35)]"><CircleHelp size={17} aria-hidden/>How to play</button>
+  <button type="button" onClick={howToPlay} className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-panel px-3 text-[14px] font-bold text-highlight"><CircleHelp size={17} aria-hidden/>How to play</button>
   <div className="flex shrink-0 items-center gap-1.5">
-   {run&&<span className="inline-flex items-center gap-1 rounded-full bg-[#F4E1D6] px-2.5 py-1 text-[14px] font-bold tabular-nums text-[#8A3B23]" title="Lantern coins"><Coins size={14}/>{run.state.coins}<span className="sr-only"> Lantern coins</span></span>}
-   <button type="button" onClick={toggleSound} aria-pressed={soundOn} aria-label="Sound" className="grid h-10 w-10 place-items-center rounded-full bg-[#EFE8D8]">{soundOn?<Volume2 size={18}/>:<VolumeX size={18}/>}</button>
+   {run&&<span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-[14px] font-bold tabular-nums text-highlight" title="Lantern coins"><Coins size={14}/>{run.state.coins}<span className="sr-only"> Lantern coins</span></span>}
+   <button type="button" onClick={toggleSound} aria-pressed={soundOn} aria-label="Sound" className="grid h-10 w-10 place-items-center rounded-full bg-panel-2">{soundOn?<Volume2 size={18}/>:<VolumeX size={18}/>}</button>
   </div>
  </div>;
  const bar:Bar|null=run&&kind?{world,scene,kind,run,relaxed,setRelaxed,canRelax:run.timeSetting==="1"||run.timeSetting==="1.5",onBuy:buy}:null;
@@ -157,14 +157,14 @@ export function StoryMode({world,scene,sceneIndex,passages,demo,setDemo,onCleare
   <AmbientPlayer src={scene.ambient_audio} on={ambientOn&&soundOn} showing={stage==="play"}/>
   {header}
   {run&&stage!=="loading"&&stage!=="cleared"&&stage!=="play"&&<PointsMeter total={run.total} max={run.goal.max} compact/>}
-  {notice&&<p role="alert" className="mt-3 rounded-2xl bg-[#FBF1EB] px-4 py-3 text-[16px]">{notice}</p>}
-  {stage==="loading"&&<p className="mt-10 text-center text-[17px] text-[#6B6457]">Opening the scene…</p>}
-  {stage==="error"&&<div className="mt-8 rounded-3xl bg-[#FFFDF8] p-6"><h1 className="text-[24px] font-bold">Story Mode can't open right now</h1><p className="mt-2 text-[16px]">{error}</p><div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={()=>start()} className="case-primary">Try again</button>{onCaseFile&&<button type="button" onClick={onCaseFile} className="case-secondary">Open the Case file</button>}</div></div>}
+  {notice&&<p role="alert" className="mt-3 rounded-2xl bg-primary-soft px-4 py-3 text-[16px]">{notice}</p>}
+  {stage==="loading"&&<p className="mt-10 text-center text-[17px] text-muted">Opening the scene…</p>}
+  {stage==="error"&&<div className="mt-8 rounded-3xl bg-panel p-6"><h1 className="text-[24px] font-bold">Story Mode can't open right now</h1><p className="mt-2 text-[16px]">{error}</p><div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={()=>start()} className="case-primary">Try again</button>{onCaseFile&&<button type="button" onClick={onCaseFile} className="case-secondary">Open the Case file</button>}</div></div>}
   {stage==="welcome"&&run&&kind&&<WelcomeBack world={world} round={round} kind={kind} run={run} midTry={!!resume} onKeep={()=>{welcomed.add(run.id);enterRound(!!resume)}} onStartOver={()=>{welcomed.add(run.id);start(true)}}/>}
   {stage==="play"&&run&&kind&&<><RoundTracker round={round} skipped={run.state.skipped??0} compact/><MissionTracker world={world} demo={demo} compact/></>}
   {stage==="play"&&run&&kind&&race&&<RaceStrip race={race} name={rivalName} emblem={world.computer_players?.rival.emblem??"lantern"} wins={demo.game?.rivalWins??0} losses={demo.game?.rivalLosses??0}/>}
-  {stage==="results"&&pieceGain&&<p role="status" className="piece-pop mt-4 flex items-center gap-3 rounded-2xl bg-[#2A2620] px-4 py-3 text-[17px] font-bold text-[#FFFDF8]"><span aria-hidden className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#A0472C] text-[20px]">+{pieceGain.count}</span>{pieceGain.count===1?"+1 piece":`+${pieceGain.count} pieces`} for {pieceGain.title}</p>}
-  {stage==="results"&&raceWon&&<p role="status" className={`mt-4 flex items-center gap-3 rounded-2xl px-4 py-3 text-[16px] font-semibold ${raceWon==="you"?"bg-[#E8F2E7] text-[#2F6B3A]":"bg-[#E8EEF5] text-[#2E3B4E]"}`}><span className="h-10 w-10 shrink-0 overflow-hidden rounded-full"><RivalEmblem kind={world.computer_players?.rival.emblem??"lantern"} size={40}/></span>{raceWon==="you"?`You beat ${rivalName} to the line.`:`${rivalName} won this face-off. Your points still come from your proof.`}</p>}
+  {stage==="results"&&pieceGain&&<p role="status" className="piece-pop mt-4 flex items-center gap-3 rounded-2xl bg-deep px-4 py-3 text-[17px] font-bold text-ink"><span aria-hidden className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary text-[20px]">+{pieceGain.count}</span>{pieceGain.count===1?"+1 piece":`+${pieceGain.count} pieces`} for {pieceGain.title}</p>}
+  {stage==="results"&&raceWon&&<p role="status" className={`mt-4 flex items-center gap-3 rounded-2xl px-4 py-3 text-[16px] font-semibold ${raceWon==="you"?"bg-success-soft text-success":"bg-violet-soft text-ink"}`}><span className="h-10 w-10 shrink-0 overflow-hidden rounded-full"><RivalEmblem kind={world.computer_players?.rival.emblem??"lantern"} size={40}/></span>{raceWon==="you"?`You beat ${rivalName} to the line.`:`${rivalName} won this face-off. Your points still come from your proof.`}</p>}
   {stage==="play"&&run&&kind&&bar&&<RoundPlay key={round} world={world} scene={scene} passages={passages} kind={kind} run={run} setting={setting} sound={soundOn} sandboxId={demo.id} resume={resume} send={send} onError={m=>setNotice(m)} bar={bar} hold={overlay.length>0}/>}
   {stage==="results"&&result&&run&&<Results world={world} scene={scene} result={result} mode={mode} run={run} headers={headers} sandboxId={demo.id} onNext={()=>{setResult(null);if(run.finished)setStage("cleared");else enterRound(false)}}/>}
   {stage==="cleared"&&run&&<Cleared run={run} mode={mode} headers={headers} sandboxId={demo.id} onNext={onCleared} onAgain={()=>start(true)} onLeads={onLeads} nextLabel={clearedLabel}/>}
@@ -178,7 +178,7 @@ function Over({label,full=false,children}:{label:string;full?:boolean;children:R
  // After the content's own effects (the face-off focuses the page's heading on mount), so the overlay's heading wins.
  useEffect(()=>{if(!host)return;const t=setTimeout(()=>{const h=ref.current?.querySelector<HTMLElement>("h1,h2");if(h){if(!h.hasAttribute("tabindex"))h.setAttribute("tabindex","-1");h.focus({preventScroll:true})}},0);return()=>clearTimeout(t)},[host]);
  if(!host)return null;
- return createPortal(<div ref={ref} role="dialog" aria-modal="true" aria-label={label} className={`case-ui fixed inset-0 z-50 overflow-y-auto overscroll-contain ${full?"bg-[#F6F0E3]":""}`}>{children}</div>,host);
+ return createPortal(<div ref={ref} role="dialog" aria-modal="true" aria-label={label} className={`case-ui fixed inset-0 z-50 overflow-y-auto overscroll-contain ${full?"bg-panel-2":""}`}>{children}</div>,host);
 }
 // A test session (opened with ?test=1, kept for the tab): its runs are tagged and stay off real leaderboards.
 function testSession(){try{if(new URLSearchParams(location.search).get("test")==="1")sessionStorage.setItem("textlab-test","1");return sessionStorage.getItem("textlab-test")==="1"}catch{return false}}
@@ -190,10 +190,10 @@ const howToSeen=(demo:Demo)=>{if(demo.howToSeen)return true;try{return localStor
 
 // ---------- Welcome back: a saved run never drops the student straight into a try ----------
 function WelcomeBack({world,round,kind,run,midTry,onKeep,onStartOver}:{world:WorldPack;round:number;kind:RoundKind;run:PublicRun;midTry:boolean;onKeep:()=>void;onStartOver:()=>void}){
- return <section className="mt-4 rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_2px_14px_-6px_rgba(42,38,32,.3)]" aria-labelledby="welcome-h">
-  <p className="text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">{world.title}</p>
+ return <section className="mt-4 rounded-3xl bg-panel p-6" aria-labelledby="welcome-h">
+  <p className="text-[13px] font-semibold uppercase tracking-wide text-highlight">{world.title}</p>
   <h1 id="welcome-h" className="mt-1 text-[30px] font-bold leading-tight">Welcome back</h1>
-  <p className="mt-2 text-[17px] leading-7 text-[#4A4438]">You're on round {round+1} of {ROUNDS.length}: {ROUND_NAMES[kind]}{midTry?", in the middle of a try":""}. You have {run.total.toLocaleString()} point{run.total===1?"":"s"} so far.</p>
+  <p className="mt-2 text-[17px] leading-7 text-muted">You're on round {round+1} of {ROUNDS.length}: {ROUND_NAMES[kind]}{midTry?", in the middle of a try":""}. You have {run.total.toLocaleString()} point{run.total===1?"":"s"} so far.</p>
   <p className="mt-1 text-[16px] font-semibold tabular-nums">{nextGoal(run.total,run.goal.max)}</p>
   <div className="mt-5 grid gap-2">
    <button type="button" onClick={onKeep} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Keep playing <ArrowRight size={20}/></button>
@@ -214,11 +214,11 @@ function HowToPlay({rival,onDone}:{rival:string|null;onDone:()=>void}){
  useEffect(()=>{const k=(e:KeyboardEvent)=>{if(e.key==="Escape")onDone()};window.addEventListener("keydown",k);return()=>window.removeEventListener("keydown",k)},[onDone]);
  const tip=TIPS[i],last=i===TIPS.length-1;
  return <div className="flex min-h-full items-end justify-center">
-  <div aria-hidden className="fixed inset-0 bg-[#2A2620]/40"/>
-  <div className="relative m-3 w-full max-w-md rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_-12px_30px_-10px_rgba(0,0,0,.35)]">
-   <p className="text-[13px] font-bold uppercase tracking-wide text-[#8A3B23]">How to play</p>
+  <div aria-hidden className="fixed inset-0 bg-deep/40"/>
+  <div className="relative m-3 w-full max-w-md rounded-3xl bg-panel p-5">
+   <p className="text-[13px] font-bold uppercase tracking-wide text-highlight">How to play</p>
    <h2 id="howto-h" ref={h} tabIndex={-1} className="mt-1 text-[24px] font-bold leading-tight outline-none">{tip.title}</h2>
-   <p className="mt-2 text-[17px] leading-7 text-[#4A4438]">{tip.body}{last&&rival?` Then the face-off with ${rival} starts.`:""}</p>
+   <p className="mt-2 text-[17px] leading-7 text-muted">{tip.body}{last&&rival?` Then the face-off with ${rival} starts.`:""}</p>
    <button type="button" onClick={()=>last?onDone():setI(i+1)} className="case-primary mt-4 min-h-[52px] w-full justify-center text-[17px]">{last?"Start reading":"Next"} <ArrowRight size={18}/></button>
   </div>
  </div>;
@@ -234,20 +234,20 @@ function RoundBanner({bar,started,label,question,clock}:{bar:Bar;started:boolean
  const {run,kind,scene}=bar,s=run.state;
  const [open,setOpen]=useState<"scoring"|"power"|null>(null);
  const coach=s.rounds.length?roundIntroLine(s.rounds.at(-1),run.state.round+(s.restarts??0)):"";
- const link=`min-h-6 underline underline-offset-2 ${question?"text-[#F3C9B2]":"text-[#8A3B23]"}`;
+ const link=`min-h-6 underline underline-offset-2 ${question?"text-muted":"text-highlight"}`;
  const relax=bar.canRelax&&!started?<button type="button" aria-pressed={bar.relaxed} onClick={()=>bar.setRelaxed(!bar.relaxed)} className={`${link} text-[12.5px] font-semibold`}>Relaxed timer: {bar.relaxed?"on":"off"}</button>:null;
  const row=<div className="mt-0.5 flex flex-wrap items-center justify-between gap-x-3 text-[13px] font-semibold">
-  <span className={`tabular-nums ${question?"text-[#FFFDF8]":"text-[#2A2620]"}`}>{nextGoal(run.total,run.goal.max)}<span className="sr-only">. {run.total} of {run.goal.max} points so far.</span></span>
+  <span className={`tabular-nums ${question?"text-ink":"text-ink"}`}>{nextGoal(run.total,run.goal.max)}<span className="sr-only">. {run.total} of {run.goal.max} points so far.</span></span>
   <button type="button" aria-expanded={open==="scoring"} onClick={()=>setOpen(o=>o==="scoring"?null:"scoring")} className={link}>How scoring works</button>
   {s.round>0&&!started&&<button type="button" aria-expanded={open==="power"} onClick={()=>setOpen(o=>o==="power"?null:"power")} className={link}>Power-ups · {s.coins} coin{s.coins===1?"":"s"}</button>}
  </div>;
  return <>
-  {question!==undefined?<div className="case-art overflow-hidden rounded-2xl" style={{backgroundImage:`url('${scene.background_image}')`}}><div className="bg-[linear-gradient(90deg,rgba(42,38,32,.95),rgba(42,38,32,.75))] px-3 pb-1.5 pt-2 text-[#FFFDF8]">
-   <div className="flex items-center gap-3"><h1 id="play-h" tabIndex={-1} className="text-[12px] font-bold uppercase tracking-wide text-[#F3C9B2] outline-none">{label}</h1>{relax}<span className="flex-1"/>{clock&&<span className={`shrink-0 text-[12.5px] font-bold tabular-nums ${clock.grace?"text-[#FFB59E]":"text-[#FFFDF8]"}`} aria-hidden>{clock.text}</span>}</div>
+  {question!==undefined?<div className="case-art overflow-hidden rounded-2xl" style={{backgroundImage:`url('${scene.background_image}')`}}><div className="bg-deep/90 px-3 pb-1.5 pt-2 text-ink">
+   <div className="flex items-center gap-3"><h1 id="play-h" tabIndex={-1} className="text-[12px] font-bold uppercase tracking-wide text-muted outline-none">{label}</h1>{relax}<span className="flex-1"/>{clock&&<span className={`shrink-0 text-[12.5px] font-bold tabular-nums ${clock.grace?"text-highlight":"text-ink"}`} aria-hidden>{clock.text}</span>}</div>
    <p className="text-[16px] font-semibold leading-[1.35]">{question}</p>{row}</div>
-   {clock&&<><div aria-hidden className="h-1 bg-[#2A2620]/70"><div className={`h-full ${clock.grace?"bg-[#E0603F]":"bg-[#F3C9B2]"}`} style={{width:`${Math.max(0,Math.min(1,clock.share))*100}%`}}/></div><p className="sr-only" aria-live="polite">{clock.announce}</p></>}</div>
-   :<>{coach&&<p className="mt-1 text-[14px] leading-5 text-[#4A4438]">{coach}</p>}{row}{relax}</>}
-  {open==="scoring"&&<div className="mt-2 rounded-2xl bg-[#FFFDF8] p-3 text-[14px] leading-5 shadow-[0_2px_10px_-5px_rgba(42,38,32,.3)]"><p>{ROUND_HELP[kind]}</p><PointsGoal max={run.goal.max}/></div>}
+   {clock&&<><div aria-hidden className="h-1 bg-deep/70"><div className={`h-full ${clock.grace?"bg-primary":"bg-primary-soft"}`} style={{width:`${Math.max(0,Math.min(1,clock.share))*100}%`}}/></div><p className="sr-only" aria-live="polite">{clock.announce}</p></>}</div>
+   :<>{coach&&<p className="mt-1 text-[14px] leading-5 text-muted">{coach}</p>}{row}{relax}</>}
+  {open==="scoring"&&<div className="mt-2 rounded-2xl bg-panel p-3 text-[14px] leading-5"><p>{ROUND_HELP[kind]}</p><PointsGoal max={run.goal.max}/></div>}
   {open==="power"&&!started&&<PowerUps kind={kind} run={run} onBuy={bar.onBuy}/>}
  </>;
 }
@@ -255,17 +255,17 @@ function PowerUps({kind,run,onBuy}:{kind:RoundKind;run:PublicRun;onBuy:(p:PowerU
  const s=run.state,usable=(p:PowerUp)=>p==="second-look"?kind!=="read":true;
  return <ul className="mt-2 grid gap-2 sm:grid-cols-3">{(Object.keys(POWER_UPS) as PowerUp[]).map(p=>{const on=(p==="lantern"&&s.lantern)||(p==="double-down"&&s.doubleDown);const short=s.coins<POWER_UPS[p].cost;const can=!on&&!short&&usable(p);
   // Can't afford it yet: a plain card that says what it takes, so it never looks used or done.
-  return <li key={p}><button type="button" aria-disabled={!can} onClick={()=>can&&onBuy(p)} aria-pressed={on} className={`flex h-full w-full flex-col rounded-2xl p-3 text-left ${on?"bg-[#2A2620] text-white":can?"bg-[#F4E1D6] hover:bg-[#EDD3C4]":short&&usable(p)?"border-2 border-dashed border-[#C9B9A0] bg-[#FFFDF8] text-[#2A2620]":"bg-[#EFE8D8] text-[#8B8478]"}`}><span className="text-[16px] font-bold">{POWER_UPS[p].name} · {POWER_UPS[p].cost}</span><span className="mt-1 text-[13px] leading-5">{on?"Ready for this round.":!usable(p)?"Not used in this round.":short?<><b className="block text-[#8A3B23]">Need {POWER_UPS[p].cost} coin{POWER_UPS[p].cost===1?"":"s"}</b>{POWER_UPS[p].what}</>:POWER_UPS[p].what}</span></button></li>})}</ul>;
+  return <li key={p}><button type="button" aria-disabled={!can} onClick={()=>can&&onBuy(p)} aria-pressed={on} className={`flex h-full w-full flex-col rounded-2xl p-3 text-left ${on?"bg-deep text-ink":can?"bg-primary-soft hover:bg-primary-soft":short&&usable(p)?"border-2 border-dashed border-edge bg-panel text-ink":"bg-panel-2 text-muted"}`}><span className="text-[16px] font-bold">{POWER_UPS[p].name} · {POWER_UPS[p].cost}</span><span className="mt-1 text-[13px] leading-5">{on?"Ready for this round.":!usable(p)?"Not used in this round.":short?<><b className="block text-highlight">Need {POWER_UPS[p].cost} coin{POWER_UPS[p].cost===1?"":"s"}</b>{POWER_UPS[p].what}</>:POWER_UPS[p].what}</span></button></li>})}</ul>;
 }
 
 function RoundHeading({round,kind,tryNo}:{round:number;kind:RoundKind;tryNo:number}){
- return <div className="flex items-baseline justify-between gap-2"><h1 id="play-h" tabIndex={-1} className="text-[20px] font-bold leading-tight outline-none">Round {round} · {ROUND_NAMES[kind]}</h1>{tryNo>1&&<span className="shrink-0 rounded-full bg-[#FFF4D6] px-2.5 py-0.5 text-[13px] font-bold text-[#8A5A00]">Try {tryNo} of {MAX_TRIES}</span>}</div>;
+ return <div className="flex items-baseline justify-between gap-2"><h1 id="play-h" tabIndex={-1} className="text-[20px] font-bold leading-tight outline-none">Round {round} · {ROUND_NAMES[kind]}</h1>{tryNo>1&&<span className="shrink-0 rounded-full bg-gold-soft px-2.5 py-0.5 text-[13px] font-bold text-gold">Try {tryNo} of {MAX_TRIES}</span>}</div>;
 }
 // The four rounds in a row: played rounds gray with a check (skipped ones gray with a dash), the current one highlighted.
 // compact: one short row on round screens.
 function RoundTracker({round,skipped,compact=false}:{round:number;skipped:number;compact?:boolean}){
  return <ol className={`grid grid-cols-4 gap-1 ${compact?"mt-2":"mt-4"}`} aria-label={`Round ${round+1} of ${ROUNDS.length}`}>{ROUNDS.map((k,i)=>{const done=i<round,now=i===round,skip=done&&i<skipped;
-  return <li key={k} aria-current={now?"step":undefined} className={`flex flex-col justify-center rounded-xl px-1 text-center font-semibold leading-tight ${compact?"min-h-[28px] whitespace-nowrap py-1 text-[11px]":"min-h-[48px] py-1.5 text-[13px]"} ${now?"bg-[#A0472C] text-white shadow-[0_0_0_3px_rgba(160,71,44,.25)]":done?"bg-[#E4DCCB] text-[#6B6457]":"bg-[#FFFDF8] text-[#2A2620] ring-1 ring-[#E4DCCB]"}`}>
+  return <li key={k} aria-current={now?"step":undefined} className={`flex flex-col justify-center rounded-xl px-1 text-center font-semibold leading-tight ${compact?"min-h-[28px] whitespace-nowrap py-1 text-[11px]":"min-h-[48px] py-1.5 text-[13px]"} ${now?"bg-primary text-on-primary shadow-[0_0_0_3px_rgba(160,71,44,.25)]":done?"bg-panel-2 text-muted":"bg-panel text-ink ring-1 ring-edge"}`}>
    {compact?<span className="flex items-center justify-center gap-1">{done&&(skip?<Minus size={12} aria-hidden/>:<Check size={12} aria-hidden/>)}<span className="sr-only">{now?"Now: ":skip?"Skipped: ":done?"Done: ":"Later: "}</span>{ROUND_NAMES[k]}</span>
     :<><span className="flex items-center justify-center gap-1">{done&&(skip?<Minus size={14} aria-hidden/>:<Check size={14} aria-hidden/>)}<span className="sr-only">{now?"Now: ":skip?"Skipped: ":done?"Done: ":"Later: "}</span>{i+1}</span><span>{ROUND_NAMES[k]}</span></>}</li>})}</ol>;
 }
@@ -276,8 +276,8 @@ function RaceStrip({race,name,emblem,wins,losses}:{race:Race;name:string;emblem:
  useEffect(()=>{const t=setInterval(()=>setNow(Date.now()),250);return()=>clearInterval(t)},[]);
  const done=now-race.start>=race.rivalMs,short=name.replace(/^The /,"");
  // The score is face-off wins this story, in plain words: "You 1 · Lantern Ghost 1".
- return <div className="mt-1.5 rounded-xl bg-[#FFFDF8] px-3 py-1 shadow-[0_1px_6px_-3px_rgba(42,38,32,.3)]">
-  <div className="flex items-center gap-2 text-[12.5px] font-bold"><span className="h-5 w-5 shrink-0 overflow-hidden rounded-full"><RivalEmblem kind={emblem} size={20}/></span><p className="shrink-0 font-semibold text-[#2E3B4E]" aria-live="polite">{done?`${short} locked in a line.`:`${short} is reading...`}<span className="sr-only"> (computer rival)</span></p><span className="ml-auto whitespace-nowrap text-[#2A2620]">You {wins} · {short} {losses}</span>
+ return <div className="mt-1.5 rounded-xl bg-panel px-3 py-1">
+  <div className="flex items-center gap-2 text-[12.5px] font-bold"><span className="h-5 w-5 shrink-0 overflow-hidden rounded-full"><RivalEmblem kind={emblem} size={20}/></span><p className="shrink-0 font-semibold text-ink" aria-live="polite">{done?`${short} locked in a line.`:`${short} is reading...`}<span className="sr-only"> (computer rival)</span></p><span className="ml-auto whitespace-nowrap text-ink">You {wins} · {short} {losses}</span>
 </div>
  </div>;
 }
@@ -312,14 +312,14 @@ function useRoundTimer(seconds:number|null,pausedByNote:boolean,onOver:()=>void,
  return {elapsed,left,grace:inGrace,graceLeft,graceSeconds:grace,paused,announce};
 }
 function TimerBar({t,seconds,compact=false,waiting=false}:{t:ReturnType<typeof useRoundTimer>;seconds:number|null;compact?:boolean;waiting?:boolean}){
- if(waiting&&seconds!==null)return <p className={`${compact?"mt-1.5":"mt-3"} flex items-center gap-2 text-[13px] font-semibold text-[#4A4438]`}><Timer size={15} aria-hidden/>{Math.round(seconds)} seconds. The timer starts when you tap a line.</p>;
- if(seconds===null)return <p className={`${compact?"mt-1.5":"mt-3"} flex items-center gap-2 text-[15px] text-[#6B6457]`}><Timer size={16}/>No timer. Take the time you need.</p>;
+ if(waiting&&seconds!==null)return <p className={`${compact?"mt-1.5":"mt-3"} flex items-center gap-2 text-[13px] font-semibold text-muted`}><Timer size={15} aria-hidden/>{Math.round(seconds)} seconds. The timer starts when you tap a line.</p>;
+ if(seconds===null)return <p className={`${compact?"mt-1.5":"mt-3"} flex items-center gap-2 text-[15px] text-muted`}><Timer size={16}/>No timer. Take the time you need.</p>;
  const share=t.grace?t.graceLeft/t.graceSeconds:(t.left??0)/seconds;
  const label=t.grace?`${Math.ceil(t.graceLeft)}s for half points`:`${Math.ceil(t.left??0)}s left`;
- if(compact&&!t.grace)return <div className="mt-1.5 flex items-center gap-2 text-[13px] font-semibold"><span className="text-[#4A4438]">{t.paused?"Paused":"Time"}</span><div aria-hidden className="h-2.5 flex-1 overflow-hidden rounded-full bg-[#E4DCCB]"><div className="h-full rounded-full bg-[#A0472C]" style={{width:`${Math.max(0,Math.min(1,share))*100}%`}}/></div><span className="tabular-nums" aria-hidden>{label}</span><p className="sr-only" aria-live="polite">{t.announce}</p></div>;
+ if(compact&&!t.grace)return <div className="mt-1.5 flex items-center gap-2 text-[13px] font-semibold"><span className="text-muted">{t.paused?"Paused":"Time"}</span><div aria-hidden className="h-2.5 flex-1 overflow-hidden rounded-full bg-panel-2"><div className="h-full rounded-full bg-primary" style={{width:`${Math.max(0,Math.min(1,share))*100}%`}}/></div><span className="tabular-nums" aria-hidden>{label}</span><p className="sr-only" aria-live="polite">{t.announce}</p></div>;
  return <div className={compact?"mt-1.5":"mt-3"}>
-  <div className="flex items-center justify-between text-[14px] font-semibold"><span className={t.grace?"text-[#A33B20]":"text-[#4A4438]"}>{t.grace?"Time! You can still add proof for half points":t.paused?"Paused":"Time"}</span><span className="tabular-nums" aria-hidden>{label}</span></div>
-  <div aria-hidden className="mt-1 h-3 overflow-hidden rounded-full bg-[#E4DCCB]"><div className={`h-full rounded-full ${t.grace?"bg-[#A33B20]":"bg-[#A0472C]"}`} style={{width:`${Math.max(0,Math.min(1,share))*100}%`}}/></div>
+  <div className="flex items-center justify-between text-[14px] font-semibold"><span className={t.grace?"text-notyet":"text-muted"}>{t.grace?"Time! You can still add proof for half points":t.paused?"Paused":"Time"}</span><span className="tabular-nums" aria-hidden>{label}</span></div>
+  <div aria-hidden className="mt-1 h-3 overflow-hidden rounded-full bg-panel-2"><div className={`h-full rounded-full ${t.grace?"bg-notyet":"bg-primary"}`} style={{width:`${Math.max(0,Math.min(1,share))*100}%`}}/></div>
   <p className="sr-only" aria-live="polite">{t.announce}{t.grace?" Time! You can still add proof for half points.":""}</p>
  </div>;
 }
@@ -347,7 +347,7 @@ async function trySend(send:Send,onError:(m:string)=>void,input:RoundInput,elaps
 function LanternNote({world,passages,scene,kind,run,locked}:{world:WorldPack;passages:SourcePassage[];scene:Scene;kind:RoundKind;run:PublicRun;locked?:string[]}){
  if(!run.state.lantern)return null;
  const pid=lanternParagraph(world,passages,scene,kind,run.state.picks,locked);
- return pid?<p className="mt-2 rounded-2xl bg-[#FBEFD2] px-4 py-3 text-[16px]">Your Lantern names {paragraphLabel(pid)}: a correct line is there.</p>:null;
+ return pid?<p className="mt-2 rounded-2xl bg-gold-soft px-4 py-3 text-[16px]">Your Lantern names {paragraphLabel(pid)}: a correct line is there.</p>:null;
 }
 
 function ReadRound({world,scene,passages,run,setting,sound,resume,send,onError,bar,hold}:RoundProps){
@@ -381,13 +381,13 @@ function ReadRound({world,scene,passages,run,setting,sound,resume,send,onError,b
   <RoundBanner bar={bar} started={started} label={`Round 1 · ${ROUND_NAMES.read}${tryNo>1?` · Try ${tryNo} of ${MAX_TRIES}`:""}`} question={q.focus} clock={clockOf(t,trySeconds("read",tryNo,setting).seconds,!started)}/>
   <LanternNote world={world} passages={passages} scene={scene} kind="read" run={run} locked={locked}/>
   <div ref={fit.ref} style={fit.style} className="relative mt-2 flex min-h-0 flex-col">
-   {firstEver&&!pouch.length&&!noteOpen&&<span aria-hidden className="pointer-events-none absolute right-3 top-2 z-10 inline-flex items-center gap-1 rounded-full bg-[#A0472C] px-2.5 py-1 text-[12.5px] font-bold text-white shadow"><Hand size={14}/>Tap a line to start</span>}
+   {firstEver&&!pouch.length&&!noteOpen&&<span aria-hidden className="pointer-events-none absolute right-3 top-2 z-10 inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[12.5px] font-bold text-on-primary shadow"><Hand size={14}/>Tap a line to start</span>}
    {noteOpen&&current?<div className="overflow-y-auto"><ContentNote text={notes.get(current.id)!}/><button type="button" onClick={()=>setNoteSeen(s=>({...s,[current.id]:true}))} className="case-secondary mt-3">Continue reading</button></div>
     :<ReadingPanel glossary={world.glossary} passages={chunks.slice(0,shown)} kept={pouch} onTap={tap} className="h-full"/>}
   </div>
   <div ref={fit.dock} className="pt-2">
    <PouchChips pouch={pouch} locked={locked} full={full} onRemove={x=>tap({text:x})}/>
-   {firstEver&&pouch.length>locked.length&&<p role="status" className="mt-1 text-[12.5px] font-semibold text-[#8A3B23]">{pouch.length>=POUCH_MAX?INLINE_TIPS.lock:INLINE_TIPS.pouch}</p>}
+   {firstEver&&pouch.length>locked.length&&<p role="status" className="mt-1 text-[12.5px] font-semibold text-highlight">{pouch.length>=POUCH_MAX?INLINE_TIPS.lock:INLINE_TIPS.pouch}</p>}
    <div className="mt-2 flex gap-2">
     {shown<chunks.length&&<button type="button" onClick={()=>setShown(n=>n+1)} disabled={noteOpen} className="case-secondary min-h-[48px] min-w-0 flex-1 justify-center whitespace-nowrap px-3 text-[14px]">Next part <span className="text-[13px] font-semibold opacity-75">{shown+1}/{chunks.length}</span><ArrowRight size={18}/></button>}
     <button type="button" disabled={busy||pouch.length===locked.length} onClick={()=>lockIn(t.elapsed,t.grace)} className="case-primary min-h-[48px] min-w-0 flex-[1.3] justify-center whitespace-nowrap px-3 text-[14px] disabled:opacity-50">{pouch.length===locked.length?`Tap ${need} line${need===1?"":"s"} to lock in`:`Lock in ${pouch.length} line${pouch.length===1?"":"s"}`}</button>
@@ -396,7 +396,7 @@ function ReadRound({world,scene,passages,run,setting,sound,resume,send,onError,b
  </section>}</TimedTry>;
 }
 function FoundSoFar({lines}:{lines:string[]}){
- return <div className="mt-3"><p className="text-[15px] font-bold">Found so far</p>{lines.map(l=><blockquote key={l} className="mt-1 flex gap-2 border-l-4 border-[#2F6B3A] pl-3 font-serif text-[15px] leading-6"><Check size={16} className="mt-1 shrink-0 text-[#2F6B3A]" aria-label="found"/>{displayLine(l)}</blockquote>)}</div>;
+ return <div className="mt-3"><p className="text-[15px] font-bold">Found so far</p>{lines.map(l=><blockquote key={l} className="mt-1 flex gap-2 border-l-4 border-success pl-3 font-serif text-[15px] leading-6"><Check size={16} className="mt-1 shrink-0 text-success" aria-label="found"/>{displayLine(l)}</blockquote>)}</div>;
 }
 // One timed try: a fresh timer each try (its key), handed to the round's view.
 // waiting: the timer hasn't started (it starts at the student's first tap); paused: a content note or an overlay is open.
@@ -411,26 +411,26 @@ function TimedTry({kind,tryNo,setting,paused=false,waiting=false,onOver,children
 function PouchChips({pouch,locked,full,onRemove}:{pouch:string[];locked:string[];full:boolean;onRemove:(t:string)=>void}){
  const found=(t:string)=>locked.some(x=>lineKey(x)===lineKey(t));
  const words=(t:string)=>displayLine(t).split(/\s+/).slice(0,2).join(" ");
- return <div className="rounded-2xl border-2 border-dashed border-[#C9B9A0] bg-[#FBF7EE] px-2 py-1">
+ return <div className="rounded-2xl border-2 border-dashed border-edge bg-panel-2 px-2 py-1">
   <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none]">
-   <span className="inline-flex min-h-8 shrink-0 items-center gap-1 px-0.5 text-[13px] font-bold" aria-live="polite"><BookOpen size={15} className="text-[#A0472C]" aria-hidden/><span className="sr-only">Evidence pouch:</span><span key={pouch.length} className="count-bump tabular-nums">{pouch.length}</span><span aria-hidden>/</span><span className="sr-only"> of </span>{POUCH_MAX}</span>
-   {!pouch.length&&<span className="text-[13px] text-[#6B6457]">Your pouch is empty</span>}
-   {pouch.map(t=>found(t)?<span key={t} className="inline-flex min-h-8 shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-[#E8F2E7] px-2 text-[12px] font-semibold text-[#2F6B3A]"><Check size={13} aria-label="found"/>{words(t)}…</span>
-    :<button key={t} type="button" onClick={()=>onRemove(t)} aria-label={`Take out of your pouch: ${words(t)}…`} className="inline-flex min-h-8 shrink-0 items-center gap-0.5 whitespace-nowrap rounded-full bg-[#A0472C] pl-2 pr-1 text-[12px] font-semibold text-white">{words(t)}…<X size={13} aria-hidden/></button>)}
+   <span className="inline-flex min-h-8 shrink-0 items-center gap-1 px-0.5 text-[13px] font-bold" aria-live="polite"><BookOpen size={15} className="text-highlight" aria-hidden/><span className="sr-only">Evidence pouch:</span><span key={pouch.length} className="count-bump tabular-nums">{pouch.length}</span><span aria-hidden>/</span><span className="sr-only"> of </span>{POUCH_MAX}</span>
+   {!pouch.length&&<span className="text-[13px] text-muted">Your pouch is empty</span>}
+   {pouch.map(t=>found(t)?<span key={t} className="inline-flex min-h-8 shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-success-soft px-2 text-[12px] font-semibold text-success"><Check size={13} aria-label="found"/>{words(t)}…</span>
+    :<button key={t} type="button" onClick={()=>onRemove(t)} aria-label={`Take out of your pouch: ${words(t)}…`} className="inline-flex min-h-8 shrink-0 items-center gap-0.5 whitespace-nowrap rounded-full bg-primary pl-2 pr-1 text-[12px] font-semibold text-on-primary">{words(t)}…<X size={13} aria-hidden/></button>)}
   </div>
-  {full&&<p className="mt-1 text-[12.5px] font-semibold text-[#A33B20]">Your pouch is full. Take a line out to swap it.</p>}
+  {full&&<p className="mt-1 text-[12.5px] font-semibold text-notyet">Your pouch is full. Take a line out to swap it.</p>}
  </div>;
 }
 function Pouch({pouch,onRemove,full,picked,onPick,max,locked=[]}:{pouch:string[];onRemove?:(t:string)=>void;full?:boolean;picked?:string[];onPick?:(t:string)=>void;max?:number;locked?:string[]}){
- return <div className="mt-4 rounded-2xl border-2 border-dashed border-[#C9B9A0] bg-[#FBF7EE] p-3" aria-live="polite">
-  <p className="flex items-center gap-2 text-[14px] font-bold text-[#2A2620]"><BookOpen size={16} className="text-[#A0472C]"/>Evidence pouch · {pouch.length} of {POUCH_MAX}{onPick&&max?` · pin ${max}`:""}</p>
-  {!pouch.length&&<p className="mt-1 text-[14px] text-[#6B6457]">Empty. Tap a line in the story to keep it.</p>}
+ return <div className="mt-4 rounded-2xl border-2 border-dashed border-edge bg-panel-2 p-3" aria-live="polite">
+  <p className="flex items-center gap-2 text-[14px] font-bold text-ink"><BookOpen size={16} className="text-highlight"/>Evidence pouch · {pouch.length} of {POUCH_MAX}{onPick&&max?` · pin ${max}`:""}</p>
+  {!pouch.length&&<p className="mt-1 text-[14px] text-muted">Empty. Tap a line in the story to keep it.</p>}
   <ul className="mt-2 space-y-2">{pouch.map(t=>{const on=!!picked?.some(x=>lineKey(x)===lineKey(t));const done=locked.some(x=>lineKey(x)===lineKey(t));return <li key={t} className="flex items-start gap-2">
-   {onPick?<button type="button" aria-pressed={on} onClick={()=>onPick(t)} className={`flex-1 rounded-xl px-3 py-2 text-left font-serif text-[15px] leading-6 ${on?"bg-[#A0472C] text-white":"bg-[#FFFDF8] ring-1 ring-[#E4DCCB] hover:ring-[#A0472C]"}`}>“{t.replace(/\s+/g," ")}”</button>
-   :<p className="flex-1 font-serif text-[15px] leading-6">{done&&<Check size={15} className="mr-1 inline text-[#2F6B3A]" aria-label="found"/>}“{t.replace(/\s+/g," ")}”</p>}
-   {onRemove&&!done&&<button type="button" onClick={()=>onRemove(t)} className="grid h-9 w-9 shrink-0 place-items-center rounded-full hover:bg-[#EFE8D8]" aria-label="Take this line out of your pouch"><X size={16}/></button>}
+   {onPick?<button type="button" aria-pressed={on} onClick={()=>onPick(t)} className={`flex-1 rounded-xl px-3 py-2 text-left font-serif text-[15px] leading-6 ${on?"bg-primary text-on-primary":"bg-panel ring-1 ring-edge hover:ring-primary"}`}>“{t.replace(/\s+/g," ")}”</button>
+   :<p className="flex-1 font-serif text-[15px] leading-6">{done&&<Check size={15} className="mr-1 inline text-success" aria-label="found"/>}“{t.replace(/\s+/g," ")}”</p>}
+   {onRemove&&!done&&<button type="button" onClick={()=>onRemove(t)} className="grid h-9 w-9 shrink-0 place-items-center rounded-full hover:bg-panel-2" aria-label="Take this line out of your pouch"><X size={16}/></button>}
   </li>})}</ul>
-  {full&&<p className="mt-2 text-[14px] font-semibold text-[#A33B20]">Your pouch is full. Take a line out to swap it.</p>}
+  {full&&<p className="mt-2 text-[14px] font-semibold text-notyet">Your pouch is full. Take a line out to swap it.</p>}
  </div>;
 }
 
@@ -440,11 +440,11 @@ function Speaker({world,characterId,line,sound,sandboxId,label}:{world:WorldPack
  useEffect(()=>{if(said.current||!sound||!who)return;said.current=true;voice.play(line,who.id)},[sound,who,line,voice]);
  useEffect(()=>()=>voice.stop(),[voice]);
  if(!who)return null;
- return <div className="mt-4 flex items-start gap-3 rounded-3xl bg-[#2A2620] p-4 text-[#FFFDF8]"><Portrait character={who} size={64} speaking={voice.speaking===who.id}/><div className="min-w-0"><p className="text-[13px] font-semibold uppercase tracking-wide text-[#F3C9B2]">{label} · {who.name}</p><p className="mt-1 text-[18px] leading-7">{line}</p></div></div>;
+ return <div className="mt-4 flex items-start gap-3 rounded-3xl bg-deep p-4 text-ink"><Portrait character={who} size={64} speaking={voice.speaking===who.id}/><div className="min-w-0"><p className="text-[13px] font-semibold uppercase tracking-wide text-muted">{label} · {who.name}</p><p className="mt-1 text-[18px] leading-7">{line}</p></div></div>;
 }
 // The accepted (or shown) line, quoted.
 function TheLine({line,shown}:{line:string;shown?:boolean}){
- return <div className="mt-4">{shown&&<p className="text-[15px] font-bold text-[#8A5A00]">Here is the line that answers it. This round scores 0, but the proof step still counts toward your case.</p>}<blockquote className="mt-1 border-l-4 border-[#A0472C] bg-[#FFFDF8] px-4 py-3 font-serif text-[17px] leading-7">{displayLine(line)}</blockquote></div>;
+ return <div className="mt-4">{shown&&<p className="text-[15px] font-bold text-gold">Here is the line that answers it. This round scores 0, but the proof step still counts toward your case.</p>}<blockquote className="mt-1 border-l-4 border-primary bg-panel px-4 py-3 font-serif text-[17px] leading-7">{displayLine(line)}</blockquote></div>;
 }
 
 // Round 2, infer: the character asks; the student finds the one line, marks its exact words if it's long, then proves it.
@@ -469,7 +469,7 @@ function InferRound({world,scene,passages,run,setting,sound,sandboxId,resume,sen
   return <section className="mt-4" aria-labelledby="play-h">
    <h1 id="play-h" className="text-[24px] font-bold">{step.name==="phrase"?"Mark the exact words":"Prove it"}</h1>
    <Speaker world={world} characterId={who} line={q.question} sound={false} sandboxId={sandboxId} label="Asks you"/>
-   {step.name==="phrase"&&step.note&&<p role="status" className="mt-3 rounded-2xl bg-[#E8F2E7] px-4 py-3 text-[17px] font-semibold text-[#2F6B3A]">{step.note}</p>}
+   {step.name==="phrase"&&step.note&&<p role="status" className="mt-3 rounded-2xl bg-success-soft px-4 py-3 text-[17px] font-semibold text-success">{step.note}</p>}
    {step.name==="phrase"?<PhrasePicker line={accepted} busy={busy} onLock={range=>go({kind:"confront",line:accepted,marked:range})}/>
     :<><TheLine line={accepted} shown={shown}/>{shown&&step.phrase&&<PhrasePicker line={accepted} shownRange={step.phrase}/>}<ProveIt choices={step.choices} busy={busy} onSubmit={p=>go({kind:"confront",line:accepted,prove:p})}/></>}
   </section>;
@@ -488,7 +488,7 @@ function InferRound({world,scene,passages,run,setting,sound,sandboxId,resume,sen
 // The character's reaction to a try, with trust moving the same way.
 function Reacts({world,who,reaction,trust}:{world:WorldPack;who:string;reaction:{line:string;trust:number};trust:number}){
  const name=world.characters.find(c=>c.id===who)?.name??"";
- return <div className="mt-3 rounded-2xl bg-[#FFFDF8] p-3"><p className="text-[16px] leading-6">{reaction.line}</p><TrustMeter name={name} value={trust} change={reaction.trust}/></div>;
+ return <div className="mt-3 rounded-2xl bg-panel p-3"><p className="text-[16px] leading-6">{reaction.line}</p><TrustMeter name={name} value={trust} change={reaction.trust}/></div>;
 }
 
 // Round 3, catch the lie: tap the line that proves the testimony false, then say why.
@@ -514,7 +514,7 @@ function LieRound({world,scene,passages,run,setting,sound,sandboxId,resume,send,
   {testimony}
   <TheLine line={accepted} shown={!!shownLine}/>
   <label htmlFor="lie-why" className="mt-4 block text-[16px] font-semibold">Why does this line prove it false?</label>
-  <textarea id="lie-why" value={explain} onChange={e=>setExplain(e.target.value)} rows={2} maxLength={400} className="mt-2 w-full rounded-2xl border border-[#E4DCCB] bg-[#FFFDF8] px-4 py-3 text-[17px]" placeholder={`${world.characters.find(c=>c.id===lie.character_id)?.name??"They"} said… but the story says…`}/>
+  <textarea id="lie-why" value={explain} onChange={e=>setExplain(e.target.value)} rows={2} maxLength={400} className="mt-2 w-full rounded-2xl border border-edge bg-panel px-4 py-3 text-[17px]" placeholder={`${world.characters.find(c=>c.id===lie.character_id)?.name??"They"} said… but the story says…`}/>
   <div className="mt-5 flex justify-end"><button type="button" disabled={!explain.trim()||busy} onClick={()=>go({kind:"lie",line:accepted,explanation:explain})} className="case-primary disabled:opacity-40">Submit <ArrowRight size={18}/></button></div>
  </section>;
  return <TimedTry key={tryNo} kind="lie" tryNo={tryNo} setting={setting} paused={hold} waiting={!started} onOver={(e,g)=>go({kind:"lie",line,...speed.meta(),timeout:true},e,g)}>{t=><section className="mt-3" aria-labelledby="play-h">
@@ -553,11 +553,11 @@ function CallRound({world,scene,passages,run,setting,resume,send,onError,bar,hol
   <p className="mt-1 text-[17px] font-semibold leading-6">{q.question}</p>
   <TimerBar t={t} seconds={trySeconds("call",tryNo,setting).seconds} compact waiting={!started}/>
   <LanternNote world={world} passages={passages} scene={scene} kind="call" run={run}/>
-  <fieldset className="mt-2"><legend className="text-[14px] font-bold uppercase tracking-wide text-[#8A3B23]">1 · Your theory</legend>
-   <div className="mt-1 grid grid-cols-3 gap-1.5">{q.theories.map(th=><button key={th.id} type="button" aria-pressed={theory===th.id} aria-label={`Theory: ${th.name}. ${th.description}`} onClick={()=>{setStarted(true);setTheory(th.id)}} className={`min-h-[48px] rounded-xl px-2 py-1.5 text-center text-[14px] font-bold leading-tight ${theory===th.id?"bg-[#2A2620] text-white":"bg-[#FFFDF8] ring-1 ring-[#E4DCCB] hover:ring-[#A0472C]"}`}>{th.name}</button>)}</div>
-   {picked&&<p className="mt-1 text-[13.5px] leading-5 text-[#4A4438]">{picked.description}</p>}</fieldset>
-  <p className="mt-2 text-[14px] font-bold uppercase tracking-wide text-[#8A3B23]">2 · Pin 2 lines that support it <span className="normal-case tracking-normal text-[#2A2620]">· {pins.length}/2</span></p>
-  {fromPouch.length>0&&<div className="mt-1 flex items-center gap-1 overflow-x-auto [scrollbar-width:none]" role="group" aria-label="Lines from your pouch"><span className="shrink-0 text-[12.5px] font-semibold text-[#6B6457]">Your pouch:</span>{fromPouch.map(l=><button key={l} type="button" onClick={()=>togglePin(l)} aria-label={`Pin from your pouch: ${displayLine(l).split(/\s+/).slice(0,6).join(" ")}…`} className="inline-flex min-h-8 shrink-0 items-center rounded-full bg-[#F4E1D6] px-2.5 text-[12.5px] font-semibold text-[#8A3B23]">+ {displayLine(l).split(/\s+/).slice(0,3).join(" ")}…</button>)}</div>}
+  <fieldset className="mt-2"><legend className="text-[14px] font-bold uppercase tracking-wide text-highlight">1 · Your theory</legend>
+   <div className="mt-1 grid grid-cols-3 gap-1.5">{q.theories.map(th=><button key={th.id} type="button" aria-pressed={theory===th.id} aria-label={`Theory: ${th.name}. ${th.description}`} onClick={()=>{setStarted(true);setTheory(th.id)}} className={`min-h-[48px] rounded-xl px-2 py-1.5 text-center text-[14px] font-bold leading-tight ${theory===th.id?"bg-deep text-ink":"bg-panel ring-1 ring-edge hover:ring-primary"}`}>{th.name}</button>)}</div>
+   {picked&&<p className="mt-1 text-[13.5px] leading-5 text-muted">{picked.description}</p>}</fieldset>
+  <p className="mt-2 text-[14px] font-bold uppercase tracking-wide text-highlight">2 · Pin 2 lines that support it <span className="normal-case tracking-normal text-ink">· {pins.length}/2</span></p>
+  {fromPouch.length>0&&<div className="mt-1 flex items-center gap-1 overflow-x-auto [scrollbar-width:none]" role="group" aria-label="Lines from your pouch"><span className="shrink-0 text-[12.5px] font-semibold text-muted">Your pouch:</span>{fromPouch.map(l=><button key={l} type="button" onClick={()=>togglePin(l)} aria-label={`Pin from your pouch: ${displayLine(l).split(/\s+/).slice(0,6).join(" ")}…`} className="inline-flex min-h-8 shrink-0 items-center rounded-full bg-primary-soft px-2.5 text-[12.5px] font-semibold text-highlight">+ {displayLine(l).split(/\s+/).slice(0,3).join(" ")}…</button>)}</div>}
   <div ref={fit.ref} style={fit.style} className="mt-1.5 flex min-h-0 flex-col"><ReadingPanel glossary={world.glossary} className="h-full" passages={chunks} kept={pins} onTap={l=>togglePin(l.text)}/></div>
   <div ref={fit.dock} className="pt-2"><button type="button" disabled={!theory||pins.length<2||busy} onClick={()=>go(t.elapsed,t.grace)} className="case-primary min-h-[48px] w-full justify-center disabled:opacity-40">{!theory?"Pick a theory":pins.length<2?`Pin ${2-pins.length} more line${pins.length===1?"":"s"}`:"Lock in my case"} <ArrowRight size={18}/></button></div>
  </section>}</TimedTry>;
@@ -578,11 +578,11 @@ function useLiveBoard(run:PublicRun,initial:Board,headers:Record<string,string>,
 }
 function BoardView({board,mode}:{board:Board;mode:"individual"|"squad"|"off"}){
  if(mode==="off"||!board)return null;
- return <section className="mt-5 rounded-3xl bg-[#2A2620] p-5 text-[#FFFDF8]" aria-labelledby="board-h">
-  <h2 id="board-h" className="flex items-center gap-2 text-[18px] font-bold"><Trophy size={18} className="text-[#F3C9B2]"/>{board.kind==="squad"?"Squad leaderboard":"Leaderboard"} · top 5</h2>
-  <ol className="mt-3 space-y-1.5">{board.top.map(r=><li key={r.rank} className={`flex items-center justify-between rounded-xl px-3 py-2 ${r.me?"bg-[#A0472C]":"bg-white/5"}`}><span className="flex items-center gap-3"><span className="w-6 text-right font-bold tabular-nums">{r.rank}</span><span className="font-semibold">{r.name}{r.me?" (you)":""}</span></span><span className="tabular-nums">{r.score}</span></li>)}</ol>
-  {board.me&&board.me.rank>5&&<p className="mt-3 rounded-xl bg-white/10 px-3 py-2 text-[16px]">You're <b>#{board.me.rank}</b> with {board.me.score}{board.me.movement>0?` · up ${board.me.movement} spot${board.me.movement===1?"":"s"}`:""}</p>}
-  {board.me&&board.me.rank<=5&&board.me.movement>0&&<p className="mt-3 text-[15px] text-[#F3C9B2]">Up {board.me.movement} spot{board.me.movement===1?"":"s"}!</p>}
+ return <section className="mt-5 rounded-3xl bg-deep p-5 text-ink" aria-labelledby="board-h">
+  <h2 id="board-h" className="flex items-center gap-2 text-[18px] font-bold"><Trophy size={18} className="text-muted"/>{board.kind==="squad"?"Squad leaderboard":"Leaderboard"} · top 5</h2>
+  <ol className="mt-3 space-y-1.5">{board.top.map(r=><li key={r.rank} className={`flex items-center justify-between rounded-xl px-3 py-2 ${r.me?"bg-primary":"bg-ink/5"}`}><span className="flex items-center gap-3"><span className="w-6 text-right font-bold tabular-nums">{r.rank}</span><span className="font-semibold">{r.name}{r.me?" (you)":""}</span></span><span className="tabular-nums">{r.score}</span></li>)}</ol>
+  {board.me&&board.me.rank>5&&<p className="mt-3 rounded-xl bg-ink/10 px-3 py-2 text-[16px]">You're <b>#{board.me.rank}</b> with {board.me.score}{board.me.movement>0?` · up ${board.me.movement} spot${board.me.movement===1?"":"s"}`:""}</p>}
+  {board.me&&board.me.rank<=5&&board.me.movement>0&&<p className="mt-3 text-[15px] text-muted">Up {board.me.movement} spot{board.me.movement===1?"":"s"}!</p>}
  </section>;
 }
 // A right round shows its points; a round that needed the answer shown is never shown as success: no streak flame, no
@@ -594,38 +594,38 @@ function Results({world,scene,result,mode,run,headers,sandboxId,onNext}:{world:W
  const mustKeep=(r.kind==="read"||r.kind==="call")&&shownLines.length>0&&shownLines.some(l=>!kept.includes(l));
  const ok=r.valid;
  return <section className="mt-5" aria-labelledby="res-h">
-  <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">Round {r.round} · {ROUND_NAMES[r.kind]}</p>
+  <p className="text-[14px] font-semibold uppercase tracking-wide text-highlight">Round {r.round} · {ROUND_NAMES[r.kind]}</p>
   {ok&&r.points===0?<h1 id="res-h" className="mt-1 text-[32px] font-bold leading-tight">Found it</h1>
    :ok?<h1 id="res-h" className="mt-1 text-[40px] font-bold leading-none tabular-nums">+{r.points}</h1>
    :<h1 id="res-h" className="mt-1 text-[32px] font-bold leading-tight">Here's what proves it</h1>}
   <p className="mt-2 text-[17px]">{ok&&r.points===0?`${r.detail} on try ${r.tries+1}. Points come on the first two tries.`:ok?`${r.detail}${r.tries?` · found on try ${r.tries+1}`:""}${r.grace?" · half points after time":""}`:r.points>0?`+${r.points} for the lines you found. The rest are shown below.`:"0 points this round. Read the line below: it's the proof."}</p>
   {ok&&<ul className="mt-3 flex flex-wrap gap-2 text-[14px] font-semibold">
-   <li className="rounded-full bg-[#EFE8D8] px-3 py-1">Proof {r.base}</li>
-   {r.multiplier>1&&<li className="inline-flex items-center gap-1 rounded-full bg-[#A0472C] px-3 py-1 text-white"><Flame size={14}/>Streak x{r.multiplier}</li>}
-   {r.doubled&&<li className="rounded-full bg-[#2A2620] px-3 py-1 text-white">Doubled</li>}
-   {r.coinsEarned>0&&<li className="inline-flex items-center gap-1 rounded-full bg-[#F4E1D6] px-3 py-1 text-[#8A3B23]"><Coins size={14}/>+{r.coinsEarned} coin{r.coinsEarned===1?"":"s"}</li>}
+   <li className="rounded-full bg-panel-2 px-3 py-1">Proof {r.base}</li>
+   {r.multiplier>1&&<li className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-on-primary"><Flame size={14}/>Streak x{r.multiplier}</li>}
+   {r.doubled&&<li className="rounded-full bg-deep px-3 py-1 text-ink">Doubled</li>}
+   {r.coinsEarned>0&&<li className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-3 py-1 text-highlight"><Coins size={14}/>+{r.coinsEarned} coin{r.coinsEarned===1?"":"s"}</li>}
   </ul>}
-  {!!r.lost&&<p className="mt-3 rounded-2xl bg-[#FFF4D6] px-4 py-3 text-[16px] font-semibold text-[#3D2E0A]">Double down: you bet {r.bet} and lost {r.lost}.</p>}
-  {r.streak>0?<p className="mt-3 flex items-center gap-2 text-[16px]"><Flame size={18} className="text-[#A0472C]"/>Streak: {r.streak} round{r.streak===1?"":"s"} in a row right on the first try</p>
+  {!!r.lost&&<p className="mt-3 rounded-2xl bg-gold-soft px-4 py-3 text-[16px] font-semibold text-gold">Double down: you bet {r.bet} and lost {r.lost}.</p>}
+  {r.streak>0?<p className="mt-3 flex items-center gap-2 text-[16px]"><Flame size={18} className="text-highlight"/>Streak: {r.streak} round{r.streak===1?"":"s"} in a row right on the first try</p>
    :<p className="mt-3 text-[16px]">Streak reset: streaks count rounds right on the first try.</p>}
   {result.reaction&&<Reacts world={world} who={who} reaction={result.reaction} trust={trust}/>}
-  {shownLines.length>0&&(r.kind==="read"||r.kind==="call")&&<div className="mt-4 rounded-3xl border-2 border-[#C98A12] bg-[#FFF4D6] p-4"><p className="text-[16px] font-bold">Shown answer{shownLines.length>1?"s":""}: tap each line to keep it</p>
-   <ul className="mt-2 space-y-2">{shownLines.map(l=>{const on=kept.includes(l);return <li key={l}><button type="button" aria-pressed={on} onClick={()=>setKept(k=>on?k.filter(x=>x!==l):[...k,l])} className={`w-full rounded-2xl px-4 py-3 text-left font-serif text-[16px] leading-6 ${on?"bg-[#2A2620] text-white":"bg-[#FFFDF8] ring-1 ring-[#C98A12]"}`}>{on&&<Check size={16} className="mr-1 inline"/>}{displayLine(l)}</button></li>})}</ul></div>}
-  {r.proof.length>0&&ok&&<div className="mt-4"><p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">{r.kind==="read"?"Your pouch":"Your proof"}</p>{r.proof.map(p=><blockquote key={p} className="mt-2 border-l-4 border-[#A0472C] pl-3 font-serif text-[15px] italic leading-6">“{p.replace(/\s+/g," ")}”</blockquote>)}</div>}
+  {shownLines.length>0&&(r.kind==="read"||r.kind==="call")&&<div className="mt-4 rounded-3xl border-2 border-gold bg-gold-soft p-4"><p className="text-[16px] font-bold">Shown answer{shownLines.length>1?"s":""}: tap each line to keep it</p>
+   <ul className="mt-2 space-y-2">{shownLines.map(l=>{const on=kept.includes(l);return <li key={l}><button type="button" aria-pressed={on} onClick={()=>setKept(k=>on?k.filter(x=>x!==l):[...k,l])} className={`w-full rounded-2xl px-4 py-3 text-left font-serif text-[16px] leading-6 ${on?"bg-deep text-ink":"bg-panel ring-1 ring-gold"}`}>{on&&<Check size={16} className="mr-1 inline"/>}{displayLine(l)}</button></li>})}</ul></div>}
+  {r.proof.length>0&&ok&&<div className="mt-4"><p className="text-[14px] font-semibold uppercase tracking-wide text-highlight">{r.kind==="read"?"Your pouch":"Your proof"}</p>{r.proof.map(p=><blockquote key={p} className="mt-2 border-l-4 border-primary pl-3 font-serif text-[15px] italic leading-6">“{p.replace(/\s+/g," ")}”</blockquote>)}</div>}
   <PointsMeter total={run.total} max={run.goal.max}/>
   <BoardView board={board} mode={mode}/>
-  <section className="mt-5 rounded-3xl bg-[#FFFDF8] p-5 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]" aria-labelledby="pulse-h">
+  <section className="mt-5 rounded-3xl bg-panel p-5" aria-labelledby="pulse-h">
    <h2 id="pulse-h" className="text-[18px] font-bold">{run.scope==="class"?"Class pulse":"Today's players"}</h2>
-   {result.pulse.length?<ul className="mt-3 space-y-3">{result.pulse.map(p=><li key={p.key}><div className="flex justify-between gap-3 text-[15px]"><span className="font-semibold">{p.label}</span><span className="tabular-nums">{p.pct}%</span></div><div aria-hidden className="mt-1 h-2.5 rounded-full bg-[#E4DCCB]"><div className="h-full rounded-full bg-[#A0472C]" style={{width:`${p.pct}%`}}/></div>{p.strongest&&<p className="mt-1 font-serif text-[14px] italic leading-5 text-[#4A4438]">Strongest proof: “{p.strongest.replace(/\s+/g," ").slice(0,160)}{p.strongest.length>160?"…":""}”</p>}</li>)}</ul>
-    :<p className="mt-2 text-[15px] text-[#6B6457]">Percentages show once 5 players have answered{result.answered?` (${result.answered} so far)`:""}.</p>}
+   {result.pulse.length?<ul className="mt-3 space-y-3">{result.pulse.map(p=><li key={p.key}><div className="flex justify-between gap-3 text-[15px]"><span className="font-semibold">{p.label}</span><span className="tabular-nums">{p.pct}%</span></div><div aria-hidden className="mt-1 h-2.5 rounded-full bg-panel-2"><div className="h-full rounded-full bg-primary" style={{width:`${p.pct}%`}}/></div>{p.strongest&&<p className="mt-1 font-serif text-[14px] italic leading-5 text-muted">Strongest proof: “{p.strongest.replace(/\s+/g," ").slice(0,160)}{p.strongest.length>160?"…":""}”</p>}</li>)}</ul>
+    :<p className="mt-2 text-[15px] text-muted">Percentages show once 5 players have answered{result.answered?` (${result.answered} so far)`:""}.</p>}
   </section>
-  <div className="mt-6 flex flex-col items-end gap-1">{mustKeep&&<p className="text-[15px] font-semibold text-[#8A5A00]">Tap the shown line to keep it</p>}<button type="button" disabled={mustKeep} onClick={onNext} className="case-primary min-h-[58px] text-[18px] disabled:opacity-40">{run.finished?"See your scene results":"Next round"} <ArrowRight size={20}/></button></div>
+  <div className="mt-6 flex flex-col items-end gap-1">{mustKeep&&<p className="text-[15px] font-semibold text-gold">Tap the shown line to keep it</p>}<button type="button" disabled={mustKeep} onClick={onNext} className="case-primary min-h-[58px] text-[18px] disabled:opacity-40">{run.finished?"See your scene results":"Next round"} <ArrowRight size={20}/></button></div>
  </section>;
 }
 function TrustMeter({name,value,change}:{name:string;value:number;change:number}){
  const pct=Math.round(((Math.max(-3,Math.min(3,value))+3)/6)*100);
- return <div className="mt-3"><p className="text-[14px] font-semibold">Trust with {name}: <span className={change>0?"text-[#2F6B3A]":change<0?"text-[#A33B20]":""}>{change>0?`up ${change}`:change<0?`down ${-change}`:"no change"}</span></p>
-  <div className="mt-1 h-2.5 rounded-full bg-[#E4DCCB]" role="meter" aria-valuemin={-3} aria-valuemax={3} aria-valuenow={value} aria-label={`Trust with ${name}`}><div className="h-full rounded-full bg-[#2A2620]" style={{width:`${pct}%`}}/></div></div>;
+ return <div className="mt-3"><p className="text-[14px] font-semibold">Trust with {name}: <span className={change>0?"text-success":change<0?"text-notyet":""}>{change>0?`up ${change}`:change<0?`down ${-change}`:"no change"}</span></p>
+  <div className="mt-1 h-2.5 rounded-full bg-panel-2" role="meter" aria-valuemin={-3} aria-valuemax={3} aria-valuenow={value} aria-label={`Trust with ${name}`}><div className="h-full rounded-full bg-deep" style={{width:`${pct}%`}}/></div></div>;
 }
 
 // The demo's ending replaces the next scene's button (and sits beside mission leads, so testers can always close).
@@ -636,11 +636,11 @@ function Cleared({run,mode,headers,sandboxId,onNext,onAgain,onLeads,nextLabel=NE
  useEffect(()=>{if(mode==="off")return;fetch(`/api/story/board?runId=${run.id}&sandboxId=${sandboxId}`,{headers,cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>j&&setBoard(j.board)).catch(()=>{})},[run.id,headers,sandboxId,mode]);
  const level=levelFor(run.total,run.goal.max),next=LEVELS.find(l=>run.total<Math.ceil((l.pct/100)*run.goal.max));
  return <section className="mt-6" aria-labelledby="clear-h">
-  <div className="rounded-3xl bg-[#2A2620] p-6 text-center text-[#FFFDF8]"><p className="text-[14px] font-semibold uppercase tracking-wide text-[#F3C9B2]">Scene cleared</p><h1 id="clear-h" className="mt-2 text-[34px] font-bold">{level?level.name:"Case still open"}</h1><p className="mt-1 text-[22px] font-bold tabular-nums">{run.total.toLocaleString()} / {run.goal.max.toLocaleString()} points{run.total>run.goal.max?" · Bonus":""}</p>
-   {next&&<p className="mt-1 text-[15px] text-[#E8DDCB]">{next.name} takes {Math.ceil((next.pct/100)*run.goal.max).toLocaleString()}.</p>}
-   <dl className="mt-4 grid grid-cols-2 gap-3 text-left sm:grid-cols-3"><div className="rounded-2xl bg-white/10 p-3"><dt className="text-[13px]">Best streak</dt><dd className="text-[22px] font-bold">{run.state.bestStreak}</dd></div><div className="rounded-2xl bg-white/10 p-3"><dt className="text-[13px]">Rank</dt><dd className="text-[22px] font-bold">{board?.me?`#${board.me.rank}`:"·"}</dd></div><div className="rounded-2xl bg-white/10 p-3"><dt className="text-[13px]">Coins left</dt><dd className="text-[22px] font-bold">{run.state.coins}</dd></div></dl></div>
-  <div className="mt-5"><h2 className="text-[18px] font-bold">Your Evidence pouch</h2>{run.state.pouch.length?run.state.pouch.map(p=><blockquote key={p} className="mt-2 border-l-4 border-[#A0472C] pl-3 font-serif text-[16px] italic leading-7">“{p.replace(/\s+/g," ")}”</blockquote>):<p className="mt-1 text-[15px] text-[#6B6457]">No lines kept this time.</p>}</div>
+  <div className="rounded-3xl bg-deep p-6 text-center text-ink"><p className="text-[14px] font-semibold uppercase tracking-wide text-muted">Scene cleared</p><h1 id="clear-h" className="mt-2 text-[34px] font-bold">{level?level.name:"Case still open"}</h1><p className="mt-1 text-[22px] font-bold tabular-nums">{run.total.toLocaleString()} / {run.goal.max.toLocaleString()} points{run.total>run.goal.max?" · Bonus":""}</p>
+   {next&&<p className="mt-1 text-[15px] text-muted">{next.name} takes {Math.ceil((next.pct/100)*run.goal.max).toLocaleString()}.</p>}
+   <dl className="mt-4 grid grid-cols-2 gap-3 text-left sm:grid-cols-3"><div className="rounded-2xl bg-ink/10 p-3"><dt className="text-[13px]">Best streak</dt><dd className="text-[22px] font-bold">{run.state.bestStreak}</dd></div><div className="rounded-2xl bg-ink/10 p-3"><dt className="text-[13px]">Rank</dt><dd className="text-[22px] font-bold">{board?.me?`#${board.me.rank}`:"·"}</dd></div><div className="rounded-2xl bg-ink/10 p-3"><dt className="text-[13px]">Coins left</dt><dd className="text-[22px] font-bold">{run.state.coins}</dd></div></dl></div>
+  <div className="mt-5"><h2 className="text-[18px] font-bold">Your Evidence pouch</h2>{run.state.pouch.length?run.state.pouch.map(p=><blockquote key={p} className="mt-2 border-l-4 border-primary pl-3 font-serif text-[16px] italic leading-7">“{p.replace(/\s+/g," ")}”</blockquote>):<p className="mt-1 text-[15px] text-muted">No lines kept this time.</p>}</div>
   <BoardView board={board} mode={mode}/>
-  <div className="mt-6 flex flex-wrap items-center justify-between gap-3"><button type="button" onClick={onAgain} className="inline-flex min-h-11 items-center gap-2 text-[15px] text-[#6B6457] underline underline-offset-4"><RotateCcw size={16}/>Play this scene again</button>{onLeads?<span className="flex flex-col items-end gap-1"><button type="button" onClick={onLeads} className="case-primary min-h-[58px] text-[18px]">Follow your mission leads <ArrowRight size={20}/></button>{nextLabel!==NEXT_SCENE&&<button type="button" onClick={onNext} className="min-h-11 text-[15px] font-semibold text-[#8A3B23] underline underline-offset-4">{nextLabel}</button>}</span>:<button type="button" onClick={onNext} className="case-primary min-h-[58px] text-[18px]">{nextLabel} <ArrowRight size={20}/></button>}</div>
+  <div className="mt-6 flex flex-wrap items-center justify-between gap-3"><button type="button" onClick={onAgain} className="inline-flex min-h-11 items-center gap-2 text-[15px] text-muted underline underline-offset-4"><RotateCcw size={16}/>Play this scene again</button>{onLeads?<span className="flex flex-col items-end gap-1"><button type="button" onClick={onLeads} className="case-primary min-h-[58px] text-[18px]">Follow your mission leads <ArrowRight size={20}/></button>{nextLabel!==NEXT_SCENE&&<button type="button" onClick={onNext} className="min-h-11 text-[15px] font-semibold text-highlight underline underline-offset-4">{nextLabel}</button>}</span>:<button type="button" onClick={onNext} className="case-primary min-h-[58px] text-[18px]">{nextLabel} <ArrowRight size={20}/></button>}</div>
  </section>;
 }

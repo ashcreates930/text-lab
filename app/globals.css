@@ -1,57 +1,112 @@
 @import "tailwindcss";
-:root{--paper:#2A2620;--ink:#F6F0E3;--muted:#6B6457;--line:#2a262024;--accent:#A0472C;--amber:#A0472C;--green:#8A3B23;--color-white:#2A2620}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#F6F0E3;color:var(--paper);font-family:Arial,Helvetica,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}select option{background:#FFFDF8;color:#2A2620}.serif{font-family:Georgia,"Times New Roman",serif}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.eyebrow{font-size:10px;letter-spacing:.19em;text-transform:uppercase;color:#A0472C}/* Scene art is shown brighter so students can inspect it; a text shadow keeps the scene title readable. */
-.scene-bg{background-size:cover;background-position:center;position:relative}.scene-bg:before{content:"";position:absolute;inset:0;background-image:inherit;background-size:cover;background-position:center;filter:brightness(1.65) contrast(1.06) saturate(1.08)}.scene-bg h1,.scene-bg h2,.scene-bg p,.scene-bg .eyebrow,.scene-bg a{text-shadow:0 1px 3px #000000b3,0 0 12px #00000066}.panel{background:#FFFDF8;border:1px solid var(--line)}.soft-button{border:1px solid #2a262038;background:#FFFDF8;transition:.2s}.soft-button:hover{background:#efe8d8;border-color:#A0472C88}.gold-button{background:#A0472C;color:#FFFDF8;font-weight:700;transition:.2s}.gold-button:hover{background:#8A3B23}.story-copy{font-family:Georgia,serif;line-height:1.85;color:#3a342b}.fade-in{animation:fade .4s ease-out}@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-/* Cream theme: Tailwind's white utilities draw in ink. Story scenes and the home page artwork stay dark, so white means white there again. */
-.scene-bg,.dark-zone{--color-white:#ffffff;color:#eee9df}
-.scene-bg .eyebrow,.dark-zone .eyebrow{color:#EBC0A8}
-.scene-bg [class*="text-[#A0472C]"],.scene-bg [class*="text-[#8A3B23]"],.dark-zone [class*="text-[#A0472C]"]{color:#EBC0A8!important}
-.scene-bg [class*="border-[#A0472C]"]{border-color:#EBC0A8!important}
-[class*="bg-[#b5482f]"],[class*="bg-[#d08a6a]"]{--color-white:#ffffff}
-.scene-bg .soft-button,.dark-zone .soft-button{background:#ffffff14;border-color:#ffffff55}
-.scene-bg .soft-button:hover{background:#ffffff26}
 
-/* Student case flow (app/case.tsx): one typeface, generous spacing, soft cards, one primary button style. */
-.case-ui{font-family:"Plus Jakarta Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#2A2620;--color-white:#ffffff}
-/* The projector host screen: the same type, light on dark. */
-.case-ui.case-ui-dark{color:#FFFDF8}
-.case-ui .font-serif{font-family:Georgia,"Times New Roman",serif}
-.case-art{background-size:cover;background-position:center;filter:brightness(1.6) contrast(1.06) saturate(1.08)}
-.case-primary{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:52px;border-radius:16px;background:#A0472C;color:#fff;padding:0 22px;font-size:17px;font-weight:700;transition:background .15s,transform .15s}
-.case-primary:hover:not(:disabled){background:#8A3B23;transform:translateY(-1px)}
-.case-secondary{display:inline-flex;align-items:center;gap:.6rem;min-height:52px;border-radius:16px;background:#FFFDF8;color:#2A2620;padding:0 18px;font-size:16px;font-weight:600;box-shadow:0 2px 10px -4px rgba(42,38,32,.25);transition:background .15s}
-.case-secondary:hover{background:#F4E1D6}
-.case-tool{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;min-height:46px;border-radius:14px;background:#FFFDF8;color:#2A2620;padding:0 12px;font-size:15px;font-weight:600;box-shadow:0 2px 10px -4px rgba(42,38,32,.25);transition:background .15s}
-.case-tool:hover:not(:disabled){background:#F4E1D6}
-@keyframes case-pulse{0%,100%{box-shadow:0 0 0 0 rgba(160,71,44,.55)}50%{box-shadow:0 0 0 10px rgba(160,71,44,0)}}
+/* ---------- The game look: tokens (lib/design-tokens.ts holds the same values) ---------- */
+@theme {
+  --color-stage: #15122E; --color-deep: #0E0C22; --color-panel: #2A2552; --color-panel-2: #1F1B40; --color-edge: #3B3470;
+  --color-ink: #FFFFFF; --color-muted: #C9C3F0; --color-faint: #8C84C8;
+  --color-primary: #FF8A1F; --color-on-primary: #1A0F00; --color-primary-shadow: #9A4A00; --color-highlight: #FFB65C; --color-primary-soft: #3A2440;
+  --color-success: #34E0C0; --color-on-success: #062B24; --color-success-shadow: #12917A; --color-success-soft: #123B3D;
+  --color-notyet: #FF7A93; --color-on-notyet: #3A0614; --color-notyet-shadow: #B23A55; --color-notyet-soft: #3E1A33;
+  --color-gold: #FFCF3F; --color-on-gold: #2B1F00; --color-gold-shadow: #B88700; --color-gold-soft: #3A3016;
+  --color-violet: #8C7CFF; --color-on-violet: #120A3A; --color-violet-shadow: #5446C2; --color-violet-soft: #2C2766;
+  --color-reading: #FFF8EC; --color-reading-ink: #241B12; --color-line-row: #FFFFFF; --color-line-edge: #EADCC6; --color-line-picked: #FFE2B8; --color-line-right: #E3FBF5; --color-line-right-edge: #12917A; --color-line-wrong: #FFE3EA; --color-line-wrong-edge: #C23A5C;
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fredoka), var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-literata), Georgia, "Times New Roman", serif;
+  --radius-row: 12px; --radius-button: 16px; --radius-card: 22px;
+}
+/* Inside the reading card the neutral tokens turn light, so shared pieces read dark on cream (lib/design-tokens.ts READING_SCOPE). */
+.reading-scope{--color-stage:#FFF8EC;--color-deep:#EADCC6;--color-panel:#FFFFFF;--color-panel-2:#FFF8EC;--color-edge:#EADCC6;--color-ink:#241B12;--color-muted:#5E4A36;--color-faint:#5E4A36;--color-highlight:#8A3F00;--color-primary-soft:#FFEBD6;--color-success-soft:#E3FBF5;--color-notyet-soft:#FFE3EA;--color-gold-soft:#FFF3CC;--color-violet-soft:#ECE9FF;color:var(--color-ink)}
+
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--color-stage);color:var(--color-ink);font-family:var(--font-sans);font-weight:700}
+h1,h2,h3,.font-display{font-family:var(--font-display);font-weight:700}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+select option{background:var(--color-panel);color:var(--color-ink)}
+input,textarea,select{color-scheme:dark}
+::placeholder{color:var(--color-faint);opacity:1}
+a{color:inherit}
+:where(p,li,label,small,dd,td) a:not([class]),a.link{color:var(--color-highlight);text-decoration:underline;text-underline-offset:3px}
+.serif,.story-copy{font-family:var(--font-serif);font-weight:400}
+.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--color-highlight)}
+.story-copy{line-height:1.85;color:var(--color-ink)}
+.fade-in{animation:fade .4s ease-out}@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* Focus: a 2px highlight ring everywhere. Headings that receive focus for screen readers need no ring. */
+:focus-visible{outline:2px solid #FFB65C;outline-offset:2px}
+h1[tabindex="-1"]:focus{outline:none}
+
+/* ---------- Surfaces ---------- */
+.panel{background:var(--color-panel);border:1px solid var(--color-edge);border-radius:22px}
+/* The reading card: cream paper, story type, white line rows (app/reading-panel.tsx). */
+.reading-card{background:var(--color-reading);color:var(--color-reading-ink);border-radius:20px}
+.line-row{background:var(--color-line-row);border:3px solid var(--color-line-edge);border-radius:12px;color:var(--color-reading-ink)}
+.line-row[aria-pressed="true"],.line-row.is-picked{background:var(--color-line-picked);border-color:var(--color-primary)}
+/* Scene art is shown brighter so students can inspect it; a text shadow keeps the scene title readable. */
+.scene-bg{background-size:cover;background-position:center;position:relative}.scene-bg:before{content:"";position:absolute;inset:0;background-image:inherit;background-size:cover;background-position:center;filter:brightness(1.35) contrast(1.06) saturate(1.08)}.scene-bg h1,.scene-bg h2,.scene-bg p,.scene-bg .eyebrow,.scene-bg a{text-shadow:0 1px 3px #000000b3,0 0 12px #00000066}
+.scene-bg,.dark-zone{color:var(--color-ink)}
+
+/* ---------- Buttons: solid bottom shadow, a 4px press ---------- */
+.btn,.case-primary,.gold-button,.host-btn,.case-secondary,.soft-button,.case-tool,.host-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:52px;border-radius:16px;padding:0 22px;font-family:var(--font-display);font-size:18px;font-weight:700;border:0;transition:transform .08s,box-shadow .08s;text-decoration:none}
+.case-primary,.gold-button,.host-btn,.btn-primary{background:var(--color-primary);color:var(--color-on-primary);box-shadow:0 6px 0 var(--color-primary-shadow)}
+.case-secondary,.soft-button,.case-tool,.host-btn-secondary,.btn-secondary{background:var(--color-panel);color:var(--color-ink);box-shadow:0 6px 0 #0B0920}
+.btn-success{background:var(--color-success);color:var(--color-on-success);box-shadow:0 6px 0 var(--color-success-shadow)}
+.btn-danger{background:var(--color-notyet);color:var(--color-on-notyet);box-shadow:0 6px 0 var(--color-notyet-shadow)}
+.btn-ghost{background:transparent;color:var(--color-highlight);box-shadow:none;text-decoration:underline;text-underline-offset:4px}
+.case-tool{min-height:46px;padding:0 12px;font-size:15px;border-radius:14px}
+.case-secondary{justify-content:flex-start}
+.host-btn{min-height:64px;border-radius:18px;padding:0 28px;font-size:clamp(20px,1.6vw,26px)}
+.host-btn-secondary{min-height:56px;font-size:clamp(18px,1.4vw,22px);border:2px solid var(--color-edge)}
+:is(.btn,.case-primary,.gold-button,.host-btn,.case-secondary,.soft-button,.case-tool,.host-btn-secondary):active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 var(--color-primary-shadow)}
+:is(.case-secondary,.soft-button,.case-tool,.host-btn-secondary,.btn-secondary):active:not(:disabled){box-shadow:0 2px 0 #0B0920}
+:is(.btn,.case-primary,.gold-button,.host-btn,.case-secondary,.soft-button,.case-tool,.host-btn-secondary):disabled{opacity:.45;cursor:not-allowed}
+:is(.case-secondary,.soft-button,.case-tool,.host-btn-secondary):hover:not(:disabled){background:#332D63}
+:is(.case-primary,.gold-button,.host-btn):hover:not(:disabled){background:#FF9A3D}
+
+/* ---------- The student case flow and the live screens share the type ---------- */
+.case-ui{font-family:var(--font-sans);color:var(--color-ink)}
+.case-ui.case-ui-dark{color:var(--color-ink)}
+.case-ui .font-serif{font-family:var(--font-serif)}
+.case-art{background-size:cover;background-position:center;filter:brightness(1.35) contrast(1.06) saturate(1.08)}
+@keyframes case-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,138,31,.55)}50%{box-shadow:0 0 0 10px rgba(255,138,31,0)}}
 .case-pulse{animation:case-pulse 2.2s ease-in-out infinite}
-@media print{.case-ui{color:#000}}
 
-/* Display settings (app/display-settings.tsx). Zoom scales every fixed pixel size in the app, including small labels. */
+/* Display settings (app/display-settings.tsx). Zoom scales every fixed pixel size in the app, including the reading card. */
 html[data-text-size="large"] body{zoom:1.15}
 html[data-text-size="xl"] body{zoom:1.3}
-/* Full-screen views divide viewport units by the page zoom, or a zoomed 100dvh is taller than the screen. */
 html[data-text-size="large"]{--page-zoom:1.15}
 html[data-text-size="xl"]{--page-zoom:1.3}
-:focus-visible{outline:3px solid #A0472C;outline-offset:2px}
 html[data-motion="reduced"] *,html[data-motion="reduced"] *:before,html[data-motion="reduced"] *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-@media (prefers-reduced-motion:reduce){.fade-in{animation:none}}
-/* High contrast: darker text and firmer borders on the cream page. */
-html[data-contrast="high"]{--muted:#1d1a15;--line:#2a262088}
-html[data-contrast="high"] .eyebrow{color:#6E2A17;font-weight:700}
-html[data-contrast="high"] [class*="text-white\/"]{color:#15120e!important}
-html[data-contrast="high"] [class*="border-white\/"]{border-color:#2a262099!important}
-html[data-contrast="high"] .story-copy{color:#000}
-html[data-contrast="high"] .panel{background:#fff;border-color:#2a2620aa}
-html[data-contrast="high"] .scene-bg [class*="text-white\/"],html[data-contrast="high"] .dark-zone [class*="text-white\/"]{color:#fbf8f2!important}
-html[data-contrast="high"] .scene-bg:before{filter:brightness(1.15) contrast(1.05)}
-html[data-contrast="high"] .scene-bg h1,html[data-contrast="high"] .scene-bg p{text-shadow:0 1px 4px #000,0 0 16px #000}
-html[data-contrast="high"] .soft-button{border-color:#2a2620b3;background:#fff}
-@media print{html,body{background:#fff!important;color:#000!important}.panel{background:#fff!important;border-color:#999!important;backdrop-filter:none}header,.display-settings{display:none!important}[class*="text-white"]{color:#222!important}}
-/* Case flow game layer: living scene, stamp, ambient motion */
+/* High contrast: brighter secondary text and firmer borders. */
+html[data-contrast="high"]{--color-muted:#FFFFFF;--color-faint:#E4E0FF;--color-edge:#8C84C8}
+html[data-contrast="high"] .reading-scope{--color-muted:#241B12;--color-faint:#241B12;--color-edge:#7A5A3A}
+
+/* ---------- Motion for moments only ---------- */
+@keyframes float-up{0%{transform:translateY(16px);opacity:0}30%{opacity:1}100%{transform:translateY(-28px);opacity:1}}
+.float-up{animation:float-up .9s ease-out forwards}
+@keyframes moment-pop{0%{transform:scale(.6)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
+.moment-pop{animation:moment-pop .35s ease-out}
+@keyframes notyet-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.notyet-shake{animation:notyet-shake .45s ease-in-out}
+@keyframes rise-in{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.rise-in{animation:rise-in .35s ease-out}
+@keyframes row-in{from{transform:translateX(-40px);opacity:0}to{transform:translateX(0);opacity:1}}
+.row-in{animation:row-in .4s ease-out both}
+@keyframes line-pop{0%{transform:scale(1)}40%{transform:scale(.97)}100%{transform:scale(1)}}
+@keyframes count-bump{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+.line-pop{animation:line-pop .22s ease-out}.count-bump{display:inline-block;animation:count-bump .3s ease-out}
+@keyframes piece-pop{0%{transform:scale(.9);opacity:0}60%{transform:scale(1.03);opacity:1}100%{transform:scale(1)}}
+.piece-pop{animation:piece-pop .35s ease-out}
+@keyframes case-pop{0%{transform:scale(1)}35%{transform:scale(1.06)}100%{transform:scale(1)}}
+.case-pop{animation:case-pop .6s ease-out .15s both}
+
+/* Case flow layer: living scene, stamp, ambient motion */
 @keyframes case-drift{from{transform:scale(1) translate(0,0)}to{transform:scale(1.08) translate(-1.5%,-1%)}}
 .case-alive{animation:case-drift 16s ease-in-out infinite alternate;transform-origin:60% 50%}
 @keyframes case-stamp-in{0%{opacity:0;transform:translate(-50%,-50%) scale(2.4) rotate(-16deg)}60%{opacity:1;transform:translate(-50%,-50%) scale(.94) rotate(-8deg)}100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-8deg)}}
-.case-stamp{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%) rotate(-8deg);animation:case-stamp-in .55s cubic-bezier(.2,.9,.3,1.2) both;border:5px double #A0472C;color:#A0472C;background:rgba(255,253,248,.92);padding:.3em .8em;border-radius:12px;font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-weight:800;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;font-size:clamp(24px,4.4vw,48px);box-shadow:0 12px 36px -12px rgba(42,38,32,.55)}
+.case-stamp{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%) rotate(-8deg);animation:case-stamp-in .55s cubic-bezier(.2,.9,.3,1.2) both;border:4px solid var(--color-success);color:var(--color-on-success);background:var(--color-success);padding:.3em .8em;border-radius:16px;font-family:var(--font-display);font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;font-size:clamp(24px,4.4vw,48px);box-shadow:0 8px 0 var(--color-success-shadow)}
 .case-stamp-static{left:auto;right:16px;top:16px;transform:rotate(-8deg);animation:none;font-size:15px;border-width:3px;padding:.25em .7em}
 .case-stamp-page{position:relative;left:auto;top:auto;display:inline-block;font-size:clamp(20px,2.6vw,30px);transform:rotate(-6deg);animation:case-stamp-page .55s cubic-bezier(.2,.9,.3,1.2) both}
 @keyframes case-stamp-page{0%{opacity:0;transform:scale(2.2) rotate(-14deg)}60%{opacity:1;transform:scale(.95) rotate(-6deg)}100%{opacity:1;transform:scale(1) rotate(-6deg)}}
@@ -66,99 +121,77 @@ html[data-contrast="high"] .soft-button{border-color:#2a2620b3;background:#fff}
 @keyframes amb-flicker{0%,100%{opacity:.75}20%{opacity:1}35%{opacity:.6}55%{opacity:.95}70%{opacity:.7}85%{opacity:.9}}
 .amb-fog{background:linear-gradient(90deg,transparent,rgba(255,255,255,.22) 30%,transparent 55%,rgba(255,255,255,.16) 80%,transparent);background-size:200% 100%;animation:amb-fog 18s linear infinite}
 @keyframes amb-fog{from{background-position:0 0}to{background-position:-200% 0}}
-@media (prefers-reduced-motion:reduce){.case-alive,.amb,.case-stamp,.case-stamp-page,.case-rise,.case-pulse{animation:none!important}}
-@media print{.case-stamp-page{animation:none}}
-@keyframes case-pop{0%{transform:scale(1)}35%{transform:scale(1.06)}100%{transform:scale(1)}}
-.case-pop{animation:case-pop .6s ease-out .15s both}
+.case-mini-stamp{display:inline-block;transform:rotate(-8deg);border:2px solid var(--color-success);color:var(--color-on-success);border-radius:8px;padding:1px 7px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:var(--color-success)}
 @keyframes case-mini-stamp{0%{opacity:0;transform:scale(2) rotate(-14deg)}70%{opacity:1;transform:scale(.95) rotate(-8deg)}100%{opacity:1;transform:scale(1) rotate(-8deg)}}
-.case-mini-stamp{display:inline-block;transform:rotate(-8deg);border:2px solid #A0472C;color:#A0472C;border-radius:6px;padding:1px 7px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#FFFDF8}
 .case-mini-stamp.fresh{animation:case-mini-stamp .45s cubic-bezier(.2,.9,.3,1.2) .2s both}
-@media (prefers-reduced-motion:reduce){.case-pop,.case-mini-stamp.fresh{animation:none!important}}
-/* Headings receive focus on each new screen for screen readers; no visible ring is needed for that programmatic focus. */
-h1[tabindex="-1"]:focus{outline:none}
+@keyframes case-hint{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,6px)}}
+.case-hint{animation:case-hint 1.6s ease-in-out infinite}
 
 /* Storybook reader */
 .sb-drawer{animation:sb-slide .28s cubic-bezier(.2,.8,.3,1) both}
 .sb-scrim{animation:sb-fade .2s ease-out both}
 @keyframes sb-slide{from{transform:translateX(100%)}to{transform:none}}
 @keyframes sb-fade{from{opacity:0}to{opacity:1}}
-.sb-word{display:inline;padding:0;border:0;background:none;font:inherit;color:inherit;text-decoration:underline;text-decoration-color:#A0472C;text-decoration-thickness:2px;text-underline-offset:.2em;cursor:pointer}
-.sb-word:hover,.sb-word:focus-visible{background:#F4E1D6;border-radius:4px}
-.sb-say{padding:0 .1em;border:0;background:none;font:inherit;color:inherit;cursor:pointer;box-shadow:inset 0 -2px 0 #A0472C55}
-.sb-speaker{font-variant:small-caps;font-weight:700;letter-spacing:.04em;color:#8A3B23}
-.sb-say:hover,.sb-say:focus-visible{background:#F4E1D6}
-.sb-placeholder{background:radial-gradient(120% 90% at 30% 20%,#FBF3E6 0%,#EFE2CC 45%,#E2C9AE 100%);}
-.sb-placeholder:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 22px,rgba(160,71,44,.05) 22px 23px)}
-.sb-frame{border:3px dashed #A0472C;background:rgba(255,253,248,.85);box-shadow:0 10px 30px -14px rgba(42,38,32,.4)}
-@media (prefers-reduced-motion:reduce){.sb-drawer,.sb-scrim{animation:none!important}}
+.sb-word{display:inline;padding:0;border:0;background:none;font:inherit;color:inherit;text-decoration:underline;text-decoration-color:var(--color-primary);text-decoration-thickness:2px;text-underline-offset:.2em;cursor:pointer}
+.sb-word:hover,.sb-word:focus-visible{background:var(--color-line-picked);border-radius:4px}
+.sb-say{padding:0 .1em;border:0;background:none;font:inherit;color:inherit;cursor:pointer;box-shadow:inset 0 -2px 0 #FF8A1F88}
+.sb-speaker{font-variant:small-caps;font-weight:700;letter-spacing:.04em;color:var(--color-highlight)}
+.sb-say:hover,.sb-say:focus-visible{background:var(--color-line-picked)}
+.sb-placeholder{background:var(--color-panel-2)}
+.sb-frame{border:3px dashed var(--color-primary);background:var(--color-panel-2)}
 .sb-open{animation:sb-open .35s cubic-bezier(.2,.8,.3,1) both;transform-origin:30% 50%}
 @keyframes sb-open{from{opacity:0;transform:perspective(1200px) rotateY(-8deg) scale(.97)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.sb-open{animation:none!important}}
 /* Student shelf */
 .shelf-row{position:relative}
 .shelf-row>li{position:relative;padding-bottom:4px}
-.shelf-row>li:after{content:"";position:absolute;left:-10px;right:-10px;bottom:-14px;height:10px;border-radius:3px;background:linear-gradient(#C9A27F,#A97F5C);box-shadow:0 6px 10px -6px rgba(42,38,32,.6)}
+.shelf-row>li:after{content:"";position:absolute;left:-10px;right:-10px;bottom:-14px;height:10px;border-radius:999px;background:var(--color-edge)}
 .shelf-pan{animation:shelf-pan 18s ease-in-out infinite alternate;transform-origin:50% 40%}
 @keyframes shelf-pan{from{transform:scale(1.08) translateX(-3%)}to{transform:scale(1.08) translateX(3%)}}
-@media (prefers-reduced-motion:reduce){.shelf-pan{animation:none!important;transform:none}}
 /* Home: role flip cards and tour */
 .role-card-inner{transition:transform .5s cubic-bezier(.2,.8,.3,1);transform-style:preserve-3d}
 .role-face,.role-back{backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .role-back{transform:rotateY(180deg)}
 .role-card:hover .role-card-inner,.role-card:focus-visible .role-card-inner{transform:rotateY(180deg)}
-.tour-ring{box-shadow:0 0 0 3px #A0472C,0 0 0 9999px rgba(42,38,32,.28);transition:all .25s ease}
-@media (prefers-reduced-motion:reduce){.role-card-inner,.tour-ring{transition:none!important}.role-card:hover .role-card-inner,.role-card:focus-visible .role-card-inner{transform:none}.role-card:hover .role-face,.role-card:focus-visible .role-face{opacity:0}.role-back{transform:none;opacity:0}.role-card:hover .role-back,.role-card:focus-visible .role-back{opacity:1}}
+.tour-ring{box-shadow:0 0 0 3px var(--color-highlight),0 0 0 9999px rgba(14,12,34,.55);transition:all .25s ease}
 /* Home book. The cover keeps a 3:4 book shape inside whatever room the screen gives it. */
-.book-stage{container-type:size}
-.book-cover{width:min(100cqw,75cqh,480px);aspect-ratio:3/4;background:linear-gradient(100deg,#7E3520 0,#A0472C 9%,#A84D31 60%,#9A4329 100%);box-shadow:inset 0 0 0 10px rgba(255,246,238,.06),0 30px 60px -28px rgba(42,38,32,.65),6px 8px 0 -2px #E9DFCC,10px 12px 0 -4px #DCCFB6;transform-origin:left center;transition:transform .7s cubic-bezier(.45,.05,.3,1),opacity .7s ease}
-.book-cover:before{content:"";position:absolute;inset:5%;border:1.5px solid rgba(255,246,238,.45);border-radius:6px;pointer-events:none}
-.book-spine{position:absolute;left:0;top:0;bottom:0;width:7%;background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,0));border-radius:6px 0 0 6px}
-.book-stage{perspective:1600px}
+.book-stage{container-type:size;perspective:1600px}
+.book-cover{width:min(100cqw,75cqh,480px);aspect-ratio:3/4;background:var(--color-primary);color:var(--color-on-primary);box-shadow:0 10px 0 var(--color-primary-shadow);transform-origin:left center;transition:transform .7s cubic-bezier(.45,.05,.3,1),opacity .7s ease}
+.book-cover:before{content:"";position:absolute;inset:5%;border:2px solid rgba(26,15,0,.35);border-radius:10px;pointer-events:none}
+.book-spine{position:absolute;left:0;top:0;bottom:0;width:7%;background:var(--color-primary-shadow);border-radius:6px 0 0 6px}
 .book-cover-swing{transform:rotateY(-100deg);opacity:.15}
 .book-cover-fade{opacity:0;transition:opacity .2s ease}
-.book-page{background:#FFFDF8;box-shadow:0 18px 40px -26px rgba(42,38,32,.5);border-radius:18px}
-@media (min-width:768px){
- .book-open{filter:drop-shadow(0 26px 36px rgba(42,38,32,.28))}
- .book-page{box-shadow:none}
- .book-page-student{border-radius:18px 4px 4px 18px;background:linear-gradient(90deg,#FFFDF8 85%,#F1E8D8)}
- .book-page-teacher{border-radius:4px 18px 18px 4px;background:linear-gradient(270deg,#FFFDF8 85%,#F1E8D8)}
-}
+.book-page{background:var(--color-panel);border-radius:22px}
+@media (min-width:768px){.book-page-student{border-radius:22px 6px 6px 22px}.book-page-teacher{border-radius:6px 22px 22px 6px}}
 .book-appear{animation:book-appear .45s ease both}
 @keyframes book-appear{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.book-cover{transition:opacity .2s ease}.book-cover-swing{transform:none;opacity:0}.book-appear{animation:none}}
-/* Short phones (iPhone SE and smaller): tighter spacing so the open book still fits without scrolling. */
 @media (max-height:600px){.book-spread{padding-top:6px;padding-bottom:6px}.book-spread .book-page{padding-top:12px;padding-bottom:12px}.book-spread .book-page .case-primary{margin-top:10px;min-height:44px}.book-spread .book-page form{margin-top:10px}.book-spread .book-page p{margin-top:2px;line-height:1.45}.book-spread .book-page h2{font-size:25px}.book-spread .book-page label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.book-spread .book-page form>div{margin-top:0}}
-@keyframes case-hint{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,6px)}}
-.case-hint{animation:case-hint 1.6s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){.case-hint{animation:none;transform:translateX(-50%)}}
-/* Game layer. A speaking character's portrait gets a soft pulsing terracotta ring. */
-.voice-ring{box-shadow:0 0 0 3px #A0472C;animation:voice-ring 1.4s ease-in-out infinite}
-@keyframes voice-ring{0%,100%{box-shadow:0 0 0 2px rgba(160,71,44,.9),0 0 0 2px rgba(160,71,44,.35)}50%{box-shadow:0 0 0 3px rgba(160,71,44,.9),0 0 0 9px rgba(160,71,44,0)}}
-/* The consequence moment fades in over one second. */
+/* A speaking character's portrait gets a pulsing ring. */
+.voice-ring{box-shadow:0 0 0 3px var(--color-primary);animation:voice-ring 1.4s ease-in-out infinite}
+@keyframes voice-ring{0%,100%{box-shadow:0 0 0 2px rgba(255,138,31,.9),0 0 0 2px rgba(255,138,31,.35)}50%{box-shadow:0 0 0 3px rgba(255,138,31,.9),0 0 0 9px rgba(255,138,31,0)}}
 .consequence-in{animation:consequence-in 1s ease both}
 @keyframes consequence-in{from{opacity:0}to{opacity:1}}
-/* Corkboard: warm cork with fine speckles, kept within the palette. */
-.corkboard{background-color:#C9A57A;background-image:radial-gradient(rgba(90,58,30,.22) 1px,transparent 1.4px),radial-gradient(rgba(255,240,215,.18) 1px,transparent 1.6px);background-size:9px 9px,13px 13px;background-position:0 0,4px 6px;box-shadow:inset 0 0 0 10px #8A5A36,inset 0 0 30px rgba(42,38,32,.35)}
-@media (prefers-reduced-motion:reduce){.voice-ring,.consequence-in{animation:none}.voice-ring{box-shadow:0 0 0 3px #A0472C}}
-@media print{.corkboard{display:none!important}}
+/* The evidence board: a panel with a dotted grid. */
+.corkboard{background-color:var(--color-panel-2);background-image:radial-gradient(rgba(201,195,240,.18) 1px,transparent 1.4px);background-size:14px 14px;box-shadow:inset 0 0 0 3px var(--color-edge)}
 
-/* Live round host screen (projector): large, high-contrast buttons. */
-.host-btn{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;min-height:60px;border-radius:18px;background:#A0472C;color:#fff;padding:0 26px;font-size:clamp(18px,1.5vw,24px);font-weight:700}
-.host-btn:hover:not(:disabled){background:#B4552F}
-.host-btn:disabled{opacity:.4;cursor:not-allowed}
-.host-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:52px;border-radius:16px;background:#2E2821;color:#FFFDF8;padding:0 18px;font-size:18px;font-weight:600;border:2px solid #5A4F42}
-.host-btn-secondary:hover{background:#3A332B}
-
-/* Full-screen game screens (the clue screen) fill the space under the header; the page footer steps aside so the page
-   itself never scrolls. */
+/* Full-screen game screens (the clue screen) fill the space under the header; the page footer steps aside. */
 main:has([data-fill-screen]) > footer { display: none; }
-/* Story lines: a quick press when a line goes into the pouch, and the pouch count bumps. */
-@keyframes line-pop{0%{transform:scale(1)}40%{transform:scale(.97)}100%{transform:scale(1)}}
-@keyframes count-bump{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
-.line-pop{animation:line-pop .22s ease-out}.count-bump{display:inline-block;animation:count-bump .3s ease-out}
-@media (prefers-reduced-motion:reduce){.line-pop,.count-bump{animation:none}}
 
-/* A mission piece earned: a quick pop on the results screen. */
-@keyframes piece-pop{0%{transform:scale(.9);opacity:0}60%{transform:scale(1.03);opacity:1}100%{transform:scale(1)}}
-.piece-pop{animation:piece-pop .35s ease-out}
-@media (prefers-reduced-motion:reduce){.piece-pop{animation:none}}
+/* Everything turns off under reduced motion. */
+@media (prefers-reduced-motion:reduce){
+ *,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+ .role-card:hover .role-card-inner,.role-card:focus-visible .role-card-inner{transform:none}.role-card:hover .role-face,.role-card:focus-visible .role-face{opacity:0}.role-back{transform:none;opacity:0}.role-card:hover .role-back,.role-card:focus-visible .role-back{opacity:1}
+ .book-cover-swing{transform:none;opacity:0}.case-hint{transform:translateX(-50%)}.shelf-pan{transform:none}
+ :is(.btn,.case-primary,.gold-button,.host-btn,.case-secondary,.soft-button,.case-tool,.host-btn-secondary):active:not(:disabled){transform:none}
+}
+
+/* ---------- Print: white paper, dark text; no HUD, buttons or motion ---------- */
+@media print{
+ :root,.reading-scope{--color-stage:#FFFFFF;--color-deep:#FFFFFF;--color-panel:#FFFFFF;--color-panel-2:#F4F4F4;--color-edge:#999999;--color-ink:#111111;--color-muted:#333333;--color-faint:#333333;--color-highlight:#7A3600;--color-primary-soft:#FFFFFF;--color-success-soft:#FFFFFF;--color-notyet-soft:#FFFFFF;--color-gold-soft:#FFFFFF;--color-violet-soft:#FFFFFF}
+ html,body{background:#fff!important;color:#111!important}
+ *,*:before,*:after{animation:none!important;transition:none!important;box-shadow:none!important;text-shadow:none!important}
+ header,nav,footer,button,.display-settings,.hud,.no-print,[role="dialog"],.corkboard{display:none!important}
+ details{display:block}details>summary{list-style:none}details:not([open])>*:not(summary){display:block!important}
+ table{border-collapse:collapse;width:100%}th,td{border:1px solid #999!important;padding:4px 6px!important;color:#111!important;background:#fff!important}
+ a{color:#111;text-decoration:underline}
+ .panel,section,li{break-inside:avoid}
+}
