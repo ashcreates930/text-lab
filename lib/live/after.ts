@@ -5,7 +5,7 @@
 import type { WorldPack } from "../world-schema.ts";
 import type { SourcePassage } from "../source-passages.ts";
 import type { LivePlayer, LiveResponse, LiveSquad } from "./engine.ts";
-import { TYPE_INFO, chunkTokens, proofShown, proofTokens, type Answer, type RaceChunk } from "../expedition.ts";
+import { TYPE_INFO, chunkTokens, joinedPassages, proofShown, proofTokens, type Answer, type RaceChunk } from "../expedition.ts";
 import { BONUS_STEMS, bonusProblems, caseNotes, flaggedQuestions, refresherAward, refresherCorrect, refresherItems, refresherTask, rolesFor, squadCaseFile, type BonusPick, type ChunkResult, type MemberResults } from "../case-notes.ts";
 import { liveRaceChunks, playerChunk, type LiveRaceRound } from "./race.ts";
 import { evidenceSentences } from "../lies.ts";
@@ -20,7 +20,7 @@ export function liveResults(chunks: RaceChunk[], responses: LiveResponse[], race
 // The phone's after-race state: Refresher items (no answers), what's been tried, Case Notes and the award.
 export function liveAfter(world: WorldPack, passages: SourcePassage[], race: LiveRaceRound, responses: LiveResponse[], raceIndex: number, playerId: string) {
   const chunks = liveRaceChunks(world, passages, race), results = liveResults(chunks, responses, raceIndex, playerId);
-  const items = refresherItems(chunks, results), callAll = chunks.flatMap((c) => c.passages);
+  const items = refresherItems(chunks, results), callAll = joinedPassages(chunks);
   const tries = new Map(rows(responses, raceIndex, "race_refresh").filter((r) => r.playerId === playerId).map((r) => [Number(r.payload.k), r.payload as { k: number; fixed: boolean }]));
   const fixed = items.map((_, k) => !!tries.get(k)?.fixed);
   const notesText: Record<number, string> = {};
@@ -44,7 +44,7 @@ export function refreshAnswer(world: WorldPack, passages: SourcePassage[], race:
   const k = Number(payload.k); if (!Number.isInteger(k) || k < 0 || k >= items.length) return "That isn't one of your Refresher questions.";
   if (rows(responses, raceIndex, "race_refresh").some((r) => r.playerId === playerId && Number(r.payload.k) === k)) return "You've already tried this one.";
   const a = (payload.answer ?? {}) as Answer, it = items[k];
-  const fixed = refresherCorrect(it, chunks[it.index], a, chunks.flatMap((c) => c.passages).flatMap((p) => evidenceSentences(p.text)));
+  const fixed = refresherCorrect(it, chunks[it.index], a, joinedPassages(chunks).flatMap((p) => evidenceSentences(p.text)));
   return { k, index: it.index, kind: it.kind, fixed };
 }
 

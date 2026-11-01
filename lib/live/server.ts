@@ -9,7 +9,7 @@ import { liveMissionPieces, liveMissionSetting, missionPick, missionSetting } fr
 import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, livePicks, myStepRecord, playerPicks, playerState, publicStory, readingAction, squadReading, stepKind, tryState, type LiveStoryRound } from "./story.ts";
 import { screenMessage } from "../safety.ts";
 import { beatMs, liveRaceBoard, liveRaceChunks, nextBeat, parseExpSettings, playerChunk, raceAnswer, raceAnswered, raceDone, raceFinish, raceQuestions, raceReadiness, raceReveal, raceTotals, type LiveRaceRound } from "./race.ts";
-import { TYPE_INFO, hasExpeditions, timeScale } from "../expedition.ts";
+import { TYPE_INFO, hasExpeditions, joinedPassages, timeScale } from "../expedition.ts";
 import { screenBoardText } from "../safety.ts";
 import { bonusPickAnswer, bonusSquad, bonusSquads, liveAfter, refreshAnswer, type LiveBonusRound } from "./after.ts";
 import { checkWriting, yourTurnChoices, type YourTurnEntry } from "../your-turn.ts";
@@ -166,7 +166,7 @@ function publicRace(st: LiveState, round: LiveRaceRound) {
       choices2: q.choices2 ? { prompt: q.choices2.prompt, options: strip(q.choices2.options) } : null, theories: q.theories?.map((t) => ({ id: t.id, name: t.name })) ?? null,
       testimony: q.testimony ? { speaker: st.world.characters.find((x) => x.id === q.testimony!.speaker)?.name ?? "A witness", text: q.testimony.text } : null,
       proof: (q.proof?.words?.length ? "words" : q.proof?.lines?.length ? "lines" : "none") as "words" | "lines" | "none",
-      callPassages: q.type === "make_call" ? chunks.slice(0, round.step + 1).flatMap((x) => x.passages) : null,
+      callPassages: q.type === "make_call" ? joinedPassages(chunks.slice(0, round.step + 1)) : null,
     } : null,
     reveal: after ? raceReveal(c, st.responses, i, st.players) : null,
     board: round.beat === "board" || round.beat === "countdown" || st.session.status === "ended" ? (() => { const b = liveRaceBoard(st.responses, i, st.players, st.squads, round.squadsOn, round.step); return { kind: b.kind, top: b.rows.slice(0, 5) }; })() : null,

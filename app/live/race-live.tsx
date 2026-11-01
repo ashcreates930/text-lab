@@ -225,7 +225,7 @@ export function BonusPlayer({state,world,act}:{state:PlayerView;world:WorldPack|
  return <section aria-labelledby="bn-h" className="mt-4 flex flex-col gap-3">
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Bonus Round · {b.name}</p>
   <h1 id="bn-h" className="text-[28px] leading-tight outline-none">Agree on the strongest proof</h1>
-  <p className="rounded-card bg-panel-2 px-4 py-3 text-[16px] font-bold">Your role: {role}{role==="Reporter"?". You hand in the Squad Case File.":role==="Skeptic"?". Ask: does the text really say that?":role==="Evidence Keeper"?". Check every proof against the passage.":". Keep the squad moving."}</p>
+  <p className="rounded-card bg-panel-2 px-4 py-3 text-[16px] font-bold">Your role: {role}{role==="Reporter"||!Object.values(b.roles).includes("Reporter")?". You can hand in the Squad Case File.":role==="Skeptic"?". Ask: does the text really say that?":role==="Evidence Keeper"?". Check every proof against the passage.":". Keep the squad moving."}</p>
   <ul className="flex flex-wrap gap-2 text-[14px]">{b.members.map(m=><li key={m.id} className="rounded-full bg-panel px-3 py-1 font-bold">{m.nickname}: {b.roles[m.id]}</li>)}</ul>
   <ol className="flex flex-col gap-3">{b.flagged.map(q=>{const p=b.picks.find(x=>x.index===q.index);return <li key={q.index} className="rounded-card bg-panel p-4">
    <p className="font-display text-[18px] font-bold">Chunk {q.chunk} · {q.type}</p><p className="mt-1 text-[16px]">{q.question}</p>
@@ -240,7 +240,8 @@ export function BonusPlayer({state,world,act}:{state:PlayerView;world:WorldPack|
    :<button type="button" onClick={()=>{setOpen(q.index);setFrom(p?.from??"");setError("")}} className="case-secondary mt-3 !min-h-11">{p?"Change it":"Pick and defend"}</button>}
   </li>})}</ol>
   {b.problems.length>0&&<ul className="rounded-card bg-panel-2 p-4 text-[15px]">{b.problems.map(x=><li key={x}>• {x}</li>)}</ul>}
-  {role==="Reporter"&&<button type="button" disabled={b.problems.length>0} onClick={async()=>{const e=await act("bonus_submit");if(e)setError(e)}} className="case-primary w-full justify-center">Hand in the Squad Case File</button>}
+  {/* The Reporter hands it in; a squad without a Reporter (three or fewer) lets anyone. */}
+  {(role==="Reporter"||!Object.values(b.roles).includes("Reporter"))&&<button type="button" disabled={b.problems.length>0} onClick={async()=>{const e=await act("bonus_submit");if(e)setError(e)}} className="case-primary w-full justify-center">Hand in the Squad Case File</button>}
  </section>;
 }
 // A Squad Case File: agreed answers, proof, the final call and who contributed what; print or save as a PDF.

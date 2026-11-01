@@ -49,6 +49,13 @@ export function expeditionChunks(world: WorldPack, passages: SourcePassage[], ex
   });
 }
 export const hasExpeditions = (world: WorldPack) => (world.expeditions?.length ?? 0) > 0;
+// The passages of several chunks (Make the Call's pinboard, the Refresher), with a paragraph split across chunks joined
+// back into one, so each paragraph appears once.
+export function joinedPassages(chunks: RaceChunk[]) {
+  const out: { id: string; text: string }[] = [];
+  for (const c of chunks) for (const p of c.passages) { const last = out.at(-1); if (last && last.id === p.id) last.text = `${last.text} ${p.text}`; else out.push({ ...p }); }
+  return out;
+}
 
 // ---------- Words: tokens and phrase ranges (for word proof, discoveries and the highlighter) ----------
 export const norm = (s: string) => s.toLowerCase().replace(/[’']/g, "'").replace(/[^a-z0-9' -]+/g, " ").replace(/\s+/g, " ").trim();
@@ -113,7 +120,9 @@ export function proofTokens(q: ExpQuestion, tokens: Token[], lines: { text: stri
 // What the result screen shows as the proof: the lines, or the words (with their line).
 export function proofShown(q: ExpQuestion, tokens: Token[]) {
   if (q.type === "make_call") return { lines: q.theories?.flatMap((t) => t.lines).slice(0, 2) ?? [], words: [] as number[] };
-  const words = (q.proof?.words ?? []).flatMap((p) => { const r = phraseRange(tokens, p); return r ? Array.from({ length: r[1] - r[0] + 1 }, (_, k) => r[0] + k) : []; }).slice(0, 12);
+  // The first accepted phrase is the proof shown; the others are alternatives a student could also have tapped.
+  const first = (q.proof?.words ?? []).map((p) => phraseRange(tokens, p)).find(Boolean);
+  const words = first ? Array.from({ length: first[1] - first[0] + 1 }, (_, k) => first[0] + k) : [];
   return { lines: q.proof?.lines ?? [], words };
 }
 // Key words to highlight in the question itself (never in the passage).

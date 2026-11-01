@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { WorldPackSchema } from "../lib/world-schema.ts";
 import { parseSourcePassages } from "../lib/source-passages.ts";
-import { chunkTokens, expeditionChunks, phraseRange, type Answer } from "../lib/expedition.ts";
+import { chunkTokens, expeditionChunks, joinedPassages, phraseRange, type Answer } from "../lib/expedition.ts";
 import { BONUS_POINTS, REFRESHER_MAX, bonusProblems, caseNotes, caseNotesPdf, flaggedQuestions, refresherAward, refresherCorrect, refresherItems, squadCaseFile, squadCaseFilePdf, type ChunkResult } from "../lib/case-notes.ts";
 
 const src = (f: string) => readFileSync(f, "utf8");
@@ -135,4 +135,10 @@ test("live: the Refresher on each phone after the podium, notes saved, then the 
   assert.equal(hb.squads.length, 1); assert.equal(hb.squads[0].submitted, true); assert.equal(hb.board[0].points, hb.squads[0].file.points); assert.ok(hb.squads[0].file.points > 0);
   // Bonus points stay off the race leaderboard.
   assert.ok(server.hostView(st).scores.every((x) => x.points === 0));
+});
+
+test("Make the Call and the Refresher list each paragraph once, even when it is split across chunks", () => {
+  const joined = joinedPassages(chunks);
+  assert.equal(new Set(joined.map((p) => p.id)).size, joined.length, "no paragraph twice (React keys stay unique)");
+  assert.equal(joined[0].id, "p003"); assert.match(joined[0].text, /Tarry\s+Town[\s\S]*uniform\s+tranquillity/, "both halves of paragraph 3, in order");
 });

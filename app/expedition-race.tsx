@@ -8,7 +8,7 @@ import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "rea
 import {ArrowRight,Check,Flame,Highlighter,Pause,Play,Star,Timer,Volume2,VolumeX,X} from "lucide-react";
 import type {ExpQuestion,QuestionType,WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
-import {DISCOVERY_COINS,GIST_SECONDS,TESTIMONY_MS,TYPE_INFO,chunkTokens,focusTokens,proofTokens,expeditionChunks,ghostPlay,gistPoints,isDiscovery,keywordParts,limitMs,phraseRange,proofShown,scoreAnswer,screenMs,type Answer,type RaceChunk,type Token} from "@/lib/expedition";
+import {DISCOVERY_COINS,GIST_SECONDS,TESTIMONY_MS,TYPE_INFO,chunkTokens,focusTokens,joinedPassages,proofTokens,expeditionChunks,ghostPlay,gistPoints,isDiscovery,keywordParts,limitMs,phraseRange,proofShown,scoreAnswer,screenMs,type Answer,type RaceChunk,type Token} from "@/lib/expedition";
 import {raceBoard,type BoardRow} from "@/lib/proof-race";
 import {contentNotes} from "@/lib/content-notes";
 import {Pill} from "./game-ui";
@@ -60,17 +60,21 @@ export function ChunkText({chunk,world,tokens,highlighter,marking,unknown,onUnkn
  const tap=(i:number)=>{if(marking&&onUnknown){onUnknown(i);return}if(onDiscover&&isDiscovery(tokens,chunk,i))onDiscover()};
  const showSet=new Set(shown),focusSet=new Set(focus);
  const canExplore=explore&&(!!onDiscover||!!marking);
+ // Consecutive words grouped by whether they're part of the lit-up proof.
+ const runs:{shown:boolean;tokens:Token[]}[]=[];for(const t of tokens){const sh=showSet.has(t.i),last=runs.at(-1);if(last&&last.shown===sh)last.tokens.push(t);else runs.push({shown:sh,tokens:[t]})}
  return <div className="reading-scope reading-card p-4">
   {notesHere.map(n=><ContentNote key={n} text={n} className="mb-3"/>)}
   <div className="mb-2 flex items-center justify-between gap-2"><p className="text-[12px] font-extrabold text-muted">¶{Number(chunk.lines[0]?.pid.slice(1))}{chunk.lines.at(-1)?.pid!==chunk.lines[0]?.pid?` to ${Number(chunk.lines.at(-1)!.pid.slice(1))}`:""}</p>
    {shown.length>0&&<p className={`rounded-full px-2.5 py-0.5 text-[12px] font-extrabold ${shownStyle==="right"?"bg-line-right text-reading-ink":"border-2 border-line-wrong-edge text-reading-ink"}`}>{shownStyle==="right"?"The proof":"Here's the proof"}</p>}
    {canExplore&&<button type="button" aria-expanded={closer} onClick={()=>setCloser(c=>!c)} className="min-h-11 rounded-full bg-deep px-3 text-[14px] font-bold">{closer?"Done looking":"Look closer"}</button>}</div>
-  <p className={`font-serif text-reading-ink ${large?"text-[clamp(22px,2.2vw,34px)] leading-[1.6]":"text-[19px] leading-[1.75]"}`}>{tokens.map(t=>{const v=vocab.get(t.i);const isUnknown=unknown?.has(t.i),isShown=showSet.has(t.i),isFocus=focusSet.has(t.i),isCursor=closer&&cursor===t.i;
-   const cls=isShown?(shownStyle==="right"?"rounded bg-line-right outline outline-2 outline-line-right-edge":"rounded outline outline-2 outline-dashed outline-line-wrong-edge")
+  <p className={`font-serif text-reading-ink ${large?"text-[clamp(22px,2.2vw,34px)] leading-[1.6]":"text-[19px] leading-[1.75]"}`}>{runs.map(run=>{const inProof=run.shown;const words=run.tokens.map(t=>{const v=vocab.get(t.i);const isUnknown=unknown?.has(t.i),isShown=showSet.has(t.i),isFocus=focusSet.has(t.i),isCursor=closer&&cursor===t.i;
+   const cls=isShown?""
     :isFocus?"rounded bg-highlight/25 underline decoration-highlight decoration-[3px] underline-offset-4":isUnknown?"rounded bg-gold-soft underline decoration-gold-shadow decoration-[3px] underline-offset-4":"";
    return <span key={t.i}>{t.i>0?" ":""}{v&&!marking&&!shown.length
     ?<button type="button" onClick={()=>{setOpen(o=>o===v.term?null:v.term);tap(t.i)}} aria-expanded={open===v.term} className={`rounded bg-violet-soft px-0.5 underline decoration-dotted decoration-2 underline-offset-4 ${cls} ${isCursor?"outline outline-[3px] outline-primary":""}`}>{t.text}<span className="sr-only"> (word to know)</span></button>
-    :<span onClick={()=>tap(t.i)} className={`${marking?"cursor-pointer rounded hover:bg-gold-soft":""} ${cls} ${isCursor?"rounded outline outline-[3px] outline-primary":""}`}>{t.text}</span>}</span>})}</p>
+    :<span onClick={()=>tap(t.i)} className={`${marking?"cursor-pointer rounded hover:bg-gold-soft":""} ${cls} ${isCursor?"rounded outline outline-[3px] outline-primary":""}`}>{t.text}</span>}</span>});
+   // A run of proof words is one highlight: teal when right, a dashed coral frame when missed.
+   return inProof?<span key={run.tokens[0].i} className={`rounded-md px-0.5 [box-decoration-break:clone] ${shownStyle==="right"?"bg-line-right shadow-[0_0_0_2px_var(--color-line-right-edge)]":"shadow-[0_0_0_2px_var(--color-line-wrong-edge)]"}`}>{words}</span>:<span key={run.tokens[0].i}>{words}</span>})}</p>
   {closer&&<div role="group" aria-label="Look closer at the words" className="mt-3 rounded-row bg-panel-2 p-3">
    <p className="text-[15px]" aria-live="polite">Word {cursor+1} of {tokens.length}: <b>{tokens[cursor]?.text}</b></p>
    <div className="mt-2 flex flex-wrap gap-2"><button type="button" onClick={()=>setCursor(c=>Math.max(0,c-1))} className="case-secondary !min-h-11">Previous word</button><button type="button" onClick={()=>setCursor(c=>Math.min(tokens.length-1,c+1))} className="case-secondary !min-h-11">Next word</button>
@@ -89,7 +93,7 @@ export function AnswerBars({options,picked,onPick,disabled,label}:{options:{text
 }
 export function WordProof({tokens,selected,onToggle,disabled,focus=[]}:{tokens:Token[];selected:number[];onToggle:(i:number)=>void;disabled?:boolean;focus?:number[]}){
  const sel=new Set(selected),foc=new Set(focus);
- return <div className="reading-scope reading-card mt-3 p-3"><p className="flex flex-wrap gap-x-1 gap-y-1.5 font-serif text-[18px] leading-tight text-reading-ink">{tokens.map(t=><button key={t.i} type="button" disabled={disabled} aria-pressed={sel.has(t.i)} onClick={()=>onToggle(t.i)} className={`inline-flex min-h-11 items-center rounded-lg px-1 ${sel.has(t.i)?"bg-primary text-on-primary":foc.has(t.i)?"bg-highlight/25 underline decoration-highlight decoration-[3px] underline-offset-4":"hover:bg-line-picked"}`}>{t.text}</button>)}</p></div>;
+ return <div className="reading-scope reading-card mt-3 p-3"><p className="flex flex-wrap gap-x-0.5 gap-y-1 font-serif text-[18px] leading-tight text-reading-ink">{tokens.map(t=><button key={t.i} type="button" disabled={disabled} aria-pressed={sel.has(t.i)} onClick={()=>onToggle(t.i)} className={`inline-flex min-h-11 items-center rounded-lg px-[3px] ${sel.has(t.i)?"bg-primary text-on-primary":foc.has(t.i)?"bg-highlight/25 underline decoration-highlight decoration-[3px] underline-offset-4":"hover:bg-line-picked"}`}>{t.text}</button>)}</p></div>;
 }
 // The question as players see it (no best answers): built from the world for solo, sent by the server for live phones.
 export type ViewQuestion={type:QuestionType;name:string;steps:1|2;prompt:string;keywords:string[];focus:string|null;choices:string[]|null;choices2:{prompt:string;options:string[]}|null;theories:{id:string;name:string}[]|null;testimony:{speaker:string;text:string}|null;proof:"words"|"lines"|"none";callPassages:{id:string;text:string}[]|null};
@@ -187,7 +191,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
  // After the race: the results for Case Notes, and the Refresher (misses only, up to 4).
  const results:ChunkResult[]=records.map((r,i)=>({index:i,answer:r?.answer??null,correct:!!r?.correct,late:!!r?.late,gist:r?.gist??null,typed:null,unknown:r?.unknown??[]}));
  const refItems=refresherItems(chunks,results);
- const callAll=chunks.flatMap(x=>x.passages);
+ const callAll=joinedPassages(chunks);
  const refViews:RefresherView[]=refItems.map(it=>{const ch=chunks[it.index],qq=ch.chunk.question,task=refresherTask(it,qq);
   return {kind:it.kind,chunk:it.index+1,task,typeName:TYPE_INFO[qq.type].name,prompt:task==="meaning"?qq.choices2!.prompt+" "+qq.prompt:qq.prompt,hint:it.kind==="gist"?"Which choice tells the whole chunk, not just one detail?":qq.hint,
    chunkView:{lines:ch.lines,discovery:ch.chunk.discovery},passages:ch.passages,options:task==="gist"?ch.chunk.gist.options.map(x=>x.text):task==="meaning"?qq.choices2!.options.map(x=>x.text):null,callPassages:task==="pin2"?callAll:null}});
@@ -200,7 +204,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
  const hud=<RaceHud score={score} streak={streak} coins={coins} sound={sound} onSound={toggleSound} chunk={k+1} total={chunks.length} left={beat==="gist"?gistLeft:beat==="question"&&!testifying?qLeft:null} title={exp.title}/>;
  const shown=proofShown(q,tokens);
  // The lines a proof step taps: this chunk's, or for Make the Call every chunk of the expedition so far.
- const callPassages=chunks.slice(0,k+1).flatMap(x=>x.passages);
+ const callPassages=joinedPassages(chunks.slice(0,k+1));
 
  return <div className="case-ui mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-16 pt-3">
   {beat!=="refresher"&&beat!=="notes"&&hud}
