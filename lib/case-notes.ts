@@ -3,7 +3,7 @@
 // browser and in tests.
 import { jsPDF } from "jspdf";
 import type { ExpQuestion } from "./world-schema.ts";
-import { TYPE_INFO, chunkTokens, norm, proofShown, proofTokens, wordsProve, type Answer, type RaceChunk } from "./expedition.ts";
+import { TYPE_INFO, chunkTokens, norm, proofShown, proofTokens, sentenceProves, type Answer, type RaceChunk } from "./expedition.ts";
 import { liarCheck, saidLine, witnessName, type InterviewNote, type LiarAnswer } from "./interview.ts";
 import type { Interview, WorldPack } from "./world-schema.ts";
 
@@ -32,17 +32,15 @@ export function refresherCorrect(item: RefresherItem, chunk: RaceChunk | undefin
   const q = chunk.chunk.question;
   if (q.type === "figure_it_out") return a.choice2 === bestOf(q.choices2?.options);
   if (q.type === "make_call") { const got = [...new Set((a.lines ?? []).map(norm))]; return got.length === 2 && (q.theories ?? []).some((t) => got.every((g) => t.lines.some((l) => norm(l) === g))) && got.every((g) => callLines.length === 0 || callLines.some((l) => norm(l) === g)); }
-  if (q.proof?.words?.length) return wordsProve(chunkTokens(chunk.lines), a.words ?? [], q.proof.words);
-  const want = (q.proof?.lines ?? []).map(norm), got = (a.lines ?? []).map(norm);
-  return got.length > 0 && got.every((g) => want.includes(g));
+  return sentenceProves(q, chunkTokens(chunk.lines), a.lines);
 }
 // What the Refresher asks the student to do for an item.
-export function refresherTask(item: RefresherItem, q: ExpQuestion | undefined): "gist" | "meaning" | "words" | "line" | "pin2" {
+export function refresherTask(item: RefresherItem, q: ExpQuestion | undefined): "gist" | "meaning" | "line" | "pin2" {
   if (item.kind === "gist") return "gist";
   if (item.kind === "liar" || !q) return "line";
   if (q.type === "figure_it_out") return "meaning";
   if (q.type === "make_call") return "pin2";
-  return q.proof?.words?.length ? "words" : "line";
+  return "line";
 }
 // Stars: one for each item fixed. Badges: "Perfect run" for no misses at all; "Comeback Detective" for fixing every
 // item; "Second Look" for fixing at least one.
@@ -65,12 +63,12 @@ export function answerText(q: ExpQuestion, a: Answer | null, chunk: RaceChunk) {
   if (a.choice != null && q.choices?.[a.choice]) parts.push(q.choices[a.choice].text);
   if (a.choice2 != null && q.choices2?.options[a.choice2]) parts.push(q.choices2.options[a.choice2].text);
   if (a.theory) parts.push(q.theories?.find((t) => t.id === a.theory)?.name ?? a.theory);
-  const proof = a.words?.length ? `"${a.words.map((i) => tokens[i]?.text ?? "").join(" ")}"` : (a.lines ?? []).map((l) => `"${l.replace(/\s+/g, " ")}"`).join(" ");
+  void tokens;
+  const proof = (a.lines ?? []).map((l) => `"${l.replace(/\s+/g, " ")}"`).join(" ");
   return { answer: parts.join(" · ") || (proof ? "Tapped a line" : "No answer"), proof };
 }
 export function correctProofText(q: ExpQuestion, chunk: RaceChunk) {
   const tokens = chunkTokens(chunk.lines), s = proofShown(q, tokens);
-  if (s.words.length) return `"${s.words.map((i) => tokens[i].text).join(" ")}"`;
   if (q.type === "figure_it_out") return q.choices2?.options.find((o) => o.best)?.text ?? "";
   return s.lines.map((l) => `"${l.replace(/\s+/g, " ")}"`).join(" ");
 }
@@ -129,9 +127,8 @@ export function squadCaseFile(squad: string, chunks: RaceChunk[], members: Membe
     const c = chunks[p.index], q = c.chunk.question, t = answerText(q, p.answer, c);
     const tokens = chunkTokens(c.lines);
     const right = q.type === "make_call" ? !!q.theories?.find((th) => th.id === p.answer.theory && (p.answer.lines ?? []).length === 2 && (p.answer.lines ?? []).every((l) => th.lines.some((x) => norm(x) === norm(l))))
-      : q.proof?.words?.length ? wordsProve(tokens, p.answer.words ?? [], q.proof.words) && p.answer.choice === bestOf(q.choices)
       : q.type === "figure_it_out" ? p.answer.choice === bestOf(q.choices) && p.answer.choice2 === bestOf(q.choices2?.options)
-      : (q.choices ? p.answer.choice === bestOf(q.choices) : true) && (p.answer.lines ?? []).length > 0 && (p.answer.lines ?? []).every((l) => (q.proof?.lines ?? []).some((x) => norm(x) === norm(l)));
+      : (q.choices ? p.answer.choice === bestOf(q.choices) : true) && sentenceProves(q, tokens, p.answer.lines);
     return { chunk: p.index + 1, question: q.prompt, agreed: t.answer, proof: t.proof, right, from: nameOf(p.from), defender: nameOf(p.defender), why: `${p.stem} ${p.reason}`.trim() };
   });
   const call = picks.find((p) => p.index === VERDICT_INDEX) ?? picks.find((p) => chunks[p.index]?.chunk.question.type === "make_call");

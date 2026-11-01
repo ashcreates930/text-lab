@@ -3,7 +3,7 @@ import type { SourcePassage } from "./source-passages.ts";
 import { evidenceSentences } from "./lies.ts";
 import { sharedRoots } from "./fair-play.ts";
 import type { Expedition, WorldPack } from "./world-schema.ts";
-import { MIN_TYPES, TYPE_INFO, chunkTokens, expeditionChunks, norm, phraseRange, proofTokens } from "./expedition.ts";
+import { MIN_TYPES, TYPE_INFO, chunkTokens, expeditionChunks, norm, phraseRange, proofLineIndexes } from "./expedition.ts";
 
 export const CHUNK_WORDS = { min: 50, max: 150, target: [60, 120] as const }, MAX_SENTENCES = 5;
 const CHOICE_TYPES = new Set(["word_detective", "shades", "between_lines", "whose_eyes", "figure_it_out", "character_clue", "theme_thread", "gist"]);
@@ -18,8 +18,9 @@ export function distractorProblems(at: string, options: { text: string; best?: b
   if (options.filter((o) => o.best).length !== 1) out.push(`${at}: exactly one best option`);
   if (new Set(options.map((o) => norm(o.text))).size !== options.length) out.push(`${at}: options must all be different`);
   if (options.some((o) => words(o.text) < 3)) out.push(`${at}: every option needs at least 3 words`);
-  const lens = options.map((o) => o.text.length), bestLen = options.find((o) => o.best)?.text.length ?? 0, others = lens.filter((l) => l !== bestLen);
-  if (others.length && (bestLen > Math.max(...others) * 1.6 || bestLen * 1.6 < Math.min(...others))) out.push(`${at}: the best option stands out by its length`);
+  const lens = options.map((o) => o.text.length), bestLen = options.find((o) => o.best)?.text.length ?? 0, others = lens.filter((_, i) => !options[i].best);
+  // The best option is never noticeably longer than the longest wrong one (at most 15%), nor far shorter than the rest.
+  if (others.length && (bestLen > Math.max(...others) * 1.15 || bestLen * 1.6 < Math.min(...others))) out.push(`${at}: the best option stands out by its length`);
   return out;
 }
 
@@ -37,6 +38,7 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
     const chunks = expeditionChunks(world, passages, exp.id);
     const allLines = chunks.flatMap((c) => c.lines.map((l) => l.text));
     const types = exp.chunks.map((c) => c.question.type);
+    out.push(...balanceProblems(`${world.id}/${exp.id}`, exp));
     if (new Set(types).size < MIN_TYPES) out.push(`${world.id}/${exp.id}: mixes ${new Set(types).size} question types; needs at least ${MIN_TYPES}`);
     if (types.filter((t) => t === "theme_thread").length !== 1) out.push(`${world.id}/${exp.id}: needs exactly one Theme Thread`);
     // The finale: Name the Liar when the expedition has an Interview, otherwise Make the Call (last chunk, once).
@@ -64,7 +66,7 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
       if (q.type === "figure_it_out") { if (!q.choices2) out.push(`${at}: Figure It Out needs a second step (its meaning)`); else out.push(...distractorProblems(`${at} meaning`, q.choices2.options)); }
       if (PROOF_TYPES.has(q.type) && !q.proof?.lines?.length && !q.proof?.words?.length) out.push(`${at}: ${q.type} needs proof lines or words`);
       for (const l of q.proof?.lines ?? []) if (!rc.lines.some((x) => x.text === l)) out.push(`${at}: proof line "${l.replace(/\s+/g, " ").slice(0, 50)}" is not copied exactly from this chunk`);
-      for (const w of q.proof?.words ?? []) if (!phraseRange(tokens, w)) out.push(`${at}: proof words "${w}" are not in this chunk`);
+      for (const w of q.proof?.words ?? []) { const r = phraseRange(tokens, w); if (!r) out.push(`${at}: proof words "${w}" are not in this chunk`); else if (tokens[r[0]].line !== tokens[r[1]].line) out.push(`${at}: proof words "${w}" cross two sentences`); }
       if (q.type === "catch_lie" && (!q.testimony || !speaking.has(q.testimony.speaker))) out.push(`${at}: Catch the Lie needs a testimony from one of the story's speaking characters`);
       if (q.type === "make_call") {
         if (!q.theories) out.push(`${at}: Make the Call needs 3 theories`);
@@ -73,7 +75,7 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
       if (q.focus) {
         const fr = phraseRange(tokens, q.focus);
         if (!fr) out.push(`${at}: focus "${q.focus}" is not in the chunk`);
-        else { const proof = new Set(proofTokens(q, tokens, rc.lines)); for (let k = fr[0]; k <= fr[1]; k++) if (proof.has(k)) { out.push(`${at}: focus "${q.focus}" overlaps the proof; it would point to the answer`); break; } }
+        else { const sentences = new Set(proofLineIndexes(q, tokens)); if (rc.lines.length > 1 && (sentences.has(tokens[fr[0]].line) || sentences.has(tokens[fr[1]].line))) out.push(`${at}: focus "${q.focus}" sits in a proof sentence; it would point to the answer`); }
       } else if (FOCUS_TYPES.has(q.type)) out.push(`${at}: ${q.type} is about a word or phrase; name it as focus`);
       for (const kw of q.keywords) if (!q.prompt.toLowerCase().includes(kw.toLowerCase())) out.push(`${at}: key word "${kw}" is not in the question`);
       if (!q.standards.some((s) => TYPE_INFO[q.type].standards.includes(s))) out.push(`${at}: standards must include one of ${TYPE_INFO[q.type].standards.join(", ")}`);
@@ -106,6 +108,18 @@ export function interviewProblems(world: WorldPack, exp: Expedition, allLines: s
     if (w.truth.lines.some((l) => w.lie.lines.includes(l)) && w.truth.lines.length === 1 && w.lie.lines.length === 1) out.push(`${at}: ${w.character} truth and lie rest on the same line`);
     if ([w.truth.text, w.lie.text, w.caught, ...w.cards].some((t) => /—/.test(t))) out.push(`${at}: no em dashes`);
   }
+  return out;
+}
+
+// Answer balance across an expedition: the best option is not always listed first, and it is not clearly the longest
+// (by more than 3 characters) in more than half of the option sets. Students also see their own shuffled order.
+export function balanceProblems(at: string, exp: Expedition) {
+  const sets = exp.chunks.flatMap((c) => [c.gist.options, c.question.choices, c.question.choices2?.options]).filter((o): o is { text: string; best?: boolean }[] => !!o?.length);
+  if (!sets.length) return [];
+  const out: string[] = [], bestAt = sets.map((o) => o.findIndex((x) => x.best));
+  if (sets.length > 1 && bestAt.every((b) => b === 0)) out.push(`${at}: the best answer is always listed first`);
+  const clear = sets.filter((o) => { const b = o.findIndex((x) => x.best), L = o.map((x) => x.text.length); return L[b] > Math.max(...L.filter((_, i) => i !== b)) + 3; }).length;
+  if (clear * 2 > sets.length) out.push(`${at}: the best answer is clearly the longest in ${clear} of ${sets.length} option sets; balance the choices`);
   return out;
 }
 

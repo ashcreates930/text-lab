@@ -106,6 +106,10 @@ html[data-contrast="high"] .reading-scope{--color-muted:#241B12;--color-faint:#2
 @keyframes line-pop{0%{transform:scale(1)}40%{transform:scale(.97)}100%{transform:scale(1)}}
 @keyframes count-bump{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
 .line-pop{animation:line-pop .22s ease-out}.count-bump{display:inline-block;animation:count-bump .3s ease-out}
+/* Race screens: the side-by-side question layout uses the full width; every other screen keeps a reading width. */
+/* Phone: the question panel's heading is smaller so more of the passage shows above it. */
+@media (max-width:767px){.split-panel h1{font-size:21px;line-height:1.2}}
+.race-root>section:not(.wide-host),.race-root>header,.race-root>p,.race-root>div:not(.split-stage):not(.hud):not(.wide-host),.wide-host>*:not(.split-stage):not(.hud):not(.wide-host){width:100%;max-width:42rem;margin-inline:auto}
 /* A portrait witness talking: a gentle bob while the line plays. */
 @keyframes portrait-talk{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.015)}}
 .portrait-talk{animation:portrait-talk .9s ease-in-out infinite}

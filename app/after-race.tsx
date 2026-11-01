@@ -9,7 +9,8 @@ import type {SourcePassage} from "@/lib/source-passages";
 import {chunkTokens,type Answer} from "@/lib/expedition";
 import {caseNotesPdf,refresherAward,type CaseNote,type RefresherViewData} from "@/lib/case-notes";
 import {saidLine,type InterviewNote} from "@/lib/interview";
-import {AnswerBars,ChunkText,WordProof,type ChunkView} from "./expedition-race";
+import {AnswerBars,ChunkText,type ChunkView} from "./expedition-race";
+import {SplitStage} from "./split-stage";
 import {ReadingPanel} from "./reading-panel";
 import {focusScreenTop} from "./screen-focus";
 
@@ -19,7 +20,8 @@ type RefresherResult={fixed:boolean;shown:number[];lines:string[]};
 // Solo checks here and returns the result; a live phone sends the answer and the result comes back on the item.
 export type RefresherCheck=(k:number,a:Answer)=>Promise<RefresherResult|null|void>|RefresherResult;
 
-export function Refresher({items,world,check,onDone}:{items:RefresherView[];world:WorldPack;check:RefresherCheck;onDone:(fixed:boolean[])=>void}){
+// seed: this student's own answer order.
+export function Refresher({items,world,check,onDone,seed}:{items:RefresherView[];world:WorldPack;check:RefresherCheck;onDone:(fixed:boolean[])=>void;seed?:string}){
  const [k,setK]=useState(0),[draft,setDraft]=useState<Answer>({}),[local,setLocal]=useState<RefresherResult|null>(null),[fixedLocal,setFixed]=useState<boolean[]>([]);
  const result=local??items[k]?.result??null;
  const fixed=items.map((x,i)=>x.result?x.result.fixed:fixedLocal[i]??false);
@@ -32,24 +34,29 @@ export function Refresher({items,world,check,onDone}:{items:RefresherView[];worl
  async function lock(a:Answer){const r=await check(k,a);if(r){setLocal(r);setFixed(f=>{const n=[...f];n[k]=r.fixed;return n})}}
  function next(){if(k+1>=items.length){onDone(fixed);return}setK(k+1);setDraft({});setLocal(null)}
  const award=refresherAward(items.map(x=>({index:x.chunk-1,kind:x.kind})),items.map((_,i)=>fixed[i]??false));
- return <section aria-labelledby="rf-h" className="mt-2 flex flex-col gap-3">
-  <div className="flex items-center justify-between"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Refresher · {k+1} of {items.length} · no timer</p><p className="flex items-center gap-1 font-display text-[18px] font-bold text-gold" aria-label={`${award.stars} stars`}>{Array.from({length:items.length},(_,i)=><Star key={i} size={18} className={fixed[i]?"fill-gold text-gold":"text-muted"} aria-hidden/>)}</p></div>
-  <h1 id="rf-h" className="text-[24px] leading-tight outline-none">{it.kind==="liar"?`${it.typeName}: ${it.prompt}`:it.kind==="gist"?`Chunk ${it.chunk}: which is the best summary?`:`Chunk ${it.chunk} · ${it.typeName}: ${it.prompt}`}</h1>
-  <p className="flex items-start gap-2 rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold"><Lightbulb size={18} className="mt-0.5 shrink-0 text-gold" aria-hidden/>{it.hint}</p>
-  {result?<div aria-live="assertive">{result.fixed
-    ?<div className="moment-pop rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">+1 star</p><p className="font-display text-[32px] font-bold leading-none">Fixed!</p></div>
-    :<div className="rounded-card bg-panel p-5"><p className="font-display text-[26px] font-bold leading-none">Here's the proof</p><p className="mt-1 text-[15px] text-muted">Read it once more. It's saved in your Case Notes.</p></div>}
-   <div className="mt-3">{it.callPassages?<ReadingPanel passages={it.callPassages as SourcePassage[]} results={result.lines.map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/>
-    :<ChunkText chunk={it.chunkView} world={world} tokens={tokens} shown={result.shown} shownStyle={result.fixed?"right":"missed"}/>}</div>
-   <button type="button" onClick={next} className="case-primary mt-3 w-full justify-center">{k+1>=items.length?"Open my Case Notes":"Next"} <ArrowRight size={18} aria-hidden/></button></div>
-  :<>{(it.task==="gist"||it.task==="meaning")&&it.options&&<><AnswerBars label={it.prompt} options={it.options.map(t=>({text:t}))} picked={null} onPick={i=>lock(it.task==="gist"?{choice:i}:{choice2:i})}/><div className="mt-1"><ChunkText chunk={it.chunkView} world={world} tokens={tokens}/></div></>}
-   {it.task==="words"&&<><p className="text-[15px] font-bold text-muted">Tap the words that prove it, then lock in.</p><WordProof tokens={tokens} selected={draft.words??[]} onToggle={i=>setDraft(d=>{const w=new Set(d.words??[]);if(w.has(i))w.delete(i);else w.add(i);return {...d,words:[...w].sort((a,b)=>a-b)}})}/>
-    <button type="button" disabled={!draft.words?.length} onClick={()=>lock(draft)} className="case-primary w-full justify-center">Lock in <ArrowRight size={18} aria-hidden/></button></>}
-   {it.task==="line"&&<><p className="text-[15px] font-bold text-muted">Tap the line that proves it, then lock in.</p><ReadingPanel className={it.kind==="liar"?"max-h-[55dvh]":undefined} passages={it.passages as SourcePassage[]} glossary={world.glossary} selected={draft.lines?.[0]} kept={[]} onTap={l=>setDraft({lines:[l.text]})}/>
-    <button type="button" disabled={!draft.lines?.length} onClick={()=>lock(draft)} className="case-primary w-full justify-center">Lock in <ArrowRight size={18} aria-hidden/></button></>}
-   {it.task==="pin2"&&<><p className="text-[15px] font-bold text-muted">Pin 2 lines that back one of the calls ({draft.lines?.length??0} of 2).</p><ReadingPanel className="max-h-[55dvh]" passages={(it.callPassages??it.passages) as SourcePassage[]} glossary={world.glossary} kept={draft.lines??[]} onTap={l=>setDraft(d=>{const ls=d.lines??[];return {lines:ls.includes(l.text)?ls.filter(x=>x!==l.text):ls.length>=2?ls:[...ls,l.text]}})}/>
-    <button type="button" disabled={(draft.lines?.length??0)!==2} onClick={()=>lock(draft)} className="case-primary w-full justify-center">Lock in <ArrowRight size={18} aria-hidden/></button></>}</>}
- </section>;
+ const head=<><div className="flex items-center justify-between"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Refresher · {k+1} of {items.length} · no timer</p><p className="flex items-center gap-1 font-display text-[18px] font-bold text-gold" aria-label={`${award.stars} stars`}>{Array.from({length:items.length},(_,i)=><Star key={i} size={18} className={fixed[i]?"fill-gold text-gold":"text-muted"} aria-hidden/>)}</p></div>
+  <h1 id="rf-h" className="text-[24px] leading-tight outline-none">{it.kind==="liar"?`${it.typeName}: ${it.prompt}`:it.kind==="gist"?`Chunk ${it.chunk}: which is the best summary?`:`Chunk ${it.chunk} · ${it.typeName}: ${it.prompt}`}</h1></>;
+ const hint=<p className="flex items-start gap-2 rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold"><Lightbulb size={18} className="mt-0.5 shrink-0 text-gold" aria-hidden/>{it.hint}</p>;
+ const lockBtn=(ok:boolean)=><button type="button" disabled={!ok} onClick={()=>lock(draft)} className="case-primary w-full justify-center">Lock in <ArrowRight size={18} aria-hidden/></button>;
+ // The passage side: the chunk (a sentence to tap for a question's proof), or the whole expedition for Name the Liar
+ // and Make the Call. After trying, the proof lights up there.
+ const wide=it.kind==="liar"||it.task==="pin2";
+ const passage=result
+  ?(it.callPassages?<ReadingPanel passages={it.callPassages as SourcePassage[]} results={result.lines.map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/>
+   :<ChunkText chunk={it.chunkView} world={world} tokens={tokens} shown={result.shown} shownStyle={result.fixed?"right":"missed"}/>)
+  :it.task==="pin2"?<ReadingPanel passages={(it.callPassages??it.passages) as SourcePassage[]} glossary={world.glossary} kept={draft.lines??[]} onTap={l=>setDraft(d=>{const ls=d.lines??[];return {lines:ls.includes(l.text)?ls.filter(x=>x!==l.text):ls.length>=2?ls:[...ls,l.text]}})}/>
+  :wide?<ReadingPanel passages={it.passages as SourcePassage[]} glossary={world.glossary} selected={draft.lines?.[0]} kept={[]} onTap={l=>setDraft(d=>d.lines?.[0]===l.text?{}:{lines:[l.text]})}/>
+  :<ChunkText chunk={it.chunkView} world={world} tokens={tokens} pick={it.task==="line"?{selected:draft.lines?.[0]??null,onPick:t=>setDraft(t?{lines:[t]}:{})}:undefined}/>;
+ const body=result?<div aria-live="assertive">{result.fixed
+   ?<div className="moment-pop rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">+1 star</p><p className="font-display text-[32px] font-bold leading-none">Fixed!</p></div>
+   :<div className="rounded-card bg-panel p-5"><p className="font-display text-[26px] font-bold leading-none">Here's the proof</p><p className="mt-1 text-[15px] text-muted">Read it once more. It's saved in your Case Notes.</p></div>}</div>
+  :<div className="flex flex-col gap-2">{hint}
+   {(it.task==="gist"||it.task==="meaning")&&it.options&&<AnswerBars seed={seed?`${seed}|${it.kind}|${it.chunk}|${it.task}`:undefined} label={it.prompt} options={it.options.map(t=>({text:t}))} picked={null} onPick={i=>lock(it.task==="gist"?{choice:i}:{choice2:i})}/>}
+   {it.task==="line"&&<p className="text-[15px] font-bold text-muted">Tap the sentence that proves it, then lock in.</p>}
+   {it.task==="pin2"&&<p className="text-[15px] font-bold text-muted">Pin 2 lines that back one of the calls ({draft.lines?.length??0} of 2).</p>}</div>;
+ const action=result?<button type="button" onClick={next} className="case-primary w-full justify-center">{k+1>=items.length?"Open my Case Notes":"Next"} <ArrowRight size={18} aria-hidden/></button>
+  :it.task==="line"?lockBtn(!!draft.lines?.length):it.task==="pin2"?lockBtn((draft.lines?.length??0)===2):undefined;
+ return <SplitStage key={k} label="Refresher" passage={passage} head={head} body={body} action={action} collapse={!result&&(it.task==="line"||it.task==="pin2")}/>;
 }
 
 // ---------- Case Notes ----------

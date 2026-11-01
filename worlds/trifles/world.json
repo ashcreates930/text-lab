@@ -5154,14 +5154,14 @@
           "gist": {
             "options": [
               {
-                "text": "Three men enter the cold, messy kitchen of an abandoned farmhouse and go straight to the stove.",
-                "best": true
-              },
-              {
-                "text": "Three women enter the warm, tidy kitchen of a busy farmhouse and start baking."
+                "text": "Three women enter the warm, tidy kitchen of a busy farmhouse and start baking bread together."
               },
               {
                 "text": "Two children play in the sunny kitchen of a brand new farmhouse."
+              },
+              {
+                "text": "Three men enter the cold, messy kitchen of an abandoned farmhouse and go straight to the stove.",
+                "best": true
               }
             ]
           },
@@ -5178,14 +5178,14 @@
             ],
             "choices": [
               {
-                "text": "Someone left suddenly, in the middle of chores",
-                "best": true
-              },
-              {
                 "text": "A family is preparing for a big party"
               },
               {
-                "text": "The rooms were scrubbed clean for visitors"
+                "text": "The rooms were scrubbed clean for the visitors"
+              },
+              {
+                "text": "Someone left suddenly, in the middle of chores",
+                "best": true
               }
             ],
             "proof": {
@@ -5233,14 +5233,14 @@
           "gist": {
             "options": [
               {
-                "text": "The two women enter slowly and stay together by the door, and Mrs. Peters says she isn't cold.",
-                "best": true
-              },
-              {
-                "text": "The two women rush to the stove, and Mrs. Peters says she is freezing."
+                "text": "The two women rush straight to the stove, and Mrs. Peters says she is freezing from the long ride."
               },
               {
                 "text": "The two women stay outside in the wagon, refusing to enter the house."
+              },
+              {
+                "text": "The two women enter slowly and stay together by the door, and Mrs. Peters says she isn't cold.",
+                "best": true
               }
             ]
           },
@@ -5257,14 +5257,14 @@
             ],
             "choices": [
               {
+                "text": "Tall, loud and commanding"
+              },
+              {
                 "text": "Thin and nervous-looking",
                 "best": true
               },
               {
                 "text": "Loud and cheerful"
-              },
-              {
-                "text": "Tall and commanding"
               }
             ],
             "proof": {
@@ -5321,7 +5321,7 @@
                 "best": true
               },
               {
-                "text": "The sheriff admits everything has been moved and cleaned since yesterday."
+                "text": "The sheriff admits that everything in the kitchen has been moved and cleaned since yesterday morning."
               },
               {
                 "text": "The sheriff refuses to let Hale speak and sends everyone home."
@@ -5388,14 +5388,14 @@
           "gist": {
             "options": [
               {
-                "text": "The attorney says someone should have guarded the house, and the sheriff explains he was too busy.",
-                "best": true
-              },
-              {
-                "text": "The attorney praises the sheriff for guarding the house all night long."
+                "text": "The attorney praises the sheriff for guarding the house himself all night long in the bitter cold."
               },
               {
                 "text": "The attorney says the house should be sold, and the sheriff agrees."
+              },
+              {
+                "text": "The attorney says someone should have guarded the house, and the sheriff explains he was too busy.",
+                "best": true
               }
             ]
           },
@@ -5417,19 +5417,19 @@
                 "best": true
               },
               {
-                "text": "It means he was carrying heavy boxes"
+                "text": "It means he was carrying heavy boxes into the jail"
               },
               {
                 "text": "It means he hurt both of his hands"
               }
             ],
             "proof": {
-              "words": [
-                "When I had to send Frank to Morris Center"
+              "lines": [
+                "I\nknew you could get back from Omaha by today and as long as I went over\neverything here myself--"
               ]
             },
-            "hint": "What else did he have to handle that day?",
-            "why": "He had to send Frank to Morris Center for another case: hands full means too much to do at once.",
+            "hint": "What does he say about checking the house?",
+            "why": "He could only go over everything himself before the attorney got back: hands full means too much to do at once.",
             "standards": [
               "V.1.3",
               "R.3.1"
@@ -5454,14 +5454,14 @@
           "gist": {
             "options": [
               {
-                "text": "Hale stopped to ask John Wright about a shared telephone line, though Wright wanted only peace and quiet.",
-                "best": true
-              },
-              {
-                "text": "Hale stopped to buy potatoes from John Wright, who loved company and chatter."
+                "text": "Hale stopped to buy potatoes from John Wright, who loved company, long visits and plenty of chatter."
               },
               {
                 "text": "Hale stopped to warn John Wright about a storm, but Wright was away in town."
+              },
+              {
+                "text": "Hale stopped to ask John Wright about a shared telephone line, though Wright wanted only peace and quiet.",
+                "best": true
               }
             ]
           },
@@ -5519,14 +5519,14 @@
           "gist": {
             "options": [
               {
+                "text": "Hale walked in without knocking and found Mrs. Wright cooking breakfast at the stove, humming."
+              },
+              {
                 "text": "Hale knocked twice, thought he heard someone answer, and found Mrs. Wright sitting in her rocker.",
                 "best": true
               },
               {
                 "text": "Hale knocked once, heard shouting, and found the whole house empty."
-              },
-              {
-                "text": "Hale walked in without knocking and found Mrs. Wright cooking breakfast."
               }
             ]
           },
@@ -5625,14 +5625,14 @@
           "gist": {
             "options": [
               {
+                "text": "Hale says Mrs. Wright was asleep and he could not see her face."
+              },
+              {
                 "text": "Hale says Mrs. Wright was rocking and pleating her apron and looked strange and worn out.",
                 "best": true
               },
               {
-                "text": "Hale says Mrs. Wright was dancing and singing and looked happy and rested."
-              },
-              {
-                "text": "Hale says Mrs. Wright was asleep and he could not see her face."
+                "text": "Hale says Mrs. Wright was dancing around and singing and looked happy, rested and cheerful."
               }
             ]
           },
@@ -5650,14 +5650,14 @@
             "focus": "queer",
             "choices": [
               {
+                "text": "Angry and loud"
+              },
+              {
                 "text": "Strange or odd",
                 "best": true
               },
               {
                 "text": "Happy and relaxed"
-              },
-              {
-                "text": "Angry and loud"
               }
             ],
             "proof": {
@@ -5705,7 +5705,7 @@
                 "best": true
               },
               {
-                "text": "Mrs. Wright greets Hale warmly and pours him a hot cup of coffee."
+                "text": "Mrs. Wright greets Hale warmly at the door and pours him a hot cup of coffee by the stove."
               },
               {
                 "text": "Mrs. Wright orders Hale to leave and slams the door in his face."
@@ -5725,14 +5725,14 @@
             ],
             "choices": [
               {
-                "text": "Her mind is far away from ordinary things",
-                "best": true
-              },
-              {
-                "text": "She is eager to chat with a neighbor"
+                "text": "She is eager to chat with a friendly neighbor"
               },
               {
                 "text": "She is angry that Hale came so early"
+              },
+              {
+                "text": "Her mind is far away from ordinary things",
+                "best": true
               }
             ],
             "proof": {
@@ -5760,14 +5760,14 @@
           "gist": {
             "options": [
               {
-                "text": "Mrs. Wright laughs oddly and then flatly tells Hale that John is home but dead.",
-                "best": true
-              },
-              {
                 "text": "Mrs. Wright cries loudly and tells Hale that John ran away to town."
               },
               {
-                "text": "Mrs. Wright smiles and tells Hale that John is out working in the barn."
+                "text": "Mrs. Wright smiles and tells Hale that John is out working in the barn with the cows."
+              },
+              {
+                "text": "Mrs. Wright laughs oddly and then flatly tells Hale that John is home but dead.",
+                "best": true
               }
             ]
           },
@@ -5784,14 +5784,14 @@
             ],
             "choices": [
               {
-                "text": "Her strange calm makes her hard to read",
-                "best": true
-              },
-              {
                 "text": "Her loud anger frightens everyone"
               },
               {
-                "text": "Her cheerful chatter fills the room"
+                "text": "Her cheerful chatter fills the whole room"
+              },
+              {
+                "text": "Her strange calm makes her hard to read",
+                "best": true
               }
             ],
             "proof": {
@@ -5826,7 +5826,7 @@
                 "text": "Crying, Mrs. Wright runs upstairs and says John fell from a ladder."
               },
               {
-                "text": "Laughing, Mrs. Wright says John is only sleeping and points to the barn."
+                "text": "Laughing, Mrs. Wright says John is only sleeping late and points out toward the barn."
               }
             ]
           },
@@ -5843,14 +5843,14 @@
             ],
             "choices": [
               {
+                "text": "The sheriff's, read aloud from his notebook"
+              },
+              {
                 "text": "Hale's, as he remembers it for the lawmen",
                 "best": true
               },
               {
                 "text": "Mrs. Wright's, written in a letter"
-              },
-              {
-                "text": "The sheriff's, read from his notebook"
               }
             ],
             "proof": {

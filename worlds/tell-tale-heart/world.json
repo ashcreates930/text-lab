@@ -4002,7 +4002,7 @@
                 "best": true
               },
               {
-                "text": "The narrator admits he is mad and begs the listener to forgive him."
+                "text": "The narrator admits he has gone completely mad and begs the listener to forgive him for it all."
               },
               {
                 "text": "The narrator says he is deaf and cannot hear anything around him."
@@ -4057,14 +4057,14 @@
           "gist": {
             "options": [
               {
+                "text": "The narrator says he hated the old man from the first day because he stole the family gold."
+              },
+              {
                 "text": "The narrator says the idea haunted him even though the old man never wronged him.",
                 "best": true
               },
               {
                 "text": "The narrator says the old man cheated him out of his gold."
-              },
-              {
-                "text": "The narrator says he hated the old man from the very first day."
               }
             ]
           },
@@ -4103,14 +4103,14 @@
           "gist": {
             "options": [
               {
-                "text": "The narrator blames the old man's pale, filmy eye and decides to kill him to be rid of it.",
-                "best": true
-              },
-              {
-                "text": "The narrator praises the old man's bright eyes and decides to protect him."
+                "text": "The narrator praises the old man's bright, kind eyes and decides to protect him from harm."
               },
               {
                 "text": "The narrator blames the old man's loud voice and decides to move away."
+              },
+              {
+                "text": "The narrator blames the old man's pale, filmy eye and decides to kill him to be rid of it.",
+                "best": true
               }
             ]
           },
@@ -4128,28 +4128,28 @@
             "focus": "the eye of a vulture",
             "choices": [
               {
-                "text": "Metaphor: the old man's eye is called a vulture's eye",
-                "best": true
-              },
-              {
-                "text": "Simile: the eye is compared to a bird using like"
+                "text": "Simile: the eye is compared to a hungry bird using like"
               },
               {
                 "text": "Onomatopoeia: the words copy a bird's cry"
+              },
+              {
+                "text": "Metaphor: the old man's eye is called a vulture's eye",
+                "best": true
               }
             ],
             "choices2": {
               "prompt": "What does it mean?",
               "options": [
                 {
-                  "text": "The eye seems cold, hungry and threatening to him",
-                  "best": true
-                },
-                {
                   "text": "The old man can fly like a bird"
                 },
                 {
-                  "text": "The old man has very sharp eyesight"
+                  "text": "The old man can see very sharply, even in the dark"
+                },
+                {
+                  "text": "The eye seems cold, hungry and threatening to him",
+                  "best": true
                 }
               ]
             },
@@ -4177,7 +4177,7 @@
                 "best": true
               },
               {
-                "text": "The narrator admits his plan was sloppy and that he was rude to the old man."
+                "text": "The narrator admits his plan was sloppy and rushed, and that he was rude to the old man all week."
               },
               {
                 "text": "The narrator says he forgot his plan and spent the whole week traveling."
@@ -4198,14 +4198,14 @@
             "focus": "dissimulation",
             "choices": [
               {
-                "text": "Hiding one's true feelings or plans",
-                "best": true
-              },
-              {
-                "text": "Careful counting and measuring"
+                "text": "Careful counting and measuring of things"
               },
               {
                 "text": "A sudden loss of all courage"
+              },
+              {
+                "text": "Hiding one's true feelings or plans",
+                "best": true
               }
             ],
             "proof": {
@@ -4238,7 +4238,7 @@
                 "best": true
               },
               {
-                "text": "Each morning the narrator bursts into the old man's room with a bright lamp."
+                "text": "Each morning the narrator bursts noisily into the old man's room carrying a bright, uncovered lamp."
               },
               {
                 "text": "Each midnight the narrator locks the old man's door from the outside."
@@ -4258,14 +4258,14 @@
             ],
             "choices": [
               {
+                "text": "Shy and nervous, turning back at once"
+              },
+              {
                 "text": "Patient and sneaky, moving with great care",
                 "best": true
               },
               {
-                "text": "Careless and loud, rushing straight in"
-              },
-              {
-                "text": "Shy and nervous, turning back at once"
+                "text": "Careless and loud, rushing straight into the room"
               }
             ],
             "proof": {
@@ -4297,7 +4297,7 @@
                 "best": true
               },
               {
-                "text": "Taking a minute to peek in, the narrator lights every lamp in the old man's room."
+                "text": "Taking only a minute to peek in, the narrator lights every single lamp in the old man's room."
               },
               {
                 "text": "Peering through the window, the narrator sees the old man awake and reading."
@@ -4324,7 +4324,7 @@
                 "text": "He is lazy and dozes off in the doorway"
               },
               {
-                "text": "He is lost and cannot find the right room"
+                "text": "He is lost in the dark and cannot find the right room"
               }
             ],
             "proof": {
@@ -4356,7 +4356,7 @@
                 "best": true
               },
               {
-                "text": "For seven nights the eye stays open, and each morning the narrator avoids the old man."
+                "text": "For seven nights the eye stays wide open, and each morning the narrator avoids the old man entirely."
               },
               {
                 "text": "For seven nights the narrator sleeps soundly and never visits the old man."
@@ -4411,7 +4411,7 @@
                 "best": true
               },
               {
-                "text": "On the eighth night the narrator rushes in and feels ashamed of his plan."
+                "text": "On the eighth night the narrator rushes into the room and suddenly feels ashamed of his whole plan."
               },
               {
                 "text": "On the eighth night the narrator stays in bed and gives up his plan."
@@ -4436,7 +4436,7 @@
                 "best": true
               },
               {
-                "text": "It makes him sound humble and unsure"
+                "text": "It makes him sound humble, nervous and unsure of himself"
               },
               {
                 "text": "It makes him sound sleepy and slow"
@@ -4473,14 +4473,14 @@
           "gist": {
             "options": [
               {
+                "text": "The narrator shouts his secret, the old man laughs, and they talk until dawn."
+              },
+              {
                 "text": "The narrator chuckles at his secret, the old man stirs as if startled, but the narrator does not retreat.",
                 "best": true
               },
               {
-                "text": "The narrator weeps at his secret, the old man sleeps soundly, and the narrator goes home."
-              },
-              {
-                "text": "The narrator shouts his secret, the old man laughs, and they talk until dawn."
+                "text": "The narrator weeps over his secret, the old man sleeps soundly on, and the narrator quietly goes back to bed."
               }
             ]
           },
@@ -4497,14 +4497,14 @@
             ],
             "choices": [
               {
+                "text": "He keeps praising the old man's kindness"
+              },
+              {
                 "text": "He keeps insisting on his own cleverness and calm",
                 "best": true
               },
               {
-                "text": "He keeps apologizing for what he planned"
-              },
-              {
-                "text": "He keeps praising the old man's kindness"
+                "text": "He keeps apologizing for everything he planned to do"
               }
             ],
             "proof": {
@@ -4562,14 +4562,14 @@
             ],
             "choices": [
               {
+                "text": "He is talking in his sleep about a dream"
+              },
+              {
                 "text": "He senses someone is there and is frightened",
                 "best": true
               },
               {
-                "text": "He is expecting a visitor and is pleased"
-              },
-              {
-                "text": "He is talking in his sleep about a dream"
+                "text": "He is expecting a late visitor and is pleased"
               }
             ],
             "proof": {
@@ -4602,14 +4602,14 @@
           "gist": {
             "options": [
               {
-                "text": "The old man sits awake listening, and the narrator recognizes his groan of terror from his own nights.",
-                "best": true
-              },
-              {
-                "text": "The old man falls back asleep, and the narrator quietly leaves the room."
+                "text": "The old man falls back asleep at once, and the narrator quietly leaves the room, closing the door behind him."
               },
               {
                 "text": "The old man calls for help, and the narrator hides under the bed."
+              },
+              {
+                "text": "The old man sits awake listening, and the narrator recognizes his groan of terror from his own nights.",
+                "best": true
               }
             ]
           },
@@ -4626,14 +4626,14 @@
             ],
             "choices": [
               {
-                "text": "He has felt the same terror himself on many nights",
-                "best": true
-              },
-              {
                 "text": "He once worked as a doctor who treated patients"
               },
               {
                 "text": "He has never been afraid of anything at all"
+              },
+              {
+                "text": "He has felt the same terror himself on many nights",
+                "best": true
               }
             ],
             "proof": {
@@ -4670,7 +4670,7 @@
                 "best": true
               },
               {
-                "text": "The old man decides the noise is a burglar and runs to fetch help."
+                "text": "The old man decides the noise is a burglar and runs down the stairs to fetch the neighbors for help."
               },
               {
                 "text": "The old man laughs at the noise and goes back to sleep at once."
@@ -4698,21 +4698,21 @@
                 "text": "Simile: death is compared to a shadow using like"
               },
               {
-                "text": "Onomatopoeia: the words copy the sound of footsteps"
+                "text": "Onomatopoeia: the words copy the sound of heavy footsteps on the floor"
               }
             ],
             "choices2": {
               "prompt": "What does it mean?",
               "options": [
                 {
+                  "text": "The lantern casts a real, tall shadow across the bedroom wall"
+                },
+                {
                   "text": "The old man senses something deadly coming that he cannot see",
                   "best": true
                 },
                 {
                   "text": "A stranger is walking down the hall"
-                },
-                {
-                  "text": "The lantern casts a real shadow on the wall"
                 }
               ]
             },
@@ -4741,14 +4741,14 @@
           "gist": {
             "options": [
               {
-                "text": "After waiting a long time, the narrator opens the lantern a crack and a thin ray falls on the eye.",
-                "best": true
-              },
-              {
-                "text": "After waiting a moment, the narrator throws open the lantern and fills the room with light."
+                "text": "After waiting only a moment, the narrator throws open the lantern and fills the whole room with light."
               },
               {
                 "text": "After waiting a long time, the narrator shuts the door and goes back to bed."
+              },
+              {
+                "text": "After waiting a long time, the narrator opens the lantern a crack and a thin ray falls on the eye.",
+                "best": true
               }
             ]
           },
@@ -4766,23 +4766,23 @@
             "focus": "stealthily",
             "choices": [
               {
-                "text": "It stresses how secret and sly every movement is",
-                "best": true
-              },
-              {
                 "text": "It shows he is tired and moving clumsily"
               },
               {
-                "text": "It shows he wants the old man to hear him"
+                "text": "It shows he secretly wants the old man to hear him"
+              },
+              {
+                "text": "It stresses how secret and sly every movement is",
+                "best": true
               }
             ],
             "proof": {
               "words": [
-                "you cannot imagine how"
+                "a very, very little crevice"
               ]
             },
-            "hint": "What does he say you cannot imagine?",
-            "why": "Stealthily means slyly and secretly, and he insists you cannot imagine how much so.",
+            "hint": "How much does he open the lantern?",
+            "why": "Stealthily means slyly and secretly: he opens only a very, very little crevice.",
             "standards": [
               "V.1.3",
               "R.3.1"
@@ -4807,14 +4807,14 @@
           "gist": {
             "options": [
               {
+                "text": "The narrator sees the old man smiling and hears him begin to sing."
+              },
+              {
                 "text": "The narrator sees the eye wide open, grows furious, and then hears a low, quick beating sound.",
                 "best": true
               },
               {
-                "text": "The narrator sees the eye closed, calms down, and hears only silence."
-              },
-              {
-                "text": "The narrator sees the old man smiling and hears him begin to sing."
+                "text": "The narrator sees the eye tightly closed, calms down at once, and hears only the silence of the house."
               }
             ]
           },
@@ -4831,14 +4831,14 @@
             ],
             "choices": [
               {
+                "text": "The old man left a clock running"
+              },
+              {
                 "text": "His senses are unusually sharp, not mad",
                 "best": true
               },
               {
                 "text": "A ghost is knocking inside the walls"
-              },
-              {
-                "text": "The old man left a clock running"
               }
             ],
             "proof": {
@@ -4871,14 +4871,14 @@
           "gist": {
             "options": [
               {
-                "text": "The narrator believes he hears the old man's heart, and its growing beat fills him with fury.",
-                "best": true
-              },
-              {
-                "text": "The narrator hears church bells, and their steady ringing calms his fury."
+                "text": "The narrator hears distant church bells, and their slow, steady ringing calms his growing fury."
               },
               {
                 "text": "The narrator hears the old man snoring, and the sound makes him laugh."
+              },
+              {
+                "text": "The narrator believes he hears the old man's heart, and its growing beat fills him with fury.",
+                "best": true
               }
             ]
           },
@@ -4895,14 +4895,14 @@
             ],
             "choices": [
               {
+                "text": "Boredom with the long, quiet night"
+              },
+              {
                 "text": "Rising fury that he struggles to hold back",
                 "best": true
               },
               {
-                "text": "Calm pity for the frightened old man"
-              },
-              {
-                "text": "Boredom with the long, quiet night"
+                "text": "Calm pity for the frightened old man in bed"
               }
             ],
             "proof": {
@@ -4935,14 +4935,14 @@
           "gist": {
             "options": [
               {
-                "text": "As the beating grows louder, the narrator suddenly fears that a neighbor will hear it.",
-                "best": true
-              },
-              {
-                "text": "As the beating fades away, the narrator decides to leave the house quietly."
+                "text": "As the beating fades away, the narrator decides to leave the house quietly before dawn."
               },
               {
                 "text": "As the beating grows louder, the narrator wakes the old man to warn him."
+              },
+              {
+                "text": "As the beating grows louder, the narrator suddenly fears that a neighbor will hear it.",
+                "best": true
               }
             ]
           },
@@ -5055,14 +5055,14 @@
           "gist": {
             "options": [
               {
-                "text": "The narrator says the eye will trouble him no more and boasts of how carefully he hid what he had done.",
-                "best": true
-              },
-              {
-                "text": "The narrator says the eye still haunts him and runs to tell a neighbor everything."
+                "text": "The narrator says the eye still haunts him, so he runs next door at once to tell a neighbor everything."
               },
               {
                 "text": "The narrator says the old man recovered, and they shared breakfast at dawn."
+              },
+              {
+                "text": "The narrator says the eye will trouble him no more and boasts of how carefully he hid what he had done.",
+                "best": true
               }
             ]
           },
@@ -5079,14 +5079,14 @@
             ],
             "choices": [
               {
-                "text": "That he cannot be mad",
-                "best": true
-              },
-              {
                 "text": "That he is truly sorry"
               },
               {
                 "text": "That the old man deserved it"
+              },
+              {
+                "text": "That he cannot be mad",
+                "best": true
               }
             ],
             "proof": {
@@ -5119,14 +5119,14 @@
           "gist": {
             "options": [
               {
-                "text": "Before dawn the narrator finishes hiding his crime, and three police officers knock at the door.",
-                "best": true
-              },
-              {
-                "text": "At noon the narrator finishes breakfast, and three neighbors bring him a cake."
+                "text": "At noon the narrator finishes a late breakfast, and three friendly neighbors bring him a cake."
               },
               {
                 "text": "Before dawn the narrator packs his bags and slips out the back door."
+              },
+              {
+                "text": "Before dawn the narrator finishes hiding his crime, and three police officers knock at the door.",
+                "best": true
               }
             ]
           },
@@ -5175,14 +5175,14 @@
           "gist": {
             "options": [
               {
-                "text": "A neighbor reported a shriek, and the narrator calmly claims it was his own nightmare.",
-                "best": true
-              },
-              {
-                "text": "A neighbor reported a fire, and the narrator admits he started it."
+                "text": "A neighbor reported smoke and a fire, and the narrator admits that he started it by accident."
               },
               {
                 "text": "A neighbor reported a theft, and the narrator blames the old man."
+              },
+              {
+                "text": "A neighbor reported a shriek, and the narrator calmly claims it was his own nightmare.",
+                "best": true
               }
             ]
           },
@@ -5226,14 +5226,14 @@
           "gist": {
             "options": [
               {
-                "text": "The narrator boldly seats the officers in the room, but soon he grows pale and wishes they would leave.",
-                "best": true
-              },
-              {
                 "text": "The narrator rudely sends the officers away, and they leave satisfied."
               },
               {
-                "text": "The narrator invites the officers to stay the night, and they all fall asleep."
+                "text": "The narrator invites the officers to stay the whole night, and they all fall asleep in their chairs."
+              },
+              {
+                "text": "The narrator boldly seats the officers in the room, but soon he grows pale and wishes they would leave.",
+                "best": true
               }
             ]
           },
@@ -5262,12 +5262,12 @@
               }
             ],
             "proof": {
-              "words": [
-                "placed my own seat upon the very spot"
+              "lines": [
+                "I was singularly at ease."
               ]
             },
-            "hint": "Where does he choose to sit?",
-            "why": "He placed his own seat upon the very spot: a shockingly bold act.",
+            "hint": "How does he feel while the officers sit there?",
+            "why": "He sits over the very spot and is singularly at ease: shocking boldness.",
             "standards": [
               "V.1.3",
               "K12.EE.1.1"
@@ -5296,7 +5296,7 @@
                 "best": true
               },
               {
-                "text": "The ringing stops, and the narrator relaxes and laughs with the officers."
+                "text": "The ringing stops completely, and the narrator relaxes and laughs along with the friendly officers."
               },
               {
                 "text": "The ringing turns out to be church bells, and everyone leaves for church."
@@ -5316,14 +5316,14 @@
             ],
             "choices": [
               {
+                "text": "The visitors are too polite to mention it"
+              },
+              {
                 "text": "The sound may exist only in the narrator's mind",
                 "best": true
               },
               {
                 "text": "The visitors are deaf and cannot hear anything"
-              },
-              {
-                "text": "The visitors are too polite to mention it"
               }
             ],
             "proof": {
@@ -5356,14 +5356,14 @@
           "gist": {
             "options": [
               {
+                "text": "The narrator falls asleep as the sound stops, while the officers leave."
+              },
+              {
                 "text": "The narrator paces and shouts as the sound grows, while the officers keep chatting and smiling.",
                 "best": true
               },
               {
-                "text": "The narrator sits quietly as the sound fades, while the officers search the cellar."
-              },
-              {
-                "text": "The narrator falls asleep as the sound stops, while the officers leave."
+                "text": "The narrator sits quietly as the sound fades, while the officers search the cellar with lanterns."
               }
             ]
           },
@@ -5381,14 +5381,14 @@
             "focus": "pleasantly",
             "choices": [
               {
-                "text": "It shows how calm they stay while he falls apart",
-                "best": true
-              },
-              {
-                "text": "It shows they are angry with him"
+                "text": "It shows they are growing angry and impatient with him"
               },
               {
                 "text": "It shows they are about to leave"
+              },
+              {
+                "text": "It shows how calm they stay while he falls apart",
+                "best": true
               }
             ],
             "proof": {
@@ -5422,14 +5422,14 @@
           "gist": {
             "options": [
               {
+                "text": "Convinced he has won, the narrator laughs and goes upstairs to sleep."
+              },
+              {
                 "text": "Convinced the officers are mocking him, the narrator cries out a confession and tells them where to look.",
                 "best": true
               },
               {
-                "text": "Convinced the officers believe him, the narrator thanks them and shows them out."
-              },
-              {
-                "text": "Convinced he has won, the narrator laughs and goes upstairs to sleep."
+                "text": "Convinced the officers believe every word, the narrator thanks them warmly and shows them out the front door."
               }
             ]
           },

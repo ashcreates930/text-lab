@@ -20,7 +20,8 @@ function rightAnswer(k: number): Answer {
   const q = exp.chunks[k].question, tokens = chunkTokens(chunks[k].lines);
   if (q.type === "make_call") return { theory: q.theories![1].id, lines: q.theories![1].lines.slice(0, 2) };
   if (q.type === "figure_it_out") return { choice: best(q.choices), choice2: best(q.choices2!.options) };
-  if (q.proof?.words?.length) { const r = phraseRange(tokens, q.proof.words[0])!; return { choice: best(q.choices), words: Array.from({ length: r[1] - r[0] + 1 }, (_, i) => r[0] + i) }; }
+  // Text evidence is a whole sentence: a word proof is the sentence that holds the word.
+  if (q.proof?.words?.length) { const r = phraseRange(tokens, q.proof.words[0])!; return { choice: best(q.choices), lines: [chunks[k].lines[tokens[r[0]].line].text] }; }
   return { ...(q.choices ? { choice: best(q.choices) } : {}), lines: [q.proof!.lines![0]] };
 }
 const result = (k: number, correct: boolean, gistOk = true, extra: Partial<ChunkResult> = {}): ChunkResult => ({ index: k, answer: correct ? rightAnswer(k) : { choice: wrong(exp.chunks[k].question.choices), lines: [chunks[k].lines[0].text] }, correct, late: false, gist: gistOk ? best(exp.chunks[k].gist.options) : wrong(exp.chunks[k].gist.options), typed: null, unknown: [], ...extra });
@@ -41,7 +42,7 @@ test("Refresher: only misses, up to 4, race questions before Gist checks", () =>
 test("Refresher: untimed proof taps are checked; stars and badges, Perfect run when nothing was missed", () => {
   for (let k = 0; k < chunks.length; k++) {
     const q = exp.chunks[k].question, a = rightAnswer(k);
-    const proofOnly = q.type === "figure_it_out" ? { choice2: a.choice2 } : q.type === "make_call" ? { lines: a.lines } : { words: a.words, lines: a.lines };
+    const proofOnly = q.type === "figure_it_out" ? { choice2: a.choice2 } : q.type === "make_call" ? { lines: a.lines } : { lines: a.lines };
     assert.ok(refresherCorrect({ index: k, kind: "question" }, chunks[k], proofOnly), `chunk ${k + 1} ${q.type}: the proof fixes it`);
     assert.ok(!refresherCorrect({ index: k, kind: "question" }, chunks[k], { lines: ["Not a line"], words: [], choice2: wrong(q.choices2?.options) }), `chunk ${k + 1}: a wrong tap doesn't`);
   }
@@ -62,7 +63,7 @@ test("Case Notes: one entry per chunk with the question, answer, proof, first tr
   const n3 = notes[2];
   assert.equal(n3.type, "Shades of Meaning"); assert.equal(n3.rightFirstTry, false); assert.equal(n3.fixed, true);
   assert.equal(n3.typedQuestion, "Why was he hunting alone?"); assert.deepEqual(n3.unknownWords, ["stripling"]);
-  assert.match(n3.correctProof, /my first exploit/); assert.ok(n3.answer.length > 0);
+  assert.match(n3.correctProof, /roar of my own gun/); assert.ok(n3.answer.length > 0);
   assert.equal(notes[0].note, "He won't swear to it."); assert.equal(notes[0].rightFirstTry, true); assert.equal(notes[0].fixed, null);
   assert.equal(notes[4].gistRight, false); assert.ok(notes[4].gistPick);
   assert.ok(notes.every((n) => n.standards.length > 0));
@@ -132,7 +133,7 @@ test("live: the Refresher on each phone after the podium, notes saved, then the 
   // Ben fixes chunk 2 in the Refresher (one try), and writes a note.
   assert.equal(benAfter.refresher[1].chunk, 1);
   const fix0 = exp.chunks[0].question.proof!.words![0], t0 = chunkTokens(chunks[0].lines), r0 = phraseRange(t0, fix0)!;
-  assert.equal(await act(ids[1], "race_refresh", { k: 1, answer: { words: Array.from({ length: r0[1] - r0[0] + 1 }, (_, i) => r0[0] + i) } }), null);
+  assert.equal(await act(ids[1], "race_refresh", { k: 1, answer: { lines: [chunks[0].lines[t0[r0[0]].line].text] } }), null);
   assert.match((await act(ids[1], "race_refresh", { k: 1, answer: {} })) ?? "", /already tried/);
   assert.equal(await act(ids[1], "race_note", { index: 0, text: "He won't swear the story is true." }), null);
   const ben2 = server.playerView(st, ids[1]).after!;

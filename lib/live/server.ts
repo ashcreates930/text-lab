@@ -317,7 +317,9 @@ export function playerView(st: LiveState, playerId: string) {
       const mine = playerChunk(st.responses, i, round.step, me.id), board = liveRaceBoard(st.responses, i, st.players, st.squads, round.squadsOn, round.step);
       const meRow = board.rows.find((r) => r.id === (board.kind === "squad" ? me.squadId : me.id)) ?? null;
       const setting = ([...st.responses].reverse().find((r) => r.kind === "player_time" && r.payload.playerId === me.id)?.payload.setting as string | undefined) ?? "1";
-      return { mine, total: raceTotals(st.responses, i, st.players, round.step).get(me.id) ?? 0, place: meRow ? { rank: meRow.rank, of: board.rows.length, move: meRow.move, gained: meRow.gained } : null, scale: timeScale(setting), extraTime: setting !== "1",
+      // The score on the phone holds this chunk's points until the reveal (it would give the answer away early).
+      const counted = round.beat === "read" || round.beat === "process" || round.beat === "ask" || round.beat === "race" ? round.step - 1 : round.step;
+      return { mine, total: raceTotals(st.responses, i, st.players, counted).get(me.id) ?? 0, place: meRow ? { rank: meRow.rank, of: board.rows.length, move: meRow.move, gained: meRow.gained, row: meRow } : null, scale: timeScale(setting), extraTime: setting !== "1",
         // The streak: questions proved in a row, through the last one answered.
         streak: (() => { let n = 0; for (let k = round.beat === "race" || round.beat === "read" || round.beat === "process" || round.beat === "ask" ? round.step - 1 : round.step; k >= 0; k--) { if (playerChunk(st.responses, i, k, me.id).correct) n++; else break; } return n; })(),
         squadId: me.squadId ?? null,
@@ -425,6 +427,8 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
       if (round?.type !== "race" || s.status !== "round") return "No Proof Race is running.";
       const n = nextBeat(round, liveRaceChunks(st.world, st.passages ?? [], round));
       if (n === "end") { await store.updateSession(s.id, { status: "ended", paused: false }); return null; }
+      // Moving on ends a pause: the new beat's clock starts now, so phones must be able to answer it.
+      if (s.paused) await store.updateSession(s.id, { paused: false });
       return set(store, st, { ...round, step: n.step, beat: n.beat, beatStartedAt: new Date().toISOString(), pausedAt: null, pinned: n.step === round.step ? round.pinned ?? null : null });
     }
     // The Bonus Round: after a Proof Race; squads are built first if there are none.

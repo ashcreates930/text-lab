@@ -11,6 +11,8 @@ import {LIAR_POINTS,firstName,interviewAudio,proofPassages,saidLine,witnessName,
 import {CharacterStage,useVoice,type StageClip} from "./character-stage";
 import {ReadingPanel} from "./reading-panel";
 import {focusScreenTop} from "./screen-focus";
+import {SplitStage} from "./split-stage";
+import {shuffledOrder} from "@/lib/expedition";
 import {HologramView} from "./hologram-view";
 
 const characterOf=(world:WorldPack,id:string)=>world.characters.find(c=>c.id===id);
@@ -67,28 +69,32 @@ export function InterviewScreen({world,expeditionId,interview,liar,onDone,saved}
 }
 
 // ---------- Name the Liar ----------
-// Step 1: who lied? Step 2: tap the line that proves it. One try.
-export function NameTheLiar({world,said,passages,onLock,seconds,left,locked=false,heading="Name the Liar"}:{world:WorldPack;said:Said[];passages:{id:string;text:string}[];onLock:(a:LiarAnswer)=>void;seconds?:number;left?:number|null;locked?:boolean;heading?:string}){
+// Step 1: who lied? Step 2: tap the sentence that proves it. One try. Side by side: the expedition's text on the left
+// (tappable in step 2), the witnesses and the lock-in on the right; on a phone the right side is the bottom panel.
+// seed: this student's own witness order.
+export function NameTheLiar({world,said,passages,onLock,seconds,left,locked=false,heading="Name the Liar",seed}:{world:WorldPack;said:Said[];passages:{id:string;text:string}[];onLock:(a:LiarAnswer)=>void;seconds?:number;left?:number|null;locked?:boolean;heading?:string;seed?:string}){
  const [step,setStep]=useState<1|2>(1),[pick,setPick]=useState<string|null>(null),[line,setLine]=useState<string|null>(null);
  useLayoutEffect(()=>{focusScreenTop()},[step]);
  const picked=said.find(s=>s.character===pick);
+ const order=seed?shuffledOrder(said.length,`${seed}|liar`).map(i=>said[i]):said;
  if(locked)return <section aria-labelledby="nl-h" className="mt-6 flex flex-col items-center gap-3 text-center"><h1 id="nl-h" className="text-[30px] outline-none">Locked in</h1><p className="text-[17px] text-muted">Nothing is revealed until everyone has locked in. Watch the board.</p></section>;
- return <section aria-labelledby="nl-h" className="flex flex-col gap-3">
-  <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{heading} · step {step} of 2 · one try{seconds?` · ${seconds} seconds`:""}</p>
-  <h1 id="nl-h" className="text-[28px] leading-tight outline-none">{step===1?"Which witness lied?":`Tap the line that proves ${picked?firstName(picked.name):"them"} wrong`}</h1>
-  {left!=null&&<p className="font-display text-[18px] font-bold tabular-nums text-gold" aria-live="off">{Math.ceil(left)}s left</p>}
-  {step===1
-   ?<><div className="grid gap-2.5">{said.map(s=>{const c=characterOf(world,s.character);return <button key={s.character} type="button" aria-pressed={pick===s.character} onClick={()=>setPick(s.character)} className={`flex min-h-[72px] items-start gap-3 rounded-[18px] p-3 text-left ${pick===s.character?"bg-gold text-on-gold":"bg-panel text-ink"}`}>
-     {c?.portrait?<img src={c.portrait} alt="" className="h-14 w-14 shrink-0 rounded-full object-cover"/>:<span aria-hidden className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-reading font-display text-[24px] font-bold text-reading-ink">{s.name.slice(0,1)}</span>}
-     <span><span className="block font-display text-[18px] font-bold">{s.name}</span><span className="block text-[15px] leading-snug">"{s.text}"</span></span></button>})}</div>
-    <button type="button" disabled={!pick} onClick={()=>setStep(2)} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Next: find the proof <ArrowRight size={18} aria-hidden/></button></>
-   :<><Caption live={false} name={`${picked?.name} said`} text={picked?.text??""}/>
-    <p className="text-[15px] font-bold text-muted">Tap the line anywhere in the expedition that shows this is false, then lock in.</p>
-    <ReadingPanel className="max-h-[55dvh]" passages={passages as SourcePassage[]} glossary={world.glossary} selected={line??undefined} kept={[]} onTap={l=>setLine(l.text)}/>
-    <div className="flex gap-2"><button type="button" onClick={()=>setStep(1)} className="case-secondary">Back</button>
-     <button type="button" disabled={!line} onClick={()=>onLock({liar:pick,line})} className="case-primary flex-1 justify-center">Lock in <ArrowRight size={18} aria-hidden/></button></div></>}
- </section>;
+ const head=<><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{heading} · step {step} of 2 · one try{seconds?` · ${seconds} seconds`:""}</p>
+  <h1 id="nl-h" className="text-[26px] leading-tight outline-none">{step===1?"Which witness lied?":`Tap the sentence that proves ${picked?firstName(picked.name):"them"} wrong`}</h1>
+  {left!=null&&<p className="font-display text-[18px] font-bold tabular-nums text-gold" aria-live="off">{Math.ceil(left)}s left</p>}</>;
+ const body=step===1
+  ?<div className="mt-2 grid gap-2.5">{order.map(s=>{const c=characterOf(world,s.character);return <button key={s.character} type="button" aria-pressed={pick===s.character} onClick={()=>setPick(s.character)} className={`flex min-h-[72px] items-start gap-3 rounded-[18px] p-3 text-left ${pick===s.character?"bg-gold text-on-gold":"bg-panel text-ink"}`}>
+    {c?.portrait?<img src={c.portrait} alt="" className="h-14 w-14 shrink-0 rounded-full object-cover"/>:<span aria-hidden className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-reading font-display text-[24px] font-bold text-reading-ink">{s.name.slice(0,1)}</span>}
+    <span><span className="block font-display text-[18px] font-bold">{s.name}</span><span className="block text-[15px] leading-snug">"{s.text}"</span></span></button>})}</div>
+  :<div className="mt-2 flex flex-col gap-2"><Caption live={false} name={`${picked?.name} said`} text={picked?.text??""}/>
+    <p className="text-[15px] font-bold text-muted">Tap the sentence anywhere in the expedition that shows this is false, then lock in.</p></div>;
+ const action=step===1
+  ?<button type="button" disabled={!pick} onClick={()=>setStep(2)} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Next: find the proof <ArrowRight size={18} aria-hidden/></button>
+  :<div className="flex gap-2"><button type="button" onClick={()=>setStep(1)} className="case-secondary">Back</button>
+    <button type="button" disabled={!line} onClick={()=>onLock({liar:pick,line})} className="case-primary flex-1 justify-center">Lock in <ArrowRight size={18} aria-hidden/></button></div>;
+ const passage=<ReadingPanel passages={passages as SourcePassage[]} glossary={world.glossary} selected={step===2?line??undefined:undefined} kept={[]} onTap={l=>{if(step===2)setLine(x=>x===l.text?null:l.text)}}/>;
+ return <SplitStage label="Name the Liar" passage={passage} head={head} body={body} action={action} collapse={step===2}/>;
 }
+
 
 // The verdict: a win is the gold "Case solved" moment with the liar's reaction and the line quoted; otherwise the
 // liar and the line are shown, and the case goes into the Refresher.

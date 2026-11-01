@@ -10,7 +10,7 @@ import type {hostView,playerView} from "@/lib/live/server";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
 import {type BoardRow} from "@/lib/proof-race";
-import {DISCOVERY_COINS,TESTIMONY_MS,chunkTokens,focusTokens,norm,type Answer,type Token} from "@/lib/expedition";
+import {DISCOVERY_COINS,TESTIMONY_MS,chunkTokens,focusTokens,norm,shuffledOrder,type Answer,type Token} from "@/lib/expedition";
 // Every word of the given lines, as token positions.
 const proofTokensOf=(tokens:Token[],lines:{text:string}[],proof:string[])=>{const want=new Set(proof.map(norm)),idx=new Set(lines.map((l,i)=>(want.has(norm(l.text))?i:-1)).filter(i=>i>=0));return tokens.filter(t=>idx.has(t.line)).map(t=>t.i)};
 import {ReadingPanel} from "../reading-panel";
@@ -19,6 +19,7 @@ import {CaseNotesView,Refresher} from "../after-race";
 import {BONUS_STEMS,squadCaseFilePdf,type SquadCaseFile} from "@/lib/case-notes";
 import {focusScreenTop} from "../screen-focus";
 import {AnswerBars,ChunkText,CountdownRing,KeywordPrompt,QuestionPanel,RaceHud,TimerTrack} from "../expedition-race";
+import {SplitStage,useStickyOffsets} from "../split-stage";
 import {InterviewHost,InterviewPlayer,interviewBeat} from "./interview-live";
 
 type HostView=ReturnType<typeof hostView>;
@@ -97,12 +98,12 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
   {round.beat==="read"&&world&&<><p className="mt-2 text-[clamp(18px,1.6vw,26px)] text-muted" aria-live="polite">{race.ready.ready} of {race.ready.total} ready · no timer while reading</p>
    <div className="mt-3"><ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} large/></div></>}
   {round.beat==="process"&&<div className="mt-3"><p className="text-[20px] text-muted">{race.answered} of {state.counters.players} answered</p><p className="mt-2 font-display text-[clamp(26px,2.8vw,44px)] font-bold">Which is the best summary?</p>
-   <ol className="mt-3 grid gap-2">{round.chunk.gist.map((g,i)=><li key={i} className="rounded-card bg-panel px-5 py-3 text-[clamp(18px,1.8vw,28px)] font-bold">{String.fromCharCode(65+i)}. {g}</li>)}</ol></div>}
+   <ol className="mt-3 grid gap-2">{round.chunk.gist.map((g,i)=><li key={i} className="rounded-card bg-panel px-5 py-3 text-[clamp(18px,1.8vw,28px)] font-bold">{g}</li>)}</ol></div>}
   {round.beat==="ask"&&<div className="mt-3"><p className="text-[20px] text-muted">{race.answered} of {state.counters.players} asked · you can move on once most have</p>{questions}</div>}
   {round.pinned&&<p className="mt-3 rounded-card bg-highlight px-5 py-3 text-[clamp(18px,1.8vw,26px)] font-bold text-on-primary"><Pin size={20} className="mr-2 inline" aria-hidden/>For discussion: {round.pinned}</p>}
   {round.beat==="race"&&q&&<div className="mt-3"><p className="text-[14px] font-extrabold uppercase tracking-[.08em] text-highlight">{q.name}</p><p className="font-display text-[clamp(26px,2.8vw,44px)] font-bold leading-tight"><KeywordPrompt prompt={q.prompt} keywords={q.keywords}/></p>
    {q.testimony&&<blockquote className="mt-3 rounded-card bg-violet p-5 text-on-violet"><p className="text-[14px] font-extrabold uppercase tracking-[.08em]">{q.testimony.speaker} testifies</p><p className="mt-1 text-[clamp(20px,2vw,30px)] font-bold">“{q.testimony.text}”</p></blockquote>}
-   {(q.choices??q.theories?.map(t=>t.name))&&<ol className="mt-3 grid gap-2 md:grid-cols-3">{(q.choices??q.theories!.map(t=>t.name)).map((c,i)=><li key={i} className="rounded-card bg-panel px-4 py-3 text-[clamp(16px,1.5vw,22px)] font-bold">{String.fromCharCode(65+i)}. {c}</li>)}</ol>}
+   {(q.choices??q.theories?.map(t=>t.name))&&<ol className="mt-3 grid gap-2 md:grid-cols-3">{(q.choices??q.theories!.map(t=>t.name)).map((c,i)=><li key={i} className="rounded-card bg-panel px-4 py-3 text-[clamp(16px,1.5vw,22px)] font-bold">{c}</li>)}</ol>}
    <p className="mt-2 text-[20px] text-muted">{race.answered} of {state.counters.players} answered{maxScale>1?" · extra time still running for some":""}</p>
    {world&&<div className="mt-3"><ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} focus={focusTokens(tokens,q.focus)} large/></div>}</div>}
   {round.beat==="reveal"&&round.reveal&&world&&<div className="mt-3"><p className="text-[clamp(26px,2.8vw,42px)] font-bold">{round.reveal.pct}% found the proof</p><p className="text-[20px] text-muted">{round.reveal.why}</p>
@@ -147,6 +148,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  const key=`${round?.step}:${round?.beat}`;
  useEffect(()=>{setDraft({});setStep(1)},[round?.step]);
  const scale=race?.scale??1;
+ useStickyOffsets();
  const myMs=round?.beatMs!=null?round.beatMs*scale:null;
  const left=useBeatClock(round?.beatStartedAt??0,round&&round.beat!=="read"&&myMs!==null&&!round.paused?myMs/1000:null);
  // Catch the Lie: the testimony plays first; the clock (and the proof step) start after it.
@@ -161,7 +163,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  const hud=<RaceHud score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.step+1} total={round.total} left={round.beat==="read"?null:left} title={round.expedition.title}/>;
  // The proof as token positions: its words, or every word of its lines.
  const shownTokens=round.reveal?.words.length?round.reveal.words:proofTokensOf(tokens,round.chunk.lines,round.reveal?.lines??[]);
- return <section className="mt-3 flex flex-col gap-3" aria-labelledby="rp-h">
+ return <section className="wide-host mt-3 flex flex-col gap-3" aria-labelledby="rp-h">
   {hud}
   {race.extraTime&&<p className="text-[13px] font-bold text-muted">Extra time is on for you.</p>}
   {round.paused&&<p role="status" className="rounded-card bg-gold px-4 py-2 text-[16px] font-bold text-on-gold">Paused by your teacher.</p>}
@@ -170,13 +172,14 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
    <ChunkText explore chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} highlighter={round.highlighter} marking={marking} unknown={unknown} onUnknown={i=>setUnknown(s=>{const n=new Set(s);if(n.has(i))n.delete(i);else n.add(i);return n})} onDiscover={()=>{if(found!==round.chunk.id){setFound(round.chunk.id);setCoins(c=>c+DISCOVERY_COINS);cue(sound,"chime",0.3)}}} found={found===round.chunk.id}/>
    {mine.ready?<p role="status" className="rounded-card bg-success px-4 py-3 text-[17px] font-bold text-on-success"><Check size={18} className="mr-1 inline" aria-hidden/>Ready. Waiting for the class.</p>
     :<button type="button" onClick={async()=>{if(unknown.size)await act("race_unknown",{words:[...unknown].map(i=>tokens[i]?.text)});setMarking(false);act("race_ready")}} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Ready <ArrowRight size={18} aria-hidden/></button>}</>}
-  {round.beat==="process"&&<><TimerTrack left={left} seconds={(myMs??20000)/1000}/><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Gist check</p><h1 id="rp-h" className="text-[28px] outline-none">Which is the best summary?</h1>
-   <AnswerBars label="Which is the best summary?" options={round.chunk.gist.map(t=>({text:t}))} picked={mine.gist} disabled={mine.gist!==null} onPick={i=>act("race_gist",{choice:i})}/>
-   {mine.gist!==null&&<p role="status" className="text-[16px] font-bold text-muted">Locked in. The question is next.</p>}</>}
+  {round.beat==="process"&&<SplitStage label="Gist check" passage={<ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens}/>}
+   head={<><TimerTrack left={left} seconds={(myMs??20000)/1000}/><p className="mt-2 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Gist check</p><h1 id="rp-h" className="text-[28px] outline-none">Which is the best summary?</h1></>}
+   body={<><AnswerBars seed={`${state.me.id}|${round.chunk.id}|gist`} label="Which is the best summary?" options={round.chunk.gist.map(t=>({text:t}))} picked={mine.gist} disabled={mine.gist!==null} onPick={i=>act("race_gist",{choice:i})}/>
+   {mine.gist!==null&&<p role="status" className="mt-2 text-[16px] font-bold text-muted">Locked in. The question is next.</p>}</>}/>}
   {round.beat==="ask"&&<><TimerTrack left={left} seconds={(myMs??60000)/1000}/><h1 id="rp-h" className="text-[28px] outline-none">Your question</h1><QuestionAsk sent={mine.asked} onSend={async t=>(await act("race_question",{text:t}))??null}/></>}
-  {round.beat==="race"&&q&&<>{!testifying&&<TimerTrack left={left} seconds={(myMs??45000)/1000}/>}
+  {round.beat==="race"&&q&&<>{mine.done&&!testifying&&<TimerTrack left={left} seconds={(myMs??45000)/1000}/>}
    {mine.done?<><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{q.name}</p><h1 id="rp-h" className="text-[24px] leading-tight outline-none"><KeywordPrompt prompt={q.prompt} keywords={q.keywords}/></h1><p role="status" className="rounded-card bg-panel px-4 py-3 text-[17px] font-bold">Locked in. Eyes on the board.</p></>
-    :<QuestionPanel headingId="rp-h" vq={q} passages={round.chunk.passages} chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} glossary={world.glossary} testifying={!!testifying} draft={draft} setDraft={setDraft} step={step} setStep={setStep} onLock={a=>act("race_tap",{answer:a})}/>}</>}
+    :<QuestionPanel seed={`${state.me.id}|${round.chunk.id}`} timer={!testifying?<TimerTrack left={left} seconds={(myMs??45000)/1000}/>:null} headingId="rp-h" vq={q} passages={round.chunk.passages} chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} glossary={world.glossary} testifying={!!testifying} draft={draft} setDraft={setDraft} step={step} setStep={setStep} onLock={a=>act("race_tap",{answer:a})}/>}</>}
   {round.beat==="reveal"&&<div aria-live="assertive">{mine.tap?.correct
    ?<div className="mt-6 flex flex-col items-center gap-3"><p aria-hidden className="float-up font-display text-[56px] font-bold leading-none text-gold">+{mine.tap.points.toLocaleString()}</p>
     <div className="moment-pop w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{q?.name}</p><h1 id="rp-h" className="mt-1 text-[40px] leading-none outline-none">Proof!<span className="sr-only"> Plus {mine.tap.points} points.</span></h1><p className="mt-2 text-[16px] font-bold">{round.reveal?.why}</p></div></div>
@@ -191,7 +194,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
     <div className="rounded-[18px] bg-gold p-3 text-on-gold shadow-[0_5px_0_var(--color-gold-shadow)]"><p className="font-display text-[24px] font-bold">{race.place.move>0?`Up ${race.place.move}`:race.place.move<0?`Down ${-race.place.move}`:`#${race.place.rank}`}</p><p className="text-[13px] font-extrabold">now #{race.place.rank} of {race.place.of}</p></div>
     <div className="rounded-[18px] bg-panel p-3 text-ink shadow-[0_5px_0_#0B0920]"><p className="font-display text-[24px] font-bold tabular-nums">{round.reveal?.pct??0}%</p><p className="text-[13px] font-extrabold text-muted">found it</p></div>
    </div>
-   {round.beat==="board"&&round.board?<Leaderboard rows={round.board.top as BoardRow[]} meId={round.board.kind==="squad"?race.squadId:state.me.id} title="Top 5"/>
+   {round.beat==="board"&&round.board?<Leaderboard rows={round.board.top as BoardRow[]} meId={round.board.kind==="squad"?race.squadId:state.me.id} own={race.place.row as BoardRow|undefined} title="Top 5"/>
     :left!==null&&myMs!==null&&<div className="mt-4"><CountdownRing ms={left*1000} total={myMs} label={round.step+1>=round.total?"Final results":`Chunk ${round.step+2} of ${round.total}`}/></div>}</>}
  </section>;
 }
@@ -202,7 +205,7 @@ export function RaceEndedPlayer({state,world,act}:{state:PlayerView;world:WorldP
  if(!f||!state.race||!world)return null;
  const after=state.after;
  const mine=f.kind==="squad"?null:f.podium.findIndex(r=>r.id===state.me.id);
- if(stage==="refresher"&&after)return <Refresher items={after.refresher} world={world} check={async(k,a)=>{await act("race_refresh",{k,answer:a})}} onDone={()=>setStage("notes")}/>;
+ if(stage==="refresher"&&after)return <Refresher seed={state.me.id} items={after.refresher} world={world} check={async(k,a)=>{await act("race_refresh",{k,answer:a})}} onDone={()=>setStage("notes")}/>;
  if(stage==="notes"&&after)return <CaseNotesView interview={after.interview} notes={after.notes} student={state.me.nickname} story={world.title} expedition={round.expedition.title} award={after.award} onNote={(i,t)=>act("race_note",{index:i,text:t})}
   bonus={<p className="no-print rounded-card bg-violet-soft p-4 text-[16px] font-bold">Bonus Round: when your teacher starts it, your squad compares Case Notes and agrees on the best proof.</p>}/>;
  return <section className="mt-6 text-center"><h1 className="text-[30px] font-bold outline-none">Race over</h1>
@@ -230,12 +233,12 @@ export function BonusPlayer({state,world,act}:{state:PlayerView;world:WorldPack|
   <h1 id="bn-h" className="text-[28px] leading-tight outline-none">Agree on the strongest proof</h1>
   <p className="rounded-card bg-panel-2 px-4 py-3 text-[16px] font-bold">Your role: {role}{role==="Reporter"||!Object.values(b.roles).includes("Reporter")?". You can hand in the Squad Case File.":role==="Skeptic"?". Ask: does the text really say that?":role==="Evidence Keeper"?". Check every proof against the passage.":". Keep the squad moving."}</p>
   <ul className="flex flex-wrap gap-2 text-[14px]">{b.members.map(m=><li key={m.id} className="rounded-full bg-panel px-3 py-1 font-bold">{m.nickname}: {b.roles[m.id]}</li>)}</ul>
-  <ol className="flex flex-col gap-3">{b.flagged.map(q=>{const p=b.picks.find(x=>x.index===q.index);return <li key={q.index} className="rounded-card bg-panel p-4">
+  <ol className="flex flex-col gap-3">{b.flagged.map(q=>{const p=b.picks.find(x=>x.index===q.index),answers=shuffledOrder(q.answers.length,`${state.me.id}|bonus|${q.index}`).map(i=>q.answers[i]);return <li key={q.index} className="rounded-card bg-panel p-4">
    <p className="font-display text-[18px] font-bold">{q.chunk?`Chunk ${q.chunk} · ${q.type}`:`${q.type}: compare who you named, and why`}</p><p className="mt-1 text-[16px]">{q.question}</p>
-   <ul className="mt-2 grid gap-2">{q.answers.map(a=><li key={a.id} className="rounded-row bg-panel-2 px-3 py-2 text-[15px]"><b>{a.nickname}:</b> {a.answer}{a.proof?<> · <span className="font-serif">{a.proof}</span></>:null}</li>)}</ul>
+   <ul className="mt-2 grid gap-2">{answers.map(a=><li key={a.id} className="rounded-row bg-panel-2 px-3 py-2 text-[15px]"><b>{a.nickname}:</b> {a.answer}{a.proof?<> · <span className="font-serif">{a.proof}</span></>:null}</li>)}</ul>
    {p?<p className="mt-2 rounded-row bg-success px-3 py-2 text-[15px] font-bold text-on-success"><Check size={16} className="mr-1 inline" aria-hidden/>Agreed: {b.members.find(m=>m.id===p.from)?.nickname}'s answer, defended by {p.defenderName}: {p.stem} {p.reason}</p>:null}
    {open===q.index?<div className="mt-3 flex flex-col gap-2 rounded-row bg-panel-2 p-3">
-    <fieldset><legend className="text-[14px] font-extrabold">Use whose answer?</legend><div className="mt-1 flex flex-wrap gap-2">{q.answers.filter(a=>a.raw).map(a=><button key={a.id} type="button" aria-pressed={from===a.id} onClick={()=>setFrom(a.id)} className={`min-h-11 rounded-full px-4 text-[15px] font-bold ${from===a.id?"bg-primary text-on-primary":"bg-panel text-ink"}`}>{a.nickname}</button>)}</div></fieldset>
+    <fieldset><legend className="text-[14px] font-extrabold">Use whose answer?</legend><div className="mt-1 flex flex-wrap gap-2">{answers.filter(a=>a.raw).map(a=><button key={a.id} type="button" aria-pressed={from===a.id} onClick={()=>setFrom(a.id)} className={`min-h-11 rounded-full px-4 text-[15px] font-bold ${from===a.id?"bg-primary text-on-primary":"bg-panel text-ink"}`}>{a.nickname}</button>)}</div></fieldset>
     <label className="text-[14px] font-extrabold">Sentence stem<select value={stem} onChange={e=>setStem(e.target.value)} className="mt-1 w-full rounded-row border-2 border-edge bg-panel px-3 py-2 text-[15px]">{BONUS_STEMS.map(x=><option key={x}>{x}</option>)}</select></label>
     <label className="text-[14px] font-extrabold">Finish it<textarea value={reason} onChange={e=>setReason(e.target.value)} rows={2} maxLength={200} className="mt-1 w-full rounded-row border-2 border-edge bg-panel px-3 py-2 text-[15px]"/></label>
     {error&&<p role="alert" className="text-[15px] font-bold text-notyet">{error}</p>}
@@ -265,7 +268,7 @@ export function BonusHost({state,world,act}:{state:HostView;world:WorldPack|null
   <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="bh-h" className="text-[clamp(24px,2.4vw,38px)] font-bold">Bonus Round</h2>{live&&<button type="button" onClick={()=>act({action:"bonus.end"})} className="host-btn">End the Bonus Round</button>}</div>
   <p className="text-[clamp(18px,1.6vw,24px)] text-muted">Squads start by comparing who they named as the liar and why, then agree on the strongest proof. Every member defends at least one choice.</p>
   {live?<ul className="mt-4 grid gap-3 md:grid-cols-3">{b.squads.map(q=><li key={q.squadId} className="rounded-card bg-panel p-5"><p className="font-display text-[24px] font-bold">{q.name}</p><p className="mt-1 text-[18px]">{q.agreed} of {q.flagged} agreed</p><p className="text-[16px] text-muted">{q.submitted?"Handed in":q.left?"Still working":"Ready to hand in"}</p></li>)}</ul>
-   :<><div className="mt-4"><Leaderboard rows={b.board.map((x,i)=>({id:x.name,name:x.name,points:x.points,gained:x.points,rank:i+1,prevRank:null,move:0}))} dark title="Squad bonus board"/></div>
+   :<><div className="mt-4"><Leaderboard rows={b.board.map((x,i,all)=>({id:x.name,name:x.name,points:x.points,gained:x.points,rank:all.findIndex(y=>y.points===x.points)+1,prevRank:null,move:0}))} dark title="Squad bonus board"/></div>
     <div className="mt-6 grid gap-4 md:grid-cols-2">{b.squads.map(q=><SquadFileCard key={q.squadId} file={q.file} story={world?.title??""} expedition="Proof Race" dark/>)}</div></>}
  </section>;
 }

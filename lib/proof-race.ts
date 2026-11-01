@@ -95,13 +95,14 @@ export function readiness(readyIds: Iterable<string>, playerIds: string[], auto:
 }
 
 // ---------- Leaderboard, podium, class stats ----------
-export type BoardRow = { id: string; name: string; points: number; gained: number; rank: number; prevRank: number | null; move: number };
+// prevPos: the row's place in the list before this chunk (0 = top), for the slide-in; ties share a rank but not a row.
+export type BoardRow = { id: string; name: string; points: number; gained: number; rank: number; prevRank: number | null; move: number; prevPos?: number | null };
 // Ranks after this chunk, with each one's change from before it ("up 2"). Ties share the higher rank, by name.
 export function raceBoard(before: Map<string, number>, after: Map<string, number>, names: Map<string, string>): BoardRow[] {
   const ranks = (m: Map<string, number>) => { const sorted = [...names.keys()].sort((a, b) => (m.get(b) ?? 0) - (m.get(a) ?? 0) || (names.get(a) ?? "").localeCompare(names.get(b) ?? "")); const r = new Map<string, number>(); sorted.forEach((id, k) => { const prev = sorted[k - 1]; r.set(id, prev !== undefined && (m.get(prev) ?? 0) === (m.get(id) ?? 0) ? r.get(prev)! : k + 1); }); return { sorted, r }; };
   const was = ranks(before), now = ranks(after);
   const hadPoints = [...before.values()].some((v) => v > 0);
-  return now.sorted.map((id) => { const rank = now.r.get(id)!, prevRank = hadPoints ? was.r.get(id) ?? null : null; return { id, name: names.get(id) ?? "", points: after.get(id) ?? 0, gained: (after.get(id) ?? 0) - (before.get(id) ?? 0), rank, prevRank, move: prevRank === null ? 0 : prevRank - rank }; });
+  return now.sorted.map((id) => { const rank = now.r.get(id)!, prevRank = hadPoints ? was.r.get(id) ?? null : null; return { id, name: names.get(id) ?? "", points: after.get(id) ?? 0, gained: (after.get(id) ?? 0) - (before.get(id) ?? 0), rank, prevRank, move: prevRank === null ? 0 : prevRank - rank, prevPos: hadPoints ? was.sorted.indexOf(id) : null }; });
 }
 export const podium = (rows: BoardRow[]) => rows.filter((r) => r.points > 0).slice(0, 3);
 // Squads rank by their members' average, so a squad of 3 isn't behind a squad of 4.

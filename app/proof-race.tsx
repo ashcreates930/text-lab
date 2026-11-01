@@ -69,12 +69,16 @@ export function QuestionAsk({sent,onSend}:{sent:boolean;onSend:(text:string)=>Pr
 
 // ---------- Leaderboard and podium ----------
 // The top 5, reordered with a short slide from each row's old place ("up 2"); a static list with reduced motion.
-export function Leaderboard({rows,meId,dark=false,title="Leaderboard",main=false}:{rows:BoardRow[];meId?:string|null;dark?:boolean;title?:string;main?:boolean}){
+// own: the student's row when it isn't in the top 5 (shown under them, with its rank).
+export function Leaderboard({rows,meId,dark=false,title="Leaderboard",main=false,own}:{rows:BoardRow[];meId?:string|null;dark?:boolean;title?:string;main?:boolean;own?:BoardRow|null}){
  const top=rows.slice(0,5);const [settled,setSettled]=useState(false);
- useLayoutEffect(()=>{setSettled(false);if(reducedMotion()){setSettled(true);return}const t=requestAnimationFrame(()=>requestAnimationFrame(()=>setSettled(true)));return()=>cancelAnimationFrame(t)},[rows]);
+ // The slide-in runs once per new standings, not on every re-render (the countdown re-renders the screen 10 times a second).
+ const standings=rows.map(r=>`${r.id}:${r.points}:${r.rank}:${r.prevPos??r.prevRank}`).join("|");
+ useLayoutEffect(()=>{setSettled(false);if(reducedMotion()){setSettled(true);return}const t=requestAnimationFrame(()=>requestAnimationFrame(()=>setSettled(true)));return()=>cancelAnimationFrame(t)},[standings]);
+ const below=own&&!top.some(r=>r.id===own.id)?own:null;
  const row=dark?64:56;
  return <section aria-labelledby="lb-h" className={dark?"":"mt-4"}>{(()=>{const H=main?"h1":"h2";return <H id="lb-h" className={`${dark?"text-[clamp(24px,2.4vw,36px)]":"text-[22px]"} font-bold outline-none`}>{title}</H>})()}
-  <ol className="relative mt-3" style={{height:top.length*(row+8)}}>{top.map((r,k)=>{const from=r.prevRank!==null&&r.prevRank<=8?(r.prevRank-r.rank)*(row+8):0;
+  <ol className="relative mt-3" style={{height:top.length*(row+8)}}>{top.map((r,k)=>{const was=r.prevPos??(r.prevRank===null?null:r.prevRank-1),from=was!==null&&was>=0?(Math.min(was,top.length)-k)*(row+8):0;
    const me=r.id===meId,tile=["bg-violet text-on-violet","bg-success text-on-success","bg-gold text-on-gold","bg-notyet text-on-notyet","bg-primary text-on-primary"][k%5];
    return <li key={r.id} className={`absolute inset-x-0 flex items-center gap-3 rounded-button px-3 ${me?"bg-primary text-on-primary shadow-[0_5px_0_var(--color-primary-shadow)]":"bg-panel text-ink"}`} style={{height:row,top:k*(row+8),transform:settled?"none":`translateY(${from}px)`,transition:settled&&!reducedMotion()?"transform .7s cubic-bezier(.2,.8,.2,1)":"none"}}>
     <span className={`w-8 text-center font-display font-bold tabular-nums ${dark?"text-[30px]":"text-[22px]"}`}>{r.rank}</span>
@@ -82,6 +86,7 @@ export function Leaderboard({rows,meId,dark=false,title="Leaderboard",main=false
     <span className="flex min-w-0 flex-1 flex-col"><span className={`truncate font-display font-semibold ${dark?"text-[clamp(20px,2vw,30px)]":"text-[18px]"}`}>{r.name}</span>
      <span className={`text-[13px] font-extrabold ${me?"":r.move>0?"text-success":r.move<0?"text-notyet":"text-muted"}`}>{r.move>0?`Up ${r.move}`:r.move<0?`Down ${-r.move}`:r.prevRank===null?"":`Held #${r.rank}`}</span></span>
     <span className={`font-display font-bold tabular-nums ${dark?"text-[clamp(22px,2.2vw,32px)]":"text-[20px]"}`}>{r.points.toLocaleString()}</span></li>})}</ol>
+  {below&&<p className="mt-2 flex items-center gap-3 rounded-button bg-primary px-3 text-on-primary shadow-[0_5px_0_var(--color-primary-shadow)]" style={{minHeight:row}}><span className="w-8 text-center font-display text-[22px] font-bold tabular-nums">{below.rank}</span><span className="flex min-w-0 flex-1 flex-col"><span className="truncate font-display text-[18px] font-semibold">{below.name} (you)</span><span className="text-[13px] font-extrabold">{below.move>0?`Up ${below.move}`:below.move<0?`Down ${-below.move}`:below.prevRank===null?"":`Held #${below.rank}`}</span></span><span className="font-display text-[20px] font-bold tabular-nums">{below.points.toLocaleString()}</span></p>}
  </section>;
 }
 export type PodiumEntry={id:string;name:string;points:number;portrait?:string|null};

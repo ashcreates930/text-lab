@@ -2701,6 +2701,10 @@ test("proof race: chunks, settings, scoring (speed bonus, near-miss retry, exten
   assert.deepEqual(rows.map(r=>[r.name,r.rank,r.prevRank,r.move,r.gained]),[["Ben",1,2,1,1350],["Ana",2,1,-1,0],["Cy",3,3,0,700]]);
   assert.deepEqual(pr.podium(rows).map(r=>r.name),["Ben","Ana","Cy"]);
   assert.equal(pr.raceBoard(new Map(),new Map([["a",100]]),names)[0].prevRank,null,"no moves before anyone scores");
+  // Ties share a rank (ordered by name) but each keeps its own row: the slide-in uses the row it was on.
+  const tie=pr.raceBoard(new Map([["a",500],["b",900],["c",100]]),new Map([["a",900],["b",900],["c",900]]),names);
+  assert.deepEqual(tie.map(r=>[r.name,r.rank,r.prevRank,r.prevPos]),[["Ana",1,2,1],["Ben",1,1,0],["Cy",1,3,2]]);
+  assert.deepEqual(tie.map(r=>r.move),[1,0,2]);
   const sq=pr.squadTotals(new Map([["a",900],["b",300],["c",600]]),new Map([["a","s1"],["b","s1"],["c","s2"]]));assert.deepEqual([...sq],[["s1",600],["s2",600]]);
   const st=pr.chunkStats([{index:0,question:"Q0"},{index:1,question:"Q1"}],[{chunk:0,playerId:"a",correct:true},{chunk:1,playerId:"a",correct:false},{chunk:0,playerId:"b",correct:true}],2);
   assert.deepEqual(st.rows.map(r=>r.pct),[100,0]);assert.equal(st.hardest[0].index,1);
@@ -2744,16 +2748,17 @@ test("proof race live: expedition beats, readiness, gist and question saving, on
   assert.equal(await host({action:"race.next"}),null);assert.equal(pub().beat,"race");assert.equal(pub().beatMs,45000);
   assert.equal(pub().question!.type,"whose_eyes");assert.ok(!JSON.stringify(pub().question).includes("\"best\""));
   const chunks=(await import("../lib/live/race.ts")).liveRaceChunks(st.world,st.passages!,st.session.rounds.at(-1) as never);
-  const tokens=chunkTokens(chunks[0].lines),r=phraseRange(tokens,c0.question.proof!.words![0])!,proof=Array.from({length:r[1]-r[0]+1},(_,k)=>r[0]+k);
+  const tokens=chunkTokens(chunks[0].lines),r=phraseRange(tokens,c0.question.proof!.words![0])!,pl=tokens[r[0]].line,proof=[chunks[0].lines[pl].text],off=[chunks[0].lines.find((_,i)=>i!==pl)!.text];// text evidence is the whole sentence
   const right=c0.question.choices!.findIndex(o=>o.best);
-  assert.equal(await act(ids[0],"race_tap",{answer:{choice:right,words:proof}}),null);
+  assert.equal(await act(ids[0],"race_tap",{answer:{choice:right,lines:proof}}),null);
   // Ben: the right answer with the wrong proof scores 0. One shot: no second try.
-  assert.equal(await act(ids[1],"race_tap",{answer:{choice:right,words:[0,1]}}),null);
-  assert.match((await act(ids[1],"race_tap",{answer:{choice:right,words:proof}}))??"",/already answered/);
-  assert.equal(await act(ids[2],"race_tap",{answer:{choice:right,words:proof}},"2"),null);
+  assert.equal(await act(ids[1],"race_tap",{answer:{choice:right,lines:off}}),null);
+  assert.match((await act(ids[1],"race_tap",{answer:{choice:right,lines:proof}}))??"",/already answered/);
+  assert.equal(await act(ids[2],"race_tap",{answer:{choice:right,lines:proof}},"2"),null);
   assert.equal(server.playerView(st,ids[2]).race!.extraTime,true);assert.equal(server.playerView(st,ids[2]).race!.scale,2);
   const tot=(pid:string)=>server.playerView(st,pid).race!.total;
-  assert.ok(tot(ids[0])>=1090&&tot(ids[0])<=1100,`fast right plus gist: ${tot(ids[0])}`);assert.equal(tot(ids[1]),0);assert.ok(tot(ids[2])>=990);
+  // The phone's score holds this chunk's points until the reveal, so it can't give the answer away early.
+  assert.deepEqual(ids.map(tot),[0,0,0],"no points shown before the reveal");
   assert.equal(server.playerView(st,ids[1]).race!.mine.tap!.answerRight,true);assert.equal(server.playerView(st,ids[1]).race!.mine.tap!.proofRight,false);
   // Pause holds the beat clock: resuming moves the beat's start by the time paused.
   const before=(st.session.rounds.at(-1) as {beatStartedAt:string}).beatStartedAt;
@@ -2762,12 +2767,21 @@ test("proof race live: expedition beats, readiness, gist and question saving, on
   assert.equal(await host({action:"resume"}),null);
   assert.ok(Date.parse((st.session.rounds.at(-1) as {beatStartedAt:string}).beatStartedAt)>Date.parse(before),"the clock moved forward");
   // The proof (3 seconds), the board (5) and the countdown (3).
+  // Next while paused moves on and ends the pause, so phones can answer the new beat (it used to leave every phone refusing answers).
+  assert.equal(await host({action:"pause"}),null);
   assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["reveal",3000]);
-  assert.equal(pub().reveal!.pct,67);assert.ok(pub().reveal!.words.length>0);
+  assert.equal(st.session.paused,false,"Next ends the pause");assert.equal(pub().paused,false);
+  assert.equal(pub().reveal!.pct,67);assert.deepEqual(pub().reveal!.words,[]);assert.ok(pub().reveal!.lines.length>0,"the proof is revealed as a sentence");
+  assert.ok(tot(ids[0])>=1090&&tot(ids[0])<=1100,`fast right plus gist: ${tot(ids[0])}`);assert.equal(tot(ids[1]),0);assert.ok(tot(ids[2])>=990);
   assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["board",5000]);
   assert.equal(pub().board!.top[0].name,"Ana Ruiz");assert.equal(pub().board!.top.at(-1)!.name,"Ben Cole");
-  assert.equal(server.playerView(st,ids[1]).race!.place!.rank,3);
+  assert.equal(server.playerView(st,ids[1]).race!.place!.rank,3);assert.equal(server.playerView(st,ids[1]).race!.place!.row.name,"Ben Cole","the phone gets its own row");
+  { const names=new Set(pub().board!.top.map(r=>r.name));assert.equal(names.size,pub().board!.top.length,"no duplicated names"); }
   assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["countdown",3000]);
+  // The next chunk: before its reveal each phone shows the score through the last chunk (not 0, not the new points).
+  { const was=ids.map(tot);assert.ok(was[0]>0);
+    for(let k=0;k<6&&!(pub().step===1&&pub().beat==="race");k++)await host({action:"race.next"});
+    assert.deepEqual([pub().step,pub().beat],[1,"race"]);assert.deepEqual(ids.map(tot),was,"held at the last chunk's total until the reveal"); }
   // Chunk 3 asks for a question (60 seconds): saved, screened, and the host can pin it.
   for(let k=0;k<30&&!(pub().step===2&&pub().beat==="ask");k++)await host({action:"race.next"});
   assert.deepEqual([pub().step,pub().beat,pub().beatMs],[2,"ask",60000]);

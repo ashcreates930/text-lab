@@ -4006,12 +4006,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: How sure is the storyteller about where the town's name came from?
 - Key words highlighted: How sure, storyteller
-- Choices: Not sure: he passes on a story he heard without promising it's true ✓ / Completely sure, because he was there when it was named / Sure, because the housewives told him themselves
+- Choices: Very sure: he checked the old town records himself and found proof / Not sure: he passes on a story he heard without promising it's true ✓ / Completely sure, because he was there when it was named
 - Proof words (any one): "I do not vouch for the fact"
 - Refresher hint: Read his own words closely. Does he ever promise the story is true?
 - Why: He says he does not vouch for the fact, so he is repeating a story, not swearing to it.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: A river town got its name, the narrator says, from husbands who lingered at the tavern. ✓ / A river town is famous for sailors who pray to St. Nicholas. / The narrator proves exactly how Tarry Town got its name.
+- Gist check: The narrator proves the town was named by Dutch sailors who stopped there to trade. / A river town got its name, the narrator says, from husbands who lingered at the tavern. ✓ / A river town is famous for sailors who pray to St. Nicholas.
 - Discovery (vocabulary): "inveterate propensity". Inveterate propensity: a habit so old and strong it can't be broken.
 
 ##### Find It
@@ -4024,7 +4024,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for a distance, counted in miles.
 - Why: The valley is perhaps about two miles from the village.
 - Standards: ELA.K12.EE.1.1
-- Gist check: A very quiet valley sits about two miles from the village. ✓ / A noisy brook floods the valley every spring. / The valley is far away and hard to reach.
+- Gist check: A noisy mill town sits about twenty miles from the village. / A very quiet valley sits about two miles from the village. ✓ / A noisy brook floods the valley every spring.
 - Discovery (figurative): "lull one to repose". Lull one to repose: the brook is so soft it could rock you to sleep.
 
 ##### Shades of Meaning
@@ -4032,13 +4032,13 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 **Chunk 3** (¶4 sentences 1 to 3; 102 words) · shared words reviewed
 
 - Question: The narrator calls his younger self a stripling. Why that word instead of plain boy?
-- Key words highlighted: stripling, instead of plain boy
-- Choices: It makes him sound young and untested, new at hunting ✓ / It shows he was the best hunter in the valley / It means he was sickly and weak
-- Proof words (any one): "my first exploit"
-- Refresher hint: Would an old hand call it his first try? Find his own words about the hunt.
-- Why: Stripling paints a young, untested boy, and he calls the hunt his first exploit.
+- Key words highlighted: stripling
+- Choices: It makes him sound young and new at hunting ✓ / It shows he was already the most skilled hunter around / It suggests he was frail and often sick as a boy
+- Proof line: "I had wandered into it at noontime, when all nature is peculiarly quiet, and was startled by the roar of my own gun, as it broke the Sabbath stillness around and was prolonged and reverberated by the angry echoes."
+- Refresher hint: How does the boy react to the sound of his own gun?
+- Why: He was startled by the roar of his own gun: a stripling is young and untested.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: The narrator remembers how still the valley was, even to a boy out hunting. ✓ / The narrator remembers being chased out of the valley by a ghost one night. / The narrator remembers hunting with his father every Sunday in the valley.
+- Gist check: The narrator remembers being chased out of the valley by a ghost one night. / The narrator remembers hunting with his father every Sunday in the valley. / The narrator remembers how still the valley was, even to a boy out hunting. ✓
 - Discovery (figurative): "angry echoes". Angry echoes: the echoes get a human feeling, as if the quiet woods were annoyed by the noise.
 
 ##### Word Detective
@@ -4047,12 +4047,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: In this chunk, what does listless mean?
 - Key words highlighted: listless
-- Choices: Lacking energy; slow and sleepy ✓ / Without a list or a plan / Full of nervous worry
-- Proof words (any one): "drowsy, dreamy influence", "repose", "drowsy", "dreamy"
-- Refresher hint: Find the words around it that feel sleepy.
-- Why: Repose and a drowsy, dreamy influence tell you listless means low on energy.
+- Choices: Lacking energy; slow and sleepy ✓ / Without a list or any plan / Full of nervous, jumpy worry
+- Proof words (any one): "drowsy, dreamy influence", "drowsy", "dreamy"
+- Refresher hint: Find the sentence that feels sleepy.
+- Why: A drowsy, dreamy influence hangs over the land: listless means low on energy.
 - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: The valley's sleepy mood gave Sleepy Hollow its name. ✓ / The Dutch settlers left the Hollow because it was too quiet. / Boys from the Hollow are known for their hard work.
+- Gist check: The Dutch settlers left the Hollow because it was too quiet. / Boys from the Hollow are known for their hard work. / The valley's sleepy mood gave Sleepy Hollow its name. ✓
 - Discovery (vocabulary): "sequestered glen". Sequestered glen: a hidden, out-of-the-way valley.
 
 ##### Figure It Out
@@ -4061,12 +4061,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Read the words holds a spell over the minds of the good people. What kind of figurative language is this?
 - Key words highlighted: holds a spell over the minds
-- Choices: Metaphor: the valley's mood is called a spell, without like or as ✓ / Simile: a comparison that uses like or as / Hyperbole: a wild exaggeration for a laugh
-- What does it mean? Something about the place shapes what people think and believe ✓ / A real witch is casting spells on the town / The people are tired from working too hard
+- Choices: Hyperbole: a wild exaggeration for a laugh / Metaphor: the valley's mood is called a spell, without like or as ✓ / Simile: the spell is compared to sleep using the word like
+- What does it mean? The people are tired from working too hard / Something about the place shapes what people think and believe ✓ / A real witch is casting nightly spells on the farmers' crops
 - Refresher hint: Does a spell have to be real magic? Think about what keeps their minds dreamy.
 - Why: The spell stands for the dreamy mood that rules how people think.
 - Standards: ELA.7.R.3.1
-- Gist check: People blame old magic for the spell that still hangs over the valley. ✓ / A doctor cured the settlers of a strange sleeping sickness. / Henry Hudson drove a wizard out of the valley.
+- Gist check: A doctor cured the settlers of a strange sleeping sickness. / Henry Hudson drove an old wizard out, and the valley woke up for good. / People blame old magic for the spell that still hangs over the valley. ✓
 - Discovery (vocabulary): "continual reverie". Reverie: a daydream. A continual reverie means drifting through life half-dreaming.
 
 ##### Read Between the Lines
@@ -4075,26 +4075,26 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer about the people of the Hollow?
 - Key words highlighted: infer
-- Choices: They are quick to accept the uncanny as real ✓ / They are afraid to leave home after dark / They don't trust tales they hear
+- Choices: They are quick to accept the uncanny as real ✓ / They are afraid to leave home after dark / They doubt every tale they are told
 - Proof line: "They are given to all kinds of marvellous beliefs, are subject to trances and visions, and frequently see strange sights, and hear music and voices in the air."
 - Proof line: "The whole neighborhood abounds with local tales, haunted spots, and twilight superstitions; stars shoot and meteors glare oftener across the valley than in any other part of the country, and the nightmare, with her whole ninefold, seems to make it the favorite scene of her gambols."
 - Refresher hint: Look at what they see and hear that nobody else does.
 - Why: They hold marvellous beliefs and see strange sights, so they accept the uncanny easily.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: The people of the Hollow accept strange sights, and the valley is full of spooky tales. ✓ / The people of the Hollow laugh at ghost stories. / Scientists come to the valley to study stars and meteors.
+- Gist check: The people of the Hollow accept strange sights, and the valley is full of spooky tales. ✓ / The people of the Hollow laugh at strange sights, and they doubt every spooky tale. / Scientists come to the valley to study stars and meteors.
 - Discovery (figurative): "with her whole ninefold". The nightmare is pictured as a creature with her nine children, playing over the valley at night.
 
 **Chunk 10** (¶9 sentences 1 to 3; 138 words)
 
 - Question: What can you infer about how the narrator feels about the busy world beyond the Hollow?
 - Key words highlighted: infer, busy world
-- Choices: He treasures quiet places that stay the same while the rest of the country hurries on ✓ / He is excited by every new improvement in the country / He thinks the Hollow should catch up with the rest of New York
+- Choices: He thinks the Hollow should catch up with the rest of New York / He treasures quiet places that stay the same while the rest of the country hurries on ✓ / He is excited by every new improvement and wishes the valley would hurry to catch up
 - Proof line: "I mention this peaceful spot with all possible laud, for it is in such little retired Dutch valleys, found here and there embosomed in the great State of New York, that population, manners, and customs remain fixed, while the great torrent of migration and improvement, which is making such incessant changes in other parts of this restless country, sweeps by them unobserved."
 - Proof line: "They are like those little nooks of still water, which border a rapid stream, where we may see the straw and bubble riding quietly at anchor, or slowly revolving in their mimic harbor, undisturbed by the rush of the passing current."
 - Refresher hint: Look at the words he picks for change and for the valley. Which does he praise?
 - Why: He praises the valley with all possible laud because its customs remain fixed while a restless country sweeps by.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: The narrator praises the Hollow as a quiet place that never seems to change. ✓ / The narrator warns that the Hollow is changing too fast. / The narrator says he never wants to see the Hollow again.
+- Gist check: The narrator says he never wants to see the Hollow again. / The narrator praises the Hollow as a quiet place that never seems to change. ✓ / The narrator warns that the Hollow is changing too fast and losing its old ways.
 - Discovery (figurative): "nooks of still water". Nooks of still water: the valley is a calm pool beside a rushing river of change.
 
 ##### Catch the Lie
@@ -4108,7 +4108,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Brom tells it with flair. Check exactly what took the trooper's head.
 - Why: The story says a cannon-ball carried his head away, not a sword.
 - Standards: ELA.K12.EE.1.1
-- Gist check: The valley's main ghost is a headless horseman, said to be a soldier killed in battle. ✓ / A general of the Revolutionary War still rides through the Hollow. / The ghost is a farmer who lost his horse in a storm.
+- Gist check: The valley's main ghost is a headless horseman, said to be a soldier killed in battle. ✓ / A general of the Revolutionary War still rides through the Hollow. / The valley's main ghost is a farmer who lost his horse in a storm long ago.
 - Discovery (figurative): "on the wings of the wind". As if on the wings of the wind: the rider moves so fast he seems to fly.
 
 ##### Character Clue
@@ -4117,12 +4117,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait fits the headless spirit in this chunk?
 - Key words highlighted: trait
-- Choices: Driven and pressed for time, racing to beat the dawn ✓ / Calm and patient with travelers / Lost, unable to find his way home
+- Choices: Lost, unable to find his way home / Driven and pressed for time, racing to beat the dawn ✓ / Calm and patient, waiting quietly for travelers to pass
 - Proof words (any one): "in a hurry to get back to the churchyard before daybreak", "rushing speed"
 - Refresher hint: Look at how fast he moves, and why.
 - Why: He passes with rushing speed, in a hurry to get back to the churchyard before daybreak.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: The ghost rides out each night to look for his head and hurries back before dawn. ✓ / The ghost guards the church so no one can go inside. / Historians proved the ghost is only a story.
+- Gist check: Historians proved the ghost is a story invented by a farmer to scare thieves. / The ghost rides out each night to look for his head and hurries back before dawn. ✓ / The ghost guards the church so no one can go inside.
 - Discovery (figurative): "like a midnight blast". Like a midnight blast: a simile. The rider rushes past like a sudden gust of night wind.
 
 ##### Theme Thread
@@ -4131,13 +4131,13 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which idea keeps coming back in the story so far?
 - Key words highlighted: keeps coming back
-- Choices: This valley's dreamy spell takes hold of anyone who stays there ✓ / Hard work always wins in the end / Strangers are never welcome in small towns
+- Choices: Hard work always wins out over idle dreaming in the end / Strangers are never welcome in small towns / This valley's dreamy spell takes hold of anyone who stays there ✓
 - Proof line: "However wide awake they may have been before they entered that sleepy region, they are sure, in a little time, to inhale the witching influence of the air, and begin to grow imaginative, to dream dreams, and see apparitions."
 - Proof line: "It is remarkable that the visionary propensity I have mentioned is not confined to the native inhabitants of the valley, but is unconsciously imbibed by every one who resides there for a time."
 - Refresher hint: Even folks who arrive wide awake don't stay that way. Find where it says so.
 - Why: The same dreamy spell shows up again: anyone who stays begins to dream dreams and see apparitions.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: Everyone who lives in the Hollow, even newcomers, soon starts to dream and see ghosts. ✓ / Newcomers to the Hollow stay wide awake and laugh at the legend. / The Headless Horseman story is only told to children.
+- Gist check: Everyone who lives in the Hollow, even newcomers, soon starts to dream and see ghosts. ✓ / Newcomers to the Hollow stay wide awake and laugh at the legend. / Only the old Dutch families dream and see ghosts, while every newcomer stays wide awake and sensible.
 - Discovery (figurative): "region of shadows". Region of shadows: a dark, mysterious place where wild stories grow.
 
 #### Expedition: The Schoolmaster (10 chunks)
@@ -4185,7 +4185,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for the place he comes from.
 - Why: He was a native of Connecticut.
 - Standards: ELA.K12.EE.1.1
-- Gist check: A Connecticut schoolmaster named Ichabod Crane came to teach the Hollow's children. ✓ / A Connecticut farmer named Ichabod Crane came to clear the Hollow's forests. / A traveling preacher named Ichabod Crane came to build the Hollow a church.
+- Gist check: A Connecticut farmer named Ichabod Crane came to clear the Hollow's forests. / A traveling preacher named Ichabod Crane came to build the Hollow a new church. / A Connecticut schoolmaster named Ichabod Crane came to teach the Hollow's children. ✓
 - Discovery (vocabulary): "worthy wight". Wight: an old word for a person. A worthy wight is a fine fellow, said with a wink.
 
 **Chunk 8** (¶14 sentences 1 to 2; 79 words)
@@ -4196,7 +4196,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for a list of jobs.
 - Why: He helped make hay, mended the fences, watered the horses, drove the cows and cut wood.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Ichabod makes himself useful to farm families by helping with the lighter chores. ✓ / Ichabod refuses to help on the farms because he thinks chores are beneath him. / Ichabod hires workers to do the farm chores in exchange for lessons.
+- Gist check: Ichabod hires local boys to do the farm chores in exchange for free lessons. / Ichabod makes himself useful to farm families by helping with the lighter chores. ✓ / Ichabod refuses to help on the farms because he thinks chores are beneath him.
 - Discovery (vocabulary): "mere drones". Drones are male bees that do no work. Some farmers think teachers are just as idle.
 
 ##### Figure It Out
@@ -4205,12 +4205,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Read the words looked like a weather-cock. What kind of figurative language is this?
 - Key words highlighted: weather-cock
-- Choices: Simile: it compares his head to a weather vane using like ✓ / Metaphor: it says his head is a weather vane, without like / Personification: it gives a weather vane human feelings
-- What does it mean? His small head sits high on a thin neck, turning this way and that ✓ / He always knows exactly what tomorrow's weather will be / His head is painted in bright colors like a barn roof
+- Choices: Personification: it gives a weather vane human feelings / Simile: it compares his head to a weather vane using like ✓ / Metaphor: it says his head is a weather vane, without like
+- What does it mean? He spins around quickly whenever the wind starts to blow hard / His small head sits high on a thin neck, turning this way and that ✓ / He always knows exactly what tomorrow's weather will be
 - Refresher hint: A weather vane sits on top of a pole and swings around. Picture his head and neck.
 - Why: Like a weather-cock on a spindle: a small head perched high on a thin neck.
 - Standards: ELA.7.R.3.1
-- Gist check: The narrator describes Ichabod as tall, skinny and loosely put together, like a scarecrow. ✓ / The narrator describes Ichabod as short, stout and strong, like the village blacksmith. / The narrator describes Ichabod as handsome and neat, like a gentleman from the city.
+- Gist check: The narrator describes Ichabod as handsome, neat and well dressed, like a city gentleman. / The narrator describes Ichabod as tall, skinny and loosely put together, like a scarecrow. ✓ / The narrator describes Ichabod as short, stout and strong, like the village blacksmith.
 - Discovery (figurative): "genius of famine". The genius of famine: Ichabod looks so bony he could be the spirit of hunger itself.
 
 ##### Read Between the Lines
@@ -4219,25 +4219,37 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer about where Ichabod holds class?
 - Key words highlighted: infer
-- Choices: It is plain and patched together from whatever was at hand ✓ / It is the grandest place in the whole valley / It is brand new, put up by skilled workers from town
+- Choices: It is the grandest and best built hall in the valley / It is brand new, put up by skilled workers from town / It is plain and patched together from whatever was at hand ✓
 - Proof line: "His schoolhouse was a low building of one large room, rudely constructed of logs; the windows partly glazed, and partly patched with leaves of old copybooks."
 - Refresher hint: Look at what fills the window holes.
 - Why: It is rudely built of logs, with windows patched with old copybook pages.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: The schoolhouse is a rough log room that is easy to get into but hard to leave. ✓ / The schoolhouse is a stone hall with strong locks on every single door. / The schoolhouse has burned down, so the classes now meet in the church.
+- Gist check: The schoolhouse has burned down, so the classes now meet in the church. / The schoolhouse is a rough log room that is easy to get into but hard to leave. ✓ / The schoolhouse is a stone hall with strong iron locks on every single door.
 - Discovery (vocabulary): "mystery of an eelpot". An eelpot is a trap eels swim into easily but can't get out of, just like the schoolhouse for a thief.
 
 **Chunk 6** (¶13 sentences 1 to 2; 58 words)
 
 - Question: Why might Ichabod pick certain children to escort after class?
 - Key words highlighted: escort
-- Choices: He hopes for a good meal or a chance to meet pretty sisters ✓ / He wants to keep the youngest pupils safe from ghosts / He is paid extra for every child he brings back
+- Choices: He hopes for a good meal or a chance to meet pretty sisters ✓ / He wants to keep the youngest pupils safe from ghosts / He is paid a few extra pennies for every child he brings home
 - Proof line: "When school hours were over, he was even the companion and playmate of the larger boys; and on holiday afternoons would convoy some of the smaller ones home, who happened to have pretty sisters, or good housewives for mothers, noted for the comforts of the cupboard."
 - Refresher hint: Look at which families he chooses.
 - Why: He walks home the ones with pretty sisters or mothers noted for the comforts of the cupboard.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: After school, Ichabod befriends pupils, especially those with good cooks or pretty sisters. ✓ / After school, Ichabod locks himself in the schoolhouse to study his books. / After school, Ichabod works in the fields to earn a second salary.
+- Gist check: After school, Ichabod locks himself in the schoolhouse to study his books. / After school, Ichabod works in the fields until dark to earn a second small salary. / After school, Ichabod befriends pupils, especially those with good cooks or pretty sisters. ✓
 - Discovery (figurative): "comforts of the cupboard". The comforts of the cupboard: a funny way to say good food at home.
+
+**Chunk 7** (¶13 sentences 3 to 4; 92 words)
+
+- Question: Why might Ichabod stay with a different family each week?
+- Key words highlighted: different family
+- Choices: He wants to learn farming from every neighbor / A town law makes teachers move every week / His pay is too small to feed such a big eater ✓
+- Proof line: "The revenue arising from his school was small, and would have been scarcely sufficient to furnish him with daily bread, for he was a huge feeder, and, though lank, had the dilating powers of an anaconda; but to help out his maintenance, he was, according to country custom in those parts, boarded and lodged at the houses of the farmers whose children he instructed."
+- Refresher hint: Look at his pay and at his appetite.
+- Why: His pay was scarcely enough for such a huge feeder, so he was boarded at the farmers' houses.
+- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Gist check: Ichabod is poorly paid, so he quietly takes food from the farmers' cellars at night. / Ichabod is poorly paid and eats a lot, so he lives a week at a time with each farm family. ✓ / Ichabod is wealthy and eats little, so he buys a fine house beside the church.
+- Discovery (vocabulary): "worldly effects". Worldly effects: everything a person owns. Ichabod's fit in one handkerchief.
 
 ##### Character Clue
 
@@ -4245,12 +4257,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait fits Ichabod in the classroom?
 - Key words highlighted: trait
-- Choices: Strict, quick to punish with the birch switch ✓ / Gentle, never raising his voice at anyone / Lazy, letting the children do as they like
+- Choices: Gentle, never raising his voice at any pupil / Lazy, letting the children do as they like / Strict, quick to punish with the birch switch ✓
 - Proof words (any one): "the appalling sound of the birch", "Spare the rod and spoil the child"
 - Refresher hint: Listen for the sounds that break into the lessons.
 - Why: The appalling sound of the birch and his motto, spare the rod, show he punishes often.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: Ichabod's lonely schoolhouse hums with lessons, and he is quick to use the switch. ✓ / Ichabod's busy schoolhouse is silent because he never lets anyone speak. / Ichabod's pupils run the school while he naps under the birch tree.
+- Gist check: Ichabod's busy schoolhouse is silent because he never lets anyone speak. / Ichabod's pupils run the school by themselves while he naps under the birch tree. / Ichabod's lonely schoolhouse hums with lessons, and he is quick to use the switch. ✓
 - Discovery (figurative): "like the hum of a beehive". A simile: the pupils' murmuring voices sound like busy bees.
 
 ##### Whose Eyes?
@@ -4259,27 +4271,13 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: How does the narrator want readers to see Ichabod's punishments?
 - Key words highlighted: narrator
-- Choices: As fair in Ichabod's own eyes, while the narrator teases him ✓ / As cruel acts the narrator plainly condemns / As rare events that almost never really happened
+- Choices: As rare events that almost never really happened / As fair in Ichabod's own eyes, while the narrator teases him ✓ / As cruel acts that the narrator plainly condemns and regrets
 - Proof line: "I would not have it imagined, however, that he was one of those cruel potentates of the school who joy in the smart of their subjects; on the contrary, he administered justice with discrimination rather than severity; taking the burden off the backs of the weak, and laying it on those of the strong."
 - Refresher hint: Notice how the narrator defends him, and how grand the words get.
 - Why: The narrator insists he was no cruel potentate and did justice with discrimination, a playful defense.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: The narrator says Ichabod punished fairly, sparing weak boys and doubling it for tough ones. ✓ / The narrator says Ichabod never punished anyone, even the rudest boys in class. / The narrator says the parents punished Ichabod for being far too strict.
+- Gist check: The narrator says Ichabod never punished anyone, even the rudest boys in class. / The narrator says the parents scolded Ichabod for punishing their sons far too harshly. / The narrator says Ichabod punished fairly, sparing weak boys and doubling it for tough ones. ✓
 - Discovery (vocabulary): "cruel potentates". Potentate: a powerful ruler. The narrator jokes that a schoolmaster rules his class like a king.
-
-##### Word Detective
-
-**Chunk 7** (¶13 sentences 3 to 4; 92 words) · shared words reviewed
-
-- Question: In this chunk, what does dilating mean?
-- Key words highlighted: dilating
-- Choices: Stretching wider to hold more ✓ / Shrinking smaller and smaller / Shining brightly in the dark
-- Proof words (any one): "a huge feeder", "anaconda"
-- Refresher hint: Find the words around it about how much he eats.
-- Why: He is a huge feeder with the dilating powers of an anaconda: his stomach stretches to hold a feast.
-- Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: Ichabod is poorly paid and eats a lot, so he lives a week at a time with each farm family. ✓ / Ichabod is wealthy and eats little, so he buys a fine house beside the church. / Ichabod is poorly paid, so he takes food from the farmers' cellars at night.
-- Discovery (vocabulary): "worldly effects". Worldly effects: everything a person owns. Ichabod's fit in one handkerchief.
 
 ##### Catch the Lie
 
@@ -4292,7 +4290,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Hans sounds sure. Check how Ichabod treated the youngest children.
 - Why: He petted the youngest and would sit with a child on one knee, rocking a cradle for hours.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Away from school, Ichabod turns gentle and wins over mothers by caring for their children. ✓ / Away from school, Ichabod stays strict and frightens the youngest children of the house. / Away from school, Ichabod avoids the children and talks only with the farmers.
+- Gist check: Away from school, Ichabod avoids the children and spends his time talking with the farmers. / Away from school, Ichabod turns gentle and wins over mothers by caring for their children. ✓ / Away from school, Ichabod stays strict and frightens the youngest children of the house.
 - Discovery (figurative): "the lion bold". Like the lion bold: Ichabod, lord of the schoolroom, turns as gentle as a lion holding a lamb.
 
 ##### Theme Thread
@@ -4301,12 +4299,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which idea about Ichabod keeps showing up?
 - Key words highlighted: keeps showing up
-- Choices: He thinks highly of himself and enjoys being admired ✓ / He is shy and hides from attention whenever he can / He cares only about money and never about praise
+- Choices: He is shy and hides from attention whenever he can / He cares only about money and never about any praise / He thinks highly of himself and enjoys being admired ✓
 - Proof line: "It was a matter of no little vanity to him on Sundays, to take his station in front of the church gallery, with a band of chosen singers; where, in his own mind, he completely carried away the palm from the parson."
 - Refresher hint: Look at how he feels standing before the singers.
 - Why: It was a matter of no little vanity to him, and in his own mind he outshone the parson.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: Ichabod also teaches singing and proudly leads the church choir on Sundays. ✓ / Ichabod also preaches sermons and takes the parson's place on Sundays. / Ichabod also plays the fiddle at every barn dance in the valley.
+- Gist check: Ichabod also preaches sermons and takes the parson's place on Sundays. / Ichabod also plays the fiddle at every barn dance held in the valley. / Ichabod also teaches singing and proudly leads the church choir on Sundays. ✓
 - Discovery (figurative): "carried away the palm". Carried away the palm: won the prize. Ichabod believes he outshines the parson.
 
 #### Expedition: Tales by the Fire (10 chunks)
@@ -4350,12 +4348,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: How does the narrator treat Ichabod's singing?
 - Key words highlighted: narrator
-- Choices: As a joke, tracing odd church sounds back to his nose ✓ / As serious praise for a truly gifted performer / As a ghost story told to frighten the children
+- Choices: As a ghost story told to frighten the children / As a joke, tracing odd church sounds back to his nose ✓ / As serious praise for a truly gifted church performer
 - Proof line: "Certain it is, his voice resounded far above all the rest of the congregation; and there are peculiar quavers still to be heard in that church, and which may even be heard half a mile off, quite to the opposite side of the millpond, on a still Sunday morning, which are said to be legitimately descended from the nose of Ichabod Crane."
 - Refresher hint: Where does the narrator say those strange quavers come from?
 - Why: The quavers still heard half a mile off are said to descend from the nose of Ichabod Crane, a playful exaggeration.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: Ichabod sings louder than everyone, and he gets by through many small, clever jobs. ✓ / Ichabod sings so softly that nobody in the church can ever hear him. / Ichabod gets rich from one big job and stops working altogether.
+- Gist check: Ichabod sings so softly that nobody in the church can ever hear him. / Ichabod earns a fortune from one big job and stops working small jobs altogether. / Ichabod sings louder than everyone, and he gets by through many small, clever jobs. ✓
 - Discovery (figurative): "by hook and by crook". By hook and by crook: by any means he can manage.
 
 ##### Read Between the Lines
@@ -4364,24 +4362,36 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer about how families treat a visiting teacher?
 - Key words highlighted: infer
-- Choices: They put out their best dishes to impress him ✓ / They hide their food so he won't eat it all / They ignore him and keep working in the barn
+- Choices: They ignore him and keep working in the barn / They put out their best dishes to impress him ✓ / They hide their best food so he won't eat it all
 - Proof line: "His appearance, therefore, is apt to occasion some little stir at the tea-table of a farmhouse, and the addition of a supernumerary dish of cakes or sweetmeats, or, peradventure, the parade of a silver teapot."
 - Refresher hint: Look at what appears on the table when he arrives.
 - Why: His arrival brings an extra dish of cakes, or even the silver teapot.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Country women think the schoolmaster is refined, so families bring out treats when he visits. ✓ / Country women think the schoolmaster is rude, so families lock their doors when he visits. / Country women think the schoolmaster is poor, so families send him food every night.
+- Gist check: Country women think the schoolmaster is poor, so families send him a basket of food each night. / Country women think the schoolmaster is refined, so families bring out treats when he visits. ✓ / Country women think the schoolmaster is rude, so families lock their doors when he visits.
 - Discovery (vocabulary): "supernumerary dish". Supernumerary: extra. The family adds an extra dish of cakes for the guest.
+
+**Chunk 4** (¶17 sentences 1 to 2; 77 words)
+
+- Question: What can you infer about why Ichabod is welcome in every home?
+- Key words highlighted: infer
+- Choices: He fixes their broken furniture for free / He brings the latest local news with him ✓ / He pays each family well for his meals
+- Proof line: "From his half-itinerant life, also, he was a kind of travelling gazette, carrying the whole budget of local gossip from house to house, so that his appearance was always greeted with satisfaction."
+- Refresher hint: What does he carry from house to house?
+- Why: He is a traveling gazette carrying local gossip, so his arrival is always greeted with satisfaction.
+- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Gist check: Ichabod carries gossip from house to house and is admired for reading books on witchcraft. ✓ / Ichabod refuses to carry gossip and is mocked by the women for never reading a single book. / Ichabod prints a newspaper and sells copies to every family in the valley.
+- Discovery (figurative): "travelling gazette". A traveling gazette: Ichabod is like a walking newspaper, spreading news as he goes.
 
 **Chunk 7** (¶18 sentences 7 to 7; 62 words)
 
 - Question: What can you infer about why Ichabod bursts into song on lonely walks?
 - Key words highlighted: infer
-- Choices: He is trying to calm his own fear ✓ / He wants the farmers to hire him / He is practicing for a singing contest
+- Choices: He wants the farmers to hire him / He is practicing for a singing contest / He is trying to calm his own fear ✓
 - Proof line: "His only resource on such occasions, either to drown thought or drive away evil spirits, was to sing psalm tunes and the good people of Sleepy Hollow, as they sat by their doors of an evening, were often filled with awe at hearing his nasal melody, “in linked sweetness long drawn out,” floating from the distant hill, or along the dusky road."
 - Refresher hint: What does singing chase away?
 - Why: Singing psalm tunes was his only way to drown thought or drive away evil spirits.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: To fight his fear, Ichabod sings hymns, and neighbors hear his nasal voice in the dark. ✓ / To show off, Ichabod sings love songs, and neighbors throw open their windows. / To earn money, Ichabod sings at doors, and neighbors pay him in apples.
+- Gist check: To show off, Ichabod sings love songs, and neighbors throw open their windows. / To earn money, Ichabod sings at farmhouse doors, and the neighbors pay him in apples. / To fight his fear, Ichabod sings hymns, and neighbors hear his nasal voice in the dark. ✓
 - Discovery (vocabulary): "nasal melody". Nasal melody: singing through the nose. Ichabod's hymns float over the hills.
 
 ##### Character Clue
@@ -4390,27 +4400,13 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait does Ichabod show with the young women?
 - Key words highlighted: trait
-- Choices: Showy and eager to impress ✓ / Shy and tongue-tied around them / Rude and bored by their company
+- Choices: Rude and bored by their company / Showy and eager to impress ✓ / Shy and tongue-tied around them
 - Proof words (any one): "superior elegance and address", "reciting for their amusement"
 - Refresher hint: Look at how he performs for them, and how the other young men feel.
 - Why: He recites for their amusement, and the bumpkins envy his superior elegance and address.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: The young women adore Ichabod, who entertains them while the shy farm boys look on jealously. ✓ / The young women laugh at Ichabod, who hides from them behind the church on Sundays. / The young women ignore Ichabod, who spends his Sundays reading alone by the millpond.
+- Gist check: The young women adore Ichabod, who entertains them while the shy farm boys look on jealously. ✓ / The young women laugh at Ichabod, who hides from them behind the church every Sunday morning. / The young women ignore Ichabod, who spends his Sundays reading alone by the millpond.
 - Discovery (vocabulary): "a whole bevy of them". Bevy: a group, often of young women, like a flock of birds.
-
-##### Word Detective
-
-**Chunk 4** (¶17 sentences 1 to 2; 77 words) · shared words reviewed
-
-- Question: In this chunk, what does erudition mean?
-- Key words highlighted: erudition
-- Choices: Deep learning from reading many books ✓ / A loud and pleasant singing voice / A habit of gossiping about neighbors
-- Proof words (any one): "read several books quite through"
-- Refresher hint: What has he done that makes the women think he is learned?
-- Why: He had read several books quite through, so they think him a man of great erudition: great learning.
-- Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: Ichabod carries gossip from house to house and is admired for reading books on witchcraft. ✓ / Ichabod refuses to gossip and is mocked for never reading a single book. / Ichabod prints a newspaper and sells copies to every family in the valley.
-- Discovery (figurative): "travelling gazette". A traveling gazette: Ichabod is like a walking newspaper, spreading news as he goes.
 
 ##### Figure It Out
 
@@ -4418,12 +4414,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Read the words for his capacious swallow. What kind of figurative language is this?
 - Key words highlighted: capacious swallow
-- Choices: Metaphor: believing stories is described as swallowing food ✓ / Simile: it compares stories to food using like or as / Onomatopoeia: the word swallow imitates a sound
-- What does it mean? He will believe any tale, however wild ✓ / He eats huge meals while reading stories / He tells his stories much too fast
+- Choices: Onomatopoeia: the word swallow imitates a gulping sound / Metaphor: believing stories is described as swallowing food ✓ / Simile: it compares stories to food using like or as
+- What does it mean? He eats huge meals while reading stories / He tells his stories much too fast / He will believe any tale, however wild ✓
 - Refresher hint: Is he really eating the tales? Think about what he does with a story he hears.
 - Why: His capacious swallow means his huge appetite for believing marvels: no tale is too wild for him.
 - Standards: ELA.7.R.3.1
-- Gist check: Ichabod is clever yet believes every wild tale, and he reads ghost stories until dark. ✓ / Ichabod is foolish and doubts every tale, so he never reads ghost stories. / Ichabod is clever and writes ghost stories that he sells in town.
+- Gist check: Ichabod is foolish and doubts every tale, so he never reads ghost stories. / Ichabod is clever and writes his own ghost stories, which he sells in town each week. / Ichabod is clever yet believes every wild tale, and he reads ghost stories until dark. ✓
 - Discovery (vocabulary): "simple credulity". Credulity: being too ready to believe things.
 
 ##### Find It
@@ -4436,7 +4432,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for something with wings that crashes into him.
 - Why: A huge blockhead of a beetle flies against him, and he is ready to give up the ghost.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Walking home at dusk, Ichabod jumps at every bird, toad and beetle he hears. ✓ / Walking home at dusk, Ichabod calmly names each bird, toad and beetle he hears. / Walking home at dusk, Ichabod hunts birds and toads for his supper.
+- Gist check: Walking home at dusk, Ichabod calmly names each bird, toad and beetle he hears. / Walking home at dusk, Ichabod hunts birds and toads for his supper. / Walking home at dusk, Ichabod jumps at every bird, toad and beetle he hears. ✓
 - Discovery (figurative): "give up the ghost". Give up the ghost: to die. A beetle bumping him nearly scares him to death.
 
 ##### Theme Thread
@@ -4445,12 +4441,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which idea keeps coming up in these pages?
 - Key words highlighted: keeps coming up
-- Choices: People in the valley love to share and believe eerie stories ✓ / Hard work on the farm matters more than school / Neighbors in the Hollow distrust every outsider
+- Choices: Hard work on the farm matters far more than book learning / Neighbors in the Hollow distrust every outsider / People in the valley love to share and believe eerie stories ✓
 - Proof line: "Another of his sources of fearful pleasure was to pass long winter evenings with the old Dutch wives, as they sat spinning by the fire, with a row of apples roasting and spluttering along the hearth, and listen to their marvellous tales of ghosts and goblins, and haunted fields, and haunted brooks, and haunted bridges, and haunted houses, and particularly of the headless horseman, or Galloping Hessian of the Hollow, as they sometimes called him."
 - Refresher hint: What do Ichabod and the old wives trade all evening?
 - Why: They trade marvellous tales of ghosts, goblins and the headless horseman, again showing the valley's love of the uncanny.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: On winter nights Ichabod trades ghost tales with old Dutch wives by the fire. ✓ / On winter nights Ichabod teaches old Dutch wives to read by the fire. / On winter nights Ichabod goes to bed early and avoids the old Dutch wives.
+- Gist check: On winter nights Ichabod goes to bed early and avoids the old Dutch wives. / On winter nights Ichabod trades ghost tales with old Dutch wives by the fire. ✓ / On winter nights Ichabod teaches the old Dutch wives to read and write by the fire.
 - Discovery (figurative): "fearful pleasure". Fearful pleasure: he loves being scared, both at once.
 
 ##### Shades of Meaning
@@ -4459,12 +4455,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Why does the narrator call his look wistful instead of just sad?
 - Key words highlighted: wistful
-- Choices: It shows a longing for the warm, safe homes he sees ✓ / It shows he is angry at the people inside / It shows he is bored by the empty fields
+- Choices: It shows he is angry at the people inside / It shows he is bored by the cold, empty fields he crosses / It shows a longing for the warm, safe homes he sees ✓
 - Proof words (any one): "snugly cuddling in the chimney corner"
 - Refresher hint: Think about where he would rather be. Find the cozy place he just left.
 - Why: Wistful means longing: he has just left snugly cuddling in the chimney corner, and every lit window reminds him of it.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: Ichabod enjoys the cozy fireside tales but pays for them with a terrifying walk home. ✓ / Ichabod hates the fireside tales but enjoys a peaceful walk home afterward. / Ichabod stays the night by the fire so he never has to walk home.
+- Gist check: Ichabod stays the whole night by the fire so he never has to walk home in the dark. / Ichabod enjoys the cozy fireside tales but pays for them with a terrifying walk home. ✓ / Ichabod hates the fireside tales but enjoys a peaceful walk home afterward.
 - Discovery (figurative): "dearly purchased". Dearly purchased: the fun had a high price, paid in fear on the way home.
 
 ##### Catch the Lie
@@ -4478,7 +4474,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Check how he felt about his own steps, and whether he looked behind him.
 - Why: He shrank at the sound of his own steps and dreaded looking over his shoulder.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Snowy bushes, his own footsteps and the wind all make Ichabod think a ghost is near. ✓ / Snowy bushes, his own footsteps and the wind all make Ichabod feel calm and sleepy. / Snowy bushes, his own footsteps and the wind all help Ichabod find the road home.
+- Gist check: Snowy bushes, his own footsteps and the wind all help Ichabod find the right road home. / Snowy bushes, his own footsteps and the wind all make Ichabod think a ghost is near. ✓ / Snowy bushes, his own footsteps and the wind all make Ichabod feel calm and sleepy.
 - Discovery (figurative): "like a sheeted spectre". A simile: a snow-covered bush looks like a ghost wrapped in a sheet.
 
 #### Expedition: The Van Tassel Farm (10 chunks)
@@ -4527,7 +4523,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Read the very last words of the chunk. What causes more perplexity than ghosts?
 - Why: The narrator says a woman causes more perplexity than ghosts, goblins and witches put together.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: Daylight ends Ichabod's night fears, but a woman is about to cause him real trouble. ✓ / Daylight brings new fears to Ichabod, but a woman helps him feel brave again. / Daylight never reaches the Hollow, so Ichabod's fears never leave him at all.
+- Gist check: Daylight brings new fears to Ichabod, but a kind woman helps him feel brave again. / Daylight never reaches the Hollow, so Ichabod's fears never leave him at all. / Daylight ends Ichabod's night fears, but a woman is about to cause him real trouble. ✓
 - Discovery (figurative): "phantoms of the mind". Phantoms of the mind: ghosts that exist only in his imagination.
 
 ##### Word Detective
@@ -4536,12 +4532,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: In this chunk, what do the words vast expectations mean?
 - Key words highlighted: vast expectations
-- Choices: A large fortune she is expected to inherit ✓ / Very high hopes for her singing voice / A long list of chores she must finish
+- Choices: Very high hopes for her lovely singing voice / A long list of chores she must finish / A large fortune she is expected to inherit ✓
 - Proof words (any one): "only child of a substantial Dutch farmer"
 - Refresher hint: Whose daughter is she, and how many children does he have?
 - Why: As the only child of a substantial farmer, she can expect to inherit everything.
 - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: Katrina, the only child of a rich farmer, joins Ichabod's singing class and is famous in the valley. ✓ / Katrina, the youngest of ten poor children, sweeps Ichabod's schoolhouse every evening. / Katrina, a traveler from the city, teaches the singing class in Ichabod's place.
+- Gist check: Katrina, the youngest of ten poor children, sweeps Ichabod's schoolhouse every evening. / Katrina, a traveler from the city, teaches the singing class in Ichabod's place each week. / Katrina, the only child of a rich farmer, joins Ichabod's singing class and is famous in the valley. ✓
 - Discovery (figurative): "plump as a partridge". A simile comparing Katrina to a plump little bird.
 
 ##### Character Clue
@@ -4550,12 +4546,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait do Katrina's clothes reveal?
 - Key words highlighted: trait
-- Choices: She likes to be noticed and admired ✓ / She doesn't care at all how she looks / She wears only plain work clothes
+- Choices: She doesn't care at all how she looks / She wears only plain work clothes / She likes to be noticed and admired ✓
 - Proof words (any one): "a little of a coquette"
 - Refresher hint: The narrator names it outright. Find the word for someone who enjoys attention.
 - Why: She is a little of a coquette: she enjoys being admired, and her outfit is chosen to set off her charms.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: Katrina dresses to catch the eye, mixing old family gold with new fashions. ✓ / Katrina dresses plainly, hiding her family's old gold away in a chest. / Katrina sells her family's old gold to buy the newest city fashions.
+- Gist check: Katrina sells her family's old gold so she can buy the newest city fashions. / Katrina dresses to catch the eye, mixing old family gold with new fashions. ✓ / Katrina dresses plainly, hiding her family's old gold away in a chest.
 - Discovery (vocabulary): "brought over from Saardam". Saardam: a town in Holland. The gold came with her family from the old country.
 
 ##### Find It
@@ -4568,7 +4564,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for a quick picture of him, full of describing words.
 - Why: Old Baltus Van Tassel was a perfect picture of a thriving, contented, liberal-hearted farmer.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Ichabod falls for Katrina, and her father turns out to be a happy, generous, well-off farmer. ✓ / Ichabod falls for Katrina, but her father turns out to be a stingy and angry farmer. / Ichabod ignores Katrina, but her father hires him to manage the whole farm.
+- Gist check: Ichabod falls for Katrina, and her father turns out to be a happy, generous, well-off farmer. ✓ / Ichabod falls for Katrina, but her father turns out to be a stingy and angry farmer. / Ichabod ignores Katrina, but her stern father hires him to manage the whole farm.
 - Discovery (vocabulary): "paternal mansion". Paternal mansion: her father's big house.
 
 ##### Read Between the Lines
@@ -4577,25 +4573,25 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer about how Baltus feels about his riches?
 - Key words highlighted: infer
-- Choices: He enjoys plenty but has no need to show off ✓ / He worries constantly about losing his money / He loves to boast about how rich he is
+- Choices: He worries constantly about losing his money / He loves to boast about how rich he is / He enjoys plenty but has no need to show off ✓
 - Proof line: "He was satisfied with his wealth, but not proud of it; and piqued himself upon the hearty abundance, rather than the style in which he lived."
 - Refresher hint: Does he care more about having plenty, or about looking grand?
 - Why: He was satisfied with his wealth but not proud of it, prizing abundance over style.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Baltus is content with his wealth, and his farm sits in a green, sheltered spot by the river. ✓ / Baltus is ashamed of being poor, and his farm sits on a dry, rocky hill far from water. / Baltus is bored with his wealth, and his farm sits in a crowded town square.
+- Gist check: Baltus is ashamed of being poor, and his farm sits on a dry, rocky hill far from water. / Baltus is bored with his wealth, and his farm sits in a crowded, dusty town square. / Baltus is content with his wealth, and his farm sits in a green, sheltered spot by the river. ✓
 - Discovery (figurative): "His stronghold". Stronghold: a fort. The narrator jokes that the farmhouse is a castle.
 
 **Chunk 9** (¶24 sentences 1 to 2; 85 words)
 
 - Question: What can you infer Ichabod sees when he studies the animals?
 - Key words highlighted: infer
-- Choices: Future feasts he hopes to enjoy ✓ / Pets he would like to care for / Chores he would rather avoid
+- Choices: Pets he would like to care for / Hard chores he would rather avoid / Future feasts he hopes to enjoy ✓
 - Proof line: "The pedagogue’s mouth watered as he looked upon this sumptuous promise of luxurious winter fare."
 - Proof line: "In his devouring mind’s eye, he pictured to himself every roasting-pig running about with a pudding in his belly, and an apple in his mouth; the pigeons were snugly put to bed in a comfortable pie, and tucked in with a coverlet of crust; the geese were swimming in their own gravy; and the ducks pairing cosily in dishes, like snug married couples, with a decent competency of onion sauce."
 - Refresher hint: What happens to his mouth as he looks?
 - Why: His mouth watered, and in his mind's eye every pig and pigeon was already roasted or baked in a pie.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Ichabod looks at the animals and imagines them all cooked and served as dinner. ✓ / Ichabod looks at the animals and imagines them all as his loyal pets. / Ichabod looks at the animals and imagines selling them at the market.
+- Gist check: Ichabod looks at the animals and imagines them all cooked and served as dinner. ✓ / Ichabod looks at the animals and imagines them all as his own loyal pets. / Ichabod looks at the animals and imagines selling them at the market.
 - Discovery (figurative): "coverlet of crust". A coverlet is a blanket: the pigeons are tucked into a pie under a crust blanket.
 
 ##### Figure It Out
@@ -4604,12 +4600,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Read the words might have served for a church. What kind of figurative language is this?
 - Key words highlighted: served for a church
-- Choices: Hyperbole: the barn is so huge it could be a church ✓ / Simile: it compares the barn to a church using like / Personification: the barn prays like a person
+- Choices: Personification: the barn prays like a person / Hyperbole: the barn is so huge it could be a church ✓ / Simile: it compares the barn to a church using like
 - What does it mean? The barn is enormous ✓ / The barn holds Sunday worship / The barn is quiet and peaceful
 - Refresher hint: Is it really a church? Think about why someone would say it could be one.
 - Why: The barn is so vast it might have served for a church: an exaggeration showing its size.
 - Standards: ELA.7.R.3.1
-- Gist check: A huge barn overflows with the harvest while birds of every kind crowd its roof. ✓ / A tiny barn sits empty while a few birds peck at its broken roof. / A burned barn stands silent while the birds fly far away from the farm.
+- Gist check: A tiny barn sits empty and silent while a few birds peck at its broken roof. / A burned barn stands silent while the birds fly far away from the farm. / A huge barn overflows with the harvest while birds of every kind crowd its roof. ✓
 - Discovery (figurative): "bursting forth with the treasures of the farm". The barn is so full that the harvest seems to burst out of every crack.
 
 ##### Catch the Lie
@@ -4624,7 +4620,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Brom talks big. Check the pigs, and check the pond.
 - Why: The porkers are sleek and grunting in abundance, and a stately squadron of snowy geese rides on the pond.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Fat pigs, geese, ducks, turkeys and fussy guinea fowl fill the busy farmyard. ✓ / A few thin goats and one tired horse wander the quiet farmyard. / Wolves have chased every last animal out of the empty farmyard.
+- Gist check: Wolves have chased every last animal out of the empty farmyard. / Fat pigs, geese, ducks, turkeys and fussy guinea fowl fill the busy farmyard. ✓ / A few thin goats and one tired old horse wander the quiet, empty farmyard.
 - Discovery (figurative): "like ill-tempered housewives". A simile: the noisy guinea fowl fuss like cranky people.
 
 ##### Shades of Meaning
@@ -4633,12 +4629,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Why does the narrator call the rooster gallant instead of just proud?
 - Key words highlighted: gallant
-- Choices: It makes him sound like a brave, polite gentleman ✓ / It makes him sound sick and weak / It makes him sound lazy and sleepy
+- Choices: It makes him sound sick, weak and too tired to crow / It makes him sound lazy and sleepy / It makes him sound like a brave, polite gentleman ✓
 - Proof words (any one): "generously calling his ever-hungry family"
 - Refresher hint: Gallant is a word for a fine gentleman. Find what he does with the food he discovers.
 - Why: Gallant suggests a courteous gentleman, and he generously calls his ever-hungry family to share his find.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: A proud rooster struts by the barn and shares the food he finds with his family. ✓ / A sick rooster hides behind the barn and refuses to eat any food. / A greedy rooster eats all the food and chases his family away.
+- Gist check: A proud rooster struts by the barn and shares the food he finds with his family. ✓ / A sick rooster hides behind the barn and refuses to eat any food. / A greedy rooster gobbles all the food he finds and chases his family away.
 - Discovery (figurative): "pattern of a husband". The rooster is described like a model husband and gentleman.
 
 ##### Theme Thread
@@ -4647,7 +4643,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which idea about Ichabod keeps coming back?
 - Key words highlighted: keeps coming back
-- Choices: His hunger and greed shape how he sees the world ✓ / His courage helps him face every single danger / His kindness wins him friends wherever he goes
+- Choices: His kindness wins him friends wherever he goes / His hunger and greed shape how he sees the world ✓ / His courage helps him face every single danger he meets
 - Proof line: "In the porkers he saw carved out the future sleek side of bacon, and juicy relishing ham; not a turkey but he beheld daintily trussed up, with its gizzard under its wing, and, peradventure, a necklace of savory sausages; and even bright chanticleer himself lay sprawling on his back, in a side dish, with uplifted claws, as if craving that quarter which his chivalrous spirit disdained to ask while living."
 - Refresher hint: Even the proud rooster from before ends up somewhere. Where?
 - Why: Even bright chanticleer lies in a side dish: his appetite rules what he sees.
@@ -4701,7 +4697,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: What is he looking at while his heart yearns? What does he plan to do with it?
 - Why: He yearns for the damsel who will inherit these domains and imagines turning them into cash.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Gazing at the rich farm, Ichabod dreams of marrying Katrina and turning the land into money. ✓ / Gazing at the poor farm, Ichabod decides Katrina must work hard to earn money. / Gazing at the rich farm, Ichabod plans to buy it all with his small teaching pay.
+- Gist check: Gazing at the poor farm, Ichabod decides Katrina must work hard to earn her own money. / Gazing at the rich farm, Ichabod plans to buy it all with his small teaching pay. / Gazing at the rich farm, Ichabod dreams of marrying Katrina and turning the land into money. ✓
 - Discovery (figurative): "shingle palaces in the wilderness". Shingle palaces: grand houses of wooden shingles. He dreams big about a frontier fortune.
 
 ##### Find It
@@ -4714,7 +4710,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for faraway places he might ride off to.
 - Why: He sees himself setting out for Kentucky, Tennessee, or the Lord knows where.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Ichabod pictures himself leading Katrina and their children west on a loaded wagon. ✓ / Ichabod pictures himself staying forever as the Hollow's poor schoolteacher. / Ichabod pictures Katrina leaving him to marry a rich man in New York.
+- Gist check: Ichabod pictures himself leading Katrina and their children west on a loaded wagon. ✓ / Ichabod pictures himself staying forever as the Hollow's poor schoolteacher. / Ichabod pictures Katrina leaving the valley to marry a rich merchant in New York.
 - Discovery (vocabulary): "household trumpery". Trumpery: odds and ends of little value, here all their household stuff.
 
 **Chunk 8** (¶28 sentences 1 to 3; 88 words)
@@ -4725,7 +4721,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for what his body is like.
 - Why: From his Herculean frame and great powers of limb he got the nickname Brom Bones.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Ichabod's toughest rival is Brom Van Brunt, a big, strong local hero called Brom Bones. ✓ / Ichabod's only friend is Brom Van Brunt, a quiet, small farmer called Brom Bones. / Ichabod's toughest rival is a rich merchant from the city who hates horses.
+- Gist check: Ichabod's toughest rival is a rich merchant from the city who hates horses and dancing. / Ichabod's toughest rival is Brom Van Brunt, a big, strong local hero called Brom Bones. ✓ / Ichabod's only friend is Brom Van Brunt, a quiet, small farmer called Brom Bones.
 - Discovery (vocabulary): "roystering blade". A roystering blade: a loud, rowdy young man who loves a good time.
 
 ##### Word Detective
@@ -4734,26 +4730,26 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: In this chunk, what does piazza mean?
 - Key words highlighted: piazza
-- Choices: A covered porch along the front of the house ✓ / A large bowl of fresh fruit / A barn for storing the harvest
-- Proof words (any one): "the low projecting eaves"
-- Refresher hint: What forms it? Look at the words just before it.
-- Why: The low projecting eaves form a piazza along the front: a covered porch.
+- Choices: A covered porch along the front of the house ✓ / A large wooden bowl of fresh fruit / A barn used for storing the year's whole harvest
+- Proof line: "Under this were hung flails, harness, various utensils of husbandry, and nets for fishing in the neighboring river."
+- Refresher hint: What hangs under it?
+- Why: Flails, harness and fishing nets were hung under it: a covered porch along the front.
 - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: The old Dutch farmhouse, with its long porch full of tools and nets, wins Ichabod's heart. ✓ / The new city mansion, with its marble steps and fountains, wins Ichabod's heart. / The run-down shack, with its broken roof and empty porch, frightens Ichabod away.
+- Gist check: The run-down shack, with its broken roof and empty porch, frightens Ichabod away. / The old Dutch farmhouse, with its long porch full of tools and nets, wins Ichabod's heart. ✓ / The new city mansion, with its marble steps and splashing fountains, wins Ichabod's heart.
 - Discovery (vocabulary): "utensils of husbandry". Husbandry: farming. These are farm tools.
 
 ##### Shades of Meaning
 
 **Chunk 4** (¶26 sentences 4 to 6; 69 words) · shared words reviewed
 
-- Question: Why does the narrator say the pewter is resplendent instead of just shiny?
-- Key words highlighted: resplendent
-- Choices: It makes the dishes seem dazzling and grand ✓ / It makes the dishes seem old and dusty / It makes the dishes seem cheap and plain
+- Question: Why does the narrator call him the wondering Ichabod instead of just Ichabod?
+- Key words highlighted: wondering
+- Choices: It shows he is amazed by everything he sees ✓ / It shows he is lost and cannot find the hall / It shows he suspects the family of something
 - Proof words (any one): "dazzled his eyes"
-- Refresher hint: What does the pewter do to Ichabod?
-- Why: Resplendent means brilliantly shining: the pewter dazzled his eyes.
+- Refresher hint: What does the pewter do to him?
+- Why: Wondering means full of amazement: the pewter dazzled his eyes.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: The busy porch leads to a main hall where rows of shining pewter dazzle Ichabod. ✓ / The empty porch leads to a dark hall where Ichabod trips over broken dishes. / The busy porch leads to a kitchen where Ichabod is put to work churning.
+- Gist check: The busy porch leads to a main hall where rows of shining pewter dazzle Ichabod. ✓ / The empty porch leads to a dark hall where Ichabod trips over broken dishes. / The busy porch leads to a kitchen where Ichabod is put straight to work churning.
 - Discovery (vocabulary): "a churn". A churn turns cream into butter.
 
 ##### Figure It Out
@@ -4762,12 +4758,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Read the words shone like mirrors. What kind of figurative language is this?
 - Key words highlighted: shone like mirrors
-- Choices: Simile: the polished tables are compared to mirrors with like ✓ / Metaphor: the tables are called mirrors, without like / Hyperbole: the tables are bigger than the house
-- What does it mean? The furniture is polished until it gleams ✓ / The room is full of real mirrors / The tables are made of clear glass
+- Choices: Simile: the polished tables are compared to mirrors with like ✓ / Metaphor: the tables are called mirrors, without like / Hyperbole: the tables are said to be bigger than the house
+- What does it mean? The furniture is polished until it gleams ✓ / The room is lined with real tall mirrors / The tables are made of clear glass
 - Refresher hint: Look for the word like. What are the tables being compared to, and why?
 - Why: Shone like mirrors: a simile showing furniture polished to a gleam.
 - Standards: ELA.7.R.3.1
-- Gist check: The house overflows with food, cloth and treasures, from shining tables to old silver. ✓ / The house is nearly empty, with only one chair and a single cracked plate. / The house is covered in dust because the family never cleans it.
+- Gist check: The house overflows with food, cloth and treasures, from shining tables to old silver. ✓ / The house is nearly empty, with only one chair and a single cracked plate. / The house is covered in dust and cobwebs because the family never cleans it.
 - Discovery (vocabulary): "gay festoons". Festoons: decorations hung in loops along the walls.
 
 ##### Whose Eyes?
@@ -4776,12 +4772,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Why does the narrator bring up heroes from old romances?
 - Key words highlighted: old romances
-- Choices: To joke that Ichabod's task is harder than slaying dragons ✓ / To show that Ichabod is a real knight in armor / To warn that dragons live near the Hollow
+- Choices: To warn that real dragons once lived near the Hollow / To joke that Ichabod's task is harder than slaying dragons ✓ / To show that Ichabod is a real knight in armor
 - Proof line: "In this enterprise, however, he had more real difficulties than generally fell to the lot of a knight-errant of yore, who seldom had anything but giants, enchanters, fiery dragons, and such like easily conquered adversaries, to contend with and had to make his way merely through gates of iron and brass, and walls of adamant to the castle keep, where the lady of his heart was confined; all which he achieved as easily as a man would carve his way to the centre of a Christmas pie; and then the lady gave him her hand as a matter of course."
 - Refresher hint: What did those heroes face, and how easily did they win?
 - Why: Knights faced giants and dragons that were easily conquered: the narrator jokes Ichabod has it harder.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: Ichabod sets his heart on winning Katrina, a task the narrator calls harder than a knight's. ✓ / Ichabod gives up on Katrina, a task the narrator calls too easy to bother with. / Ichabod fights a real dragon to win Katrina, just like a knight of old.
+- Gist check: Ichabod sets his heart on winning Katrina, a task the narrator calls harder than a knight's. ✓ / Ichabod gives up on Katrina at once, a task the narrator calls far too easy to bother with. / Ichabod fights a real dragon to win Katrina, just like a brave knight of old.
 - Discovery (vocabulary): "walls of adamant". Adamant: an imaginary stone too hard to break.
 
 ##### Character Clue
@@ -4790,12 +4786,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait does the narrator give Katrina in this chunk?
 - Key words highlighted: trait
-- Choices: Changeable, full of whims that keep suitors guessing ✓ / Steady, always saying exactly what she means / Shy, refusing to speak to any young man
+- Choices: Steady, always saying exactly what she means / Shy, refusing to speak to any young man who calls / Changeable, full of whims that keep suitors guessing ✓
 - Proof words (any one): "a labyrinth of whims and caprices"
 - Refresher hint: Find the maze the narrator says Ichabod must get through.
 - Why: She is a country coquette in a labyrinth of whims and caprices that keep changing.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: Katrina's changing moods and a crowd of jealous rivals stand between Ichabod and her heart. ✓ / Katrina's steady kindness and her father's blessing make Ichabod's path easy. / Katrina's strict father and a locked gate keep every suitor far away.
+- Gist check: Katrina's changing moods and a crowd of jealous rivals stand between Ichabod and her heart. ✓ / Katrina's steady kindness and her father's blessing make Ichabod's path easy. / Katrina's strict father and a locked iron gate keep every suitor far away from her.
 - Discovery (figurative): "every portal to her heart". Portal: a door. Her admirers guard every door to her heart.
 
 ##### Catch the Lie
@@ -4809,7 +4805,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Check what the story says about his riding.
 - Why: He was famed for skill in horsemanship, as dexterous on horseback as a Tartar.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Brom is a superb rider and the strong man who settles every local argument. ✓ / Brom is a poor rider who avoids races and every local argument. / Brom is a judge from town who settles arguments with law books.
+- Gist check: Brom is a judge from town who settles arguments with law books. / Brom is a superb rider and the strong man who settles every local argument. ✓ / Brom is a poor rider who avoids the races and stays out of every local argument.
 - Discovery (figurative): "as dexterous on horseback as a Tartar". A simile: he rides as skillfully as the famous horsemen of Central Asia.
 
 ##### Theme Thread
@@ -4818,12 +4814,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which idea about Brom do these pages keep returning to?
 - Key words highlighted: keep returning
-- Choices: He is rough and wild, but more playful than cruel ✓ / He is cruel and wants to hurt everyone he meets / He is quiet and keeps to himself at home
+- Choices: He is cruel and wants to hurt everyone he meets / He is quiet and gentle and keeps to himself at home / He is rough and wild, but more playful than cruel ✓
 - Proof line: "He was always ready for either a fight or a frolic; but had more mischief than ill-will in his composition; and with all his overbearing roughness, there was a strong dash of waggish good humor at bottom."
 - Refresher hint: Is he out to hurt people, or to have fun?
 - Why: He had more mischief than ill-will, with a strong dash of waggish good humor.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: Brom loves fights and fun, but means mischief more than harm, and his friends follow him everywhere. ✓ / Brom hates fights and fun, so he stays home alone and avoids his neighbors. / Brom means real harm, and his friends are terrified of him.
+- Gist check: Brom loves fights and fun, but means mischief more than harm, and his friends follow him everywhere. ✓ / Brom hates fights and fun, so he stays home alone and avoids his neighbors. / Brom means real harm to everyone he meets, and even his own friends are terrified of him.
 - Discovery (vocabulary): "boon companions". Boon companions: close, cheerful friends.
 
 #### Expedition: The Feud (10 chunks)
@@ -4871,7 +4867,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for something furry with a tail.
 - Why: In cold weather he wore a fur cap topped with a flaunting fox's tail.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Brom's fox-tail cap warns folks he's coming, and his gang gallops past farms at midnight. ✓ / Brom's tall black hat hides his face, and his gang sleeps quietly every night. / Brom's fox-tail cap is stolen, and his gang searches every farm at midnight.
+- Gist check: Brom's fox-tail cap is stolen, and his angry gang searches every farm at midnight. / Brom's fox-tail cap warns folks he's coming, and his gang gallops past farms at midnight. ✓ / Brom's tall black hat hides his face, and his gang sleeps quietly every night.
 - Discovery (figurative): "like a troop of Don Cossacks". A simile: Brom's gang rides like wild Cossack horsemen.
 
 ##### Read Between the Lines
@@ -4880,24 +4876,24 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer about how Katrina feels about Brom?
 - Key words highlighted: infer
-- Choices: She may like him more than she lets on ✓ / She is afraid of him and avoids him / She has never even met him
+- Choices: She may like him more than she lets on ✓ / She is afraid of him and avoids him / She has never even met him once
 - Proof line: "This rantipole hero had for some time singled out the blooming Katrina for the object of his uncouth gallantries, and though his amorous toyings were something like the gentle caresses and endearments of a bear, yet it was whispered that she did not altogether discourage his hopes."
 - Refresher hint: What was whispered about her and his hopes?
 - Why: It was whispered that she did not altogether discourage his hopes.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Neighbors admire Brom and blame him for every prank, and he has set his heart on Katrina. ✓ / Neighbors fear Brom and ban him from town, and he has given up on Katrina. / Neighbors ignore Brom, and he has set his heart on moving to the city.
+- Gist check: Neighbors fear Brom and ban him from town, and he has given up on Katrina. / Neighbors ignore Brom completely, and he has set his heart on moving to the city. / Neighbors admire Brom and blame him for every prank, and he has set his heart on Katrina. ✓
 - Discovery (figurative): "the gentle caresses and endearments of a bear". Brom's clumsy affection is compared to a bear's hug.
 
 **Chunk 5** (¶31 sentences 1 to 3; 82 words)
 
 - Question: What can you infer about why Ichabod courts Katrina so softly?
 - Key words highlighted: infer
-- Choices: He knows openly challenging Brom would be dangerous ✓ / He is too shy to speak to Katrina at all / He must keep it secret from her strict father
+- Choices: He must keep it secret from her strict father / He knows openly challenging Brom would be dangerous ✓ / He is far too shy to speak to Katrina at all
 - Proof line: "To have taken the field openly against his rival would have been madness; for he was not a man to be thwarted in his amours, any more than that stormy lover, Achilles."
 - Refresher hint: What would it be to take the field openly against his rival?
 - Why: Taking the field openly against Brom would have been madness.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Afraid to challenge Brom openly, Ichabod courts Katrina quietly during his singing visits. ✓ / Eager to fight Brom openly, Ichabod challenges him to a duel at the singing school. / Afraid of Katrina's parents, Ichabod sends her secret letters instead of visiting.
+- Gist check: Afraid of Katrina's parents, Ichabod sends her secret letters instead of ever visiting. / Afraid to challenge Brom openly, Ichabod courts Katrina quietly during his singing visits. ✓ / Eager to fight Brom openly, Ichabod challenges him to a duel at the singing school.
 - Discovery (vocabulary): "that stormy lover, Achilles". Achilles: a fierce Greek hero from Homer's poems who would not be crossed.
 
 ##### Word Detective
@@ -4906,12 +4902,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: In this chunk, what does sparking mean?
 - Key words highlighted: sparking
-- Choices: Visiting a young woman to court her ✓ / Starting a fire in the fireplace / Shoeing a horse at the blacksmith's
+- Choices: Starting a fire in the fireplace / Shoeing a horse at the blacksmith's / Visiting a young woman to court her ✓
 - Proof words (any one): "his master was courting"
 - Refresher hint: The narrator explains it right before the word.
 - Why: His master was courting, or, as it is termed, sparking.
 - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: When Brom's horse is tied at the Van Tassels' on Sunday night, other suitors give up and leave. ✓ / When Brom's horse is tied at the Van Tassels' on Sunday night, the family sends for the sheriff. / When Brom's horse runs away on Sunday night, the other suitors chase it down the road.
+- Gist check: When Brom's horse runs away on Sunday night, the other suitors chase it down the road. / When Brom's horse is tied at the Van Tassels' on Sunday night, other suitors give up and leave. ✓ / When Brom's horse is tied at the Van Tassels' on Sunday night, the family sends for the sheriff.
 - Discovery (figurative): "cross a lion in his amours". Rivals won't cross a lion: Brom is too fierce to compete with.
 
 ##### Figure It Out
@@ -4920,12 +4916,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Read the words in form and spirit like a supple-jack. What kind of figurative language is this?
 - Key words highlighted: supple-jack
-- Choices: Simile: Ichabod is compared to a bendy stick using like ✓ / Metaphor: Ichabod is called a tree, without like / Alliteration: words that begin with the same sound
-- What does it mean? He bends under pressure but always springs back ✓ / He snaps easily when anyone pushes him / He is stiff and refuses to move at all
+- Choices: Alliteration: words that begin with the same sound / Simile: Ichabod is compared to a bendy stick using like ✓ / Metaphor: Ichabod is called a tall tree, without using like
+- What does it mean? He snaps and gives up when anyone pushes him / He is stiff and refuses to move at all / He bends under pressure but always springs back ✓
 - Refresher hint: A supple-jack is a springy cane. What happens when you bend one and let go?
 - Why: Like a supple-jack, yielding but tough: he bends, but never breaks.
 - Standards: ELA.7.R.3.1
-- Gist check: Brom is a fearsome rival, but Ichabod bends without breaking and keeps trying. ✓ / Brom is a weak rival, so Ichabod wins Katrina without any effort at all. / Brom is a fearsome rival, so Ichabod quits and leaves the Hollow at once.
+- Gist check: Brom is a fearsome rival, so Ichabod quits and leaves the Hollow at once. / Brom is a fearsome rival, but Ichabod bends without breaking and keeps trying. ✓ / Brom is a weak rival, so Ichabod wins Katrina without any effort.
 - Discovery (figurative): "carried his head as high as ever". He bounces back with his pride whole.
 
 ##### Character Clue
@@ -4934,12 +4930,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait fits the man of the house?
 - Key words highlighted: trait
-- Choices: Easygoing and generous, letting her do as she likes ✓ / Strict and watchful, guarding her every move / Cold and distant, ignoring his own family
+- Choices: Strict and watchful, guarding her every move / Cold and distant, ignoring his own wife and daughter / Easygoing and generous, letting her do as she likes ✓
 - Proof words (any one): "an easy indulgent soul", "let her have her way in everything"
 - Refresher hint: How does he treat his daughter?
 - Why: He was an easy indulgent soul who let her have her way in everything.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: Katrina's easygoing father and busy mother leave her free to go her own way. ✓ / Katrina's strict father and watchful mother never let her out of their sight. / Katrina's father and mother argue all day about which suitor she should marry.
+- Gist check: Katrina's father and mother argue all day about which suitor she should marry. / Katrina's easygoing father and busy mother leave her free to go her own way. ✓ / Katrina's strict father and watchful mother never let her out of their sight.
 - Discovery (vocabulary): "sagely observed". Sagely: wisely, though the narrator is joking.
 
 ##### Catch the Lie
@@ -4953,7 +4949,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Where did Ichabod and Katrina actually talk?
 - Why: He courted her by the spring under the great elm, or sauntering in the twilight.
 - Standards: ELA.K12.EE.1.1
-- Gist check: While her parents keep busy, Ichabod courts Katrina by the spring and on twilight walks. ✓ / While her parents watch closely, Ichabod sits silently in the parlor with Katrina. / While her parents are away, Ichabod repairs the barn roof for Katrina.
+- Gist check: While her parents watch closely, Ichabod sits silently in the parlor with Katrina. / While her parents are away in town, Ichabod repairs the leaking barn roof for Katrina. / While her parents keep busy, Ichabod courts Katrina by the spring and on twilight walks. ✓
 - Discovery (figurative): "a little wooden warrior". A weathervane soldier fighting the wind on the barn roof.
 
 ##### Whose Eyes?
@@ -4962,12 +4958,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What does the narrator admit about himself here?
 - Key words highlighted: admit
-- Choices: He doesn't understand how hearts are won ✓ / He is an expert at winning hearts / He once married Katrina himself
+- Choices: He is an expert at winning hearts / He once married Katrina himself, long ago / He doesn't understand how hearts are won ✓
 - Proof line: "I profess not to know how women’s hearts are wooed and won."
 - Refresher hint: Read his very first sentence.
 - Why: He professes not to know how women's hearts are wooed and won.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: The narrator jokes that winning hearts is a puzzle, and keeping a flirt's heart takes a hero. ✓ / The narrator explains that winning hearts is easy, and anyone can do it in a day. / The narrator says only soldiers can win hearts, by fighting real battles.
+- Gist check: The narrator says only brave soldiers can win hearts, by fighting in real battles. / The narrator jokes that winning hearts is a puzzle, and keeping a flirt's heart takes a hero. ✓ / The narrator explains that winning hearts is easy, and anyone can do it in a day.
 - Discovery (figurative): "matters of riddle and admiration". Hearts are a riddle to him: puzzling and amazing.
 
 ##### Theme Thread
@@ -4981,7 +4977,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: What arises between Brom and the teacher?
 - Why: A deadly feud gradually arose between him and the preceptor of Sleepy Hollow.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: As Ichabod gains ground, Brom stops visiting and a bitter feud begins between them. ✓ / As Ichabod gains ground, Brom happily wishes him luck and they become friends. / As Ichabod loses ground, Brom visits every night and wins Katrina's hand.
+- Gist check: As Ichabod loses ground, Brom visits every single night and wins Katrina's hand. / As Ichabod gains ground, Brom stops visiting and a bitter feud begins between them. ✓ / As Ichabod gains ground, Brom happily wishes him luck and they become friends.
 - Discovery (vocabulary): "preceptor of Sleepy Hollow". Preceptor: a teacher. A fancy title for Ichabod.
 
 ##### Shades of Meaning
@@ -4990,12 +4986,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Why does the narrator call Ichabod wary instead of just scared?
 - Key words highlighted: wary
-- Choices: It suggests he is careful and alert to danger ✓ / It suggests he is lazy and sleepy / It suggests he is angry and eager to fight
+- Choices: It suggests he is lazy, sleepy and careless / It suggests he is angry and eager to fight / It suggests he is careful and alert to danger ✓
 - Proof words (any one): "too conscious of the superior might of his adversary"
 - Refresher hint: What does Ichabod know about Brom's strength?
 - Why: Wary means watchful: he was too conscious of Brom's superior might to give him a chance.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: Brom wants to settle things with a fight, but Ichabod is too careful to give him the chance. ✓ / Brom wants to settle things with a race, and Ichabod eagerly agrees to ride. / Brom wants to make peace, but Ichabod insists on settling things with a fight.
+- Gist check: Brom wants to make peace, but Ichabod insists on settling things with a fight. / Brom wants to settle things with a fight, but Ichabod is too careful to give him the chance. ✓ / Brom wants to settle things with a horse race, and Ichabod eagerly agrees to ride Gunpowder.
 - Discovery (vocabulary): "single combat". Single combat: a one-on-one fight to settle a quarrel.
 
 #### Expedition: The Invitation (10 chunks)
@@ -5043,7 +5039,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for what Brom turns to when there's no fight.
 - Why: With no other choice, he plays boorish practical jokes on his rival.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Since Ichabod won't fight, Brom and his gang torment him with rough practical jokes. ✓ / Since Ichabod won't fight, Brom leaves him alone and finds a new sweetheart. / Since Ichabod wants to fight, Brom hides from him at the Van Tassel farm.
+- Gist check: Since Ichabod wants to fight, Brom hides from him at the Van Tassel farm for weeks. / Since Ichabod won't fight, Brom and his gang torment him with rough practical jokes. ✓ / Since Ichabod won't fight, Brom leaves him alone and finds a new sweetheart.
 - Discovery (vocabulary): "rustic waggery". Waggery: mischievous joking. Brom's country-style pranks.
 
 **Chunk 5** (¶34 sentences 6 to 6, ¶35 sentences 1 to 1; 90 words)
@@ -5054,7 +5050,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for the noise that replaces the quiet.
 - Why: All was now bustle and hubbub in the late quiet schoolroom.
 - Standards: ELA.K12.EE.1.1
-- Gist check: An invitation arrives to an evening party at the Van Tassels', and the quiet room turns to bustle. ✓ / A warning arrives about the Headless Horseman, and the busy room falls silent. / A letter arrives dismissing Ichabod, and the quiet room turns to tears.
+- Gist check: An invitation arrives to an evening party at the Van Tassels', and the quiet room turns to bustle. ✓ / A warning arrives about the Headless Horseman, and the busy room falls silent. / A letter arrives dismissing Ichabod from his post, and the quiet room slowly turns to tears.
 - Discovery (vocabulary): "quilting frolic". Quilting frolic: a party where neighbors gather, often with music and dancing.
 
 **Chunk 7** (¶36 sentences 1 to 2; 95 words)
@@ -5065,7 +5061,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Whose stable does it come from?
 - Why: He borrowed a horse from Hans Van Ripper, the farmer he was staying with.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Ichabod grooms his one shabby suit and borrows a horse from Hans Van Ripper to ride to the party. ✓ / Ichabod buys a fine new suit and a fast horse in town to ride to the party. / Ichabod refuses to dress up and walks to the party in his work clothes.
+- Gist check: Ichabod buys a fine new suit and a fast horse in town to ride to the party. / Ichabod refuses to dress up and walks all the way to the party in his dusty work clothes. / Ichabod grooms his one shabby suit and borrows a horse from Hans Van Ripper to ride to the party. ✓
 - Discovery (figurative): "issued forth like a knight-errant". A simile: Ichabod rides out like a knight in an old romance, with mock grandeur.
 
 ##### Catch the Lie
@@ -5079,7 +5075,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Check what Brom did whenever Katrina was present.
 - Why: Brom took every chance to turn Ichabod into ridicule in front of her, with a whining dog as a rival.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Brom's gang wrecks the schoolhouse, and Brom mocks Ichabod in front of Katrina with a whining dog. ✓ / Brom's gang repairs the schoolhouse, and Brom praises Ichabod in front of Katrina. / Brom's gang steals the schoolhouse bell, and Ichabod wins Katrina with a song.
+- Gist check: Brom's gang steals the schoolhouse bell, and Ichabod wins Katrina back with a love song. / Brom's gang wrecks the schoolhouse, and Brom mocks Ichabod in front of Katrina with a whining dog. ✓ / Brom's gang repairs the schoolhouse, and Brom praises Ichabod in front of Katrina.
 - Discovery (figurative): "scoundrel dog". Brom teaches his dog to whine so it can play a fake singing teacher.
 
 ##### Figure It Out
@@ -5088,12 +5084,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Read the words that sceptre of despotic power. What kind of figurative language is this?
 - Key words highlighted: sceptre
-- Choices: Metaphor: his ruler is called a king's sceptre ✓ / Simile: his ruler is compared to a sceptre using as / Onomatopoeia: the words copy a sound
-- What does it mean? Ichabod rules his classroom like a stern king ✓ / Ichabod carries a real golden sceptre / Ichabod is afraid of his own students
+- Choices: Simile: his ruler is compared to a sceptre using as / Onomatopoeia: the words copy a sound / Metaphor: his ruler is called a king's sceptre ✓
+- What does it mean? Ichabod rules his classroom like a stern king ✓ / Ichabod carries a real golden sceptre to class / Ichabod is afraid of his own students
 - Refresher hint: A sceptre is what a king holds. What is Ichabod holding, and what does that make him?
 - Why: The ferule is called a sceptre of despotic power: Ichabod rules the room like a king.
 - Standards: ELA.7.R.3.1
-- Gist check: On an autumn afternoon Ichabod sits like a king over his classroom, surrounded by confiscated toys. ✓ / On an autumn afternoon Ichabod naps in the meadow while his pupils play outside. / On a winter morning Ichabod hands out toys as prizes to his best pupils.
+- Gist check: On an autumn afternoon Ichabod naps in the meadow while his pupils play outside. / On a winter morning Ichabod hands out whirligigs and popguns as prizes to his best pupils. / On an autumn afternoon Ichabod sits like a king over his classroom, surrounded by confiscated toys. ✓
 - Discovery (vocabulary): "contraband articles". Contraband: forbidden items, here toys taken from students.
 
 ##### Read Between the Lines
@@ -5102,12 +5098,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer just happened in the classroom before this moment?
 - Key words highlighted: infer
-- Choices: Someone was punished, so everyone is acting busy ✓ / A party was held, so everyone is tired / A storm hit, so everyone is hiding
+- Choices: A storm just hit, so everyone is hiding inside / Someone was punished, so everyone is acting busy ✓ / A party was held, so everyone is tired
 - Proof line: "Apparently there had been some appalling act of justice recently inflicted, for his scholars were all busily intent upon their books, or slyly whispering behind them with one eye kept upon the master; and a kind of buzzing stillness reigned throughout the schoolroom."
 - Refresher hint: Why are the scholars all so busy, with one eye on the master?
 - Why: Some appalling act of justice had recently been inflicted, so everyone is intent on their books.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: The class sits in nervous quiet until a rider arrives at the school. ✓ / The class bursts into song until the parson arrives at the school. / The class runs outside until Brom Bones rides up to the school.
+- Gist check: The class runs outside to play until Brom Bones rides up to the school. / The class sits in nervous quiet until a rider arrives at the school. ✓ / The class bursts into song until the parson arrives at the school.
 - Discovery (figurative): "buzzing stillness". Buzzing stillness: a quiet full of tiny whispers.
 
 ##### Character Clue
@@ -5116,12 +5112,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait does Ichabod show by rushing the afternoon?
 - Key words highlighted: trait
-- Choices: Eager and impatient to get to the party ✓ / Careful and patient with every lesson / Calm and in no hurry at all
+- Choices: Eager and impatient to get to the party ✓ / Careful and patient with every lesson / Calm, careful and in no hurry at all
 - Proof words (any one): "hurried through their lessons", "an hour before the usual time"
 - Refresher hint: How does he treat the lessons, and when does school end?
 - Why: The scholars were hurried through their lessons and turned loose an hour before the usual time.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: Ichabod rushes the lessons and lets the children out an hour early, and they race off cheering. ✓ / Ichabod adds extra lessons and keeps the children an hour late, and they sulk home. / Ichabod cancels the party and makes the children scrub the schoolhouse.
+- Gist check: Ichabod rushes the lessons and lets the children out an hour early, and they race off cheering. ✓ / Ichabod adds extra lessons and keeps the children an hour late, and they sulk home. / Ichabod skips the party and keeps the children late to scrub every inch of the schoolhouse.
 - Discovery (figurative): "like a legion of young imps". A simile: the freed children burst out like a crowd of little devils.
 
 ##### Whose Eyes?
@@ -5130,12 +5126,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What tone does the narrator take toward Ichabod's ride?
 - Key words highlighted: tone
-- Choices: Mocking, treating a broken-down nag like a grand charger ✓ / Admiring, praising a fine and noble war horse / Fearful, warning that the animal is a ghost
+- Choices: Admiring, praising a fine and noble war horse / Fearful, warning readers that the animal is really a ghost / Mocking, treating a broken-down nag like a grand charger ✓
 - Proof line: "The animal he bestrode was a broken-down plow-horse, that had outlived almost everything but its viciousness."
 - Refresher hint: He promises a romantic account. Then what does he describe?
 - Why: In the true spirit of romantic story he presents a broken-down plow-horse that outlived everything but its viciousness.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: Ichabod's horse is an old, bony, mean-tempered plow horse with one wild eye. ✓ / Ichabod's horse is a young, sleek, gentle racehorse with bright eyes. / Ichabod's horse is a tiny pony that his pupils lend him for the day.
+- Gist check: Ichabod's horse is a tiny, gentle pony that his pupils lend him for the day. / Ichabod's horse is an old, bony, mean-tempered plow horse with one wild eye. ✓ / Ichabod's horse is a young, sleek, gentle racehorse with bright eyes.
 - Discovery (figurative): "a head like a hammer". A simile: the horse's head is long and blocky like a hammer.
 
 ##### Shades of Meaning
@@ -5144,12 +5140,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Why might the horse be called Gunpowder instead of a gentle name?
 - Key words highlighted: Gunpowder
-- Choices: It hints he was once fiery and explosive ✓ / It hints he is slow and very sleepy / It hints he is gray like a puff of smoke
-- Proof words (any one): "fire and mettle in his day"
-- Refresher hint: What does the narrator judge from the name?
-- Why: He must have had fire and mettle in his day, judging from the name Gunpowder.
+- Choices: It hints he is gray like a puff of smoke / It hints he was once fiery and explosive ✓ / It hints he is slow and very sleepy
+- Proof words (any one): "more of the lurking devil in him"
+- Refresher hint: Read what the narrator says is still in him.
+- Why: There is more of the lurking devil in him than in any young filly: a fiery horse, true to his name.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: The horse, named Gunpowder, still has a wild spirit from his hot-tempered owner. ✓ / The horse, named Gunpowder, is gentle and calm like his peaceful owner. / The horse, named Gunpowder, was bought from a soldier at the old fort.
+- Gist check: The horse, named Gunpowder, still has a wild spirit from his hot-tempered owner. ✓ / The horse, named Gunpowder, is gentle and calm like his peaceful owner. / The horse, named Gunpowder, was bought cheaply from a soldier at the old fort.
 - Discovery (figurative): "the lurking devil in him". A hidden wild streak, as if a little devil lives inside.
 
 ##### Theme Thread
@@ -5158,12 +5154,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which idea about Ichabod's looks keeps coming back?
 - Key words highlighted: keeps coming back
-- Choices: He looks awkward and comical, all bony limbs ✓ / He looks strong and dashing, a true horseman / He looks rich and stylish, dressed like a lord
+- Choices: He looks strong and dashing, a true horseman / He looks rich and stylish, dressed like a lord / He looks awkward and comical, all bony limbs ✓
 - Proof line: "He rode with short stirrups, which brought his knees nearly up to the pommel of the saddle; his sharp elbows stuck out like grasshoppers’; he carried his whip perpendicularly in his hand, like a sceptre, and as his horse jogged on, the motion of his arms was not unlike the flapping of a pair of wings."
 - Refresher hint: Remember the scarecrow from earlier. What do his elbows look like now?
 - Why: With knees at the pommel and elbows like grasshoppers', he is as gangly and comic as ever.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: Perched on short stirrups with flapping elbows, Ichabod looks as odd as his horse. ✓ / Seated tall with steady hands, Ichabod looks like a handsome cavalry officer. / Seated in a carriage, Ichabod hides from view as the horse trots along.
+- Gist check: Seated in a closed carriage, Ichabod hides from view as the horse trots along. / Perched on short stirrups with flapping elbows, Ichabod looks as odd as his horse. ✓ / Seated tall with steady hands, Ichabod looks like a handsome cavalry officer.
 - Discovery (figurative): "his sharp elbows stuck out". His sharp, bent elbows stick out like grasshopper legs.
 
 #### Expedition: The Ride to the Party (10 chunks)
@@ -5207,12 +5203,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: How does the narrator want us to picture Ichabod setting off?
 - Key words highlighted: picture
-- Choices: As a ridiculous sight, almost like a ghost by day ✓ / As a brave knight riding out to win a battle / As a sad figure leaving the Hollow forever
+- Choices: As a brave knight riding out to win a battle / As a sad figure leaving the Hollow and its people forever / As a ridiculous sight, almost like a ghost by day ✓
 - Proof line: "Such was the appearance of Ichabod and his steed as they shambled out of the gate of Hans Van Ripper, and it was altogether such an apparition as is seldom to be met with in broad daylight."
 - Refresher hint: What does the narrator call the pair, and when is such a thing seldom seen?
 - Why: He calls them an apparition seldom met in broad daylight: a joke about how strange they look.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: With his tiny hat and flapping coat, Ichabod and his horse make a strange sight leaving the farm. ✓ / With his tall hat and neat coat, Ichabod and his horse make a fine sight leaving the farm. / With no hat or coat at all, Ichabod and his horse sneak away from the farm at night.
+- Gist check: With no hat or coat at all, Ichabod and his horse sneak away from the farm late at night. / With his tiny hat and flapping coat, Ichabod and his horse make a strange sight leaving the farm. ✓ / With his tall hat and neat coat, Ichabod and his horse make a fine sight leaving the farm.
 - Discovery (figurative): "rested on the top of his nose". The narrator jokes that his forehead is so small the hat sits on his nose.
 
 ##### Figure It Out
@@ -5221,12 +5217,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Read the words nature wore that rich and golden livery. What kind of figurative language is this?
 - Key words highlighted: golden livery
-- Choices: Personification: nature is dressed like a person in golden clothes ✓ / Simile: nature is compared to gold using like / Hyperbole: nature is made of real gold
-- What does it mean? The autumn countryside glows with rich gold colors ✓ / The farmers wear gold uniforms at harvest / The trees are covered in gold coins
+- Choices: Simile: nature is compared to gold using like / Hyperbole: the whole countryside is said to be made of real gold / Personification: nature is dressed like a person in golden clothes ✓
+- What does it mean? The trees are hung with real gold coins for the harvest / The autumn countryside glows with rich gold colors ✓ / The farmers wear gold uniforms at harvest
 - Refresher hint: Livery is a servant's uniform. Who is wearing it here?
 - Why: Nature wears golden livery like a person in fine clothes: the land glows gold in autumn.
 - Standards: ELA.7.R.3.1
-- Gist check: It is a clear, golden autumn day, and the forests blaze with orange, purple and scarlet. ✓ / It is a gray, rainy spring day, and the forests are bare and dripping. / It is a snowy winter night, and the forests are white and silent.
+- Gist check: It is a snowy winter night, and the forests are white, bare and silent under the moon. / It is a clear, golden autumn day, and the forests blaze with orange, purple and scarlet. ✓ / It is a gray, rainy spring day, and the forests are bare and dripping.
 - Discovery (figurative): "nipped by the frosts". Frost nips the leaves like a little bite, turning them bright colors.
 
 ##### Find It
@@ -5239,8 +5235,19 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look high in the air.
 - Why: Streaming files of wild ducks began to appear high in the air.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Ducks fly overhead and small birds feast and flit about before leaving for the winter. ✓ / Hawks circle overhead and small birds hide quietly from the cold winter. / Geese land on the pond and small birds build nests for the spring.
+- Gist check: Hawks circle overhead and small birds hide quietly from the cold winter. / Geese land on the pond and small birds busily build their nests for the spring. / Ducks fly overhead and small birds feast and flit about before leaving for the winter. ✓
 - Discovery (figurative): "farewell banquets". The birds' last feasts before they fly south for winter.
+
+**Chunk 7** (¶41 sentences 1 to 3; 74 words)
+
+- Question: Which line shows the river lying perfectly still?
+- Key words highlighted: perfectly still
+- Proof line: "The wide bosom of the Tappan Zee lay motionless and glassy, excepting that here and there a gentle undulation waved and prolonged the blue shadow of the distant mountain."
+- Refresher hint: Look at the water.
+- Why: The wide bosom of the Tappan Zee lay motionless and glassy.
+- Standards: ELA.K12.EE.1.1
+- Gist check: Lost in fearful thoughts, Ichabod rides through a storm as waves crash on the Hudson. / Lost in his witchcraft books, Ichabod rides past the Hudson without looking up once. / Lost in sweet daydreams, Ichabod rides above the Hudson as the sun sets over still water. ✓
+- Discovery (figurative): "sugared suppositions". Sweet daydreams, as if his thoughts were candy.
 
 **Chunk 9** (¶42 sentences 1 to 3; 72 words)
 
@@ -5250,7 +5257,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for a time of day.
 - Why: It was toward evening that Ichabod arrived at the castle of the Heer Van Tassel.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Ichabod arrives at dusk to find the Van Tassel home crowded with farmers and their wives. ✓ / Ichabod arrives at dawn to find the Van Tassel home empty and locked. / Ichabod arrives at noon to find only Brom waiting at the gate.
+- Gist check: Ichabod arrives at noon to find the house empty and only Brom waiting at the gate. / Ichabod arrives at dusk to find the Van Tassel home crowded with farmers and their wives. ✓ / Ichabod arrives at dawn to find the Van Tassel home empty and locked.
 - Discovery (figurative): "leathern-faced race". Leathern-faced: faces tanned and tough as leather from outdoor work.
 
 ##### Shades of Meaning
@@ -5259,12 +5266,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Why does the narrator call the blue jay a noisy coxcomb?
 - Key words highlighted: coxcomb
-- Choices: It shows off like a vain, loud dresser ✓ / It is shy and hides among the leaves / It is sick and cannot sing well
+- Choices: It shows off like a vain, loud dresser ✓ / It is shy and hides among the leaves / It is sick and cannot sing well at all
 - Proof words (any one): "in his gay light blue coat and white underclothes"
 - Refresher hint: A coxcomb is a showy dresser. Find his outfit.
 - Why: He struts in his gay light blue coat and white underclothes, screaming and bowing: a vain show-off.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: The narrator describes many colorful birds, ending with a showy, chattering blue jay. ✓ / The narrator describes one dull brown bird that sings alone at dawn. / The narrator describes hunters shooting every bird in the grove.
+- Gist check: The narrator describes many colorful birds, ending with a showy, chattering blue jay. ✓ / The narrator describes one dull brown bird that sings alone at dawn. / The narrator describes hunters shooting nearly every bird in the grove for supper.
 - Discovery (vocabulary): "sable clouds". Sable: black. The blackbirds fly in dark clouds.
 
 ##### Character Clue
@@ -5273,12 +5280,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait shows in what Ichabod notices on his ride?
 - Key words highlighted: trait
-- Choices: Greedy for food, always spotting the next meal ✓ / Curious about birds, counting every one he sees / Worried about the weather, watching the clouds
+- Choices: Curious about birds, counting every one he sees / Worried about the weather, watching the clouds / Greedy for food, always spotting the next meal ✓
 - Proof words (any one): "every symptom of culinary abundance"
 - Refresher hint: What is his eye always open to?
 - Why: His eye was ever open to every symptom of culinary abundance.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: Riding along, Ichabod happily eyes the apples piled everywhere for market and cider. ✓ / Riding along, Ichabod sadly notices the apple trees are bare this year. / Riding along, Ichabod picks apples to give to his pupils at school.
+- Gist check: Riding along, Ichabod happily eyes the apples piled everywhere for market and cider. ✓ / Riding along, Ichabod sadly notices the apple trees are bare this year. / Riding along, Ichabod stops to pick apples to give to his pupils at school.
 - Discovery (figurative): "oppressive opulence". So many apples that the branches seem weighed down by riches.
 
 ##### Read Between the Lines
@@ -5287,27 +5294,13 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer Ichabod daydreams about near the end of this chunk?
 - Key words highlighted: infer
-- Choices: Katrina serving him pancakes as his wife ✓ / Winning a prize at the harvest fair / Selling the corn crop for a fortune
+- Choices: Winning first prize at the harvest fair / Selling the corn crop for a fortune / Katrina serving him pancakes as his wife ✓
 - Proof line: "Farther on he beheld great fields of Indian corn, with its golden ears peeping from their leafy coverts, and holding out the promise of cakes and hasty-pudding; and the yellow pumpkins lying beneath them, turning up their fair round bellies to the sun, and giving ample prospects of the most luxurious of pies; and anon he passed the fragrant buckwheat fields breathing the odor of the beehive, and as he beheld them, soft anticipations stole over his mind of dainty slapjacks, well buttered, and garnished with honey or treacle, by the delicate little dimpled hand of Katrina Van Tassel."
 - Refresher hint: Whose hand serves the slapjacks in his mind?
 - Why: He imagines dainty slapjacks served by the delicate little hand of Katrina Van Tassel.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Fields of corn, pumpkins and buckwheat make Ichabod dream of pies, pancakes and Katrina. ✓ / Fields of corn, pumpkins and buckwheat make Ichabod worry about hard farm work. / Fields of corn, pumpkins and buckwheat remind Ichabod of the Headless Horseman.
+- Gist check: Fields of corn, pumpkins and buckwheat make Ichabod dream of pies, pancakes and Katrina. ✓ / Fields of corn, pumpkins and buckwheat make Ichabod worry about all the hard farm work ahead. / Fields of corn, pumpkins and buckwheat remind Ichabod of the Headless Horseman.
 - Discovery (figurative): "turning up their fair round bellies to the sun". Personification: the pumpkins lie like people sunbathing.
-
-##### Word Detective
-
-**Chunk 7** (¶41 sentences 1 to 3; 74 words) · shared words reviewed
-
-- Question: In this chunk, what does undulation mean?
-- Key words highlighted: undulation
-- Choices: A gentle wave or ripple ✓ / A loud crash of thunder / A sudden burst of sunlight
-- Proof words (any one): "waved and prolonged the blue shadow"
-- Refresher hint: What does the undulation do to the water's shadow?
-- Why: A gentle undulation waved and prolonged the shadow: a soft ripple on still water.
-- Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: Lost in sweet daydreams, Ichabod rides above the Hudson as the sun sets over still water. ✓ / Lost in fearful thoughts, Ichabod rides through a storm as waves crash on the Hudson. / Lost in his books, Ichabod rides past the Hudson without looking up once.
-- Discovery (figurative): "sugared suppositions". Sweet daydreams, as if his thoughts were candy.
 
 ##### Catch the Lie
 
@@ -5321,7 +5314,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Was there any wind? Look at the clouds and the boat's sail.
 - Why: The clouds floated without a breath of air to move them, and the sloop's sail hung uselessly.
 - Standards: ELA.K12.EE.1.1
-- Gist check: The sunset sky glows gold and green over a calm river where a still boat seems to float in air. ✓ / The sunset sky turns black over a stormy river where a small boat sinks in the waves. / The midday sky burns bright over a dry river where boats sit stuck in the mud.
+- Gist check: The sunset sky turns black over a stormy river where a small boat sinks in the waves. / The midday sky burns bright over a dry, cracked river where the boats sit stuck in the mud. / The sunset sky glows gold and green over a calm river where a still boat seems to float in air. ✓
 - Discovery (figurative): "the vessel was suspended in the air". The reflection makes the boat look like it hangs in the sky.
 
 ##### Theme Thread
@@ -5330,12 +5323,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which idea keeps coming back in the way the narrator describes valley folk?
 - Key words highlighted: keeps coming back
-- Choices: Old ways hold on, with only small touches of change ✓ / Everyone rushes to copy the newest fashions / The valley folk are poor and dress in rags
+- Choices: Old ways hold on, with only small touches of change ✓ / Everyone rushes to copy the newest fashions / The valley folk are poor and dress in patched rags
 - Proof line: "Buxom lasses, almost as antiquated as their mothers, excepting where a straw hat, a fine ribbon, or perhaps a white frock, gave symptoms of city innovation."
 - Refresher hint: Remember the quiet valley where customs stay fixed. How new are the girls' clothes?
 - Why: The lasses are almost as antiquated as their mothers, with only small symptoms of city innovation.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: The young women wear old styles with a few city touches, and the young men wear brass buttons and eel-skin pigtails. ✓ / The young women wear the latest city gowns, and the young men wear white powdered wigs. / The young women and men all wear plain gray work clothes to the party.
+- Gist check: The young women wear the latest city gowns, and the young men wear white powdered wigs. / The young women and men all wear the same plain gray work clothes, with no buttons or ribbons at all. / The young women wear old styles with a few city touches, and the young men wear brass buttons and eel-skin pigtails. ✓
 - Discovery (figurative): "symptoms of city innovation". Hints of new city fashion, described like signs of an illness.
 
 #### Expedition: The Feast and the Dance (10 chunks)
@@ -5379,12 +5372,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait does Brom's choice of steed reveal?
 - Key words highlighted: trait
-- Choices: Daring, he loves danger and a challenge ✓ / Careful, he always picks the safest ride / Lazy, he would rather walk everywhere
+- Choices: Lazy, he would rather walk everywhere / Daring, he loves danger and a challenge ✓ / Careful, he always picks the safest ride
 - Proof words (any one): "unworthy of a lad of spirit"
 - Refresher hint: What does he think of a calm, well-trained horse?
 - Why: He held a tractable, well-broken horse unworthy of a lad of spirit.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: Brom arrives on Daredevil, a wild horse that only he can handle. ✓ / Brom arrives on foot, having sold his horse to pay a debt. / Brom arrives on a gentle old mare that anyone could ride.
+- Gist check: Brom arrives on a gentle old mare that anyone could ride. / Brom arrives on Daredevil, a wild horse that only he can handle. ✓ / Brom arrives on foot, having sold his horse to pay a debt.
 - Discovery (figurative): "full of mettle and mischief". Mettle: courage and spirit. The horse is as bold and tricky as Brom.
 
 ##### Whose Eyes?
@@ -5393,12 +5386,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What does the narrator say dazzles Ichabod most when he walks in?
 - Key words highlighted: narrator
-- Choices: The food, more than the young women ✓ / The music, more than the food / Katrina's father, most of all
+- Choices: The food, more than the young women ✓ / The music, much more than the food / Katrina's father, most of all
 - Proof line: "Not those of the bevy of buxom lasses, with their luxurious display of red and white; but the ample charms of a genuine Dutch country tea-table, in the sumptuous time of autumn."
 - Refresher hint: The narrator says not those of the lasses, but what?
 - Why: Not the buxom lasses, but the ample charms of a genuine Dutch country tea-table.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: Entering the parlor, Ichabod is dazzled less by the girls than by the heaps of Dutch cakes. ✓ / Entering the parlor, Ichabod is dazzled by the girls and ignores the food completely. / Entering the parlor, Ichabod finds the table bare and the guests hungry.
+- Gist check: Entering the parlor, Ichabod finds the long table bare and the guests hungry and grumbling. / Entering the parlor, Ichabod is dazzled less by the girls than by the heaps of Dutch cakes. ✓ / Entering the parlor, Ichabod is dazzled by the girls and ignores the food completely.
 - Discovery (vocabulary): "sumptuous time of autumn". Sumptuous: rich and splendid.
 
 ##### Figure It Out
@@ -5407,12 +5400,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Read the words the motherly teapot. What kind of figurative language is this?
 - Key words highlighted: motherly teapot
-- Choices: Personification: the teapot is described like a caring mother ✓ / Simile: the teapot is compared to a mother using like / Hyperbole: the teapot is bigger than the room
-- What does it mean? The steaming teapot feels warm and welcoming at the center ✓ / The teapot belongs to Katrina's mother / The teapot is broken and leaking everywhere
+- Choices: Hyperbole: the teapot is said to be bigger than the whole room / Personification: the teapot is described like a caring mother ✓ / Simile: the teapot is compared to a mother using like
+- What does it mean? The teapot belongs to Katrina's mother and was a gift / The teapot is broken and leaking everywhere / The steaming teapot feels warm and welcoming at the center ✓
 - Refresher hint: Can a teapot be a mother? What feeling does the word give the table?
 - Why: The motherly teapot is given a mother's warmth, steaming at the heart of the feast.
 - Standards: ELA.7.R.3.1
-- Gist check: The table is piled with doughnuts, cakes, pies, meats and preserves in a happy jumble. ✓ / The table holds a single loaf of bread and a pitcher of water. / The table is covered with books and papers instead of any food.
+- Gist check: The table is covered with books and papers instead of any food. / The table is piled with doughnuts, cakes, pies, meats and preserves in a happy jumble. ✓ / The table holds a single loaf of stale bread, a bit of cheese and one pitcher of cold water.
 - Discovery (vocabulary): "higgledy-piggledy". Higgledy-piggledy: in a cheerful mess, all mixed up.
 
 ##### Shades of Meaning
@@ -5421,12 +5414,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Why does the narrator say Ichabod did ample justice to every dainty instead of just ate?
 - Key words highlighted: ample justice
-- Choices: It jokes that he honored the food by eating plenty ✓ / It means he judged the cakes in a contest / It means he punished the cooks for bad food
+- Choices: It means he punished the cooks for bad food / It jokes that he honored the food by eating plenty ✓ / It means he judged the cakes in a baking contest
 - Proof words (any one): "whose spirits rose with eating"
 - Refresher hint: Is anyone on trial? Look at what eating does to him.
 - Why: Doing ample justice is a grand way to say he ate his fill: his spirits rose with eating.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: The narrator hurries on, but Ichabod takes his time and grows happier with every bite. ✓ / The narrator lingers on the feast, but Ichabod eats nothing and leaves early. / The narrator and Ichabod both lose their appetite at the sight of the food.
+- Gist check: The narrator lingers on the feast, but Ichabod eats nothing and leaves early. / The narrator and Ichabod both lose their appetite at the sight of so much rich food. / The narrator hurries on, but Ichabod takes his time and grows happier with every bite. ✓
 - Discovery (vocabulary): "his historian". His historian: the narrator, calling himself the recorder of Ichabod's story.
 
 ##### Catch the Lie
@@ -5440,7 +5433,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: What does Ichabod imagine doing once he is rich?
 - Why: He pictures snapping his fingers in the face of Hans Van Ripper and every other patron.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Eating, Ichabod dreams of owning it all and snubbing everyone who once looked down on him. ✓ / Eating, Ichabod decides to give his pay to the poorer farmers in the valley. / Eating, Ichabod plans to stay a humble schoolmaster for the rest of his life.
+- Gist check: Eating, Ichabod decides to give his small pay to the poorer farmers in the valley. / Eating, Ichabod plans to stay a humble schoolmaster for the rest of his life. / Eating, Ichabod dreams of owning it all and snubbing everyone who once looked down on him. ✓
 - Discovery (figurative): "lord of all this scene". He imagines himself ruling the whole rich farm like a lord.
 
 ##### Word Detective
@@ -5449,12 +5442,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: In this chunk, what does hospitable mean?
 - Key words highlighted: hospitable
-- Choices: Welcoming and generous to guests ✓ / Sick and in need of a doctor / Shy and nervous around strangers
-- Proof words (any one): "fall to, and help themselves"
-- Refresher hint: What does he invite everyone to do?
-- Why: His hospitable attentions end with a pressing invitation to fall to and help themselves: he is welcoming.
+- Choices: Sick and in need of a doctor / Shy and nervous around strangers / Welcoming and generous to guests ✓
+- Proof line: "Old Baltus Van Tassel moved about among his guests with a face dilated with content and good humor, round and jolly as the harvest moon."
+- Refresher hint: How does he move among his guests?
+- Why: He moves among his guests with a face full of content and good humor: a welcoming host.
 - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: Old Baltus beams like the harvest moon and cheerfully tells his guests to help themselves. ✓ / Old Baltus frowns at his guests and counts every cake they eat. / Old Baltus hides in his room and lets the servants greet the guests.
+- Gist check: Old Baltus frowns at his guests from the doorway and counts every cake they eat. / Old Baltus hides in his room and lets the servants greet the guests. / Old Baltus beams like the harvest moon and cheerfully tells his guests to help themselves. ✓
 - Discovery (figurative): "round and jolly as the harvest moon". A simile: his happy face is as round and bright as a full moon.
 
 ##### Find It
@@ -5478,7 +5471,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for where the fighting lines ran.
 - Why: The British and American line had run near it during the war.
 - Standards: ELA.K12.EE.1.1
-- Gist check: After the dance, Ichabod joins the old men trading stories of the war fought nearby. ✓ / After the dance, Ichabod joins the young men racing horses in the moonlight. / After the dance, Ichabod goes home early to prepare the next day's lessons.
+- Gist check: After the dance, Ichabod joins the young men racing horses in the moonlight. / After the dance, Ichabod goes home early to prepare the next day's spelling lessons. / After the dance, Ichabod joins the old men trading stories of the war fought nearby. ✓
 - Discovery (figurative): "border chivalry". Border chivalry: raiders and rough fighters along the war line, called knights as a joke.
 
 ##### Read Between the Lines
@@ -5487,7 +5480,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer about Ichabod's moves on the floor?
 - Key words highlighted: infer
-- Choices: Wild, with every bony limb flying ✓ / Stiff, barely moving his feet / Graceful, like a trained performer
+- Choices: Graceful, like a trained performer / Wild, with every bony limb flying ✓ / Stiff, barely moving his feet
 - Proof line: "Not a limb, not a fibre about him was idle; and to have seen his loosely hung frame in full motion, and clattering about the room, you would have thought St. Vitus himself, that blessed patron of the dance, was figuring before you in person."
 - Refresher hint: Is any part of him still?
 - Why: Not a limb, not a fibre was idle: his loosely hung frame clatters about the room.
@@ -5501,12 +5494,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which idea about the rivalry keeps coming back?
 - Key words highlighted: keeps coming back
-- Choices: Ichabod's success with Katrina stirs Brom's jealousy ✓ / Brom and Ichabod become friends at the dance / Katrina ignores both men all evening
+- Choices: Katrina ignores both of the men all evening long / Ichabod's success with Katrina stirs Brom's jealousy ✓ / Brom and Ichabod become friends at the dance
 - Proof line: "The lady of his heart was his partner in the dance, and smiling graciously in reply to all his amorous oglings; while Brom Bones, sorely smitten with love and jealousy, sat brooding by himself in one corner."
 - Refresher hint: Where is Brom while Katrina smiles at Ichabod?
 - Why: While she smiles at Ichabod, Brom, sorely smitten with love and jealousy, broods alone.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: Katrina dances with Ichabod and smiles at him, while a jealous Brom sulks alone in a corner. ✓ / Katrina dances with Brom all night, while Ichabod sulks alone in a corner. / Katrina refuses to dance, while Brom and Ichabod argue by the door.
+- Gist check: Katrina dances with Brom all night, while Ichabod sulks alone in a corner. / Katrina refuses to dance at all, while Brom and Ichabod argue loudly by the door. / Katrina dances with Ichabod and smiles at him, while a jealous Brom sulks alone in a corner. ✓
 - Discovery (figurative): "sorely smitten with love and jealousy". Smitten: struck hard, here by love and jealousy.
 
 #### Expedition: Ghost Stories (10 chunks)
@@ -5550,12 +5543,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: How does the narrator feel about the old men's war memories?
 - Key words highlighted: narrator
-- Choices: Amused, since they stretch the truth to look like heroes ✓ / Impressed, since every account is perfectly accurate / Bored, since none of them ever fought at all
+- Choices: Bored, since none of them ever fought in the war at all / Amused, since they stretch the truth to look like heroes ✓ / Impressed, since every account is perfectly accurate
 - Proof line: "Just sufficient time had elapsed to enable each storyteller to dress up his tale with a little becoming fiction, and, in the indistinctness of his recollection, to make himself the hero of every exploit."
 - Refresher hint: What has time allowed each one to add?
 - Why: Each storyteller dresses up his tale with a little becoming fiction and makes himself the hero.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: The old men pad their war stories with fiction, like Doffue Martling, who almost captured a ship. ✓ / The old men refuse to talk about the war because the memories are too painful. / The old men read aloud from a history book about a ship sinking in the river.
+- Gist check: The old men refuse to talk about the war because the memories are too painful. / The old men read aloud from a history book about a British ship sinking in the river. / The old men pad their war stories with fiction, like Doffue Martling, who almost captured a ship. ✓
 - Discovery (figurative): "a little becoming fiction". Becoming fiction: a few flattering made-up details.
 
 ##### Catch the Lie
@@ -5569,7 +5562,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: What does the old gentleman claim he did, and what will he show you?
 - Why: He claims he parried a musket-ball with a small sword, and is ready to show the bent hilt as proof.
 - Standards: ELA.K12.EE.1.1
-- Gist check: One old man claims he blocked a musket ball with his sword, and every veteran thinks he won the war. ✓ / One old man admits he hid during the battle, and every veteran agrees he was a coward. / One old man shows a medal from the king, and every veteran stands to salute him.
+- Gist check: One old man admits he hid during the battle, and every veteran agrees he was a coward. / One old man shows a medal he won from the king, and every veteran stands up to salute him. / One old man claims he blocked a musket ball with his sword, and every veteran thinks he won the war. ✓
 - Discovery (vocabulary): "an excellent master of defence". Master of defence: an expert swordsman.
 
 ##### Read Between the Lines
@@ -5578,24 +5571,24 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer about why this valley keeps its old legends?
 - Key words highlighted: infer
-- Choices: Families stay put for generations, so the stories stay too ✓ / A library in town collects and prints every story / Visitors bring brand new tales every single week
+- Choices: Visitors from the city bring brand new tales every week / Families stay put for generations, so the stories stay too ✓ / A library in town collects and prints every story
 - Proof line: "Local tales and superstitions thrive best in these sheltered, long-settled retreats; but are trampled under foot by the shifting throng that forms the population of most of our country places."
 - Refresher hint: Where do such tales thrive, and what tramples them?
 - Why: Local tales thrive in sheltered, long-settled retreats but are trampled by shifting crowds elsewhere.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Ghost tales take over, since old settled places like this keep their local legends alive. ✓ / Ghost tales are banned, since the new settlers want to forget the past. / Ghost tales are rare here, since most families move away every year.
+- Gist check: Ghost tales are rare here, since most families pack up and move away every few years. / Ghost tales take over, since old settled places like this keep their local legends alive. ✓ / Ghost tales are banned, since the new settlers want to forget the past.
 - Discovery (figurative): "legendary treasures". Stories are the neighborhood's treasure.
 
 **Chunk 9** (¶54 sentences 7 to 8; 94 words)
 
 - Question: What can you infer the storytellers want listeners to think about the crossing?
 - Key words highlighted: infer
-- Choices: That it is the most dangerous place to meet the ghost ✓ / That it is a safe shortcut on stormy nights / That it is being rebuilt by the church
+- Choices: That it is a safe shortcut on stormy nights / That it is being rebuilt and widened by the church / That it is the most dangerous place to meet the ghost ✓
 - Proof line: "Such was one of the favorite haunts of the Headless Horseman, and the place where he was most frequently encountered."
 - Refresher hint: What is the place to the Horseman?
 - Why: It was one of his favorite haunts, the place where he was most frequently encountered.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: The bridge is the Horseman's favorite haunt, where he once threw a doubter named Brouwer into the brook. ✓ / The bridge is where the Horseman lost his head, and Brouwer found it in the brook. / The bridge is where Brouwer, a believer, caught the Horseman and tied him up.
+- Gist check: The bridge is where Brouwer, a firm believer, caught the Horseman one night and tied him up. / The bridge is the Horseman's favorite haunt, where he once threw a doubter named Brouwer into the brook. ✓ / The bridge is where the Horseman lost his head, and Brouwer found it in the brook.
 - Discovery (vocabulary): "a most heretical disbeliever in ghosts". Heretical: going against what everyone believes. Brouwer refused to believe in ghosts.
 
 ##### Figure It Out
@@ -5604,12 +5597,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Read the words finish their first nap. What kind of figurative language is this?
 - Key words highlighted: first nap
-- Choices: Personification: ghosts nap like living people ✓ / Simile: ghosts are compared to sleepers using like / Onomatopoeia: the word nap copies a sound
-- What does it mean? In busy towns, people move away before ghosts can visit them ✓ / Ghosts sleep all day and never come out / Villages hire guards to keep ghosts away
+- Choices: Onomatopoeia: the word nap copies a sound / Personification: ghosts nap like living people ✓ / Simile: ghosts are compared to sleepers using like
+- What does it mean? Ghosts sleep all day long and never come out at night / Villages hire guards to keep ghosts away / In busy towns, people move away before ghosts can visit them ✓
 - Refresher hint: Ghosts don't really nap. What has happened by the time they wake?
 - Why: Before a ghost can finish its first nap, its friends have traveled away: no one is left to haunt.
 - Standards: ELA.7.R.3.1
-- Gist check: The narrator jokes that ghosts in busy villages find all their friends have moved away. ✓ / The narrator warns that ghosts in busy villages are the most dangerous of all. / The narrator claims that ghosts never existed anywhere in the country.
+- Gist check: The narrator warns that ghosts in busy villages are the most dangerous of all. / The narrator claims, quite seriously, that ghosts never existed anywhere in the country. / The narrator jokes that ghosts in busy villages find all their friends have moved away. ✓
 - Discovery (figurative): "walk their rounds". Ghosts making their nightly rounds like a watchman.
 
 ##### Theme Thread
@@ -5618,12 +5611,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which idea from the very start of the story returns here?
 - Key words highlighted: very start
-- Choices: The Hollow's dreamy air spreads its spell to everyone nearby ✓ / Hard work always pays off in the end / Strangers are never welcome in the valley
+- Choices: Hard work always pays off in the end for the honest folk who stay / Strangers are never welcome in the valley / The Hollow's dreamy air spreads its spell to everyone nearby ✓
 - Proof line: "There was a contagion in the very air that blew from that haunted region; it breathed forth an atmosphere of dreams and fancies infecting all the land."
 - Refresher hint: Remember the spell over the valley in the first expedition. What spreads from the haunted region?
 - Why: A contagion in the air breathed forth dreams and fancies infecting all the land, just like the valley's spell.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: The nearness of Sleepy Hollow, whose air seems to spread dreams, explains all the ghost stories. ✓ / The distance from Sleepy Hollow, whose air is clear and fresh, explains why no one tells ghost stories. / A traveling storyteller from the city explains why everyone tells ghost stories.
+- Gist check: A traveling storyteller from the city explains why everyone tells ghost stories. / The nearness of Sleepy Hollow, whose air seems to spread dreams, explains all the ghost stories. ✓ / The distance from Sleepy Hollow, whose air is clear and fresh, explains why no one tells ghost stories.
 - Discovery (figurative): "a contagion in the very air". Contagion: something catching, like a sickness. The Hollow's fancies spread through the air.
 
 ##### Find It
@@ -5636,21 +5629,21 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for a color and a rock.
 - Why: The woman in white haunted the dark glen at Raven Rock, having perished there in the snow.
 - Standards: ELA.K12.EE.1.1
-- Gist check: The guests trade tales of mourning cries, a woman in white and the Headless Horseman in the churchyard. ✓ / The guests trade jokes about the harvest, the weather and the price of corn at market. / The guests trade news of a wedding, a new baby and a barn raising nearby.
+- Gist check: The guests trade happy news of a wedding, a new baby and a barn raising on the next farm over. / The guests trade tales of mourning cries, a woman in white and the Headless Horseman in the churchyard. ✓ / The guests trade jokes about the harvest, the weather and the price of corn at market.
 - Discovery (vocabulary): "funeral trains". Funeral trains: long lines of mourners following a coffin.
 
 ##### Shades of Meaning
 
 **Chunk 7** (¶54 sentences 1 to 3; 77 words) · shared words reviewed
 
-- Question: Why does the narrator say the church walls shine modestly instead of brightly?
-- Key words highlighted: modestly
-- Choices: It makes the church seem humble and quietly good ✓ / It makes the church seem proud and showy / It makes the church seem dirty and old
-- Proof words (any one): "like Christian purity beaming through the shades of retirement"
-- Refresher hint: What are the walls compared to?
-- Why: Modestly suggests humble goodness: the walls shine like purity beaming through the shade.
+- Question: Why does the narrator call the church's spot sequestered instead of just quiet?
+- Key words highlighted: sequestered
+- Choices: It stresses that the church is hidden away and set apart ✓ / It means the church is crowded with visitors every day / It means the church was built only last year
+- Proof words (any one): "surrounded by locust-trees and lofty elms"
+- Refresher hint: Where does it stand, and what surrounds it?
+- Why: Sequestered means tucked away: it stands on a knoll surrounded by locust-trees and lofty elms.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: The lonely church sits on a hill among trees, its white walls overlooking water and distant hills. ✓ / The busy church sits in the town square, its red walls facing a crowded market. / The ruined church sits in a swamp, its broken walls covered in vines.
+- Gist check: The ruined church sits in a muddy swamp, its broken gray walls covered in thick, tangled vines. / The lonely church sits on a hill among trees, its white walls overlooking water and distant hills. ✓ / The busy church sits in the town square, its red walls facing a crowded market.
 - Discovery (figurative): "a silver sheet of water". Metaphor: the calm pond looks like a sheet of silver.
 
 ##### Word Detective
@@ -5659,12 +5652,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: In this chunk, what does dell mean?
 - Key words highlighted: dell
-- Choices: A small wooded valley ✓ / A tall stone tower / A wide sandy beach
-- Proof words (any one): "along which raves a large brook"
-- Refresher hint: What runs along it, and what grows there?
-- Why: A wide woody dell with a brook raving along it: a small valley with trees.
+- Choices: A tall, narrow stone tower / A wide and sandy beach / A small wooded valley ✓
+- Proof line: "Over a deep black part of the stream, not far from the church, was formerly thrown a wooden bridge; the road that led to it, and the bridge itself, were thickly shaded by overhanging trees, which cast a gloom about it, even in the daytime; but occasioned a fearful darkness at night."
+- Refresher hint: Look at the stream and the trees nearby.
+- Why: A deep stream runs under thickly overhanging trees: a dell is a small wooded valley.
 - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: Beside the peaceful churchyard, a dark wooden bridge crosses a deep stream under thick trees. ✓ / Beside the busy churchyard, a bright stone bridge crosses a dry creek in open sun. / Beside the peaceful churchyard, a new road runs straight to the village market.
+- Gist check: Beside the busy churchyard, a bright stone bridge crosses a dry creek in open sun. / Beside the peaceful churchyard, a wide new road runs straight and sunny to the village market. / Beside the peaceful churchyard, a dark wooden bridge crosses a deep stream under thick trees. ✓
 - Discovery (figurative): "the sunbeams seem to sleep". Personification: sunlight rests as if asleep.
 
 ##### Character Clue
@@ -5673,12 +5666,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait does Brom show in his own spooky tale?
 - Key words highlighted: trait
-- Choices: Boastful and bold, claiming he beat the ghost ✓ / Timid, admitting he fled in terror / Honest, saying he saw nothing at all
+- Choices: Timid, admitting he fled the rider in terror / Honest, saying he saw nothing at all / Boastful and bold, claiming he beat the ghost ✓
 - Proof words (any one): "Daredevil beat the goblin horse all hollow"
 - Refresher hint: Who wins the race in Brom's version?
 - Why: He claims Daredevil beat the goblin horse all hollow: a boast.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: Brom tops the tale by boasting he raced the Horseman, and the ghost vanished in fire at the bridge. ✓ / Brom admits he once fled from the Horseman and hid in a ditch until dawn. / Brom says the Horseman is only a story and laughs at everyone who believes it.
+- Gist check: Brom admits he once fled from the Horseman and hid in a muddy ditch until the sun came up. / Brom says the Horseman is only a story and laughs at everyone who believes it. / Brom tops the tale by boasting he raced the Horseman, and the ghost vanished in fire at the bridge. ✓
 - Discovery (vocabulary): "an arrant jockey". Arrant: complete. Brom calls the ghost nothing but a common rider.
 
 #### Expedition: The Lonely Road (10 chunks)
@@ -5722,12 +5715,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer about how the evening's stories affect Ichabod?
 - Key words highlighted: infer
-- Choices: They are sinking in and stirring up his fears ✓ / They bore him while he waits to go home / They strike him as silly lies to ignore
+- Choices: They strike him as silly lies to ignore / They are sinking in and stirring up his fears ✓ / They bore him while he waits for a chance to go home
 - Proof line: "All these tales, told in that drowsy undertone with which men talk in the dark, the countenances of the listeners only now and then receiving a casual gleam from the glare of a pipe, sank deep in the mind of Ichabod."
 - Refresher hint: Where do the tales go?
 - Why: The tales, told in a drowsy undertone in the dark, sank deep in the mind of Ichabod.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: The hushed ghost stories sink deep into Ichabod, and he adds spooky tales of his own. ✓ / The loud, cheerful jokes make Ichabod laugh, and he heads home in high spirits. / The ghost stories bore Ichabod, so he leaves the room to look for Katrina.
+- Gist check: The loud, cheerful jokes make Ichabod laugh, and he heads home in high spirits. / The ghost stories bore Ichabod, so he slips out of the room to go and look for Katrina. / The hushed ghost stories sink deep into Ichabod, and he adds spooky tales of his own. ✓
 - Discovery (vocabulary): "drowsy undertone". Undertone: a low, quiet voice.
 
 ##### Find It
@@ -5740,7 +5733,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for who sat behind whom.
 - Why: Some of the damsels mounted on pillions behind their favorite swains.
 - Standards: ELA.K12.EE.1.1
-- Gist check: The party ends, and families and couples ride off until the farm grows silent. ✓ / The party grows louder, and more families arrive as the night goes on. / The party moves to the barn, where everyone dances until sunrise.
+- Gist check: The party ends, and families and couples ride off until the farm grows silent. ✓ / The party grows louder, and more families arrive as the night goes on. / The party moves out to the barn, where everyone keeps dancing until sunrise.
 - Discovery (vocabulary): "on pillions". Pillion: a cushion behind a rider's saddle for a second person.
 
 **Chunk 10** (¶60 sentences 1 to 4; 121 words)
@@ -5751,7 +5744,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for what lightning did.
 - Why: It was a place where lightning had scathed the tree and laid the white wood bare.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Every scary sign at the tree turns out to be wind, lightning damage or rubbing branches. ✓ / Every scary sign at the tree turns out to be Brom's gang playing a trick. / Every scary sign at the tree turns out to be a real ghost waiting for him.
+- Gist check: Every scary sign at the tree turns out to be a real ghost waiting for him. / Every scary sign at the tree turns out to be wind, lightning damage or rubbing branches. ✓ / Every scary sign at the tree turns out to be Brom's gang hiding in the branches to play a trick.
 - Discovery (figurative): "his knees smote against the saddle". His knees knock together in fear.
 
 ##### Whose Eyes?
@@ -5760,12 +5753,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What does the narrator admit about Ichabod's talk with Katrina?
 - Key words highlighted: admit
-- Choices: He doesn't know what was said between them ✓ / He heard every word through the door / He was the one who carried their notes
+- Choices: He was the one who carried their notes / He doesn't know what was said between them ✓ / He heard every word through the parlor door
 - Proof line: "What passed at this interview I will not pretend to say, for in fact I do not know."
 - Refresher hint: Read what he says he will not pretend.
 - Why: What passed at this interview he will not pretend to say, for in fact he does not know.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: Ichabod stays behind to speak with Katrina alone, but leaves soon after looking crushed. ✓ / Ichabod stays behind to dance with Katrina until dawn and leaves overjoyed. / Ichabod leaves first, and Katrina chases after him down the road.
+- Gist check: Ichabod stays behind to dance with Katrina until dawn and leaves overjoyed. / Ichabod leaves the party first, and Katrina chases after him down the dark road. / Ichabod stays behind to speak with Katrina alone, but leaves soon after looking crushed. ✓
 - Discovery (figurative): "the high road to success". He thinks he is on the fast path to winning her.
 
 ##### Figure It Out
@@ -5774,12 +5767,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Read the words sacking a henroost. What kind of figurative language is this?
 - Key words highlighted: henroost
-- Choices: Comparison: he leaves looking like a guilty chicken thief ✓ / Personification: the hens chase him out of the house / Onomatopoeia: the words copy a chicken's cluck
-- What does it mean? He sneaks away ashamed and defeated ✓ / He leaves carrying stolen chickens / He runs off proud of his success
+- Choices: Onomatopoeia: the words copy the sound of a chicken's cluck / Comparison: he leaves looking like a guilty chicken thief ✓ / Personification: the hens chase him out of the house
+- What does it mean? He leaves carrying stolen chickens / He runs off proud of his great success / He sneaks away ashamed and defeated ✓
 - Refresher hint: Who sneaks out of a henhouse at night, and how do they look?
 - Why: He had the air of one who had been sacking a henroost rather than winning a heart: sneaking off in shame.
 - Standards: ELA.7.R.3.1
-- Gist check: The narrator wonders whether Katrina was only using Ichabod, and Ichabod slinks away in shame. ✓ / The narrator explains exactly what Katrina said, and Ichabod leaves engaged. / The narrator blames Brom for everything, and Ichabod leaves to find him.
+- Gist check: The narrator wonders whether Katrina was only using Ichabod, and Ichabod slinks away in shame. ✓ / The narrator explains exactly what Katrina said, and Ichabod leaves engaged. / The narrator blames Brom for everything, and Ichabod storms out of the house to go and find him.
 - Discovery (figurative): "Heaven only knows". A way of saying nobody can tell.
 
 ##### Character Clue
@@ -5788,7 +5781,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait shows in how Ichabod treats Gunpowder now?
 - Key words highlighted: trait
-- Choices: Angry and bitter, taking it out on his mount ✓ / Gentle and patient, stroking his mount / Cheerful and proud, singing to his mount
+- Choices: Angry and bitter, taking it out on his mount ✓ / Gentle and patient, softly stroking his mount / Cheerful and proud, singing to his mount
 - Proof words (any one): "several hearty cuffs and kicks"
 - Refresher hint: How does he wake the sleeping horse?
 - Why: He roused his steed most uncourteously, with several hearty cuffs and kicks.
@@ -5802,12 +5795,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: In this chunk, what does crestfallen mean?
 - Key words highlighted: crestfallen
-- Choices: Sad and ashamed after a letdown ✓ / Proud and full of hope / Sleepy and ready for bed
-- Proof words (any one): "heavy-hearted"
-- Refresher hint: Look at the word paired with it.
-- Why: Heavy-hearted and crestfallen: low in spirits after his disappointment.
+- Choices: Sleepy and ready for bed / Sad and ashamed after a letdown ✓ / Proud and full of fresh hope
+- Proof line: "The hour was as dismal as himself."
+- Refresher hint: How does the narrator describe the hour, compared with Ichabod?
+- Why: The hour was as dismal as himself: crestfallen means sad and let down.
 - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: At midnight a heartbroken Ichabod rides home above the dark river. ✓ / At noon a cheerful Ichabod rides home beside the sparkling river. / At dawn a sleepy Ichabod rows home across the wide river.
+- Gist check: At noon a cheerful Ichabod rides home beside the sparkling river. / At dawn a sleepy Ichabod rows a little boat home across the wide river. / At midnight a heartbroken Ichabod rides home above the dark river. ✓
 - Discovery (figurative): "the very witching time of night". Witching time: midnight, when spirits are said to roam.
 
 ##### Catch the Lie
@@ -5822,7 +5815,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: How far away was the dog? Was anyone near him?
 - Why: The watchdog barked from the opposite shore, faint and far, and no signs of life occurred near him.
 - Standards: ELA.K12.EE.1.1
-- Gist check: The night is so still that Ichabod hears only faraway dogs, roosters, crickets and frogs. ✓ / The night is so noisy that Ichabod cannot hear his own horse's hooves. / The night is filled with music from a nearby farm dance.
+- Gist check: The night is filled with fiddle music and laughter from a nearby farm dance on the hill. / The night is so still that Ichabod hears only faraway dogs, roosters, crickets and frogs. ✓ / The night is so noisy that Ichabod cannot hear his own horse's hooves.
 - Discovery (figurative): "faithful companion of man". A fancy name for a dog.
 
 ##### Theme Thread
@@ -5831,27 +5824,27 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which idea returns as Ichabod rides on by himself?
 - Key words highlighted: by himself
-- Choices: Tales heard by the fire now feed his terror in the dark ✓ / Hard work always brings its own reward / True friends appear when you need them
+- Choices: Hard work always brings its own reward in the end / True friends appear when you need them / Tales heard by the fire now feed his terror in the dark ✓
 - Proof line: "All the stories of ghosts and goblins that he had heard in the afternoon now came crowding upon his recollection."
 - Refresher hint: What comes back to him from the afternoon?
 - Why: All the stories of ghosts and goblins he had heard came crowding upon his recollection.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: As the night darkens, every ghost story Ichabod heard comes rushing back to him. ✓ / As the night brightens, Ichabod forgets every ghost story he ever heard. / As the night darkens, Ichabod makes up a new ghost story to tell his class.
+- Gist check: As the moon brightens the road, Ichabod forgets every ghost story he ever heard. / As the night darkens, Ichabod makes up a new ghost story to tell his class. / As the night darkens, every ghost story Ichabod heard comes rushing back to him. ✓
 - Discovery (figurative): "came crowding upon his recollection". The memories push in on him like a crowd.
 
 ##### Shades of Meaning
 
 **Chunk 9** (¶59 sentences 5 to 8; 121 words) · shared words reviewed
 
-- Question: Why does the narrator call the tree's limbs gnarled instead of just bent?
-- Key words highlighted: gnarled
-- Choices: It makes them sound twisted, knotty and eerie ✓ / It makes them sound smooth and young / It makes them sound straight and tidy
-- Proof words (any one): "twisting down almost to the earth"
-- Refresher hint: How do the limbs move?
-- Why: Gnarled means knotted and twisted: the limbs go twisting down almost to the earth.
+- Question: Why does the narrator say the tree towered instead of just stood?
+- Key words highlighted: towered
+- Choices: It shows the tree is leaning and about to fall over / It shows the tree is enormous and looming over everything ✓ / It shows the tree is small, young and easy to miss
+- Proof words (any one): "large enough to form trunks for ordinary trees"
+- Refresher hint: How big are its branches?
+- Why: Its limbs are large enough to form trunks for ordinary trees: it towers.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: On the road stands a giant twisted tulip tree linked to the sad fate of Major André. ✓ / On the road stands a small young apple tree planted by the schoolchildren. / On the road stands a stone statue honoring the victory at White Plains.
-- Discovery (figurative): "towered like a giant". A simile: the tulip tree rises above the rest like a giant.
+- Gist check: On the road stands a tall stone statue honoring the American victory at White Plains. / On the road stands a giant twisted tulip tree linked to the sad fate of Major André. ✓ / On the road stands a small young apple tree planted by the schoolchildren.
+- Discovery (vocabulary): "gnarled and fantastic". Gnarled: twisted and knotty.
 
 #### Expedition: The Headless Horseman (10 chunks)
 
@@ -5898,7 +5891,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for what was laid side by side.
 - Why: A few rough logs, laid side by side, served for a bridge.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Past the tree, a log bridge crosses a brook into a dark, swampy glen. ✓ / Past the tree, a stone bridge crosses a wide river into a sunny meadow. / Past the tree, the road ends at a locked gate beside the church.
+- Gist check: Past the tree, a stone bridge crosses a wide river into a sunny meadow. / Past the tree, the road ends at a locked gate beside the church. / Past the tree, a log bridge crosses a brook into a dark, swampy glen. ✓
 - Discovery (figurative): "a cavernous gloom". So dark under the trees it feels like a cave.
 
 **Chunk 10** (¶65 sentences 1 to 2; 75 words)
@@ -5909,7 +5902,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Which way does he go at the road to Sleepy Hollow?
 - Why: Instead of keeping up the road to Sleepy Hollow, he plunged headlong downhill to the left.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Instead of the road home, Gunpowder plunges downhill toward the haunted bridge and the church. ✓ / Taking the road home, Gunpowder trots safely to Hans Van Ripper's farm. / Instead of running, Gunpowder stops and refuses to move another step.
+- Gist check: Instead of running, Gunpowder stops in the road and refuses to move another single step. / Instead of the road home, Gunpowder plunges downhill toward the haunted bridge and the church. ✓ / Taking the road home, Gunpowder trots safely to Hans Van Ripper's farm.
 - Discovery (figurative): "possessed with a demon". The horse acts as if a demon were driving it.
 
 ##### Read Between the Lines
@@ -5918,25 +5911,25 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer about why travelers dread this crossing?
 - Key words highlighted: infer
-- Choices: It is tied to a real capture and many haunted tales ✓ / It is broken and about to fall into the water / It is guarded by soldiers who stop every traveler
+- Choices: It is badly broken and about to fall into the water / It is guarded by soldiers who stop every traveler / It is tied to a real capture and many haunted tales ✓
 - Proof line: "It was at this identical spot that the unfortunate André was captured, and under the covert of those chestnuts and vines were the sturdy yeomen concealed who surprised him."
 - Proof line: "This has ever since been considered a haunted stream, and fearful are the feelings of the schoolboy who has to pass it alone after dark."
 - Refresher hint: What happened here long ago, and what has it been considered ever since?
 - Why: André was captured at this very spot, and it has ever since been considered a haunted stream.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: This bridge, where Major André was captured, is the scariest spot of all on the road. ✓ / This bridge, newly built by the farmers, is the safest spot of all on the road. / This bridge, where Brom once fell in, is a favorite place for swimming.
+- Gist check: This bridge, where Brom once fell in as a boy, is a favorite place for swimming. / This bridge, where Major André was captured, is the scariest spot of all on the road. ✓ / This bridge, newly built by the farmers, is the safest spot of all on the road.
 - Discovery (vocabulary): "sturdy yeomen". Yeomen: farmers who owned their land; here, the men who caught André.
 
 **Chunk 7** (¶63 sentences 11 to 12, ¶64 sentences 1 to 2; 96 words)
 
 - Question: What can you infer about the newcomer from the way he keeps up?
 - Key words highlighted: infer
-- Choices: He means to stay with Ichabod no matter what ✓ / He is lost and needs directions home / He wants to race Ichabod for a prize
+- Choices: He wants to race Ichabod for a prize / He means to stay with Ichabod no matter what ✓ / He is lost in the dark and needs directions home
 - Proof line: "The stranger, however, quickened his horse to an equal pace."
 - Refresher hint: What happens when Ichabod speeds up?
 - Why: The stranger quickened his horse to an equal pace: he will not be left behind.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: The figure is a big rider on a black horse who keeps pace with Ichabod however he rides. ✓ / The figure is a small boy on a pony who quickly falls far behind. / The figure is a farmer with a cart who waves and turns down a lane.
+- Gist check: The figure is a small farm boy on a pony who quickly falls far behind on the hill. / The figure is a farmer with a cart who waves and turns down a lane. / The figure is a big rider on a black horse who keeps pace with Ichabod however he rides. ✓
 - Discovery (vocabulary): "jogging along on the blind side". Blind side: the side the horse can't see, since Gunpowder has one blind eye.
 
 ##### Character Clue
@@ -5945,12 +5938,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait does Gunpowder show at the water?
 - Key words highlighted: trait
-- Choices: Stubborn, refusing to go where he's steered ✓ / Obedient, trotting straight ahead at once / Sleepy, lying down right in the road
+- Choices: Sleepy, lying down right in the middle of the road / Stubborn, refusing to go where he's steered ✓ / Obedient, trotting straight ahead at once
 - Proof words (any one): "the perverse old animal made a lateral movement"
 - Refresher hint: What does the horse do instead of starting forward?
 - Why: Instead of starting forward, the perverse old animal made a lateral movement into the fence.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: Ichabod kicks his horse toward the bridge, but Gunpowder swerves into the fence and the bushes. ✓ / Ichabod gently guides his horse, and Gunpowder trots calmly over the bridge. / Ichabod jumps off his horse and wades across the brook on foot.
+- Gist check: Ichabod kicks his horse toward the bridge, but Gunpowder swerves into the fence and the bushes. ✓ / Ichabod gently guides his horse, and Gunpowder trots calmly over the bridge. / Ichabod jumps off his horse and wades across the cold brook on foot, holding the reins.
 - Discovery (figurative): "his heart began to thump". Thump: the sound of his heart pounding with fear.
 
 ##### Figure It Out
@@ -5959,12 +5952,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Read the words like some gigantic monster ready to spring. What kind of figurative language is this?
 - Key words highlighted: gigantic monster
-- Choices: Simile: the dark shape is compared to a monster using like ✓ / Metaphor: the shape is called a monster, without like / Personification: the bridge leaps at him
-- What does it mean? The shape looks huge, threatening and ready to attack ✓ / A real monster lives under the bridge / The shape is a friendly neighbor waving
+- Choices: Simile: the dark shape is compared to a monster using like ✓ / Metaphor: the shape is called a monster, without like / Personification: the old bridge seems to leap up at him
+- What does it mean? A real monster has lived under the bridge for years / The shape is a friendly neighbor waving / The shape looks huge, threatening and ready to attack ✓
 - Refresher hint: Look for the word like. What does the shape seem about to do?
 - Why: Like some gigantic monster ready to spring: a simile making the shadow feel huge and threatening.
 - Standards: ELA.7.R.3.1
-- Gist check: Gunpowder stops at the bridge, and Ichabod sees a huge dark shape looming by the brook. ✓ / Gunpowder races over the bridge, and Ichabod sees Katrina waiting by the brook. / Gunpowder falls into the brook, and Ichabod swims to the other side.
+- Gist check: Gunpowder stops at the bridge, and Ichabod sees a huge dark shape looming by the brook. ✓ / Gunpowder races over the bridge, and Ichabod sees Katrina waiting by the brook. / Gunpowder slips and falls into the brook, and Ichabod swims hard to the other side.
 - Discovery (vocabulary): "a plashy tramp". Plashy: splashing. He hears a heavy step in the wet ground.
 
 ##### Catch the Lie
@@ -5979,21 +5972,21 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Could he still flee? And did he speak?
 - Why: It was too late to turn and fly, so he summoned a show of courage and stammered, Who are you?
 - Standards: ELA.K12.EE.1.1
-- Gist check: Too frightened to flee, Ichabod stammers out a question, but the shape gives no answer. ✓ / Too angry to be afraid, Ichabod shouts a challenge, and the shape runs away. / Too tired to care, Ichabod falls asleep in the saddle by the brook.
+- Gist check: Too tired to care anymore, Ichabod falls asleep in the saddle right beside the brook. / Too frightened to flee, Ichabod stammers out a question, but the shape gives no answer. ✓ / Too angry to be afraid, Ichabod shouts a challenge, and the shape runs away.
 - Discovery (figurative): "upon the wings of the wind". So fast it seems to fly on the wind.
 
 ##### Shades of Meaning
 
 **Chunk 6** (¶63 sentences 6 to 10; 85 words) · shared words reviewed
 
-- Question: Why does the narrator call Gunpowder inflexible instead of just tired?
-- Key words highlighted: inflexible
-- Choices: It shows the horse stubbornly won't budge ✓ / It shows the horse is weak and sick / It shows the horse is calm and happy
-- Proof words (any one): "Once more he cudgelled the sides"
-- Refresher hint: How many times has Ichabod had to beat him?
-- Why: Inflexible means unbending: once more Ichabod must cudgel him, and still he won't move.
+- Question: Why does the narrator say Ichabod's voice is agitated instead of just loud?
+- Key words highlighted: agitated
+- Choices: It shows he is shaken and nervous ✓ / It shows he is angry and ready to fight / It shows he is bored and half asleep
+- Proof words (any one): "shutting his eyes"
+- Refresher hint: What does he do next with his eyes?
+- Why: Agitated means shaken: next he shuts his eyes and bursts into a psalm.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: Ichabod sings a psalm in fear, and the shadow suddenly leaps into the middle of the road. ✓ / Ichabod whistles a jig in joy, and the shadow slowly melts into the trees. / Ichabod stays silent, and the shadow turns out to be his own reflection.
+- Gist check: Ichabod stays perfectly silent, and the dark shadow turns out to be his own reflection. / Ichabod sings a psalm in fear, and the shadow suddenly leaps into the middle of the road. ✓ / Ichabod whistles a jig in joy, and the shadow slowly melts into the trees.
 - Discovery (vocabulary): "with involuntary fervor". Involuntary: without meaning to. He bursts into song from pure fear.
 
 ##### Word Detective
@@ -6002,12 +5995,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: In this chunk, what does pertinacious mean?
 - Key words highlighted: pertinacious
-- Choices: Stubbornly sticking close ✓ / Kind and very talkative / Small and easily scared
+- Choices: Stubbornly sticking close ✓ / Kind, cheerful and very talkative / Small and easily scared
 - Proof words (any one): "did the same"
 - Refresher hint: What does the companion do when Ichabod slows down?
 - Why: When Ichabod lagged behind, the other did the same: a companion who stubbornly sticks close.
 - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: Against the sky Ichabod sees that the silent rider has no head and carries it on his saddle. ✓ / Against the sky Ichabod sees that the silent rider is Brom Bones grinning at him. / Against the sky Ichabod sees that the rider is only a scarecrow tied to a horse.
+- Gist check: Against the sky Ichabod sees that the silent rider has no head and carries it on his saddle. ✓ / Against the sky Ichabod sees that the silent rider is Brom Bones grinning at him. / Against the sky Ichabod sees that the rider is only a stuffed scarecrow tied onto a horse.
 - Discovery (figurative): "clove to the roof of his mouth". His mouth is so dry with fear that his tongue sticks.
 
 ##### Theme Thread
@@ -6016,12 +6009,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which idea about Ichabod reaches its peak in this chase?
 - Key words highlighted: chase
-- Choices: His belief in ghost tales turns into pure terror ✓ / His greed finally wins him a fortune / His bravery makes him a hero at last
+- Choices: His bravery makes him a hero at last / His belief in ghost tales turns into pure terror ✓ / His greed finally wins him a fortune and a farm
 - Proof line: "His terror rose to desperation; he rained a shower of kicks and blows upon Gunpowder, hoping by a sudden movement to give his companion the slip; but the spectre started full jump with him."
 - Refresher hint: What has his fear grown into?
 - Why: His terror rose to desperation: every tale he believed has come to life.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: Ichabod gallops off in terror, but the headless rider chases him with sparks flying. ✓ / Ichabod stops to talk, and the headless rider politely rides away. / Ichabod chases the headless rider, who flees into the woods.
+- Gist check: Ichabod gallops off in terror, but the headless rider chases him with sparks flying. ✓ / Ichabod stops to talk, and the headless rider politely rides away. / Ichabod bravely chases the headless rider, who flees into the woods without a sound.
 - Discovery (figurative): "through thick and thin". Through everything in their way.
 
 #### Expedition: Gone (10 chunks)
@@ -6069,7 +6062,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for straps giving way.
 - Why: The girths of the saddle gave way, and he felt it slipping from under him.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Halfway through the hollow the saddle slips off, and Ichabod clings to Gunpowder's neck. ✓ / Halfway through the hollow the horse stops, and Ichabod climbs a tree to hide. / Halfway through the hollow Ichabod buys a new saddle from a passing farmer.
+- Gist check: Halfway through the hollow the horse stops, and Ichabod climbs a tree to hide. / Halfway through the hollow Ichabod stops to buy a sturdy new saddle from a passing farmer. / Halfway through the hollow the saddle slips off, and Ichabod clings to Gunpowder's neck. ✓
 - Discovery (vocabulary): "the girths of the saddle gave way". Girths: straps under a horse's belly that hold the saddle on.
 
 **Chunk 8** (¶69 sentences 1 to 3; 73 words)
@@ -6080,7 +6073,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for a list of clothes and odds and ends.
 - Why: Two shirts and a half, two stocks, stockings, small-clothes, a rusty razor, a psalm book and a broken pitch-pipe.
 - Standards: ELA.K12.EE.1.1
-- Gist check: No body is found, and Hans sorts through Ichabod's few shabby belongings. ✓ / Ichabod's body is found, and Hans buries him behind the church. / No body is found, and Hans discovers a fortune hidden in the bundle.
+- Gist check: No body is found, and Hans discovers a fortune hidden in the bundle. / No body is found, and Hans sorts through Ichabod's few shabby belongings. ✓ / Ichabod's body is found in the brook, and Hans buries him behind the church.
 - Discovery (vocabulary): "a broken pitch-pipe". Pitch-pipe: a small pipe used to find the right note for singing.
 
 ##### Read Between the Lines
@@ -6089,24 +6082,36 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer about Ichabod's worries even in the middle of the chase?
 - Key words highlighted: infer
-- Choices: He still fears Hans will be furious about the lost saddle ✓ / He worries he left the schoolhouse door unlocked / He fears Katrina will laugh at his old horse
+- Choices: He still fears Hans will be furious about the lost saddle ✓ / He worries he left the schoolhouse door unlocked / He fears Katrina will laugh at him and his tired old horse
 - Proof line: "For a moment the terror of Hans Van Ripper’s wrath passed across his mind,--for it was his Sunday saddle; but this was no time for petty fears; the goblin was hard on his haunches; and (unskilful rider that he was!) he had much ado to maintain his seat; sometimes slipping on one side, sometimes on another, and sometimes jolted on the high ridge of his horse’s backbone, with a violence that he verily feared would cleave him asunder."
 - Refresher hint: Whose saddle was it, and which one?
 - Why: The terror of Hans Van Ripper's wrath passed across his mind, for it was his Sunday saddle.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Ichabod briefly fears Hans's anger over the saddle, then struggles to stay on the bare horse. ✓ / Ichabod forgets the saddle completely and rides perfectly on the bare horse. / Ichabod jumps down to rescue the saddle, then runs the rest of the way.
+- Gist check: Ichabod jumps down to rescue Hans's good saddle from the road, then runs the rest of the way. / Ichabod briefly fears Hans's anger over the saddle, then struggles to stay on the bare horse. ✓ / Ichabod forgets the saddle completely and rides perfectly on the bare horse.
 - Discovery (vocabulary): "petty fears". Petty: small and unimportant, next to a goblin chase.
+
+**Chunk 4** (¶67 sentences 6 to 7; 70 words)
+
+- Question: What can you infer about Ichabod's danger at this moment?
+- Key words highlighted: infer
+- Choices: The pursuer is right on his heels ✓ / The pursuer has fallen far behind him / The pursuer has turned off toward the church
+- Proof line: "Just then he heard the black steed panting and blowing close behind him; he even fancied that he felt his hot breath."
+- Refresher hint: How close does he hear the black steed?
+- Why: He hears the black steed panting close behind and even fancies he feels its hot breath.
+- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Gist check: With the black horse breathing at his back, Ichabod gallops over the bridge and looks back. ✓ / With no one behind him, Ichabod walks his horse slowly over the bridge. / With the black horse calmly beside him, Ichabod stops to rest and talk on the bridge.
+- Discovery (vocabulary): "fire and brimstone". Brimstone: burning sulfur, linked with demons in old stories.
 
 **Chunk 10** (¶70 sentences 1 to 4; 126 words)
 
 - Question: What can you infer about how much the village misses Ichabod?
 - Key words highlighted: infer
-- Choices: Not much: they gossip, then quickly move on ✓ / Deeply: they search for him for years / Angrily: they blame Katrina for everything
+- Choices: Not much: they gossip, then quickly move on ✓ / Deeply: they search the hills for him for years / Angrily: they blame Katrina for everything
 - Proof line: "As he was a bachelor, and in nobody’s debt, nobody troubled his head any more about him; the school was removed to a different quarter of the hollow, and another pedagogue reigned in his stead."
 - Refresher hint: Who troubled about him afterward?
 - Why: As he owed nobody, nobody troubled his head any more about him, and another pedagogue reigned in his stead.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: The neighbors decide the Galloping Hessian carried Ichabod off, then forget him as a new teacher arrives. ✓ / The neighbors decide Ichabod ran off with Katrina and send a search party after them. / The neighbors decide Brom did it and run him out of the valley for good.
+- Gist check: The neighbors decide Ichabod ran off with Katrina and send a search party after them. / The neighbors decide Brom did it and, after a stormy meeting, run him and his whole gang out of the valley for good. / The neighbors decide the Galloping Hessian carried Ichabod off, then forget him as a new teacher arrives. ✓
 - Discovery (vocabulary): "a whole budget of others". Budget: here, a bundle or collection of stories.
 
 ##### Catch the Lie
@@ -6121,22 +6126,8 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: What did Ichabod remember about that spot, and what did he think?
 - Why: He remembered where Brom's ghostly rival vanished and thought, If I can but reach that bridge, I am safe.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Spotting the church bridge, Ichabod remembers Brom's tale and believes he'll be safe once he crosses. ✓ / Spotting the church bridge, Ichabod remembers it is broken and turns back in despair. / Spotting his schoolhouse, Ichabod rides inside and bars the door behind him.
+- Gist check: Spotting the church bridge, Ichabod remembers it is broken and turns back in despair. / Spotting his old schoolhouse in the dark, Ichabod rides right inside and bars the heavy door behind him. / Spotting the church bridge, Ichabod remembers Brom's tale and believes he'll be safe once he crosses. ✓
 - Discovery (figurative): "a silver star in the bosom of the brook". The star's reflection shines in the water like silver.
-
-##### Shades of Meaning
-
-**Chunk 4** (¶67 sentences 6 to 7; 70 words) · shared words reviewed
-
-- Question: Why does the narrator say Gunpowder thundered over instead of crossed?
-- Key words highlighted: thundered
-- Choices: It shows how loud and fast the crossing is ✓ / It shows a storm is breaking overhead / It shows the horse is calm and slow
-- Proof words (any one): "the resounding planks"
-- Refresher hint: What sound do the planks make?
-- Why: Thundered paints a loud, pounding gallop over the resounding planks.
-- Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: With the black horse breathing at his back, Ichabod gallops over the bridge and looks back. ✓ / With no one behind him, Ichabod walks his horse slowly over the bridge. / With the black horse beside him, Ichabod stops to rest on the bridge.
-- Discovery (vocabulary): "fire and brimstone". Brimstone: burning sulfur, linked with demons in old stories.
 
 ##### Figure It Out
 
@@ -6145,11 +6136,11 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Question: Read the words passed by like a whirlwind. What kind of figurative language is this?
 - Key words highlighted: whirlwind
 - Choices: Simile: the riders rush past like a whirlwind ✓ / Metaphor: the riders are called a storm, without like / Onomatopoeia: the words copy the sound of wind
-- What does it mean? The horses and rider race past in a sudden, wild rush ✓ / A real tornado strikes the bridge / The riders slowly circle around Ichabod
+- What does it mean? A real tornado strikes the bridge and the church / The riders slowly circle around Ichabod / The horses and rider race past in a sudden, wild rush ✓
 - Refresher hint: Look for the word like. How fast and wild is a whirlwind?
 - Why: Like a whirlwind: everything sweeps past in a sudden, violent rush.
 - Standards: ELA.7.R.3.1
-- Gist check: The goblin hurls his head at Ichabod, knocking him into the dust as the horses rush past. ✓ / The goblin tips his hat to Ichabod and rides away into the church. / The goblin drops his head in the brook, and Ichabod laughs and rides home.
+- Gist check: The goblin politely tips his hat to Ichabod and rides away into the dark church. / The goblin drops his head in the brook, and Ichabod laughs and rides home. / The goblin hurls his head at Ichabod, knocking him into the dust as the horses rush past. ✓
 - Discovery (figurative): "the horrible missile". Missile: something thrown. The head becomes a weapon.
 
 ##### Character Clue
@@ -6158,12 +6149,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait does Hans show when the teacher goes missing?
 - Key words highlighted: trait
-- Choices: Worried, though partly about his own saddle ✓ / Overjoyed to be rid of his boarder / Calm, sure that all is perfectly fine
+- Choices: Calm, sure that all is perfectly fine / Worried, though partly about his own saddle ✓ / Overjoyed to be rid of his hungry boarder
 - Proof words (any one): "the fate of poor Ichabod, and his saddle"
 - Refresher hint: What two things is he uneasy about?
 - Why: He began to feel some uneasiness about the fate of poor Ichabod, and his saddle.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: Next morning Gunpowder is grazing at home, but Ichabod never shows up, and Hans grows uneasy. ✓ / Next morning Ichabod rides in for breakfast, and Hans scolds him for being late. / Next morning Gunpowder is gone too, and Hans calls it a lucky trade.
+- Gist check: Next morning Gunpowder is gone too, and Hans calls it a lucky trade for an old saddle. / Next morning Gunpowder is grazing at home, but Ichabod never shows up, and Hans grows uneasy. ✓ / Next morning Ichabod rides in for breakfast, and Hans scolds him for being late.
 - Discovery (figurative): "soberly cropping the grass". The horse grazes calmly, as if nothing happened.
 
 ##### Theme Thread
@@ -6172,12 +6163,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which idea about the mystery keeps the story open?
 - Key words highlighted: mystery
-- Choices: The clues could point to a ghost or to a human trick ✓ / Every clue proves the ghost is real / The clues show Ichabod simply moved away happily
+- Choices: The clues show Ichabod simply moved away happily / The clues could point to a ghost or to a human trick ✓ / Every clue proves beyond doubt that the ghost is real
 - Proof line: "In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin."
 - Refresher hint: Look at what lies beside the hat. Is it a ghost's head?
 - Why: Hoofprints, a hat and a shattered pumpkin: the evidence fits the ghost story and a prankster just as well.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: Searchers find the trampled saddle, hoofprints to the bridge, Ichabod's hat and a smashed pumpkin. ✓ / Searchers find Ichabod asleep under the bridge with his hat over his face. / Searchers find nothing at all, not even a single hoofprint.
+- Gist check: Searchers find Ichabod asleep under the bridge with his hat over his face. / Searchers find nothing at all on the road or by the brook, not even a single hoofprint or a button. / Searchers find the trampled saddle, hoofprints to the bridge, Ichabod's hat and a smashed pumpkin. ✓
 - Discovery (vocabulary): "a shattered pumpkin". Shattered: smashed to pieces.
 
 ##### Whose Eyes?
@@ -6186,12 +6177,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: How does the narrator want us to see Hans's decision about learning?
 - Key words highlighted: narrator
-- Choices: As a foolish overreaction, poking fun at Hans ✓ / As wise advice every parent should follow / As a sad choice forced by poverty
+- Choices: As a sad choice forced on him by poverty / As a foolish overreaction, poking fun at Hans ✓ / As wise advice every parent should follow
 - Proof line: "These magic books and the poetic scrawl were forthwith consigned to the flames by Hans Van Ripper; who, from that time forward, determined to send his children no more to school, observing that he never knew any good come of this same reading and writing."
 - Refresher hint: What does Hans conclude from one missing teacher?
 - Why: He decides never to send his children to school, since he never knew any good come of reading and writing: the narrator is poking fun.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: Hans burns Ichabod's books and love poems and decides reading and writing do no good. ✓ / Hans keeps Ichabod's books and decides to become a teacher himself. / Hans sells Ichabod's books and gives the money to Katrina.
+- Gist check: Hans burns Ichabod's books and love poems and decides reading and writing do no good. ✓ / Hans keeps Ichabod's books and decides to become a teacher himself. / Hans sells Ichabod's books in town and gives every penny of the money to Katrina.
 - Discovery (figurative): "consigned to the flames". Consigned to the flames: thrown into the fire.
 
 #### Expedition: The Postscript (7 chunks)
@@ -6239,7 +6230,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for news brought back from New York.
 - Why: An old farmer brought word that Ichabod was alive, studied law and became a justice of the Ten Pound Court.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Years later a farmer reports that Ichabod is alive and became a lawyer and a judge far away. ✓ / Years later a farmer reports that Ichabod's ghost haunts the schoolhouse at night. / Years later a farmer reports that Ichabod married Katrina in New York.
+- Gist check: Years later a farmer reports that Ichabod is alive and became a lawyer and a judge far away. ✓ / Years later a farmer reports that Ichabod's ghost haunts the schoolhouse at night. / Years later a farmer reports that Ichabod secretly married Katrina in New York and runs a shop.
 - Discovery (vocabulary): "Ten Pound Court". A small local court that handled minor cases.
 
 ##### Read Between the Lines
@@ -6248,24 +6239,24 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer about Brom's part in that night?
 - Key words highlighted: infer
-- Choices: He may have played the headless rider himself ✓ / He searched all night to save Ichabod / He was away in town and knew nothing
+- Choices: He was away in town that night and knew nothing / He may have played the headless rider himself ✓ / He searched all night to save Ichabod
 - Proof line: "Brom Bones, too, who, shortly after his rival’s disappearance conducted the blooming Katrina in triumph to the altar, was observed to look exceedingly knowing whenever the story of Ichabod was related, and always burst into a hearty laugh at the mention of the pumpkin; which led some to suspect that he knew more about the matter than he chose to tell."
 - Refresher hint: When does he laugh, and what did some suspect?
 - Why: He bursts into a hearty laugh at the mention of the pumpkin, so some suspect he knew more than he chose to tell.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Brom marries Katrina and laughs knowingly whenever the pumpkin comes up. ✓ / Brom leaves the valley and never speaks of Ichabod again. / Brom marries a girl from town and avoids the Van Tassels forever.
+- Gist check: Brom marries a girl from town and avoids the Van Tassels forever. / Brom marries Katrina and laughs knowingly whenever the pumpkin comes up. ✓ / Brom leaves the valley for good and never speaks of Ichabod again.
 - Discovery (figurative): "conducted the blooming Katrina in triumph to the altar". He marries her as if winning a prize.
 
 **Chunk 7** (¶80 sentences 1 to 2, ¶81 sentences 1 to 2; 85 words)
 
 - Question: What can you infer from the last words of the tale?
 - Key words highlighted: infer
-- Choices: Even the teller doubts much of the tale ✓ / The teller swears every word is true / The teller saw the ghost himself
+- Choices: The teller swears every word is true / The teller once saw the ghost himself / Even the teller doubts much of the tale ✓
 - Proof line: "“Faith, sir,” replied the story-teller, “as to that matter, I don’t believe one-half of it myself.”"
 - Refresher hint: How much of it does he believe?
 - Why: He admits, I don't believe one-half of it myself.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: The doubtful gentleman questions the tale, and the storyteller admits he believes only half of it. ✓ / The doubtful gentleman is convinced, and the storyteller swears it all happened. / The doubtful gentleman leaves, and the storyteller starts a brand new tale.
+- Gist check: The doubtful gentleman questions the tale, and the storyteller admits he believes only half of it. ✓ / The doubtful gentleman is convinced, and the storyteller swears it all happened. / The doubtful gentleman leaves in a huff, and the storyteller starts a brand new ghost tale.
 - Discovery (vocabulary): "the ratiocination of the syllogism". Ratiocination: careful reasoning. The gentleman is puzzled by the joking logic.
 
 ##### Theme Thread
@@ -6274,12 +6265,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which idea from the start of the story wins out in the end?
 - Key words highlighted: wins out
-- Choices: The valley prefers its ghost story to a plain explanation ✓ / Hard work always makes a poor man rich in the end / True love always conquers every obstacle in its way
+- Choices: True love always conquers every obstacle in its way / The valley prefers its ghost story to a plain explanation ✓ / Hard work always makes a poor man rich in the end, however long it takes
 - Proof line: "The old country wives, however, who are the best judges of these matters, maintain to this day that Ichabod was spirited away by supernatural means; and it is a favorite story often told about the neighborhood round the winter evening fire."
 - Refresher hint: What do the old wives maintain, even with the farmer's news?
 - Why: The old country wives maintain to this day that Ichabod was spirited away: the valley's spell holds.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: The old wives insist Ichabod was spirited away, and his ghost is said to haunt the empty schoolhouse. ✓ / The old wives insist Ichabod moved to the city, and the schoolhouse is rebuilt. / The old wives forget Ichabod, and the bridge becomes a picnic spot.
+- Gist check: The old wives insist Ichabod moved to the city, and the schoolhouse is rebuilt. / The old wives soon forget Ichabod, and the bridge becomes a favorite sunny picnic spot for families. / The old wives insist Ichabod was spirited away, and his ghost is said to haunt the empty schoolhouse. ✓
 - Discovery (vocabulary): "an object of superstitious awe". Superstitious awe: fear and wonder based on belief in the supernatural.
 
 ##### Whose Eyes?
@@ -6288,12 +6279,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Who does the postscript say first told this tale?
 - Key words highlighted: postscript
-- Choices: A shabby, cheerful old storyteller at a city meeting ✓ / Ichabod Crane himself, years after the ride / Katrina Van Tassel, at her wedding feast
+- Choices: Ichabod Crane himself, years after the ride / Katrina Van Tassel, telling it at her own wedding feast / A shabby, cheerful old storyteller at a city meeting ✓
 - Proof line: "The narrator was a pleasant, shabby, gentlemanly old fellow, in pepper-and-salt clothes, with a sadly humourous face, and one whom I strongly suspected of being poor--he made such efforts to be entertaining."
 - Refresher hint: Look for a description of the narrator who related it.
 - Why: The narrator was a pleasant, shabby, gentlemanly old fellow, suspected of being poor.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: The postscript says the tale was told at a city meeting by a shabby old fellow, to much laughter. ✓ / The postscript says the tale was found in a dead soldier's diary near the bridge. / The postscript says the tale was written by Brom Bones to explain the pumpkin.
+- Gist check: The postscript says the tale was found in a dead soldier's diary near the bridge. / The postscript says the tale was written down by Brom Bones himself to explain the smashed pumpkin. / The postscript says the tale was told at a city meeting by a shabby old fellow, to much laughter. ✓
 - Discovery (vocabulary): "pepper-and-salt clothes". Pepper-and-salt: cloth speckled black and white.
 
 ##### Character Clue
@@ -6302,12 +6293,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait fits the frowning listener?
 - Key words highlighted: trait
-- Choices: Serious and doubtful, slow to be amused ✓ / Jolly and quick to laugh at anything / Sleepy and not listening at all
+- Choices: Sleepy and not really listening at all / Serious and doubtful, slow to be amused ✓ / Jolly and quick to laugh at anything
 - Proof words (any one): "maintained a grave and rather severe face throughout"
 - Refresher hint: How does his face look while everyone else laughs?
 - Why: He maintained a grave and rather severe face throughout, as if turning a doubt over in his mind.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: One stern old gentleman never smiles and demands to know the moral of the story. ✓ / One jolly old gentleman laughs loudest and asks to hear it again. / One sleepy old gentleman snores through the whole tale.
+- Gist check: One stern old gentleman never smiles and demands to know the moral of the story. ✓ / One jolly old gentleman laughs loudest and asks to hear it again. / One sleepy old gentleman snores loudly through the whole tale, then claps at the end.
 - Discovery (vocabulary): "beetling eyebrows". Beetling: sticking out over the eyes, like a frown.
 
 ##### Catch the Lie
@@ -6321,7 +6312,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: What does the storyteller say about jokes?
 - Why: He says every situation has its pleasures, provided we will but take a joke as we find it.
 - Standards: ELA.K12.EE.1.1
-- Gist check: The storyteller gives a joking moral: take life's jokes as they come, and losing an heiress can lead to success. ✓ / The storyteller gives a serious moral: ghosts are real, so stay home at night. / The storyteller refuses to give any moral and walks out of the room.
+- Gist check: The storyteller gives a serious moral: ghosts are real, so stay home at night. / The storyteller refuses to give any moral at all, finishes his glass of wine and walks out of the room. / The storyteller gives a joking moral: take life's jokes as they come, and losing an heiress can lead to success. ✓
 - Discovery (vocabulary): "goblin troopers". Troopers: cavalry soldiers; here, ghostly riders.
 
 ### The Tell-Tale Heart
@@ -6376,31 +6367,31 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: What question does he keep asking?
 - Why: How, then, am I mad? He argues his sharp senses prove he is sane.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: The narrator insists he is nervous but not mad, and boasts that his hearing is unusually sharp. ✓ / The narrator admits he is mad and begs the listener to forgive him. / The narrator says he is deaf and cannot hear anything around him.
+- Gist check: The narrator insists he is nervous but not mad, and boasts that his hearing is unusually sharp. ✓ / The narrator admits he has gone completely mad and begs the listener to forgive him for it all. / The narrator says he is deaf and cannot hear anything around him.
 - Discovery (figurative): "very, very dreadfully nervous". The repeated words show how worked up he is.
 
 **Chunk 14** (¶17 sentences 1 to 2, ¶18 sentences 1 to 2; 124 words)
 
 - Question: What does the narrator insist explains what he hears?
 - Key words highlighted: insist
-- Choices: His senses are unusually sharp, not mad ✓ / A ghost is knocking inside the walls / The old man left a clock running
+- Choices: The old man left a clock running / His senses are unusually sharp, not mad ✓ / A ghost is knocking inside the walls
 - Proof line: "And now — have I not told you that what you mistake for madness is but over acuteness of the senses? — now, I say, there came to my ears a low, dull, quick sound — much such a sound as a watch makes when enveloped in cotton."
 - Refresher hint: What does he say you mistake for madness?
 - Why: He says what you mistake for madness is but over acuteness of the senses.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: The narrator sees the eye wide open, grows furious, and then hears a low, quick beating sound. ✓ / The narrator sees the eye closed, calms down, and hears only silence. / The narrator sees the old man smiling and hears him begin to sing.
+- Gist check: The narrator sees the old man smiling and hears him begin to sing. / The narrator sees the eye wide open, grows furious, and then hears a low, quick beating sound. ✓ / The narrator sees the eye tightly closed, calms down at once, and hears only the silence of the house.
 - Discovery (figurative): "a hideous veil over it". The cloudy film over the eye is described like a veil.
 
 **Chunk 18** (¶21 sentences 8 to 10, ¶22 sentences 1 to 2, ¶23 sentences 1 to 5; 108 words)
 
 - Question: What does the narrator claim his careful hiding shows?
 - Key words highlighted: claim
-- Choices: That he cannot be mad ✓ / That he is truly sorry / That the old man deserved it
+- Choices: That he is truly sorry / That the old man deserved it / That he cannot be mad ✓
 - Proof line: "If, still, you think me mad, you will think so no longer when I describe the wise precautions I took for the concealment of the body."
 - Refresher hint: What will you think no longer once he describes it?
 - Why: If you still think him mad, he says, you will think so no longer when he describes his precautions.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: The narrator says the eye will trouble him no more and boasts of how carefully he hid what he had done. ✓ / The narrator says the eye still haunts him and runs to tell a neighbor everything. / The narrator says the old man recovered, and they shared breakfast at dawn.
+- Gist check: The narrator says the eye still haunts him, so he runs next door at once to tell a neighbor everything. / The narrator says the old man recovered, and they shared breakfast at dawn. / The narrator says the eye will trouble him no more and boasts of how carefully he hid what he had done. ✓
 - Discovery (vocabulary): "the wise precautions". Precautions: steps taken to avoid trouble.
 
 ##### Find It
@@ -6413,7 +6404,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for what he says about the old man's wealth.
 - Why: For his gold I had no desire.
 - Standards: ELA.K12.EE.1.1
-- Gist check: The narrator says the idea haunted him even though the old man never wronged him. ✓ / The narrator says the old man cheated him out of his gold. / The narrator says he hated the old man from the very first day.
+- Gist check: The narrator says he hated the old man from the first day because he stole the family gold. / The narrator says the idea haunted him even though the old man never wronged him. ✓ / The narrator says the old man cheated him out of his gold.
 - Discovery (figurative): "it haunted me day and night". The idea follows him everywhere, like a ghost.
 
 **Chunk 16** (¶19 sentences 9 to 9, ¶20 sentences 1 to 5; 79 words)
@@ -6424,7 +6415,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for a new anxiety.
 - Why: A new anxiety seized him: the sound would be heard by a neighbor.
 - Standards: ELA.K12.EE.1.1
-- Gist check: As the beating grows louder, the narrator suddenly fears that a neighbor will hear it. ✓ / As the beating fades away, the narrator decides to leave the house quietly. / As the beating grows louder, the narrator wakes the old man to warn him.
+- Gist check: As the beating fades away, the narrator decides to leave the house quietly before dawn. / As the beating grows louder, the narrator wakes the old man to warn him. / As the beating grows louder, the narrator suddenly fears that a neighbor will hear it. ✓
 - Discovery (figurative): "the dead hour of the night". The deepest, stillest part of the night.
 
 **Chunk 20** (¶26 sentences 1 to 1, ¶27 sentences 1 to 8; 100 words)
@@ -6435,7 +6426,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for what was heard, and by whom.
 - Why: A shriek had been heard by a neighbor during the night, and the officers were sent to search.
 - Standards: ELA.K12.EE.1.1
-- Gist check: A neighbor reported a shriek, and the narrator calmly claims it was his own nightmare. ✓ / A neighbor reported a fire, and the narrator admits he started it. / A neighbor reported a theft, and the narrator blames the old man.
+- Gist check: A neighbor reported smoke and a fire, and the narrator admits that he started it by accident. / A neighbor reported a theft, and the narrator blames the old man. / A neighbor reported a shriek, and the narrator calmly claims it was his own nightmare. ✓
 - Discovery (vocabulary): "secure, undisturbed". Undisturbed: left exactly as it was.
 
 **Chunk 24** (¶33 sentences 3 to 7, ¶34 sentences 1 to 3; 93 words)
@@ -6446,7 +6437,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for the words he cries out at the end.
 - Why: I admit the deed! It is the beating of his hideous heart!
 - Standards: ELA.K12.EE.1.1
-- Gist check: Convinced the officers are mocking him, the narrator cries out a confession and tells them where to look. ✓ / Convinced the officers believe him, the narrator thanks them and shows them out. / Convinced he has won, the narrator laughs and goes upstairs to sleep.
+- Gist check: Convinced he has won, the narrator laughs and goes upstairs to sleep. / Convinced the officers are mocking him, the narrator cries out a confession and tells them where to look. ✓ / Convinced the officers believe every word, the narrator thanks them warmly and shows them out the front door.
 - Discovery (vocabulary): "hypocritical smiles". Hypocritical: pretending to feel something you don't.
 
 ##### Figure It Out
@@ -6455,24 +6446,24 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Read the words the eye of a vulture. What kind of figurative language is this?
 - Key words highlighted: vulture
-- Choices: Metaphor: the old man's eye is called a vulture's eye ✓ / Simile: the eye is compared to a bird using like / Onomatopoeia: the words copy a bird's cry
-- What does it mean? The eye seems cold, hungry and threatening to him ✓ / The old man can fly like a bird / The old man has very sharp eyesight
+- Choices: Simile: the eye is compared to a hungry bird using like / Onomatopoeia: the words copy a bird's cry / Metaphor: the old man's eye is called a vulture's eye ✓
+- What does it mean? The old man can fly like a bird / The old man can see very sharply, even in the dark / The eye seems cold, hungry and threatening to him ✓
 - Refresher hint: What does a vulture do, and how might its eye feel to someone it stares at?
 - Why: A vulture's eye watches and waits: to the narrator the old man's eye feels cold and threatening.
 - Standards: ELA.7.R.3.1
-- Gist check: The narrator blames the old man's pale, filmy eye and decides to kill him to be rid of it. ✓ / The narrator praises the old man's bright eyes and decides to protect him. / The narrator blames the old man's loud voice and decides to move away.
+- Gist check: The narrator praises the old man's bright, kind eyes and decides to protect him from harm. / The narrator blames the old man's loud voice and decides to move away. / The narrator blames the old man's pale, filmy eye and decides to kill him to be rid of it. ✓
 - Discovery (figurative): "my blood ran cold". Fear so strong he feels it in his veins.
 
 **Chunk 12** (¶13 sentences 1 to 4, ¶14 sentences 1 to 3; 139 words) · shared words reviewed
 
 - Question: Read the words had stalked with his black shadow before him. What kind of figurative language is this?
 - Key words highlighted: stalked
-- Choices: Personification: death moves toward the old man like a person ✓ / Simile: death is compared to a shadow using like / Onomatopoeia: the words copy the sound of footsteps
-- What does it mean? The old man senses something deadly coming that he cannot see ✓ / A stranger is walking down the hall / The lantern casts a real shadow on the wall
+- Choices: Personification: death moves toward the old man like a person ✓ / Simile: death is compared to a shadow using like / Onomatopoeia: the words copy the sound of heavy footsteps on the floor
+- What does it mean? The lantern casts a real, tall shadow across the bedroom wall / The old man senses something deadly coming that he cannot see ✓ / A stranger is walking down the hall
 - Refresher hint: Can death really walk? What does the old man feel coming?
 - Why: Death stalks like a person casting a shadow: the old man feels danger closing in.
 - Standards: ELA.7.R.3.1
-- Gist check: The old man tries to explain away the noise as wind or a mouse, but his fear keeps growing. ✓ / The old man decides the noise is a burglar and runs to fetch help. / The old man laughs at the noise and goes back to sleep at once.
+- Gist check: The old man tries to explain away the noise as wind or a mouse, but his fear keeps growing. ✓ / The old man decides the noise is a burglar and runs down the stairs to fetch the neighbors for help. / The old man laughs at the noise and goes back to sleep at once.
 - Discovery (vocabulary): "the wind in the chimney". One of the harmless explanations the old man tries to believe.
 
 ##### Word Detective
@@ -6481,12 +6472,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: In this chunk, what does dissimulation mean?
 - Key words highlighted: dissimulation
-- Choices: Hiding one's true feelings or plans ✓ / Careful counting and measuring / A sudden loss of all courage
+- Choices: Careful counting and measuring of things / A sudden loss of all courage / Hiding one's true feelings or plans ✓
 - Proof words (any one): "I was never kinder to the old man"
 - Refresher hint: How does he act toward the old man while planning to harm him?
 - Why: He was never kinder than the week before: he hid his true intent behind kindness.
 - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: The narrator argues that his careful planning proves he is sane, and he acts extra kind to the old man. ✓ / The narrator admits his plan was sloppy and that he was rude to the old man. / The narrator says he forgot his plan and spent the whole week traveling.
+- Gist check: The narrator argues that his careful planning proves he is sane, and he acts extra kind to the old man. ✓ / The narrator admits his plan was sloppy and rushed, and that he was rude to the old man all week. / The narrator says he forgot his plan and spent the whole week traveling.
 - Discovery (vocabulary): "with what foresight". Foresight: planning ahead.
 
 **Chunk 21** (¶28 sentences 1 to 1, ¶29 sentences 1 to 6; 104 words) · shared words reviewed
@@ -6494,11 +6485,11 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Question: In this chunk, what does audacity mean?
 - Key words highlighted: audacity
 - Choices: Shocking, reckless boldness ✓ / Deep and quiet sadness / Careful, gentle politeness
-- Proof words (any one): "placed my own seat upon the very spot"
-- Refresher hint: Where does he choose to sit?
-- Why: He placed his own seat upon the very spot: a shockingly bold act.
+- Proof line: "I was singularly at ease."
+- Refresher hint: How does he feel while the officers sit there?
+- Why: He sits over the very spot and is singularly at ease: shocking boldness.
 - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: The narrator boldly seats the officers in the room, but soon he grows pale and wishes they would leave. ✓ / The narrator rudely sends the officers away, and they leave satisfied. / The narrator invites the officers to stay the night, and they all fall asleep.
+- Gist check: The narrator rudely sends the officers away, and they leave satisfied. / The narrator invites the officers to stay the whole night, and they all fall asleep in their chairs. / The narrator boldly seats the officers in the room, but soon he grows pale and wishes they would leave. ✓
 - Discovery (vocabulary): "a ringing in my ears". A ringing in the ears: a sound that seems to come from inside your own head.
 
 ##### Character Clue
@@ -6507,24 +6498,24 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait does the narrator show each midnight?
 - Key words highlighted: trait
-- Choices: Patient and sneaky, moving with great care ✓ / Careless and loud, rushing straight in / Shy and nervous, turning back at once
+- Choices: Shy and nervous, turning back at once / Patient and sneaky, moving with great care ✓ / Careless and loud, rushing straight into the room
 - Proof words (any one): "very, very slowly"
 - Refresher hint: How fast does he move his head?
 - Why: He moved it very, very slowly so he would not disturb the old man.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: Each midnight the narrator slowly eases his head and a covered lantern through the old man's door. ✓ / Each morning the narrator bursts into the old man's room with a bright lamp. / Each midnight the narrator locks the old man's door from the outside.
+- Gist check: Each midnight the narrator slowly eases his head and a covered lantern through the old man's door. ✓ / Each morning the narrator bursts noisily into the old man's room carrying a bright, uncovered lamp. / Each midnight the narrator locks the old man's door from the outside.
 - Discovery (vocabulary): "a dark lantern". Dark lantern: a lantern with a cover that can block its light.
 
 **Chunk 15** (¶18 sentences 3 to 4, ¶19 sentences 1 to 8; 91 words)
 
 - Question: Which trait does the narrator show as the sound grows?
 - Key words highlighted: trait
-- Choices: Rising fury that he struggles to hold back ✓ / Calm pity for the frightened old man / Boredom with the long, quiet night
+- Choices: Boredom with the long, quiet night / Rising fury that he struggles to hold back ✓ / Calm pity for the frightened old man in bed
 - Proof words (any one): "It increased my fury"
 - Refresher hint: What does the sound do to him, and does he act at once?
 - Why: It increased his fury, yet he refrained and kept still.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: The narrator believes he hears the old man's heart, and its growing beat fills him with fury. ✓ / The narrator hears church bells, and their steady ringing calms his fury. / The narrator hears the old man snoring, and the sound makes him laugh.
+- Gist check: The narrator hears distant church bells, and their slow, steady ringing calms his growing fury. / The narrator hears the old man snoring, and the sound makes him laugh. / The narrator believes he hears the old man's heart, and its growing beat fills him with fury. ✓
 - Discovery (vocabulary): "the hellish tattoo of the heart". Tattoo: a steady drumbeat.
 
 ##### Read Between the Lines
@@ -6533,19 +6524,19 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer from how slowly he inches into the room?
 - Key words highlighted: infer
-- Choices: He is obsessed, spending ages on each tiny step ✓ / He is lazy and dozes off in the doorway / He is lost and cannot find the right room
+- Choices: He is obsessed, spending ages on each tiny step ✓ / He is lazy and dozes off in the doorway / He is lost in the dark and cannot find the right room
 - Proof line: "It took me an hour to place my whole head within the opening so far that I could see the old man as he lay upon his bed."
 - Refresher hint: How long does one small step take him?
 - Why: It took him an hour just to place his head inside: an obsession with every detail.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Taking an hour to peek in, the narrator shines one thin ray of light onto the vulture eye. ✓ / Taking a minute to peek in, the narrator lights every lamp in the old man's room. / Peering through the window, the narrator sees the old man awake and reading.
+- Gist check: Taking an hour to peek in, the narrator shines one thin ray of light onto the vulture eye. ✓ / Taking only a minute to peek in, the narrator lights every single lamp in the old man's room. / Peering through the window, the narrator sees the old man awake and reading.
 - Discovery (vocabulary): "a single thin ray". A ray: a narrow beam of light.
 
 **Chunk 10** (¶9 sentences 2 to 2, ¶10 sentences 1 to 1; 77 words)
 
 - Question: What can you infer from the old man's question in the blackness?
 - Key words highlighted: infer
-- Choices: He senses someone is there and is frightened ✓ / He is expecting a visitor and is pleased / He is talking in his sleep about a dream
+- Choices: He is talking in his sleep about a dream / He senses someone is there and is frightened ✓ / He is expecting a late visitor and is pleased
 - Proof line: "I had got my head in, and was about to open the lantern, when my thumb slipped upon the tin fastening, and the old man sprang up in bed, crying out — “Who's there?”"
 - Refresher hint: What does he do, and what does he call out?
 - Why: He sprang up in bed crying out, Who's there? He senses someone in the room.
@@ -6557,12 +6548,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer about the narrator from his familiarity with that sound?
 - Key words highlighted: infer
-- Choices: He has felt the same terror himself on many nights ✓ / He once worked as a doctor who treated patients / He has never been afraid of anything at all
+- Choices: He once worked as a doctor who treated patients / He has never been afraid of anything at all / He has felt the same terror himself on many nights ✓
 - Proof line: "Many a night, just at midnight, when all the world slept, it has welled up from my own bosom, deepening, with its dreadful echo, the terrors that distracted me."
 - Refresher hint: Where has he heard it before?
 - Why: Many a night it has welled up from his own bosom: he knows that terror himself.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: The old man sits awake listening, and the narrator recognizes his groan of terror from his own nights. ✓ / The old man falls back asleep, and the narrator quietly leaves the room. / The old man calls for help, and the narrator hides under the bed.
+- Gist check: The old man falls back asleep at once, and the narrator quietly leaves the room, closing the door behind him. / The old man calls for help, and the narrator hides under the bed. / The old man sits awake listening, and the narrator recognizes his groan of terror from his own nights. ✓
 - Discovery (vocabulary): "the death-watches in the wall". Death-watches: beetles that tick in walls; an old superstition said they warned of a death.
 
 **Chunk 17** (¶20 sentences 6 to 8, ¶21 sentences 1 to 7; 101 words)
@@ -6581,12 +6572,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer from the fact that the visitors never react to the sound?
 - Key words highlighted: infer
-- Choices: The sound may exist only in the narrator's mind ✓ / The visitors are deaf and cannot hear anything / The visitors are too polite to mention it
+- Choices: The visitors are too polite to mention it / The sound may exist only in the narrator's mind ✓ / The visitors are deaf and cannot hear anything
 - Proof line: "I gasped for breath — and yet the officers heard it not."
 - Refresher hint: He gasps for breath. Who hears it?
 - Why: He gasped for breath, and yet the officers heard it not.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: The ringing becomes a beating sound that grows louder, though the officers seem not to hear it. ✓ / The ringing stops, and the narrator relaxes and laughs with the officers. / The ringing turns out to be church bells, and everyone leaves for church.
+- Gist check: The ringing becomes a beating sound that grows louder, though the officers seem not to hear it. ✓ / The ringing stops completely, and the narrator relaxes and laughs along with the friendly officers. / The ringing turns out to be church bells, and everyone leaves for church.
 - Discovery (vocabulary): "violent gesticulations". Gesticulations: wild arm movements while talking.
 
 ##### Catch the Lie
@@ -6600,7 +6591,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: What did the narrator do each day at dawn?
 - Why: Every morning he went boldly into the chamber and spoke to the old man in a hearty tone.
 - Standards: ELA.K12.EE.1.1
-- Gist check: For seven nights the eye stays shut, and each morning the narrator greets the old man warmly. ✓ / For seven nights the eye stays open, and each morning the narrator avoids the old man. / For seven nights the narrator sleeps soundly and never visits the old man.
+- Gist check: For seven nights the eye stays shut, and each morning the narrator greets the old man warmly. ✓ / For seven nights the eye stays wide open, and each morning the narrator avoids the old man entirely. / For seven nights the narrator sleeps soundly and never visits the old man.
 - Discovery (figurative): "his Evil Eye". Capitalized like a name, the eye becomes a villain in his mind.
 
 **Chunk 19** (¶24 sentences 1 to 4, ¶25 sentences 1 to 4; 119 words)
@@ -6613,7 +6604,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: What time was it, and how did he come to the door?
 - Why: It was four o'clock, still dark as midnight, and he went down to open it with a light heart.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Before dawn the narrator finishes hiding his crime, and three police officers knock at the door. ✓ / At noon the narrator finishes breakfast, and three neighbors bring him a cake. / Before dawn the narrator packs his bags and slips out the back door.
+- Gist check: At noon the narrator finishes a late breakfast, and three friendly neighbors bring him a cake. / Before dawn the narrator packs his bags and slips out the back door. / Before dawn the narrator finishes hiding his crime, and three police officers knock at the door. ✓
 - Discovery (vocabulary): "with perfect suavity". Suavity: smooth, polite manners.
 
 ##### Shades of Meaning
@@ -6622,36 +6613,36 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Why does the narrator call it sagacity instead of just cleverness?
 - Key words highlighted: sagacity
-- Choices: It makes his plotting sound wise and grand to himself ✓ / It makes him sound humble and unsure / It makes him sound sleepy and slow
+- Choices: It makes his plotting sound wise and grand to himself ✓ / It makes him sound humble, nervous and unsure of himself / It makes him sound sleepy and slow
 - Proof words (any one): "feelings of triumph"
 - Refresher hint: How does he feel about his own skill?
 - Why: Sagacity means deep wisdom: he can scarcely contain his feelings of triumph.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: On the eighth night the narrator moves slower than a clock hand and feels proud of his own cleverness. ✓ / On the eighth night the narrator rushes in and feels ashamed of his plan. / On the eighth night the narrator stays in bed and gives up his plan.
+- Gist check: On the eighth night the narrator moves slower than a clock hand and feels proud of his own cleverness. ✓ / On the eighth night the narrator rushes into the room and suddenly feels ashamed of his whole plan. / On the eighth night the narrator stays in bed and gives up his plan.
 - Discovery (figurative): "the extent of my own powers". He feels almost superhuman in his cleverness.
 
 **Chunk 13** (¶15 sentences 1 to 1, ¶16 sentences 1 to 2; 102 words) · shared words reviewed
 
 - Question: Why does the narrator repeat stealthily instead of just saying quietly?
 - Key words highlighted: stealthily
-- Choices: It stresses how secret and sly every movement is ✓ / It shows he is tired and moving clumsily / It shows he wants the old man to hear him
-- Proof words (any one): "you cannot imagine how"
-- Refresher hint: What does he say you cannot imagine?
-- Why: Stealthily means slyly and secretly, and he insists you cannot imagine how much so.
+- Choices: It shows he is tired and moving clumsily / It shows he secretly wants the old man to hear him / It stresses how secret and sly every movement is ✓
+- Proof words (any one): "a very, very little crevice"
+- Refresher hint: How much does he open the lantern?
+- Why: Stealthily means slyly and secretly: he opens only a very, very little crevice.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: After waiting a long time, the narrator opens the lantern a crack and a thin ray falls on the eye. ✓ / After waiting a moment, the narrator throws open the lantern and fills the room with light. / After waiting a long time, the narrator shuts the door and goes back to bed.
+- Gist check: After waiting only a moment, the narrator throws open the lantern and fills the whole room with light. / After waiting a long time, the narrator shuts the door and goes back to bed. / After waiting a long time, the narrator opens the lantern a crack and a thin ray falls on the eye. ✓
 - Discovery (figurative): "like the thread of the spider". A simile: the ray of light is as thin as a spider's thread.
 
 **Chunk 23** (¶32 sentences 1 to 7, ¶33 sentences 1 to 2; 98 words) · shared words reviewed
 
 - Question: Why does the narrator stress that the men chatted pleasantly instead of just talked?
 - Key words highlighted: pleasantly
-- Choices: It shows how calm they stay while he falls apart ✓ / It shows they are angry with him / It shows they are about to leave
+- Choices: It shows they are growing angry and impatient with him / It shows they are about to leave / It shows how calm they stay while he falls apart ✓
 - Proof words (any one): "I paced the floor to and fro"
 - Refresher hint: Compare what he is doing with what they are doing.
 - Why: He paces the floor to and fro while they chat pleasantly: their calm makes his panic worse.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: The narrator paces and shouts as the sound grows, while the officers keep chatting and smiling. ✓ / The narrator sits quietly as the sound fades, while the officers search the cellar. / The narrator falls asleep as the sound stops, while the officers leave.
+- Gist check: The narrator falls asleep as the sound stops, while the officers leave. / The narrator paces and shouts as the sound grows, while the officers keep chatting and smiling. ✓ / The narrator sits quietly as the sound fades, while the officers search the cellar with lanterns.
 - Discovery (vocabulary): "with heavy strides". Strides: long steps.
 
 ##### Theme Thread
@@ -6660,13 +6651,13 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which pattern keeps coming back in the narrator's telling?
 - Key words highlighted: keeps coming back
-- Choices: He keeps insisting on his own cleverness and calm ✓ / He keeps apologizing for what he planned / He keeps praising the old man's kindness
+- Choices: He keeps praising the old man's kindness / He keeps insisting on his own cleverness and calm ✓ / He keeps apologizing for everything he planned to do
 - Proof line: "To think that there I was, opening the door, little by little, and the old man not even to dream of my secret deeds or thoughts."
 - Proof line: "I fairly chuckled at the idea."
 - Refresher hint: What does he find funny?
 - Why: He gloats that the old man cannot dream of his secret, and chuckles at the idea.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: The narrator chuckles at his secret, the old man stirs as if startled, but the narrator does not retreat. ✓ / The narrator weeps at his secret, the old man sleeps soundly, and the narrator goes home. / The narrator shouts his secret, the old man laughs, and they talk until dawn.
+- Gist check: The narrator shouts his secret, the old man laughs, and they talk until dawn. / The narrator chuckles at his secret, the old man stirs as if startled, but the narrator does not retreat. ✓ / The narrator weeps over his secret, the old man sleeps soundly on, and the narrator quietly goes back to bed.
 - Discovery (vocabulary): "I fairly chuckled at the idea". Chuckled: laughed quietly.
 
 ### Trifles
@@ -6712,24 +6703,24 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: What can you infer about this home from the opening stage directions?
 - Key words highlighted: infer
-- Choices: Someone left suddenly, in the middle of chores ✓ / A family is preparing for a big party / The rooms were scrubbed clean for visitors
+- Choices: A family is preparing for a big party / The rooms were scrubbed clean for the visitors / Someone left suddenly, in the middle of chores ✓
 - Proof line: "SCENE: _The kitchen in the now abandoned farmhouse of JOHN WRIGHT, a gloomy kitchen, and left without having been put in order--unwashed pans under the sink, a loaf of bread outside the bread-box, a dish-towel on the table--other signs of incompleted work."
 - Refresher hint: Look at the pans, the bread and the towel.
 - Why: The kitchen was left without being put in order: unwashed pans, bread out, signs of incompleted work.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Three men enter the cold, messy kitchen of an abandoned farmhouse and go straight to the stove. ✓ / Three women enter the warm, tidy kitchen of a busy farmhouse and start baking. / Two children play in the sunny kitchen of a brand new farmhouse.
+- Gist check: Three women enter the warm, tidy kitchen of a busy farmhouse and start baking bread together. / Two children play in the sunny kitchen of a brand new farmhouse. / Three men enter the cold, messy kitchen of an abandoned farmhouse and go straight to the stove. ✓
 - Discovery (vocabulary): "signs of incompleted work". Incompleted work: chores someone started and never finished.
 
 **Chunk 8** (¶37 sentences 1 to 1, ¶38 sentences 1 to 1, ¶39 sentences 1 to 1, ¶40 sentences 1 to 5; 84 words)
 
 - Question: What can you infer about Mrs. Wright from her reply about the weather?
 - Key words highlighted: infer
-- Choices: Her mind is far away from ordinary things ✓ / She is eager to chat with a neighbor / She is angry that Hale came so early
+- Choices: She is eager to chat with a friendly neighbor / She is angry that Hale came so early / Her mind is far away from ordinary things ✓
 - Proof line: "And she said, “Is it?”--and went on kind of pleating at her apron."
 - Refresher hint: How does she answer a simple remark, and what do her hands keep doing?
 - Why: She answers Is it? and goes on pleating at her apron, as if her mind is elsewhere.
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Mrs. Wright barely notices Hale, answers him oddly, and never invites him to the stove. ✓ / Mrs. Wright greets Hale warmly and pours him a hot cup of coffee. / Mrs. Wright orders Hale to leave and slams the door in his face.
+- Gist check: Mrs. Wright barely notices Hale, answers him oddly, and never invites him to the stove. ✓ / Mrs. Wright greets Hale warmly at the door and pours him a hot cup of coffee by the stove. / Mrs. Wright orders Hale to leave and slams the door in his face.
 - Discovery (vocabulary): "pay much attention". She barely notices that Hale is there.
 
 ##### Character Clue
@@ -6738,12 +6729,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which trait do the stage directions give Mrs. Peters?
 - Key words highlighted: trait
-- Choices: Thin and nervous-looking ✓ / Loud and cheerful / Tall and commanding
+- Choices: Tall, loud and commanding / Thin and nervous-looking ✓ / Loud and cheerful
 - Proof words (any one): "a thin nervous face"
 - Refresher hint: Read how she is described as she comes in.
 - Why: The sheriff's wife is a slight wiry woman with a thin nervous face.
 - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: The two women enter slowly and stay together by the door, and Mrs. Peters says she isn't cold. ✓ / The two women rush to the stove, and Mrs. Peters says she is freezing. / The two women stay outside in the wagon, refusing to enter the house.
+- Gist check: The two women rush straight to the stove, and Mrs. Peters says she is freezing from the long ride. / The two women stay outside in the wagon, refusing to enter the house. / The two women enter slowly and stay together by the door, and Mrs. Peters says she isn't cold. ✓
 - Discovery (vocabulary): "slight wiry woman". Wiry: thin but tough.
 
 ##### Find It
@@ -6756,7 +6747,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Listen for the sheriff's short answer.
 - Why: It's just the same.
 - Standards: ELA.K12.EE.1.1
-- Gist check: The sheriff asks Hale to tell what he saw and says nothing has been moved except the stove fire. ✓ / The sheriff admits everything has been moved and cleaned since yesterday. / The sheriff refuses to let Hale speak and sends everyone home.
+- Gist check: The sheriff asks Hale to tell what he saw and says nothing has been moved except the stove fire. ✓ / The sheriff admits that everything in the kitchen has been moved and cleaned since yesterday morning. / The sheriff refuses to let Hale speak and sends everyone home.
 - Discovery (vocabulary): "a big case on". A big case: an important crime to solve.
 
 **Chunk 6** (¶20 sentences 1 to 1, ¶21 sentences 1 to 2, ¶22 sentences 1 to 1, ¶23 sentences 1 to 4; 105 words)
@@ -6767,7 +6758,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: Look for a piece of furniture he points to.
 - Why: There in that rocker sat Mrs. Wright.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Hale knocked twice, thought he heard someone answer, and found Mrs. Wright sitting in her rocker. ✓ / Hale knocked once, heard shouting, and found the whole house empty. / Hale walked in without knocking and found Mrs. Wright cooking breakfast.
+- Gist check: Hale walked in without knocking and found Mrs. Wright cooking breakfast at the stove, humming. / Hale knocked twice, thought he heard someone answer, and found Mrs. Wright sitting in her rocker. ✓ / Hale knocked once, heard shouting, and found the whole house empty.
 - Discovery (figurative): "all quiet inside". An eerie silence for a farm morning.
 
 ##### Shades of Meaning
@@ -6776,12 +6767,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Why does the sheriff say he had his hands full instead of just busy?
 - Key words highlighted: hands full
-- Choices: It stresses how overloaded and stretched thin he was ✓ / It means he was carrying heavy boxes / It means he hurt both of his hands
-- Proof words (any one): "When I had to send Frank to Morris Center"
-- Refresher hint: What else did he have to handle that day?
-- Why: He had to send Frank to Morris Center for another case: hands full means too much to do at once.
+- Choices: It stresses how overloaded and stretched thin he was ✓ / It means he was carrying heavy boxes into the jail / It means he hurt both of his hands
+- Proof line: "I knew you could get back from Omaha by today and as long as I went over everything here myself--"
+- Refresher hint: What does he say about checking the house?
+- Why: He could only go over everything himself before the attorney got back: hands full means too much to do at once.
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: The attorney says someone should have guarded the house, and the sheriff explains he was too busy. ✓ / The attorney praises the sheriff for guarding the house all night long. / The attorney says the house should be sold, and the sheriff agrees.
+- Gist check: The attorney praises the sheriff for guarding the house himself all night long in the bitter cold. / The attorney says the house should be sold, and the sheriff agrees. / The attorney says someone should have guarded the house, and the sheriff explains he was too busy. ✓
 - Discovery (vocabulary): "from Omaha". Omaha: a city in Nebraska, where the attorney had been.
 
 ##### Catch the Lie
@@ -6795,7 +6786,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Refresher hint: What did he say when Hale brought up the telephone?
 - Why: He put Hale off, saying folks talked too much anyway, and all he asked was peace and quiet.
 - Standards: ELA.K12.EE.1.1
-- Gist check: Hale stopped to ask John Wright about a shared telephone line, though Wright wanted only peace and quiet. ✓ / Hale stopped to buy potatoes from John Wright, who loved company and chatter. / Hale stopped to warn John Wright about a storm, but Wright was away in town.
+- Gist check: Hale stopped to buy potatoes from John Wright, who loved company, long visits and plenty of chatter. / Hale stopped to warn John Wright about a storm, but Wright was away in town. / Hale stopped to ask John Wright about a shared telephone line, though Wright wanted only peace and quiet. ✓
 - Discovery (vocabulary): "a party telephone". Party telephone: one line shared by several homes.
 
 ##### Word Detective
@@ -6804,12 +6795,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: In this chunk, what does queer mean?
 - Key words highlighted: queer
-- Choices: Strange or odd ✓ / Happy and relaxed / Angry and loud
+- Choices: Angry and loud / Strange or odd ✓ / Happy and relaxed
 - Proof words (any one): "what she was going to do next"
 - Refresher hint: How does Hale explain it when he's asked?
 - Why: She looked as if she didn't know what she was going to do next: strange, not like herself.
 - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: Hale says Mrs. Wright was rocking and pleating her apron and looked strange and worn out. ✓ / Hale says Mrs. Wright was dancing and singing and looked happy and rested. / Hale says Mrs. Wright was asleep and he could not see her face.
+- Gist check: Hale says Mrs. Wright was asleep and he could not see her face. / Hale says Mrs. Wright was rocking and pleating her apron and looked strange and worn out. ✓ / Hale says Mrs. Wright was dancing around and singing and looked happy, rested and cheerful.
 - Discovery (vocabulary): "her apron in her hand". She keeps folding her apron into pleats, over and over.
 
 ##### Theme Thread
@@ -6818,12 +6809,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Which idea about Mrs. Wright keeps coming back in Hale's story?
 - Key words highlighted: keeps coming back
-- Choices: Her strange calm makes her hard to read ✓ / Her loud anger frightens everyone / Her cheerful chatter fills the room
+- Choices: Her loud anger frightens everyone / Her cheerful chatter fills the whole room / Her strange calm makes her hard to read ✓
 - Proof line: "“No,” she says, kind o’ dull like."
 - Refresher hint: How does she say even the most shocking things?
 - Why: She answers kind of dull like: the same strange calm Hale noticed from the start.
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: Mrs. Wright laughs oddly and then flatly tells Hale that John is home but dead. ✓ / Mrs. Wright cries loudly and tells Hale that John ran away to town. / Mrs. Wright smiles and tells Hale that John is out working in the barn.
+- Gist check: Mrs. Wright cries loudly and tells Hale that John ran away to town. / Mrs. Wright smiles and tells Hale that John is out working in the barn with the cows. / Mrs. Wright laughs oddly and then flatly tells Hale that John is home but dead. ✓
 - Discovery (vocabulary): "out of patience". Out of patience: tired of waiting.
 
 ##### Whose Eyes?
@@ -6832,12 +6823,12 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 - Question: Whose account of that morning are we hearing?
 - Key words highlighted: account
-- Choices: Hale's, as he remembers it for the lawmen ✓ / Mrs. Wright's, written in a letter / The sheriff's, read from his notebook
+- Choices: The sheriff's, read aloud from his notebook / Hale's, as he remembers it for the lawmen ✓ / Mrs. Wright's, written in a letter
 - Proof line: "“Why--where is he?” says I, not knowing what to say."
 - Refresher hint: Who is the I in these lines?
 - Why: Says I, not knowing what to say: Hale is telling the lawmen what he saw.
 - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: Calmly rocking, Mrs. Wright points upstairs and says John died of a rope around his neck. ✓ / Crying, Mrs. Wright runs upstairs and says John fell from a ladder. / Laughing, Mrs. Wright says John is only sleeping and points to the barn.
+- Gist check: Calmly rocking, Mrs. Wright points upstairs and says John died of a rope around his neck. ✓ / Crying, Mrs. Wright runs upstairs and says John fell from a ladder. / Laughing, Mrs. Wright says John is only sleeping late and points out toward the barn.
 - Discovery (figurative): "not getting a bit excited". She stays strangely calm.
 
 <!-- expeditions:end -->

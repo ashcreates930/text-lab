@@ -45,7 +45,7 @@ export function InterviewHost({state,round,world,act,left,totalMs}:{state:HostVi
    <div className="flex flex-col gap-3"><p className="font-display text-[clamp(26px,2.6vw,40px)] font-bold">{w.name}</p>
     {round.beat==="vote"?<><p className="text-[20px] text-muted">{race.answered} of {players} voted · which question should we ask?</p>
       <ol className="grid gap-3">{w.cards.map((c,i)=>{const n=iv.votes[k]?.[i]??0,total=Math.max(1,(iv.votes[k]?.[0]??0)+(iv.votes[k]?.[1]??0));return <li key={i} className="relative overflow-hidden rounded-card bg-panel px-5 py-4 text-[clamp(18px,1.8vw,28px)] font-bold">
-       <span aria-hidden className="absolute inset-y-0 left-0 bg-highlight/25 transition-[width] duration-500" style={{width:`${(n/total)*100}%`}}/><span className="relative">{String.fromCharCode(65+i)}. {c}</span><span className="relative float-right tabular-nums">{n}</span></li>})}</ol></>
+       <span aria-hidden className="absolute inset-y-0 left-0 bg-highlight/25 transition-[width] duration-500" style={{width:`${(n/total)*100}%`}}/><span className="relative">{c}</span><span className="relative float-right tabular-nums">{n}</span></li>})}</ol></>
      :<><p className="rounded-card bg-violet-soft px-5 py-3 text-[clamp(18px,1.7vw,26px)] font-bold">The class asked: {iv.said[k]?.card}</p>
       {iv.said[k]&&<div className="text-[clamp(18px,1.8vw,28px)]"><Caption name={w.name} text={iv.said[k].text}/></div>}
       <button type="button" onClick={speak} disabled={!!voice.playing} className="host-btn-secondary w-fit"><RotateCcw size={20} aria-hidden/>Play it again</button></>}
@@ -91,7 +91,7 @@ export function InterviewPlayer({state,world,act,left,myMs}:{state:PlayerView;wo
   {iv.said[k]&&<Caption name={w.name} text={iv.said[k].text}/>}
   <p className="text-[15px] text-muted">Listen on the board. One of the three witnesses is lying.</p>
  </section>;
- if(round.beat==="liar")return <div className="mt-3"><NameTheLiar world={world} said={asSaid(iv)} passages={iv.callPassages??[]} locked={!!me?.locked} seconds={myMs?Math.round(myMs/1000):undefined} left={left} onLock={a=>act("liar_lock",{liar:a.liar,line:a.line})}/></div>;
+ if(round.beat==="liar")return <div className="wide-host mt-3"><NameTheLiar seed={`${state.me.id}|${round.expedition.id}`} world={world} said={asSaid(iv)} passages={iv.callPassages??[]} locked={!!me?.locked} seconds={myMs?Math.round(myMs/1000):undefined} left={left} onLock={a=>act("liar_lock",{liar:a.liar,line:a.line})}/></div>;
  if(round.beat==="verdict"&&iv.verdict){const r=me?.result,v=iv.verdict;
   return <section aria-labelledby="ivp-h" className="mt-3 flex flex-col gap-3" aria-live="assertive">
    {r?.solved?<div className="flex flex-col items-center gap-3"><p aria-hidden className="float-up font-display text-[56px] font-bold leading-none text-gold">+{LIAR_POINTS.toLocaleString()}</p>

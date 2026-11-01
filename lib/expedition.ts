@@ -71,26 +71,41 @@ export function phraseRange(tokens: Token[], phrase: string): [number, number] |
   for (let s = 0; s + want.length <= tokens.length; s++) if (want.every((w, k) => tokens[s + k].key === w)) return [s, s + want.length - 1];
   return null;
 }
-// Word proof: the selection covers one accepted phrase completely, with at most 4 extra words.
-export function wordsProve(tokens: Token[], selected: number[], accepted: string[]) {
-  const sel = new Set(selected);
-  return accepted.some((p) => { const r = phraseRange(tokens, p); if (!r) return false; for (let k = r[0]; k <= r[1]; k++) if (!sel.has(k)) return false; return sel.size - (r[1] - r[0] + 1) <= 4; });
-}
 // A tap on the chunk's hidden discovery (a figurative phrase or a rich word).
 export function isDiscovery(tokens: Token[], chunk: { discovery: { phrase: string } }, tokenIndex: number) {
   const r = phraseRange(tokens, chunk.discovery.phrase); return !!r && tokenIndex >= r[0] && tokenIndex <= r[1];
 }
 
+// ---------- Text evidence is a whole sentence ----------
+// Every proof is tapping a sentence. A question proved by a line accepts that line; one proved by a word or phrase
+// accepts the sentence that holds it. Returns the accepted sentences as line indexes in the chunk.
+export function proofLineIndexes(q: ExpQuestion, tokens: Token[]) {
+  const keys = lineKeys(tokens), out = new Set<number>();
+  for (const l of q.proof?.lines ?? []) { const k = keys.indexOf(norm(l)); if (k >= 0) out.add(k); }
+  for (const p of q.proof?.words ?? []) { const r = phraseRange(tokens, p); if (r) out.add(tokens[r[0]].line); }
+  return [...out].sort((a, b) => a - b);
+}
+// Each line of the chunk, normalized (rebuilt from its tokens).
+export function lineKeys(tokens: Token[]) {
+  const out: string[] = []; for (const t of tokens) out[t.line] = out[t.line] === undefined ? t.key : `${out[t.line]} ${t.key}`;
+  return out.map((s) => norm(s ?? ""));
+}
+// A tapped sentence proves it when it is one of the accepted sentences.
+export function sentenceProves(q: ExpQuestion, tokens: Token[], tapped: string[] | undefined) {
+  const keys = lineKeys(tokens), ok = new Set(proofLineIndexes(q, tokens)), got = tapped ?? [];
+  return got.length > 0 && got.every((g) => { const k = keys.indexOf(norm(g)); return k >= 0 && ok.has(k); });
+}
+
 // ---------- Answers and scoring ----------
 export type Answer = { choice?: number | null; choice2?: number | null; lines?: string[]; words?: number[]; theory?: string | null };
 const best = (opts: { best?: boolean }[] | undefined) => (opts ?? []).findIndex((o) => !!o.best);
-const sameLine = (a: string, b: string) => norm(a) === norm(b);
 export const speedBonus = (elapsedMs: number, limit: number) => (limit > 0 ? Math.round(POINTS.speedMax * Math.max(0, Math.min(1, 1 - elapsedMs / limit))) : 0);
 // Each step's verdict (answer, proof) and the points. Time ran out: 0, whatever was picked.
 export function scoreAnswer(q: ExpQuestion, a: Answer, tokens: Token[], elapsedMs: number, limit: number) {
   const late = elapsedMs > limit;
-  const proofLinesOk = () => { const want = q.proof?.lines ?? []; const got = a.lines ?? []; return got.length > 0 && got.every((g) => want.some((w) => sameLine(w, g))); };
-  const proofOk = () => (q.proof?.words?.length ? wordsProve(tokens, a.words ?? [], q.proof.words) : proofLinesOk());
+  // Every proof is one tapped sentence (lib: sentenceProves).
+  const proofLinesOk = () => sentenceProves(q, tokens, a.lines);
+  const proofOk = proofLinesOk;
   let answer = true, proof = true;
   switch (q.type) {
     case "find_it": case "catch_lie": answer = proofLinesOk(); proof = answer; break;
@@ -111,19 +126,24 @@ export const gistPoints = (chunk: Pick<ExpChunk, "gist">, choice: number | null)
 export function focusTokens(tokens: Token[], focus: string | null | undefined) {
   const r = focus ? phraseRange(tokens, focus) : null; return r ? Array.from({ length: r[1] - r[0] + 1 }, (_, k) => r[0] + k) : [];
 }
-// The proof as token positions in this chunk: its words, or every word of its proof lines. Lit up after the answer only.
-export function proofTokens(q: ExpQuestion, tokens: Token[], lines: { text: string }[]) {
-  const words = proofShown(q, tokens).words; if (words.length) return words;
-  const want = new Set((q.proof?.lines ?? []).map(norm)), idx = new Set(lines.map((l, i) => (want.has(norm(l.text)) ? i : -1)).filter((i) => i >= 0));
-  return tokens.filter((t) => idx.has(t.line)).map((t) => t.i);
+// The proof as token positions in this chunk: every word of the proof sentence (for a word or phrase, the sentence
+// with the first accepted phrase). Lit up after the answer only.
+export function proofTokens(q: ExpQuestion, tokens: Token[], _lines?: { text: string }[]) {
+  const shownLines = new Set(proofShownLines(q, tokens));
+  return tokens.filter((t) => shownLines.has(t.line)).map((t) => t.i);
+}
+function proofShownLines(q: ExpQuestion, tokens: Token[]) {
+  const keys = lineKeys(tokens), out = new Set<number>();
+  for (const l of q.proof?.lines ?? []) { const k = keys.indexOf(norm(l)); if (k >= 0) out.add(k); }
+  const first = (q.proof?.words ?? []).map((p) => phraseRange(tokens, p)).find(Boolean); if (first) out.add(tokens[first[0]].line);
+  return [...out];
 }
 // What the result screen shows as the proof: the lines, or the words (with their line).
 export function proofShown(q: ExpQuestion, tokens: Token[]) {
   if (q.type === "make_call") return { lines: q.theories?.flatMap((t) => t.lines).slice(0, 2) ?? [], words: [] as number[] };
-  // The first accepted phrase is the proof shown; the others are alternatives a student could also have tapped.
-  const first = (q.proof?.words ?? []).map((p) => phraseRange(tokens, p)).find(Boolean);
-  const words = first ? Array.from({ length: first[1] - first[0] + 1 }, (_, k) => first[0] + k) : [];
-  return { lines: q.proof?.lines ?? [], words };
+  // A word or phrase proof is shown as its whole sentence (rebuilt from the tokens); words are no longer used.
+  const keys = proofShownLines(q, tokens), text = (k: number) => tokens.filter((t) => t.line === k).map((t) => t.text).join(" ");
+  return { lines: q.proof?.lines?.length ? q.proof.lines : keys.map(text), words: [] as number[] };
 }
 // Key words to highlight in the question itself (never in the passage).
 export function keywordParts(prompt: string, keywords: string[]) {
@@ -145,4 +165,15 @@ export function ghostPlay(seed: string, chunk: number, limit: number) {
   let h = 2166136261; for (const ch of `${seed}:${chunk}`) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
   const r = ((h >>> 0) % 1000) / 1000, right = r < 0.68, at = limit * (0.35 + 0.4 * r);
   return { right, points: right ? POINTS.correct + speedBonus(at, limit) : 0, gist: r < 0.8 ? POINTS.gist : 0 };
+}
+
+// ---------- Answer order ----------
+// Each student sees choices in their own order: seeded by the student and the question, so it is stable on reload and
+// differs between students. Returns the original indexes in display order.
+export function shuffledOrder(n: number, seed: string) {
+  let h = 2166136261; for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  let s = h >>> 0; const next = () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  const out = Array.from({ length: n }, (_, i) => i);
+  for (let i = n - 1; i > 0; i--) { const j = Math.floor(next() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
+  return out;
 }

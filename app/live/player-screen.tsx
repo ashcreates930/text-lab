@@ -24,8 +24,9 @@ export function PlayerScreen({code}:{code:string}){
  return <Play seat={seat} onLeave={()=>{try{localStorage.removeItem(playerKey(code))}catch{}setSeat(null)}}/>;
 }
 
-function Frame({children}:{children:React.ReactNode}){
- return <main className="case-ui mx-auto min-h-screen max-w-xl bg-stage px-4 pb-16 pt-5 text-ink">{children}</main>;
+// wide: a race in progress uses the side-by-side question layout on tablets and laptops.
+function Frame({children,wide=false}:{children:React.ReactNode;wide?:boolean}){
+ return <main className={`case-ui mx-auto min-h-screen ${wide?"race-root max-w-6xl":"max-w-xl"} bg-stage px-4 pb-16 pt-5 text-ink`}>{children}</main>;
 }
 
 function Join({code,onJoined}:{code:string;onJoined:(s:Seat)=>void}){
@@ -51,14 +52,14 @@ function Play({seat,onLeave}:{seat:Seat;onLeave:()=>void}){
  async function act(kind:string,payload:Record<string,unknown>={}):Promise<string|null>{const r=await postJson(`/api/live/sessions/${seat.sessionId}/act`,{kind,payload},{"x-live-player":seat.playerToken});if(r.ok){setState(r.data);setNotice("");return null}setNotice(r.error);return r.error}
  if(!state)return <Frame><p className="text-[18px]" aria-live="polite">{error||"Joining…"}</p>{error==="Join the round first."&&<button type="button" onClick={onLeave} className="case-primary mt-4">Join again</button>}</Frame>;
  const s=state.session,round=state.round;
- return <Frame>
+ return <Frame wide={isRace(round)}>
   <header className="flex items-center justify-between gap-3">
    <div><p className="text-[13px] font-semibold uppercase tracking-wide text-highlight">{s.title}</p><p className="text-[18px] font-bold">{state.me.nickname}</p></div>
    {state.squad&&<div className="text-right"><p className="text-[15px] font-semibold">{state.squad.name}</p><p className="text-[14px] tabular-nums text-muted">{state.score} pts</p></div>}
   </header>
   {notice&&<p role="alert" className="mt-3 rounded-2xl bg-primary-soft px-4 py-3 text-[16px]">{notice}</p>}
   {s.paused&&<p className="mt-3 rounded-2xl bg-deep px-4 py-3 text-[17px] font-semibold text-ink">Paused. Eyes on the board.</p>}
-  <div aria-live="polite">
+  <div aria-live="polite" className="wide-host">
    {state.yourTurn&&s.status!=="round"&&world?<YourTurnPhone state={state} world={world} passages={passages} seat={seat}/>
    :s.status==="ended"&&isRace(round)?<RaceEndedPlayer state={state} world={world} act={act}/>
    :round&&(round as {type?:string}).type==="bonus"?<BonusPlayer state={state} world={world} act={act}/>

@@ -5,8 +5,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { WorldPackSchema } from "../lib/world-schema.ts";
 import { parseSourcePassages } from "../lib/source-passages.ts";
-import { GIST_SECONDS, POINTS, SCREEN_MS, TYPE_INFO, chunkTokens, expeditionChunks, gistPoints, isDiscovery, keywordParts, limitMs, phraseRange, proofShown, scoreAnswer, screenMs, timeScale, wordsProve } from "../lib/expedition.ts";
-import { expeditionCoverage, expeditionProblems, distractorProblems } from "../lib/expedition-check.ts";
+import { GIST_SECONDS, POINTS, SCREEN_MS, TYPE_INFO, chunkTokens, expeditionChunks, gistPoints, isDiscovery, keywordParts, limitMs, phraseRange, proofLineIndexes, proofShown, scoreAnswer, screenMs, sentenceProves, shuffledOrder, timeScale } from "../lib/expedition.ts";
+import { balanceProblems, expeditionCoverage, expeditionProblems, distractorProblems } from "../lib/expedition-check.ts";
 import { BENCHMARK_FAMILIES, benchmark } from "../lib/best-standards.ts";
 import { contentNotes } from "../lib/content-notes.ts";
 
@@ -16,7 +16,12 @@ const shp = parseSourcePassages(src("public/worlds/sleepy-hollow/source.md"));
 const exp = sh.expeditions![0], chunks = expeditionChunks(sh, shp, exp.id);
 const byType = (t: string) => { const k = exp.chunks.findIndex((c) => c.question.type === t); return { c: chunks[k], q: exp.chunks[k].question, tokens: chunkTokens(chunks[k].lines) }; };
 const best = (o?: { best?: boolean }[]) => (o ?? []).findIndex((x) => x.best), wrong = (o?: { best?: boolean }[]) => (o ?? []).findIndex((x) => !x.best);
-const wordsOf = (tokens: ReturnType<typeof chunkTokens>, p: string) => { const r = phraseRange(tokens, p)!; return Array.from({ length: r[1] - r[0] + 1 }, (_, k) => r[0] + k); };
+// Text evidence is a whole sentence: the accepted sentence, and one that isn't.
+type Q = (typeof exp.chunks)[number]["question"];
+type C = (typeof chunks)[number];
+type Tk = ReturnType<typeof chunkTokens>;
+const proofSentence = (c: C, q: Q, tokens: Tk) => c.lines[proofLineIndexes(q, tokens)[0]].text;
+const offSentence = (c: C, q: Q, tokens: Tk) => c.lines.find((_, i) => !proofLineIndexes(q, tokens).includes(i))?.text;
 
 test("chunks: whole sentences, 50 to 150 words, at most 5 sentences, no gaps, and the expedition validates", () => {
   assert.equal(chunks.length, 10);
@@ -66,11 +71,13 @@ test("every expedition mixes at least 5 question types and one Theme Thread; wit
 test("scoring: two-step questions need the right answer AND the right proof; one-step questions need the line", () => {
   const lim = limitMs(45);
   for (const t of ["whose_eyes", "shades", "word_detective", "character_clue"]) {
-    const { q, tokens } = byType(t); const proof = wordsOf(tokens, q.proof!.words![0]);
-    const right = scoreAnswer(q, { choice: best(q.choices), words: proof }, tokens, 1000, lim);
+    const { q, tokens, c } = byType(t); const proof = [proofSentence(c, q, tokens)], off = offSentence(c, q, tokens);
+    const right = scoreAnswer(q, { choice: best(q.choices), lines: proof }, tokens, 1000, lim);
     assert.ok(right.correct, t); assert.ok(right.points > POINTS.correct && right.points <= POINTS.correct + POINTS.speedMax, t);
-    assert.equal(scoreAnswer(q, { choice: wrong(q.choices), words: proof }, tokens, 1000, lim).points, 0, `${t}: wrong answer, right proof`);
-    assert.equal(scoreAnswer(q, { choice: best(q.choices), words: [0, 1, 2] }, tokens, 1000, lim).points, 0, `${t}: right answer, wrong proof`);
+    assert.equal(scoreAnswer(q, { choice: wrong(q.choices), lines: proof }, tokens, 1000, lim).points, 0, `${t}: wrong answer, right proof`);
+    if (off) assert.equal(scoreAnswer(q, { choice: best(q.choices), lines: [off] }, tokens, 1000, lim).points, 0, `${t}: right answer, wrong sentence`);
+    // Word-level taps no longer count: the proof is the sentence.
+    assert.equal(scoreAnswer(q, { choice: best(q.choices), words: [0, 1, 2] }, tokens, 1000, lim).points, 0, `${t}: words are not a proof`);
   }
   for (const t of ["between_lines", "theme_thread"]) {
     const { q, tokens, c } = byType(t);
@@ -129,14 +136,16 @@ test("Gist screen: heading Gist check, question Which is the best summary, and t
   for (const piece of ["Score ", "Streak ", " coins", "Sound on", "Chunk {chunk} of {total}"]) assert.ok(ui.includes(piece), piece);
 });
 
-test("words: word proof, the hidden discovery, and question key words (highlighted in the question, never the passage)", () => {
-  const { q, tokens } = byType("word_detective");
-  assert.ok(wordsProve(tokens, wordsOf(tokens, "repose"), q.proof!.words!));
-  assert.ok(!wordsProve(tokens, wordsOf(tokens, "repose").concat([0, 1, 2, 3, 4, 5]), q.proof!.words!), "too many extra words");
+test("words: a word question's proof is the sentence with the clue, the hidden discovery, and question key words (highlighted in the question, never the passage)", () => {
+  const { q, tokens, c } = byType("word_detective");
+  const k = proofLineIndexes(q, tokens);
+  assert.ok(k.length > 0 && sentenceProves(q, tokens, [c.lines[k[0]].text]), "the sentence with the clue proves it");
+  assert.ok(!sentenceProves(q, tokens, []), "nothing tapped");
+  const off = offSentence(c, q, tokens); if (off) assert.ok(!sentenceProves(q, tokens, [off]), "another sentence doesn't");
   const c0 = exp.chunks[0], t0 = chunkTokens(chunks[0].lines), r = phraseRange(t0, c0.discovery.phrase)!;
   assert.ok(isDiscovery(t0, c0, r[0])); assert.ok(!isDiscovery(t0, c0, 0));
   assert.deepEqual(keywordParts("Why does listless matter?", ["listless"]).map((p) => p.key), [false, true, false]);
-  assert.ok(proofShown(q, tokens).words.length > 0);
+  { const shown = proofShown(q, tokens); assert.deepEqual(shown.words, [], "the proof is shown as a sentence, never as words"); assert.ok(shown.lines.length > 0); }
   // Words to Know: a soft highlight and a dotted underline, never the orange picked-line state.
   assert.ok(src("app/expedition-race.tsx").includes("bg-violet-soft px-0.5 underline decoration-dotted"));
 });
@@ -154,4 +163,58 @@ test("standards: every question is tagged; every code is a verified B.E.S.T. ben
 test("plausible distractors: three different options, real phrases, the best one not given away by length", () => {
   assert.deepEqual(distractorProblems("x", [{ text: "Quiet and calm here", best: true }, { text: "Loud and busy town" }, { text: "Far away and hard" }]), []);
   assert.ok(distractorProblems("x", [{ text: "A very long and detailed correct option that gives itself away", best: true }, { text: "Short wrong one" }, { text: "Another one here" }]).length > 0);
+});
+
+test("text evidence is a whole sentence everywhere: the UI taps sentences, no word-by-word proof step is left", () => {
+  const race = src("app/expedition-race.tsx"), after = src("app/after-race.tsx"), iv = src("app/interview.tsx");
+  for (const f of [race, after, iv]) { assert.ok(!f.includes("WordProof"), "no word-by-word proof"); assert.ok(!/Tap the words that prove/.test(f)); }
+  assert.match(race, /Tap the sentence that proves it\. Tap it again to clear it\./);
+  assert.match(race, /Choose this sentence/, "Look closer steps through sentences");
+  assert.match(after, /Tap the sentence that proves it, then lock in\./);
+  // The focus word never sits in the accepted sentence (or the tap would give it away); a single-sentence chunk is exempt.
+  for (const e of sh.expeditions!) { const cs = expeditionChunks(sh, shp, e.id);
+    e.chunks.forEach((x, k) => { const q = x.question; if (!q.focus || cs[k].lines.length < 2) return; const t = chunkTokens(cs[k].lines), r = phraseRange(t, q.focus); if (!r) return;
+      assert.ok(!proofLineIndexes(q, t).includes(t[r[0]].line), `${e.id} chunk ${k + 1}: focus "${q.focus}" is in the proof sentence`); }); }
+});
+
+test("answer order: shuffled per student and question, stable on reload, different between students", () => {
+  const a = shuffledOrder(4, "ana|c1"), again = shuffledOrder(4, "ana|c1");
+  assert.deepEqual(a, again, "stable on reload");
+  assert.deepEqual([...a].sort(), [0, 1, 2, 3], "every choice once");
+  const orders = new Set(Array.from({ length: 30 }, (_, i) => shuffledOrder(4, `student-${i}|c1`).join("")));
+  assert.ok(orders.size >= 8, `students see different orders (${orders.size})`);
+  const firsts = new Set(Array.from({ length: 30 }, (_, i) => shuffledOrder(4, `student-${i}|c1`)[0]));
+  assert.equal(firsts.size, 4, "the first choice varies between students");
+  // Every set of choices uses the student's own order; the host board has no letters.
+  for (const f of ["app/expedition-race.tsx", "app/live/race-live.tsx", "app/after-race.tsx", "app/interview.tsx"]) assert.match(src(f), /shuffledOrder|seed=\{/, f);
+  assert.ok(!src("app/live/race-live.tsx").includes("fromCharCode"), "the host board shows answers without letters");
+  assert.ok(!src("app/live/interview-live.tsx").includes("fromCharCode"));
+});
+
+test("answer balance: the best answer is not always first and not consistently the longest; stripling is fixed", () => {
+  for (const e of sh.expeditions!) assert.deepEqual(balanceProblems(e.id, e), [], e.id);
+  const bad = structuredClone(sh.expeditions![0]);
+  for (const c of bad.chunks) for (const o of [c.gist.options, c.question.choices, c.question.choices2?.options]) o?.sort((x, y) => Number(!!y.best) - Number(!!x.best));
+  assert.match(balanceProblems(bad.id, bad).join(" | "), /first/, "always first fails");
+  const long = structuredClone(sh.expeditions![0]);
+  for (const c of long.chunks) for (const o of [c.gist.options, c.question.choices, c.question.choices2?.options]) for (const x of o ?? []) if (x.best) x.text += " and that is the whole careful, detailed reason for it";
+  assert.match(balanceProblems(long.id, long).join(" | "), /longest/, "consistently longest fails");
+  // The stripling question: only "stripling" is highlighted, and the wrong answers are as specific as the right one.
+  const sq = sh.expeditions!.flatMap((e) => e.chunks).map((c) => c.question).find((q) => /stripling/.test(q.prompt))!;
+  assert.deepEqual(sq.keywords, ["stripling"]);
+  const lens = sq.choices!.map((o) => o.text.length), bestLen = lens[sq.choices!.findIndex((o) => o.best)];
+  assert.ok(sq.choices!.filter((o) => !o.best).every((o) => o.text.length >= bestLen * 0.7), sq.choices!.map((o) => o.text).join(" / "));
+});
+
+test("Start Proof Race fixes the expedition when the race starts, so saving at the finish can't swap in the next one", () => {
+  const c = src("app/case.tsx");
+  assert.match(c, /onStart=\{\(\)=>\{setExpedition\(next\);setRacing\(true\)\}\}/);
+  assert.ok(!/onStart=\{\(\)=>\{setExpedition\(null\);setRacing\(true\)\}\}/.test(c));
+});
+
+test("leaderboard: the slide-in runs once per standings (not on every re-render), from the row's old position; the phone shows its own row", () => {
+  const ui = src("app/proof-race.tsx");
+  assert.match(ui, /const standings=rows\.map/); assert.match(ui, /\},\[standings\]\);/);
+  assert.match(ui, /r\.prevPos\?\?/);
+  assert.match(src("app/live/race-live.tsx"), /own=\{race\.place\.row/);
 });
