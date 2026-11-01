@@ -30,11 +30,15 @@ test("chunks: whole sentences, 50 to 150 words, at most 5 sentences, no gaps, an
   assert.match(probs, /no gaps or overlaps/); assert.match(probs, /not copied exactly/);
 });
 
-test("every expedition mixes at least 5 question types, one Theme Thread, and ends on Make the Call", () => {
+test("every expedition mixes at least 5 question types and one Theme Thread; with an Interview, Name the Liar replaces Make the Call", () => {
   const types = exp.chunks.map((c) => c.question.type);
-  assert.ok(new Set(types).size >= 5); assert.equal(types.filter((t) => t === "theme_thread").length, 1); assert.equal(types.at(-1), "make_call");
-  // Expedition 1 uses every type (Gist Check runs on every chunk).
-  for (const t of Object.keys(TYPE_INFO)) if (t !== "gist") assert.ok(types.includes(t as never), t);
+  assert.ok(new Set(types).size >= 5); assert.equal(types.filter((t) => t === "theme_thread").length, 1);
+  assert.ok(exp.interview); assert.ok(!types.includes("make_call"));
+  // Expedition 1 uses every chunk type (Gist Check runs on every chunk; its finale is Name the Liar).
+  for (const t of Object.keys(TYPE_INFO)) if (t !== "gist" && t !== "make_call") assert.ok(types.includes(t as never), t);
+  // Without an Interview, Make the Call is still the last chunk, once.
+  const noIv = structuredClone(sh); delete noIv.expeditions![0].interview;
+  assert.match(expeditionProblems(noIv, shp).join(" | "), /Make the Call is the last chunk, once/);
 });
 
 test("scoring: two-step questions need the right answer AND the right proof; one-step questions need the line", () => {
@@ -63,7 +67,10 @@ test("scoring: two-step questions need the right answer AND the right proof; one
     assert.ok(scoreAnswer(q, { choice: best(q.choices), choice2: best(q.choices2!.options) }, tokens, 1000, lim).correct);
     assert.equal(scoreAnswer(q, { choice: best(q.choices), choice2: wrong(q.choices2!.options) }, tokens, 1000, lim).points, 0);
     assert.equal(scoreAnswer(q, { choice: wrong(q.choices), choice2: best(q.choices2!.options) }, tokens, 1000, lim).points, 0); }
-  { const { q, tokens } = byType("make_call"); const t = q.theories![1];
+  // Make the Call (for expeditions without an Interview): any theory wins with 2 of its lines.
+  { const tokens = chunkTokens(chunks[9].lines); const q = { type: "make_call" as const, prompt: "Make the call: what is the Headless Horseman?", keywords: [], hint: "h", why: "w", standards: ["K12.EE.1.1" as const],
+      theories: [{ id: "real", name: "A real ghost", lines: [chunks[6].lines[0].text, chunks[6].lines[1].text] }, { id: "story", name: "A story", lines: [chunks[3].lines[1].text, chunks[8].lines[0].text, chunks[5].lines[0].text] }, { id: "grew", name: "A legend", lines: [chunks[6].lines[1].text, chunks[8].lines[0].text] }] };
+    const t = q.theories[1];
     assert.ok(scoreAnswer(q, { theory: t.id, lines: t.lines.slice(0, 2) }, tokens, 1000, limitMs(90)).correct, "any theory wins with 2 of its lines");
     assert.equal(scoreAnswer(q, { theory: t.id, lines: [t.lines[0]] }, tokens, 1000, limitMs(90)).points, 0, "needs 2 lines");
     assert.equal(scoreAnswer(q, { theory: q.theories![0].id, lines: t.lines.slice(0, 2) }, tokens, 1000, limitMs(90)).points, 0, "lines must back the call"); }

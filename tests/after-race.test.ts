@@ -7,7 +7,8 @@ import { readFileSync } from "node:fs";
 import { WorldPackSchema } from "../lib/world-schema.ts";
 import { parseSourcePassages } from "../lib/source-passages.ts";
 import { chunkTokens, expeditionChunks, joinedPassages, phraseRange, type Answer } from "../lib/expedition.ts";
-import { BONUS_POINTS, REFRESHER_MAX, bonusProblems, caseNotes, caseNotesPdf, flaggedQuestions, refresherAward, refresherCorrect, refresherItems, squadCaseFile, squadCaseFilePdf, type ChunkResult } from "../lib/case-notes.ts";
+import { liarIndex, interviewStatements, type LiarAnswer } from "../lib/interview.ts";
+import { BONUS_POINTS, REFRESHER_MAX, VERDICT_INDEX, verdictAnswer, bonusProblems, caseNotes, caseNotesPdf, flaggedQuestions, refresherAward, refresherCorrect, refresherItems, squadCaseFile, squadCaseFilePdf, type ChunkResult } from "../lib/case-notes.ts";
 
 const src = (f: string) => readFileSync(f, "utf8");
 const sh = WorldPackSchema.parse(JSON.parse(src("worlds/sleepy-hollow/world.json")));
@@ -70,21 +71,27 @@ test("Case Notes: one entry per chunk with the question, answer, proof, first tr
   assert.ok(pdf.startsWith("%PDF")); assert.match(pdf, /Case Notes: Into the Hollow/); assert.match(pdf, /My notes:/); assert.match(pdf, /He won't swear to it\./);
 });
 
-test("Bonus Round: flagged questions, every member defends one, and the Squad Case File with its PDF", () => {
-  const ana = { id: "a", name: "Ana", results: chunks.map((c) => result(c.index, true)) };
-  const ben = { id: "b", name: "Ben", results: chunks.map((c) => result(c.index, c.index !== 1)) };
-  const flagged = flaggedQuestions(chunks, [ana, ben]);
-  assert.deepEqual(flagged, [1, 9], "the answer they differed on, plus the final call");
-  // Picks: Ana's answer on chunk 2 defended by Ben, and the call defended by Ana.
-  const picks = [{ index: 1, from: "a", answer: ana.results[1].answer!, defender: "b", stem: "I chose this line because…", reason: "it gives the two miles." }, { index: 9, from: "a", answer: ana.results[9].answer!, defender: "a", stem: "This proves it because…", reason: "the valley breathes the spell." }];
-  assert.deepEqual(bonusProblems(flagged, [ana, ben], picks.slice(0, 1)), ["Agree on chunk 10", "Every member defends at least one choice"]);
+test("Bonus Round: opens on who each member named, flags differing answers, every member defends one, and the Squad Case File with its PDF", () => {
+  const iv = exp.interview!, liar = liarIndex("lanterns", exp.id), w = iv.witnesses[liar], other = iv.witnesses[(liar + 1) % 3];
+  const verdict = { world: sh, interview: iv, liar };
+  const anaNamed: LiarAnswer = { liar: w.character, line: w.lie.lines[0] }, benNamed: LiarAnswer = { liar: other.character, line: other.truth.lines[0] };
+  const ana = { id: "a", name: "Ana", results: chunks.map((c) => result(c.index, true)), named: anaNamed };
+  const ben = { id: "b", name: "Ben", results: chunks.map((c) => result(c.index, c.index !== 1)), named: benNamed };
+  const flagged = flaggedQuestions(chunks, [ana, ben], verdict);
+  assert.deepEqual(flagged, [VERDICT_INDEX, 1], "who they named first, then the answer they differed on");
+  // Picks: Ana's verdict defended by Ana, and Ana's answer on chunk 2 defended by Ben.
+  const picks = [{ index: 1, from: "a", answer: ana.results[1].answer!, defender: "b", stem: "I chose this line because…", reason: "it gives the two miles." }, { index: VERDICT_INDEX, from: "a", answer: verdictAnswer(anaNamed)!, defender: "a", stem: "This proves it because…", reason: "the story says the opposite." }];
+  assert.deepEqual(bonusProblems(flagged, [ana, ben], picks.slice(0, 1)), ["Agree on who lied", "Every member defends at least one choice"]);
   assert.deepEqual(bonusProblems(flagged, [ana, ben], picks), []);
-  const file = squadCaseFile("Lanterns", chunks, [ana, ben], picks);
+  const file = squadCaseFile("Lanterns", chunks, [ana, ben], picks, 0, verdict);
   assert.equal(file.items.length, 2); assert.ok(file.items.every((i) => i.right)); assert.equal(file.points, 2 * BONUS_POINTS);
-  assert.deepEqual(file.members.map((m) => [m.name, m.role, m.defended]), [["Ana", "Lead Investigator", [10]], ["Ben", "Evidence Keeper", [2]]]);
-  assert.equal(file.finalCall, exp.chunks[9].question.theories![1].name);
+  assert.deepEqual(file.members.map((m) => [m.name, m.role, m.defended]), [["Ana", "Lead Investigator", [0]], ["Ben", "Evidence Keeper", [2]]]);
+  assert.equal(file.finalCall, `${interviewStatements(sh, iv, liar)[liar].name} lied`);
+  // Ben's verdict would not hold up.
+  const wrongFile = squadCaseFile("Lanterns", chunks, [ana, ben], [{ ...picks[1], from: "b", answer: verdictAnswer(benNamed)! }], 0, verdict);
+  assert.equal(wrongFile.items[0].right, false);
   const pdf = Buffer.from(squadCaseFilePdf(sh.title, exp.title, file).output("arraybuffer")).toString("latin1");
-  assert.ok(pdf.startsWith("%PDF")); assert.match(pdf, /Squad Case File: Lanterns/); assert.match(pdf, /The final call/);
+  assert.ok(pdf.startsWith("%PDF")); assert.match(pdf, /Squad Case File: Lanterns/); assert.match(pdf, /The verdict/); assert.match(pdf, /defended Name the Liar/);
 });
 
 test("live: the Refresher on each phone after the podium, notes saved, then the Bonus Round from start to the Squad Case File reveal", async () => {
@@ -106,21 +113,30 @@ test("live: the Refresher on each phone after the podium, notes saved, then the 
     while (pub().beat !== "countdown") await host({ action: "race.next" });
     await host({ action: "race.next" });
   }
+  // Name the Liar: Ana solves it; Ben names the liar with the wrong line.
+  assert.equal(pub().beat, "liar");
+  const v = server.hostView(st).round as unknown as { interview: { witnesses: { character: string }[] } };
+  const race = st.session.rounds[st.session.roundIndex] as { interview: { liar: number } }, w = exp.interview!.witnesses[race.interview.liar];
+  assert.equal(v.interview.witnesses.length, 3);
+  assert.equal(await act(ids[0], "liar_lock", { liar: w.character, line: w.lie.lines[0] }), null);
+  assert.equal(await act(ids[1], "liar_lock", { liar: w.character, line: chunks[0].lines[0].text }), null);
+  await host({ action: "race.next" }); await host({ action: "race.next" });
   assert.equal(st.session.status, "ended");
   // Before the race ended there was no Refresher; now each phone has its own.
   const anaAfter = server.playerView(st, ids[0]).after!, benAfter = server.playerView(st, ids[1]).after!;
   assert.equal(anaAfter.refresher.length, 4, "Ana missed every Gist check (she never picked one)");
   assert.ok(anaAfter.refresher.every((r) => r.kind === "gist"));
-  assert.equal(benAfter.refresher.length, 4); assert.ok(benAfter.refresher.every((r) => r.kind === "question"));
+  assert.equal(benAfter.refresher.length, 4); assert.equal(benAfter.refresher[0].kind, "liar", "an unsolved Name the Liar comes first"); assert.ok(benAfter.refresher.slice(1).every((r) => r.kind === "question"));
+  assert.ok(anaAfter.interview!.solved); assert.equal(benAfter.interview!.solved, false); assert.equal(benAfter.interview!.said.length, 3);
   assert.ok(!JSON.stringify(benAfter.refresher).includes("\"best\""), "the phone never gets the answers");
   // Ben fixes chunk 2 in the Refresher (one try), and writes a note.
-  assert.equal(benAfter.refresher[0].chunk, 1);
+  assert.equal(benAfter.refresher[1].chunk, 1);
   const fix0 = exp.chunks[0].question.proof!.words![0], t0 = chunkTokens(chunks[0].lines), r0 = phraseRange(t0, fix0)!;
-  assert.equal(await act(ids[1], "race_refresh", { k: 0, answer: { words: Array.from({ length: r0[1] - r0[0] + 1 }, (_, i) => r0[0] + i) } }), null);
-  assert.match((await act(ids[1], "race_refresh", { k: 0, answer: {} })) ?? "", /already tried/);
+  assert.equal(await act(ids[1], "race_refresh", { k: 1, answer: { words: Array.from({ length: r0[1] - r0[0] + 1 }, (_, i) => r0[0] + i) } }), null);
+  assert.match((await act(ids[1], "race_refresh", { k: 1, answer: {} })) ?? "", /already tried/);
   assert.equal(await act(ids[1], "race_note", { index: 0, text: "He won't swear the story is true." }), null);
   const ben2 = server.playerView(st, ids[1]).after!;
-  assert.equal(ben2.refresher[0].result!.fixed, true); assert.ok(ben2.refresher[0].result!.shown.length > 0);
+  assert.equal(ben2.refresher[1].result!.fixed, true); assert.ok(ben2.refresher[1].result!.shown.length > 0);
   assert.equal(ben2.notes[0].fixed, true); assert.equal(ben2.notes[0].note, "He won't swear the story is true."); assert.deepEqual(ben2.award, { stars: 1, of: 4, badge: "Second Look" });
   // The Bonus Round: squads built for the class, every flagged question agreed and defended, handed in, revealed.
   assert.equal(await host({ action: "bonus.start" }), null);

@@ -18,6 +18,18 @@ for (const id of ["sleepy-hollow", "tell-tale-heart", "trifles"]) {
   for (const exp of world.expeditions) {
     const chunks = expeditionChunks(world, passages, exp.id);
     out.push(`#### Expedition: ${exp.title} (${exp.chunks.length} chunks)`, "");
+    // The Interview and Name the Liar: one witness lies per student (per game when live).
+    if (exp.interview) {
+      out.push("##### The Interview and Name the Liar", "", "Each student picks one card per witness; one witness, picked at random per student, gives the lie and the other two the truth. Name the Liar needs the liar and a proof line. Audio is pre-recorded in each witness's voice.", "");
+      for (const w of exp.interview.witnesses) {
+        const name = world.characters.find((x) => x.id === w.character)?.name ?? w.character;
+        out.push(`**${name}**`, "", `- Question cards: ${w.cards.map((c) => `"${c}"`).join(" / ")}`);
+        out.push(`- True: "${w.truth.text}"`, ...w.truth.lines.map((l) => `  - Confirmed by: "${one(l)}"`));
+        out.push(`- False${w.lie.gesture ? ` (${w.lie.gesture.replace("-", " ")})` : ""}: "${w.lie.text}"`, ...w.lie.lines.map((l) => `  - Disproved by: "${one(l)}"`));
+        out.push(`- When caught: "${w.caught}"`, "");
+      }
+      out.push("Screen text: \"One witness will lie to you. Listen closely: after the race you'll name the liar and prove it with a line from the story.\" · \"Which witness lied?\" · \"Tap the line anywhere in the expedition that shows this is false, then lock in.\" · \"Case solved\" · \"Not this time.\" · \"It's in your Refresher.\" · Live: \"What should we ask [witness]?\" · \"Locked in\" · \"Nothing is revealed until everyone has locked in. Watch the board.\"", "");
+    }
     // Grouped by question type, in the order the types first appear.
     const types = [...new Set(exp.chunks.map((c) => c.question.type))];
     for (const t of types) {

@@ -7,6 +7,7 @@ import { WorldPackSchema } from "../lib/world-schema.ts";
 import { parseSourcePassages } from "../lib/source-passages.ts";
 import { narrationParts } from "../lib/narration.ts";
 import { frameArtPrompt, providedSceneDescription } from "../lib/frame-art.ts";
+import { interviewAudioList } from "../lib/interview.ts";
 const { loadEnvConfig } = nextEnv;
 loadEnvConfig(process.cwd());
 const root=join(process.cwd(),"worlds"),publicRoot=join(process.cwd(),"public","worlds");
@@ -143,6 +144,26 @@ if(process.argv.includes("--sfx")){
   }
   process.exit(0);
 }
+// --interview: every Interview statement (truth, lie, and the line a caught liar says) in its witness's voice, saved
+// to public/worlds/<story>/interview/<expedition>-<character>-<truth|lie|caught>.mp3, so nothing calls an AI at play
+// time. Plain standard English, steady natural settings (no exaggerated accents). Skips files that exist unless --force.
+if(process.argv.includes("--interview")){
+  if(!elevenLabsKey)throw new Error("ELEVENLABS_API_KEY is required for Interview audio.");
+  const force=process.argv.includes("--force");
+  for(const id of (selectedWorld??"sleepy-hollow").split(",")){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(join(root,id,"world.json"),"utf8")));
+    for(const a of interviewAudioList(world)){
+      const out=join(process.cwd(),"public",...a.path.split("/").filter(Boolean));
+      if(!force){try{await readFile(out);continue}catch{}}
+      if(!a.voice)throw new Error(`${a.character} has no voice`);
+      const res=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(a.voice)}`,{method:"POST",headers:{"xi-api-key":elevenLabsKey,"Content-Type":"application/json","Accept":"audio/mpeg"},body:JSON.stringify({text:a.text,model_id:"eleven_turbo_v2_5",voice_settings:{stability:0.6,similarity_boost:0.75,style:0}})});
+      if(!res.ok)throw new Error(`ElevenLabs failed for ${a.path} (${res.status})`);
+      await mkdir(join(out,".."),{recursive:true});await writeFile(out,Buffer.from(await res.arrayBuffer()));
+      console.log(`Interview ${a.path} · ${a.text.length} characters`);
+    }
+  }
+  process.exit(0);
+}
 if(portraitsMode||ambientMode||hologramsMode){
   const worlds=(selectedWorld??"sleepy-hollow,trifles,tell-tale-heart").split(",");
   // Period and setting per story, so every portrait matches its scene art.
@@ -156,6 +177,7 @@ if(portraitsMode||ambientMode||hologramsMode){
     "tell-tale-heart/narrator":"Show him only as a shadowed silhouette from the side: no visible face or features, just the outline of head and shoulders in dark clothing, lit faintly from behind.",
     "sleepy-hollow/brom-bones":"A burly, broad-shouldered young farmer with short curly black hair, a bold, good-humored face, and a fur cap with a fox tail.",
     "sleepy-hollow/hans-van-ripper":"An older, weathered Dutch farmer with a stern, practical face.",
+    "sleepy-hollow/katrina-van-tassel":"A young woman of eighteen with rosy cheeks and light hair pinned under a small white cap, in a modest 1790s Dutch farm dress with a laced bodice and a shawl, wearing old gold earrings and a gold chain; a lively, confident, slightly teasing expression. Modest and age-appropriate.",
     "tell-tale-heart/officer":"A woman police officer of the period in a plain dark wool uniform coat, no badge or insignia, with a calm, observant face.",
   };
   for(const id of worlds){

@@ -6,7 +6,12 @@
 // (screened; a flagged one is kept for the teacher only) and race_tap (the one-shot answer, scored on the server from
 // the beat's start against the student's own extended time). Points, the reveal, the board, the podium and the class
 // stats come from the rows.
-import type { WorldPack } from "../world-schema.ts";
+// An expedition with an Interview opens with it: for each witness the class votes on a question card (vote, 20
+// seconds), then the witness answers on the board (testify; the host moves on). One witness lies, picked per game. The
+// finale is Name the Liar: every phone locks in the liar and the line privately (liar, 90 seconds), and nothing is
+// shown until the board reveals the liar with the class breakdown (verdict). Rows: interview_vote and liar_lock.
+import type { Interview, WorldPack } from "../world-schema.ts";
+import { LIAR_SECONDS, VOTE_SECONDS, cardWinner, liarCheck, type LiarAnswer } from "../interview.ts";
 import type { SourcePassage } from "../source-passages.ts";
 import type { LivePlayer, LiveResponse, LiveSquad } from "./engine.ts";
 import { GIST_SECONDS, SCREEN_MS, TESTIMONY_MS, TYPED_SECONDS, TYPE_INFO, chunkTokens, expeditionChunks, gistPoints, limitMs, proofShown, scoreAnswer, timeScale, type Answer, type RaceChunk } from "../expedition.ts";
@@ -15,9 +20,10 @@ import { bandOf, type GradeBand } from "../best-standards.ts";
 import { screenBoardText } from "../safety.ts";
 
 export type ExpSettings = { expeditionId: string; gradeBand: GradeBand; questions: boolean; highlighter: boolean; autoAdvance: boolean };
-export const LIVE_BEATS = ["read", "process", "ask", "race", "reveal", "board", "countdown"] as const;
+export const LIVE_BEATS = ["vote", "testify", "read", "process", "ask", "race", "reveal", "board", "countdown", "liar", "verdict"] as const;
 export type LiveBeat = (typeof LIVE_BEATS)[number];
-export type LiveRaceRound = { type: "race"; settings: ExpSettings; step: number; beat: LiveBeat; beatStartedAt: string; squadsOn: boolean; pinned?: string | null; pausedAt?: string | null };
+export type LiveRaceRound = { type: "race"; settings: ExpSettings; step: number; beat: LiveBeat; beatStartedAt: string; squadsOn: boolean; pinned?: string | null; pausedAt?: string | null; interview?: { liar: number; witnesses: number } | null };
+export const interviewOf = (world: WorldPack, round: Pick<LiveRaceRound, "settings" | "interview">): Interview | null => (round.interview ? world.expeditions?.find((e) => e.id === round.settings.expeditionId)?.interview ?? null : null);
 export const isBeat = (b: unknown): b is LiveBeat => (LIVE_BEATS as readonly string[]).includes(String(b));
 
 export function parseExpSettings(x: unknown, world: WorldPack, grade = 7): ExpSettings | null {
@@ -34,23 +40,30 @@ export const asksHere = (round: Pick<LiveRaceRound, "settings">, step: number) =
 // The next beat after this one; after the countdown, the next chunk (or the end).
 export function nextBeat(round: LiveRaceRound, chunks: RaceChunk[]): { step: number; beat: LiveBeat } | "end" {
   const b = round.beat, s = round.step;
+  if (b === "vote") return { step: s, beat: "testify" };
+  if (b === "testify") return s + 1 < (round.interview?.witnesses ?? 0) ? { step: s + 1, beat: "vote" } : { step: 0, beat: "read" };
+  if (b === "liar") return { step: s, beat: "verdict" };
+  if (b === "verdict") return "end";
   if (b === "read") return { step: s, beat: "process" };
   if (b === "process") return { step: s, beat: asksHere(round, s) ? "ask" : "race" };
   if (b === "ask") return { step: s, beat: "race" };
   if (b === "race") return { step: s, beat: "reveal" };
   if (b === "reveal") return { step: s, beat: "board" };
   if (b === "board") return { step: s, beat: "countdown" };
-  return s + 1 < chunks.length ? { step: s + 1, beat: "read" } : "end";
+  return s + 1 < chunks.length ? { step: s + 1, beat: "read" } : round.interview ? { step: s, beat: "liar" } : "end";
 }
 // How long a beat runs for one player (milliseconds), or null for reading (no timer). The question's clock for Catch
 // the Lie starts after the testimony.
 export function beatMs(round: LiveRaceRound, chunk: RaceChunk | undefined, setting?: string | null) {
   const b = round.beat;
+  if (b === "vote") return limitMs(VOTE_SECONDS, setting);
+  if (b === "liar") return limitMs(LIAR_SECONDS, setting);
+  if (b === "testify" || b === "verdict") return null;
   if (b === "read" || !chunk) return null;
   if (b === "process") return limitMs(GIST_SECONDS, setting);
   if (b === "ask") return limitMs(TYPED_SECONDS, setting);
   if (b === "race") return limitMs(TYPE_INFO[chunk.chunk.question.type].seconds, setting) + (chunk.chunk.question.type === "catch_lie" ? TESTIMONY_MS : 0);
-  return Math.round(SCREEN_MS[b === "reveal" ? "result" : b] * timeScale(setting));
+  return Math.round(SCREEN_MS[b === "reveal" ? "result" : (b as "board" | "countdown")] * timeScale(setting));
 }
 
 // ---------- One player's chunk ----------
@@ -70,10 +83,27 @@ export function playerChunk(responses: LiveResponse[], roundIndex: number, step:
 
 // ---------- Answers ----------
 // What a player sent this beat, checked and scored, or why it can't count. One shot: one answer per question.
-export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses: LiveResponse[], roundIndex: number, playerId: string, kind: string, payload: Record<string, unknown>, now: number, timeSetting: string): { payload: Record<string, unknown>; flagged: boolean } | string {
+export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses: LiveResponse[], roundIndex: number, playerId: string, kind: string, payload: Record<string, unknown>, now: number, timeSetting: string, iv: Interview | null = null): { payload: Record<string, unknown>; flagged: boolean } | string {
   const chunk = chunks[round.step], me = playerChunk(responses, roundIndex, round.step, playerId);
   if (!chunk) return "The race is over.";
   const since = Math.max(0, now - Date.parse(round.beatStartedAt));
+  // The Interview: one vote per witness, for one of the two cards.
+  if (kind === "interview_vote") {
+    if (round.beat !== "vote") return "Voting is closed.";
+    if (playerVote(responses, roundIndex, round.step, playerId) !== null) return "You already voted.";
+    const card = Number(payload.card);
+    return card === 0 || card === 1 ? { payload: { step: round.step, card }, flagged: false } : "Pick one of the two questions.";
+  }
+  // Name the Liar: one try, checked here and kept private until the reveal; past the time it counts for 0.
+  if (kind === "liar_lock") {
+    if (round.beat !== "liar" || !iv || !round.interview) return "Name the Liar isn't open.";
+    if (playerLiar(responses, roundIndex, playerId)) return "You've already locked in.";
+    const a: LiarAnswer = { liar: typeof payload.liar === "string" ? payload.liar : null, line: typeof payload.line === "string" ? payload.line.slice(0, 2000) : null };
+    if (!a.liar || !iv.witnesses.some((w) => w.character === a.liar)) return "Pick a witness.";
+    if (!a.line) return "Tap the line that proves it.";
+    const late = since > limitMs(LIAR_SECONDS, timeSetting) + 1500, r = liarCheck(iv, round.interview.liar, a);
+    return { payload: { step: chunks.length - 1, liar: a.liar, line: a.line, named: r.named, solved: r.solved && !late, late, points: late ? 0 : r.points }, flagged: false };
+  }
   if (kind === "race_ready") {
     if (round.beat !== "read") return "Reading time is over.";
     return me.ready ? "You're already ready." : { payload: { step: round.step }, flagged: false };
@@ -124,7 +154,7 @@ export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses:
 // Each player's points through a step (inclusive): Gist check and question points.
 export function raceTotals(responses: LiveResponse[], roundIndex: number, players: LivePlayer[], through: number) {
   const t = new Map(players.map((p) => [p.id, 0]));
-  for (const r of responses) if (r.roundIndex === roundIndex && (r.kind === "race_gist" || r.kind === "race_tap") && r.playerId && Number(r.payload.step) <= through) t.set(r.playerId, (t.get(r.playerId) ?? 0) + Number(r.payload.points ?? 0));
+  for (const r of responses) if (r.roundIndex === roundIndex && (r.kind === "race_gist" || r.kind === "race_tap" || r.kind === "liar_lock") && r.playerId && Number(r.payload.step) <= through) t.set(r.playerId, (t.get(r.playerId) ?? 0) + Number(r.payload.points ?? 0));
   return t;
 }
 // The board after a step: players (or squads, by average, when squads are on) with their move since the step before.
@@ -155,10 +185,29 @@ export const raceReadiness = (round: LiveRaceRound, responses: LiveResponse[], r
   readiness(rows(responses, roundIndex, "race_ready", round.step).map((r) => r.playerId!).filter(Boolean), players.map((p) => p.id), round.settings.autoAdvance);
 // Who has answered this beat (the host can move on once most have; it waits only on extra time someone still uses).
 export function raceDone(round: LiveRaceRound, responses: LiveResponse[], roundIndex: number, players: LivePlayer[]) {
-  return players.filter((p) => { const c = playerChunk(responses, roundIndex, round.step, p.id); return round.beat === "process" ? c.gist !== null : round.beat === "ask" ? c.asked : c.done; }).map((p) => p.id);
+  return players.filter((p) => {
+    if (round.beat === "vote") return playerVote(responses, roundIndex, round.step, p.id) !== null;
+    if (round.beat === "liar" || round.beat === "verdict") return !!playerLiar(responses, roundIndex, p.id);
+    const c = playerChunk(responses, roundIndex, round.step, p.id); return round.beat === "process" ? c.gist !== null : round.beat === "ask" ? c.asked : c.done;
+  }).map((p) => p.id);
 }
 export const raceAnswered = (round: LiveRaceRound, responses: LiveResponse[], roundIndex: number, players: LivePlayer[]) => raceDone(round, responses, roundIndex, players).length;
 // "Your question": up to 3 questions for the board, never a flagged one and never a name; the teacher can pin one.
 export function raceQuestions(responses: LiveResponse[], roundIndex: number, step: number) {
   return rows(responses, roundIndex, "race_question", step).filter((r) => !r.flagged).map((r) => ({ id: r.id, text: String(r.payload.text) }));
 }
+
+// ---------- The Interview and Name the Liar ----------
+export type LiarLock = { step: number; liar: string; line: string; named: boolean; solved: boolean; late: boolean; points: number };
+export const playerVote = (responses: LiveResponse[], roundIndex: number, step: number, playerId: string) => {
+  const r = rows(responses, roundIndex, "interview_vote", step).find((x) => x.playerId === playerId); return r ? Number(r.payload.card) : null;
+};
+export const playerLiar = (responses: LiveResponse[], roundIndex: number, playerId: string) => (rows(responses, roundIndex, "liar_lock").find((x) => x.playerId === playerId)?.payload as LiarLock | undefined) ?? null;
+// The class's votes for each witness so far, and the card each witness answered (the most votes; a tie takes the first).
+export function liveCards(responses: LiveResponse[], roundIndex: number, witnesses: number) {
+  const votes = Array.from({ length: witnesses }, (_, k) => { const v = rows(responses, roundIndex, "interview_vote", k).map((r) => Number(r.payload.card)); return [v.filter((x) => x === 0).length, v.filter((x) => x === 1).length]; });
+  return { votes, cards: votes.map((v) => cardWinner([...Array(v[0]).fill(0), ...Array(v[1]).fill(1)])) };
+}
+// Every player's answer at the reveal (no lock counts as naming no one).
+export const liarAnswers = (responses: LiveResponse[], roundIndex: number, players: LivePlayer[]): LiarAnswer[] =>
+  players.map((p) => { const l = playerLiar(responses, roundIndex, p.id); return { liar: l?.liar ?? null, line: l?.line ?? null }; });

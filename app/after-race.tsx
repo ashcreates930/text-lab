@@ -7,13 +7,14 @@ import {ArrowRight,Check,Download,Lightbulb,Printer,Star} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
 import {chunkTokens,type Answer} from "@/lib/expedition";
-import {caseNotesPdf,refresherAward,type CaseNote} from "@/lib/case-notes";
+import {caseNotesPdf,refresherAward,type CaseNote,type RefresherViewData} from "@/lib/case-notes";
+import {saidLine,type InterviewNote} from "@/lib/interview";
 import {AnswerBars,ChunkText,WordProof,type ChunkView} from "./expedition-race";
 import {ReadingPanel} from "./reading-panel";
 import {focusScreenTop} from "./screen-focus";
 
 // One Refresher item as the screen needs it (the answers stay with whoever checks).
-export type RefresherView={kind:"question"|"gist";chunk:number;task:"gist"|"meaning"|"words"|"line"|"pin2";typeName:string;prompt:string;hint:string;chunkView:ChunkView;passages:{id:string;text:string}[];options:string[]|null;callPassages:{id:string;text:string}[]|null;result?:RefresherResult|null};
+export type RefresherView=RefresherViewData&{chunkView:ChunkView;result?:RefresherResult|null};
 type RefresherResult={fixed:boolean;shown:number[];lines:string[]};
 // Solo checks here and returns the result; a live phone sends the answer and the result comes back on the item.
 export type RefresherCheck=(k:number,a:Answer)=>Promise<RefresherResult|null|void>|RefresherResult;
@@ -33,7 +34,7 @@ export function Refresher({items,world,check,onDone}:{items:RefresherView[];worl
  const award=refresherAward(items.map(x=>({index:x.chunk-1,kind:x.kind})),items.map((_,i)=>fixed[i]??false));
  return <section aria-labelledby="rf-h" className="mt-2 flex flex-col gap-3">
   <div className="flex items-center justify-between"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Refresher · {k+1} of {items.length} · no timer</p><p className="flex items-center gap-1 font-display text-[18px] font-bold text-gold" aria-label={`${award.stars} stars`}>{Array.from({length:items.length},(_,i)=><Star key={i} size={18} className={fixed[i]?"fill-gold text-gold":"text-muted"} aria-hidden/>)}</p></div>
-  <h1 id="rf-h" className="text-[24px] leading-tight outline-none">{it.kind==="gist"?`Chunk ${it.chunk}: which is the best summary?`:`Chunk ${it.chunk} · ${it.typeName}: ${it.prompt}`}</h1>
+  <h1 id="rf-h" className="text-[24px] leading-tight outline-none">{it.kind==="liar"?`${it.typeName}: ${it.prompt}`:it.kind==="gist"?`Chunk ${it.chunk}: which is the best summary?`:`Chunk ${it.chunk} · ${it.typeName}: ${it.prompt}`}</h1>
   <p className="flex items-start gap-2 rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold"><Lightbulb size={18} className="mt-0.5 shrink-0 text-gold" aria-hidden/>{it.hint}</p>
   {result?<div aria-live="assertive">{result.fixed
     ?<div className="moment-pop rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">+1 star</p><p className="font-display text-[32px] font-bold leading-none">Fixed!</p></div>
@@ -44,7 +45,7 @@ export function Refresher({items,world,check,onDone}:{items:RefresherView[];worl
   :<>{(it.task==="gist"||it.task==="meaning")&&it.options&&<><AnswerBars label={it.prompt} options={it.options.map(t=>({text:t}))} picked={null} onPick={i=>lock(it.task==="gist"?{choice:i}:{choice2:i})}/><div className="mt-1"><ChunkText chunk={it.chunkView} world={world} tokens={tokens}/></div></>}
    {it.task==="words"&&<><p className="text-[15px] font-bold text-muted">Tap the words that prove it, then lock in.</p><WordProof tokens={tokens} selected={draft.words??[]} onToggle={i=>setDraft(d=>{const w=new Set(d.words??[]);if(w.has(i))w.delete(i);else w.add(i);return {...d,words:[...w].sort((a,b)=>a-b)}})}/>
     <button type="button" disabled={!draft.words?.length} onClick={()=>lock(draft)} className="case-primary w-full justify-center">Lock in <ArrowRight size={18} aria-hidden/></button></>}
-   {it.task==="line"&&<><p className="text-[15px] font-bold text-muted">Tap the line that proves it, then lock in.</p><ReadingPanel passages={it.passages as SourcePassage[]} glossary={world.glossary} selected={draft.lines?.[0]} kept={[]} onTap={l=>setDraft({lines:[l.text]})}/>
+   {it.task==="line"&&<><p className="text-[15px] font-bold text-muted">Tap the line that proves it, then lock in.</p><ReadingPanel className={it.kind==="liar"?"max-h-[55dvh]":undefined} passages={it.passages as SourcePassage[]} glossary={world.glossary} selected={draft.lines?.[0]} kept={[]} onTap={l=>setDraft({lines:[l.text]})}/>
     <button type="button" disabled={!draft.lines?.length} onClick={()=>lock(draft)} className="case-primary w-full justify-center">Lock in <ArrowRight size={18} aria-hidden/></button></>}
    {it.task==="pin2"&&<><p className="text-[15px] font-bold text-muted">Pin 2 lines that back one of the calls ({draft.lines?.length??0} of 2).</p><ReadingPanel className="max-h-[55dvh]" passages={(it.callPassages??it.passages) as SourcePassage[]} glossary={world.glossary} kept={draft.lines??[]} onTap={l=>setDraft(d=>{const ls=d.lines??[];return {lines:ls.includes(l.text)?ls.filter(x=>x!==l.text):ls.length>=2?ls:[...ls,l.text]}})}/>
     <button type="button" disabled={(draft.lines?.length??0)!==2} onClick={()=>lock(draft)} className="case-primary w-full justify-center">Lock in <ArrowRight size={18} aria-hidden/></button></>}</>}
@@ -53,16 +54,25 @@ export function Refresher({items,world,check,onDone}:{items:RefresherView[];worl
 
 // ---------- Case Notes ----------
 const status=(n:CaseNote)=>n.rightFirstTry?{label:"Proved on the one try",cls:"bg-success text-on-success",Icon:Check}:n.fixed?{label:"Fixed in the Refresher",cls:"bg-gold text-on-gold",Icon:Star}:{label:n.fixed===false?"Not fixed yet":"Missed",cls:"bg-panel-2 text-ink",Icon:null};
-export function CaseNotesView({notes,student,story,expedition,award,onNote,bonus,onDone}:{notes:CaseNote[];student:string;story:string;expedition:string;award?:{stars:number;of:number;badge:string|null};onNote?:(chunk:number,text:string)=>void;bonus?:React.ReactNode;onDone?:()=>void}){
+export function CaseNotesView({notes,student,story,expedition,award,onNote,bonus,onDone,interview}:{notes:CaseNote[];student:string;story:string;expedition:string;award?:{stars:number;of:number;badge:string|null};onNote?:(chunk:number,text:string)=>void;bonus?:React.ReactNode;onDone?:()=>void;interview?:InterviewNote|null}){
  useLayoutEffect(()=>{focusScreenTop()},[]);
  const file=useMemo(()=>`case-notes-${expedition.toLowerCase().replace(/[^a-z0-9]+/g,"-")}.pdf`,[expedition]);
- function download(){caseNotesPdf(student,story,expedition,notes).save(file)}
+ function download(){caseNotesPdf(student,story,expedition,notes,interview).save(file)}
  const right=notes.filter(n=>n.rightFirstTry).length;
  return <section aria-labelledby="cn-h" className="case-notes mt-2 flex flex-col gap-3">
   <div><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{story} · {expedition}</p><h1 id="cn-h" className="text-[30px] outline-none">Case Notes</h1>
    <p className="text-[16px] text-muted">{student} · {right} of {notes.length} proved on the one try{award&&award.of>0?` · ${award.stars} of ${award.of} fixed in the Refresher`:""}</p></div>
   {award?.badge&&<p className="no-print inline-flex w-fit items-center gap-2 rounded-full bg-gold px-4 py-2 font-display text-[18px] font-bold text-on-gold"><Star size={18} className="fill-on-gold" aria-hidden/>Badge: {award.badge}</p>}
   <div className="no-print flex flex-wrap gap-2"><button type="button" onClick={()=>window.print()} className="case-secondary !min-h-11"><Printer size={18} aria-hidden/>Print</button><button type="button" onClick={download} className="case-secondary !min-h-11"><Download size={18} aria-hidden/>Download PDF</button></div>
+  {interview&&<section aria-labelledby="cn-iv" className="rounded-card bg-panel p-4">
+   <div className="flex flex-wrap items-center justify-between gap-2"><h2 id="cn-iv" className="font-display text-[18px] font-bold">The Interview</h2>
+    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[13px] font-extrabold ${interview.solved?"bg-gold text-on-gold":interview.fixed?"bg-gold text-on-gold":"bg-panel-2 text-ink"}`}>{interview.solved?<><Check size={14} aria-hidden/>Case solved</>:interview.fixed?<><Star size={14} aria-hidden/>Fixed in the Refresher</>:"Not solved"}</span></div>
+   <ul className="mt-2 grid gap-1.5 text-[15px] leading-snug">{interview.said.map(s=><li key={s.character}>{saidLine(s)}</li>)}</ul>
+   <dl className="mt-2 grid gap-1.5 text-[15px] leading-snug">
+    <div><dt className="inline font-extrabold">I named: </dt><dd className="inline">{interview.pick??"no one"}{interview.line?<> · <span className="font-serif">"{interview.line.replace(/\s+/g," ")}"</span></>:null}</dd></div>
+    <div><dt className="inline font-extrabold">The liar: </dt><dd className="inline">{interview.liar}</dd></div>
+    <div><dt className="inline font-extrabold">The proof: </dt><dd className="inline font-serif">{interview.lieLines.map(l=>`"${l.replace(/\s+/g," ")}"`).join(" ")}</dd></div>
+   </dl></section>}
   <ol className="flex flex-col gap-3">{notes.map(n=>{const s=status(n);return <li key={n.chunk} className="rounded-card bg-panel p-4">
    <div className="flex flex-wrap items-center justify-between gap-2"><p className="font-display text-[18px] font-bold">Chunk {n.chunk} · {n.type}</p><span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[13px] font-extrabold ${s.cls}`}>{s.Icon&&<s.Icon size={14} aria-hidden/>}{s.label}</span></div>
    <dl className="mt-2 grid gap-1.5 text-[15px] leading-snug">

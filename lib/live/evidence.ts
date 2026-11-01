@@ -3,14 +3,19 @@
 // Flagged writing is shown here, marked, because this view is the teacher's only; it never reaches the host screen.
 import type { WorldPack } from "../world-schema.ts";
 import { freezeLine } from "../freeze.ts";
-import { raceTotals } from "./race.ts";
+import { interviewOf, liarAnswers, liveCards, playerLiar, raceTotals, type LiveRaceRound } from "./race.ts";
+import { interviewStatements, liarBreakdown, witnessName } from "../interview.ts";
 import { ROLE_INFO, objectionResult, roundLie, scoreLieRound, scoreVerdictRound, storySquadScores, type LivePlayer, type LiveResponse, type LiveSession, type LiveSquad, type Role } from "./engine.ts";
 
 export type LiveMemberEvidence = { nickname: string; studentId: string | null; actions: string[] };
 export type LiveSquadEvidence = { name: string; members: LiveMemberEvidence[]; answer: string; explanation: string; flagged: boolean; result: string; points: number };
 // freezes: every Freeze in the round (who, whom, when), so a teacher can spot a squad being targeted.
 // questions: Proof Race's "Your question" chunks, every student question with its chunk (flagged ones marked).
-export type LiveRoundEvidence = { sessionId: string; date: string; number: number; type: string; prompt: string; squads: LiveSquadEvidence[]; freezes?: string[]; questions?: { nickname: string; chunk: number; text: string; flagged: boolean }[] };
+// interview: a Proof Race's Interview and Name the Liar: the three statements the class heard (and which was the lie),
+// each student's pick, proof line and whether they solved the case, and the class breakdown.
+export type LiveInterviewEvidence = { liar: string; statements: { name: string; card: string; text: string; lied: boolean }[]; named: { name: string; count: number }[]; solved: number; total: number;
+  students: { nickname: string; studentId: string | null; pick: string | null; line: string | null; solved: boolean }[] };
+export type LiveRoundEvidence = { sessionId: string; date: string; number: number; type: string; prompt: string; squads: LiveSquadEvidence[]; freezes?: string[]; questions?: { nickname: string; chunk: number; text: string; flagged: boolean }[]; interview?: LiveInterviewEvidence };
 export type LiveSessionInput = { session: LiveSession; world: WorldPack; squads: LiveSquad[]; players: LivePlayer[]; responses: LiveResponse[]; absent?: string[] };
 
 const TYPE_NAMES = { lie: "Live Spot the Lie", verdict: "Verdict Vote", objection: "Objection!", story: "Story Mode", race: "Proof Race", bonus: "Bonus Round" } as const;
@@ -37,10 +42,12 @@ function actionLine(r: LiveResponse, world: WorldPack) {
     case "race_question": return `Chunk ${Number(r.payload.step) + 1}: asked "${text(r, "text")}"${r.flagged ? " (flagged)" : ""}`;
     case "race_tap": { const p = r.payload as { step: number; correct?: boolean; late?: boolean; answerRight?: boolean; proofRight?: boolean; points?: number };
       return `Chunk ${Number(p.step) + 1}: ${p.correct ? `proved it (${Number(p.points ?? 0)} pts)` : p.late ? "time ran out" : p.answerRight && !p.proofRight ? "right answer, proof missed" : "missed"}`; }
-    case "race_refresh": return `Refresher, chunk ${Number(r.payload.index) + 1}: ${r.payload.fixed ? "fixed it" : "not yet"}`;
+    case "race_refresh": return Number(r.payload.index) < 0 ? `Refresher, Name the Liar: ${r.payload.fixed ? "found the line" : "not yet"}` : `Refresher, chunk ${Number(r.payload.index) + 1}: ${r.payload.fixed ? "fixed it" : "not yet"}`;
     case "race_note": return `Case Notes, chunk ${Number(r.payload.index) + 1}: "${text(r, "text")}"`;
-    case "bonus_pick": return `Bonus Round, chunk ${Number(r.payload.index) + 1}: defended "${text(r, "stem")} ${text(r, "reason")}"`;
+    case "bonus_pick": return `Bonus Round, ${Number(r.payload.index) < 0 ? "Name the Liar" : `chunk ${Number(r.payload.index) + 1}`}: defended "${text(r, "stem")} ${text(r, "reason")}"`;
     case "bonus_submit": return "Bonus Round: handed in the Squad Case File";
+    case "interview_vote": return `Interview, witness ${Number(r.payload.step) + 1}: voted for question ${Number(r.payload.card) === 0 ? "A" : "B"}`;
+    case "liar_lock": return `Name the Liar: named ${witnessName(world, text(r, "liar"))}, proof "${text(r, "line").replace(/\s+/g, " ")}" (${r.payload.solved ? `case solved, ${Number(r.payload.points ?? 0)} pts` : r.payload.late ? "time ran out" : r.payload.named ? "right liar, proof missed" : "not solved"})`;
     case "race_unknown": return `Chunk ${Number(r.payload.step) + 1}: marked words they don't know: ${((r.payload.words as string[] | undefined) ?? []).join(", ")}`;
     default: return "";
   }
@@ -106,7 +113,20 @@ export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] 
     });
     const freezes = rows.filter((r) => r.kind === "story_freeze").map((r) => freezeLine({ by: `${players.find((p) => p.id === r.playerId)?.nickname ?? "A player"} (${squads.find((q) => q.id === r.squadId)?.name ?? "a squad"})`, target: text(r, "targetName"), at: r.createdAt, where: `Story Mode round ${Number(r.payload.step) + 1}` }));
     const questions = rows.filter((r) => r.kind === "race_question").map((r) => ({ nickname: players.find((p) => p.id === r.playerId)?.nickname ?? "A player", chunk: Number(r.payload.step) + 1, text: text(r, "text"), flagged: r.flagged }));
-    out.push({ sessionId: session.id, date, number: i + 1, type: TYPE_NAMES[round.type], prompt, squads: squadRows, ...(freezes.length ? { freezes } : {}), ...(questions.length ? { questions } : {}) });
+    const interview = round.type === "race" ? raceInterview(world, round, responses, i, players) : null;
+    out.push({ sessionId: session.id, date, number: i + 1, type: TYPE_NAMES[round.type], prompt, squads: squadRows, ...(freezes.length ? { freezes } : {}), ...(questions.length ? { questions } : {}), ...(interview ? { interview } : {}) });
   });
   return out;
+}
+
+// A Proof Race's Interview and Name the Liar, for the Evidence view.
+function raceInterview(world: WorldPack, round: LiveRaceRound, responses: LiveResponse[], i: number, players: LivePlayer[]): LiveInterviewEvidence | null {
+  const iv = interviewOf(world, round); if (!iv || !round.interview) return null;
+  const liar = round.interview.liar, cards = liveCards(responses, i, iv.witnesses.length).cards, b = liarBreakdown(iv, liar, liarAnswers(responses, i, players));
+  return {
+    liar: witnessName(world, iv.witnesses[liar].character),
+    statements: interviewStatements(world, iv, liar, cards).map((s) => ({ name: s.name, card: s.card ?? "", text: s.text, lied: s.lied })),
+    named: b.named.map((n) => ({ name: witnessName(world, n.character), count: n.count })), solved: b.solved, total: b.total,
+    students: players.map((p) => { const l = playerLiar(responses, i, p.id); return { nickname: p.nickname, studentId: p.studentId ?? null, pick: l ? witnessName(world, l.liar) : null, line: l?.line ?? null, solved: !!l?.solved }; }),
+  };
 }

@@ -2,7 +2,7 @@
 import type { SourcePassage } from "./source-passages.ts";
 import { evidenceSentences } from "./lies.ts";
 import { sharedRoots } from "./fair-play.ts";
-import type { WorldPack } from "./world-schema.ts";
+import type { Expedition, WorldPack } from "./world-schema.ts";
 import { MIN_TYPES, TYPE_INFO, chunkTokens, expeditionChunks, norm, phraseRange, proofTokens } from "./expedition.ts";
 
 export const CHUNK_WORDS = { min: 50, max: 150, target: [60, 120] as const }, MAX_SENTENCES = 5;
@@ -39,7 +39,10 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
     const types = exp.chunks.map((c) => c.question.type);
     if (new Set(types).size < MIN_TYPES) out.push(`${world.id}/${exp.id}: mixes ${new Set(types).size} question types; needs at least ${MIN_TYPES}`);
     if (types.filter((t) => t === "theme_thread").length !== 1) out.push(`${world.id}/${exp.id}: needs exactly one Theme Thread`);
-    if (types.filter((t) => t === "make_call").length !== 1 || types.at(-1) !== "make_call") out.push(`${world.id}/${exp.id}: Make the Call is the last chunk, once`);
+    // The finale: Name the Liar when the expedition has an Interview, otherwise Make the Call (last chunk, once).
+    const calls = types.filter((t) => t === "make_call").length;
+    if (exp.interview ? calls > 0 : calls !== 1 || types.at(-1) !== "make_call") out.push(exp.interview ? `${world.id}/${exp.id}: Name the Liar is the finale; no Make the Call` : `${world.id}/${exp.id}: Make the Call is the last chunk, once`);
+    out.push(...interviewProblems(world, exp, allLines, names));
     exp.chunks.forEach((c, k) => {
       const at = `${world.id}/${exp.id}/${c.id}`, rc = chunks[k], tokens = chunkTokens(rc.lines), q = c.question;
       for (const sg of c.segments) {
@@ -80,6 +83,27 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
       const texts = [q.prompt, q.hint, q.why, c.discovery.note, ...c.gist.options.map((o) => o.text), ...(q.choices ?? []).map((o) => o.text), ...(q.choices2?.options ?? []).map((o) => o.text), q.testimony?.text ?? "", ...(q.theories ?? []).map((t) => t.name)];
       if (texts.some((t) => dash.test(t))) out.push(`${at}: no em dashes`);
     });
+  }
+  return out;
+}
+
+// The Interview: three different speaking witnesses; every statement's lines are exact lines from this expedition;
+// a statement never repeats its own proof line's key words (students must find the line, not match words).
+export function interviewProblems(world: WorldPack, exp: Expedition, allLines: string[], names: Set<string>) {
+  const out: string[] = [], iv = exp.interview; if (!iv) return out;
+  const at = `${world.id}/${exp.id} interview`;
+  if (new Set(iv.witnesses.map((w) => w.character)).size !== iv.witnesses.length) out.push(`${at}: three different witnesses`);
+  for (const w of iv.witnesses) {
+    const c = world.characters.find((x) => x.id === w.character);
+    if (!c) { out.push(`${at}: ${w.character} is not one of the story's speaking characters`); continue; }
+    if (!c.voice_id) out.push(`${at}: ${w.character} needs a voice`);
+    for (const [kind, st] of [["truth", w.truth], ["lie", w.lie]] as const) {
+      for (const l of st.lines) if (!allLines.includes(l)) out.push(`${at}: ${w.character} ${kind} line "${l.replace(/\s+/g, " ").slice(0, 50)}" is not copied exactly from this expedition`);
+      const shared = sharedRoots(st.text, st.lines, names);
+      if (shared.length) out.push(`${at}: ${w.character} ${kind} repeats words from its proof line (${shared.join(", ")}); paraphrase it`);
+    }
+    if (w.truth.lines.some((l) => w.lie.lines.includes(l)) && w.truth.lines.length === 1 && w.lie.lines.length === 1) out.push(`${at}: ${w.character} truth and lie rest on the same line`);
+    if ([w.truth.text, w.lie.text, w.caught, ...w.cards].some((t) => /—/.test(t))) out.push(`${at}: no em dashes`);
   }
   return out;
 }

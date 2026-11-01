@@ -9,6 +9,7 @@ import { clueGameProblems, cluePanel } from "../lib/clue-game.ts";
 import { readingPortions } from "../lib/source-passages.ts";
 import { bankProblems, sprintProblems } from "../lib/fair-play.ts";
 import { expeditionProblems } from "../lib/expedition-check.ts";
+import { interviewAudioList } from "../lib/interview.ts";
 import { missionProblems } from "../lib/missions.ts";
 import { yourTurnProblems } from "../lib/your-turn.ts";
 import { inflateSync } from "node:zlib";
@@ -60,6 +61,8 @@ for(const folder of await readdir(root,{withFileTypes:true})){
   const problems=[...storybookProblems(result.data,source),...lieProblems(result.data,parseSourcePassages(source)),...studentRoleProblems(result.data),...storyModeProblems(result.data,parseSourcePassages(source)),...clueGameProblems(result.data,parseSourcePassages(source)),...yourTurnProblems(result.data,parseSourcePassages(source)),...missionProblems(result.data,parseSourcePassages(source)),...sprintProblems(result.data,parseSourcePassages(source),(i)=>new Set((readingPortions(parseSourcePassages(source),result.data.scenes)[i]??[]).map((p)=>p.id))),...expeditionProblems(result.data,parseSourcePassages(source)),...bankProblems(result.data,parseSourcePassages(source),(sc,clue)=>cluePanel(result.data,parseSourcePassages(source),sc,clue))];
   // Hologram mode: every hologram listed must exist under public/ as a transparent PNG.
   for(const c of result.data.characters){if(!c.hologram)continue;let png:Buffer;try{png=await readFile(new URL(`../public${c.hologram}`,import.meta.url))}catch{problems.push(`${c.id} hologram ${c.hologram} is missing`);continue}const issue=await hologramPngProblem(png,d=>inflateSync(d));if(issue)problems.push(`${c.id} hologram ${c.hologram} ${issue}`)}
+  // The Interview plays pre-recorded statements only (npm run generate-assets -- --interview).
+  for(const a of interviewAudioList(result.data)){try{await readFile(new URL(`../public${a.path}`,import.meta.url))}catch{problems.push(`Interview audio ${a.path} is missing (npm run generate-assets -- --interview)`)}}
   for(const scene of result.data.scenes)for(const clue of scene.artifacts){const owner=clueOwners.get(clue.id);if(owner&&owner!==result.data.id)problems.push(`clue id ${clue.id} is also used by ${owner}; clue ids must be unique across stories`);clueOwners.set(clue.id,result.data.id)}
   if(problems.length){failed=true;console.error(`Invalid storybook: ${folder.name}`);problems.forEach(x=>console.error(`  - ${x}`));continue}
   console.log(`Valid world pack: ${result.data.id} (${result.data.status??"playable"}, ${result.data.scenes.length} scenes${result.data.storybook?`, ${result.data.storybook.pages.length} storybook pages`:""})`);

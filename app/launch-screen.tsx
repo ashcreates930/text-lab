@@ -22,7 +22,7 @@ export function LaunchScreen({world,ready,onStart,onJoinLive}:{world:WorldPack;r
    <button type="button" onClick={onStart} disabled={!ready} className="flex min-h-[200px] flex-col items-start gap-2 rounded-[24px] bg-primary p-4 text-left text-on-primary shadow-[0_8px_0_var(--color-primary-shadow)] transition-transform active:translate-y-1 disabled:opacity-50 motion-reduce:transition-none">
     <span className="flex w-full items-center justify-between"><span className="rounded-full bg-on-primary px-2.5 py-1 text-[11px] font-extrabold tracking-[.06em] text-highlight">PLAY</span><Zap size={36} strokeWidth={2.2} aria-hidden/></span>
     <span className="mt-1 font-display text-[28px] font-bold leading-none">Start Proof Race</span>
-    <span className="text-[15px] font-bold leading-snug">{ready?"Read a chunk. Race the Lantern Ghost to the line that proves it.":"Proof Race is coming to this story soon."}</span>
+    <span className="text-[15px] font-bold leading-snug">{!ready?"Proof Race is coming to this story soon.":world.expeditions?.[0]?.interview?"Question the witnesses. Race through the story. Name the liar.":"Read a chunk. Race the Lantern Ghost to the line that proves it."}</span>
     <span className="mt-auto inline-flex items-center gap-1 font-display text-[18px] font-bold">Play now <ArrowRight size={18} aria-hidden/></span>
    </button>
    {code===null

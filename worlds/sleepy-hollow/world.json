@@ -256,7 +256,50 @@
           "paragraph": "p028",
           "line": "The neighbors looked upon him with a mixture\nof awe, admiration, and good-will; and, when any madcap prank or rustic\nbrawl occurred in the vicinity, always shook their heads, and warranted\nBrom Bones was at the bottom of it."
         }
-      ]
+      ],
+      "model": {
+        "src": "/characters/brom/brom.glb",
+        "clips": {
+          "talking": "talking",
+          "laughing": "laughing",
+          "head-shake": "head-shake"
+        }
+      }
+    },
+    {
+      "id": "katrina-van-tassel",
+      "name": "Katrina Van Tassel",
+      "gender": "female",
+      "description": "Katrina Van Tassel, eighteen, the only child of a wealthy Dutch farmer in the valley; a little of a coquette, who wears her great-great-grandmother's gold ornaments with the newer fashions.",
+      "personality": "Confident, playful and a little teasing; enjoys being admired and keeps her suitors guessing. Sharp about the valley's people and its stories, and never says more about her own heart than she wants to.",
+      "knowledge_limits": "Knows the valley's tales, her father's farm and the people who visit it, only as far as the source passages show. Knows nothing of what happens after the story ends, and never says whom she favors.",
+      "speech_style": "Bright, quick, plain standard English with no dialect. Short, lively answers, sometimes turned back on the asker with a smile.",
+      "never_reveal": [
+        "Never say whom she favors or whom she will marry.",
+        "Never claim to know what happened to Ichabod on the road home.",
+        "Never describe what was said at her tête-à-tête with Ichabod after the party.",
+        "Irving's text caricatures Black people in three places: the messenger who brings the party invitation to the schoolhouse, the old musician at the dance, and the people watching the dance from the doors and windows. Never repeat, describe, or joke about any of them. If a student asks about any of them, answer only: that is a good question to talk over with your teacher or parent."
+      ],
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "traits": [
+        {
+          "name": "The farmer's only child",
+          "paragraph": "p022",
+          "line": "Among the musical disciples who assembled, one evening in each week,\nto receive his instructions in psalmody, was Katrina Van Tassel,\nthe daughter and only child of a substantial Dutch farmer."
+        },
+        {
+          "name": "A little of a coquette",
+          "paragraph": "p022",
+          "line": "She was withal a\nlittle of a coquette, as might be perceived even in her dress, which was\na mixture of ancient and modern fashions, as most suited to set off\nher charms."
+        },
+        {
+          "name": "Proud of old family gold",
+          "paragraph": "p022",
+          "line": "She wore the ornaments of pure yellow gold, which her\ngreat-great-grandmother had brought over from Saardam; the tempting\nstomacher of the olden time, and withal a provokingly short petticoat,\nto display the prettiest foot and ankle in the country round."
+        }
+      ],
+      "portrait": "/worlds/sleepy-hollow/characters/katrina-van-tassel.png",
+      "hologram": "/worlds/sleepy-hollow/holograms/katrina-van-tassel.png"
     }
   ],
   "glossary": [
@@ -8293,50 +8336,106 @@
             "note": "Nooks of still water: the valley is a calm pool beside a rushing river of change."
           },
           "question": {
-            "type": "make_call",
-            "prompt": "Make the call: what is the Headless Horseman?",
+            "type": "between_lines",
+            "prompt": "What can you infer about how the narrator feels about the busy world beyond the Hollow?",
             "keywords": [
-              "Make the call"
+              "infer",
+              "busy world"
             ],
-            "theories": [
+            "choices": [
               {
-                "id": "real-ghost",
-                "name": "A real ghost haunts the Hollow",
-                "lines": [
-                  "The dominant spirit, however, that haunts this enchanted region, and\nseems to be commander-in-chief of all the powers of the air, is the\napparition of a figure on horseback, without a head.",
-                  "It is said by some\nto be the ghost of a Hessian trooper, whose head had been carried away\nby a cannon-ball, in some nameless battle during the Revolutionary War,\nand who is ever and anon seen by the country folk hurrying along in\nthe gloom of night, as if on the wings of the wind.",
-                  "Indeed,\ncertain of the most authentic historians of those parts, who have been\ncareful in collecting and collating the floating facts concerning this\nspectre, allege that the body of the trooper having been buried in the\nchurchyard, the ghost rides forth to the scene of battle in nightly\nquest of his head, and that the rushing speed with which he sometimes\npasses along the Hollow, like a midnight blast, is owing to his being\nbelated, and in a hurry to get back to the churchyard before daybreak."
-                ]
+                "text": "He treasures quiet places that stay the same while the rest of the country hurries on",
+                "best": true
               },
               {
-                "id": "valley-story",
-                "name": "A story the dreamy valley tells itself",
-                "lines": [
-                  "Certain it is, the place still continues under\nthe sway of some witching power, that holds a spell over the minds of\nthe good people, causing them to walk in a continual reverie.",
-                  "They are\ngiven to all kinds of marvellous beliefs, are subject to trances and\nvisions, and frequently see strange sights, and hear music and voices in\nthe air.",
-                  "However wide awake\nthey may have been before they entered that sleepy region, they are\nsure, in a little time, to inhale the witching influence of the air, and\nbegin to grow imaginative, to dream dreams, and see apparitions.",
-                  "Such is the general purport of this legendary superstition, which has\nfurnished materials for many a wild story in that region of shadows; and\nthe spectre is known at all the country firesides, by the name of the\nHeadless Horseman of Sleepy Hollow."
-                ]
+                "text": "He is excited by every new improvement in the country"
               },
               {
-                "id": "grew-from-truth",
-                "name": "A real soldier's death that grew into a legend",
-                "lines": [
-                  "It is said by some\nto be the ghost of a Hessian trooper, whose head had been carried away\nby a cannon-ball, in some nameless battle during the Revolutionary War,\nand who is ever and anon seen by the country folk hurrying along in\nthe gloom of night, as if on the wings of the wind.",
-                  "Such is the general purport of this legendary superstition, which has\nfurnished materials for many a wild story in that region of shadows; and\nthe spectre is known at all the country firesides, by the name of the\nHeadless Horseman of Sleepy Hollow.",
-                  "The whole neighborhood abounds with local tales, haunted spots,\nand twilight superstitions; stars shoot and meteors glare oftener across\nthe valley than in any other part of the country, and the nightmare,\nwith her whole ninefold, seems to make it the favorite scene of her\ngambols."
-                ]
+                "text": "He thinks the Hollow should catch up with the rest of New York"
               }
             ],
-            "hint": "Any call can win. Pin the two lines that back yours best.",
-            "why": "Each theory has lines that support it; the proof decides.",
+            "proof": {
+              "lines": [
+                "I mention this peaceful spot with all possible laud, for it is in such\nlittle retired Dutch valleys, found here and there embosomed in the\ngreat State of New York, that population, manners, and customs remain\nfixed, while the great torrent of migration and improvement, which is\nmaking such incessant changes in other parts of this restless country,\nsweeps by them unobserved.",
+                "They are like those little nooks of still\nwater, which border a rapid stream, where we may see the straw and\nbubble riding quietly at anchor, or slowly revolving in their mimic\nharbor, undisturbed by the rush of the passing current."
+              ]
+            },
+            "hint": "Look at the words he picks for change and for the valley. Which does he praise?",
+            "why": "He praises the valley with all possible laud because its customs remain fixed while a restless country sweeps by.",
             "standards": [
-              "K12.EE.1.1",
-              "K12.EE.3.1"
+              "K12.EE.3.1",
+              "K12.EE.1.1"
             ]
           }
         }
-      ]
+      ],
+      "interview": {
+        "witnesses": [
+          {
+            "character": "brom-bones",
+            "cards": [
+              "Tell me about the Headless Horseman.",
+              "Where would a traveler run into him?"
+            ],
+            "truth": {
+              "text": "He doesn't keep to the Hollow, not him. He's out on the highways too, and the ground around the old meeting house is where he likes to prowl.",
+              "lines": [
+                "His haunts are not\nconfined to the valley, but extend at times to the adjacent roads, and\nespecially to the vicinity of a church at no great distance."
+              ]
+            },
+            "lie": {
+              "text": "He's out searching for the horse he lost, see, and he's never pressed. He takes his own sweet time getting home, slow as you please.",
+              "lines": [
+                "Indeed,\ncertain of the most authentic historians of those parts, who have been\ncareful in collecting and collating the floating facts concerning this\nspectre, allege that the body of the trooper having been buried in the\nchurchyard, the ghost rides forth to the scene of battle in nightly\nquest of his head, and that the rushing speed with which he sometimes\npasses along the Hollow, like a midnight blast, is owing to his being\nbelated, and in a hurry to get back to the churchyard before daybreak."
+              ],
+              "gesture": "laughing"
+            },
+            "caught": "Ha! All right, you got me. I just like to see folks jump."
+          },
+          {
+            "character": "hans-van-ripper",
+            "cards": [
+              "What should a newcomer know about this part of the country?",
+              "Tell me about the town and the valley near it."
+            ],
+            "truth": {
+              "text": "The farm wives christened the town, on account of their men loitering at the inn whenever they went in to sell their crops.",
+              "lines": [
+                "This name was given, we are told, in\nformer days, by the good housewives of the adjacent country, from the\ninveterate propensity of their husbands to linger about the village\ntavern on market days."
+              ]
+            },
+            "lie": {
+              "text": "That hollow is a full day's journey from town, and I'll tell you plainly, it's the noisiest spot in all the county.",
+              "lines": [
+                "Not far from this village, perhaps about two miles, there is a little\nvalley or rather lap of land among high hills, which is one of the\nquietest places in the whole world."
+              ],
+              "gesture": "head-shake"
+            },
+            "caught": "Hmph. Fine. I may have stretched it a little."
+          },
+          {
+            "character": "katrina-van-tassel",
+            "cards": [
+              "Do the old tales take hold of people here?",
+              "Who believes the stories told in this valley?"
+            ],
+            "truth": {
+              "text": "Folks who come here clear-headed and sensible don't stay that way. Give them a season, and they start spotting ghosts too.",
+              "lines": [
+                "However wide awake\nthey may have been before they entered that sleepy region, they are\nsure, in a little time, to inhale the witching influence of the air, and\nbegin to grow imaginative, to dream dreams, and see apparitions."
+              ]
+            },
+            "lie": {
+              "text": "Only the families born in the Hollow believe those tales. Anyone who moves here from outside just laughs at them.",
+              "lines": [
+                "It is remarkable that the visionary propensity I have mentioned is not\nconfined to the native inhabitants of the valley, but is unconsciously\nimbibed by every one who resides there for a time.",
+                "However wide awake\nthey may have been before they entered that sleepy region, they are\nsure, in a little time, to inhale the witching influence of the air, and\nbegin to grow imaginative, to dream dreams, and see apparitions."
+              ]
+            },
+            "caught": "Oh, you caught that? Clever. I only wanted to see if you were listening."
+          }
+        ]
+      }
     }
   ]
 }

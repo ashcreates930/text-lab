@@ -19,6 +19,7 @@ import {CaseNotesView,Refresher} from "../after-race";
 import {BONUS_STEMS,squadCaseFilePdf,type SquadCaseFile} from "@/lib/case-notes";
 import {focusScreenTop} from "../screen-focus";
 import {AnswerBars,ChunkText,CountdownRing,KeywordPrompt,QuestionPanel,RaceHud,TimerTrack} from "../expedition-race";
+import {InterviewHost,InterviewPlayer,interviewBeat} from "./interview-live";
 
 type HostView=ReturnType<typeof hostView>;
 type PlayerView=ReturnType<typeof playerView>;
@@ -73,7 +74,7 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
  const race=state.race!;
  const timed=round.beat!=="read";
  // Timed beats wait for the longest extra time still in use; the automatic screens stretch for the longest extra time in the room.
- const waiting=round.beat==="process"||round.beat==="ask"||round.beat==="race";
+ const waiting=round.beat==="process"||round.beat==="ask"||round.beat==="race"||round.beat==="vote"||round.beat==="liar";
  const maxScale=Math.max(1,...state.lobby.filter(p=>!waiting||!race.done.includes(p.id)).map(p=>scaleOf(p.extraTime)));
  const totalMs=round.beatMs===null?null:round.beatMs*maxScale;
  const left=useBeatClock(round.beatStartedAt,timed&&totalMs!==null&&!state.session.paused?totalMs/1000:null);
@@ -82,7 +83,8 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
  const everyone=state.counters.players>0&&race.answered>=state.counters.players;
  const due=!state.session.paused&&((round.beat==="read"&&race.ready.advance)||(timed&&left===0)||(waiting&&everyone));
  useEffect(()=>{if(due&&moved.current!==key){moved.current=key;act({action:"race.next"})}},[due,key,act]);
- const next=<button type="button" onClick={()=>act({action:"race.next"})} className="host-btn">{round.beat==="countdown"?(round.step+1>=round.total?"Final podium":"Next chunk"):"Next"} <ArrowRight size={22} aria-hidden/></button>;
+ if(interviewBeat(round.beat)&&round.interview)return <InterviewHost state={state} round={round} world={world} act={act} left={timed&&totalMs!==null?left:null} totalMs={totalMs}/>;
+ const next=<button type="button" onClick={()=>act({action:"race.next"})} className="host-btn">{round.beat==="countdown"?(round.step+1>=round.total?(round.interview?"Name the Liar":"Final podium"):"Next chunk"):"Next"} <ArrowRight size={22} aria-hidden/></button>;
  const tokens=chunkTokens(round.chunk.lines);
  const q=round.question;
  const questions=<div className="mt-3"><p className="text-[20px]">Student questions (no names):</p><ul className="mt-2 grid gap-2">{race.questions.slice(0,3).map(x=><li key={x.id} className="flex items-center justify-between gap-3 rounded-card bg-panel px-5 py-3 text-[clamp(18px,1.8vw,26px)]"><span>{x.text}</span><button type="button" onClick={()=>act({action:"race.pin",questionId:race.pinned===x.id?null:x.id})} aria-pressed={race.pinned===x.id} className="host-btn-secondary"><Pin size={18} aria-hidden/>{race.pinned===x.id?"Pinned":"Pin"}</button></li>)}
@@ -155,6 +157,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  if(!round||!race||!world||!mine)return null;
  const tokens=chunkTokens(round.chunk.lines);
  const q=round.question;
+ if(interviewBeat(round.beat)&&round.interview)return <>{(round.beat==="liar"||round.beat==="verdict")&&<RaceHud score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.total} total={round.total} left={null} title={round.expedition.title}/>}<InterviewPlayer state={state} world={world} act={act} left={round.beat==="vote"||round.beat==="liar"?left:null} myMs={myMs}/></>;
  const hud=<RaceHud score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.step+1} total={round.total} left={round.beat==="read"?null:left} title={round.expedition.title}/>;
  // The proof as token positions: its words, or every word of its lines.
  const shownTokens=round.reveal?.words.length?round.reveal.words:proofTokensOf(tokens,round.chunk.lines,round.reveal?.lines??[]);
@@ -200,7 +203,7 @@ export function RaceEndedPlayer({state,world,act}:{state:PlayerView;world:WorldP
  const after=state.after;
  const mine=f.kind==="squad"?null:f.podium.findIndex(r=>r.id===state.me.id);
  if(stage==="refresher"&&after)return <Refresher items={after.refresher} world={world} check={async(k,a)=>{await act("race_refresh",{k,answer:a})}} onDone={()=>setStage("notes")}/>;
- if(stage==="notes"&&after)return <CaseNotesView notes={after.notes} student={state.me.nickname} story={world.title} expedition={round.expedition.title} award={after.award} onNote={(i,t)=>act("race_note",{index:i,text:t})}
+ if(stage==="notes"&&after)return <CaseNotesView interview={after.interview} notes={after.notes} student={state.me.nickname} story={world.title} expedition={round.expedition.title} award={after.award} onNote={(i,t)=>act("race_note",{index:i,text:t})}
   bonus={<p className="no-print rounded-card bg-violet-soft p-4 text-[16px] font-bold">Bonus Round: when your teacher starts it, your squad compares Case Notes and agrees on the best proof.</p>}/>;
  return <section className="mt-6 text-center"><h1 className="text-[30px] font-bold outline-none">Race over</h1>
   {state.race.place&&<p className="mt-2 text-[20px]">You finished <b>#{state.race.place.rank}</b> of {state.race.place.of} with {state.race.total.toLocaleString()} points.</p>}
@@ -228,7 +231,7 @@ export function BonusPlayer({state,world,act}:{state:PlayerView;world:WorldPack|
   <p className="rounded-card bg-panel-2 px-4 py-3 text-[16px] font-bold">Your role: {role}{role==="Reporter"||!Object.values(b.roles).includes("Reporter")?". You can hand in the Squad Case File.":role==="Skeptic"?". Ask: does the text really say that?":role==="Evidence Keeper"?". Check every proof against the passage.":". Keep the squad moving."}</p>
   <ul className="flex flex-wrap gap-2 text-[14px]">{b.members.map(m=><li key={m.id} className="rounded-full bg-panel px-3 py-1 font-bold">{m.nickname}: {b.roles[m.id]}</li>)}</ul>
   <ol className="flex flex-col gap-3">{b.flagged.map(q=>{const p=b.picks.find(x=>x.index===q.index);return <li key={q.index} className="rounded-card bg-panel p-4">
-   <p className="font-display text-[18px] font-bold">Chunk {q.chunk} · {q.type}</p><p className="mt-1 text-[16px]">{q.question}</p>
+   <p className="font-display text-[18px] font-bold">{q.chunk?`Chunk ${q.chunk} · ${q.type}`:`${q.type}: compare who you named, and why`}</p><p className="mt-1 text-[16px]">{q.question}</p>
    <ul className="mt-2 grid gap-2">{q.answers.map(a=><li key={a.id} className="rounded-row bg-panel-2 px-3 py-2 text-[15px]"><b>{a.nickname}:</b> {a.answer}{a.proof?<> · <span className="font-serif">{a.proof}</span></>:null}</li>)}</ul>
    {p?<p className="mt-2 rounded-row bg-success px-3 py-2 text-[15px] font-bold text-on-success"><Check size={16} className="mr-1 inline" aria-hidden/>Agreed: {b.members.find(m=>m.id===p.from)?.nickname}'s answer, defended by {p.defenderName}: {p.stem} {p.reason}</p>:null}
    {open===q.index?<div className="mt-3 flex flex-col gap-2 rounded-row bg-panel-2 p-3">
@@ -248,9 +251,9 @@ export function BonusPlayer({state,world,act}:{state:PlayerView;world:WorldPack|
 export function SquadFileCard({file,story,expedition,headingId,dark=false}:{file:SquadCaseFile;story:string;expedition:string;headingId?:string;dark?:boolean}){
  return <div className={`case-notes rounded-card ${dark?"bg-panel":"bg-panel"} p-4`}>
   <div className="flex flex-wrap items-center justify-between gap-2"><h2 id={headingId} tabIndex={headingId?-1:undefined} className="text-[24px] outline-none">Squad Case File: {file.squad}</h2><span className="rounded-full bg-gold px-3 py-1 font-display text-[16px] font-bold text-on-gold">+{file.points} bonus</span></div>
-  <ul className="mt-2 text-[15px]">{file.members.map(m=><li key={m.name}><b>{m.name}</b>, {m.role}: defended chunk{m.defended.length===1?"":"s"} {m.defended.join(", ")||"none"}</li>)}</ul>
-  <ol className="mt-3 grid gap-2">{file.items.map(i=><li key={i.chunk} className="rounded-row bg-panel-2 px-3 py-2 text-[15px]"><p className="font-bold">Chunk {i.chunk}: {i.question}</p><p>Agreed: {i.agreed}{i.proof?<> · <span className="font-serif">{i.proof}</span></>:null} <span className={`ml-1 rounded-full px-2 py-0.5 text-[12px] font-extrabold ${i.right?"bg-success text-on-success":"bg-notyet text-on-notyet"}`}>{i.right?"Holds up":"Doesn't hold up"}</span></p><p className="text-muted">From {i.from}'s notes; defended by {i.defender}: {i.why}</p></li>)}</ol>
-  <p className="mt-3 font-display text-[18px] font-bold">The final call: {file.finalCall??"not made"}</p>
+  <ul className="mt-2 text-[15px]">{file.members.map(m=><li key={m.name}><b>{m.name}</b>, {m.role}: defended {m.defended.map(d=>d?`chunk ${d}`:"Name the Liar").join(", ")||"nothing yet"}</li>)}</ul>
+  <ol className="mt-3 grid gap-2">{file.items.map(i=><li key={i.chunk} className="rounded-row bg-panel-2 px-3 py-2 text-[15px]"><p className="font-bold">{i.chunk?`Chunk ${i.chunk}`:"Name the Liar"}: {i.question}</p><p>Agreed: {i.agreed}{i.proof?<> · <span className="font-serif">{i.proof}</span></>:null} <span className={`ml-1 rounded-full px-2 py-0.5 text-[12px] font-extrabold ${i.right?"bg-success text-on-success":"bg-notyet text-on-notyet"}`}>{i.right?"Holds up":"Doesn't hold up"}</span></p><p className="text-muted">From {i.from}'s notes; defended by {i.defender}: {i.why}</p></li>)}</ol>
+  <p className="mt-3 font-display text-[18px] font-bold">{file.items.some(i=>i.chunk===0)?`The verdict: ${file.finalCall??"not agreed"}`:`The final call: ${file.finalCall??"not made"}`}</p>
   <div className="no-print mt-3 flex flex-wrap gap-2"><button type="button" onClick={()=>window.print()} className="case-secondary !min-h-11"><Printer size={18} aria-hidden/>Print</button><button type="button" onClick={()=>squadCaseFilePdf(story,expedition,file).save(`squad-case-file-${file.squad.toLowerCase().replace(/[^a-z0-9]+/g,"-")}.pdf`)} className="case-secondary !min-h-11"><Download size={18} aria-hidden/>Download PDF</button></div>
  </div>;
 }
@@ -260,7 +263,7 @@ export function BonusHost({state,world,act}:{state:HostView;world:WorldPack|null
  const live=state.session.status==="round";
  return <section className="mt-4" aria-labelledby="bh-h">
   <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="bh-h" className="text-[clamp(24px,2.4vw,38px)] font-bold">Bonus Round</h2>{live&&<button type="button" onClick={()=>act({action:"bonus.end"})} className="host-btn">End the Bonus Round</button>}</div>
-  <p className="text-[clamp(18px,1.6vw,24px)] text-muted">Squads compare Case Notes and agree on the strongest proof. Every member defends at least one choice.</p>
+  <p className="text-[clamp(18px,1.6vw,24px)] text-muted">Squads start by comparing who they named as the liar and why, then agree on the strongest proof. Every member defends at least one choice.</p>
   {live?<ul className="mt-4 grid gap-3 md:grid-cols-3">{b.squads.map(q=><li key={q.squadId} className="rounded-card bg-panel p-5"><p className="font-display text-[24px] font-bold">{q.name}</p><p className="mt-1 text-[18px]">{q.agreed} of {q.flagged} agreed</p><p className="text-[16px] text-muted">{q.submitted?"Handed in":q.left?"Still working":"Ready to hand in"}</p></li>)}</ul>
    :<><div className="mt-4"><Leaderboard rows={b.board.map((x,i)=>({id:x.name,name:x.name,points:x.points,gained:x.points,rank:i+1,prevRank:null,move:0}))} dark title="Squad bonus board"/></div>
     <div className="mt-6 grid gap-4 md:grid-cols-2">{b.squads.map(q=><SquadFileCard key={q.squadId} file={q.file} story={world?.title??""} expedition="Proof Race" dark/>)}</div></>}

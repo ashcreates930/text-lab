@@ -6,8 +6,11 @@
 import {useCallback,useEffect,useLayoutEffect,useRef,useState} from "react";
 import {FlipHorizontal2,Play,Square,X} from "lucide-react";
 import {HOLOGRAM_DEFAULTS,copyTransform,hologramLayout,voiceLevel} from "@/lib/hologram";
+import {CharacterStage,type CharacterModel} from "./character-stage";
 
-export type HologramCharacter={id:string;name:string;portrait?:string;hologram?:string};
+// model: a 3D witness renders once off screen and each frame is copied into the four views; without WebGL, enough
+// memory or a quick load, the flat hologram picture shows instead.
+export type HologramCharacter={id:string;name:string;portrait?:string;hologram?:string;model?:CharacterModel|null};
 const PREFS="textlab-hologram";
 // An element can be wired into Web Audio only once, so remember each one's source node.
 const sources=new WeakMap<HTMLMediaElement,MediaElementAudioSourceNode>();
@@ -16,8 +19,9 @@ export const SILENT_WAV="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQ
 const readPrefs=()=>{try{const v=JSON.parse(localStorage.getItem(PREFS)??"null");if(v&&typeof v==="object")return {...HOLOGRAM_DEFAULTS,...v} as typeof HOLOGRAM_DEFAULTS}catch{}return HOLOGRAM_DEFAULTS};
 
 // playKey: when it changes to a new value, play the line (the live Witness stand uses this). unlocked: an audio element
-// and context already unlocked by a tap, for plays that don't come from a tap here.
-export function HologramView({character,worldId,line,sandboxId,onClose,playKey,title,unlocked}:{character:HologramCharacter;worldId:string;line:string;sandboxId:string;onClose?:()=>void;playKey?:string|null;title?:string;unlocked?:{audio:HTMLAudioElement;context:AudioContext|null}}){
+// and context already unlocked by a tap, for plays that don't come from a tap here. audioSrc: a pre-recorded line
+// (the Interview), played instead of asking for the voice.
+export function HologramView({character,worldId,line,sandboxId,onClose,playKey,title,unlocked,audioSrc}:{character:HologramCharacter;worldId:string;line:string;sandboxId:string;onClose?:()=>void;playKey?:string|null;title?:string;unlocked?:{audio:HTMLAudioElement;context:AudioContext|null};audioSrc?:string}){
  const [prefs,setPrefs]=useState(HOLOGRAM_DEFAULTS),[box,setBox]=useState({width:0,height:0});
  const [ui,setUi]=useState(true),[count,setCount]=useState(0),[playing,setPlaying]=useState(false),[notice,setNotice]=useState("");
  const [src,setSrc]=useState(character.hologram??`/worlds/${worldId}/holograms/${character.id}.png`);
@@ -50,7 +54,7 @@ export function HologramView({character,worldId,line,sandboxId,onClose,playKey,t
   for(let n=3;n>0;n--){setCount(n);await new Promise(r=>setTimeout(r,1000))}
   setCount(0);
   try{
-   const r=await fetch("/api/voice",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({sandboxId,text:line.slice(0,1800),worldId,character:character.id})});
+   const r=audioSrc?await fetch(audioSrc):await fetch("/api/voice",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({sandboxId,text:line.slice(0,1800),worldId,character:character.id})});
    if(!r.ok){setNotice("The voice isn't available right now.");return}
    const a=unlocked?.audio??new Audio();a.src=URL.createObjectURL(await r.blob());audio.current=a;a.onended=stop;
    const c=ctx.current;
@@ -64,14 +68,19 @@ export function HologramView({character,worldId,line,sandboxId,onClose,playKey,t
    }else{if(c&&node)node.connect(c.destination);glow(0.8)}
    setPlaying(true);await a.play();
   }catch{setNotice("The voice isn't available right now.");stop()}
- },[line,sandboxId,worldId,character.id,stop]);
+ },[line,sandboxId,worldId,character.id,stop,audioSrc]);// eslint-disable-line react-hooks/exhaustive-deps
  // The Witness stand plays when the host says so.
  const lastKey=useRef(playKey);
  useEffect(()=>{if(playKey&&playKey!==lastKey.current){lastKey.current=playKey;start()}},[playKey,start]);
  const copies=hologramLayout({...box,...prefs});
+ const [solid,setSolid]=useState<HTMLCanvasElement|null>(null),views=useRef<(HTMLCanvasElement|null)[]>([]);
+ // Copy the 3D frame into the four views.
+ useEffect(()=>{if(!solid)return;let raf=0;const draw=()=>{for(const v of views.current){const g=v?.getContext("2d");if(!v||!g)continue;if(v.width!==solid.width){v.width=solid.width;v.height=solid.height}g.clearRect(0,0,v.width,v.height);g.drawImage(solid,0,0)}raf=requestAnimationFrame(draw)};draw();return()=>cancelAnimationFrame(raf)},[solid]);
  return <div role="dialog" aria-modal="true" aria-labelledby="holo-h" className="dark-zone fixed inset-0 z-[100] select-none bg-black text-white" onPointerDown={wake} onKeyDown={e=>{wake();if(e.key==="Escape"&&onClose)onClose()}}>
   <div ref={stage} className="absolute inset-0 overflow-hidden" style={{["--glow" as string]:"0.35"}} aria-hidden>
-   {copies.map(c=><img key={c.side} src={src} alt="" draggable={false} onError={()=>{if(character.portrait&&src!==character.portrait)setSrc(character.portrait)}}
+   {character.model&&<CharacterStage model={character.model} portrait={null} name={character.name} clip={playing?"talking":"idle"} height={512} className="pointer-events-none !fixed -left-[2000px] top-0 w-[512px]" onCanvas={setSolid}/>}
+   {solid?copies.map((c,k)=><canvas key={c.side} ref={el=>{views.current[k]=el}} className="pointer-events-none absolute max-w-none" style={{left:c.x,top:c.y,width:c.size,height:c.size,transform:copyTransform(c),clipPath:c.clip,filter:"brightness(1.15) drop-shadow(0 0 calc(4px + var(--glow) * 22px) rgba(140,235,255,calc(0.25 + var(--glow) * 0.6)))"}}/>)
+   :copies.map(c=><img key={c.side} src={src} alt="" draggable={false} onError={()=>{if(character.portrait&&src!==character.portrait)setSrc(character.portrait)}}
     className="pointer-events-none absolute max-w-none object-contain" style={{left:c.x,top:c.y,width:c.size,height:c.size,transform:copyTransform(c),clipPath:c.clip,filter:"brightness(1.15) drop-shadow(0 0 calc(4px + var(--glow) * 22px) rgba(140,235,255,calc(0.25 + var(--glow) * 0.6)))"}}/>)}
    <div className="absolute rounded-sm" style={{left:box.width/2,top:box.height/2,width:Math.min(box.width,box.height)*prefs.gap,height:Math.min(box.width,box.height)*prefs.gap,transform:"translate(-50%,-50%)",boxShadow:"inset 0 0 0 1px rgba(255,255,255,.08)"}}/>
   </div>

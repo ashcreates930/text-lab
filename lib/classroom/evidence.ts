@@ -199,6 +199,16 @@ export function evidenceCsv(e: ClassEvidence) {
     lines.push("", ["Live round", "Date", "Round type", "Prompt", "Squad", "Student", "Role actions", "Squad answer", "Squad explanation", "Flagged for review", "Squad result", "Squad points"].join(","));
     for (const r of e.live) for (const sq of r.squads) for (const m of sq.members)
       lines.push([String(r.number), r.date, r.type, r.prompt, sq.name, m.nickname, m.actions.join(" | "), sq.answer, sq.explanation, sq.flagged ? "Yes" : "", sq.result, String(sq.points)].map(cell).join(","));
+    // Name the Liar: one row per student per Proof Race, then the class breakdown.
+    const iv = e.live.filter((r) => r.interview);
+    if (iv.length) {
+      lines.push("", ["Name the Liar", "Date", "Student", "Statements heard", "The liar", "Student named", "Student's proof line", "Case solved"].join(","));
+      for (const r of iv) {
+        const x = r.interview!, heard = x.statements.map((s) => `${s.name}${s.lied ? " (the lie)" : ""}: ${s.text}`).join(" | ");
+        for (const st of x.students) lines.push([String(r.number), r.date, st.nickname, heard, x.liar, st.pick ?? "No answer", (st.line ?? "").replace(/\s+/g, " "), st.solved ? "Yes" : "No"].map(cell).join(","));
+        lines.push([String(r.number), r.date, "Class breakdown", "", x.liar, x.named.map((n) => `${n.name}: ${n.count}`).join(" | "), "", `${x.solved} of ${x.total}`].map(cell).join(","));
+      }
+    }
   }
   return lines.join("\r\n");
 }

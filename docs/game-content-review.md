@@ -3966,6 +3966,40 @@ Generated from world.json by `scripts/content-review.ts`. ✓ marks the best opt
 
 #### Expedition: Into the Hollow (10 chunks)
 
+##### The Interview and Name the Liar
+
+Each student picks one card per witness; one witness, picked at random per student, gives the lie and the other two the truth. Name the Liar needs the liar and a proof line. Audio is pre-recorded in each witness's voice.
+
+**Brom Bones**
+
+- Question cards: "Tell me about the Headless Horseman." / "Where would a traveler run into him?"
+- True: "He doesn't keep to the Hollow, not him. He's out on the highways too, and the ground around the old meeting house is where he likes to prowl."
+  - Confirmed by: "His haunts are not confined to the valley, but extend at times to the adjacent roads, and especially to the vicinity of a church at no great distance."
+- False (laughing): "He's out searching for the horse he lost, see, and he's never pressed. He takes his own sweet time getting home, slow as you please."
+  - Disproved by: "Indeed, certain of the most authentic historians of those parts, who have been careful in collecting and collating the floating facts concerning this spectre, allege that the body of the trooper having been buried in the churchyard, the ghost rides forth to the scene of battle in nightly quest of his head, and that the rushing speed with which he sometimes passes along the Hollow, like a midnight blast, is owing to his being belated, and in a hurry to get back to the churchyard before daybreak."
+- When caught: "Ha! All right, you got me. I just like to see folks jump."
+
+**Hans Van Ripper**
+
+- Question cards: "What should a newcomer know about this part of the country?" / "Tell me about the town and the valley near it."
+- True: "The farm wives christened the town, on account of their men loitering at the inn whenever they went in to sell their crops."
+  - Confirmed by: "This name was given, we are told, in former days, by the good housewives of the adjacent country, from the inveterate propensity of their husbands to linger about the village tavern on market days."
+- False (head shake): "That hollow is a full day's journey from town, and I'll tell you plainly, it's the noisiest spot in all the county."
+  - Disproved by: "Not far from this village, perhaps about two miles, there is a little valley or rather lap of land among high hills, which is one of the quietest places in the whole world."
+- When caught: "Hmph. Fine. I may have stretched it a little."
+
+**Katrina Van Tassel**
+
+- Question cards: "Do the old tales take hold of people here?" / "Who believes the stories told in this valley?"
+- True: "Folks who come here clear-headed and sensible don't stay that way. Give them a season, and they start spotting ghosts too."
+  - Confirmed by: "However wide awake they may have been before they entered that sleepy region, they are sure, in a little time, to inhale the witching influence of the air, and begin to grow imaginative, to dream dreams, and see apparitions."
+- False: "Only the families born in the Hollow believe those tales. Anyone who moves here from outside just laughs at them."
+  - Disproved by: "It is remarkable that the visionary propensity I have mentioned is not confined to the native inhabitants of the valley, but is unconsciously imbibed by every one who resides there for a time."
+  - Disproved by: "However wide awake they may have been before they entered that sleepy region, they are sure, in a little time, to inhale the witching influence of the air, and begin to grow imaginative, to dream dreams, and see apparitions."
+- When caught: "Oh, you caught that? Clever. I only wanted to see if you were listening."
+
+Screen text: "One witness will lie to you. Listen closely: after the race you'll name the liar and prove it with a line from the story." · "Which witness lied?" · "Tap the line anywhere in the expedition that shows this is false, then lock in." · "Case solved" · "Not this time." · "It's in your Refresher." · Live: "What should we ask [witness]?" · "Locked in" · "Nothing is revealed until everyone has locked in. Watch the board."
+
 ##### Whose Eyes?
 
 **Chunk 1** (¶3 sentences 1 to 3; 138 words)
@@ -4050,6 +4084,19 @@ Generated from world.json by `scripts/content-review.ts`. ✓ marks the best opt
 - Gist check: The people of the Hollow accept strange sights, and the valley is full of spooky tales. ✓ / The people of the Hollow laugh at ghost stories. / Scientists come to the valley to study stars and meteors.
 - Discovery (figurative): "with her whole ninefold". The nightmare is pictured as a creature with her nine children, playing over the valley at night.
 
+**Chunk 10** (¶9 sentences 1 to 3; 138 words)
+
+- Question: What can you infer about how the narrator feels about the busy world beyond the Hollow?
+- Key words highlighted: infer, busy world
+- Choices: He treasures quiet places that stay the same while the rest of the country hurries on ✓ / He is excited by every new improvement in the country / He thinks the Hollow should catch up with the rest of New York
+- Proof line: "I mention this peaceful spot with all possible laud, for it is in such little retired Dutch valleys, found here and there embosomed in the great State of New York, that population, manners, and customs remain fixed, while the great torrent of migration and improvement, which is making such incessant changes in other parts of this restless country, sweeps by them unobserved."
+- Proof line: "They are like those little nooks of still water, which border a rapid stream, where we may see the straw and bubble riding quietly at anchor, or slowly revolving in their mimic harbor, undisturbed by the rush of the passing current."
+- Refresher hint: Look at the words he picks for change and for the valley. Which does he praise?
+- Why: He praises the valley with all possible laud because its customs remain fixed while a restless country sweeps by.
+- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Gist check: The narrator praises the Hollow as a quiet place that never seems to change. ✓ / The narrator warns that the Hollow is changing too fast. / The narrator says he never wants to see the Hollow again.
+- Discovery (figurative): "nooks of still water". Nooks of still water: the valley is a calm pool beside a rushing river of change.
+
 ##### Catch the Lie
 
 **Chunk 7** (¶6 sentences 1 to 2; 88 words)
@@ -4092,20 +4139,5 @@ Generated from world.json by `scripts/content-review.ts`. ✓ marks the best opt
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Gist check: Everyone who lives in the Hollow, even newcomers, soon starts to dream and see ghosts. ✓ / Newcomers to the Hollow stay wide awake and laugh at the legend. / The Headless Horseman story is only told to children.
 - Discovery (figurative): "region of shadows". Region of shadows: a dark, mysterious place where wild stories grow.
-
-##### Make the Call
-
-**Chunk 10** (¶9 sentences 1 to 3; 138 words)
-
-- Question: Make the call: what is the Headless Horseman?
-- Key words highlighted: Make the call
-- Theory: A real ghost haunts the Hollow. Backed by: "The dominant spirit, however, that haunts this enchanted region, and seems to be…"; "It is said by some to be the ghost of a Hessian trooper, whose head had been car…"; "Indeed, certain of the most authentic historians of those parts, who have been c…"
-- Theory: A story the dreamy valley tells itself. Backed by: "Certain it is, the place still continues under the sway of some witching power, …"; "They are given to all kinds of marvellous beliefs, are subject to trances and vi…"; "However wide awake they may have been before they entered that sleepy region, th…"; "Such is the general purport of this legendary superstition, which has furnished …"
-- Theory: A real soldier's death that grew into a legend. Backed by: "It is said by some to be the ghost of a Hessian trooper, whose head had been car…"; "Such is the general purport of this legendary superstition, which has furnished …"; "The whole neighborhood abounds with local tales, haunted spots, and twilight sup…"
-- Refresher hint: Any call can win. Pin the two lines that back yours best.
-- Why: Each theory has lines that support it; the proof decides.
-- Standards: ELA.K12.EE.1.1, ELA.K12.EE.3.1
-- Gist check: The narrator praises the Hollow as a quiet place that never seems to change. ✓ / The narrator warns that the Hollow is changing too fast. / The narrator says he never wants to see the Hollow again.
-- Discovery (figurative): "nooks of still water". Nooks of still water: the valley is a calm pool beside a rushing river of change.
 
 <!-- expeditions:end -->

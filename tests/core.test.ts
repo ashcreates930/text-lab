@@ -2726,6 +2726,9 @@ test("proof race live: expedition beats, readiness, gist and question saving, on
   // Start expedition 1 without squads; extra time for Cy from the host.
   assert.equal(await host({action:"round.start",type:"race",settings:{expeditionId:"into-the-hollow",gradeBand:"6-8",questions:true}}),null);
   assert.equal(await host({action:"player.time",playerId:ids[2],setting:"2"}),null);
+  // The Interview comes first (tests/interview.test.ts covers it); the host moves through it.
+  assert.equal(pub().beat,"vote");
+  for(let k=0;k<6&&pub().beat!=="read";k++)await host({action:"race.next"});
   assert.deepEqual([pub().beat,pub().step,pub().total,pub().question,pub().beatMs],["read",0,10,null,null],"no question and no timer while reading");
   // Reading: ready, and the host sees the count.
   assert.equal(await act(ids[0],"race_ready"),null);assert.match((await act(ids[0],"race_ready"))??"",/already/);

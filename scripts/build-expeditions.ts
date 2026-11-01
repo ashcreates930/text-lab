@@ -7,7 +7,9 @@ import { evidenceSentences } from "../lib/lies.ts";
 type Ref = [string, number];
 type Q = { type: string; prompt: string; keywords?: string[]; focus?: string; choices?: [string, boolean?][]; choices2?: { prompt: string; options: [string, boolean?][] }; lines?: Ref[]; words?: string[]; testimony?: { speaker: string; text: string }; theories?: { id: string; name: string; lines: Ref[] }[]; hint: string; why: string; standards: string[]; reviewed?: boolean };
 type C = { seg: [string, number, number][]; gist: [string, boolean?][]; discovery: [string, "figurative" | "vocabulary", string]; q: Q };
-type E = { id: string; title: string; chunks: C[] };
+type S = { text: string; lines: Ref[]; gesture?: "laughing" | "head-shake" };
+type W = { character: string; cards: [string, string]; truth: S; lie: S; caught: string };
+type E = { id: string; title: string; chunks: C[]; interview?: W[] };
 
 const SPEC: Record<string, { front_matter: string[]; expeditions: E[] }> = {
   "sleepy-hollow": {
@@ -71,13 +73,24 @@ const SPEC: Record<string, { front_matter: string[]; expeditions: E[] }> = {
         { seg: [["p009", 0, 2]],
           gist: [["The narrator praises the Hollow as a quiet place that never seems to change.", true], ["The narrator warns that the Hollow is changing too fast."], ["The narrator says he never wants to see the Hollow again."]],
           discovery: ["nooks of still water", "figurative", "Nooks of still water: the valley is a calm pool beside a rushing river of change."],
-          q: { type: "make_call", prompt: "Make the call: what is the Headless Horseman?", keywords: ["Make the call"],
-            theories: [
-              { id: "real-ghost", name: "A real ghost haunts the Hollow", lines: [["p006", 0], ["p006", 1], ["p006", 3]] },
-              { id: "valley-story", name: "A story the dreamy valley tells itself", lines: [["p005", 3], ["p005", 4], ["p008", 1], ["p007", 0]] },
-              { id: "grew-from-truth", name: "A real soldier's death that grew into a legend", lines: [["p006", 1], ["p007", 0], ["p005", 5]] },
-            ],
-            hint: "Any call can win. Pin the two lines that back yours best.", why: "Each theory has lines that support it; the proof decides.", standards: ["K12.EE.1.1", "K12.EE.3.1"] } },
+          q: { type: "between_lines", prompt: "What can you infer about how the narrator feels about the busy world beyond the Hollow?", keywords: ["infer", "busy world"],
+            choices: [["He treasures quiet places that stay the same while the rest of the country hurries on", true], ["He is excited by every new improvement in the country"], ["He thinks the Hollow should catch up with the rest of New York"]],
+            lines: [["p009", 0], ["p009", 1]], hint: "Look at the words he picks for change and for the valley. Which does he praise?", why: "He praises the valley with all possible laud because its customs remain fixed while a restless country sweeps by.", standards: ["K12.EE.3.1", "K12.EE.1.1"] } },
+      ],
+      // The Interview: each witness's truth is confirmed, and lie disproved, by exact lines in this expedition.
+      interview: [
+        { character: "brom-bones", cards: ["Tell me about the Headless Horseman.", "Where would a traveler run into him?"],
+          truth: { text: "He doesn't keep to the Hollow, not him. He's out on the highways too, and the ground around the old meeting house is where he likes to prowl.", lines: [["p006", 2]] },
+          lie: { text: "He's out searching for the horse he lost, see, and he's never pressed. He takes his own sweet time getting home, slow as you please.", lines: [["p006", 3]], gesture: "laughing" },
+          caught: "Ha! All right, you got me. I just like to see folks jump." },
+        { character: "hans-van-ripper", cards: ["What should a newcomer know about this part of the country?", "Tell me about the town and the valley near it."],
+          truth: { text: "The farm wives christened the town, on account of their men loitering at the inn whenever they went in to sell their crops.", lines: [["p003", 1]] },
+          lie: { text: "That hollow is a full day's journey from town, and I'll tell you plainly, it's the noisiest spot in all the county.", lines: [["p003", 3]], gesture: "head-shake" },
+          caught: "Hmph. Fine. I may have stretched it a little." },
+        { character: "katrina-van-tassel", cards: ["Do the old tales take hold of people here?", "Who believes the stories told in this valley?"],
+          truth: { text: "Folks who come here clear-headed and sensible don't stay that way. Give them a season, and they start spotting ghosts too.", lines: [["p008", 1]] },
+          lie: { text: "Only the families born in the Hollow believe those tales. Anyone who moves here from outside just laughs at them.", lines: [["p008", 0], ["p008", 1]] },
+          caught: "Oh, you caught that? Clever. I only wanted to see if you were listening." },
       ] }],
   },
 };
@@ -96,7 +109,10 @@ for (const [worldId, spec] of Object.entries(SPEC)) {
         ...(q.lines || q.words ? { proof: { ...(q.lines ? { lines: q.lines.map(line) } : {}), ...(q.words ? { words: q.words } : {}) } } : {}),
         ...(q.testimony ? { testimony: q.testimony } : {}), ...(q.theories ? { theories: q.theories.map((t) => ({ id: t.id, name: t.name, lines: t.lines.map(line) })) } : {}),
         hint: q.hint, why: q.why, standards: q.standards, ...(q.reviewed ? { reviewed: true } : {}) } };
-  }) }));
+  }), ...(e.interview ? { interview: { witnesses: e.interview.map((w) => {
+    const st = (x: S) => ({ text: x.text, lines: x.lines.map(line), ...(x.gesture ? { gesture: x.gesture } : {}) });
+    return { character: w.character, cards: w.cards, truth: st(w.truth), lie: st(w.lie), caught: w.caught };
+  }) } } : {}) }));
   writeFileSync(path, JSON.stringify(world, null, 2) + "\n");
   console.log(`${worldId}: ${world.expeditions.length} expedition(s), ${world.expeditions.reduce((a: number, e: { chunks: unknown[] }) => a + e.chunks.length, 0)} chunks`);
 }

@@ -159,6 +159,18 @@ function DetailPanel({evidence,selected,onClose}:{evidence:ClassEvidence;selecte
  </div>;
 }
 
+// A Proof Race's Interview and Name the Liar: the statements the class heard (the lie marked), the class breakdown,
+// and each student's pick, proof line and whether they solved the case.
+function InterviewEvidence({x}:{x:NonNullable<LiveRoundEvidence["interview"]>}){
+ return <div className="mt-3 rounded-2xl bg-panel-2 p-3">
+  <p className="text-[13px] font-bold uppercase tracking-wide text-highlight">The Interview and Name the Liar</p>
+  <ul className="mt-1 space-y-1.5 text-[15px] leading-6 text-ink">{x.statements.map(s=><li key={s.name}><span className="font-semibold">{s.name}</span>{s.lied?<span className="ml-2 rounded-full bg-notyet-soft px-2 py-0.5 text-[12px] font-bold text-notyet">The lie</span>:null}{s.card?<span className="text-muted"> · asked: {s.card}</span>:null}<br/>"{s.text}"</li>)}</ul>
+  <p className="mt-2 text-[15px] text-ink"><span className="font-semibold">Solved:</span> {x.solved} of {x.total} · <span className="font-semibold">Named:</span> {x.named.map(n=>`${n.name} ${n.count}`).join(", ")}</p>
+  <div className="mt-2 overflow-x-auto"><table className="w-full text-left text-[14px] text-ink"><thead><tr className="text-muted"><th className="py-1 pr-3 font-semibold">Student</th><th className="py-1 pr-3 font-semibold">Named</th><th className="py-1 pr-3 font-semibold">Proof line</th><th className="py-1 font-semibold">Solved</th></tr></thead>
+   <tbody>{x.students.map(s=><tr key={s.nickname} className="border-t border-edge align-top"><td className="py-1 pr-3 font-semibold">{s.nickname}</td><td className="py-1 pr-3">{s.pick??"No answer"}</td><td className="py-1 pr-3 font-serif">{s.line?`"${s.line.replace(/\s+/g," ")}"`:""}</td><td className="py-1">{s.solved?"Yes":"No"}</td></tr>)}</tbody></table></div>
+ </div>;
+}
+
 // Live rounds: one card per round with each squad's answer and result, and what each student did in their role.
 // Flagged writing shows here, marked, for the teacher only; it was hidden from the host screen.
 function LiveRounds({rounds}:{rounds:LiveRoundEvidence[]}){
@@ -169,6 +181,7 @@ function LiveRounds({rounds}:{rounds:LiveRoundEvidence[]}){
    <summary className="cursor-pointer text-[17px] font-semibold text-ink">{r.date} · Round {r.number} · {r.type}<span className="mt-1 block text-[14px] font-normal text-muted">{r.prompt}</span></summary>
    {r.freezes?.length?<div className="mt-3 rounded-2xl bg-violet-soft p-3"><p className="text-[13px] font-bold uppercase tracking-wide text-ink">❄ Freezes this round</p><ul className="mt-1 space-y-1 text-[14px] text-ink">{r.freezes.map((f,i)=><li key={i}>{f}</li>)}</ul></div>:null}
    {r.questions?.length?<div className="mt-3 rounded-2xl bg-panel-2 p-3"><p className="text-[13px] font-bold uppercase tracking-wide text-highlight">Student questions</p><ul className="mt-1 space-y-1.5 text-[15px] leading-6 text-ink">{r.questions.map((q,i)=><li key={i}><span className="font-semibold">{q.nickname}</span>, chunk {q.chunk}: {q.flagged&&<span className="mr-2 inline-flex items-center gap-1 rounded-full bg-notyet-soft px-2 py-0.5 text-[12px] font-bold text-notyet"><Flag size={12}/>Flagged, hidden from the class</span>}{q.text}</li>)}</ul></div>:null}
+   {r.interview?<InterviewEvidence x={r.interview}/>:null}
    <ul className="mt-4 grid gap-3 md:grid-cols-2">{r.squads.map(sq=><li key={sq.name} className="rounded-2xl border border-edge p-4">
     <p className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-[16px] font-bold text-ink">{sq.name}</span><span className="text-[14px] font-semibold tabular-nums text-highlight">{sq.points} pts · {sq.result}</span></p>
     {sq.answer&&<p className="mt-2 text-[15px] italic leading-6 text-ink">“{sq.answer}”</p>}
@@ -221,7 +234,7 @@ function Missions({students}:{students:EvidenceStudent[]}){
    <p className="text-[13px] font-bold uppercase tracking-wide text-highlight">{st.nickname} · {m.title} · {m.found.length} of {m.total} pieces</p>
    <ul className="mt-2 space-y-1.5">{m.found.map(p=><li key={p.line} className="font-serif text-[14px] italic leading-5 text-ink">“{p.line.replace(/\s+/g," ")}”{p.shown&&<span className="ml-2 rounded-full bg-gold-soft px-2 py-0.5 font-sans text-[12px] font-bold not-italic text-gold">shown</span>}</li>)}</ul>
    {m.verdict?<div className="mt-3 border-t border-edge pt-3"><p className="text-[14px] font-bold">Verdict: {m.verdict.theory}{m.verdict.early&&<span className="ml-2 rounded-full bg-success-soft px-2 py-0.5 text-[12px] text-success">Found it before the reveal</span>}</p><p className="mt-1 text-[15px] leading-6">{m.verdict.writing}</p>
-    {m.verdict.pinned.length>0&&<ul className="mt-2 space-y-1.5">{m.verdict.pinned.map(l=><li key={l} className="text-[14px] leading-5"><span className="font-serif italic">“{l.replace(/s+/g," ")}”</span> <span className="font-bold text-muted">· {m.verdict!.compare[l]==="same"?"Points the same way":m.verdict!.compare[l]==="else"?"Points somewhere else":"Not compared yet"}</span></li>)}</ul>}</div>:<p className="mt-3 text-[14px] text-muted">No verdict yet.</p>}
+    {m.verdict.pinned.length>0&&<ul className="mt-2 space-y-1.5">{m.verdict.pinned.map(l=><li key={l} className="text-[14px] leading-5"><span className="font-serif italic">“{l.replace(/\s+/g," ")}”</span> <span className="font-bold text-muted">· {m.verdict!.compare[l]==="same"?"Points the same way":m.verdict!.compare[l]==="else"?"Points somewhere else":"Not compared yet"}</span></li>)}</ul>}</div>:<p className="mt-3 text-[14px] text-muted">No verdict yet.</p>}
   </li>})}</ul>
  </section>;
 }

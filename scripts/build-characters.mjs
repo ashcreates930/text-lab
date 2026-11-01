@@ -56,6 +56,10 @@ for (const [name, c] of Object.entries(CHARACTERS)) {
       anim.addSampler(sampler).addChannel(doc.createAnimationChannel().setTargetNode(node).setTargetPath(ch.getTargetPath()).setSampler(sampler));
     }
   }
+  // The exported rest pose sits the hips half a body lower and forward of where every clip plants them, so the model
+  // jumped when a clip started. The rest pose takes the first clip's first hips position.
+  const hips = nodes.get("mixamorig:Hips"), move = root.listAnimations()[0]?.listChannels().find((ch) => ch.getTargetNode() === hips && ch.getTargetPath() === "translation");
+  if (hips && move) hips.setTranslation(move.getSampler().getOutput().getElement(0, []));
   // Lock every finger bone in a relaxed, half-closed pose (no track moves them).
   for (const n of root.listNodes()) {
     const m = n.getName().match(/(Left|Right)Hand(Index|Middle|Ring|Pinky|Thumb)(\d)/); if (!m) continue;
