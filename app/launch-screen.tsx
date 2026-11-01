@@ -2,11 +2,11 @@
 // The launch screen (after the first tap): the role card on top, one big "Start Proof Race" card and a smaller "Join a
 // live game" tile beside it. Fits one phone screen without scrolling. Proof Race is the only way students play.
 import {useLayoutEffect,useRef,useState} from "react";
-import {ArrowRight,Search,Users,Zap} from "lucide-react";
+import {ArrowRight,Map as MapIcon,Search,Users,Zap} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import {focusScreenTop} from "./screen-focus";
 
-export function LaunchScreen({world,ready,onStart,onJoinLive}:{world:WorldPack;ready:boolean;onStart:()=>void;onJoinLive?:()=>void}){
+export function LaunchScreen({world,ready,onStart,onJoinLive,onMap}:{world:WorldPack;ready:boolean;onStart:()=>void;onJoinLive?:()=>void;onMap?:()=>void}){
  const [code,setCode]=useState<string|null>(null);
  const codeRef=useRef<HTMLInputElement>(null);
  useLayoutEffect(()=>{focusScreenTop()},[]);
@@ -38,5 +38,6 @@ export function LaunchScreen({world,ready,onStart,onJoinLive}:{world:WorldPack;r
      <button type="submit" disabled={clean.length<4} className="btn btn-primary mt-auto !min-h-12 !px-3 !text-[16px]">Join <ArrowRight size={16} aria-hidden/></button>
     </form>}
   </div>
+  {onMap&&<button type="button" onClick={onMap} className="case-secondary w-full justify-center"><MapIcon size={18} aria-hidden/>Expedition map and badges</button>}
  </div>;
 }

@@ -33,7 +33,8 @@ const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|nul
     <h1 className="mt-1 text-[clamp(28px,3vw,48px)] font-bold leading-tight outline-none" tabIndex={-1}>{s.status==="lobby"?"Join the case":s.status==="ended"?"Case closed":round?roundTitle(round.type):"Next round"}</h1></div>
    <div className="flex flex-wrap items-center gap-2">
     <Counter label="Players" value={state.counters.players}/>
-    <Counter label="Squads joined" value={state.counters.squadsJoined}/>
+    {/* Proof Race plays without squads unless the teacher turns them on, so the squad counter hides. */}
+    {!(isRace(round)&&!round.squadsOn)&&<Counter label="Squads joined" value={state.counters.squadsJoined}/>}
     {s.status==="round"&&state.counters.squadsAnswering>0&&<Counter label="Squads submitted" value={`${state.counters.squadsSubmitted}/${state.counters.squadsAnswering}`}/>}
     {s.status==="round"&&(round?.type==="verdict"&&"stage" in round&&round.stage==="vote"||round?.type==="objection"&&"stage" in round&&round.stage==="vote")&&<Counter label="Votes" value={state.counters.votes}/>}
     {s.status==="lobby"&&<LobbyMusic on={s.status==="lobby"}/>}

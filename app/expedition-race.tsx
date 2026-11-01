@@ -21,6 +21,7 @@ import {CaseNotesView,Refresher,type RefresherView} from "./after-race";
 import {caseNotes,refresherAward,refresherCorrect,refresherItems,refresherShown,refresherView,type ChunkResult} from "@/lib/case-notes";
 import {interviewNote,interviewStatements,liarCheck,liarIndex,witnessName,type LiarAnswer} from "@/lib/interview";
 import {InterviewScreen,LiarVerdict,NameTheLiar} from "./interview";
+import type {ExpeditionAttempt} from "@/lib/expedition-progress";
 import {evidenceSentences} from "@/lib/lies";
 
 type Beat="interview"|"read"|"gist"|"question"|"result"|"board"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"notes";
@@ -141,7 +142,7 @@ export function CountdownRing({ms,total,label}:{ms:number;total:number;label:str
 }
 
 // ---------- The solo expedition ----------
-export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="1",highlighter=false,studentKey,onFinish,onExit}:{world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;timeSetting?:string;highlighter?:boolean;studentKey?:string;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void}){
+export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="1",highlighter=false,studentKey,onSave,onFinish,onExit}:{world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;timeSetting?:string;highlighter?:boolean;studentKey?:string;onSave?:(a:ExpeditionAttempt)=>void;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void}){
  const [sound,toggleSound]=useSoundPref("effects",preset);
  const chunks=useMemo(()=>expeditionChunks(world,passages,expeditionId),[world,passages,expeditionId]);
  const exp=world.expeditions?.find(e=>e.id===expeditionId);
@@ -201,6 +202,13 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
  const callAll=joinedPassages(chunks);
  const lie=iv?{name:witnessName(world,iv.witnesses[liar].character),lieText:iv.witnesses[liar].lie.text,lines:iv.witnesses[liar].lie.lines}:null;
  const refViews:RefresherView[]=refItems.map(it=>refresherView(it,chunks,callAll,lie));
+ const attemptId=useMemo(()=>{try{return crypto.randomUUID()}catch{return `a${Date.now()}${Math.random().toString(36).slice(2)}`}},[]),startedIso=useMemo(()=>new Date().toISOString(),[]),finishedIso=useRef<string|null>(null);
+ function save(complete:boolean){if(!onSave||!iv&&records.length<chunks.length)return;finishedIso.current??=new Date().toISOString();
+  const liarAt=refItems.findIndex(x=>x.kind==="liar");
+  onSave({attemptId,worldId:world.id,expeditionId,startedAt:startedIso,finishedAt:finishedIso.current,complete,score,notes:caseNotes(chunks,results,{items:refItems,fixed},notesText),
+   interview:iv?interviewNote(world,iv,liar,cards,liarAnswer,liarAt>=0?!!fixed[liarAt]:null):null,award:complete?refresherAward(refItems,fixed):null})}
+ const saved=useRef(false);
+ useEffect(()=>{if(beat==="finish"&&!saved.current){saved.current=true;save(false)}},[beat]);// eslint-disable-line react-hooks/exhaustive-deps
  if(!c||!q||!exp)return null;
  const info=TYPE_INFO[q.type];
  const names=new Map([["me","You"],["ghost",rivalName]]);
@@ -259,8 +267,8 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
    <p className="mt-6 text-center text-[16px] text-muted">Every point came from a line you proved in the story.</p>
    <button type="button" onClick={()=>go("refresher")} className="case-primary mt-5 min-h-[52px] w-full justify-center">{refItems.length?`Refresher: fix ${refItems.length}`:"Refresher"} <ArrowRight size={18} aria-hidden/></button></section>}
   {beat==="refresher"&&<Refresher items={refViews} world={world} check={(i,a)=>{const it=refItems[i];return refresherShown(it,chunks,refresherCorrect(it,chunks[it.index],a,callAll.flatMap(p=>evidenceSentences(p.text)),lie?.lines),lie?.lines)}} onDone={f=>{setFixed(f);go("notes")}}/>}
-  {beat==="notes"&&<CaseNotesView interview={iv?interviewNote(world,iv,liar,cards,liarAnswer,refItems.findIndex(x=>x.kind==="liar")>=0?!!fixed[refItems.findIndex(x=>x.kind==="liar")]:null):null} student="You" story={world.title} expedition={exp.title} notes={caseNotes(chunks,results,{items:refItems,fixed},notesText)} award={refresherAward(refItems,fixed)} onNote={(i,t)=>setNotesText(n=>({...n,[i]:t}))}
-   bonus={<p className="no-print rounded-card bg-violet-soft p-4 text-[16px] font-bold">Bonus Round: in class, your squad compares Case Notes and agrees on the best proof for every question you answered differently.</p>} onDone={onExit}/>}
+  {beat==="notes"&&<CaseNotesView onDone={()=>{save(true);onExit?.()}} interview={iv?interviewNote(world,iv,liar,cards,liarAnswer,refItems.findIndex(x=>x.kind==="liar")>=0?!!fixed[refItems.findIndex(x=>x.kind==="liar")]:null):null} student="You" story={world.title} expedition={exp.title} notes={caseNotes(chunks,results,{items:refItems,fixed},notesText)} award={refresherAward(refItems,fixed)} onNote={(i,t)=>setNotesText(n=>({...n,[i]:t}))}
+   bonus={<p className="no-print rounded-card bg-violet-soft p-4 text-[16px] font-bold">Bonus Round: in class, your squad compares Case Notes and agrees on the best proof for every question you answered differently.</p>} />}
  </div>;
 }
 

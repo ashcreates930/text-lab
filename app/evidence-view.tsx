@@ -9,11 +9,12 @@ import {useEffect,useMemo,useRef,useState} from "react";
 import {LEVELS,SPEED_FLAG_TEXT} from "@/lib/fair-play";
 import {AlertTriangle,Check,Download,Flag,Gavel,MessageCircle,Radio,ShieldCheck,X} from "lucide-react";
 import type {LiveRoundEvidence} from "@/lib/live/evidence";
+import {ExpeditionEvidence} from "./expedition-evidence";
 import {evidenceCsv,evidenceDetail,type ClassEvidence,type EvidenceClue,type EvidenceStudent} from "@/lib/classroom/evidence";
 
 type Selected={student:EvidenceStudent;clue:EvidenceClue}|null;
 
-export function EvidenceView({evidence,sample=false,className}:{evidence:ClassEvidence;sample?:boolean;className?:string}){
+export function EvidenceView({evidence,sample=false,className,onAssign,onUnassign}:{evidence:ClassEvidence;sample?:boolean;className?:string;onAssign?:(id:string,due:string|null)=>Promise<void>;onUnassign?:(id:string)=>Promise<void>}){
  const [selected,setSelected]=useState<Selected>(null),[verdictOf,setVerdictOf]=useState<EvidenceStudent|null>(null);
  const opener=useRef<HTMLElement|null>(null);
  const {summary,scenes,students}=evidence;
@@ -88,6 +89,7 @@ export function EvidenceView({evidence,sample=false,className}:{evidence:ClassEv
   {evidence.students.some(st=>st.yourTurn?.length)?<YourTurnWriting students={evidence.students}/>:null}
   {evidence.students.some(st=>st.marks?.length||st.claimFlags?.length||st.freezes?.length)?<MarksAndFlags students={evidence.students}/>:null}
   {evidence.storyMode?.some(s=>s.rows.length)?<StoryBoards boards={evidence.storyMode}/>:null}
+  {evidence.expeditions?<ExpeditionEvidence data={evidence.expeditions} onAssign={onAssign} onUnassign={onUnassign}/>:null}
   {evidence.live?.length?<LiveRounds rounds={evidence.live}/>:null}
   {selected&&<DetailPanel evidence={evidence} selected={selected} onClose={close}/>}
   {verdictOf?.verdict&&<VerdictDetail evidence={evidence} student={verdictOf} onClose={close}/>}

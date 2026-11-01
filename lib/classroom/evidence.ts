@@ -3,6 +3,7 @@
 // (students.progress) and the class story's world pack. Shared by the teacher API, the sample classroom, and tests.
 import type { WorldPack } from "../world-schema.ts";
 import type { LiveRoundEvidence } from "../live/evidence.ts";
+import type { expeditionEvidence } from "../expedition-progress.ts";
 import { freezeLine } from "../freeze.ts";
 import { LEVELS, SPEED_FLAG_TEXT } from "../fair-play.ts";
 
@@ -57,6 +58,8 @@ export type ClassEvidence = {
   verdict?: { question: string; standards: string[] };
   // Live rounds the class played: each squad's answer and result, and what each student did in their role.
   live?: LiveRoundEvidence[];
+  // Proof Race expeditions played solo by class students (lib/expedition-progress.ts), with assignments.
+  expeditions?: ReturnType<typeof expeditionEvidence>;
   // Story Mode (teachers only): max and level are the points possible and the goal level reached; per round, tries (misses
   // before the right answer), shown (the answer was shown after three misses, 0 points), typed (a typed "This proves…
   // because…") and flags (speed flags: never shown to students).
@@ -193,6 +196,14 @@ export function evidenceCsv(e: ClassEvidence) {
       const flagged = r.rounds.filter((x) => x.flags?.length).map((x) => `Round ${x.round}: ${x.flags!.map((f) => SPEED_FLAG_TEXT[f as keyof typeof SPEED_FLAG_TEXT] ?? f).join("; ")}`).join(" | ");
       lines.push([sc.sceneTitle, String(r.rank), r.nickname, String(r.score), r.max ? String(r.max) : "", LEVELS.find((l) => l.id === r.level)?.name ?? "", String(r.bestStreak), r.timeSetting === "1" ? "Standard" : r.timeSetting === "untimed" ? "Untimed" : `${r.timeSetting}x`, pts(1), (rd(1)?.proof ?? []).join(" | "), pts(2), rd(2)?.typed ?? rd(2)?.choice ?? "", (rd(2)?.proof ?? []).join(" | "), pts(3), (rd(3)?.proof ?? []).join(" | "), rd(3)?.explanation ?? "", pts(4), rd(4)?.choice ?? "", (rd(4)?.proof ?? []).join(" | "), shownRounds, flagged].map(cell).join(","));
     }
+  }
+  // Proof Race expeditions: one row per student per question (first attempt), tagged to B.E.S.T., then Name the Liar.
+  if (e.expeditions?.expeditions.some((x) => x.rows.some((r) => r.notes.length))) {
+    lines.push("", ["Expedition", "Student", "Finished", "Chunk", "Question type", "Question", "Answer", "Proof", "Proved first try", "Fixed in Refresher", "Gist", "Words not known", "Case Notes", "Standards"].join(","));
+    for (const x of e.expeditions.expeditions) for (const r of x.rows) for (const n of r.notes)
+      lines.push([x.title, r.nickname, r.finished ? r.finished.slice(0, 10) : "No", String(n.chunk), n.type, n.question, n.answer, n.proof, n.rightFirstTry ? "Yes" : "No", n.fixed === null ? "" : n.fixed ? "Yes" : "No", n.gistPick ? (n.gistRight ? "Best summary" : "Not the best") : "", n.unknownWords.join(" | "), n.note, n.standards.join(" | ")].map(cell).join(","));
+    lines.push("", ["Expedition", "Student", "Statements heard", "The liar", "Student named", "Student's proof line", "Case solved"].join(","));
+    for (const x of e.expeditions.expeditions) for (const r of x.rows) if (r.liar) lines.push([x.title, r.nickname, r.liar.said.map((s) => `${s.name}${s.lied ? " (the lie)" : ""}: ${s.text}`).join(" | "), r.liar.liar, r.liar.pick ?? "No answer", (r.liar.line ?? "").replace(/\s+/g, " "), r.liar.solved ? "Yes" : "No"].map(cell).join(","));
   }
   // Live rounds: a second table, one row per student per round (squads score together; no individual ranking).
   if (e.live?.length) {

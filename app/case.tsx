@@ -33,6 +33,9 @@ import {DemoEnding} from "./demo-ending";
 import {ProofRaceSolo} from "./proof-race";
 import {LaunchScreen} from "./launch-screen";
 import {ExpeditionRace} from "./expedition-race";
+import {ExpeditionMap} from "./expedition-map";
+import {loadAttempts,saveAttempt} from "./expedition-store";
+import {expeditionMap,newRank,nextExpedition,type ExpeditionAttempt} from "@/lib/expedition-progress";
 import {LEGACY_MODES} from "@/lib/feature-flags";
 import {hasProofRace} from "@/lib/proof-race";
 import {StoryMode} from "./story-mode";
@@ -56,6 +59,11 @@ export function CaseFlow(props:CaseProps){
 function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,startAtLie,onStarted,onStartOver,onJoinLive}:CaseProps){
  // racing: Proof Race is open (the one way to play when LEGACY_MODES is off).
  const [racing,setRacing]=useState(false);
+ // The expedition map and saved attempts (this device, or the class for a signed-in student).
+ const [mapOpen,setMapOpen]=useState(false),[expedition,setExpedition]=useState<string|null>(null),[earned,setEarned]=useState<string|null>(null);
+ const [attempts,setAttempts]=useState<ExpeditionAttempt[]>([]),[assigned,setAssigned]=useState<{expeditionId:string;due:string|null}[]>([]);
+ const worldId=demo.worldId;
+ useEffect(()=>{if(!worldId)return;let live=true;loadAttempts(worldId,demo.classAuth).then(r=>{if(live){setAttempts(r.attempts);setAssigned(r.assigned)}});return()=>{live=false}},[worldId,demo.classAuth]);
  const [world,setWorld]=useState<WorldPack|null>(null),[passages,setPassages]=useState<SourcePassage[]>([]),[error,setError]=useState("");
  const [openClue,setOpenClue]=useState<string>(""),[openFrame,setOpenFrame]=useState(""),[openWriting,setOpenWriting]=useState(false),[openLeadsFor,setOpenLeadsFor]=useState(""),[verdictOpen,setVerdictOpen]=useState(false),[toast,setToast]=useState(""),[celebrate,setCelebrate]=useState<{sceneId:string;rankUp:string|null}|null>(null),[justProven,setJustProven]=useState(""),[plantClue,setPlantClue]=useState("");
  // Opening a clue or a storyboard frame, or going back to the scene, is a new screen: start at the top with focus on its heading.
@@ -91,9 +99,14 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  const sceneIndex=Math.min(demo.scene,world.scenes.length-1),scene=world.scenes[sceneIndex],role=world.roles.find(r=>r.id===demo.role)!;
  // One way to play (LEGACY_MODES off): the launch screen, then Proof Race. The case flow below stays behind the flag.
  if(!LEGACY_MODES){
-  const firstExpedition=world.expeditions?.[0]?.id;
-  if(racing&&passages.length&&firstExpedition)return <ExpeditionRace world={world} passages={passages} expeditionId={firstExpedition} preset={demo.preset} onExit={()=>setRacing(false)}/>;
-  return <LaunchScreen world={world} ready={passages.length>0&&!!firstExpedition} onStart={()=>setRacing(true)} onJoinLive={onJoinLive}/>;
+  // Start Proof Race opens the next expedition's Interview directly; the map is reached from the launch screen and
+  // after Case Notes.
+  const stops=expeditionMap(world,attempts,assigned),next=nextExpedition(stops);
+  const proven=(list:ExpeditionAttempt[])=>new Set(list.filter(a=>a.finishedAt).map(a=>a.expeditionId)).size;
+  function record(a:ExpeditionAttempt){setAttempts(list=>{const before=proven(list),nextList=[...list.filter(x=>x.attemptId!==a.attemptId),a];if(proven(nextList)>before)setEarned(newRank(before,stops.length));return nextList});saveAttempt(a,demo.classAuth)}
+  if(racing&&passages.length&&(expedition??next))return <ExpeditionRace key={expedition??next!} world={world} passages={passages} expeditionId={(expedition??next)!} preset={demo.preset} studentKey={demo.classAuth?`class:${demo.classAuth.className??""}:${demo.classAuth.nickname}`:undefined} onSave={record} onExit={()=>{setRacing(false);setExpedition(null);setMapOpen(true)}}/>;
+  if(mapOpen)return <ExpeditionMap world={world} attempts={attempts} assigned={assigned} justEarned={earned} onStart={id=>{setEarned(null);setExpedition(id);setMapOpen(false);setRacing(true)}} onBack={()=>{setEarned(null);setMapOpen(false)}}/>;
+  return <LaunchScreen world={world} ready={passages.length>0&&!!next} onStart={()=>{setExpedition(null);setRacing(true)}} onMap={(world.expeditions?.length??0)>0?()=>setMapOpen(true):undefined} onJoinLive={onJoinLive}/>;
  }
  const finished=demo.submitted;
  if(finished)return <CaseSummary world={world} demo={demo} passages={passages} onAnotherStory={onAnotherStory} personal={personal??DEFAULT_PERSONAL} setDemo={setDemo}/>;
