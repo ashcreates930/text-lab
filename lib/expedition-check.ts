@@ -54,7 +54,8 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
       }
       const sentences = rc.lines.length;
       if (rc.words < CHUNK_WORDS.min || rc.words > CHUNK_WORDS.max) out.push(`${at}: ${rc.words} words; a chunk is ${CHUNK_WORDS.min} to ${CHUNK_WORDS.max}`);
-      if (sentences > MAX_SENTENCES) out.push(`${at}: ${sentences} sentences; at most ${MAX_SENTENCES}`);
+      const maxSentences = world.expedition_rules?.max_sentences ?? MAX_SENTENCES;
+      if (sentences > maxSentences) out.push(`${at}: ${sentences} sentences; at most ${maxSentences}`);
       // Gist check and the discovery.
       out.push(...distractorProblems(`${at} gist`, c.gist.options));
       if (!phraseRange(tokens, c.discovery.phrase)) out.push(`${at}: discovery "${c.discovery.phrase}" is not in the chunk`);

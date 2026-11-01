@@ -12,12 +12,15 @@ const one = (s: string) => s.replace(/\s+/g, " ").trim();
 const out: string[] = [START, "## Proof Race expeditions", "", "Generated from world.json by `scripts/content-review.ts`. ✓ marks the best option. Standards are verified B.E.S.T. benchmarks (grade 7 codes shown; the class's grade picks the code).", ""];
 for (const id of ["sleepy-hollow", "tell-tale-heart", "trifles"]) {
   const world = WorldPackSchema.parse(JSON.parse(readFileSync(`worlds/${id}/world.json`, "utf8")));
-  if (!world.expeditions?.length) continue;
+  if (!world.expeditions?.length && !world.draft_expeditions?.length) continue;
   const passages = parseSourcePassages(readFileSync(`public/worlds/${id}/source.md`, "utf8"));
   out.push(`### ${world.title}`, "");
-  for (const exp of world.expeditions) {
-    const chunks = expeditionChunks(world, passages, exp.id);
-    out.push(`#### Expedition: ${exp.title} (${exp.chunks.length} chunks)`, "");
+  // Drafts are listed after the live expeditions, marked for review.
+  const drafts = new Set((world.draft_expeditions ?? []).map((e) => e.id));
+  for (const exp of [...(world.expeditions ?? []), ...(world.draft_expeditions ?? [])]) {
+    const draft = drafts.has(exp.id), view = draft ? { ...world, expeditions: world.draft_expeditions } : world;
+    const chunks = expeditionChunks(view, passages, exp.id);
+    out.push(`#### ${draft ? "DRAFT for review, not live: " : ""}Expedition: ${exp.title} (${exp.chunks.length} chunks)`, "");
     // The Interview and Name the Liar: one witness lies per student (per game when live).
     if (exp.interview) {
       out.push("##### The Interview and Name the Liar", "", "Each student picks one card per witness; one witness, picked at random per student, gives the lie and the other two the truth. Name the Liar needs the liar and a proof line. Audio is pre-recorded in each witness's voice.", "");

@@ -5132,5 +5132,806 @@
         }
       ]
     }
+  ],
+  "front_matter": [],
+  "expedition_rules": {
+    "max_sentences": 15
+  },
+  "draft_expeditions": [
+    {
+      "id": "the-wright-kitchen",
+      "title": "The Wright Kitchen",
+      "chunks": [
+        {
+          "id": "the-wright-kitchen-01",
+          "segments": [
+            {
+              "p": "p001",
+              "from": 0,
+              "to": 2
+            }
+          ],
+          "gist": {
+            "options": [
+              {
+                "text": "Three men enter the cold, messy kitchen of an abandoned farmhouse and go straight to the stove.",
+                "best": true
+              },
+              {
+                "text": "Three women enter the warm, tidy kitchen of a busy farmhouse and start baking."
+              },
+              {
+                "text": "Two children play in the sunny kitchen of a brand new farmhouse."
+              }
+            ]
+          },
+          "discovery": {
+            "phrase": "signs of incompleted work",
+            "kind": "vocabulary",
+            "note": "Incompleted work: chores someone started and never finished."
+          },
+          "question": {
+            "type": "between_lines",
+            "prompt": "What can you infer about this home from the opening stage directions?",
+            "keywords": [
+              "infer"
+            ],
+            "choices": [
+              {
+                "text": "Someone left suddenly, in the middle of chores",
+                "best": true
+              },
+              {
+                "text": "A family is preparing for a big party"
+              },
+              {
+                "text": "The rooms were scrubbed clean for visitors"
+              }
+            ],
+            "proof": {
+              "lines": [
+                "SCENE: _The kitchen in the now abandoned farmhouse of JOHN WRIGHT, a\ngloomy kitchen, and left without having been put in order--unwashed\npans under the sink, a loaf of bread outside the bread-box, a\ndish-towel on the table--other signs of incompleted work."
+              ]
+            },
+            "hint": "Look at the pans, the bread and the towel.",
+            "why": "The kitchen was left without being put in order: unwashed pans, bread out, signs of incompleted work.",
+            "standards": [
+              "K12.EE.3.1",
+              "K12.EE.1.1"
+            ]
+          }
+        },
+        {
+          "id": "the-wright-kitchen-02",
+          "segments": [
+            {
+              "p": "p001",
+              "from": 3,
+              "to": 5
+            },
+            {
+              "p": "p002",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p003",
+              "from": 0,
+              "to": 2
+            },
+            {
+              "p": "p004",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p005",
+              "from": 0,
+              "to": 1
+            }
+          ],
+          "gist": {
+            "options": [
+              {
+                "text": "The two women enter slowly and stay together by the door, and Mrs. Peters says she isn't cold.",
+                "best": true
+              },
+              {
+                "text": "The two women rush to the stove, and Mrs. Peters says she is freezing."
+              },
+              {
+                "text": "The two women stay outside in the wagon, refusing to enter the house."
+              }
+            ]
+          },
+          "discovery": {
+            "phrase": "slight wiry woman",
+            "kind": "vocabulary",
+            "note": "Wiry: thin but tough."
+          },
+          "question": {
+            "type": "character_clue",
+            "prompt": "Which trait do the stage directions give Mrs. Peters?",
+            "keywords": [
+              "trait"
+            ],
+            "choices": [
+              {
+                "text": "Thin and nervous-looking",
+                "best": true
+              },
+              {
+                "text": "Loud and cheerful"
+              },
+              {
+                "text": "Tall and commanding"
+              }
+            ],
+            "proof": {
+              "words": [
+                "a thin nervous face"
+              ]
+            },
+            "hint": "Read how she is described as she comes in.",
+            "why": "The sheriff's wife is a slight wiry woman with a thin nervous face.",
+            "standards": [
+              "R.1.1",
+              "K12.EE.1.1"
+            ]
+          }
+        },
+        {
+          "id": "the-wright-kitchen-03",
+          "segments": [
+            {
+              "p": "p006",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p007",
+              "from": 0,
+              "to": 1
+            },
+            {
+              "p": "p008",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p009",
+              "from": 0,
+              "to": 1
+            },
+            {
+              "p": "p010",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p011",
+              "from": 0,
+              "to": 2
+            }
+          ],
+          "gist": {
+            "options": [
+              {
+                "text": "The sheriff asks Hale to tell what he saw and says nothing has been moved except the stove fire.",
+                "best": true
+              },
+              {
+                "text": "The sheriff admits everything has been moved and cleaned since yesterday."
+              },
+              {
+                "text": "The sheriff refuses to let Hale speak and sends everyone home."
+              }
+            ]
+          },
+          "discovery": {
+            "phrase": "a big case on",
+            "kind": "vocabulary",
+            "note": "A big case: an important crime to solve."
+          },
+          "question": {
+            "type": "find_it",
+            "prompt": "Which line says whether anything in the room was disturbed?",
+            "keywords": [
+              "disturbed"
+            ],
+            "proof": {
+              "lines": [
+                "It’s just the same."
+              ]
+            },
+            "hint": "Listen for the sheriff's short answer.",
+            "why": "It's just the same.",
+            "standards": [
+              "K12.EE.1.1"
+            ]
+          }
+        },
+        {
+          "id": "the-wright-kitchen-04",
+          "segments": [
+            {
+              "p": "p012",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p013",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p014",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p015",
+              "from": 0,
+              "to": 2
+            },
+            {
+              "p": "p016",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p017",
+              "from": 0,
+              "to": 0
+            }
+          ],
+          "gist": {
+            "options": [
+              {
+                "text": "The attorney says someone should have guarded the house, and the sheriff explains he was too busy.",
+                "best": true
+              },
+              {
+                "text": "The attorney praises the sheriff for guarding the house all night long."
+              },
+              {
+                "text": "The attorney says the house should be sold, and the sheriff agrees."
+              }
+            ]
+          },
+          "discovery": {
+            "phrase": "from Omaha",
+            "kind": "vocabulary",
+            "note": "Omaha: a city in Nebraska, where the attorney had been."
+          },
+          "question": {
+            "type": "shades",
+            "prompt": "Why does the sheriff say he had his hands full instead of just busy?",
+            "keywords": [
+              "hands full"
+            ],
+            "focus": "hands full",
+            "choices": [
+              {
+                "text": "It stresses how overloaded and stretched thin he was",
+                "best": true
+              },
+              {
+                "text": "It means he was carrying heavy boxes"
+              },
+              {
+                "text": "It means he hurt both of his hands"
+              }
+            ],
+            "proof": {
+              "words": [
+                "When I had to send Frank to Morris Center"
+              ]
+            },
+            "hint": "What else did he have to handle that day?",
+            "why": "He had to send Frank to Morris Center for another case: hands full means too much to do at once.",
+            "standards": [
+              "V.1.3",
+              "R.3.1"
+            ],
+            "reviewed": true
+          }
+        },
+        {
+          "id": "the-wright-kitchen-05",
+          "segments": [
+            {
+              "p": "p018",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p019",
+              "from": 0,
+              "to": 2
+            }
+          ],
+          "gist": {
+            "options": [
+              {
+                "text": "Hale stopped to ask John Wright about a shared telephone line, though Wright wanted only peace and quiet.",
+                "best": true
+              },
+              {
+                "text": "Hale stopped to buy potatoes from John Wright, who loved company and chatter."
+              },
+              {
+                "text": "Hale stopped to warn John Wright about a storm, but Wright was away in town."
+              }
+            ]
+          },
+          "discovery": {
+            "phrase": "a party telephone",
+            "kind": "vocabulary",
+            "note": "Party telephone: one line shared by several homes."
+          },
+          "question": {
+            "type": "catch_lie",
+            "prompt": "Mrs. Hale describes the man of the farmhouse. One thing she says is false. Tap the line that proves it.",
+            "keywords": [
+              "false"
+            ],
+            "proof": {
+              "lines": [
+                "I spoke\nto Wright about it once before and he put me off, saying folks talked\ntoo much anyway, and all he asked was peace and quiet--I guess you know\nabout how much he talked himself; but I thought maybe if I went to the\nhouse and talked about it before his wife, though I said to Harry that\nI didn’t know as what his wife wanted made much difference to John--"
+              ]
+            },
+            "testimony": {
+              "speaker": "mrs-hale",
+              "text": "My husband says that man was a great talker and loved having folks drop by."
+            },
+            "hint": "What did he say when Hale brought up the telephone?",
+            "why": "He put Hale off, saying folks talked too much anyway, and all he asked was peace and quiet.",
+            "standards": [
+              "K12.EE.1.1"
+            ]
+          }
+        },
+        {
+          "id": "the-wright-kitchen-06",
+          "segments": [
+            {
+              "p": "p020",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p021",
+              "from": 0,
+              "to": 1
+            },
+            {
+              "p": "p022",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p023",
+              "from": 0,
+              "to": 3
+            }
+          ],
+          "gist": {
+            "options": [
+              {
+                "text": "Hale knocked twice, thought he heard someone answer, and found Mrs. Wright sitting in her rocker.",
+                "best": true
+              },
+              {
+                "text": "Hale knocked once, heard shouting, and found the whole house empty."
+              },
+              {
+                "text": "Hale walked in without knocking and found Mrs. Wright cooking breakfast."
+              }
+            ]
+          },
+          "discovery": {
+            "phrase": "all quiet inside",
+            "kind": "figurative",
+            "note": "An eerie silence for a farm morning."
+          },
+          "question": {
+            "type": "find_it",
+            "prompt": "Which line tells where Hale first found the farmer's wife?",
+            "keywords": [
+              "first found"
+            ],
+            "proof": {
+              "lines": [
+                "I wasn’t sure, I’m not sure yet, but I opened the door--this door\n[_indicating the door by which the two women are still standing_] and\nthere in that rocker--[_pointing to it_] sat Mrs. Wright."
+              ]
+            },
+            "hint": "Look for a piece of furniture he points to.",
+            "why": "There in that rocker sat Mrs. Wright.",
+            "standards": [
+              "K12.EE.1.1"
+            ]
+          }
+        },
+        {
+          "id": "the-wright-kitchen-07",
+          "segments": [
+            {
+              "p": "p024",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p025",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p026",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p027",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p028",
+              "from": 0,
+              "to": 1
+            },
+            {
+              "p": "p029",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p030",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p031",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p032",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p033",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p034",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p035",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p036",
+              "from": 0,
+              "to": 1
+            }
+          ],
+          "gist": {
+            "options": [
+              {
+                "text": "Hale says Mrs. Wright was rocking and pleating her apron and looked strange and worn out.",
+                "best": true
+              },
+              {
+                "text": "Hale says Mrs. Wright was dancing and singing and looked happy and rested."
+              },
+              {
+                "text": "Hale says Mrs. Wright was asleep and he could not see her face."
+              }
+            ]
+          },
+          "discovery": {
+            "phrase": "her apron in her hand",
+            "kind": "vocabulary",
+            "note": "She keeps folding her apron into pleats, over and over."
+          },
+          "question": {
+            "type": "word_detective",
+            "prompt": "In this chunk, what does queer mean?",
+            "keywords": [
+              "queer"
+            ],
+            "focus": "queer",
+            "choices": [
+              {
+                "text": "Strange or odd",
+                "best": true
+              },
+              {
+                "text": "Happy and relaxed"
+              },
+              {
+                "text": "Angry and loud"
+              }
+            ],
+            "proof": {
+              "words": [
+                "what she was going to do next"
+              ]
+            },
+            "hint": "How does Hale explain it when he's asked?",
+            "why": "She looked as if she didn't know what she was going to do next: strange, not like herself.",
+            "standards": [
+              "V.1.3",
+              "K12.EE.1.1"
+            ],
+            "reviewed": true
+          }
+        },
+        {
+          "id": "the-wright-kitchen-08",
+          "segments": [
+            {
+              "p": "p037",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p038",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p039",
+              "from": 0,
+              "to": 0
+            },
+            {
+              "p": "p040",
+              "from": 0,
+              "to": 4
+            }
+          ],
+          "gist": {
+            "options": [
+              {
+                "text": "Mrs. Wright barely notices Hale, answers him oddly, and never invites him to the stove.",
+                "best": true
+              },
+              {
+                "text": "Mrs. Wright greets Hale warmly and pours him a hot cup of coffee."
+              },
+              {
+                "text": "Mrs. Wright orders Hale to leave and slams the door in his face."
+              }
+            ]
+          },
+          "discovery": {
+            "phrase": "pay much attention",
+            "kind": "vocabulary",
+            "note": "She barely notices that Hale is there."
+          },
+          "question": {
+            "type": "between_lines",
+            "prompt": "What can you infer about Mrs. Wright from her reply about the weather?",
+            "keywords": [
+              "infer"
+            ],
+            "choices": [
+              {
+                "text": "Her mind is far away from ordinary things",
+                "best": true
+              },
+              {
+                "text": "She is eager to chat with a neighbor"
+              },
+              {
+                "text": "She is angry that Hale came so early"
+              }
+            ],
+            "proof": {
+              "lines": [
+                "And she\nsaid, “Is it?”--and went on kind of pleating at her apron."
+              ]
+            },
+            "hint": "How does she answer a simple remark, and what do her hands keep doing?",
+            "why": "She answers Is it? and goes on pleating at her apron, as if her mind is elsewhere.",
+            "standards": [
+              "K12.EE.3.1",
+              "K12.EE.1.1"
+            ]
+          }
+        },
+        {
+          "id": "the-wright-kitchen-09",
+          "segments": [
+            {
+              "p": "p040",
+              "from": 5,
+              "to": 14
+            }
+          ],
+          "gist": {
+            "options": [
+              {
+                "text": "Mrs. Wright laughs oddly and then flatly tells Hale that John is home but dead.",
+                "best": true
+              },
+              {
+                "text": "Mrs. Wright cries loudly and tells Hale that John ran away to town."
+              },
+              {
+                "text": "Mrs. Wright smiles and tells Hale that John is out working in the barn."
+              }
+            ]
+          },
+          "discovery": {
+            "phrase": "out of patience",
+            "kind": "vocabulary",
+            "note": "Out of patience: tired of waiting."
+          },
+          "question": {
+            "type": "theme_thread",
+            "prompt": "Which idea about Mrs. Wright keeps coming back in Hale's story?",
+            "keywords": [
+              "keeps coming back"
+            ],
+            "choices": [
+              {
+                "text": "Her strange calm makes her hard to read",
+                "best": true
+              },
+              {
+                "text": "Her loud anger frightens everyone"
+              },
+              {
+                "text": "Her cheerful chatter fills the room"
+              }
+            ],
+            "proof": {
+              "lines": [
+                "“No,” she says, kind o’ dull like."
+              ]
+            },
+            "hint": "How does she say even the most shocking things?",
+            "why": "She answers kind of dull like: the same strange calm Hale noticed from the start.",
+            "standards": [
+              "R.1.2",
+              "K12.EE.1.1"
+            ]
+          }
+        },
+        {
+          "id": "the-wright-kitchen-10",
+          "segments": [
+            {
+              "p": "p040",
+              "from": 15,
+              "to": 23
+            }
+          ],
+          "gist": {
+            "options": [
+              {
+                "text": "Calmly rocking, Mrs. Wright points upstairs and says John died of a rope around his neck.",
+                "best": true
+              },
+              {
+                "text": "Crying, Mrs. Wright runs upstairs and says John fell from a ladder."
+              },
+              {
+                "text": "Laughing, Mrs. Wright says John is only sleeping and points to the barn."
+              }
+            ]
+          },
+          "discovery": {
+            "phrase": "not getting a bit excited",
+            "kind": "figurative",
+            "note": "She stays strangely calm."
+          },
+          "question": {
+            "type": "whose_eyes",
+            "prompt": "Whose account of that morning are we hearing?",
+            "keywords": [
+              "account"
+            ],
+            "choices": [
+              {
+                "text": "Hale's, as he remembers it for the lawmen",
+                "best": true
+              },
+              {
+                "text": "Mrs. Wright's, written in a letter"
+              },
+              {
+                "text": "The sheriff's, read from his notebook"
+              }
+            ],
+            "proof": {
+              "lines": [
+                "“Why--where is he?” says I, not knowing what to say."
+              ]
+            },
+            "hint": "Who is the I in these lines?",
+            "why": "Says I, not knowing what to say: Hale is telling the lawmen what he saw.",
+            "standards": [
+              "R.1.3",
+              "K12.EE.1.1"
+            ]
+          }
+        }
+      ],
+      "interview": {
+        "witnesses": [
+          {
+            "character": "mr-hale",
+            "cards": [
+              "Why were you on the road that morning?",
+              "What time did you reach the house?"
+            ],
+            "truth": {
+              "text": "My boy and I were hauling spuds to market that morning.",
+              "lines": [
+                "Harry and I had started to town with a load of potatoes."
+              ]
+            },
+            "lie": {
+              "text": "It was barely dawn when I got there, so early I figured they'd still be asleep.",
+              "lines": [
+                "I knew they must be up, it was past eight o’clock."
+              ],
+              "gesture": "head-shake"
+            },
+            "caught": "You're right. It was well past breakfast time. I misremembered."
+          },
+          {
+            "character": "mrs-peters",
+            "cards": [
+              "How did you feel coming into the kitchen?",
+              "Was anything moved before you arrived?"
+            ],
+            "truth": {
+              "text": "I told the attorney I wasn't chilly, even standing back there away from the fire.",
+              "lines": [
+                "I’m not--cold."
+              ]
+            },
+            "lie": {
+              "text": "My husband had the whole place tidied up before anyone arrived.",
+              "lines": [
+                "It’s just the same."
+              ]
+            },
+            "caught": "No, he left it all as it was. He's careful about that. I spoke too quickly."
+          },
+          {
+            "character": "mrs-hale",
+            "cards": [
+              "What did you notice when you walked in?",
+              "What did your husband say Mrs. Wright was doing?"
+            ],
+            "truth": {
+              "text": "I came in uneasy, I'll admit, glancing all around that sad room.",
+              "lines": [
+                "MRS. HALE is\nlarger and would ordinarily be called more comfortable looking, but she\nis disturbed now and looks fearfully about as she enters."
+              ]
+            },
+            "lie": {
+              "text": "He says she sat there with empty, idle fingers the whole time.",
+              "lines": [
+                "She had her apron in her hand and was\nkind of--pleating it."
+              ]
+            },
+            "caught": "No. She was working at her apron the whole time. I know that."
+          }
+        ]
+      }
+    }
   ]
 }

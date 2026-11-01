@@ -110,6 +110,9 @@ export const WorldPackSchema = z.object({
   your_turn:z.object({activities:z.record(z.string(),yourTurnActivity)}).optional(),missions:z.array(mission).optional(),
   // Expeditions (see above). front_matter: paragraphs that sit before the story (a title, an epigraph), outside every chunk.
   expeditions:z.array(expedition).optional(),front_matter:z.array(z.string().regex(/^p\d{3}$/)).optional(),
+  // Drafts awaiting the teacher's review: validated like expeditions, never shown to students until moved into
+  // expeditions. expedition_rules: a story-level exception to the chunk rules, only with the teacher's approval.
+  draft_expeditions:z.array(expedition).optional(),expedition_rules:z.object({max_sentences:z.number().int().min(5).max(20)}).optional(),
   // Demo rival and squad modes: the computer players' names (clearly labeled as computer players on screen).
   computer_players:z.object({rival:z.object({name:z.string().min(1),emblem:z.enum(["lantern","rider"])}),teammates:z.array(z.string().min(1)).min(2).max(3)}).optional(),
   // Students in the story: the part the student plays (see lib/student-role.ts). never: people the student must never be.

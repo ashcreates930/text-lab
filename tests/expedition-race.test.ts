@@ -21,7 +21,16 @@ test("chunks: whole sentences, 50 to 150 words, at most 5 sentences, no gaps, an
   assert.equal(chunks.length, 10);
   for (const c of chunks) { assert.ok(c.words >= 50 && c.words <= 150, `${c.id}: ${c.words} words`); assert.ok(c.lines.length <= 5); }
   assert.deepEqual(expeditionProblems(sh, shp), []);
-  const cov = expeditionCoverage(sh, shp); assert.equal(cov.chunks, 10); assert.equal(cov.through, "p009");
+  // The whole story: 14 expeditions (the last is shorter, where the story ends), every chunk 50 to 150 words, no gaps.
+  const cov = expeditionCoverage(sh, shp); assert.equal(cov.chunks, 137); assert.equal(cov.through, "p081"); assert.equal(cov.complete, true);
+  assert.ok(cov.words.every((w) => w >= 50 && w <= 150)); assert.equal(sh.expeditions!.length, 14);
+  assert.ok(sh.expeditions!.slice(0, 13).every((e) => e.chunks.length === 10 && e.interview), "expeditions of 10, each with an Interview");
+  // Drafts for review (Trifles, The Tell-Tale Heart) validate but are never live.
+  for (const id of ["trifles", "tell-tale-heart"]) {
+    const w = WorldPackSchema.parse(JSON.parse(src(`worlds/${id}/world.json`))), ps = parseSourcePassages(src(`public/worlds/${id}/source.md`));
+    assert.ok(w.draft_expeditions?.length && !w.expeditions?.length, `${id}: drafts only`);
+    assert.deepEqual(expeditionProblems({ ...w, expeditions: w.draft_expeditions }, ps), [], id);
+  }
   // Paragraph 3 is split in two: how Tarry Town got its name, then the quiet valley.
   assert.deepEqual(exp.chunks.slice(0, 2).map((c) => c.segments), [[{ p: "p003", from: 0, to: 2 }], [{ p: "p003", from: 3, to: 4 }]]);
   // A gap or overlap and an invented proof line are both caught.

@@ -3,17 +3,21 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { parseSourcePassages } from "../lib/source-passages.ts";
 import { evidenceSentences } from "../lib/lies.ts";
+import { SLEEPY_HOLLOW_MORE } from "./expeditions/sleepy-hollow.ts";
+import { theVultureEye } from "./expeditions/tell-tale-heart.ts";
+import { theWrightKitchen } from "./expeditions/trifles.ts";
 
-type Ref = [string, number];
-type Q = { type: string; prompt: string; keywords?: string[]; focus?: string; choices?: [string, boolean?][]; choices2?: { prompt: string; options: [string, boolean?][] }; lines?: Ref[]; words?: string[]; testimony?: { speaker: string; text: string }; theories?: { id: string; name: string; lines: Ref[] }[]; hint: string; why: string; standards: string[]; reviewed?: boolean };
-type C = { seg: [string, number, number][]; gist: [string, boolean?][]; discovery: [string, "figurative" | "vocabulary", string]; q: Q };
-type S = { text: string; lines: Ref[]; gesture?: "laughing" | "head-shake" };
-type W = { character: string; cards: [string, string]; truth: S; lie: S; caught: string };
-type E = { id: string; title: string; chunks: C[]; interview?: W[] };
+export type Ref = [string, number];
+export type Q = { type: string; prompt: string; keywords?: string[]; focus?: string; choices?: [string, boolean?][]; choices2?: { prompt: string; options: [string, boolean?][] }; lines?: Ref[]; words?: string[]; testimony?: { speaker: string; text: string }; theories?: { id: string; name: string; lines: Ref[] }[]; hint: string; why: string; standards: string[]; reviewed?: boolean };
+export type C = { seg: [string, number, number][]; gist: [string, boolean?][]; discovery: [string, "figurative" | "vocabulary", string]; q: Q };
+export type S = { text: string; lines: Ref[]; gesture?: "laughing" | "head-shake" };
+export type W = { character: string; cards: [string, string]; truth: S; lie: S; caught: string };
+export type E = { id: string; title: string; chunks: C[]; interview?: W[] };
 
-const SPEC: Record<string, { front_matter: string[]; expeditions: E[] }> = {
+// draft: written to draft_expeditions for the teacher's review (students never see them); rules: an approved exception.
+const SPEC: Record<string, { front_matter: string[]; expeditions: E[]; draft?: boolean; rules?: { max_sentences: number } }> = {
   "sleepy-hollow": {
-    front_matter: ["p001", "p002"],
+    front_matter: ["p001", "p002", "p073", "p074", "p082"],
     expeditions: [{
       id: "into-the-hollow", title: "Into the Hollow", chunks: [
         { seg: [["p003", 0, 2]],
@@ -91,8 +95,10 @@ const SPEC: Record<string, { front_matter: string[]; expeditions: E[] }> = {
           truth: { text: "Folks who come here clear-headed and sensible don't stay that way. Give them a season, and they start spotting ghosts too.", lines: [["p008", 1]] },
           lie: { text: "Only the families born in the Hollow believe those tales. Anyone who moves here from outside just laughs at them.", lines: [["p008", 0], ["p008", 1]] },
           caught: "Oh, you caught that? Clever. I only wanted to see if you were listening." },
-      ] }],
+      ] }, ...SLEEPY_HOLLOW_MORE],
   },
+  "tell-tale-heart": { front_matter: [], expeditions: [theVultureEye], draft: true, rules: { max_sentences: 10 } },
+  trifles: { front_matter: [], expeditions: [theWrightKitchen], draft: true, rules: { max_sentences: 15 } },
 };
 
 for (const [worldId, spec] of Object.entries(SPEC)) {
@@ -101,7 +107,8 @@ for (const [worldId, spec] of Object.entries(SPEC)) {
   const line = ([p, i]: Ref) => { const x = passages.find((q) => q.id === p); const s = x ? evidenceSentences(x.text)[i] : undefined; if (!s) throw new Error(`${worldId}: no sentence ${p}[${i}]`); return s; };
   const opts = (o: [string, boolean?][]) => o.map(([text, best]) => (best ? { text, best: true } : { text }));
   world.front_matter = spec.front_matter;
-  world.expeditions = spec.expeditions.map((e) => ({ id: e.id, title: e.title, chunks: e.chunks.map((c, k) => {
+  if (spec.rules) world.expedition_rules = spec.rules;
+  const built = spec.expeditions.map((e) => ({ id: e.id, title: e.title, chunks: e.chunks.map((c, k) => {
     const q = c.q;
     return { id: `${e.id}-${String(k + 1).padStart(2, "0")}`, segments: c.seg.map(([p, from, to]) => ({ p, from, to })), gist: { options: opts(c.gist) },
       discovery: { phrase: c.discovery[0], kind: c.discovery[1], note: c.discovery[2] },
@@ -113,6 +120,7 @@ for (const [worldId, spec] of Object.entries(SPEC)) {
     const st = (x: S) => ({ text: x.text, lines: x.lines.map(line), ...(x.gesture ? { gesture: x.gesture } : {}) });
     return { character: w.character, cards: w.cards, truth: st(w.truth), lie: st(w.lie), caught: w.caught };
   }) } } : {}) }));
+  if (spec.draft) world.draft_expeditions = built; else world.expeditions = built;
   writeFileSync(path, JSON.stringify(world, null, 2) + "\n");
-  console.log(`${worldId}: ${world.expeditions.length} expedition(s), ${world.expeditions.reduce((a: number, e: { chunks: unknown[] }) => a + e.chunks.length, 0)} chunks`);
+  console.log(`${worldId}: ${built.length} ${spec.draft ? "draft " : ""}expedition(s), ${built.reduce((a: number, e: { chunks: unknown[] }) => a + e.chunks.length, 0)} chunks`);
 }
