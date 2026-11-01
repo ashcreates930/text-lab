@@ -54,8 +54,9 @@ export function liarBreakdown(iv: Interview, liar: number, answers: LiarAnswer[]
 // Pre-generated audio for each statement (scripts/generate-assets.ts); no AI calls at play time.
 export type AudioKind = "truth" | "lie" | "caught";
 export const interviewAudio = (worldId: string, expeditionId: string, character: string, kind: AudioKind) => `/worlds/${worldId}/interview/${expeditionId}-${character}-${kind}.mp3`;
-export function interviewAudioList(world: WorldPack) {
-  return (world.expeditions ?? []).flatMap((e) => (e.interview?.witnesses ?? []).flatMap((w) => {
+// drafts: also the draft expeditions awaiting review (recorded ahead; the app never plays them until approved).
+export function interviewAudioList(world: WorldPack, drafts = false) {
+  return [...(world.expeditions ?? []), ...(drafts ? world.draft_expeditions ?? [] : [])].flatMap((e) => (e.interview?.witnesses ?? []).flatMap((w) => {
     const voice = world.characters.find((c) => c.id === w.character)?.voice_id ?? "";
     return ([["truth", w.truth.text], ["lie", w.lie.text], ["caught", w.caught]] as const).map(([kind, text]) => ({ path: interviewAudio(world.id, e.id, w.character, kind), text, voice, character: w.character }));
   }));

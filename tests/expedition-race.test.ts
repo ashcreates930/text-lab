@@ -8,6 +8,7 @@ import { parseSourcePassages } from "../lib/source-passages.ts";
 import { GIST_SECONDS, POINTS, SCREEN_MS, TYPE_INFO, chunkTokens, expeditionChunks, gistPoints, isDiscovery, keywordParts, limitMs, phraseRange, proofShown, scoreAnswer, screenMs, timeScale, wordsProve } from "../lib/expedition.ts";
 import { expeditionCoverage, expeditionProblems, distractorProblems } from "../lib/expedition-check.ts";
 import { BENCHMARK_FAMILIES, benchmark } from "../lib/best-standards.ts";
+import { contentNotes } from "../lib/content-notes.ts";
 
 const src = (f: string) => readFileSync(f, "utf8");
 const sh = WorldPackSchema.parse(JSON.parse(src("worlds/sleepy-hollow/world.json")));
@@ -30,7 +31,19 @@ test("chunks: whole sentences, 50 to 150 words, at most 5 sentences, no gaps, an
     const w = WorldPackSchema.parse(JSON.parse(src(`worlds/${id}/world.json`))), ps = parseSourcePassages(src(`public/worlds/${id}/source.md`));
     assert.ok(w.draft_expeditions?.length && !w.expeditions?.length, `${id}: drafts only`);
     assert.deepEqual(expeditionProblems({ ...w, expeditions: w.draft_expeditions }, ps), [], id);
+    assert.ok(w.draft_expeditions!.every((e) => e.interview && !e.chunks.some((c) => c.question.type === "make_call")), `${id}: Interview and Name the Liar`);
   }
+  // Approved sentence limits per story; The Tell-Tale Heart is one expedition with the narrator, an officer and the
+  // neighbor (witness only: recorded lines, never a chat character or an avatar); its violent paragraphs carry notes.
+  const tt = WorldPackSchema.parse(JSON.parse(src("worlds/tell-tale-heart/world.json"))), tf = WorldPackSchema.parse(JSON.parse(src("worlds/trifles/world.json")));
+  assert.deepEqual([sh.expedition_rules?.max_sentences ?? 5, tt.expedition_rules?.max_sentences, tf.expedition_rules?.max_sentences], [5, 10, 15]);
+  assert.equal(tt.draft_expeditions!.length, 1); assert.deepEqual(tt.draft_expeditions![0].interview!.witnesses.map((x) => x.character), ["narrator", "officer", "neighbor"]);
+  assert.ok(tt.characters.find((c) => c.id === "neighbor")!.witness_only);
+  const ttp = parseSourcePassages(src("public/worlds/tell-tale-heart/source.md")), ps0 = (p: string) => ttp.find((x) => x.id === p)!.text;
+  assert.deepEqual([...contentNotes(tt).keys()].sort(), ["p020", "p021", "p022", "p023", "p024"]);
+  const violent = new Set(["p020", "p021", "p022", "p023", "p024"]);
+  for (const x of tt.draft_expeditions![0].interview!.witnesses) for (const l of [...x.truth.lines, ...x.lie.lines]) assert.ok(![...violent].some((p) => ps0(p).includes(l)), "statements clear of the violent paragraphs");
+  assert.match(src("app/api/chat/route.ts"), /!x\.witness_only/); assert.match(src("app/api/voice/route.ts"), /!c\.witness_only/);
   // Paragraph 3 is split in two: how Tarry Town got its name, then the quiet valley.
   assert.deepEqual(exp.chunks.slice(0, 2).map((c) => c.segments), [[{ p: "p003", from: 0, to: 2 }], [{ p: "p003", from: 3, to: 4 }]]);
   // A gap or overlap and an invented proof line are both caught.

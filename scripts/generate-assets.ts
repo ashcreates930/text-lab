@@ -152,7 +152,7 @@ if(process.argv.includes("--interview")){
   const force=process.argv.includes("--force");
   for(const id of (selectedWorld??"sleepy-hollow").split(",")){
     const world=WorldPackSchema.parse(JSON.parse(await readFile(join(root,id,"world.json"),"utf8")));
-    for(const a of interviewAudioList(world)){
+    for(const a of interviewAudioList(world,true)){
       const out=join(process.cwd(),"public",...a.path.split("/").filter(Boolean));
       if(!force){try{await readFile(out);continue}catch{}}
       if(!a.voice)throw new Error(`${a.character} has no voice`);
@@ -177,8 +177,9 @@ if(portraitsMode||ambientMode||hologramsMode){
     "tell-tale-heart/narrator":"Show him only as a shadowed silhouette from the side: no visible face or features, just the outline of head and shoulders in dark clothing, lit faintly from behind.",
     "sleepy-hollow/brom-bones":"A burly, broad-shouldered young farmer with short curly black hair, a bold, good-humored face, and a fur cap with a fox tail.",
     "sleepy-hollow/hans-van-ripper":"An older, weathered Dutch farmer with a stern, practical face.",
-    "sleepy-hollow/katrina-van-tassel":"A young woman of eighteen with rosy cheeks and light hair pinned under a small white cap, in a modest 1790s Dutch farm dress with a laced bodice and a shawl, wearing old gold earrings and a gold chain; a lively, confident, slightly teasing expression. Modest and age-appropriate.",
+    "sleepy-hollow/katrina-van-tassel":"A young woman of about eighteen, the wealthy Dutch farmer's only daughter: rosy-cheeked, with light hair pinned under a small white cap, fashionably dressed in 1790s Dutch farm style with a fitted bodice, a full skirt and an apron, and the heirloom gold jewelry her great-great-grandmother brought from Holland (gold earrings and a gold chain). Confident and a little teasing in expression, with a slight smile. Modest, period-accurate clothing, appropriate for a middle school classroom.",
     "tell-tale-heart/officer":"A woman police officer of the period in a plain dark wool uniform coat, no badge or insignia, with a calm, observant face.",
+    "tell-tale-heart/neighbor":"An ordinary city neighbor of the 1840s, roused in the night, in a plain dark wool dressing gown over a nightshirt and a simple nightcap, holding a small candle, with a worried, earnest face. Nothing frightening or violent.",
   };
   for(const id of worlds){
     const file=join(root,id,"world.json"),raw=JSON.parse(await readFile(file,"utf8"));const pack=WorldPackSchema.parse(raw);

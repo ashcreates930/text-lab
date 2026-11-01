@@ -71,7 +71,8 @@ export function studentRoleProblems(world: WorldPack): string[] {
   if (!/^You\b/.test(role.setup) || !/^You\b/.test(role.intro)) problems.push(`${where}: setup and intro speak to the student in the second person ("You …")`);
   if (role.intro.length > 420) problems.push(`${where}: intro must fit on one card (at most 420 characters)`);
   const lower = role.name.toLowerCase();
-  for (const c of world.characters) if (lower.includes(c.name.toLowerCase())) problems.push(`${where}: the student can't play ${c.name}`);
+  // A witness-only character speaks only in Proof Race's recorded Interview, never alongside the student's role.
+  for (const c of world.characters) if (!c.witness_only && lower.includes(c.name.toLowerCase())) problems.push(`${where}: the student can't play ${c.name}`);
   for (const id of role.never ?? []) if (lower.includes(id.toLowerCase().replace(/-/g, " "))) problems.push(`${where}: the student can't play ${id}`);
   for (const s of world.scenes) if (s.choice_point && !s.choice_point.role_frame?.trim()) problems.push(`${where}: scene ${s.id} has a choice point without a role_frame`);
   return problems;

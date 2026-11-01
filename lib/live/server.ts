@@ -211,7 +211,8 @@ function afterRace(st: LiveState) {
 }
 // Lobby: each player's avatar (a story character's portrait).
 const avatarOf = (st: LiveState, playerId: string) => { const r = [...st.responses].reverse().find((x) => x.kind === "avatar" && x.playerId === playerId); const c = r ? st.world.characters.find((ch) => ch.id === r.payload.characterId) : undefined; return c ? { id: c.id, name: c.name, portrait: c.portrait ?? null } : null; };
-const avatarChoices = (st: LiveState) => st.world.characters.filter((c) => c.portrait).map((c) => ({ id: c.id, name: c.name, portrait: c.portrait! }));
+// Witness-only characters (recorded Interview lines only) are never avatars.
+const avatarChoices = (st: LiveState) => st.world.characters.filter((c) => c.portrait && !c.witness_only).map((c) => ({ id: c.id, name: c.name, portrait: c.portrait! }));
 const sessionInfo = (st: LiveState) => ({ id: st.session.id, code: st.session.code, status: st.session.status, paused: st.session.paused, roundIndex: st.session.roundIndex, roundCount: st.session.rounds.length, roundStartedAt: st.session.roundStartedAt, worldId: st.session.worldId, title: st.world.title, demo: st.session.demo, expiresAt: st.session.expiresAt, hasVerdict: !!st.world.verdict });
 
 export function hostView(st: LiveState) {

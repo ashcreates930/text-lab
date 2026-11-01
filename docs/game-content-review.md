@@ -6326,7 +6326,44 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 ### The Tell-Tale Heart
 
-#### DRAFT for review, not live: Expedition: The Vulture Eye (10 chunks)
+#### DRAFT for review, not live: Expedition: The Vulture Eye (24 chunks)
+
+##### The Interview and Name the Liar
+
+Each student picks one card per witness; one witness, picked at random per student, gives the lie and the other two the truth. Name the Liar needs the liar and a proof line. Audio is pre-recorded in each witness's voice.
+
+**The Narrator**
+
+- Question cards: "What did you tell the officers?" / "How did you feel while the officers stayed?"
+- True: "I told those gentlemen the master of the house was away, visiting outside the city."
+  - Confirmed by: "The old man, I mentioned, was absent in the country."
+- False: "I was glad of their company. I would have kept those visitors talking until sunrise."
+  - Disproved by: "But, ere long, I felt myself getting pale and wished them gone."
+  - Disproved by: "Why would they not be gone?"
+- When caught: "You noticed. Very sharp. Almost as sharp as my own hearing."
+
+**Officer**
+
+- Question cards: "Why did you go to the house?" / "What did you make of the man who let you in?"
+- True: "My partners and I came calling before sunrise, once a report reached our station."
+  - Confirmed by: "There entered three men, who introduced themselves, with perfect suavity, as officers of the police."
+  - Confirmed by: "A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises."
+- False: "We didn't believe a word that fellow said, right from the start."
+  - Disproved by: "The officers were satisfied."
+  - Disproved by: "My manner had convinced them."
+- When caught: "True enough, he had us fooled at first. His manner was very smooth."
+
+**The Neighbor**
+
+- Question cards: "What did you notice that night?" / "Why did you go to the police?"
+- True: "Somebody screamed over there after dark, so I sent word to the authorities, and they sent people round."
+  - Confirmed by: "A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises."
+  - Confirmed by: "There entered three men, who introduced themselves, with perfect suavity, as officers of the police."
+- False: "I didn't catch a single noise. I only sent for the watch because the lamps were out."
+  - Disproved by: "A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises."
+- When caught: "All right, I did hear a cry. That is exactly why I went."
+
+Screen text: "One witness will lie to you. Listen closely: after the race you'll name the liar and prove it with a line from the story." · "Which witness lied?" · "Tap the line anywhere in the expedition that shows this is false, then lock in." · "Case solved" · "Not this time." · "It's in your Refresher." · Live: "What should we ask [witness]?" · "Locked in" · "Nothing is revealed until everyone has locked in. Watch the board."
 
 ##### Whose Eyes?
 
@@ -6342,6 +6379,30 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Gist check: The narrator insists he is nervous but not mad, and boasts that his hearing is unusually sharp. ✓ / The narrator admits he is mad and begs the listener to forgive him. / The narrator says he is deaf and cannot hear anything around him.
 - Discovery (figurative): "very, very dreadfully nervous". The repeated words show how worked up he is.
 
+**Chunk 14** (¶17 sentences 1 to 2, ¶18 sentences 1 to 2; 124 words)
+
+- Question: What does the narrator insist explains what he hears?
+- Key words highlighted: insist
+- Choices: His senses are unusually sharp, not mad ✓ / A ghost is knocking inside the walls / The old man left a clock running
+- Proof line: "And now — have I not told you that what you mistake for madness is but over acuteness of the senses? — now, I say, there came to my ears a low, dull, quick sound — much such a sound as a watch makes when enveloped in cotton."
+- Refresher hint: What does he say you mistake for madness?
+- Why: He says what you mistake for madness is but over acuteness of the senses.
+- Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
+- Gist check: The narrator sees the eye wide open, grows furious, and then hears a low, quick beating sound. ✓ / The narrator sees the eye closed, calms down, and hears only silence. / The narrator sees the old man smiling and hears him begin to sing.
+- Discovery (figurative): "a hideous veil over it". The cloudy film over the eye is described like a veil.
+
+**Chunk 18** (¶21 sentences 8 to 10, ¶22 sentences 1 to 2, ¶23 sentences 1 to 5; 108 words)
+
+- Question: What does the narrator claim his careful hiding shows?
+- Key words highlighted: claim
+- Choices: That he cannot be mad ✓ / That he is truly sorry / That the old man deserved it
+- Proof line: "If, still, you think me mad, you will think so no longer when I describe the wise precautions I took for the concealment of the body."
+- Refresher hint: What will you think no longer once he describes it?
+- Why: If you still think him mad, he says, you will think so no longer when he describes his precautions.
+- Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
+- Gist check: The narrator says the eye will trouble him no more and boasts of how carefully he hid what he had done. ✓ / The narrator says the eye still haunts him and runs to tell a neighbor everything. / The narrator says the old man recovered, and they shared breakfast at dawn.
+- Discovery (vocabulary): "the wise precautions". Precautions: steps taken to avoid trouble.
+
 ##### Find It
 
 **Chunk 2** (¶2 sentences 1 to 7; 52 words)
@@ -6354,6 +6415,39 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Standards: ELA.K12.EE.1.1
 - Gist check: The narrator says the idea haunted him even though the old man never wronged him. ✓ / The narrator says the old man cheated him out of his gold. / The narrator says he hated the old man from the very first day.
 - Discovery (figurative): "it haunted me day and night". The idea follows him everywhere, like a ghost.
+
+**Chunk 16** (¶19 sentences 9 to 9, ¶20 sentences 1 to 5; 79 words)
+
+- Question: Which line shows the narrator suddenly worried that someone next door will notice?
+- Key words highlighted: someone next door
+- Proof line: "And now a new anxiety seized me — the sound would be heard by a neighbor!"
+- Refresher hint: Look for a new anxiety.
+- Why: A new anxiety seized him: the sound would be heard by a neighbor.
+- Standards: ELA.K12.EE.1.1
+- Gist check: As the beating grows louder, the narrator suddenly fears that a neighbor will hear it. ✓ / As the beating fades away, the narrator decides to leave the house quietly. / As the beating grows louder, the narrator wakes the old man to warn him.
+- Discovery (figurative): "the dead hour of the night". The deepest, stillest part of the night.
+
+**Chunk 20** (¶26 sentences 1 to 1, ¶27 sentences 1 to 8; 100 words)
+
+- Question: Which line explains what brought the visitors to the door?
+- Key words highlighted: brought the visitors
+- Proof line: "A shriek had been heard by a neighbor during the night; suspicion of foul play had been aroused; information had been lodged at the police-office, and they (the officers) had been deputed to search the premises."
+- Refresher hint: Look for what was heard, and by whom.
+- Why: A shriek had been heard by a neighbor during the night, and the officers were sent to search.
+- Standards: ELA.K12.EE.1.1
+- Gist check: A neighbor reported a shriek, and the narrator calmly claims it was his own nightmare. ✓ / A neighbor reported a fire, and the narrator admits he started it. / A neighbor reported a theft, and the narrator blames the old man.
+- Discovery (vocabulary): "secure, undisturbed". Undisturbed: left exactly as it was.
+
+**Chunk 24** (¶33 sentences 3 to 7, ¶34 sentences 1 to 3; 93 words)
+
+- Question: Which line shows the narrator finally confessing?
+- Key words highlighted: confessing
+- Proof line: "I admit the deed! — tear up the planks! — here, here! — it is the beating of his hideous heart!”"
+- Refresher hint: Look for the words he cries out at the end.
+- Why: I admit the deed! It is the beating of his hideous heart!
+- Standards: ELA.K12.EE.1.1
+- Gist check: Convinced the officers are mocking him, the narrator cries out a confession and tells them where to look. ✓ / Convinced the officers believe him, the narrator thanks them and shows them out. / Convinced he has won, the narrator laughs and goes upstairs to sleep.
+- Discovery (vocabulary): "hypocritical smiles". Hypocritical: pretending to feel something you don't.
 
 ##### Figure It Out
 
@@ -6369,6 +6463,18 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Gist check: The narrator blames the old man's pale, filmy eye and decides to kill him to be rid of it. ✓ / The narrator praises the old man's bright eyes and decides to protect him. / The narrator blames the old man's loud voice and decides to move away.
 - Discovery (figurative): "my blood ran cold". Fear so strong he feels it in his veins.
 
+**Chunk 12** (¶13 sentences 1 to 4, ¶14 sentences 1 to 3; 139 words) · shared words reviewed
+
+- Question: Read the words had stalked with his black shadow before him. What kind of figurative language is this?
+- Key words highlighted: stalked
+- Choices: Personification: death moves toward the old man like a person ✓ / Simile: death is compared to a shadow using like / Onomatopoeia: the words copy the sound of footsteps
+- What does it mean? The old man senses something deadly coming that he cannot see ✓ / A stranger is walking down the hall / The lantern casts a real shadow on the wall
+- Refresher hint: Can death really walk? What does the old man feel coming?
+- Why: Death stalks like a person casting a shadow: the old man feels danger closing in.
+- Standards: ELA.7.R.3.1
+- Gist check: The old man tries to explain away the noise as wind or a mouse, but his fear keeps growing. ✓ / The old man decides the noise is a burglar and runs to fetch help. / The old man laughs at the noise and goes back to sleep at once.
+- Discovery (vocabulary): "the wind in the chimney". One of the harmless explanations the old man tries to believe.
+
 ##### Word Detective
 
 **Chunk 4** (¶3 sentences 1 to 6; 59 words) · shared words reviewed
@@ -6382,6 +6488,18 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
 - Gist check: The narrator argues that his careful planning proves he is sane, and he acts extra kind to the old man. ✓ / The narrator admits his plan was sloppy and that he was rude to the old man. / The narrator says he forgot his plan and spent the whole week traveling.
 - Discovery (vocabulary): "with what foresight". Foresight: planning ahead.
+
+**Chunk 21** (¶28 sentences 1 to 1, ¶29 sentences 1 to 6; 104 words) · shared words reviewed
+
+- Question: In this chunk, what does audacity mean?
+- Key words highlighted: audacity
+- Choices: Shocking, reckless boldness ✓ / Deep and quiet sadness / Careful, gentle politeness
+- Proof words (any one): "placed my own seat upon the very spot"
+- Refresher hint: Where does he choose to sit?
+- Why: He placed his own seat upon the very spot: a shockingly bold act.
+- Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
+- Gist check: The narrator boldly seats the officers in the room, but soon he grows pale and wishes they would leave. ✓ / The narrator rudely sends the officers away, and they leave satisfied. / The narrator invites the officers to stay the night, and they all fall asleep.
+- Discovery (vocabulary): "a ringing in my ears". A ringing in the ears: a sound that seems to come from inside your own head.
 
 ##### Character Clue
 
@@ -6397,6 +6515,18 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Gist check: Each midnight the narrator slowly eases his head and a covered lantern through the old man's door. ✓ / Each morning the narrator bursts into the old man's room with a bright lamp. / Each midnight the narrator locks the old man's door from the outside.
 - Discovery (vocabulary): "a dark lantern". Dark lantern: a lantern with a cover that can block its light.
 
+**Chunk 15** (¶18 sentences 3 to 4, ¶19 sentences 1 to 8; 91 words)
+
+- Question: Which trait does the narrator show as the sound grows?
+- Key words highlighted: trait
+- Choices: Rising fury that he struggles to hold back ✓ / Calm pity for the frightened old man / Boredom with the long, quiet night
+- Proof words (any one): "It increased my fury"
+- Refresher hint: What does the sound do to him, and does he act at once?
+- Why: It increased his fury, yet he refrained and kept still.
+- Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
+- Gist check: The narrator believes he hears the old man's heart, and its growing beat fills him with fury. ✓ / The narrator hears church bells, and their steady ringing calms his fury. / The narrator hears the old man snoring, and the sound makes him laugh.
+- Discovery (vocabulary): "the hellish tattoo of the heart". Tattoo: a steady drumbeat.
+
 ##### Read Between the Lines
 
 **Chunk 6** (¶5 sentences 1 to 3; 79 words)
@@ -6410,6 +6540,54 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
 - Gist check: Taking an hour to peek in, the narrator shines one thin ray of light onto the vulture eye. ✓ / Taking a minute to peek in, the narrator lights every lamp in the old man's room. / Peering through the window, the narrator sees the old man awake and reading.
 - Discovery (vocabulary): "a single thin ray". A ray: a narrow beam of light.
+
+**Chunk 10** (¶9 sentences 2 to 2, ¶10 sentences 1 to 1; 77 words)
+
+- Question: What can you infer from the old man's question in the blackness?
+- Key words highlighted: infer
+- Choices: He senses someone is there and is frightened ✓ / He is expecting a visitor and is pleased / He is talking in his sleep about a dream
+- Proof line: "I had got my head in, and was about to open the lantern, when my thumb slipped upon the tin fastening, and the old man sprang up in bed, crying out — “Who's there?”"
+- Refresher hint: What does he do, and what does he call out?
+- Why: He sprang up in bed crying out, Who's there? He senses someone in the room.
+- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Gist check: In the pitch-dark room the narrator's thumb slips, and the old man sits up crying out. ✓ / In the bright room the narrator's lantern falls, and the old man sleeps through it. / In the pitch-dark room the narrator trips, and the old man calls for the police.
+- Discovery (figurative): "as black as pitch". A simile: the room is as dark as tar.
+
+**Chunk 11** (¶11 sentences 1 to 3, ¶12 sentences 1 to 5; 143 words)
+
+- Question: What can you infer about the narrator from his familiarity with that sound?
+- Key words highlighted: infer
+- Choices: He has felt the same terror himself on many nights ✓ / He once worked as a doctor who treated patients / He has never been afraid of anything at all
+- Proof line: "Many a night, just at midnight, when all the world slept, it has welled up from my own bosom, deepening, with its dreadful echo, the terrors that distracted me."
+- Refresher hint: Where has he heard it before?
+- Why: Many a night it has welled up from his own bosom: he knows that terror himself.
+- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Gist check: The old man sits awake listening, and the narrator recognizes his groan of terror from his own nights. ✓ / The old man falls back asleep, and the narrator quietly leaves the room. / The old man calls for help, and the narrator hides under the bed.
+- Discovery (vocabulary): "the death-watches in the wall". Death-watches: beetles that tick in walls; an old superstition said they warned of a death.
+
+**Chunk 17** (¶20 sentences 6 to 8, ¶21 sentences 1 to 7; 101 words)
+
+- Question: What can you infer worries the narrator most in this chunk?
+- Key words highlighted: infer
+- Choices: That a sound might give him away ✓ / That the old man's gold is missing / That the sun will rise too soon
+- Proof line: "This, however, did not vex me; it would not be heard through the walls."
+- Refresher hint: Why does the muffled sound not vex him?
+- Why: It did not vex him because it would not be heard through the walls: being heard is his worry.
+- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Gist check: The narrator rushes into the room, and soon the old man's heartbeat stops. ✓ / The narrator runs out of the house, and the old man locks the door behind him. / The narrator lights every lamp, and the old man wakes up laughing.
+- Discovery (vocabulary): "a muffled sound". Muffled: quiet and dull, as if wrapped up.
+
+**Chunk 22** (¶30 sentences 1 to 1, ¶31 sentences 1 to 6; 128 words)
+
+- Question: What can you infer from the fact that the visitors never react to the sound?
+- Key words highlighted: infer
+- Choices: The sound may exist only in the narrator's mind ✓ / The visitors are deaf and cannot hear anything / The visitors are too polite to mention it
+- Proof line: "I gasped for breath — and yet the officers heard it not."
+- Refresher hint: He gasps for breath. Who hears it?
+- Why: He gasped for breath, and yet the officers heard it not.
+- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Gist check: The ringing becomes a beating sound that grows louder, though the officers seem not to hear it. ✓ / The ringing stops, and the narrator relaxes and laughs with the officers. / The ringing turns out to be church bells, and everyone leaves for church.
+- Discovery (vocabulary): "violent gesticulations". Gesticulations: wild arm movements while talking.
 
 ##### Catch the Lie
 
@@ -6425,6 +6603,19 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Gist check: For seven nights the eye stays shut, and each morning the narrator greets the old man warmly. ✓ / For seven nights the eye stays open, and each morning the narrator avoids the old man. / For seven nights the narrator sleeps soundly and never visits the old man.
 - Discovery (figurative): "his Evil Eye". Capitalized like a name, the eye becomes a villain in his mind.
 
+**Chunk 19** (¶24 sentences 1 to 4, ¶25 sentences 1 to 4; 119 words)
+
+- Question: The officer remembers arriving. One thing he says is false. Tap the line that proves it.
+- Key words highlighted: false
+- Testimony (Officer): "We came by in broad daylight, around noon, and the fellow was slow to open the door for us."
+- Proof line: "When I had made an end of these labors, it was four o'clock — still dark as midnight."
+- Proof line: "I went down to open it with a light heart, — for what had I now to fear?"
+- Refresher hint: What time was it, and how did he come to the door?
+- Why: It was four o'clock, still dark as midnight, and he went down to open it with a light heart.
+- Standards: ELA.K12.EE.1.1
+- Gist check: Before dawn the narrator finishes hiding his crime, and three police officers knock at the door. ✓ / At noon the narrator finishes breakfast, and three neighbors bring him a cake. / Before dawn the narrator packs his bags and slips out the back door.
+- Discovery (vocabulary): "with perfect suavity". Suavity: smooth, polite manners.
+
 ##### Shades of Meaning
 
 **Chunk 8** (¶7 sentences 1 to 1, ¶8 sentences 1 to 4; 77 words) · shared words reviewed
@@ -6438,6 +6629,30 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Standards: ELA.7.V.1.3, ELA.7.R.3.1
 - Gist check: On the eighth night the narrator moves slower than a clock hand and feels proud of his own cleverness. ✓ / On the eighth night the narrator rushes in and feels ashamed of his plan. / On the eighth night the narrator stays in bed and gives up his plan.
 - Discovery (figurative): "the extent of my own powers". He feels almost superhuman in his cleverness.
+
+**Chunk 13** (¶15 sentences 1 to 1, ¶16 sentences 1 to 2; 102 words) · shared words reviewed
+
+- Question: Why does the narrator repeat stealthily instead of just saying quietly?
+- Key words highlighted: stealthily
+- Choices: It stresses how secret and sly every movement is ✓ / It shows he is tired and moving clumsily / It shows he wants the old man to hear him
+- Proof words (any one): "you cannot imagine how"
+- Refresher hint: What does he say you cannot imagine?
+- Why: Stealthily means slyly and secretly, and he insists you cannot imagine how much so.
+- Standards: ELA.7.V.1.3, ELA.7.R.3.1
+- Gist check: After waiting a long time, the narrator opens the lantern a crack and a thin ray falls on the eye. ✓ / After waiting a moment, the narrator throws open the lantern and fills the room with light. / After waiting a long time, the narrator shuts the door and goes back to bed.
+- Discovery (figurative): "like the thread of the spider". A simile: the ray of light is as thin as a spider's thread.
+
+**Chunk 23** (¶32 sentences 1 to 7, ¶33 sentences 1 to 2; 98 words) · shared words reviewed
+
+- Question: Why does the narrator stress that the men chatted pleasantly instead of just talked?
+- Key words highlighted: pleasantly
+- Choices: It shows how calm they stay while he falls apart ✓ / It shows they are angry with him / It shows they are about to leave
+- Proof words (any one): "I paced the floor to and fro"
+- Refresher hint: Compare what he is doing with what they are doing.
+- Why: He paces the floor to and fro while they chat pleasantly: their calm makes his panic worse.
+- Standards: ELA.7.V.1.3, ELA.7.R.3.1
+- Gist check: The narrator paces and shouts as the sound grows, while the officers keep chatting and smiling. ✓ / The narrator sits quietly as the sound fades, while the officers search the cellar. / The narrator falls asleep as the sound stops, while the officers leave.
+- Discovery (vocabulary): "with heavy strides". Strides: long steps.
 
 ##### Theme Thread
 
@@ -6453,21 +6668,6 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Gist check: The narrator chuckles at his secret, the old man stirs as if startled, but the narrator does not retreat. ✓ / The narrator weeps at his secret, the old man sleeps soundly, and the narrator goes home. / The narrator shouts his secret, the old man laughs, and they talk until dawn.
 - Discovery (vocabulary): "I fairly chuckled at the idea". Chuckled: laughed quietly.
-
-##### Make the Call
-
-**Chunk 10** (¶9 sentences 2 to 2, ¶10 sentences 1 to 1; 77 words)
-
-- Question: Make the call: is the narrator as sane as he claims?
-- Key words highlighted: Make the call
-- Theory: Calm and in control, as he says. Backed by: "You should have seen how wisely I proceeded — with what caution — with what fore…"; "It took me an hour to place my whole head within the opening so far that I could…"; "I moved it slowly — very, very slowly, so that I might not disturb the old man's…"
-- Theory: Driven mad by the eye. Backed by: "I think it was his eye! — yes, it was this!…"; "Whenever it fell upon me, my blood ran cold; and so, by degrees — very gradually…"; "And this I did for seven long nights — every night just at midnight — but I foun…"
-- Theory: Nervous and losing his grip. Backed by: "TRUE! — nervous — very, very dreadfully nervous I had been, and am; but why will…"; "I could scarcely contain my feelings of triumph.…"; "I fairly chuckled at the idea.…"
-- Refresher hint: Any call can win. Pin the two lines that back yours best.
-- Why: Each theory has lines that support it; the proof decides.
-- Standards: ELA.K12.EE.1.1, ELA.K12.EE.3.1
-- Gist check: In the pitch-dark room the narrator's thumb slips, and the old man sits up crying out. ✓ / In the bright room the narrator's lantern falls, and the old man sleeps through it. / In the pitch-dark room the narrator trips, and the old man calls for the police.
-- Discovery (figurative): "as black as pitch". A simile: the room is as dark as tar.
 
 ### Trifles
 
