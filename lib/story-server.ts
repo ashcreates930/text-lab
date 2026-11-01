@@ -29,8 +29,10 @@ function demoNickname(sandboxId: string, taken: string[]) {
 // startAt: open at a later round (demo visitors only, from the home page's "Catch the lie"). Earlier rounds are skipped
 // and score nothing; a cleared run starts over first.
 // test: the request came from a test session (?test=1), so the run is tagged as a test run.
-export async function startRun(store: StoryStore, world: WorldPack, scene: Scene, who: Identity, restart = false, startAt?: RoundKind, test = false): Promise<StoryRun | string> {
-  const run = await openRun(store, world, scene, who, restart, test);
+// missionId: the student's mission, so the run's questions can hold its pieces in this scene.
+export async function startRun(store: StoryStore, world: WorldPack, scene: Scene, who: Identity, restart = false, startAt?: RoundKind, test = false, missionId?: string): Promise<StoryRun | string> {
+  const pieceLines = world.missions?.find((m) => m.id === missionId)?.pieces.filter((p) => p.scene_id === scene.id).map((p) => p.line) ?? [];
+  const run = await openRun(store, world, scene, who, restart, test, pieceLines);
   if (typeof run === "string" || !startAt || who.scope !== "demo") return run;
   return skipTo(store, world, scene, who, run, ROUNDS.indexOf(startAt));
 }
@@ -43,7 +45,7 @@ async function skipTo(store: StoryStore, world: WorldPack, scene: Scene, who: Id
   await store.saveRun(from.id, { state });
   return { ...from, state };
 }
-async function openRun(store: StoryStore, world: WorldPack, scene: Scene, who: Identity, restart: boolean, test: boolean): Promise<StoryRun | string> {
+async function openRun(store: StoryStore, world: WorldPack, scene: Scene, who: Identity, restart: boolean, test: boolean, pieceLines: string[] = []): Promise<StoryRun | string> {
   if (!scene.story_mode) return "This scene has no Story Mode.";
   const day = storyDay();
   const key = who.scope === "class"
@@ -54,7 +56,7 @@ async function openRun(store: StoryStore, world: WorldPack, scene: Scene, who: I
   const seat = who.scope === "class" ? who.seat ?? null : null;
   // This run's questions: on a replay, ones the student hasn't seen yet; in class, by roster seat.
   // A class shares one seed, so seats (not names) decide who gets which question; a demo visitor's is their own.
-  const picksFor = (seen: string[], restarts: number) => pickRound(scene, { seed: who.scope === "class" ? `${who.classId}:${scene.id}` : `${key.playerKey}:${scene.id}:${restarts}`, seen, seat: seat === null ? null : seat + restarts });
+  const picksFor = (seen: string[], restarts: number) => pickRound(scene, { seed: who.scope === "class" ? `${who.classId}:${scene.id}` : `${key.playerKey}:${scene.id}:${restarts}`, seen, seat: seat === null ? null : seat + restarts, pieceLines });
   if (found && !restart) {
     if (found.state.picks) return found;
     // Runs from before question banks: pick now.

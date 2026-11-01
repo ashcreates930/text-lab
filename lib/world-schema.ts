@@ -13,9 +13,36 @@ const ytLine=z.object({paragraph:z.string().regex(/^p\d{3}$/),line:z.string().mi
 // weigh: a claim the story leaves open. The student taps a line that supports it (accept), then a line that keeps it
 // uncertain (weigh.uncertain), and gets the feedback; nothing to rebut.
 const ytExchange=z.object({say:z.string().min(1),accept:z.array(ytLine),weigh:z.object({uncertain:z.array(ytLine).min(1),feedback:z.string().min(1)}).optional()});
+// Expeditions (lib/expedition.ts): the story read chunk by chunk, 10 chunks to an expedition. A chunk is whole sentences
+// (segments: paragraph and 0-based sentence range, inclusive) with its Gist check, one hidden discovery and one
+// question. Proof lines are copied exactly from the chunk's lines; proof words are exact text inside them. Standards are
+// B.E.S.T. benchmark families verified in lib/best-standards.ts. reviewed: the question's shared words were checked.
+export const QUESTION_TYPES=["word_detective","shades","between_lines","whose_eyes","figure_it_out","character_clue","theme_thread","gist","find_it","catch_lie","make_call"] as const;
+export const BENCHMARK_FAMILY_IDS=["R.1.1","R.1.2","R.1.3","R.3.1","R.3.2","V.1.3","K12.EE.1.1","K12.EE.3.1","K12.EE.4.1"] as const;
+const expChoice=z.object({text:z.string().min(1),best:z.boolean().optional()});
+const expQuestion=z.object({type:z.enum(QUESTION_TYPES),prompt:z.string().min(1),keywords:z.array(z.string().min(1)).default([]),focus:z.string().min(1).optional(),
+ choices:z.array(expChoice).length(3).optional(),choices2:z.object({prompt:z.string().min(1),options:z.array(expChoice).length(3)}).optional(),
+ proof:z.object({lines:z.array(z.string().min(1)).optional(),words:z.array(z.string().min(1)).optional()}).optional(),
+ testimony:z.object({speaker:z.string(),text:z.string().min(1)}).optional(),
+ theories:z.array(z.object({id:z.string(),name:z.string().min(1),lines:z.array(z.string().min(1)).min(2)})).length(3).optional(),
+ hint:z.string().min(1),why:z.string().min(1),standards:z.array(z.enum(BENCHMARK_FAMILY_IDS)).min(1),reviewed:z.boolean().optional()});
+const expChunk=z.object({id:z.string(),segments:z.array(z.object({p:z.string().regex(/^p\d{3}$/),from:z.number().int().min(0),to:z.number().int().min(0)})).min(1),
+ gist:z.object({options:z.array(expChoice).length(3)}),discovery:z.object({phrase:z.string().min(1),kind:z.enum(["figurative","vocabulary"]),note:z.string().min(1)}),question:expQuestion});
+// The Interview (before the race): three witnesses, each with two question cards, one true and one false statement in
+// character (each with the exact lines in the expedition that confirm or disprove it), an optional gesture, and what
+// the witness says when caught as the liar. Rules: lib/interview.ts.
+const statement=z.object({text:z.string().min(1),lines:z.array(z.string().min(1)).min(1),gesture:z.enum(["laughing","head-shake"]).optional()});
+const witness=z.object({character:z.string(),cards:z.array(z.string().min(1)).length(2),truth:statement,lie:statement,caught:z.string().min(1)});
+const expedition=z.object({id:z.string(),title:z.string().min(1),chunks:z.array(expChunk).min(1),interview:z.object({witnesses:z.array(witness).length(3)}).optional()});
+export type Expedition=z.infer<typeof expedition>;export type Interview=z.infer<typeof expedition>["interview"]&{};export type Witness=z.infer<typeof witness>;export type ExpChunk=z.infer<typeof expChunk>;export type ExpQuestion=z.infer<typeof expQuestion>;export type QuestionType=(typeof QUESTION_TYPES)[number];
+
 // Proof Race sprints (content only for now): one question answered by one line in a short chunk (paragraphs), with
 // near misses and hints, checked like bank questions.
-const sprint=z.object({id:z.string(),question:z.string().min(1),paragraphs:z.array(z.string().regex(/^p\d{3}$/)).min(1),answers:z.array(z.string().min(1)).min(1),near_misses:z.array(z.object({line:z.string(),hint:z.string().min(1)})).default([])});
+const sprint=z.object({id:z.string(),question:z.string().min(1),paragraphs:z.array(z.string().regex(/^p\d{3}$/)).min(1),answers:z.array(z.string().min(1)).min(1),near_misses:z.array(z.object({line:z.string(),hint:z.string().min(1)})).default([]),
+ // Proof Race chunking: short is the 2 to 4 sentence chunk (1-based, inclusive) for the smaller chunk size; gist is the
+ // "best one-line summary" check (3 options, exactly one best).
+ short:z.object({paragraph:z.string(),from:z.number().int().min(1),to:z.number().int().min(1)}).optional(),
+ gist:z.object({options:z.array(z.object({text:z.string().min(1),best:z.boolean().optional()})).length(3)}).optional()});
 const ytContent={character_id:z.string().nullable().optional(),exchanges:z.array(ytExchange).optional(),sides:z.record(z.string(),z.object({character_id:z.string(),exchanges:z.array(ytExchange)})).optional(),
  need:z.number().int().min(1).max(5).optional(),groups:z.record(z.string(),z.string()).optional(),items:z.array(z.object({id:z.string(),label:z.string().min(1),icon:z.string().optional(),group:z.string().optional(),accept:z.array(ytLine),hint:z.string().min(1).optional()})).optional(),
  posts:z.array(z.object({author:z.string(),text:z.string().min(1),false:z.boolean(),accept:z.array(ytLine).optional()})).optional()};
@@ -81,11 +108,16 @@ export const WorldPackSchema = z.object({
   roles:z.array(role),
   // Your Turn (lib/your-turn.ts): one activity per "What's your angle?" option, after the game.
   your_turn:z.object({activities:z.record(z.string(),yourTurnActivity)}).optional(),missions:z.array(mission).optional(),
+  // Expeditions (see above). front_matter: paragraphs that sit before the story (a title, an epigraph), outside every chunk.
+  expeditions:z.array(expedition).optional(),front_matter:z.array(z.string().regex(/^p\d{3}$/)).optional(),
+  // Drafts awaiting the teacher's review: validated like expeditions, never shown to students until moved into
+  // expeditions. expedition_rules: a story-level exception to the chunk rules, only with the teacher's approval.
+  draft_expeditions:z.array(expedition).optional(),expedition_rules:z.object({max_sentences:z.number().int().min(5).max(20)}).optional(),
   // Demo rival and squad modes: the computer players' names (clearly labeled as computer players on screen).
   computer_players:z.object({rival:z.object({name:z.string().min(1),emblem:z.enum(["lantern","rider"])}),teammates:z.array(z.string().min(1)).min(2).max(3)}).optional(),
   // Students in the story: the part the student plays (see lib/student-role.ts). never: people the student must never be.
   student_role:z.object({name:z.string(),setup:z.string(),start_scene:z.string(),intro:z.string(),never:z.array(z.string()).optional()}).optional(),
-  characters:z.array(z.object({id:z.string(),name:z.string(),gender:z.string(),description:z.string(),personality:z.string(),knowledge_limits:z.string(),speech_style:z.string(),never_reveal:z.array(z.string()),voice_id:z.string(),portrait:z.string().optional(),traits:z.array(z.object({name:z.string().min(1),paragraph:z.string().regex(/^p\d{3}$/),line:z.string().min(1)})).min(2).max(3).optional(),hologram:z.string().regex(/^\/worlds\/[a-z0-9-]+\/holograms\/[a-z0-9-]+\.png$/).optional()})),
+  characters:z.array(z.object({id:z.string(),name:z.string(),gender:z.string(),description:z.string(),personality:z.string(),knowledge_limits:z.string(),speech_style:z.string(),never_reveal:z.array(z.string()),voice_id:z.string(),portrait:z.string().optional(),traits:z.array(z.object({name:z.string().min(1),paragraph:z.string().regex(/^p\d{3}$/),line:z.string().min(1)})).min(2).max(3).optional(),hologram:z.string().regex(/^\/worlds\/[a-z0-9-]+\/holograms\/[a-z0-9-]+\.png$/).optional(),witness_only:z.boolean().optional(),model:z.object({src:z.string().regex(/^\/characters\/[a-z0-9-]+\/[a-z0-9-]+\.glb$/),clips:z.object({talking:z.string().optional(),laughing:z.string().optional(),"head-shake":z.string().optional()})}).optional()})),
   glossary:z.array(z.object({term:z.string(),student_friendly_definition:z.string(),part_of_speech:z.string().optional(),definition:z.string().optional(),plain_definition:z.string().optional(),example_sentence:z.string().optional(),text_sentence:z.string().optional()})),
   scenes:z.array(scene),
   storybook:storybook.optional(),

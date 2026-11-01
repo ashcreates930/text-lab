@@ -94,8 +94,10 @@ export function typedProof(proves: string, because: string) {
 function hash(s: string) { let h = 0; for (const ch of s) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; }
 // Picks a question for a student. seen: ids they've had (a replay gets a new one until they've seen them all); seat: their
 // position in the class roster (neighbors differ); chunk: their squad chunk's paragraphs (answers must be there).
-export function pickQuestion<T extends { id: string }>(bank: T[], o: { seed: string; seen?: string[]; seat?: number | null; chunk?: string[]; answerPids?: (q: T) => string[] }): T {
+// prefer: questions to choose from first when any match (a student's mission pieces, so proving lines can earn them).
+export function pickQuestion<T extends { id: string }>(bank: T[], o: { seed: string; seen?: string[]; seat?: number | null; chunk?: string[]; answerPids?: (q: T) => string[]; prefer?: (q: T) => boolean }): T {
   let pool = bank;
+  if (o.prefer) { const preferred = bank.filter(o.prefer); if (preferred.length) pool = preferred; }
   if (o.chunk?.length && o.answerPids) { const inChunk = bank.filter((q) => o.answerPids!(q).some((pid) => o.chunk!.includes(pid))); if (inChunk.length) pool = inChunk; }
   const fresh = pool.filter((q) => !o.seen?.includes(q.id));
   const from = fresh.length ? fresh : pool;
@@ -205,7 +207,17 @@ export function sprintProblems(world: WorldPack, passages: SourcePassage[], read
       const chunk = new Set(s.paragraphs);
       const onChunk = (line: string) => { const p = passages.find((x) => chunk.has(x.id) && evidenceSentences(x.text).includes(line)); return p ? { text: line, pid: p.id } : null; };
       problems.push(...questionProblems(at, { question: s.question, answers: s.answers, near_misses: s.near_misses }, names, onChunk, (line) => onChunk(line)?.pid ?? null, false));
-      if ([s.question, ...s.near_misses.map((n) => n.hint)].some((t) => dash.test(t))) problems.push(`${at}: no em dashes`);
+      if ([s.question, ...s.near_misses.map((n) => n.hint), ...(s.gist?.options.map((o) => o.text) ?? [])].some((t) => dash.test(t))) problems.push(`${at}: no em dashes`);
+      // Gist: exactly one best summary, all three different.
+      if (s.gist && (s.gist.options.filter((o) => o.best).length !== 1 || new Set(s.gist.options.map((o) => o.text)).size !== 3)) problems.push(`${at}: the gist needs 3 different summaries, exactly one best`);
+      // Short chunk: 2 to 4 sentences of one of its paragraphs, holding every answer that is in that paragraph.
+      if (s.short) {
+        const p = passages.find((x) => x.id === s.short!.paragraph), lines = p ? evidenceSentences(p.text) : [];
+        const n = s.short.to - s.short.from + 1, inShort = lines.slice(s.short.from - 1, s.short.to);
+        if (!s.paragraphs.includes(s.short.paragraph) || !p) problems.push(`${at}: the short chunk must be one of the sprint's paragraphs`);
+        else if (n < 2 || n > 4 || s.short.to > lines.length) problems.push(`${at}: the short chunk is 2 to 4 sentences of ${s.short.paragraph}`);
+        else if (s.answers.some((a) => lines.includes(a) && !inShort.includes(a))) problems.push(`${at}: the short chunk leaves out an answer`);
+      }
     }
   });
   return problems;

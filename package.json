@@ -10,16 +10,18 @@
     "start": "next start",
     "lint": "eslint .",
     "pretest": "npm run sync:worlds",
-    "test": "node --experimental-strip-types --test tests/core.test.ts",
+    "test": "node --experimental-strip-types --test tests/core.test.ts tests/design-tokens.test.ts tests/expedition.test.ts tests/expedition-race.test.ts tests/after-race.test.ts tests/interview.test.ts tests/expedition-progress.test.ts",
     "validate:worlds": "node --experimental-strip-types scripts/validate-worlds.ts",
     "assets": "node --experimental-strip-types scripts/generate-assets.ts",
     "sync:worlds": "node --experimental-strip-types scripts/generate-assets.ts --sync-only",
-    "generate-assets": "node --experimental-strip-types scripts/generate-assets.ts"
+    "generate-assets": "node --experimental-strip-types scripts/generate-assets.ts",
+    "build:characters": "node scripts/build-characters.mjs"
   },
   "dependencies": {
     "@scure/bip39": "^2.4.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.57.0",
+    "jspdf": "^4.2.1",
     "lucide-react": "^0.468.0",
     "next": "^15.5.4",
     "openai": "^5.20.0",
@@ -27,15 +29,22 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "sharp": "^0.35.5",
+    "three": "^0.187.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@gltf-transform/core": "^4.5.1",
+    "@gltf-transform/extensions": "^4.5.1",
+    "@gltf-transform/functions": "^4.5.1",
     "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^22.18.6",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
+    "@types/three": "^0.187.0",
     "eslint": "^9.36.0",
     "eslint-config-next": "^15.5.4",
+    "fbx2gltf": "^0.9.7-p1",
+    "meshoptimizer": "^1.3.0",
     "tailwindcss": "^4.1.13",
     "tsx": "^4.20.6",
     "typescript": "^5.9.2"

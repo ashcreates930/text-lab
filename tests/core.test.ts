@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
 import {WorldPackSchema} from "../lib/world-schema.ts";
-import {screenMessage} from "../lib/safety.ts";
+import {screenBoardText,screenMessage} from "../lib/safety.ts";
 import {characterReply} from "../lib/llm.ts";
 import {generateResumePhrase,hashResumePhrase} from "../lib/resume.ts";
 import {createDemoSandboxId,isDemoSandboxExpired} from "../lib/demo-sandbox.ts";
@@ -1551,7 +1551,7 @@ test("what's your angle: characters hear only the part and how the student plays
   assert.equal(sr.ANGLE_STEPS.length,3);
   assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.firedUpBy.options),["Unfairness","Being underestimated","Loyalty","Winning","Money"]);
   assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.lane.options),["Sports","Music","Gaming","Fashion","Social media"]);
-  assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.style.options),["Solo","Rival","Squad"]);
+  assert.deepEqual(Object.values(sr.ANGLE_OPTIONS.style.options),["Solo","Rival","Squad","Proof Race"]);
   assert.equal(sr.ANGLE_OPTIONS.style.label,"How do you want to play?");
   assert.deepEqual([sr.PLAY_STEP,...sr.INTEREST_STEPS],["style","firedUpBy","lane"],"play mode before the game; interests before Your Turn");
   assert.deepEqual(sr.UNLOCK,{title:"Unlock your challenge",line:"Two quick taps and we'll pick a challenge that fits you."});
@@ -2327,7 +2327,7 @@ test("rival freezes are logged for the teacher", async()=>{
 test("Your Turn content: one activity per angle option, every scored line exact, validated", async()=>{
   const {world,passages}=await storyKit();const yt=await import("../lib/your-turn.ts");
   assert.deepEqual(yt.yourTurnProblems(world,passages),[]);
-  assert.deepEqual(Object.keys(world.your_turn!.activities).sort(),[...yt.ANGLE_OPTION_IDS].sort(),"every option of all three questions");
+  assert.deepEqual(Object.keys(world.your_turn!.activities).sort(),yt.ANGLE_OPTION_IDS.filter(id=>id!=="race").sort(),"every option of all three questions (Proof Race is a way to play, not a challenge)");
   assert.equal(world.your_turn!.activities.loyalty.kind,"talk");assert.equal(world.your_turn!.activities.loyalty.character_id,"hans-van-ripper");
   assert.equal(world.your_turn!.activities.winning.kind,"debate");
   for(const a of Object.values(world.your_turn!.activities))assert.ok(a.minutes>=5&&a.minutes<=7);
@@ -2658,4 +2658,157 @@ test("the pumpkin claim is weighed, not rebutted, and scene 1's Proof Race sprin
   const bad=structuredClone(world);bad.scenes[0].sprints![0].near_misses[0].line="Not in the story.";bad.scenes[0].sprints![1].question="Which birds whistle in that glen?";
   const probs=fp.sprintProblems(bad,passages,(i)=>new Set((readingPortions(passages,bad.scenes)[i]??[]).map(p=>p.id)));
   assert.ok(probs.some(p=>/sprint\/walk: near miss/.test(p))&&probs.some(p=>/sprint\/birds: the question shares key words/.test(p)),probs.join("; "));
+});
+
+
+test("proof race: chunks, settings, scoring (speed bonus, near-miss retry, extended time), readiness, board and podium", async()=>{
+  const {world,passages}=await storyKit();const pr=await import("../lib/proof-race.ts");
+  const all=pr.raceChunks(world,passages,pr.DEFAULT_RACE);
+  assert.equal(all.length,12);assert.ok(pr.hasProofRace(world));
+  // Every third chunk asks for a question; the others check the gist (unless it repeats the same passage).
+  assert.equal(all[2].process,"question");assert.ok(all.filter(c=>c.process==="gist").length>=5);
+  assert.ok(all.every(c=>c.passages.length>=1&&c.answers.length>=1));
+  assert.ok(all.some(c=>c.samePassage),"two sprints share a paragraph in paragraph size");
+  const six=pr.raceChunks(world,passages,{...pr.DEFAULT_RACE,chunks:6,questions:false});
+  assert.equal(six.length,6);assert.ok(six.every(c=>c.process!=="question"));
+  const off=pr.raceChunks(world,passages,{...pr.DEFAULT_RACE,gist:false,questions:false});assert.ok(off.every(c=>c.process===null));
+  // Sentence size: 2 to 4 sentences, the answer inside.
+  const short=pr.raceChunks(world,passages,{...pr.DEFAULT_RACE,chunkSize:"sentences"});
+  const {evidenceSentences,lineWords}=await import("../lib/lies.ts");
+  for(const c of short){const n=c.passages.flatMap(p=>evidenceSentences(p.text)).length;assert.ok(n>=2&&n<=4,`${c.sprintId}: ${n} sentences`);assert.ok(c.passages.some(p=>lineWords(p.text).includes(lineWords(c.answers[0]))))}
+  assert.deepEqual(pr.parseRaceSettings({chunks:9,seconds:45,chunkSize:"sentences",gist:false,questions:true,autoAdvance:true}),{chunkSize:"sentences",chunks:9,gist:false,questions:true,seconds:45,autoAdvance:true});
+  assert.deepEqual(pr.parseRaceSettings({chunks:7,seconds:5}),pr.DEFAULT_RACE,"anything else falls back");
+  // Scoring: 700 plus up to 300 for speed, only when right; a near miss allows one retry for 350.
+  const c=all[0],limit=pr.raceLimitMs(20,"1");
+  assert.deepEqual(pr.raceTap(c,c.answers[0],1,0,limit),{result:"right",points:1000});
+  assert.deepEqual(pr.raceTap(c,c.answers[0],1,10000,limit),{result:"right",points:850});
+  assert.deepEqual(pr.raceTap(c,c.answers[0],1,25000,limit),{result:"right",points:700});
+  const near=pr.raceTap(c,c.nearMisses[0].line,1,1000,limit);assert.equal(near.result,"near");assert.equal(near.points,0);
+  assert.deepEqual(pr.raceTap(c,c.answers[0],2,15000,limit),{result:"retryRight",points:350});
+  assert.deepEqual(pr.raceTap(c,c.nearMisses[0].line,2,15000,limit),{result:"wrong",points:0});
+  assert.equal(pr.raceTap(c,"Not a line at all.",1,0,limit).result,"wrong");
+  // Extended time: the bonus is measured against the student's own time.
+  assert.equal(pr.raceLimitMs(20,"2"),40000);assert.equal(pr.speedBonus(20000,pr.raceLimitMs(20,"2")),pr.speedBonus(10000,limit));
+  assert.equal(pr.raceLimitMs(20,"untimed"),60000);
+  assert.equal(pr.gistPoints(c,c.gist!.best),100);assert.equal(pr.gistPoints(c,(c.gist!.best+1)%3),0);
+  // Readiness: auto-advance at 90% only when it's on.
+  assert.deepEqual(pr.readiness(["a","b"],["a","b","c"],true),{ready:2,total:3,advance:false});
+  assert.equal(pr.readiness(Array.from({length:9},(_,k)=>String(k)),Array.from({length:10},(_,k)=>String(k)),true).advance,true);
+  assert.equal(pr.readiness(Array.from({length:10},(_,k)=>String(k)),Array.from({length:10},(_,k)=>String(k)),false).advance,false);
+  // The board: ranks with moves; the podium is the top 3 with points.
+  const names=new Map([["a","Ana"],["b","Ben"],["c","Cy"]]);
+  const rows=pr.raceBoard(new Map([["a",1000],["b",500],["c",0]]),new Map([["a",1000],["b",1850],["c",700]]),names);
+  assert.deepEqual(rows.map(r=>[r.name,r.rank,r.prevRank,r.move,r.gained]),[["Ben",1,2,1,1350],["Ana",2,1,-1,0],["Cy",3,3,0,700]]);
+  assert.deepEqual(pr.podium(rows).map(r=>r.name),["Ben","Ana","Cy"]);
+  assert.equal(pr.raceBoard(new Map(),new Map([["a",100]]),names)[0].prevRank,null,"no moves before anyone scores");
+  // Ties share a rank (ordered by name) but each keeps its own row: the slide-in uses the row it was on.
+  const tie=pr.raceBoard(new Map([["a",500],["b",900],["c",100]]),new Map([["a",900],["b",900],["c",900]]),names);
+  assert.deepEqual(tie.map(r=>[r.name,r.rank,r.prevRank,r.prevPos]),[["Ana",1,2,1],["Ben",1,1,0],["Cy",1,3,2]]);
+  assert.deepEqual(tie.map(r=>r.move),[1,0,2]);
+  const sq=pr.squadTotals(new Map([["a",900],["b",300],["c",600]]),new Map([["a","s1"],["b","s1"],["c","s2"]]));assert.deepEqual([...sq],[["s1",600],["s2",600]]);
+  const st=pr.chunkStats([{index:0,question:"Q0"},{index:1,question:"Q1"}],[{chunk:0,playerId:"a",correct:true},{chunk:1,playerId:"a",correct:false},{chunk:0,playerId:"b",correct:true}],2);
+  assert.deepEqual(st.rows.map(r=>r.pct),[100,0]);assert.equal(st.hardest[0].index,1);
+  // The demo rival: authored and steady per chunk.
+  assert.deepEqual(pr.rivalPlay("x",3,limit),pr.rivalPlay("x",3,limit));
+});
+
+test("proof race live: expedition beats, readiness, gist and question saving, one-shot answers scored on the server with extra time, pause, the board and podium", async()=>{
+  process.env.CLASSROOM_DEV_STORE="memory";
+  const {memoryLiveStore}=await import("../lib/live/store.ts");const server=await import("../lib/live/server.ts");const {liveRoundEvidence}=await import("../lib/live/evidence.ts");
+  const {chunkTokens,phraseRange}=await import("../lib/expedition.ts");
+  const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
+  const s=await store.createSession({code:"RACE01",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
+  const ids:string[]=[];for(const n of ["Ana Ruiz","Ben Cole","Cy Park"]){const r=await server.join(store,s,{nickname:n,studentId:null});ids.push(r.player!.id)}
+  let st=(await server.loadState(store,s.id))!;
+  const act=async(pid:string,kind:string,payload:Record<string,unknown>={},timeSetting="1")=>{st=(await server.loadState(store,s.id))!;const e=await server.playerAct(store,st,pid,{kind:kind as never,payload},{judgeAllowed:async()=>false,timeSetting:timeSetting as never});st=(await server.loadState(store,s.id))!;return e};
+  const host=async(a:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;const e=await server.hostAct(store,st,a as never);st=(await server.loadState(store,s.id))!;return e};
+  type Pub={beat:string;step:number;total:number;beatMs:number|null;question:{type:string;choices:string[]|null}|null;reveal:{pct:number;lines:string[];words:number[]}|null;board:{top:{name:string;rank:number}[]}|null;pinned:string|null;finish:{podium:{name:string}[];stats:{rows:unknown[];hardest:unknown[]}}|null};
+  const pub=()=>server.hostView(st).round as unknown as Pub;
+  // Lobby: an avatar from the story's characters, before any round.
+  assert.equal(await act(ids[0],"avatar",{characterId:"brom-bones"}),null);assert.match((await act(ids[0],"avatar",{characterId:"nobody"}))??"",/Pick one/);
+  assert.equal(server.hostView(st).lobby.find(p=>p.id===ids[0])!.avatar!.name,"Brom Bones");
+  // Start expedition 1 without squads; extra time for Cy from the host.
+  assert.equal(await host({action:"round.start",type:"race",settings:{expeditionId:"into-the-hollow",gradeBand:"6-8",questions:true}}),null);
+  assert.equal(await host({action:"player.time",playerId:ids[2],setting:"2"}),null);
+  // The Interview comes first (tests/interview.test.ts covers it); the host moves through it.
+  assert.equal(pub().beat,"vote");
+  for(let k=0;k<6&&pub().beat!=="read";k++)await host({action:"race.next"});
+  assert.deepEqual([pub().beat,pub().step,pub().total,pub().question,pub().beatMs],["read",0,10,null,null],"no question and no timer while reading");
+  // Reading: ready, and the host sees the count.
+  assert.equal(await act(ids[0],"race_ready"),null);assert.match((await act(ids[0],"race_ready"))??"",/already/);
+  assert.match((await act(ids[0],"race_tap",{answer:{lines:["x"]}}))??"",/isn't open/);
+  assert.deepEqual(server.hostView(st).race!.ready,{ready:1,total:3,advance:false});
+  // Gist check (20 seconds).
+  assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["process",20000]);
+  const exp=st.world.expeditions![0],c0=exp.chunks[0],best=c0.gist.options.findIndex(o=>o.best);
+  assert.equal(await act(ids[0],"race_gist",{choice:best}),null);
+  assert.equal(await act(ids[1],"race_gist",{choice:(best+1)%3}),null);
+  assert.match((await act(ids[1],"race_gist",{choice:best}))??"",/already/);
+  // The question (Whose Eyes?, 45 seconds): the phones get the choices but never which one is best.
+  assert.equal(await host({action:"race.next"}),null);assert.equal(pub().beat,"race");assert.equal(pub().beatMs,45000);
+  assert.equal(pub().question!.type,"whose_eyes");assert.ok(!JSON.stringify(pub().question).includes("\"best\""));
+  const chunks=(await import("../lib/live/race.ts")).liveRaceChunks(st.world,st.passages!,st.session.rounds.at(-1) as never);
+  const tokens=chunkTokens(chunks[0].lines),r=phraseRange(tokens,c0.question.proof!.words![0])!,pl=tokens[r[0]].line,proof=[chunks[0].lines[pl].text],off=[chunks[0].lines.find((_,i)=>i!==pl)!.text];// text evidence is the whole sentence
+  const right=c0.question.choices!.findIndex(o=>o.best);
+  assert.equal(await act(ids[0],"race_tap",{answer:{choice:right,lines:proof}}),null);
+  // Ben: the right answer with the wrong proof scores 0. One shot: no second try.
+  assert.equal(await act(ids[1],"race_tap",{answer:{choice:right,lines:off}}),null);
+  assert.match((await act(ids[1],"race_tap",{answer:{choice:right,lines:proof}}))??"",/already answered/);
+  assert.equal(await act(ids[2],"race_tap",{answer:{choice:right,lines:proof}},"2"),null);
+  assert.equal(server.playerView(st,ids[2]).race!.extraTime,true);assert.equal(server.playerView(st,ids[2]).race!.scale,2);
+  const tot=(pid:string)=>server.playerView(st,pid).race!.total;
+  // The phone's score holds this chunk's points until the reveal, so it can't give the answer away early.
+  assert.deepEqual(ids.map(tot),[0,0,0],"no points shown before the reveal");
+  assert.equal(server.playerView(st,ids[1]).race!.mine.tap!.answerRight,true);assert.equal(server.playerView(st,ids[1]).race!.mine.tap!.proofRight,false);
+  // Pause holds the beat clock: resuming moves the beat's start by the time paused.
+  const before=(st.session.rounds.at(-1) as {beatStartedAt:string}).beatStartedAt;
+  assert.equal(await host({action:"pause"}),null);assert.equal(pub().beat,"race");
+  await new Promise(res=>setTimeout(res,40));
+  assert.equal(await host({action:"resume"}),null);
+  assert.ok(Date.parse((st.session.rounds.at(-1) as {beatStartedAt:string}).beatStartedAt)>Date.parse(before),"the clock moved forward");
+  // The proof (3 seconds), the board (5) and the countdown (3).
+  // Next while paused moves on and ends the pause, so phones can answer the new beat (it used to leave every phone refusing answers).
+  assert.equal(await host({action:"pause"}),null);
+  assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["reveal",3000]);
+  assert.equal(st.session.paused,false,"Next ends the pause");assert.equal(pub().paused,false);
+  assert.equal(pub().reveal!.pct,67);assert.deepEqual(pub().reveal!.words,[]);assert.ok(pub().reveal!.lines.length>0,"the proof is revealed as a sentence");
+  assert.ok(tot(ids[0])>=1090&&tot(ids[0])<=1100,`fast right plus gist: ${tot(ids[0])}`);assert.equal(tot(ids[1]),0);assert.ok(tot(ids[2])>=990);
+  assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["board",5000]);
+  assert.equal(pub().board!.top[0].name,"Ana Ruiz");assert.equal(pub().board!.top.at(-1)!.name,"Ben Cole");
+  assert.equal(server.playerView(st,ids[1]).race!.place!.rank,3);assert.equal(server.playerView(st,ids[1]).race!.place!.row.name,"Ben Cole","the phone gets its own row");
+  { const names=new Set(pub().board!.top.map(r=>r.name));assert.equal(names.size,pub().board!.top.length,"no duplicated names"); }
+  assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["countdown",3000]);
+  // The next chunk: before its reveal each phone shows the score through the last chunk (not 0, not the new points).
+  { const was=ids.map(tot);assert.ok(was[0]>0);
+    for(let k=0;k<6&&!(pub().step===1&&pub().beat==="race");k++)await host({action:"race.next"});
+    assert.deepEqual([pub().step,pub().beat],[1,"race"]);assert.deepEqual(ids.map(tot),was,"held at the last chunk's total until the reveal"); }
+  // Chunk 3 asks for a question (60 seconds): saved, screened, and the host can pin it.
+  for(let k=0;k<30&&!(pub().step===2&&pub().beat==="ask");k++)await host({action:"race.next"});
+  assert.deepEqual([pub().step,pub().beat,pub().beatMs],[2,"ask",60000]);
+  assert.equal(await act(ids[0],"race_question",{text:"Why did the narrator go hunting alone?"}),null);
+  assert.equal(await act(ids[1],"race_question",{text:"Where do you live?"}),null);
+  assert.equal(await act(ids[2],"race_question",{text:"this story is stupid and so are you"}),null);
+  const qs=server.hostView(st).race!.questions;assert.equal(qs.length,1,"a flagged question never reaches the board");
+  assert.equal(await host({action:"race.pin",questionId:qs[0].id}),null);assert.equal(pub().pinned,"Why did the narrator go hunting alone?");
+  // Finish: the podium and class stats; the Evidence view keeps every question, flagged ones marked, and each answer.
+  for(let k=0;k<80&&st.session.status!=="ended";k++)await host({action:"race.next"});
+  const fin=pub().finish!;
+  assert.equal(fin.podium[0].name,"Ana Ruiz");assert.equal(fin.stats.rows.length,10);assert.equal(fin.stats.hardest.length,3);
+  const ev=liveRoundEvidence({session:st.session,world:st.world,squads:st.squads,players:st.players,responses:st.responses});
+  const race=ev.find(rd=>rd.type==="Proof Race")!;assert.equal(race.questions!.length,3);assert.equal(race.questions!.filter(q=>q.flagged).length,2);assert.equal(race.questions!.find(q=>q.flagged)!.text,"Where do you live?");
+  assert.ok(race.squads[0].members.find(m=>m.nickname==="Ben Cole")!.actions.some(a=>/right answer, proof missed/.test(a)));
+  assert.match(race.prompt,/Into the Hollow · grades 6 to 8/);
+});
+
+test("production fixes: mission questions hold the student's pieces, and round 1 counts the pouch's 3 lines", async()=>{
+  const {world,scene,sm}=await storyKit();
+  const m=world.missions!.find(x=>x.id==="find-ichabod")!,lines=m.pieces.filter(p=>p.scene_id===scene.id).map(p=>p.line);
+  const {lineWords}=await import("../lib/lies.ts");const has=(xs:string[])=>xs.some(x=>lines.some(l=>lineWords(l)===lineWords(x)));
+  for(const seed of ["a","b","c","d","e","f"]){const p=sm.pickRound(scene,{seed,pieceLines:lines});assert.ok(has(sm.readQ(scene,p).answers),`round 1 holds a piece (${seed})`);assert.ok(has(sm.inferQ(scene,p).answers.map(a=>a.line)),`round 2 holds a piece (${seed})`)}
+  assert.equal(sm.POUCH_MAX,3,"the button asks for the pouch's lines");
+});
+
+test("board questions: put-downs and swearing stay off the class board, story questions pass", ()=>{
+  for(const t of ["this story is stupid and so are you","you suck","wtf is this"])assert.notEqual(screenBoardText(t).action,"allow",t);
+  for(const t of ["Why did the class laugh at Ichabod?","Was the Horseman really a ghost?","Who passed the glass of cider?"])assert.equal(screenBoardText(t).action,"allow",t);
 });

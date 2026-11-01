@@ -23,7 +23,7 @@ export function Portrait({character,size=40,speaking=false,decorative=true}:{cha
  const ring=speaking?"voice-ring":"";
  return <span className={`relative inline-grid shrink-0 place-items-center overflow-hidden rounded-full ${ring}`} style={{width:size,height:size}} aria-hidden={decorative||undefined} role={decorative?undefined:"img"} aria-label={decorative?undefined:character.name}>
   {p.kind==="image"&&!broken?<img src={p.src} alt="" width={size} height={size} onError={()=>setBroken(true)} className="h-full w-full object-cover"/>
-  :<span className="grid h-full w-full place-items-center bg-[#A0472C] font-bold text-white" style={{fontSize:Math.round(size*0.38)}}>{initials(character.name)}</span>}
+  :<span className="grid h-full w-full place-items-center bg-primary font-bold text-on-primary" style={{fontSize:Math.round(size*0.38)}}>{initials(character.name)}</span>}
  </span>;
 }
 
@@ -37,7 +37,7 @@ export function useSoundPref(kind:SoundKind,preset:string){
 }
 
 export function SoundToggle({on,onToggle,label}:{on:boolean;onToggle:()=>void;label:string}){
- return <button type="button" onClick={onToggle} aria-pressed={on} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#EFE8D8] px-4 text-[15px] font-semibold text-[#2A2620] hover:bg-[#E4DCCB]">{on?<Volume2 size={17}/>:<VolumeX size={17}/>}{label} {on?"on":"off"}</button>;
+ return <button type="button" onClick={onToggle} aria-pressed={on} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-panel-2 px-4 text-[15px] font-semibold text-ink hover:bg-panel-2">{on?<Volume2 size={17}/>:<VolumeX size={17}/>}{label} {on?"on":"off"}</button>;
 }
 
 // Plays character answers in their voice through /api/voice, on the shared player, so a voice stops any narration
@@ -129,11 +129,11 @@ export function AmbientPlayer({src,on,showing}:{src:string|null|undefined;on:boo
 export function ConsequenceMoment({image,text,onContinue}:{image:string;text:string;onContinue:()=>void}){
  const button=useRef<HTMLButtonElement>(null);
  useEffect(()=>{button.current?.focus({preventScroll:true})},[]);
- return <div role="dialog" aria-modal="true" aria-labelledby="consequence-text" className="consequence-in fixed inset-0 z-50 grid place-items-center bg-[#2A2620] bg-cover bg-center p-6" style={{backgroundImage:`url('${image}')`}}>
-  <div aria-hidden className="absolute inset-0 bg-[#1B1712]/75"/>
+ return <div role="dialog" aria-modal="true" aria-labelledby="consequence-text" className="consequence-in fixed inset-0 z-50 grid place-items-center bg-deep bg-cover bg-center p-6" style={{backgroundImage:`url('${image}')`}}>
+  <div aria-hidden className="absolute inset-0 bg-deep/75"/>
   <div className="case-ui relative max-w-2xl text-center">
-   <p className="text-[13px] font-semibold uppercase tracking-[.16em] text-[#F3C9B2]">Your choice</p>
-   <p id="consequence-text" className="mt-4 font-serif text-[24px] leading-relaxed text-white md:text-[30px]">{text}</p>
+   <p className="text-[13px] font-semibold uppercase tracking-[.16em] text-muted">Your choice</p>
+   <p id="consequence-text" className="mt-4 font-serif text-[24px] leading-relaxed text-ink md:text-[30px]">{text}</p>
    <button ref={button} type="button" onClick={onContinue} className="case-primary mt-8">Continue <ArrowRight size={18}/></button>
   </div>
  </div>;
@@ -147,12 +147,12 @@ export function CaseBoard({world,answers,storyboard=[],top,reprove=[]}:{world:Wo
  const [points,setPoints]=useState<string>("");
  const measure=useCallback(()=>{const b=board.current;if(!b)return;const r=b.getBoundingClientRect();setPoints(pins.current.slice(0,cards.length).filter(Boolean).map(p=>{const q=p!.getBoundingClientRect();return `${(q.left+q.width/2-r.left).toFixed(1)},${(q.top+q.height/2-r.top).toFixed(1)}`}).join(" "))},[cards.length]);
  useLayoutEffect(()=>{measure();const b=board.current;if(!b)return;const ro=new ResizeObserver(measure);ro.observe(b);return()=>ro.disconnect()},[measure]);
- const row=<>{top&&<div className="relative mb-6">{top}</div>}{storyboard.length>0&&<div className="relative mb-6"><p className="mb-2 inline-block rounded-full bg-[#FFFDF8] px-3 py-1 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23] shadow">Your storyboard</p><StoryboardRow frames={storyboard}/></div>}</>;
- if(!cards.length)return <div className="corkboard rounded-3xl p-5 text-center md:p-8">{row}<p className="mx-auto max-w-md rounded-2xl bg-[#FFFDF8] px-5 py-4 text-[17px] font-semibold text-[#2A2620] shadow">Prove a clue to pin it to your case board.</p></div>;
+ const row=<>{top&&<div className="relative mb-6">{top}</div>}{storyboard.length>0&&<div className="relative mb-6"><p className="mb-2 inline-block rounded-full bg-panel px-3 py-1 text-[13px] font-semibold uppercase tracking-wide text-highlight shadow">Your storyboard</p><StoryboardRow frames={storyboard}/></div>}</>;
+ if(!cards.length)return <div className="corkboard rounded-3xl p-5 text-center md:p-8">{row}<p className="mx-auto max-w-md rounded-2xl bg-panel px-5 py-4 text-[17px] font-semibold text-ink shadow">Prove a clue to pin it to your case board.</p></div>;
  return <div className="corkboard relative rounded-3xl p-5 md:p-8" data-testid="case-board">
   {row}
   <div ref={board} className="relative">
-  <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"><polyline points={points} fill="none" stroke="#A0472C" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" opacity=".85"/></svg>
+  <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"><polyline points={points} fill="none" stroke="#FF8A1F" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" opacity=".85"/></svg>
   <ol className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{cards.map((c,i)=><BoardCardView key={c.clueId} card={c} index={i} reprove={reprove.includes(c.clueId)} pinRef={el=>{pins.current[i]=el}}/>)}</ol>
   </div>
  </div>;
@@ -160,15 +160,15 @@ export function CaseBoard({world,answers,storyboard=[],top,reprove=[]}:{world:Wo
 
 function BoardCardView({card,index,pinRef,reprove=false}:{card:BoardCard;index:number;pinRef:(el:HTMLSpanElement|null)=>void;reprove?:boolean}){
  const tilt=[-1.6,1.2,-0.8,1.6,-1.2,0.8][index%6];
- return <li className="relative rounded-2xl bg-[#FFFDF8] p-4 pt-6 shadow-[0_10px_24px_-12px_rgba(42,38,32,.6)]" style={{transform:`rotate(${tilt}deg)`}}>
-  <span ref={pinRef} aria-hidden className="absolute left-1/2 top-1.5 grid h-5 w-5 -translate-x-1/2 place-items-center rounded-full bg-[#A0472C] text-white shadow"><Pin size={11}/></span>
-  <div className="flex items-start justify-between gap-2"><p className="text-[12px] font-semibold uppercase tracking-wide text-[#8A3B23]">Scene {card.sceneIndex+1} · Exhibit {index+1}</p>{card.factCheck&&<FactCheckerBadge count={1}/>}</div>
+ return <li className="relative rounded-2xl bg-panel p-4 pt-6" style={{transform:`rotate(${tilt}deg)`}}>
+  <span ref={pinRef} aria-hidden className="absolute left-1/2 top-1.5 grid h-5 w-5 -translate-x-1/2 place-items-center rounded-full bg-primary text-on-primary shadow"><Pin size={11}/></span>
+  <div className="flex items-start justify-between gap-2"><p className="text-[12px] font-semibold uppercase tracking-wide text-highlight">Scene {card.sceneIndex+1} · Exhibit {index+1}</p>{card.factCheck&&<FactCheckerBadge count={1}/>}</div>
   <div className="case-art mt-2 aspect-[16/9] rounded-xl" role="img" aria-label={`Close-up: ${card.name}`} style={{backgroundImage:`url('${card.image}')`,backgroundPosition:`${card.focus.x}% ${card.focus.y}%`,backgroundSize:"300%"}}/>
-  <h3 className="mt-3 text-[17px] font-bold leading-snug text-[#2A2620]">{card.name}</h3>
-  {reprove&&<p className="mt-1 inline-flex rounded-full bg-[#F7DCD3] px-2 py-0.5 text-[13px] font-bold text-[#A33B20]">Re-prove this clue</p>}
-  <blockquote className="mt-2 border-l-4 border-[#A0472C] pl-3 font-serif text-[15px] italic leading-6 text-[#4A4438]">“{card.quote}”</blockquote>
-  <p className="mt-2 text-[15px] leading-6 text-[#2A2620]">{card.explanation}</p>
-  {card.factCheck&&<p className="mt-2 text-[13px] font-semibold text-[#8A3B23]">This line proved {card.character??"a character"} wrong.</p>}
+  <h3 className="mt-3 text-[17px] font-bold leading-snug text-ink">{card.name}</h3>
+  {reprove&&<p className="mt-1 inline-flex rounded-full bg-notyet-soft px-2 py-0.5 text-[13px] font-bold text-notyet">Re-prove this clue</p>}
+  <blockquote className="mt-2 border-l-4 border-primary pl-3 font-serif text-[15px] italic leading-6 text-muted">“{card.quote}”</blockquote>
+  <p className="mt-2 text-[15px] leading-6 text-ink">{card.explanation}</p>
+  {card.factCheck&&<p className="mt-2 text-[13px] font-semibold text-highlight">This line proved {card.character??"a character"} wrong.</p>}
  </li>;
 }
 
@@ -176,10 +176,10 @@ function BoardCardView({card,index,pinRef,reprove=false}:{card:BoardCard;index:n
 export function CaseBoardDialog({world,answers,storyboard,top,onClose,reprove}:{world:WorldPack;answers:Record<string,{notice?:string;interpret?:string;craft?:string;character?:string}>;storyboard?:BoardFrame[];top?:React.ReactNode;onClose:()=>void;reprove?:string[]}){
  const heading=useRef<HTMLHeadingElement>(null);
  useEffect(()=>{const opener=document.activeElement as HTMLElement|null;heading.current?.focus({preventScroll:true});const esc=(e:KeyboardEvent)=>{if(e.key==="Escape")onClose()};window.addEventListener("keydown",esc);return()=>{window.removeEventListener("keydown",esc);opener?.focus?.({preventScroll:true})}},[onClose]);
- return <div role="dialog" aria-modal="true" aria-labelledby="board-h" className="fixed inset-0 z-50 overflow-y-auto bg-[#2A2620]/55 p-3 md:p-8">
-  <div className="case-ui mx-auto max-w-6xl rounded-3xl bg-[#F6F0E3] p-4 shadow-2xl md:p-6">
-   <div className="mb-4 flex items-center justify-between gap-3"><h2 id="board-h" ref={heading} tabIndex={-1} className="text-[24px] font-bold outline-none">Your case board</h2><button type="button" onClick={onClose} aria-label="Close the case board" className="grid h-11 w-11 place-items-center rounded-full text-[#6B6457] hover:bg-[#EFE8D8]"><X size={22}/></button></div>
-   <div className="mb-4 rounded-2xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><p className="mb-2 text-[13px] font-semibold uppercase tracking-wide text-[#8A3B23]">Your detective rank</p><RankLadder/></div>
+ return <div role="dialog" aria-modal="true" aria-labelledby="board-h" className="fixed inset-0 z-50 overflow-y-auto bg-deep/55 p-3 md:p-8">
+  <div className="case-ui mx-auto max-w-6xl rounded-3xl bg-panel-2 p-4 shadow-2xl md:p-6">
+   <div className="mb-4 flex items-center justify-between gap-3"><h2 id="board-h" ref={heading} tabIndex={-1} className="text-[24px] font-bold outline-none">Your case board</h2><button type="button" onClick={onClose} aria-label="Close the case board" className="grid h-11 w-11 place-items-center rounded-full text-muted hover:bg-panel-2"><X size={22}/></button></div>
+   <div className="mb-4 rounded-2xl bg-panel p-4"><p className="mb-2 text-[13px] font-semibold uppercase tracking-wide text-highlight">Your detective rank</p><RankLadder/></div>
    <CaseBoard world={world} answers={answers} storyboard={storyboard} top={top} reprove={reprove}/>
   </div>
  </div>;

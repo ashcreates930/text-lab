@@ -7,6 +7,7 @@ import { WorldPackSchema } from "../lib/world-schema.ts";
 import { parseSourcePassages } from "../lib/source-passages.ts";
 import { narrationParts } from "../lib/narration.ts";
 import { frameArtPrompt, providedSceneDescription } from "../lib/frame-art.ts";
+import { interviewAudioList } from "../lib/interview.ts";
 const { loadEnvConfig } = nextEnv;
 loadEnvConfig(process.cwd());
 const root=join(process.cwd(),"worlds"),publicRoot=join(process.cwd(),"public","worlds");
@@ -118,7 +119,8 @@ if(process.argv.includes("--narration")){
   console.log(`Done. Recorded ${made} paragraph(s) (${chars} characters); ${kept} already existed.`);
   process.exit(0);
 }
-// --sfx: Story Mode sound cues (countdown tick, correct chime, streak sting, leaderboard reveal), short and quiet, from
+// --sfx: Story Mode sound cues (countdown tick, correct chime, streak sting, leaderboard reveal), the live lobby loop and
+// the podium flourish, short and quiet, from
 // ElevenLabs sound generation like the ambient tracks. Saved to public/sounds/story/<name>.mp3. Takes --only=<name,...>.
 if(process.argv.includes("--sfx")){
   if(!elevenLabsKey)throw new Error("ELEVENLABS_API_KEY is required for sound effects.");
@@ -128,6 +130,9 @@ if(process.argv.includes("--sfx")){
     chime:["A short, gentle two-note bell chime for a correct answer, soft and warm, quiet.",1],
     streak:["A brief, bright rising three-note pluck on a harp, cheerful but quiet, no drums.",1.2],
     reveal:["A short, soft paper flip followed by a light single piano note, quiet.",1.5],
+    // Live lobby and the podium (Proof Race and every live game).
+    lobby:["A quiet, light, looping lobby tune for a classroom reading game: soft plucked strings and a gentle woodblock, warm and curious, no vocals, no drums, steady and calm.",20],
+    celebrate:["A short, cheerful celebration flourish: a bright rising harp run and a soft bell, quiet and warm, no crowd, no drums.",2.5],
   };
   const dir=join(process.cwd(),"public","sounds","story");await mkdir(dir,{recursive:true});
   for(const [name,[prompt,seconds]] of Object.entries(cues)){
@@ -136,6 +141,26 @@ if(process.argv.includes("--sfx")){
     if(!res.ok)throw new Error(`ElevenLabs sound generation failed for ${name} (${res.status})`);
     await writeFile(join(dir,`${name}.mp3`),Buffer.from(await res.arrayBuffer()));
     console.log(`Sound cue ${name}.mp3`);
+  }
+  process.exit(0);
+}
+// --interview: every Interview statement (truth, lie, and the line a caught liar says) in its witness's voice, saved
+// to public/worlds/<story>/interview/<expedition>-<character>-<truth|lie|caught>.mp3, so nothing calls an AI at play
+// time. Plain standard English, steady natural settings (no exaggerated accents). Skips files that exist unless --force.
+if(process.argv.includes("--interview")){
+  if(!elevenLabsKey)throw new Error("ELEVENLABS_API_KEY is required for Interview audio.");
+  const force=process.argv.includes("--force");
+  for(const id of (selectedWorld??"sleepy-hollow").split(",")){
+    const world=WorldPackSchema.parse(JSON.parse(await readFile(join(root,id,"world.json"),"utf8")));
+    for(const a of interviewAudioList(world,true)){
+      const out=join(process.cwd(),"public",...a.path.split("/").filter(Boolean));
+      if(!force){try{await readFile(out);continue}catch{}}
+      if(!a.voice)throw new Error(`${a.character} has no voice`);
+      const res=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(a.voice)}`,{method:"POST",headers:{"xi-api-key":elevenLabsKey,"Content-Type":"application/json","Accept":"audio/mpeg"},body:JSON.stringify({text:a.text,model_id:"eleven_turbo_v2_5",voice_settings:{stability:0.6,similarity_boost:0.75,style:0}})});
+      if(!res.ok)throw new Error(`ElevenLabs failed for ${a.path} (${res.status})`);
+      await mkdir(join(out,".."),{recursive:true});await writeFile(out,Buffer.from(await res.arrayBuffer()));
+      console.log(`Interview ${a.path} · ${a.text.length} characters`);
+    }
   }
   process.exit(0);
 }
@@ -152,7 +177,9 @@ if(portraitsMode||ambientMode||hologramsMode){
     "tell-tale-heart/narrator":"Show him only as a shadowed silhouette from the side: no visible face or features, just the outline of head and shoulders in dark clothing, lit faintly from behind.",
     "sleepy-hollow/brom-bones":"A burly, broad-shouldered young farmer with short curly black hair, a bold, good-humored face, and a fur cap with a fox tail.",
     "sleepy-hollow/hans-van-ripper":"An older, weathered Dutch farmer with a stern, practical face.",
+    "sleepy-hollow/katrina-van-tassel":"A young woman of about eighteen, the wealthy Dutch farmer's only daughter: rosy-cheeked, with light hair pinned under a small white cap, fashionably dressed in 1790s Dutch farm style with a fitted bodice, a full skirt and an apron, and the heirloom gold jewelry her great-great-grandmother brought from Holland (gold earrings and a gold chain). Confident and a little teasing in expression, with a slight smile. Modest, period-accurate clothing, appropriate for a middle school classroom.",
     "tell-tale-heart/officer":"A woman police officer of the period in a plain dark wool uniform coat, no badge or insignia, with a calm, observant face.",
+    "tell-tale-heart/neighbor":"An ordinary city neighbor of the 1840s, roused in the night, in a plain dark wool dressing gown over a nightshirt and a simple nightcap, holding a small candle, with a worried, earnest face. Nothing frightening or violent.",
   };
   for(const id of worlds){
     const file=join(root,id,"world.json"),raw=JSON.parse(await readFile(file,"utf8"));const pack=WorldPackSchema.parse(raw);

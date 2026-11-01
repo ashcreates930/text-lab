@@ -210,13 +210,13 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
  // ---- Demo squad: computer pins (never the answer), reactions and the vote ----
  const [squadStart]=useState(Date.now());
  const [teamPins,setTeamPins]=useState<PanelPin[]>([]),[reactions,setReactions]=useState<PanelReaction[]>([]),[reactOpen,setReactOpen]=useState<string|null>(null),[voteOpen,setVoteOpen]=useState(false);
- useEffect(()=>{if(!squad)return;const timers=squad.teammates.map((t,i)=>t.pin?window.setTimeout(()=>setTeamPins(p=>p.some(x=>x.by===t.name)?p:[...p,{line:t.pin!,by:t.name,color:"#5E7FA8",computer:true}]),Math.max(0,squadStart+4000+i*5000+t.pin.split(/\s+/).length*80-Date.now())):0);return()=>timers.forEach(clearTimeout)},[squad,squadStart]);
+ useEffect(()=>{if(!squad)return;const timers=squad.teammates.map((t,i)=>t.pin?window.setTimeout(()=>setTeamPins(p=>p.some(x=>x.by===t.name)?p:[...p,{line:t.pin!,by:t.name,color:"#8C7CFF",computer:true}]),Math.max(0,squadStart+4000+i*5000+t.pin.split(/\s+/).length*80-Date.now())):0);return()=>timers.forEach(clearTimeout)},[squad,squadStart]);
  // A computer teammate reacts to the student's first pin a few seconds later, with an authored stem.
  const firstPin=pouch[0];
  useEffect(()=>{if(!squad||!firstPin)return;const earlier=scene.artifacts[Math.max(0,scene.artifacts.indexOf(clue)-1)];const who=world.characters.find(c=>c.id===clue.off_claim?.character_id)??s.char;
   const t=window.setTimeout(()=>setReactions(r=>r.some(x=>x.by===squad.teammates[0].name&&lineWords(x.line)===lineWords(firstPin))?r:[...r,{line:firstPin,by:squad.teammates[0].name,stem:REACTION_STEMS.proves,body:`we should check it against what ${who?.name??"the character"} said.`},...(earlier&&earlier!==clue?[{line:firstPin,by:squad.teammates[1].name,stem:REACTION_STEMS.connects,body:`the clue about ${inSentence(earlier.name)}.`}]:[])]),3500);
   return()=>clearTimeout(t)},[squad,firstPin,scene.artifacts,clue,world.characters,s.char]);
- const myPins:PanelPin[]=squad?pouch.map(line=>({line,by:"You",color:"#A0472C"})):[];
+ const myPins:PanelPin[]=squad?pouch.map(line=>({line,by:"You",color:"#FF8A1F"})):[];
 
  function saveClue(){const info=s.save();if(info)onClose(true,info)}
  const holoChar=holo?world.characters.find(c=>c.id===holo):undefined;
@@ -233,12 +233,12 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
  const trust=trustMeter(world,demo);
  const voiceToggle=s.reply&&replier?voiceButtonFor(voice.current,replier.id,s.reply,replier.name):null;
 
- return <div data-fill-screen className="case-ui relative flex flex-col bg-[#F6F0E3]" style={{height:fit??"calc(100dvh - 58px)"}}>
+ return <div data-fill-screen className="case-ui relative flex flex-col bg-panel-2" style={{height:fit??"calc(100dvh - 58px)"}}>
   {/* Top row: back, the clue banner (the scene picture, small) and points */}
   <div className="mx-auto flex w-full max-w-6xl items-stretch gap-2 px-3 pt-2 md:px-6">
-   <button type="button" onClick={()=>onClose(false)} aria-label="Back to the scene" className="grid w-11 shrink-0 place-items-center rounded-2xl bg-[#EFE8D8] text-[#2A2620] hover:bg-[#E4DCCB]"><ArrowLeft size={20}/></button>
-   <div className="relative flex min-h-[52px] min-w-0 flex-1 items-center gap-2 overflow-hidden rounded-2xl px-3 md:min-h-[72px]" style={{backgroundImage:`linear-gradient(90deg,rgba(42,38,32,.9),rgba(42,38,32,.45)),url('${scene.background_image}')`,backgroundSize:"cover",backgroundPosition:`${clue.position.x+clue.position.width/2}% ${clue.position.y+clue.position.height/2}%`}}>
-    <div className="min-w-0 flex-1"><p className="truncate text-[10px] font-bold uppercase tracking-wide text-[#F3C9B2] md:text-[11px]">Clue {scene.artifacts.indexOf(clue)+1} of {scene.artifacts.length} · {evidenceLabel[clue.evidence_type]}</p><h1 className="line-clamp-2 text-[16px] font-bold leading-tight text-white outline-none md:text-[22px]">{clue.name}</h1></div>
+   <button type="button" onClick={()=>onClose(false)} aria-label="Back to the scene" className="grid w-11 shrink-0 place-items-center rounded-2xl bg-panel-2 text-ink hover:bg-panel-2"><ArrowLeft size={20}/></button>
+   <div className="relative flex min-h-[52px] min-w-0 flex-1 items-center gap-2 overflow-hidden rounded-2xl px-3 md:min-h-[72px]" style={{backgroundImage:`linear-gradient(rgba(14,12,34,.78),rgba(14,12,34,.78)),url('${scene.background_image}')`,backgroundSize:"cover",backgroundPosition:`${clue.position.x+clue.position.width/2}% ${clue.position.y+clue.position.height/2}%`}}>
+    <div className="min-w-0 flex-1"><p className="truncate text-[10px] font-bold uppercase tracking-wide text-muted md:text-[11px]">Clue {scene.artifacts.indexOf(clue)+1} of {scene.artifacts.length} · {evidenceLabel[clue.evidence_type]}</p><h1 className="line-clamp-2 text-[16px] font-bold leading-tight text-ink outline-none md:text-[22px]">{clue.name}</h1></div>
     <GameChips demo={demo} onDark/>
    </div>
   </div>
@@ -246,29 +246,29 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
    {/* Side column (top on phones): banner, the character's claim, the task */}
    <div className="flex shrink-0 flex-col gap-2 md:order-2 md:w-[400px] md:min-h-0 md:overflow-y-auto">
     {raceState&&<RaceBar state={raceState} now={now} rivalName={rivalName} emblem={world.computer_players?.rival.emblem??"lantern"} locked={locked} game={game} freeze={freezeCheck} onFreeze={freezeRival}/>}
-    {freezeNote&&rival&&<p role="status" className="rounded-2xl border-2 border-[#9CC3E0] bg-[#E8F2FA] px-3 py-2 text-[13px] font-semibold text-[#2F5D80]">❄ Three right proofs in a row: you earned a Freeze. Use it in your next face-off.</p>}
-    {squadSoloToday(demo)&&<p className="rounded-2xl bg-[#F4E1D6] px-3 py-1.5 text-[13px] font-semibold text-[#8A3B23]">{SQUAD_SOLO_NOTE}</p>}
-    {squad&&<p className="rounded-2xl bg-[#F4E1D6] px-3 py-2 text-[13px] leading-5"><b>Reader:</b> {SQUAD_JOBS.reader.does} Your part: {squad.mine.map(x=>paragraphLabel(x.id)).join(", ")}.</p>}
+    {freezeNote&&rival&&<p role="status" className="rounded-2xl border-2 border-violet bg-violet-soft px-3 py-2 text-[13px] font-semibold text-ink">❄ Three right proofs in a row: you earned a Freeze. Use it in your next face-off.</p>}
+    {squadSoloToday(demo)&&<p className="rounded-2xl bg-primary-soft px-3 py-1.5 text-[13px] font-semibold text-highlight">{SQUAD_SOLO_NOTE}</p>}
+    {squad&&<p className="rounded-2xl bg-primary-soft px-3 py-2 text-[13px] leading-5"><b>Reader:</b> {SQUAD_JOBS.reader.does} Your part: {squad.mine.map(x=>paragraphLabel(x.id)).join(", ")}.</p>}
     {/* The claim */}
     {speaking&&(lie&&!s.reply&&!s.busy?
-     <Bubble who={liar!} label={lieCaught?"Testimony · lie caught":"Testimony"} onCard={()=>setCard(liar!.id)} speaking={voice.speaking===liar!.id} actions={lieCaught&&!askOpen?<button type="button" onClick={()=>setAskOpen(true)} className="inline-flex min-h-10 items-center gap-1 rounded-full px-3 text-[13px] font-semibold text-[#F3C9B2]"><MessageCircle size={14}/>Ask {liar!.name.split(" ")[0]} a question</button>:null}>{testimonyParts(lie).map((x,i)=>x.false&&lieCaught?<s key={i}>{x.text}</s>:<span key={i}>{x.text}</span>)}</Bubble>
+     <Bubble who={liar!} label={lieCaught?"Testimony · lie caught":"Testimony"} onCard={()=>setCard(liar!.id)} speaking={voice.speaking===liar!.id} actions={lieCaught&&!askOpen?<button type="button" onClick={()=>setAskOpen(true)} className="inline-flex min-h-10 items-center gap-1 rounded-full px-3 text-[13px] font-semibold text-muted"><MessageCircle size={14}/>Ask {liar!.name.split(" ")[0]} a question</button>:null}>{testimonyParts(lie).map((x,i)=>x.false&&lieCaught?<s key={i}>{x.text}</s>:<span key={i}>{x.text}</span>)}</Bubble>
      :raceState&&!raceState.done&&clue.off_claim?<Bubble who={world.characters.find(c=>c.id===clue.off_claim!.character_id)??speaking} label="Claim" onCard={()=>setCard(clue.off_claim!.character_id)}>{clue.off_claim.claim}</Bubble>
      :s.reply||s.busy?<Bubble who={replier??speaking} label={s.asked?`You asked: ${s.asked}`:""} onCard={()=>setCard((replier??speaking).id)} speaking={!!replier&&voice.speaking===replier.id}
        actions={!s.busy&&s.reply?<>
-        {!flagging&&<button type="button" onClick={()=>{setFlagging(true);setMessage(null);setSelected(undefined)}} className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-[#FFFDF8] px-3 text-[13px] font-bold text-[#A33B20]"><Flag size={14}/>Something's off</button>}
-        {voiceToggle&&replier&&<button type="button" onClick={()=>voice.toggle(s.reply,replier.id)} aria-label={voiceToggle.aria} aria-pressed={voiceToggle.playing} className="inline-flex min-h-10 items-center gap-1 rounded-full px-3 text-[13px] font-semibold text-[#F3C9B2]">{voiceToggle.playing?<Square size={12} fill="currentColor"/>:<Volume2 size={15}/>}{voiceToggle.label}</button>}
-        <button type="button" onClick={()=>setAskOpen(v=>!v)} aria-expanded={askOpen} className="inline-flex min-h-10 items-center gap-1 rounded-full px-3 text-[13px] font-semibold text-[#F3C9B2]"><MessageCircle size={14}/>Ask</button></>:null}>
+        {!flagging&&<button type="button" onClick={()=>{setFlagging(true);setMessage(null);setSelected(undefined)}} className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-panel px-3 text-[13px] font-bold text-notyet"><Flag size={14}/>Something's off</button>}
+        {voiceToggle&&replier&&<button type="button" onClick={()=>voice.toggle(s.reply,replier.id)} aria-label={voiceToggle.aria} aria-pressed={voiceToggle.playing} className="inline-flex min-h-10 items-center gap-1 rounded-full px-3 text-[13px] font-semibold text-muted">{voiceToggle.playing?<Square size={12} fill="currentColor"/>:<Volume2 size={15}/>}{voiceToggle.label}</button>}
+        <button type="button" onClick={()=>setAskOpen(v=>!v)} aria-expanded={askOpen} className="inline-flex min-h-10 items-center gap-1 rounded-full px-3 text-[13px] font-semibold text-muted"><MessageCircle size={14}/>Ask</button></>:null}>
        {s.busy?"Thinking…":s.reply}</Bubble>
      :null)}
     {/* Asking */}
-    {askOpen&&(!lie||lieCaught)&&!(raceState&&!raceState.done)&&!s.busy&&(askable.length?<div className="rounded-2xl bg-[#FFFDF8] p-3 shadow-[0_2px_10px_-6px_rgba(42,38,32,.3)]">
-     <div className="flex items-center justify-between gap-2"><div className="flex flex-wrap gap-1.5">{askable.map(c=><span key={c.id} className="inline-flex items-center"><button type="button" onClick={()=>setCard(c.id)} aria-label={`${c.name}'s card`} className="rounded-full ring-2 ring-transparent hover:ring-[#A0472C]"><Portrait character={c} size={36}/></button><button type="button" onClick={()=>s.setCharacter(c.id)} aria-pressed={s.character===c.id} className={`ml-1 min-h-9 rounded-full px-2.5 text-[13px] font-bold ${s.character===c.id?"bg-[#2A2620] text-white":"bg-[#EFE8D8]"}`}>{c.name.split(" ")[0]}</button></span>)}</div><SoundToggle on={voicesOn} onToggle={toggleVoices} label="Voices"/></div>
-     <div className="mt-2 flex gap-1.5 overflow-x-auto pb-1">{s.suggestions.map(q=><button key={q} type="button" onClick={()=>{s.ask(q);setAskOpen(false);setFlagging(false)}} className="min-h-10 shrink-0 rounded-full bg-[#F4E1D6] px-3 text-[13px] font-semibold text-[#2A2620]">{q}</button>)}</div>
-     <form onSubmit={e=>{e.preventDefault();s.ask(s.question);setAskOpen(false);setFlagging(false)}} className="mt-1.5 flex gap-1.5"><label className="sr-only" htmlFor="clue-ask">Your question for {s.char?.name}</label><input id="clue-ask" value={s.question} onChange={e=>s.setQuestion(e.target.value)} maxLength={300} placeholder={`Ask ${s.char?.name?.split(" ")[0]??""}…`} className="min-h-11 min-w-0 flex-1 rounded-full border border-[#E4DCCB] bg-white px-4 text-[15px] outline-none focus:border-[#A0472C]"/><button disabled={!s.question.trim()} className="min-h-11 rounded-full bg-[#2A2620] px-4 text-[14px] font-bold text-white disabled:opacity-40">Ask</button></form>
-     {!s.asked&&<button type="button" onClick={()=>setAskOpen(false)} className="mt-1 text-[13px] text-[#6B6457] underline underline-offset-4">Skip, I'll look myself</button>}
-    </div>:<p className="rounded-2xl bg-[#FFFDF8] px-3 py-2 text-[14px]">{CLASS_AI_OFF}</p>)}
-    <div aria-live="polite">{message?<p className={`rounded-2xl px-3 py-2 text-[14px] leading-5 ${message.kind==="win"?"bg-[#2F6B3A] font-semibold text-white":message.kind==="hint"?"border-l-4 border-[#A0472C] bg-[#FBF1EB]":"bg-[#EFE8D8]"}`}>{message.text}</p>
-     :<p className="flex items-start gap-1.5 text-[14px] font-semibold leading-5 text-[#8A3B23]"><span aria-hidden>🔎</span>{task}</p>}</div>
+    {askOpen&&(!lie||lieCaught)&&!(raceState&&!raceState.done)&&!s.busy&&(askable.length?<div className="rounded-2xl bg-panel p-3">
+     <div className="flex items-center justify-between gap-2"><div className="flex flex-wrap gap-1.5">{askable.map(c=><span key={c.id} className="inline-flex items-center"><button type="button" onClick={()=>setCard(c.id)} aria-label={`${c.name}'s card`} className="rounded-full ring-2 ring-transparent hover:ring-primary"><Portrait character={c} size={36}/></button><button type="button" onClick={()=>s.setCharacter(c.id)} aria-pressed={s.character===c.id} className={`ml-1 min-h-9 rounded-full px-2.5 text-[13px] font-bold ${s.character===c.id?"bg-primary text-on-primary":"bg-panel-2"}`}>{c.name.split(" ")[0]}</button></span>)}</div><SoundToggle on={voicesOn} onToggle={toggleVoices} label="Voices"/></div>
+     <div className="mt-2 flex gap-1.5 overflow-x-auto pb-1">{s.suggestions.map(q=><button key={q} type="button" onClick={()=>{s.ask(q);setAskOpen(false);setFlagging(false)}} className="min-h-10 shrink-0 rounded-full bg-primary-soft px-3 text-[13px] font-semibold text-ink">{q}</button>)}</div>
+     <form onSubmit={e=>{e.preventDefault();s.ask(s.question);setAskOpen(false);setFlagging(false)}} className="mt-1.5 flex gap-1.5"><label className="sr-only" htmlFor="clue-ask">Your question for {s.char?.name}</label><input id="clue-ask" value={s.question} onChange={e=>s.setQuestion(e.target.value)} maxLength={300} placeholder={`Ask ${s.char?.name?.split(" ")[0]??""}…`} className="min-h-11 min-w-0 flex-1 rounded-full border border-edge bg-panel px-4 text-[15px] outline-none focus:border-primary"/><button disabled={!s.question.trim()} className="min-h-11 rounded-full bg-deep px-4 text-[14px] font-bold text-ink disabled:opacity-40">Ask</button></form>
+     {!s.asked&&<button type="button" onClick={()=>setAskOpen(false)} className="mt-1 text-[13px] text-muted underline underline-offset-4">Skip, I'll look myself</button>}
+    </div>:<p className="rounded-2xl bg-panel px-3 py-2 text-[14px]">{CLASS_AI_OFF}</p>)}
+    <div aria-live="polite">{message?<p className={`rounded-2xl px-3 py-2 text-[14px] leading-5 ${message.kind==="win"?"bg-success font-semibold text-on-success":message.kind==="hint"?"border-l-4 border-primary bg-primary-soft":"bg-panel-2"}`}>{message.text}</p>
+     :<p className="flex items-start gap-1.5 text-[14px] font-semibold leading-5 text-highlight"><span aria-hidden>🔎</span>{task}</p>}</div>
     {trust&&mode==="solo"&&<span className="sr-only">{trust.name}'s trust is {trust.value}.</span>}
     {dock("hidden md:flex")}
    </div>
@@ -282,11 +282,11 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
    onTag={(tag:MarkTag|null)=>{const k=markKey(markLine.pid,markLine.index);setDemo(d=>{const m={...(d.marks??{})};if(tag)m[k]={tag,pid:markLine.pid,text:markLine.text,clueId:clue.id,at:new Date().toISOString()};else delete m[k];return {...d,marks:m}});setMarkLine(null)}}/>}
   {reactOpen&&squad&&<ReactSheet line={reactOpen} onClose={()=>setReactOpen(null)} onSend={(stem,body)=>{setReactions(r=>[...r,{line:reactOpen,by:"You",stem:REACTION_STEMS[stem],body}]);setReactOpen(null)}}/>}
   {voteOpen&&squad&&<VoteSheet pins={[...myPins,...teamPins]} reactions={reactions} factChecker={squad.teammates.find(t=>t.job==="fact-checker")?.name??null} onClose={()=>setVoteOpen(false)} onLock={line=>{setVoteOpen(false);proveLine(line)}}/>}
-  {notYet&&<div className="absolute inset-0 z-50 overflow-y-auto bg-[#2A2620]/45 p-3 md:p-8" role="dialog" aria-modal="true" aria-labelledby="notyet-h"><div className="mx-auto max-w-xl"><NotYet tryNo={Math.min(tries+1,MAX_TRIES)} hint={notYet} onTryAgain={()=>{setNotYet(null);setSelected(undefined);setMessage(null)}}/></div></div>}
+  {notYet&&<div className="absolute inset-0 z-50 overflow-y-auto bg-deep/45 p-3 md:p-8" role="dialog" aria-modal="true" aria-labelledby="notyet-h"><div className="mx-auto max-w-xl"><NotYet tryNo={Math.min(tries+1,MAX_TRIES)} hint={notYet} onTryAgain={()=>{setNotYet(null);setSelected(undefined);setMessage(null)}}/></div></div>}
   {stage==="phrase"&&!notYet&&<Sheet label="Mark the exact words" onClose={()=>{}}><PhrasePicker line={accepted} onLock={lockPhrase}/></Sheet>}
   {explainOpen&&!notYet&&<Sheet label="Prove it" onClose={()=>setExplainOpen(false)}>
-   {shown&&<p className="mb-2 rounded-2xl bg-[#FFF4D6] px-3 py-2 text-[15px] font-semibold text-[#3D2E0A]">Shown answer: this clue scores 0, but your proof still counts.</p>}
-   <blockquote className="rounded-2xl border-l-4 border-[#A0472C] bg-[#F4E1D6]/60 px-3 py-2 font-serif text-[15px] leading-6">{displayLine(accepted||s.proof?.text||"")}</blockquote>
+   {shown&&<p className="mb-2 rounded-2xl bg-gold-soft px-3 py-2 text-[15px] font-semibold text-gold">Shown answer: this clue scores 0, but your proof still counts.</p>}
+   <blockquote className="rounded-2xl border-l-4 border-primary bg-primary-soft/60 px-3 py-2 font-serif text-[15px] leading-6">{displayLine(accepted||s.proof?.text||"")}</blockquote>
    {shown&&answerFor(q,accepted)?.phrase&&<PhrasePicker line={accepted} shownRange={phraseRange(accepted,answerFor(q,accepted)!.phrase!)}/>}
    <ProveIt choices={lie?null:q.prove?proveChoices(q.prove,`${demo.id}:${clue.id}:${q.id}`):null} onSubmit={finishProof}/>
   </Sheet>}
@@ -298,13 +298,13 @@ function CluePlay({world,scene,sceneIndex,clue,roleId,demo,setDemo,passages,onCl
  function dock(className:string){
   const inRace=!!raceState&&!raceState.done;
   return <div className={`shrink-0 flex-col gap-1.5 ${className}`}>
-   <div className="flex items-center justify-between rounded-2xl border-2 border-dashed border-[#C9B9A0] bg-[#FBF7EE] px-3 py-1.5 text-[13px] font-bold" aria-live="polite"><span>Evidence pouch · {pouch.length} of 3</span><span aria-hidden className="flex gap-1">{[0,1,2].map(i=><i key={i} className={`block h-2 w-5 rounded ${i<pouch.length?"bg-[#A0472C]":"bg-[#E4DCCB]"}`}/>)}</span></div>
-   {squad&&!proven&&<div className="flex gap-1.5">{pouch.length>0||teamPins.length>0?<button type="button" onClick={()=>setReactOpen(teamPins.at(-1)?.line??pouch[0])} className="min-h-12 flex-1 rounded-full bg-[#F4E1D6] text-[15px] font-bold text-[#8A3B23]">React</button>:null}<button type="button" onClick={()=>setAskOpen(v=>!v)} aria-expanded={askOpen} className="min-h-12 flex-1 rounded-full bg-[#EFE8D8] text-[15px] font-bold">Ask</button><button type="button" disabled={!pouch.length} onClick={()=>setVoteOpen(true)} aria-label="Vote on the best proof" className="flex min-h-12 flex-[1.4] items-center justify-center gap-1.5 rounded-full bg-[#A0472C] text-[15px] font-bold text-white disabled:opacity-40"><Vote size={17}/>Vote</button></div>}
-   {!squad&&stage==="line"&&!flagging&&!inRace&&<button type="button" disabled={!selected} onClick={()=>prove()} className="flex min-h-12 w-full items-center justify-center gap-1.5 rounded-full bg-[#A0472C] text-[16px] font-bold text-white disabled:opacity-40">Lock in this line <ArrowRight size={18}/></button>}
-   {flagging&&<div className="flex gap-1.5"><button type="button" onClick={()=>{setFlagging(false);setMessage(null)}} className="min-h-12 flex-1 rounded-full bg-[#EFE8D8] text-[15px] font-bold">Cancel</button><button type="button" disabled={!selected} onClick={flagCheck} className="flex min-h-12 flex-[2] items-center justify-center gap-1.5 rounded-full bg-[#A33B20] text-[15px] font-bold text-white disabled:opacity-40"><Flag size={16}/>Check</button></div>}
-   {inRace&&<p className="text-center text-[13px] font-semibold text-[#6B6457]">{locked?"Locked out…":"Tap a line in the story."}</p>}
-   {stage==="prove"&&!flagging&&<>{s.asked&&!lie&&!s.stance&&<div className="grid grid-cols-2 gap-1.5">{[["supports","Backs them up"],["contradicts","Proves them wrong"]].map(([v,l])=><button key={v} type="button" onClick={()=>s.setStance(v)} className="min-h-12 rounded-full bg-[#EFE8D8] text-[14px] font-bold">{l}</button>)}</div>}
-    <button type="button" disabled={!!s.asked&&!lie&&!s.stance} onClick={()=>setExplainOpen(true)} className="flex min-h-12 w-full items-center justify-center gap-1.5 rounded-full bg-[#A0472C] text-[16px] font-bold text-white disabled:opacity-40">Prove it <ArrowRight size={18}/></button></>}
+   <div className="flex items-center justify-between rounded-2xl border-2 border-dashed border-edge bg-panel-2 px-3 py-1.5 text-[13px] font-bold" aria-live="polite"><span>Evidence pouch · {pouch.length} of 3</span><span aria-hidden className="flex gap-1">{[0,1,2].map(i=><i key={i} className={`block h-2 w-5 rounded ${i<pouch.length?"bg-primary":"bg-panel-2"}`}/>)}</span></div>
+   {squad&&!proven&&<div className="flex gap-1.5">{pouch.length>0||teamPins.length>0?<button type="button" onClick={()=>setReactOpen(teamPins.at(-1)?.line??pouch[0])} className="min-h-12 flex-1 rounded-full bg-primary-soft text-[15px] font-bold text-highlight">React</button>:null}<button type="button" onClick={()=>setAskOpen(v=>!v)} aria-expanded={askOpen} className="min-h-12 flex-1 rounded-full bg-panel-2 text-[15px] font-bold">Ask</button><button type="button" disabled={!pouch.length} onClick={()=>setVoteOpen(true)} aria-label="Vote on the best proof" className="flex min-h-12 flex-[1.4] items-center justify-center gap-1.5 rounded-full bg-primary text-[15px] font-bold text-on-primary disabled:opacity-40"><Vote size={17}/>Vote</button></div>}
+   {!squad&&stage==="line"&&!flagging&&!inRace&&<button type="button" disabled={!selected} onClick={()=>prove()} className="flex min-h-12 w-full items-center justify-center gap-1.5 rounded-full bg-primary text-[16px] font-bold text-on-primary disabled:opacity-40">Lock in this line <ArrowRight size={18}/></button>}
+   {flagging&&<div className="flex gap-1.5"><button type="button" onClick={()=>{setFlagging(false);setMessage(null)}} className="min-h-12 flex-1 rounded-full bg-panel-2 text-[15px] font-bold">Cancel</button><button type="button" disabled={!selected} onClick={flagCheck} className="flex min-h-12 flex-[2] items-center justify-center gap-1.5 rounded-full bg-notyet text-[15px] font-bold text-on-notyet disabled:opacity-40"><Flag size={16}/>Check</button></div>}
+   {inRace&&<p className="text-center text-[13px] font-semibold text-muted">{locked?"Locked out…":"Tap a line in the story."}</p>}
+   {stage==="prove"&&!flagging&&<>{s.asked&&!lie&&!s.stance&&<div className="grid grid-cols-2 gap-1.5">{[["supports","Backs them up"],["contradicts","Proves them wrong"]].map(([v,l])=><button key={v} type="button" onClick={()=>s.setStance(v)} className="min-h-12 rounded-full bg-panel-2 text-[14px] font-bold">{l}</button>)}</div>}
+    <button type="button" disabled={!!s.asked&&!lie&&!s.stance} onClick={()=>setExplainOpen(true)} className="flex min-h-12 w-full items-center justify-center gap-1.5 rounded-full bg-primary text-[16px] font-bold text-on-primary disabled:opacity-40">Prove it <ArrowRight size={18}/></button></>}
   </div>;
  }
 }
@@ -315,9 +315,9 @@ function useFitHeight(){
  return h;
 }
 function Bubble({who,label,children,actions,onCard,speaking}:{who:WorldPack["characters"][number];label?:string;children:React.ReactNode;actions?:React.ReactNode;onCard:()=>void;speaking?:boolean}){
- return <div className="flex gap-2.5 rounded-2xl bg-[#2A2620] p-2.5 text-[#FFFDF8]">
-  <button type="button" onClick={onCard} aria-label={`Open ${who.name}'s card`} className="grid h-11 w-11 shrink-0 place-items-center rounded-full ring-2 ring-[#F3C9B2]"><Portrait character={who} size={40} speaking={speaking}/></button>
-  <div className="min-w-0 flex-1"><p className="line-clamp-1 text-[11px] font-bold uppercase tracking-wide text-[#F3C9B2]">{who.name}{label?<span className="ml-1 font-semibold normal-case tracking-normal text-[#E8DDCB]"> · {label}</span>:null}</p>
+ return <div className="flex gap-2.5 rounded-2xl bg-deep p-2.5 text-ink">
+  <button type="button" onClick={onCard} aria-label={`Open ${who.name}'s card`} className="grid h-11 w-11 shrink-0 place-items-center rounded-full ring-2 ring-highlight"><Portrait character={who} size={40} speaking={speaking}/></button>
+  <div className="min-w-0 flex-1"><p className="line-clamp-1 text-[11px] font-bold uppercase tracking-wide text-muted">{who.name}{label?<span className="ml-1 font-semibold normal-case tracking-normal text-muted"> · {label}</span>:null}</p>
    <p className="mt-0.5 max-h-[17dvh] overflow-y-auto text-[14.5px] leading-[1.4] md:max-h-none md:text-[15px]">{children}</p>
    {actions&&<div className="mt-1 flex flex-wrap items-center gap-0.5">{actions}</div>}</div>
  </div>;
@@ -327,12 +327,12 @@ function RaceBar({state,now,rivalName,emblem,locked,game,freeze,onFreeze}:{state
  const frozenLeft=freezeLeft(state.frozenAt,now);
  const left=Math.max(0,Math.ceil(RIVAL_SECONDS-(now-state.start)/1000)),wait=Math.max(0,Math.ceil((state.lockUntil-now)/1000));
  const share=state.done?(state.outcome==="you"?0.8:state.outcome==="rival"?0.2:0.5):Math.min(0.85,Math.max(0.15,0.5+(state.you!==null?0.3:0)-(state.rival!==null?0.3:0)));
- return <div className="rounded-2xl bg-[#FFFDF8] p-2.5 shadow-[0_2px_10px_-6px_rgba(42,38,32,.3)]">
-  <div className="flex items-center justify-between text-[13px] font-bold"><span className="text-[#8A3B23]">You</span><span className="tabular-nums text-[#6B6457]" aria-label={`${left} seconds left`}>{state.done?"Done":`${left}s`}</span><span className="flex items-center gap-1.5 text-[#3E5F86]">{rivalName}<span className="overflow-hidden rounded-full"><RivalEmblem kind={emblem} size={22}/></span></span></div>
+ return <div className="rounded-2xl bg-panel p-2.5">
+  <div className="flex items-center justify-between text-[13px] font-bold"><span className="text-highlight">You</span><span className="tabular-nums text-muted" aria-label={`${left} seconds left`}>{state.done?"Done":`${left}s`}</span><span className="flex items-center gap-1.5 text-ink">{rivalName}<span className="overflow-hidden rounded-full"><RivalEmblem kind={emblem} size={22}/></span></span></div>
   <TugBar share={share} you={game.rivalWins} them={game.rivalLosses} label="Face-off"/>
-  <p className="mt-1 text-[12px] text-[#6B6457]" aria-live="polite">{locked?`Locked out: ${wait}s`:frozenLeft>0?`❄ ${rivalName} is frozen: ${frozenLeft}s`:state.rivalNote||`${rivalName} (computer rival) is reading…`}</p>
-  {!state.done&&game.freezeHeld&&(freeze?.ok?<button type="button" onClick={onFreeze} className="mt-1.5 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full border-2 border-[#9CC3E0] bg-[#E8F2FA] text-[14px] font-bold text-[#2F5D80]">❄ Freeze {rivalName}</button>
-   :<p className="mt-1 text-[12px] font-semibold text-[#2F5D80]">❄ Freeze ready · {freeze?.reason}</p>)}
+  <p className="mt-1 text-[12px] text-muted" aria-live="polite">{locked?`Locked out: ${wait}s`:frozenLeft>0?`❄ ${rivalName} is frozen: ${frozenLeft}s`:state.rivalNote||`${rivalName} (computer rival) is reading…`}</p>
+  {!state.done&&game.freezeHeld&&(freeze?.ok?<button type="button" onClick={onFreeze} className="mt-1.5 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full border-2 border-violet bg-violet-soft text-[14px] font-bold text-ink">❄ Freeze {rivalName}</button>
+   :<p className="mt-1 text-[12px] font-semibold text-ink">❄ Freeze ready · {freeze?.reason}</p>)}
  </div>;
 }
 
@@ -343,11 +343,11 @@ function ReactSheet({line,onSend,onClose}:{line:string;onSend:(stem:ReactionStem
  function send(){const t=body.trim();if(!t)return;const s=screenMessage(t);if(s.action!=="allow"){setErr(s.message??"Try different words.");return}onSend(stem,t)}
  return <Sheet label="React to a pin" onClose={onClose}>
   <p className="line-clamp-2 font-serif text-[15px] italic leading-6">“{displayLine(line)}”</p>
-  <div className="mt-3 grid grid-cols-3 gap-1.5" role="radiogroup" aria-label="Sentence stem">{(Object.keys(REACTION_STEMS) as ReactionStem[]).map(k=><button key={k} type="button" role="radio" aria-checked={stem===k} onClick={()=>setStem(k)} className={`min-h-12 rounded-2xl px-2 text-[13px] font-bold ${stem===k?"bg-[#2A2620] text-white":"bg-[#F4E1D6] text-[#8A3B23]"}`}>{REACTION_STEMS[k]}</button>)}</div>
+  <div className="mt-3 grid grid-cols-3 gap-1.5" role="radiogroup" aria-label="Sentence stem">{(Object.keys(REACTION_STEMS) as ReactionStem[]).map(k=><button key={k} type="button" role="radio" aria-checked={stem===k} onClick={()=>setStem(k)} className={`min-h-12 rounded-2xl px-2 text-[13px] font-bold ${stem===k?"bg-primary text-on-primary":"bg-primary-soft text-highlight"}`}>{REACTION_STEMS[k]}</button>)}</div>
   <label htmlFor="react-box" className="mt-3 block text-[14px] font-bold">{REACTION_STEMS[stem]}</label>
-  <input id="react-box" ref={box} value={body} onChange={e=>{setBody(e.target.value);setErr("")}} maxLength={REACTION_MAX} placeholder="finish the sentence" className="mt-1 min-h-12 w-full rounded-2xl border border-[#E4DCCB] bg-white px-4 text-[16px]"/>
-  <p className="mt-1 text-right text-[12px] text-[#6B6457]">{body.length}/{REACTION_MAX}</p>
-  {err&&<p role="alert" className="text-[14px] text-[#A33B20]">{err}</p>}
+  <input id="react-box" ref={box} value={body} onChange={e=>{setBody(e.target.value);setErr("")}} maxLength={REACTION_MAX} placeholder="finish the sentence" className="mt-1 min-h-12 w-full rounded-2xl border border-edge bg-panel px-4 text-[16px]"/>
+  <p className="mt-1 text-right text-[12px] text-muted">{body.length}/{REACTION_MAX}</p>
+  {err&&<p role="alert" className="text-[14px] text-notyet">{err}</p>}
   <button type="button" disabled={!body.trim()} onClick={send} className="case-primary mt-2 w-full disabled:opacity-40">Add my reaction</button>
  </Sheet>;
 }
@@ -361,10 +361,10 @@ function VoteSheet({pins,reactions,factChecker,onLock,onClose}:{pins:PanelPin[];
  const winner=voteWinner(unique.map(p=>({line:p.line,reactions:reacts(p.line)})),votes,factChecker);
  useEffect(()=>{if(left===0&&winner)onLock(winner)},[left,winner,onLock]);
  return <Sheet label="Vote: best proof" onClose={onClose}>
-  <p className="text-[14px] text-[#4A4438]">Which line best proves it? Ties go to the line with the most reactions, then the Fact-checker's vote. <span className="font-bold tabular-nums">{left}s</span></p>
-  <ul className="mt-2 max-h-[45dvh] space-y-2 overflow-y-auto">{unique.map(p=>{const n=votes.filter(v=>lineWords(v.line)===lineWords(p.line)).length;const lead=winner&&lineWords(winner)===lineWords(p.line);return <li key={p.line}><button type="button" aria-pressed={!!mine&&lineWords(mine)===lineWords(p.line)} onClick={()=>setMine(p.line)} className={`w-full rounded-2xl border-2 p-3 text-left ${mine&&lineWords(mine)===lineWords(p.line)?"border-[#A0472C] bg-[#FBEDE5]":"border-[#E4DCCB] bg-[#FFFDF8]"}`}>
+  <p className="text-[14px] text-muted">Which line best proves it? Ties go to the line with the most reactions, then the Fact-checker's vote. <span className="font-bold tabular-nums">{left}s</span></p>
+  <ul className="mt-2 max-h-[45dvh] space-y-2 overflow-y-auto">{unique.map(p=>{const n=votes.filter(v=>lineWords(v.line)===lineWords(p.line)).length;const lead=winner&&lineWords(winner)===lineWords(p.line);return <li key={p.line}><button type="button" aria-pressed={!!mine&&lineWords(mine)===lineWords(p.line)} onClick={()=>setMine(p.line)} className={`w-full rounded-2xl border-2 p-3 text-left ${mine&&lineWords(mine)===lineWords(p.line)?"border-primary bg-primary-soft":"border-edge bg-panel"}`}>
    <span className="block font-serif text-[15px] leading-6">{displayLine(p.line)}</span>
-   <span className="mt-1 flex flex-wrap justify-between gap-x-3 text-[12px] font-bold text-[#8A3B23]"><span>Pinned by {p.by}{p.computer?" (computer)":""} · {reacts(p.line)} reaction{reacts(p.line)===1?"":"s"}</span><span className="whitespace-nowrap">{n} vote{n===1?"":"s"}{lead?" · leading":""}</span></span></button></li>})}</ul>
+   <span className="mt-1 flex flex-wrap justify-between gap-x-3 text-[12px] font-bold text-highlight"><span>Pinned by {p.by}{p.computer?" (computer)":""} · {reacts(p.line)} reaction{reacts(p.line)===1?"":"s"}</span><span className="whitespace-nowrap">{n} vote{n===1?"":"s"}{lead?" · leading":""}</span></span></button></li>})}</ul>
   <button type="button" disabled={!mine||!winner} onClick={()=>winner&&onLock(winner)} className="case-primary mt-3 w-full disabled:opacity-40"><Check size={18}/>Lock in the squad's pick</button>
  </Sheet>;
 }
@@ -372,7 +372,7 @@ function Sheet({label,children,onClose}:{label:string;children:React.ReactNode;o
  const h=useRef<HTMLHeadingElement>(null);
  useEffect(()=>{const k=(e:KeyboardEvent)=>{if(e.key==="Escape")onClose()};window.addEventListener("keydown",k);if(!document.activeElement||document.activeElement===document.body)h.current?.focus();return()=>window.removeEventListener("keydown",k)},[onClose]);
  return <div className="absolute inset-0 z-50 flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="sheet-h">
-  <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 bg-[#2A2620]/45"/>
-  <div className="relative max-h-[92%] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-[#FFFDF8] p-5 pb-7 md:rounded-3xl"><h2 id="sheet-h" ref={h} tabIndex={-1} className="text-[20px] font-bold outline-none">{label}</h2><div className="mt-2">{children}</div></div>
+  <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 bg-deep/45"/>
+  <div className="relative max-h-[92%] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-panel p-5 pb-7 md:rounded-3xl"><h2 id="sheet-h" ref={h} tabIndex={-1} className="text-[20px] font-bold outline-none">{label}</h2><div className="mt-2">{children}</div></div>
  </div>;
 }

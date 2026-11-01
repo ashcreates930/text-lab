@@ -62,10 +62,13 @@ export function maxPoints(fromRound = 0) {
 // roster seat so neighbors differ.
 export type Picks = Record<RoundKind, string>;
 export const sceneLies = (scene: Scene): (Lie & { id: string })[] => [...(scene.lie ? [{ ...scene.lie, id: "lie" }] : []), ...(scene.story_mode?.lies ?? [])];
-export function pickRound(scene: Scene, o: { seed: string; seen?: string[]; seat?: number | null }): Picks {
+// pieceLines: the lines of the student's mission pieces in this scene. Rounds 1 and 2 prefer questions whose answers
+// hold one, so a student who proves the right lines can earn the scene's pieces.
+export function pickRound(scene: Scene, o: { seed: string; seen?: string[]; seat?: number | null; pieceLines?: string[] }): Picks {
   const c = scene.story_mode!;
-  const pick = <T extends { id: string }>(kind: RoundKind, bank: T[]) => pickQuestion(bank, { seed: `${o.seed}:${kind}`, seen: o.seen?.filter((s) => s.startsWith(`${kind}:`)).map((s) => s.slice(kind.length + 1)), seat: o.seat }).id;
-  return { read: pick("read", c.read.bank), confront: pick("confront", c.infer.bank), lie: pick("lie", sceneLies(scene)), call: pick("call", c.call.bank) };
+  const holds = (lines: string[]) => !!o.pieceLines?.length && lines.some((l) => o.pieceLines!.some((p) => same(p, l)));
+  const pick = <T extends { id: string }>(kind: RoundKind, bank: T[], answers?: (q: T) => string[]) => pickQuestion(bank, { seed: `${o.seed}:${kind}`, seen: o.seen?.filter((s) => s.startsWith(`${kind}:`)).map((s) => s.slice(kind.length + 1)), seat: o.seat, ...(answers ? { prefer: (q: T) => holds(answers(q)) } : {}) }).id;
+  return { read: pick("read", c.read.bank, (q) => q.answers), confront: pick("confront", c.infer.bank, (q) => q.answers.map((a) => a.line)), lie: pick("lie", sceneLies(scene)), call: pick("call", c.call.bank) };
 }
 const byId = <T extends { id: string }>(bank: T[], id: string | undefined) => bank.find((q) => q.id === id) ?? bank[0];
 export const readQ = (scene: Scene, picks?: Partial<Picks>) => byId(scene.story_mode!.read.bank, picks?.read);

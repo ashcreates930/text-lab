@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Proof Race question</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&family=Literata:opsz,wght@7..72,400;7..72,500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E0C22}
+a{color:#FFB65C}a:hover{color:#FFD9A8}
+@keyframes drain{from{width:100%}to{width:8%}}
+@keyframes floatUp{0%{transform:translateY(16px);opacity:0}30%{opacity:1}100%{transform:translateY(-28px);opacity:1}}
+@keyframes pop{0%{transform:scale(.6)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes flicker{0%,100%{opacity:1}50%{opacity:.6}}
+.tl-drain{animation:drain 20s linear forwards}
+.tl-float{animation:floatUp .9s ease-out forwards}
+.tl-pop{animation:pop .35s ease-out}
+.tl-flicker{animation:flicker 1.4s ease-in-out infinite}
+.tl-line{cursor:pointer;transition:transform .08s}
+.tl-line:active{transform:translateY(2px)}
+.tl-btn{cursor:pointer}
+.tl-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #9A4A00 !important}
+@media (prefers-reduced-motion: reduce){.tl-drain,.tl-float,.tl-pop,.tl-flicker{animation:none}.tl-drain{width:55%}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #15122E; color: #FFFFFF; font-family: 'Nunito', system-ui, sans-serif; display: flex; flex-direction: column; padding: 16px 16px 20px; gap: 12px; position: relative; overflow: hidden">
+
+  <div style="display: flex; gap: 8px; align-items: center">
+    <div style="display: flex; align-items: center; gap: 6px; background: #2A2552; border-radius: 999px; padding: 8px 12px; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 18px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="#FFB65C" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z"/></svg>
+      <span>{{score}}</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 4px; background: #2A2552; border-radius: 999px; padding: 8px 12px; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 18px; color: #FFB65C">
+      <svg width="16" height="18" viewBox="0 0 24 24" fill="#FF8A1F" aria-hidden="true"><path d="M12 2c1 4-3 5-3 9a3 3 0 006 0c0-1.5-.6-2.4-1.2-3.4C17 9 19 12 19 15a7 7 0 01-14 0c0-5 5-8 7-13z"/></svg>
+      <span>x3</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px; background: #2A2552; border-radius: 999px; padding: 8px 12px; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 18px">
+      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#FFCF3F"/><circle cx="12" cy="12" r="6" fill="none" stroke="#B88700" stroke-width="2"/></svg>
+      <span>6</span>
+    </div>
+    <div style="flex-grow: 1"></div>
+    <button type="button" aria-label="Sound on" style="width: 44px; height: 44px; border-radius: 12px; border: none; background: #2A2552; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 010 6M19 6a8 8 0 010 12"/></svg>
+    </button>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <div style="display: flex; justify-content: space-between; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 15px; color: #C9C3F0">
+      <span>Question 6 of 10</span>
+      <span style="color: #FFFFFF">14s</span>
+    </div>
+    <div style="height: 12px; border-radius: 999px; background: #2A2552; overflow: hidden">
+      <div class="tl-drain" style="height: 12px; border-radius: 999px; background: #FF8A1F"></div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px; background: #1F1B40; border-radius: 14px; padding: 8px 12px">
+    <svg class="tl-flicker" width="26" height="30" viewBox="0 0 26 30" aria-hidden="true"><rect x="9" y="1" width="8" height="4" rx="2" fill="#8C84C8"/><rect x="4" y="5" width="18" height="21" rx="6" fill="#3B3470" stroke="#8C84C8" stroke-width="2"/><ellipse cx="13" cy="16" rx="5" ry="7" fill="#FFB65C"/><rect x="6" y="26" width="14" height="3" rx="1.5" fill="#8C84C8"/></svg>
+    <span style="font-size: 14px; font-weight: 700; color: #C9C3F0; flex-grow: 1">Lantern Ghost is reading…</span>
+    <span style="font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 15px">You 5 · Ghost 4</span>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 4px">
+    <span style="font-size: 12px; font-weight: 800; letter-spacing: .08em; color: #FFB65C">PROOF RACE · CHUNK 6</span>
+    <h1 style="margin: 0; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 26px; line-height: 1.15">How was the rider wounded long ago?</h1>
+    <span style="font-size: 15px; font-weight: 700; color: #C9C3F0">Tap the line that proves it.</span>
+  </div>
+
+  <div style="background: #FFF8EC; border-radius: 18px; padding: 10px; display: flex; flex-direction: column; gap: 8px; color: #241B12">
+    <span style="font-size: 12px; font-weight: 800; color: #7A5A3A; padding: 0 4px">¶6</span>
+    <sc-for list="{{lines}}" as="line" hint-placeholder-count="3">
+      <button type="button" class="tl-line" onClick="{{line.pick}}" style="{{line.style}}">{{line.text}}</button>
+    </sc-for>
+  </div>
+
+  <div style="flex-grow: 1"></div>
+
+  <sc-if value="{{canLock}}" hint-placeholder-val="{{ true }}">
+    <button type="button" class="tl-btn" onClick="{{lock}}" style="height: 60px; border-radius: 16px; border: none; background: #FF8A1F; color: #1A0F00; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 22px; box-shadow: 0 6px 0 #9A4A00">Lock it in</button>
+  </sc-if>
+  <sc-if value="{{cantLock}}" hint-placeholder-val="{{ false }}">
+    <div style="height: 60px; border-radius: 16px; background: #2A2552; color: #C9C3F0; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; display: flex; align-items: center; justify-content: center">Tap a line first</div>
+  </sc-if>
+
+  <sc-if value="{{isRight}}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; left: 0; top: 0; width: 390px; height: 844px; background: rgba(14,12,34,.88); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; gap: 16px">
+      <div class="tl-float" style="font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 56px; color: #FFCF3F">+940</div>
+      <div class="tl-pop" style="width: 100%; background: #34E0C0; color: #062B24; border-radius: 24px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 8px 0 #12917A">
+        <span style="font-size: 13px; font-weight: 800; letter-spacing: .08em">FIRST TRY · STREAK x4</span>
+        <h2 style="margin: 0; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 40px">Proof!</h2>
+        <p style="margin: 0; font-family: 'Literata', serif; font-size: 16px; line-height: 1.45">“…whose head had been carried away by a cannon-ball in some nameless battle during the Revolutionary War…”</p>
+        <span style="font-size: 15px; font-weight: 800">You beat the Lantern Ghost to the line.</span>
+      </div>
+      <a href="Leaderboard.dc.html" style="width: 100%; height: 60px; border-radius: 16px; background: #FF8A1F; color: #1A0F00; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 22px; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 6px 0 #9A4A00">See the leaderboard</a>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isWrong}}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; left: 0; top: 0; width: 390px; height: 844px; background: rgba(14,12,34,.88); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; gap: 16px">
+      <div class="tl-pop" style="width: 100%; background: #FF7A93; color: #3A0614; border-radius: 24px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 8px 0 #B23A55">
+        <span style="font-size: 13px; font-weight: 800; letter-spacing: .08em">TRY 1 OF 2</span>
+        <h2 style="margin: 0; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 40px">Not yet</h2>
+        <p style="margin: 0; font-size: 17px; font-weight: 700; line-height: 1.4">{{hint}}</p>
+        <span style="font-size: 14px; font-weight: 800">One more try for half points.</span>
+      </div>
+      <button type="button" class="tl-btn" onClick="{{retry}}" style="width: 100%; height: 60px; border-radius: 16px; border: none; background: #FF8A1F; color: #1A0F00; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 22px; box-shadow: 0 6px 0 #9A4A00">Look again</button>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { picked: -1, phase: 'pick' }; }
+  renderVals() {
+    const texts = [
+      'The dominant spirit, however, that haunts this enchanted region, and seems to be commander-in-chief of all the powers of the air, is the apparition of a figure on horseback, without a head.',
+      'It is said by some to be the ghost of a Hessian trooper, whose head had been carried away by a cannon-ball in some nameless battle during the Revolutionary War, and who is ever and anon seen by the country folk hurrying along in the gloom of night, as if on the wings of the wind.',
+      'His haunts are not confined to the valley, but extend at times to the adjacent roads, and especially to the vicinity of a church at no great distance.'
+    ];
+    const hints = [
+      'That line says what he is. Which line says how he lost his head?',
+      '',
+      'That line says where he rides. Which line says how he lost his head?'
+    ];
+    const base = 'text-align: left; width: 100%; border-radius: 12px; padding: 10px 12px; font-family: Literata, serif; font-size: 14.5px; line-height: 1.45; color: #241B12; ';
+    const picked = this.state.picked;
+    const lines = texts.map((t, i) => ({
+      text: t,
+      style: base + (i === picked ? 'background: #FFE2B8; border: 3px solid #FF8A1F;' : 'background: #FFFFFF; border: 3px solid #EADCC6;'),
+      pick: () => this.setState({ picked: i })
+    }));
+    const phase = this.state.phase;
+    return {
+      score: phase === 'right' ? '3,080' : '2,140',
+      lines,
+      canLock: picked >= 0,
+      cantLock: picked < 0,
+      isRight: phase === 'right',
+      isWrong: phase === 'wrong',
+      hint: picked >= 0 ? hints[picked] : '',
+      lock: () => this.setState({ phase: picked === 1 ? 'right' : 'wrong' }),
+      retry: () => this.setState({ phase: 'pick', picked: -1 })
+    };
+  }
+}
+</script>
+</body>
+</html>

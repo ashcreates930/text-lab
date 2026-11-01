@@ -16,6 +16,10 @@ export const personalSettings = (c: Pick<ClassRow, "roles_enabled" | "angles_ena
 export type StudentRow = { id: string; session_id: string; nickname: string; created_at: string };
 export type AssignmentRow = { id: string; session_id: string; lesson_id: string; due_date: string | null; created_at: string };
 export type CompletionRow = { student_id: string; lesson_id: string; first_try_correct: number; total: number; finished_at: string };
+// Proof Race expeditions (supabase/migrations/202610310001_expeditions.sql): one row per attempt; record holds the
+// Case Notes, the Interview and the award (lib/expedition-progress.ts).
+export type ExpeditionResultRow = { student_id: string; world_id: string; expedition_id: string; attempt_id: string; complete: boolean; score: number; first_try: number; total: number; solved_case: boolean | null; record: Record<string, unknown>; started_at: string; finished_at: string | null; updated_at?: string };
+export type ExpeditionAssignmentRow = { id: string; session_id: string; expedition_id: string; due_date: string | null; created_at: string };
 export type AnalysisRow = { id: string; session_id: string; plan: LivePlan; step: number; phase: LiveState["phase"]; chat_started_at: string | null; status: LiveState["status"]; created_at: string; updated_at: string };
 export type ResponseRow = { id: string; analysis_id: string; student_id: string; step: number; kind: "answer" | "takeaway"; response_text: string; created_at: string };
 
@@ -49,6 +53,11 @@ export interface ClassroomStore {
   deleteAssignment(classId: string, lessonId: string): Promise<void>;
   listCompletions(studentIds: string[]): Promise<CompletionRow[]>;
   upsertCompletion(row: CompletionRow): Promise<void>;
+  listExpeditionResults(studentIds: string[]): Promise<ExpeditionResultRow[]>;
+  upsertExpeditionResult(row: ExpeditionResultRow): Promise<void>;
+  listExpeditionAssignments(classId: string): Promise<ExpeditionAssignmentRow[]>;
+  upsertExpeditionAssignment(classId: string, expeditionId: string, dueDate: string | null): Promise<void>;
+  deleteExpeditionAssignment(classId: string, expeditionId: string): Promise<void>;
   getActiveAnalysis(classId: string): Promise<AnalysisRow | null>;
   createAnalysis(classId: string, plan: LivePlan, first: LiveState): Promise<AnalysisRow>;
   updateAnalysis(id: string, state: LiveState): Promise<AnalysisRow | null>;
@@ -111,6 +120,11 @@ function supabaseStore(db: SupabaseClient): ClassroomStore {
     async deleteAssignment(classId, lessonId) { must(await db.from("lesson_assignments").delete().eq("session_id", classId).eq("lesson_id", lessonId)); },
     async listCompletions(studentIds) { if (!studentIds.length) return []; return must(await db.from("lesson_completions").select("student_id,lesson_id,first_try_correct,total,finished_at").in("student_id", studentIds)) as CompletionRow[]; },
     async upsertCompletion(row) { must(await db.from("lesson_completions").upsert(row, { onConflict: "student_id,lesson_id" })); },
+    async listExpeditionResults(studentIds) { if (!studentIds.length) return []; return must(await db.from("expedition_results").select("student_id,world_id,expedition_id,attempt_id,complete,score,first_try,total,solved_case,record,started_at,finished_at,updated_at").in("student_id", studentIds).order("started_at")) as ExpeditionResultRow[]; },
+    async upsertExpeditionResult(row) { must(await db.from("expedition_results").upsert({ ...row, updated_at: new Date().toISOString() }, { onConflict: "student_id,expedition_id,attempt_id" })); },
+    async listExpeditionAssignments(classId) { return must(await db.from("expedition_assignments").select("*").eq("session_id", classId).order("created_at")) as ExpeditionAssignmentRow[]; },
+    async upsertExpeditionAssignment(classId, expeditionId, dueDate) { must(await db.from("expedition_assignments").upsert({ session_id: classId, expedition_id: expeditionId, due_date: dueDate }, { onConflict: "session_id,expedition_id" })); },
+    async deleteExpeditionAssignment(classId, expeditionId) { must(await db.from("expedition_assignments").delete().eq("session_id", classId).eq("expedition_id", expeditionId)); },
     async getActiveAnalysis(classId) { return must(await db.from("live_analyses").select("*").eq("session_id", classId).eq("status", "active").order("created_at", { ascending: false }).limit(1).maybeSingle()) as AnalysisRow | null; },
     async createAnalysis(classId, plan, first) {
       must(await db.from("live_analyses").update({ status: "ended", updated_at: new Date().toISOString() }).eq("session_id", classId).eq("status", "active"));
@@ -122,7 +136,7 @@ function supabaseStore(db: SupabaseClient): ClassroomStore {
   };
 }
 
-type Memory = { teachers: { id: string; auth: string }[]; classes: ClassRow[]; students: (StudentRow & { hash: string })[]; progress?: Record<string, StudentProgress>; assignments: AssignmentRow[]; completions: CompletionRow[]; analyses: AnalysisRow[]; responses: ResponseRow[] };
+type Memory = { teachers: { id: string; auth: string }[]; classes: ClassRow[]; students: (StudentRow & { hash: string })[]; progress?: Record<string, StudentProgress>; assignments: AssignmentRow[]; completions: CompletionRow[]; analyses: AnalysisRow[]; responses: ResponseRow[]; expeditionResults?: ExpeditionResultRow[]; expeditionAssignments?: ExpeditionAssignmentRow[] };
 const g = globalThis as unknown as { __ittMemory?: Memory; __ittAbsences?: { studentId: string; day: string }[] };
 function memoryStore(): ClassroomStore {
   const m = (g.__ittMemory ??= { teachers: [], classes: [], students: [], assignments: [], completions: [], analyses: [], responses: [] });
@@ -153,6 +167,11 @@ function memoryStore(): ClassroomStore {
     async deleteAssignment(classId, lessonId) { m.assignments = m.assignments.filter((a) => !(a.session_id === classId && a.lesson_id === lessonId)); },
     async listCompletions(studentIds) { return m.completions.filter((c) => studentIds.includes(c.student_id)); },
     async upsertCompletion(row) { m.completions = m.completions.filter((c) => !(c.student_id === row.student_id && c.lesson_id === row.lesson_id)); m.completions.push(row); },
+    async listExpeditionResults(studentIds) { return (m.expeditionResults ?? []).filter((r) => studentIds.includes(r.student_id)); },
+    async upsertExpeditionResult(row) { const list = (m.expeditionResults ??= []); const k = list.findIndex((r) => r.student_id === row.student_id && r.expedition_id === row.expedition_id && r.attempt_id === row.attempt_id); const next = { ...row, updated_at: now() }; if (k >= 0) list[k] = next; else list.push(next); },
+    async listExpeditionAssignments(classId) { return (m.expeditionAssignments ?? []).filter((a) => a.session_id === classId); },
+    async upsertExpeditionAssignment(classId, expeditionId, dueDate) { const list = (m.expeditionAssignments ??= []); const a = list.find((x) => x.session_id === classId && x.expedition_id === expeditionId); if (a) a.due_date = dueDate; else list.push({ id: id(), session_id: classId, expedition_id: expeditionId, due_date: dueDate, created_at: now() }); },
+    async deleteExpeditionAssignment(classId, expeditionId) { m.expeditionAssignments = (m.expeditionAssignments ?? []).filter((a) => !(a.session_id === classId && a.expedition_id === expeditionId)); },
     async getActiveAnalysis(classId) { return [...m.analyses].reverse().find((a) => a.session_id === classId && a.status === "active") ?? null; },
     async createAnalysis(classId, plan, first) { m.analyses.filter((a) => a.session_id === classId).forEach((a) => (a.status = "ended")); const row: AnalysisRow = { id: id(), session_id: classId, plan, step: first.step, phase: first.phase, chat_started_at: first.chatStartedAt, status: first.status, created_at: now(), updated_at: now() }; m.analyses.push(row); return row; },
     async updateAnalysis(aid, state) { const a = m.analyses.find((x) => x.id === aid); if (!a) return null; Object.assign(a, { step: state.step, phase: state.phase, chat_started_at: state.chatStartedAt, status: state.status, updated_at: now() }); return a; },

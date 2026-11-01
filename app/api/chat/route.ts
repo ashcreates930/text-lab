@@ -27,7 +27,7 @@ export async function POST(request:NextRequest){
   const mission=missionFor(pack,parsed.data.mission);
   if(mission){const pid=parseSourcePassages(markdown).find(p=>evidenceSentences(p.text).includes(mission.payoff.line))?.id;if(pid)excluded.add(pid)}
   const source=through||excluded.size?parseSourcePassages(markdown).filter(p=>(!through||Number(p.id.slice(1))<=through)&&!excluded.has(p.id)).map(p=>p.text):markdown.split(/\n\s*\n/).slice(1).map(p=>p.trim()).filter(Boolean);
-  const item=pack.characters.find(x=>x.id===character);if(!item)return NextResponse.json({error:"Character not found."},{status:404});
+  const item=pack.characters.find(x=>x.id===character&&!x.witness_only);if(!item)return NextResponse.json({error:"Character not found."},{status:404});
   const capped=await consumeDemoAi(request,"character",parsed.data.sandboxId);if(capped)return capped;
   // Students in the story: the student's part and their angle (three choices only). A class student's teacher settings win.
   let personal={rolesOn:parsed.data.inRole!==false,anglesOn:!!parsed.data.angle};

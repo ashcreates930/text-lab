@@ -16,14 +16,18 @@ export const ROLE_INFO: Record<Role, { name: string; job: string }> = {
   reporter: { name: "Reporter", job: "Write the one-sentence explanation." },
 };
 
-export type RoundType = "lie" | "verdict" | "objection" | "story";
+export type RoundType = "lie" | "verdict" | "objection" | "story" | "race" | "bonus";
 export type Round =
   // planted: a classmate's approved lie from the Lie bank (a snapshot), and the squad its writer is in, which sits out.
   | { type: "lie"; sceneId: string; planted?: { id: string; lie: Lie; writerSquadId: string | null } }
   | { type: "verdict"; stage: "vote" | "argue" }
   | { type: "objection"; stage: "counter" | "vote"; defendSquadId: string; objectSquadId: string; pin: { clueId?: string; quote: string }; endsAt: string }
   // Story Mode, live (lib/live/story.ts): step 0 to 3, each shown as a round and then as a leaderboard reveal.
-  | import("./story.ts").LiveStoryRound;
+  | import("./story.ts").LiveStoryRound
+  // Proof Race: chunked reading, then a fast race on each chunk (lib/live/race.ts).
+  | import("./race.ts").LiveRaceRound
+  // The Bonus Round after a Proof Race: squads compare Case Notes (lib/live/after.ts).
+  | import("./after.ts").LiveBonusRound;
 export type SessionStatus = "lobby" | "round" | "reveal" | "ended";
 
 export type LiveSession = {
@@ -37,7 +41,10 @@ export type LivePlayer = { id: string; nickname: string; squadId: string | null;
 // story_pin / story_react / story_vote: reading together in a live Story Mode squad (lib/live/story.ts squadReading).
 // story_freeze: a squad member froze another squad's lock-in (lib/freeze.ts). your_turn_start / your_turn: the host
 // started Your Turn for everyone; a player saved their activity (lib/your-turn.ts).
-export type ResponseKind = "pin" | "explain" | "approve" | "object" | "submit" | "vote" | "pins" | "argument" | "judged" | "counter_vote" | "override" | "witness" | "story" | "story_try" | "mission" | "mission_pick" | "story_pin" | "story_react" | "story_vote" | "story_freeze" | "your_turn_start" | "your_turn_angle" | "your_turn";
+export type ResponseKind = "pin" | "explain" | "approve" | "object" | "submit" | "vote" | "pins" | "argument" | "judged" | "counter_vote" | "override" | "witness" | "story" | "story_try" | "mission" | "mission_pick" | "story_pin" | "story_react" | "story_vote" | "story_freeze" | "your_turn_start" | "your_turn_angle" | "your_turn"
+  // Proof Race (lib/live/race.ts) and the lobby: a player's avatar (a story character), the host's extra time for a
+  // player, a pinned student question.
+  | "race_ready" | "race_gist" | "race_question" | "race_tap" | "race_unknown" | "race_refresh" | "race_note" | "bonus_pick" | "bonus_submit" | "race_pin" | "avatar" | "player_time" | "interview_vote" | "liar_lock";
 export type LiveResponse = {
   id: string; roundIndex: number; squadId: string | null; playerId: string | null; role: Role | "host" | "system" | null;
   kind: ResponseKind; payload: Record<string, unknown>; flagged: boolean; createdAt: string;
@@ -73,7 +80,9 @@ export function rolesFor(memberIds: string[], roundIndex: number): Record<Role, 
 export const rolesOf = (roles: Record<Role, string> | null, playerId: string) => (roles ? ROLES.filter((r) => roles[r] === playerId) : []);
 
 export function squadPurpose(type: RoundType) {
-  return type === "story" ? "Play the scene together: read, answer, catch the lie and make your call."
+  return type === "race" ? "Read each chunk, then race to the line that proves it."
+    : type === "bonus" ? "Compare your Case Notes and agree on the strongest proof."
+    : type === "story" ? "Play the scene together: read, answer, catch the lie and make your call."
     : type === "lie" ? "Catch the false claim with one line from the story."
     : type === "verdict" ? "Defend your theory with three pieces of evidence."
     : "Counter the other squad's evidence with a better line from the text.";
@@ -228,6 +237,7 @@ export function sessionScores(world: WorldPack, session: LiveSession, squads: Li
     if (round.type === "lie") { const lie = roundLie(world, round); if (lie) scores = scoreLieRound(lie, squads, responses, i, round.planted?.writerSquadId ?? null); }
     else if (round.type === "verdict") scores = scoreVerdictRound(squads, responses, i);
     else if (round.type === "story") scores = storySquadScores(squads, responses, i, players, absent);
+    else if (round.type === "race" || round.type === "bonus") scores = [];
     else scores = objectionResult(round, responses, i).scores;
     for (const s of scores) total.set(s.squadId, (total.get(s.squadId) ?? 0) + s.points);
   });

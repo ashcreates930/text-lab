@@ -31,25 +31,25 @@ export function PlantLieView({world,scene,clue,passages,token,onClose}:{world:Wo
   setBusy(false);
  }
  return <div className="case-ui mx-auto max-w-3xl px-4 pb-24 pt-6 md:px-8">
-  <button type="button" onClick={onClose} className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[15px] text-[#6B6457] hover:bg-[#EFE8D8]"><ArrowLeft size={18}/> Back to the scene</button>
-  <p className="mt-4 text-[14px] font-semibold text-[#8A3B23]">{clue.name}</p>
+  <button type="button" onClick={onClose} className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[15px] text-muted hover:bg-panel-2"><ArrowLeft size={18}/> Back to the scene</button>
+  <p className="mt-4 text-[14px] font-semibold text-highlight">{clue.name}</p>
   <h1 className="mt-1 text-[28px] font-bold leading-tight">Plant a lie</h1>
-  {sent?<div className="mt-5 rounded-3xl bg-[#FFFDF8] p-6 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]" role="status">
-   <p className="flex items-center gap-2 text-[19px] font-bold"><ShieldCheck size={20} className="text-[#A0472C]"/> Sent to your teacher.</p>
+  {sent?<div className="mt-5 rounded-3xl bg-panel p-6" role="status">
+   <p className="flex items-center gap-2 text-[19px] font-bold"><ShieldCheck size={20} className="text-highlight"/> Sent to your teacher.</p>
    <p className="mt-2 text-[16px] leading-7">If your teacher approves it, it goes into your class's Lie bank. Your squad earns points when a classmate catches it with the right line and a good explanation.</p>
    <button type="button" onClick={onClose} className="case-primary mt-5">Back to the scene</button>
   </div>:<>
-  <p className="mt-2 text-[16px] leading-7 text-[#4A4438]">Write one false sentence a character might say about this clue. Then tap the line from the story that proves it false. A good lie is catchable: one line disproves it.</p>
+  <p className="mt-2 text-[16px] leading-7 text-muted">Write one false sentence a character might say about this clue. Then tap the line from the story that proves it false. A good lie is catchable: one line disproves it.</p>
   {speakers.length>1&&<fieldset className="mt-5"><legend className="text-[15px] font-semibold">Who says it?</legend>
-   <div className="mt-2 flex flex-wrap gap-2">{speakers.map(c=><button key={c.id} type="button" onClick={()=>setCharacterId(c.id)} aria-pressed={characterId===c.id} className={`inline-flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-4 text-[15px] font-semibold ${characterId===c.id?"bg-[#2A2620] text-white":"bg-[#EFE8D8] text-[#2A2620]"}`}><Portrait character={c} size={32}/>{c.name}</button>)}</div></fieldset>}
-  {!speakers.length&&<p className="mt-5 rounded-2xl bg-[#FBF1EB] px-4 py-3 text-[16px]">No one speaks in this scene, so there's no one to plant a lie on. Try a clue in another scene.</p>}
+   <div className="mt-2 flex flex-wrap gap-2">{speakers.map(c=><button key={c.id} type="button" onClick={()=>setCharacterId(c.id)} aria-pressed={characterId===c.id} className={`inline-flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-4 text-[15px] font-semibold ${characterId===c.id?"bg-primary text-on-primary":"bg-panel-2 text-ink"}`}><Portrait character={c} size={32}/>{c.name}</button>)}</div></fieldset>}
+  {!speakers.length&&<p className="mt-5 rounded-2xl bg-primary-soft px-4 py-3 text-[16px]">No one speaks in this scene, so there's no one to plant a lie on. Try a clue in another scene.</p>}
   {speaker&&<><label htmlFor="lie-sentence" className="mt-5 block text-[15px] font-semibold">{speaker.name} says…</label>
-  <textarea id="lie-sentence" value={sentence} onChange={e=>setSentence(e.target.value)} maxLength={220} rows={2} placeholder={`One false sentence, in ${speaker.name}'s voice`} className="mt-2 w-full rounded-2xl border border-[#E4DCCB] bg-[#FFFDF8] px-4 py-3 text-[17px] leading-7 focus:border-[#A0472C] focus:outline-none"/>
-  <p className="mt-1 text-right text-[13px] text-[#8B8478]">{sentence.length}/220</p>
+  <textarea id="lie-sentence" value={sentence} onChange={e=>setSentence(e.target.value)} maxLength={220} rows={2} placeholder={`One false sentence, in ${speaker.name}'s voice`} className="mt-2 w-full rounded-2xl border border-edge bg-panel px-4 py-3 text-[17px] leading-7 focus:border-primary focus:outline-none"/>
+  <p className="mt-1 text-right text-[13px] text-muted">{sentence.length}/220</p>
   <p className="mt-4 text-[15px] font-semibold">Tap the line that proves it false</p>
-  <div className="mt-2 rounded-3xl bg-[#FFFDF8] p-4 shadow-[0_2px_10px_-4px_rgba(42,38,32,.25)]"><EvidenceLines passages={source} picked={line?.text} onPick={setLine} className="max-h-[48vh] space-y-2 overflow-y-auto pr-1"/>{!source.length&&<p className="text-[15px] text-[#6B6457]">Loading the story…</p>}</div>
-  <div aria-live="polite">{problems.length>0&&<p className="mt-3 rounded-2xl bg-[#FBF1EB] px-4 py-3 text-[16px]">{problems[0]}</p>}
-  {error&&<p role="alert" className="mt-3 rounded-2xl bg-[#FBF1EB] px-4 py-3 text-[16px]">{error}</p>}</div>
+  <div className="mt-2 rounded-3xl bg-panel p-4"><EvidenceLines passages={source} picked={line?.text} onPick={setLine} className="max-h-[48vh] space-y-2 overflow-y-auto pr-1"/>{!source.length&&<p className="text-[15px] text-muted">Loading the story…</p>}</div>
+  <div aria-live="polite">{problems.length>0&&<p className="mt-3 rounded-2xl bg-primary-soft px-4 py-3 text-[16px]">{problems[0]}</p>}
+  {error&&<p role="alert" className="mt-3 rounded-2xl bg-primary-soft px-4 py-3 text-[16px]">{error}</p>}</div>
   <div className="mt-5 flex justify-end"><button type="button" disabled={!ready||busy} onClick={send} className="case-primary disabled:opacity-40"><Send size={18}/>{busy?"Sending…":"Send to my teacher"}</button></div></>}
   </>}
  </div>;

@@ -9,11 +9,11 @@ import {StudentPreview} from "./home";
 type Tab="classroom"|"students";
 export function TeacherHub({onSignIn,onPricing,onApproach,onKeepReading}:{onSignIn:()=>void;onPricing:()=>void;onApproach:()=>void;onKeepReading:()=>void}){
  const [tab,setTab]=useState<Tab>("classroom");
- const tabButton=(id:Tab,label:string,icon:React.ReactNode)=><button type="button" role="tab" aria-selected={tab===id} aria-controls="hub-panel" onClick={()=>setTab(id)} className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full px-4 text-[15px] font-semibold ${tab===id?"bg-[#2A2620] text-white":"bg-[#EFE8D8] text-[#2A2620] hover:bg-[#E4DCCB]"}`}>{icon}{label}</button>;
- const link=(label:string,icon:React.ReactNode,go:()=>void)=><button type="button" onClick={go} className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-[#E4DCCB] bg-[#FFFDF8] px-4 text-[15px] font-semibold text-[#8A3B23] hover:border-[#A0472C]">{icon}{label} <ArrowRight size={15}/></button>;
+ const tabButton=(id:Tab,label:string,icon:React.ReactNode)=><button type="button" role="tab" aria-selected={tab===id} aria-controls="hub-panel" onClick={()=>setTab(id)} className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full px-4 text-[15px] font-semibold ${tab===id?"bg-primary text-on-primary":"bg-panel-2 text-ink hover:bg-panel-2"}`}>{icon}{label}</button>;
+ const link=(label:string,icon:React.ReactNode,go:()=>void)=><button type="button" onClick={go} className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-edge bg-panel px-4 text-[15px] font-semibold text-highlight hover:border-primary">{icon}{label} <ArrowRight size={15}/></button>;
  return <div className="case-ui">
   <section className="mx-auto max-w-6xl px-4 pt-6 md:px-8">
-   <p className="text-[14px] font-semibold uppercase tracking-wide text-[#8A3B23]">For teachers and parents</p>
+   <p className="text-[14px] font-semibold uppercase tracking-wide text-highlight">For teachers and parents</p>
    <h1 className="mt-1 text-[30px] font-bold leading-tight md:text-[36px]">See it the way your students will</h1>
    <div className="mt-4 flex flex-wrap gap-2">
     <div role="tablist" aria-label="Look inside" className="flex flex-wrap gap-2">{tabButton("classroom","Sample classroom",<School size={17}/>)}{tabButton("students","See what students see",<BookOpen size={17}/>)}</div>
