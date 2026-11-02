@@ -2770,7 +2770,7 @@ test("proof race live: expedition beats, readiness, gist and question saving, on
   // Next while paused moves on and ends the pause, so phones can answer the new beat (it used to leave every phone refusing answers).
   assert.equal(await host({action:"pause"}),null);
   assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["reveal",3000]);
-  assert.equal(st.session.paused,false,"Next ends the pause");assert.equal(pub().paused,false);
+  assert.equal(st.session.paused,false,"Next ends the pause");assert.equal((pub() as {paused?:boolean}).paused,false);
   assert.equal(pub().reveal!.pct,67);assert.deepEqual(pub().reveal!.words,[]);assert.ok(pub().reveal!.lines.length>0,"the proof is revealed as a sentence");
   assert.ok(tot(ids[0])>=1090&&tot(ids[0])<=1100,`fast right plus gist: ${tot(ids[0])}`);assert.equal(tot(ids[1]),0);assert.ok(tot(ids[2])>=990);
   assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["board",5000]);

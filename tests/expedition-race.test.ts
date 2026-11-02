@@ -218,3 +218,12 @@ test("leaderboard: the slide-in runs once per standings (not on every re-render)
   assert.match(ui, /r\.prevPos\?\?/);
   assert.match(src("app/live/race-live.tsx"), /own=\{race\.place\.row/);
 });
+
+test("a witness's voice never strands the student: a stalled or silent line counts as heard", () => {
+  const v = src("app/character-stage.tsx");
+  assert.match(v, /still>=4/, "stopped moving for 4 seconds");
+  assert.match(v, /\(d\+3\)\*1000/, "3 seconds past its length");
+  assert.match(v, /Date\.now\(\)-started>30000&&t===0/, "never loaded in 30 seconds");
+  assert.match(v, /ctx\.resume\(\)/, "a suspended audio context is resumed");
+  assert.match(v, /clearInterval\(r\.watch\)/);
+});

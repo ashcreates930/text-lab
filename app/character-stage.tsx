@@ -112,16 +112,20 @@ export function CharacterStage({model,portrait,name,clip="idle",gesture=null,lev
 }
 
 // A witness's voice: plays one pre-recorded line at a time and reports how loud it is (0 to 1) for the glow. If the
-// audio can't play, the caption still shows and the line counts as heard.
+// audio can't play, the caption still shows and the line counts as heard. A line that stalls (it stops moving for 4
+// seconds, or runs 3 seconds past its length, or never loads in 30) also counts as heard, so a student is never stuck.
 export function useVoice(){
  const [playing,setPlaying]=useState<string|null>(null),[level,setLevel]=useState(0);
- const ref=useRef<{audio:HTMLAudioElement;ctx?:AudioContext;raf:number}|null>(null);
- const stop=useCallback(()=>{const r=ref.current;if(!r)return;cancelAnimationFrame(r.raf);r.audio.pause();r.audio.src="";r.ctx?.close().catch(()=>{});ref.current=null;setPlaying(null);setLevel(0)},[]);
+ const ref=useRef<{audio:HTMLAudioElement;ctx?:AudioContext;raf:number;watch:number}|null>(null);
+ const stop=useCallback(()=>{const r=ref.current;if(!r)return;cancelAnimationFrame(r.raf);clearInterval(r.watch);r.audio.pause();r.audio.src="";r.ctx?.close().catch(()=>{});ref.current=null;setPlaying(null);setLevel(0)},[]);
  const play=useCallback((src:string,onEnd?:()=>void)=>{
-  stop();const audio=new Audio(src);audio.preload="auto";const r:{audio:HTMLAudioElement;ctx?:AudioContext;raf:number}={audio,raf:0};ref.current=r;setPlaying(src);
+  stop();const audio=new Audio(src);audio.preload="auto";const r:{audio:HTMLAudioElement;ctx?:AudioContext;raf:number;watch:number}={audio,raf:0,watch:0};ref.current=r;setPlaying(src);
   const done=()=>{if(ref.current!==r)return;stop();onEnd?.()};
   audio.onended=done;audio.onerror=done;
-  try{const AC=window.AudioContext??(window as unknown as {webkitAudioContext?:typeof AudioContext}).webkitAudioContext;if(AC){const ctx=new AC(),srcNode=ctx.createMediaElementSource(audio),an=ctx.createAnalyser();an.fftSize=512;srcNode.connect(an);an.connect(ctx.destination);r.ctx=ctx;
+  const started=Date.now();let last=-1,still=0;
+  r.watch=window.setInterval(()=>{const t=audio.currentTime,d=audio.duration;still=t===last?still+1:0;last=t;
+   if((t>0&&still>=4)||(Number.isFinite(d)&&d>0&&Date.now()-started>(d+3)*1000)||(Date.now()-started>30000&&t===0))done()},1000);
+  try{const AC=window.AudioContext??(window as unknown as {webkitAudioContext?:typeof AudioContext}).webkitAudioContext;if(AC){const ctx=new AC(),srcNode=ctx.createMediaElementSource(audio),an=ctx.createAnalyser();an.fftSize=512;srcNode.connect(an);an.connect(ctx.destination);r.ctx=ctx;if(ctx.state==="suspended")ctx.resume().catch(()=>{});
    const buf=new Uint8Array(an.fftSize);const tick=()=>{an.getByteTimeDomainData(buf);let sum=0;for(const v of buf){const x=(v-128)/128;sum+=x*x}setLevel(Math.min(1,Math.sqrt(sum/buf.length)*4));r.raf=requestAnimationFrame(tick)};tick()}}catch{}
   audio.play().catch(done);
  },[stop]);
