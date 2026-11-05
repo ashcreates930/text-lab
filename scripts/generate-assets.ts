@@ -61,6 +61,27 @@ const ambientPrompts:Record<string,string>={
 // (add_detail pictures leave out their missing detail), saved to public/worlds/<story>/frames/<page-id>.png, with
 // illustration.src set and status "generated". Pages marked no_generation are skipped. Takes --world=<id,...>,
 // --only=<page-id,...> and --force (otherwise pages that already have a picture are kept).
+// --map: the painted base of each story's world map (world_map.art_description in world.json; build the map first with
+// scripts/build-map.ts), an original illustration with no words, saved to public/worlds/<story>/map/base.webp. The
+// trail, stops, fog, tokens and labels are drawn in code on top. Takes --world=<id,...> and --force (otherwise an
+// existing map is kept).
+if(process.argv.includes("--map")){
+  if(!imageClient)throw new Error("OPENAI_API_KEY is required for the world map.");
+  const force=process.argv.includes("--force");
+  const worlds=(await readdir(root,{withFileTypes:true})).filter(d=>d.isDirectory()).map(d=>d.name).filter(id=>!selectedWorld||selectedWorld.split(",").includes(id));
+  for(const id of worlds){
+    const raw=JSON.parse(await readFile(join(root,id,"world.json"),"utf8"));const map=raw.world_map;if(!map)continue;
+    const out=join(publicRoot,id,"map","base.webp");
+    if(!force){try{await readFile(out);console.log(`Kept ${id} map (use --force to paint it again).`);continue}catch{}}
+    const prompt=`${map.art_description} The picture is used under drawn map markers in a school literature app, so leave every place clear and readable at small size. School-appropriate.`;
+    const result=await imageClient.images.generate({model:process.env.OPENAI_IMAGE_MODEL||"gpt-image-1",prompt,size:`${map.width}x${map.height}` as "1536x1024",quality:"high"});
+    const encoded=result.data?.[0]?.b64_json;if(!encoded)throw new Error(`No map returned for ${id}`);
+    await mkdir(join(publicRoot,id,"map"),{recursive:true});
+    await sharp(Buffer.from(encoded,"base64")).webp({quality:82}).toFile(out);
+    console.log(`Map ${id}/map/base.webp${result.usage?` · ${result.usage.total_tokens} tokens`:""}`);
+  }
+  process.exit(0);
+}
 if(process.argv.includes("--frames")){
   if(!imageClient)throw new Error("OPENAI_API_KEY is required for storyboard frames.");
   const sharp=(await import("sharp")).default;

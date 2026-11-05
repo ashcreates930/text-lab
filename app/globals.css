@@ -216,3 +216,17 @@ main:has([data-fill-screen]) > footer { display: none; }
  .print-only{display:block}
  .case-notes textarea{display:none!important}
 }
+/* The world map (app/world-map.tsx): labels with a dark halo, fog that drifts, a pulsing next stop, twinkling secrets,
+   44 px controls and a visible focus ring on every stop. Reduced motion: everything holds still. */
+.map-label{font-family:var(--font-serif,Georgia,serif);font-style:italic;fill:#fff3d6;stroke:rgba(8,6,24,.85);stroke-width:4px;paint-order:stroke;pointer-events:none}
+.map-label-strong{font-family:var(--font-display);font-style:normal;font-weight:700;fill:#fff}
+.map-ctl{display:grid;place-items:center;width:44px;height:44px;border-radius:999px;background:rgba(20,16,48,.88);color:var(--color-ink);border:1.5px solid rgba(255,255,255,.18)}
+.map-ctl:focus-visible{outline:3px solid var(--color-highlight);outline-offset:2px}
+.map-hit:focus-visible>circle:first-child{stroke:var(--color-highlight);stroke-width:4px;vector-effect:non-scaling-stroke}
+.map-fog{animation:map-fog-drift 14s ease-in-out infinite alternate}
+@keyframes map-fog-drift{from{transform:translate(-14px,0)}to{transform:translate(14px,-6px)}}
+.map-pulse{transform-box:fill-box;transform-origin:center;animation:map-pulse 1.8s ease-out infinite}
+@keyframes map-pulse{from{opacity:.95;transform:scale(.75)}to{opacity:0;transform:scale(1.25)}}
+.map-twinkle{animation:map-twinkle 2.4s ease-in-out infinite}
+@keyframes map-twinkle{0%,100%{opacity:.35}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.map-fog,.map-pulse,.map-twinkle{animation:none}.map-pulse{opacity:.8}}

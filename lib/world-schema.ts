@@ -34,6 +34,16 @@ const expChunk=z.object({id:z.string(),segments:z.array(z.object({p:z.string().r
 const statement=z.object({text:z.string().min(1),lines:z.array(z.string().min(1)).min(1),gesture:z.enum(["laughing","head-shake"]).optional()});
 const witness=z.object({character:z.string(),cards:z.array(z.string().min(1)).length(2),truth:statement,lie:statement,caught:z.string().min(1)});
 const expedition=z.object({id:z.string(),title:z.string().min(1),chunks:z.array(expChunk).min(1),interview:z.object({witnesses:z.array(witness).length(3)}).optional()});
+// The world map (lib/world-map.ts; built by scripts/build-map.ts from scripts/maps/<world>.ts). A painted base image
+// with no words; places, regions and stops are drawn in code on top, in the image's own pixels. Each expedition is a
+// region; each chunk is a stop where that part of the story happens. landmark: the twist (a witness interrupts) or the
+// boss question; finale: where Name the Liar is held. secret: a discovery found on a return visit.
+const mapPoint={x:z.number().min(0),y:z.number().min(0)};
+const worldMap=z.object({image:z.string().min(1),width:z.number().int().positive(),height:z.number().int().positive(),art_description:z.string().min(1),
+  places:z.array(z.object({id:z.string(),name:z.string().min(1),...mapPoint,label_only:z.boolean().optional()})).min(1),
+  regions:z.array(z.object({expedition:z.string(),name:z.string().min(1),label:z.object(mapPoint),
+    stops:z.array(z.object({chunk:z.number().int().min(1),place:z.string(),...mapPoint,landmark:z.enum(["twist","boss"]).optional(),secret:z.boolean().optional()})).min(1),
+    finale:z.object({place:z.string(),...mapPoint}).optional()}))});
 export type Expedition=z.infer<typeof expedition>;export type Interview=z.infer<typeof expedition>["interview"]&{};export type Witness=z.infer<typeof witness>;export type ExpChunk=z.infer<typeof expChunk>;export type ExpQuestion=z.infer<typeof expQuestion>;export type QuestionType=(typeof QUESTION_TYPES)[number];
 
 // Proof Race sprints (content only for now): one question answered by one line in a short chunk (paragraphs), with
@@ -109,7 +119,7 @@ export const WorldPackSchema = z.object({
   // Your Turn (lib/your-turn.ts): one activity per "What's your angle?" option, after the game.
   your_turn:z.object({activities:z.record(z.string(),yourTurnActivity)}).optional(),missions:z.array(mission).optional(),
   // Expeditions (see above). front_matter: paragraphs that sit before the story (a title, an epigraph), outside every chunk.
-  expeditions:z.array(expedition).optional(),front_matter:z.array(z.string().regex(/^p\d{3}$/)).optional(),
+  expeditions:z.array(expedition).optional(),world_map:worldMap.optional(),front_matter:z.array(z.string().regex(/^p\d{3}$/)).optional(),
   // Drafts awaiting the teacher's review: validated like expeditions, never shown to students until moved into
   // expeditions. expedition_rules: a story-level exception to the chunk rules, only with the teacher's approval.
   draft_expeditions:z.array(expedition).optional(),expedition_rules:z.object({max_sentences:z.number().int().min(5).max(20)}).optional(),

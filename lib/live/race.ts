@@ -75,6 +75,7 @@ export function playerChunk(responses: LiveResponse[], roundIndex: number, step:
   return {
     ready: mine("race_ready").length > 0,
     gist: (mine("race_gist")[0]?.payload.choice as number | undefined) ?? null,
+    gistRight: mine("race_gist")[0] ? Number(mine("race_gist")[0].payload.points ?? 0) > 0 : null,
     asked: !!asked, question: asked ? String(asked.payload.text) : null,
     unknown: mine("race_unknown").flatMap((r) => (r.payload.words as string[] | undefined) ?? []),
     tap: tap ?? null, done: !!tap, correct: !!tap?.correct, points: tap?.points ?? 0,

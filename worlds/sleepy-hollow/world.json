@@ -16683,5 +16683,1203 @@
         ]
       }
     }
-  ]
+  ],
+  "world_map": {
+    "image": "/worlds/sleepy-hollow/map/base.webp",
+    "width": 1536,
+    "height": 1024,
+    "art_description": "An original hand-painted storybook map of the Sleepy Hollow countryside in New York's Hudson Valley around the year 1790, seen from above at a gentle three-quarter angle, at night under a bright full moon, lit by warm lantern and window glow. Deep indigo, violet and midnight-blue tones with amber and gold lights. Layout, which matters most: the broad Hudson River runs down the whole left edge of the picture, widening at the lower left into the wide Tappan Zee with one small moonlit sailboat. On the riverbank at the lower left, the small Dutch market village of Tarry Town with a tavern, a few houses and a little dock. On the riverbank at the upper left, the large prosperous Van Tassel farm: a long, low Dutch stone farmhouse with a deep front porch, a huge barn, an orchard, haystacks and a small spring under a great elm. In the center, a quiet green glen in a hollow between high wooded hills, with a small brook winding through it. In the lower center, a few small scattered farmhouses with lit windows and a little farm with a stable on the lower right. On the right side, near the bottom, a small log schoolhouse at the foot of a wooded hill beside the brook. A winding dirt road leaves the Van Tassel farm and runs to the right across the top of the map: beside it, standing alone, an enormous gnarled old tulip tree (top center); then a dark marshy swamp crossed by a small log bridge (top right); then the road curves down to a small white church on a knoll among trees on the right side, with a dark wooden bridge over the brook just below the church. Thinner roads link every place. Painterly and textured, rich but uncluttered, with wide areas of forest and hills between places. No people, no animals, no creatures, no ghosts. No text, no letters, no numbers, no labels, no compass rose, no legend and no border.",
+    "places": [
+      {
+        "id": "tarry-town",
+        "name": "Tarry Town",
+        "x": 470,
+        "y": 800
+      },
+      {
+        "id": "hudson",
+        "name": "The Hudson",
+        "x": 170,
+        "y": 520,
+        "label_only": true
+      },
+      {
+        "id": "glen",
+        "name": "The glen of Sleepy Hollow",
+        "x": 930,
+        "y": 560
+      },
+      {
+        "id": "schoolhouse",
+        "name": "The schoolhouse",
+        "x": 1360,
+        "y": 800
+      },
+      {
+        "id": "farmhouses",
+        "name": "Farmhouses where Ichabod boards",
+        "x": 800,
+        "y": 860
+      },
+      {
+        "id": "fireside",
+        "name": "Fireside tales",
+        "x": 850,
+        "y": 770
+      },
+      {
+        "id": "hans-farm",
+        "name": "Hans Van Ripper's farm",
+        "x": 1090,
+        "y": 830
+      },
+      {
+        "id": "vt-barnyard",
+        "name": "The Van Tassel barnyard",
+        "x": 560,
+        "y": 235
+      },
+      {
+        "id": "vt-house",
+        "name": "The Van Tassel farmhouse",
+        "x": 390,
+        "y": 205
+      },
+      {
+        "id": "vt-spring",
+        "name": "The spring under the elm",
+        "x": 460,
+        "y": 300
+      },
+      {
+        "id": "vt-parlor",
+        "name": "The Van Tassel parlor",
+        "x": 320,
+        "y": 250
+      },
+      {
+        "id": "ride",
+        "name": "The road above the river",
+        "x": 640,
+        "y": 690
+      },
+      {
+        "id": "andre-tree",
+        "name": "Major André's tree",
+        "x": 820,
+        "y": 250
+      },
+      {
+        "id": "wiley-swamp",
+        "name": "Wiley's swamp",
+        "x": 1160,
+        "y": 315
+      },
+      {
+        "id": "hollow-road",
+        "name": "The road through the hollow",
+        "x": 1300,
+        "y": 380
+      },
+      {
+        "id": "church",
+        "name": "The old Dutch church",
+        "x": 1420,
+        "y": 470
+      },
+      {
+        "id": "church-bridge",
+        "name": "The bridge by the church",
+        "x": 1205,
+        "y": 628
+      },
+      {
+        "id": "brook",
+        "name": "The brook",
+        "x": 1185,
+        "y": 720
+      },
+      {
+        "id": "city",
+        "name": "The landing (road to the city)",
+        "x": 270,
+        "y": 860
+      }
+    ],
+    "regions": [
+      {
+        "expedition": "into-the-hollow",
+        "name": "Tarry Town and the glen",
+        "label": {
+          "x": 930,
+          "y": 497
+        },
+        "stops": [
+          {
+            "chunk": 1,
+            "place": "tarry-town",
+            "x": 470,
+            "y": 793
+          },
+          {
+            "chunk": 2,
+            "place": "glen",
+            "x": 861,
+            "y": 530
+          },
+          {
+            "chunk": 3,
+            "place": "glen",
+            "x": 904,
+            "y": 538
+          },
+          {
+            "chunk": 4,
+            "place": "glen",
+            "x": 953,
+            "y": 530,
+            "secret": true
+          },
+          {
+            "chunk": 5,
+            "place": "glen",
+            "x": 999,
+            "y": 544
+          },
+          {
+            "chunk": 6,
+            "place": "glen",
+            "x": 922,
+            "y": 574
+          },
+          {
+            "chunk": 7,
+            "place": "church",
+            "x": 1397,
+            "y": 463,
+            "landmark": "twist"
+          },
+          {
+            "chunk": 8,
+            "place": "church",
+            "x": 1443,
+            "y": 477
+          },
+          {
+            "chunk": 9,
+            "place": "glen",
+            "x": 955,
+            "y": 597,
+            "landmark": "boss"
+          },
+          {
+            "chunk": 10,
+            "place": "glen",
+            "x": 996,
+            "y": 604
+          }
+        ],
+        "finale": {
+          "place": "glen",
+          "x": 1046,
+          "y": 619
+        }
+      },
+      {
+        "expedition": "the-schoolmaster",
+        "name": "The schoolhouse",
+        "label": {
+          "x": 1360,
+          "y": 737
+        },
+        "stops": [
+          {
+            "chunk": 1,
+            "place": "schoolhouse",
+            "x": 1291,
+            "y": 770
+          },
+          {
+            "chunk": 2,
+            "place": "schoolhouse",
+            "x": 1335,
+            "y": 781
+          },
+          {
+            "chunk": 3,
+            "place": "schoolhouse",
+            "x": 1388,
+            "y": 774,
+            "secret": true
+          },
+          {
+            "chunk": 4,
+            "place": "schoolhouse",
+            "x": 1429,
+            "y": 784
+          },
+          {
+            "chunk": 5,
+            "place": "schoolhouse",
+            "x": 1383,
+            "y": 830
+          },
+          {
+            "chunk": 6,
+            "place": "schoolhouse",
+            "x": 1337,
+            "y": 822
+          },
+          {
+            "chunk": 7,
+            "place": "farmhouses",
+            "x": 754,
+            "y": 853
+          },
+          {
+            "chunk": 8,
+            "place": "farmhouses",
+            "x": 800,
+            "y": 867
+          },
+          {
+            "chunk": 9,
+            "place": "farmhouses",
+            "x": 846,
+            "y": 853,
+            "landmark": "twist"
+          },
+          {
+            "chunk": 10,
+            "place": "church",
+            "x": 1420,
+            "y": 463,
+            "landmark": "boss"
+          }
+        ],
+        "finale": {
+          "place": "schoolhouse",
+          "x": 1357,
+          "y": 747
+        }
+      },
+      {
+        "expedition": "tales-by-the-fire",
+        "name": "Fireside tales",
+        "label": {
+          "x": 800,
+          "y": 797
+        },
+        "stops": [
+          {
+            "chunk": 1,
+            "place": "farmhouses",
+            "x": 731,
+            "y": 853
+          },
+          {
+            "chunk": 2,
+            "place": "farmhouses",
+            "x": 777,
+            "y": 867
+          },
+          {
+            "chunk": 3,
+            "place": "farmhouses",
+            "x": 823,
+            "y": 853
+          },
+          {
+            "chunk": 4,
+            "place": "farmhouses",
+            "x": 869,
+            "y": 867
+          },
+          {
+            "chunk": 5,
+            "place": "fireside",
+            "x": 849,
+            "y": 763,
+            "secret": true
+          },
+          {
+            "chunk": 6,
+            "place": "brook",
+            "x": 1162,
+            "y": 713
+          },
+          {
+            "chunk": 7,
+            "place": "brook",
+            "x": 1204,
+            "y": 722
+          },
+          {
+            "chunk": 8,
+            "place": "fireside",
+            "x": 868,
+            "y": 800,
+            "landmark": "boss"
+          },
+          {
+            "chunk": 9,
+            "place": "fireside",
+            "x": 913,
+            "y": 813
+          },
+          {
+            "chunk": 10,
+            "place": "brook",
+            "x": 1229,
+            "y": 754,
+            "landmark": "twist"
+          }
+        ],
+        "finale": {
+          "place": "fireside",
+          "x": 850,
+          "y": 723
+        }
+      },
+      {
+        "expedition": "the-van-tassel-farm",
+        "name": "The Van Tassel farm",
+        "label": {
+          "x": 560,
+          "y": 172
+        },
+        "stops": [
+          {
+            "chunk": 1,
+            "place": "schoolhouse",
+            "x": 1360,
+            "y": 793
+          },
+          {
+            "chunk": 2,
+            "place": "vt-house",
+            "x": 321,
+            "y": 198
+          },
+          {
+            "chunk": 3,
+            "place": "vt-house",
+            "x": 367,
+            "y": 212
+          },
+          {
+            "chunk": 4,
+            "place": "vt-house",
+            "x": 413,
+            "y": 198
+          },
+          {
+            "chunk": 5,
+            "place": "vt-house",
+            "x": 455,
+            "y": 213
+          },
+          {
+            "chunk": 6,
+            "place": "vt-barnyard",
+            "x": 495,
+            "y": 204,
+            "secret": true
+          },
+          {
+            "chunk": 7,
+            "place": "vt-barnyard",
+            "x": 537,
+            "y": 218,
+            "landmark": "twist"
+          },
+          {
+            "chunk": 8,
+            "place": "vt-barnyard",
+            "x": 583,
+            "y": 205
+          },
+          {
+            "chunk": 9,
+            "place": "vt-barnyard",
+            "x": 629,
+            "y": 219
+          },
+          {
+            "chunk": 10,
+            "place": "vt-barnyard",
+            "x": 560,
+            "y": 252,
+            "landmark": "boss"
+          }
+        ],
+        "finale": {
+          "place": "vt-house",
+          "x": 390,
+          "y": 159
+        }
+      },
+      {
+        "expedition": "a-rival-appears",
+        "name": "A rival appears",
+        "label": {
+          "x": 390,
+          "y": 142
+        },
+        "stops": [
+          {
+            "chunk": 1,
+            "place": "vt-barnyard",
+            "x": 537,
+            "y": 228
+          },
+          {
+            "chunk": 2,
+            "place": "vt-barnyard",
+            "x": 583,
+            "y": 242
+          },
+          {
+            "chunk": 3,
+            "place": "vt-house",
+            "x": 321,
+            "y": 175
+          },
+          {
+            "chunk": 4,
+            "place": "vt-house",
+            "x": 367,
+            "y": 189
+          },
+          {
+            "chunk": 5,
+            "place": "vt-house",
+            "x": 413,
+            "y": 175,
+            "secret": true
+          },
+          {
+            "chunk": 6,
+            "place": "vt-house",
+            "x": 459,
+            "y": 189
+          },
+          {
+            "chunk": 7,
+            "place": "vt-house",
+            "x": 459,
+            "y": 235
+          },
+          {
+            "chunk": 8,
+            "place": "vt-house",
+            "x": 413,
+            "y": 221
+          },
+          {
+            "chunk": 9,
+            "place": "vt-house",
+            "x": 367,
+            "y": 235,
+            "landmark": "twist"
+          },
+          {
+            "chunk": 10,
+            "place": "vt-house",
+            "x": 321,
+            "y": 221,
+            "landmark": "boss"
+          }
+        ],
+        "finale": {
+          "place": "vt-house",
+          "x": 268,
+          "y": 205
+        }
+      },
+      {
+        "expedition": "the-feud",
+        "name": "The feud",
+        "label": {
+          "x": 460,
+          "y": 237
+        },
+        "stops": [
+          {
+            "chunk": 1,
+            "place": "farmhouses",
+            "x": 800,
+            "y": 853
+          },
+          {
+            "chunk": 2,
+            "place": "vt-house",
+            "x": 367,
+            "y": 198
+          },
+          {
+            "chunk": 3,
+            "place": "vt-house",
+            "x": 409,
+            "y": 207,
+            "secret": true
+          },
+          {
+            "chunk": 4,
+            "place": "vt-spring",
+            "x": 437,
+            "y": 291
+          },
+          {
+            "chunk": 5,
+            "place": "vt-spring",
+            "x": 483,
+            "y": 305
+          },
+          {
+            "chunk": 6,
+            "place": "vt-house",
+            "x": 434,
+            "y": 239
+          },
+          {
+            "chunk": 7,
+            "place": "vt-spring",
+            "x": 431,
+            "y": 331,
+            "landmark": "twist"
+          },
+          {
+            "chunk": 8,
+            "place": "vt-spring",
+            "x": 477,
+            "y": 345
+          },
+          {
+            "chunk": 9,
+            "place": "vt-spring",
+            "x": 523,
+            "y": 329,
+            "landmark": "boss"
+          },
+          {
+            "chunk": 10,
+            "place": "vt-spring",
+            "x": 569,
+            "y": 343
+          }
+        ],
+        "finale": {
+          "place": "vt-spring",
+          "x": 622,
+          "y": 359
+        }
+      },
+      {
+        "expedition": "the-invitation",
+        "name": "The invitation",
+        "label": {
+          "x": 1366,
+          "y": 667
+        },
+        "stops": [
+          {
+            "chunk": 1,
+            "place": "schoolhouse",
+            "x": 1291,
+            "y": 770
+          },
+          {
+            "chunk": 2,
+            "place": "schoolhouse",
+            "x": 1337,
+            "y": 780,
+            "landmark": "twist"
+          },
+          {
+            "chunk": 3,
+            "place": "schoolhouse",
+            "x": 1383,
+            "y": 770
+          },
+          {
+            "chunk": 4,
+            "place": "schoolhouse",
+            "x": 1429,
+            "y": 784
+          },
+          {
+            "chunk": 5,
+            "place": "schoolhouse",
+            "x": 1383,
+            "y": 830
+          },
+          {
+            "chunk": 6,
+            "place": "schoolhouse",
+            "x": 1337,
+            "y": 821
+          },
+          {
+            "chunk": 7,
+            "place": "hans-farm",
+            "x": 1021,
+            "y": 823
+          },
+          {
+            "chunk": 8,
+            "place": "hans-farm",
+            "x": 1067,
+            "y": 837,
+            "secret": true
+          },
+          {
+            "chunk": 9,
+            "place": "hans-farm",
+            "x": 1113,
+            "y": 823
+          },
+          {
+            "chunk": 10,
+            "place": "hans-farm",
+            "x": 1159,
+            "y": 837,
+            "landmark": "boss"
+          }
+        ],
+        "finale": {
+          "place": "hans-farm",
+          "x": 1212,
+          "y": 853
+        }
+      },
+      {
+        "expedition": "the-ride-to-the-party",
+        "name": "The ride to the party",
+        "label": {
+          "x": 640,
+          "y": 627
+        },
+        "stops": [
+          {
+            "chunk": 1,
+            "place": "hans-farm",
+            "x": 1090,
+            "y": 823
+          },
+          {
+            "chunk": 2,
+            "place": "ride",
+            "x": 571,
+            "y": 660
+          },
+          {
+            "chunk": 3,
+            "place": "ride",
+            "x": 617,
+            "y": 673
+          },
+          {
+            "chunk": 4,
+            "place": "ride",
+            "x": 663,
+            "y": 660,
+            "secret": true
+          },
+          {
+            "chunk": 5,
+            "place": "ride",
+            "x": 709,
+            "y": 673
+          },
+          {
+            "chunk": 6,
+            "place": "ride",
+            "x": 686,
+            "y": 707
+          },
+          {
+            "chunk": 7,
+            "place": "ride",
+            "x": 640,
+            "y": 720
+          },
+          {
+            "chunk": 8,
+            "place": "ride",
+            "x": 594,
+            "y": 707,
+            "landmark": "twist"
+          },
+          {
+            "chunk": 9,
+            "place": "vt-house",
+            "x": 367,
+            "y": 198
+          },
+          {
+            "chunk": 10,
+            "place": "vt-house",
+            "x": 413,
+            "y": 212,
+            "landmark": "boss"
+          }
+        ],
+        "finale": {
+          "place": "vt-house",
+          "x": 466,
+          "y": 228
+        }
+      },
+      {
+        "expedition": "the-feast-and-the-dance",
+        "name": "The feast and the dance",
+        "label": {
+          "x": 320,
+          "y": 187
+        },
+        "stops": [
+          {
+            "chunk": 1,
+            "place": "vt-house",
+            "x": 391,
+            "y": 181
+          },
+          {
+            "chunk": 2,
+            "place": "vt-parlor",
+            "x": 251,
+            "y": 197
+          },
+          {
+            "chunk": 3,
+            "place": "vt-parlor",
+            "x": 297,
+            "y": 211
+          },
+          {
+            "chunk": 4,
+            "place": "vt-parlor",
+            "x": 343,
+            "y": 197
+          },
+          {
+            "chunk": 5,
+            "place": "vt-parlor",
+            "x": 387,
+            "y": 222,
+            "landmark": "twist"
+          },
+          {
+            "chunk": 6,
+            "place": "vt-parlor",
+            "x": 389,
+            "y": 263,
+            "secret": true
+          },
+          {
+            "chunk": 7,
+            "place": "vt-parlor",
+            "x": 343,
+            "y": 243
+          },
+          {
+            "chunk": 8,
+            "place": "vt-parlor",
+            "x": 297,
+            "y": 256
+          },
+          {
+            "chunk": 9,
+            "place": "vt-parlor",
+            "x": 251,
+            "y": 243,
+            "landmark": "boss"
+          },
+          {
+            "chunk": 10,
+            "place": "vt-parlor",
+            "x": 320,
+            "y": 290
+          }
+        ],
+        "finale": {
+          "place": "vt-parlor",
+          "x": 366,
+          "y": 320
+        }
+      },
+      {
+        "expedition": "ghost-stories",
+        "name": "Ghost stories",
+        "label": {
+          "x": 326,
+          "y": 117
+        },
+        "stops": [
+          {
+            "chunk": 1,
+            "place": "vt-parlor",
+            "x": 251,
+            "y": 197
+          },
+          {
+            "chunk": 2,
+            "place": "vt-parlor",
+            "x": 297,
+            "y": 211,
+            "landmark": "twist"
+          },
+          {
+            "chunk": 3,
+            "place": "vt-parlor",
+            "x": 343,
+            "y": 197
+          },
+          {
+            "chunk": 4,
+            "place": "vt-parlor",
+            "x": 389,
+            "y": 211
+          },
+          {
+            "chunk": 5,
+            "place": "vt-parlor",
+            "x": 389,
+            "y": 257
+          },
+          {
+            "chunk": 6,
+            "place": "vt-parlor",
+            "x": 343,
+            "y": 243
+          },
+          {
+            "chunk": 7,
+            "place": "vt-parlor",
+            "x": 297,
+            "y": 253,
+            "secret": true
+          },
+          {
+            "chunk": 8,
+            "place": "vt-parlor",
+            "x": 251,
+            "y": 243
+          },
+          {
+            "chunk": 9,
+            "place": "vt-parlor",
+            "x": 297,
+            "y": 294
+          },
+          {
+            "chunk": 10,
+            "place": "vt-parlor",
+            "x": 343,
+            "y": 303,
+            "landmark": "boss"
+          }
+        ],
+        "finale": {
+          "place": "vt-parlor",
+          "x": 396,
+          "y": 319
+        }
+      },
+      {
+        "expedition": "the-lonely-road",
+        "name": "The lonely road",
+        "label": {
+          "x": 820,
+          "y": 187
+        },
+        "stops": [
+          {
+            "chunk": 1,
+            "place": "vt-parlor",
+            "x": 320,
+            "y": 243
+          },
+          {
+            "chunk": 2,
+            "place": "vt-house",
+            "x": 344,
+            "y": 198
+          },
+          {
+            "chunk": 3,
+            "place": "vt-house",
+            "x": 390,
+            "y": 212
+          },
+          {
+            "chunk": 4,
+            "place": "vt-house",
+            "x": 436,
+            "y": 198
+          },
+          {
+            "chunk": 5,
+            "place": "vt-barnyard",
+            "x": 560,
+            "y": 228
+          },
+          {
+            "chunk": 6,
+            "place": "andre-tree",
+            "x": 751,
+            "y": 220
+          },
+          {
+            "chunk": 7,
+            "place": "andre-tree",
+            "x": 797,
+            "y": 233,
+            "landmark": "twist"
+          },
+          {
+            "chunk": 8,
+            "place": "andre-tree",
+            "x": 843,
+            "y": 220
+          },
+          {
+            "chunk": 9,
+            "place": "andre-tree",
+            "x": 889,
+            "y": 234,
+            "landmark": "boss"
+          },
+          {
+            "chunk": 10,
+            "place": "andre-tree",
+            "x": 820,
+            "y": 267,
+            "secret": true
+          }
+        ],
+        "finale": {
+          "place": "andre-tree",
+          "x": 770,
+          "y": 289
+        }
+      },
+      {
+        "expedition": "the-headless-horseman",
+        "name": "The Headless Horseman",
+        "label": {
+          "x": 1160,
+          "y": 252
+        },
+        "stops": [
+          {
+            "chunk": 1,
+            "place": "wiley-swamp",
+            "x": 1091,
+            "y": 285
+          },
+          {
+            "chunk": 2,
+            "place": "wiley-swamp",
+            "x": 1137,
+            "y": 295,
+            "secret": true
+          },
+          {
+            "chunk": 3,
+            "place": "wiley-swamp",
+            "x": 1183,
+            "y": 285
+          },
+          {
+            "chunk": 4,
+            "place": "wiley-swamp",
+            "x": 1229,
+            "y": 299
+          },
+          {
+            "chunk": 5,
+            "place": "wiley-swamp",
+            "x": 1183,
+            "y": 345,
+            "landmark": "twist"
+          },
+          {
+            "chunk": 6,
+            "place": "wiley-swamp",
+            "x": 1137,
+            "y": 336
+          },
+          {
+            "chunk": 7,
+            "place": "hollow-road",
+            "x": 1231,
+            "y": 373
+          },
+          {
+            "chunk": 8,
+            "place": "hollow-road",
+            "x": 1277,
+            "y": 387
+          },
+          {
+            "chunk": 9,
+            "place": "hollow-road",
+            "x": 1323,
+            "y": 373,
+            "landmark": "boss"
+          },
+          {
+            "chunk": 10,
+            "place": "hollow-road",
+            "x": 1369,
+            "y": 387
+          }
+        ],
+        "finale": {
+          "place": "hollow-road",
+          "x": 1422,
+          "y": 403
+        }
+      },
+      {
+        "expedition": "gone",
+        "name": "Gone",
+        "label": {
+          "x": 1205,
+          "y": 565
+        },
+        "stops": [
+          {
+            "chunk": 1,
+            "place": "hollow-road",
+            "x": 1277,
+            "y": 373
+          },
+          {
+            "chunk": 2,
+            "place": "hollow-road",
+            "x": 1323,
+            "y": 387
+          },
+          {
+            "chunk": 3,
+            "place": "church-bridge",
+            "x": 1159,
+            "y": 621,
+            "landmark": "twist"
+          },
+          {
+            "chunk": 4,
+            "place": "church-bridge",
+            "x": 1205,
+            "y": 635
+          },
+          {
+            "chunk": 5,
+            "place": "church-bridge",
+            "x": 1251,
+            "y": 621
+          },
+          {
+            "chunk": 6,
+            "place": "hans-farm",
+            "x": 1090,
+            "y": 822
+          },
+          {
+            "chunk": 7,
+            "place": "brook",
+            "x": 1185,
+            "y": 714,
+            "landmark": "boss",
+            "secret": true
+          },
+          {
+            "chunk": 8,
+            "place": "hans-farm",
+            "x": 1107,
+            "y": 860
+          },
+          {
+            "chunk": 9,
+            "place": "hans-farm",
+            "x": 1153,
+            "y": 873
+          },
+          {
+            "chunk": 10,
+            "place": "schoolhouse",
+            "x": 1360,
+            "y": 793
+          }
+        ],
+        "finale": {
+          "place": "brook",
+          "x": 1185,
+          "y": 673
+        }
+      },
+      {
+        "expedition": "the-postscript",
+        "name": "The postscript",
+        "label": {
+          "x": 270,
+          "y": 797
+        },
+        "stops": [
+          {
+            "chunk": 1,
+            "place": "city",
+            "x": 270,
+            "y": 853
+          },
+          {
+            "chunk": 2,
+            "place": "vt-house",
+            "x": 390,
+            "y": 198
+          },
+          {
+            "chunk": 3,
+            "place": "schoolhouse",
+            "x": 1360,
+            "y": 793,
+            "landmark": "boss"
+          },
+          {
+            "chunk": 4,
+            "place": "city",
+            "x": 241,
+            "y": 889
+          },
+          {
+            "chunk": 5,
+            "place": "city",
+            "x": 287,
+            "y": 903
+          },
+          {
+            "chunk": 6,
+            "place": "city",
+            "x": 333,
+            "y": 889,
+            "landmark": "twist"
+          },
+          {
+            "chunk": 7,
+            "place": "city",
+            "x": 379,
+            "y": 903
+          }
+        ],
+        "finale": {
+          "place": "city",
+          "x": 432,
+          "y": 919
+        }
+      }
+    ]
+  }
 }

@@ -16,6 +16,7 @@ import {Pill} from "./game-ui";
 import {ContentNote} from "./content-note";
 import {ReadingPanel} from "./reading-panel";
 import {Leaderboard,Podium,cue,reducedMotion,useBeatClock} from "./proof-race";
+import {RaceMap} from "./world-map";
 import {useSoundPref} from "./game-feel";
 import {focusScreenTop} from "./screen-focus";
 import {CaseNotesView,Refresher,type RefresherView} from "./after-race";
@@ -278,7 +279,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
     <div className="rounded-[18px] bg-gold p-3 text-on-gold shadow-[0_5px_0_var(--color-gold-shadow)]"><p className="font-display text-[24px] font-bold">{(meRow?.move??0)>0?`Up ${meRow!.move}`:(meRow?.move??0)<0?`Down ${-meRow!.move}`:`#${meRow?.rank}`}</p><p className="text-[13px] font-extrabold">now #{meRow?.rank} of 2</p></div>
     <div className="rounded-[18px] bg-panel p-3 text-ink shadow-[0_5px_0_#0B0920]"><p className="font-display text-[24px] font-bold">{record?.correct?<Check className="mx-auto" size={28} aria-hidden/>:<X className="mx-auto" size={28} aria-hidden/>}</p><p className="text-[13px] font-extrabold text-muted">{record?.correct?"found it":"missed"}</p></div>
    </div>
-   {beat==="board"?<Leaderboard rows={board} meId="me" title="Top 5"/>:<div className="mt-8"><CountdownRing ms={autoLeft} total={screenMs("countdown",timeSetting)} label={k+1>=chunks.length?"Final results":`Chunk ${k+2} of ${chunks.length}`}/></div>}
+   {beat==="board"?<Leaderboard rows={board} meId="me" title="Top 5"/>:<>{world.world_map&&<div className="mt-4"><RaceMap world={world} expeditionId={expeditionId} stars={records.slice(0,k+1).map((r,i)=>r?.correct?(r.gist===null||gistPoints(chunks[i].chunk,r.gist)>0?3:2):0)} tokens={[{id:"me",name:"You",me:true}]} label={`Map: walking to ${k+1>=chunks.length?"the finale":`stop ${k+2}`}`}/></div>}<div className="mt-6"><CountdownRing ms={autoLeft} total={screenMs("countdown",timeSetting)} label={k+1>=chunks.length?"Final results":`Chunk ${k+2} of ${chunks.length}`}/></div></>}
    {paused&&<p className="mt-3 text-center text-[15px] text-muted">Paused. Take your time.</p>}
    {!paused&&<p aria-hidden className="mt-3 flex items-center justify-center gap-1.5 text-[13px] text-muted"><Timer size={14}/>Moving on in {Math.ceil(autoLeft/1000)}s</p>}
   </section>}

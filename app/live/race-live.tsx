@@ -20,6 +20,7 @@ import {BONUS_STEMS,squadCaseFilePdf,type SquadCaseFile} from "@/lib/case-notes"
 import {focusScreenTop} from "../screen-focus";
 import {AnswerBars,ChunkText,CountdownRing,KeywordPrompt,QuestionPanel,RaceHud,TimerTrack} from "../expedition-race";
 import {SplitStage,useStickyOffsets} from "../split-stage";
+import {RaceMap} from "../world-map";
 import {InterviewHost,InterviewPlayer,interviewBeat} from "./interview-live";
 
 type HostView=ReturnType<typeof hostView>;
@@ -110,7 +111,8 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
    <div className="mt-3">{q?.callPassages?<ReadingPanel passages={q.callPassages as SourcePassage[]} results={round.reveal.lines.map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/>
     :<ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shown={round.reveal.words.length?round.reveal.words:proofTokensOf(tokens,round.chunk.lines,round.reveal.lines)} large/>}</div>
    {q?.type&&round.step%3===2&&race.questions.length>0&&questions}</div>}
-  {(round.beat==="board"||round.beat==="countdown")&&round.board&&<div className="mt-4 grid gap-6 md:grid-cols-[1fr_auto] md:items-start"><Leaderboard rows={round.board.top as BoardRow[]} dark title={round.board.kind==="squad"?"Squads":"Top 5"}/>
+  {(round.beat==="board"||round.beat==="countdown")&&round.board&&<div className="mt-4 grid gap-6 md:grid-cols-[1fr_auto] md:items-start">{round.beat==="countdown"&&world?.world_map?<RaceMap world={world} expeditionId={round.expedition.id} stars={Array.from({length:round.step+1},()=>-1)} className="h-[min(62vh,640px)] min-h-[320px]" label="The class map: every investigator walks to the next stop"
+    tokens={state.lobby.map(p=>({id:p.id,name:p.nickname,portrait:p.avatar?.portrait??null,glow:(race.proved??[]).includes(p.id)}))}/>:<Leaderboard rows={round.board.top as BoardRow[]} dark title={round.board.kind==="squad"?"Squads":"Top 5"}/>}
    {round.beat==="countdown"&&left!==null&&totalMs!==null&&<CountdownRing ms={left*1000} total={totalMs} label={round.step+1>=round.total?"Final results":`Chunk ${round.step+2} of ${round.total}`}/>}</div>}
  </section>;
 }
@@ -195,7 +197,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
     <div className="rounded-[18px] bg-panel p-3 text-ink shadow-[0_5px_0_#0B0920]"><p className="font-display text-[24px] font-bold tabular-nums">{round.reveal?.pct??0}%</p><p className="text-[13px] font-extrabold text-muted">found it</p></div>
    </div>
    {round.beat==="board"&&round.board?<Leaderboard rows={round.board.top as BoardRow[]} meId={round.board.kind==="squad"?race.squadId:state.me.id} own={race.place.row as BoardRow|undefined} title="Top 5"/>
-    :left!==null&&myMs!==null&&<div className="mt-4"><CountdownRing ms={left*1000} total={myMs} label={round.step+1>=round.total?"Final results":`Chunk ${round.step+2} of ${round.total}`}/></div>}</>}
+    :<>{world.world_map&&race.path&&<div className="mt-3"><RaceMap world={world} expeditionId={round.expedition.id} stars={race.path} tokens={[{id:state.me.id,name:state.me.nickname,portrait:(state as {avatar?:{portrait?:string}|null}).avatar?.portrait??null,me:true}]} label="Map: your token walks to the next stop"/></div>}{left!==null&&myMs!==null&&<div className="mt-4"><CountdownRing ms={left*1000} total={myMs} label={round.step+1>=round.total?"Final results":`Chunk ${round.step+2} of ${round.total}`}/></div>}</>}</>}
  </section>;
 }
 // After the race, on each phone: the podium, then the Refresher (checked on the server), then Case Notes.
