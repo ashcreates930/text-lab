@@ -39,6 +39,13 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
     const allLines = chunks.flatMap((c) => c.lines.map((l) => l.text));
     const types = exp.chunks.map((c) => c.question.type);
     out.push(...balanceProblems(`${world.id}/${exp.id}`, exp));
+    // Lightning beats: the answer is a sentence of the chunk it recalls, and only that chunk's text answers it.
+    for (const l of exp.lightning ?? []) {
+      const c = chunks[l.chunk - 1], key = (t: string) => t.replace(/\s+/g, " ").trim();
+      if (!c) { out.push(`${world.id}/${exp.id}: lightning ${l.id} recalls chunk ${l.chunk}, which doesn't exist`); continue; }
+      for (const a of l.answer) if (!c.lines.some((x) => key(x.text) === key(a))) out.push(`${world.id}/${exp.id}: lightning ${l.id}: "${a.slice(0, 40)}" isn't a sentence of chunk ${l.chunk}`);
+      if (/—/.test(l.question)) out.push(`${world.id}/${exp.id}: lightning ${l.id}: no em dashes`);
+    }
     if (new Set(types).size < MIN_TYPES) out.push(`${world.id}/${exp.id}: mixes ${new Set(types).size} question types; needs at least ${MIN_TYPES}`);
     if (types.filter((t) => t === "theme_thread").length !== 1) out.push(`${world.id}/${exp.id}: needs exactly one Theme Thread`);
     // The finale: Name the Liar when the expedition has an Interview, otherwise Make the Call (last chunk, once).

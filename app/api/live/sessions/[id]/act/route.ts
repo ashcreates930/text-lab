@@ -6,7 +6,7 @@ import { getClassroomStore } from "@/lib/classroom/store";
 import type { TimeSetting } from "@/lib/story-mode";
 
 // A player's action in their role: pin a line, write the explanation, approve or object, submit, or vote.
-const KINDS = ["race_ready", "race_gist", "race_question", "race_tap", "race_unknown", "race_refresh", "race_note", "bonus_pick", "bonus_submit", "interview_vote", "liar_lock", "avatar", "pin", "explain", "approve", "object", "submit", "vote", "pins", "argument", "counter_vote", "story", "story_pin", "story_react", "story_vote", "story_freeze", "your_turn_angle", "your_turn", "mission_pick"];
+const KINDS = ["race_ready", "race_gist", "race_question", "race_tap", "race_lightning", "race_burst", "race_unknown", "race_refresh", "race_note", "bonus_pick", "bonus_submit", "interview_vote", "liar_lock", "avatar", "pin", "explain", "approve", "object", "submit", "vote", "pins", "argument", "counter_vote", "story", "story_pin", "story_react", "story_vote", "story_freeze", "your_turn_angle", "your_turn", "mission_pick"];
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const store = getLiveStore();

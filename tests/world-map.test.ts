@@ -119,7 +119,7 @@ test("screens: the map replaces the trail, with a list view, keyboard and screen
   // Live: every token on the class map (gold when proved), each phone its own; the host only learns who proved after the reveal.
   assert.match(src("app/live/race-live.tsx"), /tokens=\{state\.lobby\.map\(p=>\(\{id:p\.id,name:p\.nickname/);
   assert.match(src("app/live/race-live.tsx"), /tokens=\{\[\{id:state\.me\.id/);
-  assert.match(src("lib/live/server.ts"), /proved: round\.beat === "reveal" \|\| round\.beat === "board" \|\| round\.beat === "countdown"/);
+  assert.match(src("lib/live/server.ts"), /proved: round\.beat === "reveal" \|\| round\.beat === "lightning" \|\| round\.beat === "board"/);
   // The asset script paints the base map.
   assert.match(src("scripts/generate-assets.ts"), /process\.argv\.includes\("--map"\)/);
 });

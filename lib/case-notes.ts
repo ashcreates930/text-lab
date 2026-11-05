@@ -4,11 +4,13 @@
 import { jsPDF } from "jspdf";
 import type { ExpQuestion } from "./world-schema.ts";
 import { TYPE_INFO, chunkTokens, norm, proofShown, proofTokens, sentenceProves, type Answer, type RaceChunk } from "./expedition.ts";
+import { questionAt, type Version } from "./pacing.ts";
 import { liarCheck, saidLine, witnessName, type InterviewNote, type LiarAnswer } from "./interview.ts";
 import type { Interview, WorldPack } from "./world-schema.ts";
 
 // One chunk's result, from the solo race or from a live game's rows.
-export type ChunkResult = { index: number; answer: Answer | null; correct: boolean; late: boolean; gist: number | null; typed: string | null; unknown: string[] };
+// version: the question version this student saw (adaptive challenge, lib/pacing.ts); standard when absent.
+export type ChunkResult = { index: number; answer: Answer | null; correct: boolean; late: boolean; gist: number | null; typed: string | null; unknown: string[]; version?: Version };
 const bestOf = (o?: { best?: boolean }[]) => (o ?? []).findIndex((x) => !!x.best);
 export const gistRight = (chunk: RaceChunk, gist: number | null) => gist !== null && !!chunk.chunk.gist.options[gist]?.best;
 
@@ -54,6 +56,7 @@ export function refresherAward(items: RefresherItem[], fixed: boolean[]) {
 export type CaseNote = {
   chunk: number; type: string; question: string; answer: string; proof: string; rightFirstTry: boolean; fixed: boolean | null;
   gistPick: string | null; gistRight: boolean; typedQuestion: string | null; unknownWords: string[]; correctProof: string; standards: string[]; note: string;
+  version?: Version;
 };
 // The student's answer and proof, in words.
 export function answerText(q: ExpQuestion, a: Answer | null, chunk: RaceChunk) {
@@ -75,12 +78,13 @@ export function correctProofText(q: ExpQuestion, chunk: RaceChunk) {
 // One entry per chunk, built during play, with blank space for the student's own notes.
 export function caseNotes(chunks: RaceChunk[], results: ChunkResult[], refresher: { items: RefresherItem[]; fixed: boolean[] } = { items: [], fixed: [] }, notes: Record<number, string> = {}): CaseNote[] {
   return chunks.map((c) => {
-    const r = results.find((x) => x.index === c.index), q = c.chunk.question, t = answerText(q, r?.answer ?? null, c);
+    // The question this student was asked: their version of it.
+    const r = results.find((x) => x.index === c.index), { question: q, version } = questionAt(c.chunk.question, r?.version ?? "standard"), t = answerText(q, r?.answer ?? null, c);
     const k = refresher.items.findIndex((it) => it.index === c.index && it.kind === "question");
     return {
       chunk: c.index + 1, type: TYPE_INFO[q.type].name, question: q.prompt, answer: t.answer, proof: t.proof, rightFirstTry: !!r?.correct,
       fixed: k >= 0 ? !!refresher.fixed[k] : null, gistPick: r?.gist != null ? c.chunk.gist.options[r.gist]?.text ?? null : null, gistRight: gistRight(c, r?.gist ?? null),
-      typedQuestion: r?.typed ?? null, unknownWords: r?.unknown ?? [], correctProof: correctProofText(q, c), standards: q.standards, note: notes[c.index] ?? "",
+      typedQuestion: r?.typed ?? null, unknownWords: r?.unknown ?? [], correctProof: correctProofText(q, c), standards: q.standards, note: notes[c.index] ?? "", version,
     };
   });
 }

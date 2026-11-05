@@ -20,12 +20,14 @@ const ytExchange=z.object({say:z.string().min(1),accept:z.array(ytLine),weigh:z.
 export const QUESTION_TYPES=["word_detective","shades","between_lines","whose_eyes","figure_it_out","character_clue","theme_thread","gist","find_it","catch_lie","make_call"] as const;
 export const BENCHMARK_FAMILY_IDS=["R.1.1","R.1.2","R.1.3","R.3.1","R.3.2","V.1.3","K12.EE.1.1","K12.EE.3.1","K12.EE.4.1"] as const;
 const expChoice=z.object({text:z.string().min(1),best:z.boolean().optional()});
-const expQuestion=z.object({type:z.enum(QUESTION_TYPES),prompt:z.string().min(1),keywords:z.array(z.string().min(1)).default([]),focus:z.string().min(1).optional(),
+const expQuestionBase=z.object({type:z.enum(QUESTION_TYPES),prompt:z.string().min(1),keywords:z.array(z.string().min(1)).default([]),focus:z.string().min(1).optional(),
  choices:z.array(expChoice).length(3).optional(),choices2:z.object({prompt:z.string().min(1),options:z.array(expChoice).length(3)}).optional(),
  proof:z.object({lines:z.array(z.string().min(1)).optional(),words:z.array(z.string().min(1)).optional()}).optional(),
  testimony:z.object({speaker:z.string(),text:z.string().min(1)}).optional(),
  theories:z.array(z.object({id:z.string(),name:z.string().min(1),lines:z.array(z.string().min(1)).min(2)})).length(3).optional(),
  hint:z.string().min(1),why:z.string().min(1),standards:z.array(z.enum(BENCHMARK_FAMILY_IDS)).min(1),reviewed:z.boolean().optional()});
+// Adaptive challenge (lib/pacing.ts): an easier and a harder version of the question, on the same chunk.
+const expQuestion=expQuestionBase.extend({versions:z.object({easier:expQuestionBase.optional(),harder:expQuestionBase.optional()}).optional()});
 const expChunk=z.object({id:z.string(),segments:z.array(z.object({p:z.string().regex(/^p\d{3}$/),from:z.number().int().min(0),to:z.number().int().min(0)})).min(1),
  gist:z.object({options:z.array(expChoice).length(3)}),discovery:z.object({phrase:z.string().min(1),kind:z.enum(["figurative","vocabulary"]),note:z.string().min(1)}),question:expQuestion});
 // The Interview (before the race): three witnesses, each with two question cards, one true and one false statement in
@@ -33,7 +35,10 @@ const expChunk=z.object({id:z.string(),segments:z.array(z.object({p:z.string().r
 // the witness says when caught as the liar. Rules: lib/interview.ts.
 const statement=z.object({text:z.string().min(1),lines:z.array(z.string().min(1)).min(1),gesture:z.enum(["laughing","head-shake"]).optional()});
 const witness=z.object({character:z.string(),cards:z.array(z.string().min(1)).length(2),truth:statement,lie:statement,caught:z.string().min(1)});
-const expedition=z.object({id:z.string(),title:z.string().min(1),chunks:z.array(expChunk).min(1),interview:z.object({witnesses:z.array(witness).length(3)}).optional()});
+// Lightning beats (lib/pacing.ts): 10-second recall questions, answered by tapping the one sentence (in chunk `chunk`)
+// that answers; asked after chunk `after` (both 1-based), between deeper questions.
+const lightning=z.object({id:z.string(),chunk:z.number().int().min(1),after:z.number().int().min(1),question:z.string().min(1),answer:z.array(z.string().min(1)).min(1)});
+const expedition=z.object({id:z.string(),title:z.string().min(1),chunks:z.array(expChunk).min(1),interview:z.object({witnesses:z.array(witness).length(3)}).optional(),lightning:z.array(lightning).optional()});
 // The world map (lib/world-map.ts; built by scripts/build-map.ts from scripts/maps/<world>.ts). A painted base image
 // with no words; places, regions and stops are drawn in code on top, in the image's own pixels. Each expedition is a
 // region; each chunk is a stop where that part of the story happens. landmark: the twist (a witness interrupts) or the
@@ -123,7 +128,7 @@ export const WorldPackSchema = z.object({
   expeditions:z.array(expedition).optional(),world_map:worldMap.optional(),front_matter:z.array(z.string().regex(/^p\d{3}$/)).optional(),
   // Drafts awaiting the teacher's review: validated like expeditions, never shown to students until moved into
   // expeditions. expedition_rules: a story-level exception to the chunk rules, only with the teacher's approval.
-  draft_expeditions:z.array(expedition).optional(),expedition_rules:z.object({max_sentences:z.number().int().min(5).max(20)}).optional(),
+  draft_expeditions:z.array(expedition).optional(),expedition_rules:z.object({max_sentences:z.number().int().min(5).max(20).optional(),arc_pending:z.array(z.string()).optional()}).optional(),
   // Demo rival and squad modes: the computer players' names (clearly labeled as computer players on screen).
   computer_players:z.object({rival:z.object({name:z.string().min(1),emblem:z.enum(["lantern","rider"])}),teammates:z.array(z.string().min(1)).min(2).max(3)}).optional(),
   // Students in the story: the part the student plays (see lib/student-role.ts). never: people the student must never be.

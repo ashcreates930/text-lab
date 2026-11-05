@@ -12,14 +12,20 @@ export type Q = { type: string; prompt: string; keywords?: string[]; focus?: str
 export type C = { seg: [string, number, number][]; gist: [string, boolean?][]; discovery: [string, "figurative" | "vocabulary", string]; q: Q };
 export type S = { text: string; lines: Ref[]; gesture?: "laughing" | "head-shake" };
 export type W = { character: string; cards: [string, string]; truth: S; lie: S; caught: string };
-export type E = { id: string; title: string; chunks: C[]; interview?: W[] };
+// lightning: a recall beat from an approved sprint (by id), or written out with its answer sentence(s).
+export type E = { id: string; title: string; chunks: C[]; interview?: W[]; lightning?: { sprint?: string; id?: string; chunk: number; after: number; question?: string; answer?: Ref[] }[] };
 
 // draft: written to draft_expeditions for the teacher's review (students never see them); rules: an approved exception.
-const SPEC: Record<string, { front_matter: string[]; expeditions: E[]; draft?: boolean; rules?: { max_sentences: number } }> = {
+const SPEC: Record<string, { front_matter: string[]; expeditions: E[]; draft?: boolean; rules?: { max_sentences?: number; arc_pending?: string[] } }> = {
   "sleepy-hollow": {
     front_matter: ["p001", "p002", "p073", "p074", "p082"],
+    // Expeditions still to be rebuilt to the arc (lib/pacing.ts); validate:worlds checks the arc on every other one.
+    rules: { arc_pending: ["the-schoolmaster", "tales-by-the-fire", "the-van-tassel-farm", "a-rival-appears", "the-feud", "the-invitation", "the-ride-to-the-party", "the-feast-and-the-dance", "ghost-stories", "the-lonely-road", "the-headless-horseman", "gone", "the-postscript"] },
     expeditions: [{
-      id: "into-the-hollow", title: "Into the Hollow", chunks: [
+      id: "into-the-hollow", title: "Into the Hollow",
+      // Lightning beats (lib/pacing.ts): recall, one tap, 10 seconds; from the approved Proof Race sprints.
+      lightning: [{ sprint: "walk", chunk: 2, after: 4 }, { sprint: "wounded", chunk: 7, after: 8 }],
+      chunks: [
         { seg: [["p003", 0, 2]],
           gist: [["A river town got its name, the narrator says, from husbands who lingered at the tavern.", true], ["A river town is famous for sailors who pray to St. Nicholas."], ["The narrator proves the town was named by Dutch sailors who stopped there to trade."]],
           discovery: ["inveterate propensity", "vocabulary", "Inveterate propensity: a habit so old and strong it can't be broken."],
@@ -117,7 +123,8 @@ for (const [worldId, spec] of Object.entries(SPEC)) {
         ...(q.lines || q.words ? { proof: { ...(q.lines ? { lines: q.lines.map(line) } : {}), ...(q.words ? { words: q.words } : {}) } } : {}),
         ...(q.testimony ? { testimony: q.testimony } : {}), ...(q.theories ? { theories: q.theories.map((t) => ({ id: t.id, name: t.name, lines: t.lines.map(line) })) } : {}),
         hint: q.hint, why: q.why, standards: q.standards, ...(q.reviewed ? { reviewed: true } : {}) } };
-  }), ...(e.interview ? { interview: { witnesses: e.interview.map((w) => {
+  }), ...(e.lightning ? { lightning: e.lightning.map((l) => { const sp = l.sprint ? (world.scenes as { sprints?: { id: string; question: string; answers: string[] }[] }[]).flatMap((x) => x.sprints ?? []).find((x) => x.id === l.sprint) : null; if (l.sprint && !sp) throw new Error(`${e.id}: no sprint ${l.sprint}`);
+    return { id: l.id ?? l.sprint!, chunk: l.chunk, after: l.after, question: l.question ?? sp!.question, answer: l.answer ? l.answer.map(line) : sp!.answers }; }) } : {}), ...(e.interview ? { interview: { witnesses: e.interview.map((w) => {
     const st = (x: S) => ({ text: x.text, lines: x.lines.map(line), ...(x.gesture ? { gesture: x.gesture } : {}) });
     return { character: w.character, cards: w.cards, truth: st(w.truth), lie: st(w.lie), caught: w.caught };
   }) } } : {}) }));

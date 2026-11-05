@@ -5,7 +5,7 @@
 // streak, coins, sound, chunk count, seconds left) sits on every race screen. Extended time multiplies every timer and
 // every automatic screen. Screen readers hear the result and the new rank before anything moves.
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
-import {ArrowRight,Check,Flame,Highlighter,Pause,Play,Star,Timer,Volume2,VolumeX,X} from "lucide-react";
+import {ArrowRight,Check,Crown,Flame,Highlighter,Pause,Play,Sparkles,Star,Timer,Volume2,VolumeX,X,Zap} from "lucide-react";
 import type {ExpQuestion,QuestionType,WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
 import {DISCOVERY_COINS,GIST_SECONDS,TESTIMONY_MS,TYPE_INFO,chunkTokens,focusTokens,joinedPassages,proofTokens,expeditionChunks,ghostPlay,gistPoints,isDiscovery,keywordParts,limitMs,phraseRange,proofShown,scoreAnswer,screenMs,shuffledOrder,type Answer,type RaceChunk,type Token} from "@/lib/expedition";
@@ -16,6 +16,7 @@ import {Pill} from "./game-ui";
 import {ContentNote} from "./content-note";
 import {ReadingPanel} from "./reading-panel";
 import {Leaderboard,Podium,cue,reducedMotion,useBeatClock} from "./proof-race";
+import {BURST_POINTS,BURST_SECONDS,LIGHTNING_POINTS,LIGHTNING_SECONDS,arcOf,beatKind,isCheckpoint,multiplierAt,questionAt,streakBonus,versionFor,type Lightning,type Version} from "@/lib/pacing";
 import {RaceMap} from "./world-map";
 import {useSoundPref} from "./game-feel";
 import {focusScreenTop} from "./screen-focus";
@@ -26,8 +27,9 @@ import {InterviewScreen,LiarVerdict,NameTheLiar} from "./interview";
 import type {ExpeditionAttempt} from "@/lib/expedition-progress";
 import {evidenceSentences} from "@/lib/lies";
 
-type Beat="interview"|"read"|"gist"|"question"|"result"|"board"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"notes";
-export type ChunkRecord={gist:number|null;answer:Answer;correct:boolean;points:number;late:boolean;coins:number;unknown:string[];discovered:boolean};
+type Beat="interview"|"read"|"gist"|"question"|"result"|"lightning"|"board"|"burst"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"notes";
+// points include the boss or surprise double; bonus: the streak bonus; version: the question version this student saw.
+export type ChunkRecord={gist:number|null;answer:Answer;correct:boolean;points:number;late:boolean;coins:number;unknown:string[];discovered:boolean;bonus:number;mult:number;version:Version};
 const AUTO:Partial<Record<Beat,"result"|"board"|"countdown">>={result:"result",board:"board",countdown:"countdown"};
 
 // ---------- HUD ----------
@@ -130,7 +132,7 @@ export function KeywordPrompt({prompt,keywords}:{prompt:string;keywords:string[]
 // meaning, or two pinned lines for Make the Call). Laid out side by side (app/split-stage.tsx): the passage on the left,
 // the question, choices, testimony and timer on the right; on a phone the question is a panel pinned to the bottom.
 // Used by the solo race and by every phone in a live game. seed: this student's own answer order.
-export function QuestionPanel({vq,passages,chunk,world,tokens,glossary,testifying,draft,setDraft,step,setStep,onLock,headingId="ex-h",seed,timer}:{vq:ViewQuestion;passages:{id:string;text:string}[];chunk:ChunkView;world:WorldPack;tokens:Token[];glossary:WorldPack["glossary"];testifying:boolean;draft:Answer;setDraft:React.Dispatch<React.SetStateAction<Answer>>;step:1|2;setStep:(s:1|2)=>void;onLock:(a:Answer)=>void;headingId?:string;seed?:string;timer?:React.ReactNode}){
+export function QuestionPanel({vq,passages,chunk,world,tokens,glossary,testifying,draft,setDraft,step,setStep,onLock,headingId="ex-h",seed,timer,banner}:{vq:ViewQuestion;passages:{id:string;text:string}[];chunk:ChunkView;world:WorldPack;tokens:Token[];glossary:WorldPack["glossary"];testifying:boolean;draft:Answer;setDraft:React.Dispatch<React.SetStateAction<Answer>>;step:1|2;setStep:(s:1|2)=>void;onLock:(a:Answer)=>void;headingId?:string;seed?:string;timer?:React.ReactNode;banner?:React.ReactNode}){
  const twoStep=vq.steps===2,needsProofStep=twoStep&&vq.type!=="figure_it_out"&&vq.type!=="make_call";
  const pinned=draft.lines??[];
  const focus=focusTokens(tokens,vq.focus);
@@ -140,7 +142,7 @@ export function QuestionPanel({vq,passages,chunk,world,tokens,glossary,testifyin
  const passage=callStep
   ?<ReadingPanel className="mt-1" glossary={glossary} passages={(vq.callPassages??passages) as SourcePassage[]} kept={pinned} onTap={l=>setDraft(d=>{const ls=d.lines??[];return {...d,lines:ls.includes(l.text)?ls.filter(x=>x!==l.text):ls.length>=2?ls:[...ls,l.text]}})}/>
   :<ChunkText chunk={chunk} world={world} tokens={tokens} focus={focus} pick={proofStep?{selected:draft.lines?.[0]??null,onPick:t=>setDraft(d=>({...d,lines:t?[t]:[]}))}:undefined}/>;
- const head=<>{timer}<p className="mt-2 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{vq.name}{twoStep?` · Step ${step} of 2`:""}</p>
+ const head=<>{timer}{banner}<p className="mt-2 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{vq.name}{twoStep?` · Step ${step} of 2`:""}</p>
   <h1 id={headingId} className="text-[22px] leading-tight outline-none md:text-[24px]"><KeywordPrompt prompt={vq.prompt} keywords={vq.keywords}/></h1></>;
  const body=<>
   {vq.testimony&&<blockquote className={`mt-3 rounded-card bg-violet p-4 text-on-violet shadow-[0_6px_0_var(--color-violet-shadow)] ${reducedMotion()?"":"rise-in"}`}><p className="text-[12px] font-extrabold uppercase tracking-[.08em]">{vq.testimony.speaker} testifies</p><p className="mt-1 text-[17px] font-bold leading-snug">“{vq.testimony.text}”</p>{testifying&&<p role="status" className="mt-2 text-[13px] font-extrabold">Listen to the whole testimony. The timer starts when it ends.</p>}</blockquote>}
@@ -160,6 +162,56 @@ export function CountdownRing({ms,total,label}:{ms:number;total:number;label:str
  return <div className="flex flex-col items-center gap-3"><svg width="96" height="96" viewBox="0 0 80 80" aria-hidden><circle cx="40" cy="40" r={r} fill="none" stroke="var(--color-panel)" strokeWidth="8"/><circle cx="40" cy="40" r={r} fill="none" stroke="var(--color-primary)" strokeWidth="8" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c*(1-share)} transform="rotate(-90 40 40)"/><text x="40" y="47" textAnchor="middle" fontSize="22" fontWeight="700" fill="var(--color-ink)" fontFamily="var(--font-display)">{Math.ceil(ms/1000)}</text></svg><p className="font-display text-[20px]">{label}</p></div>;
 }
 
+// ---------- Pacing: banners and the rank pill (lib/pacing.ts) ----------
+// The arc's moments, announced above the question: a witness interrupts (the twist), the boss question, a surprise.
+export function ArcBanner({kind,speaker}:{kind:"twist"|"boss"|"double"|"warmup"|null;speaker?:string|null}){
+ if(!kind||kind==="warmup")return null;
+ const text=kind==="twist"?<><Zap size={18} aria-hidden/>Twist! {speaker??"A witness"} interrupts with a new claim.</>:kind==="boss"?<><Crown size={18} aria-hidden/>Boss question · double points</>:<><Sparkles size={18} aria-hidden/>Surprise! Double points on this stop.</>;
+ return <p role="status" className={`mt-2 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 font-display text-[15px] font-bold ${kind==="twist"?"bg-violet text-on-violet":"bg-gold text-on-gold"} ${reducedMotion()?"":"moment-pop"}`}>{text}</p>;
+}
+// After each answer: only the points and a small rank-move pill (the full leaderboard waits for the checkpoint).
+export function RankPill({move,rank,of}:{move:number;rank:number;of:number}){
+ return <span className="inline-flex items-center gap-1.5 rounded-full bg-panel px-3 py-1 text-[14px] font-extrabold text-ink"><span className={move>0?"text-success":move<0?"text-muted":"text-ink"}>{move>0?`Up ${move}`:move<0?`Down ${-move}`:`Held #${rank}`}</span><span className="text-muted">· #{rank} of {of}</span></span>;
+}
+
+// A lightning beat: one recall question, answered in 10 seconds by tapping the sentence (in the chunk it recalls)
+// that answers it. Right: LIGHTNING_POINTS (300). The answer shows for a moment, then the race moves on.
+export function LightningBeat({item,chunk,world,seed,timeSetting,sound,onDone,locked}:{item:Lightning;chunk:RaceChunk;world:WorldPack;seed:string;timeSetting?:string;sound:boolean;onDone:(points:number)=>void;locked?:boolean}){
+ void seed;
+ const [startedAt]=useState(Date.now()),[pick,setPick]=useState<string|null>(null),[result,setResult]=useState<boolean|null>(null);
+ const seconds=limitMs(LIGHTNING_SECONDS,timeSetting)/1000,left=useBeatClock(startedAt,result===null&&!locked?seconds:null);
+ const tokens=useMemo(()=>chunkTokens(chunk.lines),[chunk]);
+ const key=(t:string)=>t.replace(/\s+/g," ").trim();
+ function lock(p:string|null){if(result!==null)return;const ok=!!p&&item.answer.some(a=>key(a)===key(p));setResult(ok);cue(sound,ok?"chime":"reveal");setTimeout(()=>onDone(ok?LIGHTNING_POINTS:0),reducedMotion()?900:1800)}
+ useEffect(()=>{if(left===0&&result===null)lock(pick)},[left]);// eslint-disable-line react-hooks/exhaustive-deps
+ const answerIdx=chunk.lines.findIndex(l=>item.answer.some(a=>key(a)===key(l.text)));
+ const shown=answerIdx>=0?tokens.filter(t=>t.line===answerIdx).map(t=>t.i):[];
+ return <SplitStage label="Lightning beat" collapse={false} passage={<ChunkText chunk={{lines:chunk.lines,discovery:chunk.chunk.discovery}} world={world} tokens={tokens} pick={result===null?{selected:pick,onPick:setPick}:undefined} shown={result!==null?shown:[]} shownStyle={result?"right":"missed"}/>}
+  head={<><TimerTrack left={result===null?left:null} seconds={seconds}/><p className="mt-2 inline-flex items-center gap-1.5 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight"><Zap size={14} aria-hidden/>Lightning · {LIGHTNING_SECONDS} seconds · from chunk {item.chunk}</p><h1 id="ex-h" className="text-[24px] leading-tight outline-none">{item.question}</h1></>}
+  body={result===null?<p className="text-[15px] font-bold text-muted">Tap the sentence that answers it.</p>:<p role="status" className={`rounded-card px-4 py-3 font-display text-[22px] font-bold ${result?"bg-success text-on-success":"bg-panel text-ink"}`}>{result?`Lightning fast! +${LIGHTNING_POINTS}`:"Here's the sentence. Keep going!"}</p>}
+  action={result===null?<button type="button" disabled={!pick} onClick={()=>lock(pick)} className="case-primary w-full justify-center">Lock in <ArrowRight size={18} aria-hidden/></button>:undefined}/>;
+}
+// The burst after the checkpoint: 60 seconds to find the hidden discoveries (a figurative phrase or a rich word) in
+// level 1's chunks, BURST_POINTS (200) each. In a live game a squad pools its members' finds; solo it's a timed bonus challenge.
+export function DiscoveryBurst({chunks,world,timeSetting,sound,onDone,onFind,squad}:{chunks:RaceChunk[];world:WorldPack;timeSetting?:string;sound:boolean;onDone?:(points:number)=>void;onFind?:(chunkIndex:number)=>void;squad?:{name:string;found:number}|null}){
+ const [startedAt]=useState(Date.now()),[found,setFound]=useState<Set<number>>(new Set()),[over,setOver]=useState(false);
+ const seconds=limitMs(BURST_SECONDS,timeSetting)/1000,left=useBeatClock(startedAt,over?null:seconds);
+ useEffect(()=>{if(left===0&&!over)finish()},[left]);// eslint-disable-line react-hooks/exhaustive-deps
+ function finish(){if(over)return;setOver(true);setTimeout(()=>onDone?.(found.size*BURST_POINTS),reducedMotion()?900:1800)}
+ return <section aria-labelledby="ex-h" className="flex flex-col gap-3">
+  <TimerTrack left={over?null:left} seconds={seconds}/>
+  <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{squad?"Squad burst":"Bonus challenge"} · {BURST_SECONDS} seconds</p>
+  <h1 id="ex-h" className="text-[26px] leading-tight outline-none">Find the hidden discoveries</h1>
+  <p className="text-[16px] font-bold">Tap the figurative phrase or rich word hidden in each chunk. {BURST_POINTS} points each{squad?", for your squad":""}.</p>
+  <p role="status" className="font-display text-[20px] font-bold text-gold">{found.size} of {chunks.length} found{squad?` · ${squad.name}: ${squad.found}`:""}</p>
+  {chunks.map(c=>{const t=chunkTokens(c.lines);return <div key={c.index} className="flex flex-col gap-1"><p className="text-[13px] font-extrabold text-muted">Chunk {c.index+1}{found.has(c.index)?" · found":""}</p>
+   {found.has(c.index)&&<p role="status" className="rounded-row bg-gold px-3 py-2 text-[15px] font-bold text-on-gold">+{BURST_POINTS}: "{c.chunk.discovery.phrase}". {c.chunk.discovery.note}</p>}
+   <ChunkText explore={!over} chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={t} found={false} onDiscover={()=>{if(!over&&!found.has(c.index)){setFound(f=>new Set(f).add(c.index));onFind?.(c.index);cue(sound,"chime",0.3)}}}/></div>})}
+  {over?<p role="status" className="rounded-card bg-gold px-4 py-3 font-display text-[22px] font-bold text-on-gold">{found.size?`+${found.size*BURST_POINTS} for ${found.size} discover${found.size===1?"y":"ies"}`:"Time! On to level 2."}</p>
+   :onDone&&<button type="button" onClick={finish} className="case-secondary w-full justify-center">I'm done</button>}
+ </section>;
+}
+
 // ---------- The solo expedition ----------
 export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="1",highlighter=false,studentKey,onSave,onFinish,onExit}:{world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;timeSetting?:string;highlighter?:boolean;studentKey?:string;onSave?:(a:ExpeditionAttempt)=>void;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void}){
  const [sound,toggleSound]=useSoundPref("effects",preset);
@@ -177,7 +229,13 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
  const liar=useMemo(()=>liarIndex(studentKey??soloStudentKey(),expeditionId,iv?.witnesses.length??3),[studentKey,expeditionId,iv]);
  const [cards,setCards]=useState<number[]>(()=>loadCards(world.id,expeditionId)),[liarAnswer,setLiarAnswer]=useState<LiarAnswer|null>(null);
  const liarResult=iv&&liarAnswer?liarCheck(iv,liar,liarAnswer):null;
- const c=chunks[k];const tokens=useMemo(()=>c?chunkTokens(c.lines):[],[c]);const q=c?.chunk.question;
+ const c=chunks[k];const tokens=useMemo(()=>c?chunkTokens(c.lines):[],[c]);
+ // The arc (lib/pacing.ts) and this student's version of the question: standard to start, up after two first-try
+ // answers in a row, down after two misses in a row.
+ const arc=useMemo(()=>exp?arcOf(world,exp):null,[world,exp]);
+ const version=versionFor(records.slice(0,k).map(r=>!!r?.correct));
+ const asked=c?questionAt(c.chunk.question,version):null,q=asked?.question;
+ const [lightningPts,setLightningPts]=useState<number[]>([]),[burstPts,setBurstPts]=useState(0);
  const go=useCallback((b:Beat)=>{setBeat(b);setStartedAt(Date.now())},[]);
  useStickyOffsets();
  // This student's own answer order for every set of choices (stable on reload, different for each student).
@@ -189,7 +247,9 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
  const qLeft=useBeatClock(startedAt,beat==="question"&&!testifying?qSeconds:null);
  const record=records[k];
  // Your points through a chunk: the question plus the Gist check.
- const mine=(upto:number)=>records.slice(0,upto+1).reduce((a,r,i)=>a+(r?.points??0)+(r&&r.gist!==null?gistPoints(chunks[i].chunk,r.gist):0),0);
+ // Points through a chunk: the question (with any double), the streak bonus, the Gist check, the lightning beat after it,
+ // and the burst once the checkpoint is behind.
+ const mine=(upto:number)=>records.slice(0,upto+1).reduce((a,r,i)=>a+(r?.points??0)+(r?.bonus??0)+(r&&r.gist!==null?gistPoints(chunks[i].chunk,r.gist):0)+(lightningPts[i]??0),0)+(arc?.burstAfter!=null&&upto>=arc.burstAfter?burstPts:0);
  const score=mine(records.length-1)+(liarResult?.points??0);
  const coins=records.reduce((a,r)=>a+(r?.coins??0),0)+(found&&!record?DISCOVERY_COINS:0);
  const streak=(()=>{let s=0;for(let i=records.length-1;i>=0;i--){if(records[i]?.correct)s++;else break}return s})();
@@ -204,10 +264,14 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
  function lockIn(a:Answer){
   if(beat!=="question"||record)return;
   const res=scoreAnswer(q!,a,tokens,Date.now()-startedAt,limitMs(TYPE_INFO[q!.type].seconds,timeSetting));
-  const g=ghostPlay(world.id+expeditionId,k,limitMs(TYPE_INFO[q!.type].seconds,timeSetting));
-  const next=[...records];next[k]={gist,answer:a,correct:res.correct,points:res.points,late:res.late,coins:found?DISCOVERY_COINS:0,unknown:[...unknown].map(i=>tokens[i]?.text.replace(/[^\p{L}'-]/gu,"")).filter(Boolean),discovered:found};
-  setRecords(next);setGhost(x=>{const n=[...x];n[k]=g.points+g.gist;return n});cue(sound,res.correct?"chime":"reveal");go("result");
+  const g=ghostPlay(world.id+expeditionId,k,limitMs(TYPE_INFO[q!.type].seconds,timeSetting)),mult=arc?multiplierAt(arc,k):1;
+  const next=[...records];next[k]={gist,answer:a,correct:res.correct,points:res.points*mult,late:res.late,coins:found?DISCOVERY_COINS:0,unknown:[...unknown].map(i=>tokens[i]?.text.replace(/[^\p{L}'-]/gu,"")).filter(Boolean),discovered:found,
+   bonus:streakBonus(streak,res.correct?streak+1:0),mult,version:asked!.version};
+  setRecords(next);setGhost(x=>{const n=[...x];n[k]=g.points*mult+g.gist;return n});cue(sound,res.correct?"chime":"reveal");go("result");
  }
+ const lightningHere=arc?.lightning.find(l=>l.after===k)?.item??null;
+ function afterResult(){if(lightningHere&&lightningPts[k]===undefined)go("lightning");else afterExtras()}
+ function afterExtras(){go(isCheckpoint(k,chunks.length)?"board":"countdown")}
  // Time's up: whatever is picked counts, which is a miss.
  useEffect(()=>{if(beat==="question"&&qLeft===0&&!record)lockIn(draft)},[qLeft]);// eslint-disable-line react-hooks/exhaustive-deps
  // The automatic screens: result, then the leaderboard, then the countdown, then the next chunk. Pause holds them.
@@ -215,11 +279,11 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
  useEffect(()=>{const kind=AUTO[beat];if(!kind)return;remaining.current=screenMs(kind,timeSetting);deadline.current=Date.now()+remaining.current;setAutoLeft(remaining.current)},[beat,k,timeSetting]);
  useEffect(()=>{const kind=AUTO[beat];if(!kind||paused)return;deadline.current=Date.now()+remaining.current;
   const t=setInterval(()=>{const left=Math.max(0,deadline.current-Date.now());remaining.current=left;setAutoLeft(left);if(left===0){clearInterval(t);
-   if(beat==="result")go("board");else if(beat==="board")go("countdown");else if(beat==="countdown"){if(k+1>=chunks.length){if(iv)go("liar");else{go("finish");onFinish?.(records)}}else startChunk(k+1)}}},100);
+   if(beat==="result")afterResult();else if(beat==="board")go(arc?.burstAfter===k?"burst":"countdown");else if(beat==="countdown"){if(k+1>=chunks.length){if(iv)go("liar");else{go("finish");onFinish?.(records)}}else startChunk(k+1)}}},100);
   return()=>clearInterval(t)},[beat,paused,k]);// eslint-disable-line react-hooks/exhaustive-deps
 
  // After the race: the results for Case Notes, and the Refresher (misses only, up to 4).
- const results:ChunkResult[]=records.map((r,i)=>({index:i,answer:r?.answer??null,correct:!!r?.correct,late:!!r?.late,gist:r?.gist??null,typed:null,unknown:r?.unknown??[]}));
+ const results:ChunkResult[]=records.map((r,i)=>({index:i,answer:r?.answer??null,correct:!!r?.correct,late:!!r?.late,gist:r?.gist??null,typed:null,unknown:r?.unknown??[],version:r?.version??"standard"}));
  const refItems=refresherItems(chunks,results,!!liarResult&&!liarResult.solved);
  const callAll=joinedPassages(chunks);
  const lie=iv?{name:witnessName(world,iv.witnesses[liar].character),lieText:iv.witnesses[liar].lie.text,lines:iv.witnesses[liar].lie.lines}:null;
@@ -258,28 +322,32 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
    head={<><TimerTrack left={gistLeft} seconds={gSeconds}/><p className="mt-3 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Gist check · {GIST_SECONDS} seconds</p><h1 id="ex-h" className="text-[28px] outline-none">Which is the best summary?</h1></>}
    body={<AnswerBars seed={`${seedKey}|${c.id}|gist`} label="Which is the best summary?" options={c.chunk.gist.options} picked={gist} onPick={pickGist} disabled={gist!==null}/>}/>}
 
-  {beat==="question"&&<QuestionPanel seed={`${seedKey}|${c.id}`} timer={<TimerTrack left={testifying?qSeconds:qLeft} seconds={qSeconds}/>} vq={viewQuestion(q,world,callPassages)} passages={c.passages} chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} glossary={world.glossary} testifying={testifying} draft={draft} setDraft={setDraft} step={step} setStep={setStep} onLock={lockIn}/>}
+  {beat==="question"&&<QuestionPanel banner={arc?<ArcBanner kind={beatKind(arc,k)} speaker={q.testimony?world.characters.find(x=>x.id===q.testimony!.speaker)?.name:null}/>:null} seed={`${seedKey}|${c.id}`} timer={<TimerTrack left={testifying?qSeconds:qLeft} seconds={qSeconds}/>} vq={viewQuestion(q,world,callPassages)} passages={c.passages} chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} glossary={world.glossary} testifying={testifying} draft={draft} setDraft={setDraft} step={step} setStep={setStep} onLock={lockIn}/>}
 
   {beat==="result"&&record&&<section aria-labelledby="ex-h" aria-live="assertive">
    {record.correct
     ?<div className="mt-8 flex flex-col items-center gap-3"><p aria-hidden className="float-up font-display text-[56px] font-bold leading-none text-gold">+{record.points.toLocaleString()}</p>
-     <div className="moment-pop w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{info.name}{streak>1?` · Streak x${streak}`:""}</p><h1 id="ex-h" className="mt-1 text-[40px] leading-none outline-none">Proof!<span className="sr-only"> Plus {record.points} points.</span></h1><p className="mt-2 text-[16px] font-bold">{q.why}</p></div></div>
+     <div className="moment-pop w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{info.name}{record.mult>1?" · Double points":""}{streak>1?` · Streak x${streak}`:""}</p><h1 id="ex-h" className="mt-1 text-[40px] leading-none outline-none">Proof!<span className="sr-only"> Plus {record.points} points.</span></h1><p className="mt-2 text-[16px] font-bold">{q.why}</p></div>
+     {record.bonus>0&&<p role="status" className="moment-pop rounded-full bg-gold px-4 py-1.5 font-display text-[17px] font-bold text-on-gold">Streak bonus! +{record.bonus} for {streak} in a row</p>}</div>
     :<div className="notyet-shake mt-3 rounded-[24px] bg-notyet p-5 text-on-notyet shadow-[0_8px_0_var(--color-notyet-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{info.name}{record.late?" · Time's up":""}</p><h1 id="ex-h" className="mt-1 text-[36px] leading-none outline-none">Not yet.</h1><p className="mt-2 text-[17px] font-bold">You'll get another shot in the Refresher.</p></div>}
+   {meRow&&<p className="mt-3 flex justify-center"><RankPill move={meRow.move} rank={meRow.rank} of={board.length}/></p>}
    {q.type==="make_call"
     ?<><p className="mt-3 text-[13px] font-extrabold uppercase tracking-[.08em] text-highlight">{record.correct?"The proof":"Here's the proof"}</p><ReadingPanel className="mt-1" glossary={world.glossary} passages={callPassages as SourcePassage[]} results={shown.lines.map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/></>
     :<div className="mt-3"><ChunkText chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} shown={proofTokens(q,tokens,c.lines)} shownStyle={record.correct?"right":"missed"}/></div>}
   </section>}
 
+  {beat==="lightning"&&lightningHere&&<LightningBeat item={lightningHere} chunk={chunks[lightningHere.chunk-1]} world={world} seed={`${seedKey}|${lightningHere.id}`} timeSetting={timeSetting} sound={sound} onDone={p=>{setLightningPts(x=>{const n=[...x];n[k]=p;return n});afterExtras()}}/>}
+  {beat==="burst"&&<DiscoveryBurst chunks={chunks.slice(0,(arc?.burstAfter??0)+1)} world={world} timeSetting={timeSetting} sound={sound} onDone={p=>{setBurstPts(p);go("countdown")}}/>}
   {(beat==="board"||beat==="countdown")&&<section aria-labelledby="ex-h">
    <p role="status" className="sr-only">{record?.correct?`Plus ${record.points} points.`:"No points this time."} You're number {meRow?.rank} of 2.</p>
-   <div className="flex items-center justify-between gap-3"><h1 id="ex-h" className="text-[28px] outline-none">{beat==="board"?"Leaderboard":"Next chunk"}</h1>
+   <div className="flex items-center justify-between gap-3"><h1 id="ex-h" className="text-[28px] outline-none">{beat==="board"?"Checkpoint: Level 1 complete":"Next chunk"}</h1>
     <button type="button" onClick={()=>setPaused(p=>!p)} aria-pressed={paused} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-panel px-4 font-display text-[16px] font-semibold">{paused?<><Play size={16} aria-hidden/>Resume</>:<><Pause size={16} aria-hidden/>Pause</>}</button></div>
-   <div className="mt-3 grid grid-cols-3 gap-2.5 text-center">
+   {beat==="board"&&<div className="mt-3 grid grid-cols-3 gap-2.5 text-center">
     <div className="rounded-[18px] bg-success p-3 text-on-success shadow-[0_5px_0_var(--color-success-shadow)]"><p className="font-display text-[24px] font-bold tabular-nums">+{(meRow?.gained??0).toLocaleString()}</p><p className="text-[13px] font-extrabold">this chunk</p></div>
     <div className="rounded-[18px] bg-gold p-3 text-on-gold shadow-[0_5px_0_var(--color-gold-shadow)]"><p className="font-display text-[24px] font-bold">{(meRow?.move??0)>0?`Up ${meRow!.move}`:(meRow?.move??0)<0?`Down ${-meRow!.move}`:`#${meRow?.rank}`}</p><p className="text-[13px] font-extrabold">now #{meRow?.rank} of 2</p></div>
     <div className="rounded-[18px] bg-panel p-3 text-ink shadow-[0_5px_0_#0B0920]"><p className="font-display text-[24px] font-bold">{record?.correct?<Check className="mx-auto" size={28} aria-hidden/>:<X className="mx-auto" size={28} aria-hidden/>}</p><p className="text-[13px] font-extrabold text-muted">{record?.correct?"found it":"missed"}</p></div>
-   </div>
-   {beat==="board"?<Leaderboard rows={board} meId="me" title="Top 5"/>:<>{world.world_map&&<div className="mt-4"><RaceMap world={world} expeditionId={expeditionId} stars={records.slice(0,k+1).map((r,i)=>r?.correct?(r.gist===null||gistPoints(chunks[i].chunk,r.gist)>0?3:2):0)} tokens={[{id:"me",name:"You",me:true}]} label={`Map: walking to ${k+1>=chunks.length?"the finale":`stop ${k+2}`}`}/></div>}<div className="mt-6"><CountdownRing ms={autoLeft} total={screenMs("countdown",timeSetting)} label={k+1>=chunks.length?"Final results":`Chunk ${k+2} of ${chunks.length}`}/></div></>}
+   </div>}
+   {beat==="board"?<><Leaderboard rows={board} meId="me" title="Top 5"/><p className="mt-3 text-center text-[16px] font-bold text-muted">Level 2 is next{arc?.boss!=null?", with the boss question":""}. First: a 60-second bonus challenge.</p></>:<>{world.world_map&&<div className="mt-4"><RaceMap world={world} expeditionId={expeditionId} stars={records.slice(0,k+1).map((r,i)=>r?.correct?(r.gist===null||gistPoints(chunks[i].chunk,r.gist)>0?3:2):0)} tokens={[{id:"me",name:"You",me:true}]} label={`Map: walking to ${k+1>=chunks.length?"the finale":`stop ${k+2}`}`}/></div>}<div className="mt-6"><CountdownRing ms={autoLeft} total={screenMs("countdown",timeSetting)} label={k+1>=chunks.length?"Final results":`Chunk ${k+2} of ${chunks.length}`}/></div></>}
    {paused&&<p className="mt-3 text-center text-[15px] text-muted">Paused. Take your time.</p>}
    {!paused&&<p aria-hidden className="mt-3 flex items-center justify-center gap-1.5 text-[13px] text-muted"><Timer size={14}/>Moving on in {Math.ceil(autoLeft/1000)}s</p>}
   </section>}

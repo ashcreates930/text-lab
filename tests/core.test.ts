@@ -2773,11 +2773,10 @@ test("proof race live: expedition beats, readiness, gist and question saving, on
   assert.equal(st.session.paused,false,"Next ends the pause");assert.equal((pub() as {paused?:boolean}).paused,false);
   assert.equal(pub().reveal!.pct,67);assert.deepEqual(pub().reveal!.words,[]);assert.ok(pub().reveal!.lines.length>0,"the proof is revealed as a sentence");
   assert.ok(tot(ids[0])>=1090&&tot(ids[0])<=1100,`fast right plus gist: ${tot(ids[0])}`);assert.equal(tot(ids[1]),0);assert.ok(tot(ids[2])>=990);
-  assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["board",5000]);
-  assert.equal(pub().board!.top[0].name,"Ana Ruiz");assert.equal(pub().board!.top.at(-1)!.name,"Ben Cole");
+  // After an answer: the result and each phone's rank move only; the full leaderboard waits for the checkpoint (tests/pacing.test.ts).
   assert.equal(server.playerView(st,ids[1]).race!.place!.rank,3);assert.equal(server.playerView(st,ids[1]).race!.place!.row.name,"Ben Cole","the phone gets its own row");
-  { const names=new Set(pub().board!.top.map(r=>r.name));assert.equal(names.size,pub().board!.top.length,"no duplicated names"); }
   assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["countdown",3000]);
+  assert.equal(pub().board,null,"no leaderboard after chunk 1");
   // The next chunk: before its reveal each phone shows the score through the last chunk (not 0, not the new points).
   { const was=ids.map(tot);assert.ok(was[0]>0);
     for(let k=0;k<6&&!(pub().step===1&&pub().beat==="race");k++)await host({action:"race.next"});
