@@ -8,18 +8,19 @@ import { join } from "node:path";
 
 export type MapSpec = {
   width: number; height: number; art_description: string;
-  places: { id: string; name: string; x: number; y: number; label_only?: boolean }[];
+  areas?: { id: string; name: string; x: number; y: number }[];
+  places: { id: string; name: string; x: number; y: number; label_only?: boolean; area?: string }[];
   expeditions: Record<string, { name: string; finale: string; twist?: number; boss?: number; secrets?: number[]; chunks: string[] }>;
 };
 type Pt = { x: number; y: number };
-const GOLDEN = Math.PI * (3 - Math.sqrt(5)), ROW = 4, GAP = 46, MIN_GAP = 40, BADGE = 70;
+const ROW = 4, GAP = 46, MIN_GAP = 40, BADGE = 84;
 
 // Lays out every stop. Pure, so tests can check it. Each expedition's run of chunks at one place snakes around that
 // place (rows of up to 4, 46 px apart); only one region's stops are drawn at a time, so expeditions that share a place
-// can overlap. The region's badge (label) sits at its main place, spread around it when several regions share it.
+// can overlap. The region's badge (label) sits at its main area (a place, or an area such as a farm's places together),
+// spread around it when several regions share it; ties go to where the expedition starts.
 export function layoutMap(spec: MapSpec, image: string) {
   const place = new Map(spec.places.map((p) => [p.id, p]));
-  const badgeUses = new Map<string, number>();
   const regions = Object.entries(spec.expeditions).map(([expedition, e]) => {
     const runs: { place: string; chunks: number[] }[] = [];
     e.chunks.forEach((p, k) => { const last = runs.at(-1); if (last && last.place === p) last.chunks.push(k + 1); else runs.push({ place: p, chunks: [k + 1] }); });
@@ -51,15 +52,21 @@ export function layoutMap(spec: MapSpec, image: string) {
       }
       if (!moved) break;
     }
-    // The badge: the place where most of this expedition happens.
-    const counts = new Map<string, number>(); for (const p of e.chunks) counts.set(p, (counts.get(p) ?? 0) + 1);
-    const main = [...counts.entries()].sort((x, y) => y[1] - x[1])[0][0], m = place.get(main)!, k = badgeUses.get(main) ?? 0; badgeUses.set(main, k + 1);
-    const label = { x: m.x + (k ? BADGE * Math.cos(k * GOLDEN * 2) : 0), y: m.y - BADGE * 0.9 + (k ? BADGE * Math.sin(k * GOLDEN * 2) : 0) };
-    return { expedition, name: e.name, label, stops, finale };
+    // The badge: the area (or place) where most of this expedition happens; a tie goes to where it starts.
+    const areaOf = (p: string) => place.get(p)?.area ?? p, counts = new Map<string, number>(); for (const p of e.chunks) counts.set(areaOf(p), (counts.get(areaOf(p)) ?? 0) + 1);
+    const main = [...counts.entries()].sort((x, y) => y[1] - x[1])[0][0];
+    return { expedition, name: e.name, area: main, label: { x: 0, y: 0 }, stops, finale };
   });
+  // Badges: alone at their area, or evenly round a circle wide enough that neighbours stay a tap target apart on a
+  // laptop or a projector (a phone merges them into one marker).
+  const byArea = new Map<string, typeof regions>(); for (const r of regions) byArea.set(r.area, [...(byArea.get(r.area) ?? []), r]);
+  for (const [area, list] of byArea) {
+    const m = spec.areas?.find((a) => a.id === area) ?? place.get(area)!, n = list.length, R = n > 1 ? Math.max(BADGE, BADGE / (2 * Math.sin(Math.PI / n))) : 0;
+    list.forEach((r, i) => { const a = -Math.PI / 2 + (i / n) * Math.PI * 2; r.label = { x: m.x + R * Math.cos(a), y: m.y - BADGE * 0.9 + R * Math.sin(a) }; });
+  }
   const clamp = (v: number, max: number) => Math.round(Math.min(max - 24, Math.max(24, v)));
   for (const r of regions) { for (const p of [...r.stops, r.finale, r.label]) { p.x = clamp(p.x, spec.width); p.y = clamp(p.y, spec.height); } }
-  return { image, width: spec.width, height: spec.height, art_description: spec.art_description, places: spec.places, regions };
+  return { image, width: spec.width, height: spec.height, art_description: spec.art_description, ...(spec.areas ? { areas: spec.areas } : {}), places: spec.places, regions };
 }
 
 

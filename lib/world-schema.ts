@@ -40,8 +40,9 @@ const expedition=z.object({id:z.string(),title:z.string().min(1),chunks:z.array(
 // boss question; finale: where Name the Liar is held. secret: a discovery found on a return visit.
 const mapPoint={x:z.number().min(0),y:z.number().min(0)};
 const worldMap=z.object({image:z.string().min(1),width:z.number().int().positive(),height:z.number().int().positive(),art_description:z.string().min(1),
-  places:z.array(z.object({id:z.string(),name:z.string().min(1),...mapPoint,label_only:z.boolean().optional()})).min(1),
-  regions:z.array(z.object({expedition:z.string(),name:z.string().min(1),label:z.object(mapPoint),
+  areas:z.array(z.object({id:z.string(),name:z.string().min(1),...mapPoint})).optional(),
+  places:z.array(z.object({id:z.string(),name:z.string().min(1),...mapPoint,label_only:z.boolean().optional(),area:z.string().optional()})).min(1),
+  regions:z.array(z.object({expedition:z.string(),name:z.string().min(1),area:z.string().optional(),label:z.object(mapPoint),
     stops:z.array(z.object({chunk:z.number().int().min(1),place:z.string(),...mapPoint,landmark:z.enum(["twist","boss"]).optional(),secret:z.boolean().optional()})).min(1),
     finale:z.object({place:z.string(),...mapPoint}).optional()}))});
 export type Expedition=z.infer<typeof expedition>;export type Interview=z.infer<typeof expedition>["interview"]&{};export type Witness=z.infer<typeof witness>;export type ExpChunk=z.infer<typeof expChunk>;export type ExpQuestion=z.infer<typeof expQuestion>;export type QuestionType=(typeof QUESTION_TYPES)[number];

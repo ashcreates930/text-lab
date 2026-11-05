@@ -123,3 +123,19 @@ test("screens: the map replaces the trail, with a list view, keyboard and screen
   // The asset script paints the base map.
   assert.match(src("scripts/generate-assets.ts"), /process\.argv\.includes\("--map"\)/);
 });
+
+test("crowded markers: the six Van Tassel farm expeditions share one area and merge into one marker with a picker on a phone", () => {
+  const farm = map.regions.filter((r) => r.area === "van-tassel-farm").map((r) => exps.findIndex((e) => e.id === r.expedition) + 1);
+  assert.deepEqual(farm, [4, 5, 6, 9, 10, 11]);
+  assert.equal(map.areas?.find((a) => a.id === "van-tassel-farm")?.name, "The Van Tassel farm");
+  // Badges round the farm are evenly spaced: about 61 screen px apart on a 1,120 px laptop map (separate), about 43 on a phone (merged at 46).
+  const farmRegions = map.regions.filter((r) => r.area === "van-tassel-farm");
+  let gap = Infinity; for (const a of farmRegions) for (const b of farmRegions) if (a !== b) gap = Math.min(gap, Math.hypot(a.label.x - b.label.x, a.label.y - b.label.y));
+  assert.ok(gap / (1536 / 1120) >= 46, `laptop: ${gap / (1536 / 1120)} px`); assert.ok(gap / (701 / 358) < 46, `phone: ${gap / (701 / 358)} px`);
+  const ui = src("app/world-map.tsx");
+  assert.match(ui, /const gap=46\*u/); assert.match(ui, /expeditions near \$\{place\}/); assert.match(ui, /role="dialog" aria-modal="false" aria-labelledby="wm-pick-h"/);
+  assert.match(ui, /if\(e\.key==="Escape"\)\{e\.preventDefault\(\);closePicker\(\)\}/); assert.match(ui, /\{g\.length\} expeditions<\/text>/);
+  assert.match(ui, /Proven, \$\{r\.stars\} of 3 stars/);
+  // An unknown area fails validation.
+  const bad = structuredClone(sh); bad.world_map!.regions[0].area = "nowhere"; assert.match(mapProblems(bad).join(" | "), /unknown area nowhere/);
+});

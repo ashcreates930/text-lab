@@ -9,6 +9,9 @@ import type { MapSpec } from "../build-map.ts";
 export const SPEC: MapSpec = {
   width: 1536, height: 1024,
   art_description: "An original hand-painted storybook map of the Sleepy Hollow countryside in New York's Hudson Valley around the year 1790, seen from above at a gentle three-quarter angle, at night under a bright full moon, lit by warm lantern and window glow. Deep indigo, violet and midnight-blue tones with amber and gold lights. Layout, which matters most: the broad Hudson River runs down the whole left edge of the picture, widening at the lower left into the wide Tappan Zee with one small moonlit sailboat. On the riverbank at the lower left, the small Dutch market village of Tarry Town with a tavern, a few houses and a little dock. On the riverbank at the upper left, the large prosperous Van Tassel farm: a long, low Dutch stone farmhouse with a deep front porch, a huge barn, an orchard, haystacks and a small spring under a great elm. In the center, a quiet green glen in a hollow between high wooded hills, with a small brook winding through it. In the lower center, a few small scattered farmhouses with lit windows and a little farm with a stable on the lower right. On the right side, near the bottom, a small log schoolhouse at the foot of a wooded hill beside the brook. A winding dirt road leaves the Van Tassel farm and runs to the right across the top of the map: beside it, standing alone, an enormous gnarled old tulip tree (top center); then a dark marshy swamp crossed by a small log bridge (top right); then the road curves down to a small white church on a knoll among trees on the right side, with a dark wooden bridge over the brook just below the church. Thinner roads link every place. Painterly and textured, rich but uncluttered, with wide areas of forest and hills between places. No people, no animals, no creatures, no ghosts. No text, no letters, no numbers, no labels, no compass rose, no legend and no border.",
+  // areas: places that belong together (the Van Tassel farm's barnyard, house, spring and parlor). An expedition's badge
+  // sits at the area where most of it happens, and crowded badges in one area merge into one marker on a phone.
+  areas: [{ id: "van-tassel-farm", name: "The Van Tassel farm", x: 430, y: 240 }],
   places: [
     { id: "tarry-town", name: "Tarry Town", x: 470, y: 800 },
     { id: "hudson", name: "The Hudson", x: 170, y: 520, label_only: true },
@@ -17,10 +20,10 @@ export const SPEC: MapSpec = {
     { id: "farmhouses", name: "Farmhouses where Ichabod boards", x: 800, y: 860 },
     { id: "fireside", name: "Fireside tales", x: 850, y: 770 },
     { id: "hans-farm", name: "Hans Van Ripper's farm", x: 1090, y: 830 },
-    { id: "vt-barnyard", name: "The Van Tassel barnyard", x: 560, y: 235 },
-    { id: "vt-house", name: "The Van Tassel farmhouse", x: 390, y: 205 },
-    { id: "vt-spring", name: "The spring under the elm", x: 460, y: 300 },
-    { id: "vt-parlor", name: "The Van Tassel parlor", x: 320, y: 250 },
+    { id: "vt-barnyard", name: "The Van Tassel barnyard", x: 560, y: 235, area: "van-tassel-farm" },
+    { id: "vt-house", name: "The Van Tassel farmhouse", x: 390, y: 205, area: "van-tassel-farm" },
+    { id: "vt-spring", name: "The spring under the elm", x: 460, y: 300, area: "van-tassel-farm" },
+    { id: "vt-parlor", name: "The Van Tassel parlor", x: 320, y: 250, area: "van-tassel-farm" },
     { id: "ride", name: "The road above the river", x: 640, y: 690 },
     { id: "andre-tree", name: "Major André's tree", x: 820, y: 250 },
     { id: "wiley-swamp", name: "Wiley's swamp", x: 1160, y: 315 },

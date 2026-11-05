@@ -7,7 +7,7 @@
 // with the arrow keys when the map has focus), zoom with the buttons or a pinch. Reduced motion: no walking, drifting
 // or pulsing. Rules: lib/world-map.ts. MapList is the same map as a list, for screen readers and keyboards.
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
-import {Crown,Lock,Minus,Plus,Sparkles,Star,Zap,Maximize2} from "lucide-react";
+import {Crown,Lock,Minus,Plus,Sparkles,Star,Zap,Maximize2,X} from "lucide-react";
 import type {MapRegionView,MapStopView,TokenAt,WorldMapData} from "@/lib/world-map";
 import {pointOf,raceRegions,raceTokenAt,regionFrame,trailOf} from "@/lib/world-map";
 import type {WorldPack} from "@/lib/world-schema";
@@ -96,6 +96,23 @@ export function WorldMap({map,regions,focus=null,onFocus,tokens=[],travel,onStop
 
  const placesHere=region?map.places.filter(p=>!p.label_only&&(region.stops.some(s=>s.place===p.id)||region.finale?.placeName===p.name)):map.places.filter(p=>p.label_only);
  const fog=region?[]:regions.filter(r=>r.state==="locked");
+ // Overview: region badges closer than a tap target on this screen merge into one marker with a count (the six
+ // expeditions at the Van Tassel farm on a phone); zooming in or a wider screen separates them again.
+ const groups=useMemo(()=>{if(region)return [];const gap=46*u,out:MapRegionView[][]=[];
+  // An area (the farm) merges as a whole when any two of its badges are too close; then anything else that is too close.
+  const areas=new Map<string,MapRegionView[]>();for(const r of regions)if(r.area)areas.set(r.area,[...(areas.get(r.area)??[]),r]);
+  const taken=new Set<string>();for(const g of areas.values())if(g.length>1&&g.some((a,i)=>g.some((b,j)=>j>i&&Math.hypot(a.label.x-b.label.x,a.label.y-b.label.y)<gap))){out.push([...g].sort((a,b)=>a.number-b.number));g.forEach(r=>taken.add(r.expedition))}
+  const left=regions.filter(r=>!taken.has(r.expedition));
+  while(left.length){const g=[left.shift()!];for(let i=0;i<g.length;i++)for(let j=left.length-1;j>=0;j--)if(Math.hypot(left[j].label.x-g[i].label.x,left[j].label.y-g[i].label.y)<gap)g.push(...left.splice(j,1));out.push(g.sort((a,b)=>a.number-b.number))}
+  return out},[region,regions,u]);
+ const grouped=new Set(groups.filter(g=>g.length>1).flat().map(r=>r.expedition));
+ const [picker,setPicker]=useState<string[]|null>(null);
+ const pickerFirst=useRef<HTMLButtonElement>(null),pickerFrom=useRef<Element|null>(null);
+ useEffect(()=>{if(picker)pickerFirst.current?.focus()},[picker]);
+ useEffect(()=>{if(region)setPicker(null)},[region]);
+ const closePicker=()=>{setPicker(null);(pickerFrom.current as HTMLElement|null)?.focus?.()};
+ const areaName=(g:MapRegionView[])=>{const a=g[0]?.area;return a&&g.every(r=>r.area===a)?map.areas?.find(x=>x.id===a)?.name??null:null};
+ const placeNear=(x:number,y:number)=>map.places.filter(p=>!p.label_only).reduce((a,p)=>Math.hypot(p.x-x,p.y-y)<Math.hypot(a.x-x,a.y-y)?p:a);
  return <div ref={wrap} className={`world-map relative overflow-hidden rounded-card bg-deep ${className}`}>
   <svg role="group" aria-label={label} tabIndex={interactive?0:-1} onKeyDown={keys} viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`} preserveAspectRatio="xMidYMid meet" className={`block h-full w-full select-none ${interactive?"cursor-grab touch-none active:cursor-grabbing":""} outline-none focus-visible:ring-4 focus-visible:ring-highlight`}
    onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
@@ -112,7 +129,16 @@ export function WorldMap({map,regions,focus=null,onFocus,tokens=[],travel,onStop
    {placesHere.map(p=>{const at=region?region.stops.filter(s=>s.place===p.id):[],x=at.length?at.reduce((a,s)=>a+s.x,0)/at.length:p.x,y=at.length?Math.max(...at.map(s=>s.y))+34*u:p.y;
     return <text key={p.id} x={x} y={y} textAnchor="middle" fontSize={(region?14:15)*u} className="map-label" aria-hidden>{p.name}</text>})}
    {/* Overview: one badge per region. Zoomed in: the other regions stay as small badges. */}
-   {regions.map(r=>{if(region&&r.expedition===region.expedition)return null;const small=!!region,R=(small?13:20)*u,cur=r.state==="current",locked=r.state==="locked";
+   {groups.filter(g=>g.length>1).map(g=>{const x=g.reduce((a,r)=>a+r.label.x,0)/g.length,y=g.reduce((a,r)=>a+r.label.y,0)/g.length,R=22*u,cur=g.some(r=>r.state==="current"),locked=g.every(r=>r.state==="locked"),ids=g.map(r=>r.expedition),place=areaName(g)??placeNear(x,y).name;
+    const open=(e:React.SyntheticEvent)=>{pickerFrom.current=e.currentTarget;setPicker(ids)};
+    return <g key={ids.join()} role="button" tabIndex={0} aria-haspopup="dialog" aria-label={`${g.length} expeditions near ${place}: ${g.map(r=>r.number).join(", ")}. Choose one.`} className="map-hit cursor-pointer outline-none" onClick={e=>{if(!dragged.current)open(e)}} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open(e)}}}>
+     <circle cx={x} cy={y} r={26*u} fill="transparent"/>
+     {cur&&<circle cx={x} cy={y} r={R*1.5} className="map-pulse" fill="none" stroke="var(--color-primary)" strokeWidth={3*u}/>}
+     <circle cx={x} cy={y} r={R} fill={cur?"var(--color-primary)":locked?"#3b3463":"var(--color-success)"} stroke={locked?"#8d84bd":"#fff7e6"} strokeWidth={2.5*u}/>
+     <text x={x} y={y+7*u} textAnchor="middle" fontSize={20*u} fontWeight={800} fill={cur?"var(--color-on-primary)":locked?"#e6e0ff":"var(--color-on-success)"} className="font-display">{g.length}</text>
+     <text x={x} y={y+R+15*u} textAnchor="middle" fontSize={13*u} className="map-label map-label-strong">{g.length} expeditions</text>
+    </g>})}
+   {regions.map(r=>{if(region&&r.expedition===region.expedition)return null;if(grouped.has(r.expedition))return null;const small=!!region,R=(small?13:20)*u,cur=r.state==="current",locked=r.state==="locked";
     return <g key={r.expedition} role="button" tabIndex={0} aria-label={regionLabel(r)} className="map-hit cursor-pointer outline-none" onClick={tap(()=>onFocus?.(r.expedition))} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();onFocus?.(r.expedition)}}}>
      <circle cx={r.label.x} cy={r.label.y} r={Math.max(R,22*u)} fill="transparent"/>
      {cur&&!small&&<circle cx={r.label.x} cy={r.label.y} r={R*1.55} className="map-pulse" fill="none" stroke="var(--color-primary)" strokeWidth={3*u}/>}
@@ -128,13 +154,23 @@ export function WorldMap({map,regions,focus=null,onFocus,tokens=[],travel,onStop
    {placed.map(({t,x,y,ox,oy})=>{// Tokens stand just above their stop, like a pin, so the stop stays readable.
     const w=walk&&walk.id===t.id?walk.p:null,R=(t.me?17:14)*u,cx=(w?.x??x)+(w?0:ox*u),cy=(w?.y??y)+(w?0:oy*u)-(R+12*u);
     return <g key={t.id} aria-label={`${t.me?"You":t.name}${t.glow?", proved this stop":""}`} role="img" className={t.me?"map-token-me":""}>
-     {t.glow&&<circle cx={cx} cy={cy} r={R*2.1} fill="url(#wm-glow)"/>}
+     {t.glow&&<circle cx={cx} cy={cy} r={R*2.8} fill="url(#wm-glow)"/>}
      <circle cx={cx} cy={cy+2*u} r={R} fill="rgba(0,0,0,.45)"/>
-     <circle cx={cx} cy={cy} r={R} fill="var(--color-reading)" stroke={t.me?"var(--color-primary)":t.glow?"var(--color-gold)":"#fff7e6"} strokeWidth={(t.me?4:2.5)*u}/>
+     <circle cx={cx} cy={cy} r={R} fill="var(--color-reading)" stroke={t.me?"var(--color-primary)":t.glow?"var(--color-gold)":"#fff7e6"} strokeWidth={(t.me||t.glow?4:2.5)*u}/>
      {t.portrait?<image href={t.portrait} x={cx-R+1.5*u} y={cy-R+1.5*u} width={(R-1.5*u)*2} height={(R-1.5*u)*2} clipPath="url(#wm-face)" preserveAspectRatio="xMidYMid slice"/>
       :<text x={cx} y={cy+5*u} textAnchor="middle" fontSize={(t.me?15:13)*u} fontWeight={800} fill="var(--color-reading-ink)" className="font-display">{t.me?"You".slice(0,1):t.name.slice(0,1).toUpperCase()}</text>}
     </g>})}
   </svg>
+  {picker&&(()=>{const list=picker.map(id=>regions.find(r=>r.expedition===id)!).filter(Boolean),c=list[0]?areaName(list)??placeNear(list.reduce((a,r)=>a+r.label.x,0)/list.length,list.reduce((a,r)=>a+r.label.y,0)/list.length).name:"";
+   return <div role="dialog" aria-modal="false" aria-labelledby="wm-pick-h" onKeyDown={e=>{if(e.key==="Escape"){e.preventDefault();closePicker()}}} className="absolute inset-x-2 bottom-2 z-10 max-h-[80%] overflow-y-auto rounded-card border border-edge bg-panel-2 p-3 shadow-[0_10px_30px_rgba(0,0,0,.45)]">
+    <div className="flex items-start justify-between gap-2"><p id="wm-pick-h" className="font-display text-[18px] font-bold leading-tight">{list.length} expeditions<span className="block text-[13px] font-semibold text-muted">near {c}</span></p>
+     <button type="button" onClick={closePicker} aria-label="Close" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-panel"><X size={18} aria-hidden/></button></div>
+    <ol className="mt-2 grid gap-1.5">{list.map((r,i)=><li key={r.expedition}><button ref={i===0?pickerFirst:undefined} type="button" onClick={()=>{setPicker(null);onFocus?.(r.expedition)}}
+     className={`flex min-h-11 w-full items-center gap-2 rounded-row px-3 py-2 text-left text-[15px] ${r.state==="current"?"bg-primary text-on-primary":"bg-panel text-ink"}`}>
+     <span aria-hidden className={`grid h-8 w-8 shrink-0 place-items-center rounded-full font-display font-bold ${r.state==="current"?"bg-on-primary text-highlight":r.state==="locked"?"bg-deep text-muted":"bg-success text-on-success"}`}>{r.state==="locked"?<Lock size={14}/>:r.number}</span>
+     <span className="min-w-0 flex-1"><span className="block font-bold leading-tight">Expedition {r.number}: {r.title}</span><span className={`block text-[13px] ${r.state==="current"?"":"text-muted"}`}>{r.state==="locked"?"Locked":r.state==="current"?"Your next expedition":`Proven, ${r.stars} of 3 stars`}</span></span>
+     {r.state==="proven"&&<span aria-hidden className="flex shrink-0">{[0,1,2].map(k=><Star key={k} size={14} className={k<r.stars?"fill-gold text-gold":"text-muted"}/>)}</span>}</button></li>)}</ol>
+   </div>})()}
   {interactive&&<div className="absolute right-2 top-2 flex flex-col gap-1.5">
    <button type="button" onClick={()=>zoom(0.75)} className="map-ctl" aria-label="Zoom in"><Plus size={20} aria-hidden/></button>
    <button type="button" onClick={()=>zoom(1.33)} className="map-ctl" aria-label="Zoom out"><Minus size={20} aria-hidden/></button>

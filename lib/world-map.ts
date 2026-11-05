@@ -15,7 +15,7 @@ export type WorldMapData = NonNullable<WorldPack["world_map"]>;
 export type MapRegionData = WorldMapData["regions"][number];
 export type MapStopState = "locked" | "ahead" | "next" | "proven";
 export type MapStopView = { chunk: number; x: number; y: number; place: string; placeName: string; state: MapStopState; stars: number; landmark: "twist" | "boss" | null; secret: "hidden" | "found" | null };
-export type MapRegionView = { expedition: string; number: number; title: string; name: string; state: StopState; stars: number; label: { x: number; y: number }; stops: MapStopView[]; finale: { x: number; y: number; placeName: string; state: MapStopState; solved: boolean | null } | null; assigned: { due: string | null } | null };
+export type MapRegionView = { expedition: string; number: number; title: string; name: string; area: string | null; state: StopState; stars: number; label: { x: number; y: number }; stops: MapStopView[]; finale: { x: number; y: number; placeName: string; state: MapStopState; solved: boolean | null } | null; assigned: { due: string | null } | null };
 export type TokenAt = { expedition: string; stop: number | "finale" };
 
 // Stars for one stop, from its first-attempt note.
@@ -40,7 +40,7 @@ export function worldMapView(world: WorldPack, attempts: ExpeditionAttempt[], as
         secret: s.secret && x.state === "proven" ? (secretsFound.includes(`${x.id}:${s.chunk}`) ? "found" : "hidden") : null };
     });
     const finale = exp.interview && r.finale ? { x: r.finale.x, y: r.finale.y, placeName: placeName(r.finale.place), state: (x.state === "proven" ? "proven" : x.state === "locked" ? "locked" : "ahead") as MapStopState, solved: x.solved } : null;
-    return { expedition: x.id, number: x.number, title: x.title, name: r.name, state: x.state, stars: x.stars, label: r.label, stops, finale, assigned: x.assigned };
+    return { expedition: x.id, number: x.number, title: x.title, name: r.name, area: r.area ?? null, state: x.state, stars: x.stars, label: r.label, stops, finale, assigned: x.assigned };
   });
 }
 
@@ -103,6 +103,9 @@ export function mapProblems(world: WorldPack): string[] {
     for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) if (Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y) < 20) out.push(`world_map: ${e.id} stops ${i + 1} and ${j + 1} overlap`);
   }
   for (const r of map.regions) if (!(world.expeditions ?? []).some((e) => e.id === r.expedition)) out.push(`world_map: region ${r.expedition} has no expedition`);
+  const areas = new Set(map.areas?.map((a) => a.id) ?? []);
+  for (const p of map.places) if (p.area && !areas.has(p.area)) out.push(`world_map: place ${p.id} is in an unknown area ${p.area}`);
+  for (const r of map.regions) if (r.area && !areas.has(r.area) && !places.has(r.area)) out.push(`world_map: region ${r.expedition} is in an unknown area ${r.area}`);
   return out;
 }
 
