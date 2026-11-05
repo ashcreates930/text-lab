@@ -162,6 +162,8 @@ test("screens: the solo cadence, banners, the rank pill, lightning, the burst, n
   const race = src("app/expedition-race.tsx"), live = src("app/live/race-live.tsx");
   assert.match(race, /function afterExtras\(\)\{go\(isCheckpoint\(k,chunks\.length\)\?"board":"countdown"\)\}/);
   assert.match(race, /Checkpoint: Level 1 complete/); assert.match(race, /<RankPill move=\{meRow\.move\}/);
+  // After chunk 1 there's no earlier rank: the pill shows the place only ("#1 of 2"), never "Held #1".
+  assert.match(race, /if\(first\)return <span[^>]*>#\{rank\} of \{of\}<\/span>/); assert.match(race, /first=\{meRow\.prevRank===null\}/); assert.match(live, /first=\{\(race\.place\.row/);
   assert.match(race, /Twist! \{speaker\?\?"A witness"\} interrupts with a new claim\./); assert.match(race, /Boss question · double points/); assert.match(race, /Surprise! Double points on this stop\./);
   assert.match(race, /export function LightningBeat/); assert.match(race, /export function DiscoveryBurst/); assert.match(race, /Streak bonus! \+\{record\.bonus\}/);
   assert.match(live, /Bonus: find this chunk's hidden discovery/, "early finishers get a bonus on the same chunk");

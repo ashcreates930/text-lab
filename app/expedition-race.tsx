@@ -170,7 +170,9 @@ export function ArcBanner({kind,speaker}:{kind:"twist"|"boss"|"double"|"warmup"|
  return <p role="status" className={`mt-2 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 font-display text-[15px] font-bold ${kind==="twist"?"bg-violet text-on-violet":"bg-gold text-on-gold"} ${reducedMotion()?"":"moment-pop"}`}>{text}</p>;
 }
 // After each answer: only the points and a small rank-move pill (the full leaderboard waits for the checkpoint).
-export function RankPill({move,rank,of}:{move:number;rank:number;of:number}){
+// first: no earlier rank to move from (after chunk 1), so just the place: "#1 of 2".
+export function RankPill({move,rank,of,first=false}:{move:number;rank:number;of:number;first?:boolean}){
+ if(first)return <span className="inline-flex items-center rounded-full bg-panel px-3 py-1 text-[14px] font-extrabold text-ink">#{rank} of {of}</span>;
  return <span className="inline-flex items-center gap-1.5 rounded-full bg-panel px-3 py-1 text-[14px] font-extrabold text-ink"><span className={move>0?"text-success":move<0?"text-muted":"text-ink"}>{move>0?`Up ${move}`:move<0?`Down ${-move}`:`Held #${rank}`}</span><span className="text-muted">· #{rank} of {of}</span></span>;
 }
 
@@ -330,7 +332,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
      <div className="moment-pop w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{info.name}{record.mult>1?" · Double points":""}{streak>1?` · Streak x${streak}`:""}</p><h1 id="ex-h" className="mt-1 text-[40px] leading-none outline-none">Proof!<span className="sr-only"> Plus {record.points} points.</span></h1><p className="mt-2 text-[16px] font-bold">{q.why}</p></div>
      {record.bonus>0&&<p role="status" className="moment-pop rounded-full bg-gold px-4 py-1.5 font-display text-[17px] font-bold text-on-gold">Streak bonus! +{record.bonus} for {streak} in a row</p>}</div>
     :<div className="notyet-shake mt-3 rounded-[24px] bg-notyet p-5 text-on-notyet shadow-[0_8px_0_var(--color-notyet-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{info.name}{record.late?" · Time's up":""}</p><h1 id="ex-h" className="mt-1 text-[36px] leading-none outline-none">Not yet.</h1><p className="mt-2 text-[17px] font-bold">You'll get another shot in the Refresher.</p></div>}
-   {meRow&&<p className="mt-3 flex justify-center"><RankPill move={meRow.move} rank={meRow.rank} of={board.length}/></p>}
+   {meRow&&<p className="mt-3 flex justify-center"><RankPill move={meRow.move} rank={meRow.rank} of={board.length} first={meRow.prevRank===null}/></p>}
    {q.type==="make_call"
     ?<><p className="mt-3 text-[13px] font-extrabold uppercase tracking-[.08em] text-highlight">{record.correct?"The proof":"Here's the proof"}</p><ReadingPanel className="mt-1" glossary={world.glossary} passages={callPassages as SourcePassage[]} results={shown.lines.map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/></>
     :<div className="mt-3"><ChunkText chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} shown={proofTokens(q,tokens,c.lines)} shownStyle={record.correct?"right":"missed"}/></div>}
