@@ -18289,35 +18289,41 @@
             "note": "Undertone: a low, quiet voice."
           },
           "question": {
-            "type": "between_lines",
-            "prompt": "What can you infer about how the evening's stories affect Ichabod?",
+            "type": "find_it",
+            "prompt": "Which line shows how Ichabod answered the old men's stories?",
             "keywords": [
-              "infer"
-            ],
-            "choices": [
-              {
-                "text": "They strike him as silly lies to ignore"
-              },
-              {
-                "text": "They are sinking in and stirring up his fears",
-                "best": true
-              },
-              {
-                "text": "They bore him while he waits for a chance to go home"
-              }
+              "answered"
             ],
             "proof": {
               "lines": [
-                "All these tales, told in that drowsy undertone with which men talk in\nthe dark, the countenances of the listeners only now and then receiving\na casual gleam from the glare of a pipe, sank deep in the mind of\nIchabod."
+                "He repaid them in kind with large extracts from his invaluable\nauthor, Cotton Mather, and added many marvellous events that had taken\nplace in his native State of Connecticut, and fearful sights which he\nhad seen in his nightly walks about Sleepy Hollow."
               ]
             },
-            "hint": "Where do the tales go?",
-            "why": "The tales, told in a drowsy undertone in the dark, sank deep in the mind of Ichabod.",
+            "hint": "Look for what he added from his own reading and walks.",
+            "why": "He repaid them in kind with extracts from Cotton Mather and fearful sights from his own nightly walks.",
             "standards": [
-              "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line shows the old men's words staying with Ichabod?",
+              "keywords": [
+                "staying with"
+              ],
+              "proof": {
+                "lines": [
+                  "All these tales, told in that drowsy undertone with which men talk in\nthe dark, the countenances of the listeners only now and then receiving\na casual gleam from the glare of a pipe, sank deep in the mind of\nIchabod."
+                ]
+              },
+              "hint": "Where did the tales sink?",
+              "why": "All these tales sank deep in the mind of Ichabod.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-lonely-road-02",
@@ -18348,22 +18354,73 @@
             "note": "Pillion: a cushion behind a rider's saddle for a second person."
           },
           "question": {
-            "type": "find_it",
-            "prompt": "Which line shows how some young women rode home?",
+            "type": "word_detective",
+            "prompt": "What are the pillions the young women ride on?",
             "keywords": [
-              "rode home"
+              "pillions"
+            ],
+            "focus": "pillions",
+            "choices": [
+              {
+                "text": "Small carts pulled by goats"
+              },
+              {
+                "text": "Lanterns carried on a pole"
+              },
+              {
+                "text": "Seats behind a rider on a horse",
+                "best": true
+              }
             ],
             "proof": {
               "lines": [
                 "Some of the\ndamsels mounted on pillions behind their favorite swains, and their\nlight-hearted laughter, mingling with the clatter of hoofs, echoed along\nthe silent woodlands, sounding fainter and fainter, until they gradually\ndied away,--and the late scene of noise and frolic was all silent and\ndeserted."
               ]
             },
-            "hint": "Look for who sat behind whom.",
-            "why": "Some of the damsels mounted on pillions behind their favorite swains.",
+            "hint": "Where do the young women sit?",
+            "why": "The damsels ride on pillions \"behind their favorite swains\": a pillion is a seat behind the rider.",
             "standards": [
+              "V.1.3",
               "K12.EE.1.1"
+            ],
+            "reviewed": true,
+            "clues": [
+              "behind their favorite swains"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "word_detective",
+              "prompt": "Which meaning of revel fits this chunk?",
+              "keywords": [
+                "revel"
+              ],
+              "focus": "revel",
+              "choices": [
+                {
+                  "text": "A neighbors' quarrel"
+                },
+                {
+                  "text": "A lively party",
+                  "best": true
+                },
+                {
+                  "text": "A church service"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Some of the\ndamsels mounted on pillions behind their favorite swains, and their\nlight-hearted laughter, mingling with the clatter of hoofs, echoed along\nthe silent woodlands, sounding fainter and fainter, until they gradually\ndied away,--and the late scene of noise and frolic was all silent and\ndeserted."
+                ]
+              },
+              "hint": "What was the scene full of before it went silent?",
+              "why": "When it breaks up, \"the late scene of noise and frolic\" goes silent: a revel is a lively party.",
+              "standards": [
+                "V.1.3",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-lonely-road-03",
@@ -18422,7 +18479,39 @@
               "R.1.3",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "whose_eyes",
+              "prompt": "How does the narrator guess that the talk with Katrina went badly?",
+              "keywords": [
+                "guess"
+              ],
+              "choices": [
+                {
+                  "text": "From the way Ichabod looks as he leaves",
+                  "best": true
+                },
+                {
+                  "text": "From a letter Katrina wrote to him"
+                },
+                {
+                  "text": "From what Brom told him the next day"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Something, however, I fear me, must have gone wrong, for he certainly\nsallied forth, after no very great interval, with an air quite desolate\nand chapfallen."
+                ]
+              },
+              "hint": "What does Ichabod look like coming out?",
+              "why": "Something must have gone wrong, for he sallied forth \"quite desolate and chapfallen.\"",
+              "standards": [
+                "R.1.3",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-lonely-road-04",
@@ -18454,7 +18543,7 @@
           },
           "question": {
             "type": "figure_it_out",
-            "prompt": "Read the words sacking a henroost. What kind of figurative language is this?",
+            "prompt": "Read the words \"sacking a henroost.\" What kind of figurative language is this?",
             "keywords": [
               "henroost"
             ],
@@ -18486,13 +18575,55 @@
                 }
               ]
             },
-            "hint": "Who sneaks out of a henhouse at night, and how do they look?",
-            "why": "He had the air of one who had been sacking a henroost rather than winning a heart: sneaking off in shame.",
+            "hint": "How would a chicken thief slip away? Compare that with a winning suitor.",
+            "why": "He steals away like a chicken thief rather than a man who won a lady's heart: ashamed and defeated.",
             "standards": [
               "R.3.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "figure_it_out",
+              "prompt": "The narrator asks whether Katrina was \"playing off any of her coquettish tricks.\" Which device is this?",
+              "keywords": [
+                "coquettish tricks"
+              ],
+              "focus": "playing off any of her coquettish tricks",
+              "choices": [
+                {
+                  "text": "Simile: Katrina is compared using like"
+                },
+                {
+                  "text": "Hyperbole: a huge exaggeration for fun"
+                },
+                {
+                  "text": "Rhetorical question: it hints, not tells",
+                  "best": true
+                }
+              ],
+              "choices2": {
+                "prompt": "What does it suggest?",
+                "options": [
+                  {
+                    "text": "Katrina wrote Ichabod a secret note"
+                  },
+                  {
+                    "text": "The narrator is sure of what happened"
+                  },
+                  {
+                    "text": "Katrina may have used him to stir Brom",
+                    "best": true
+                  }
+                ]
+              },
+              "hint": "Does the narrator answer his own question?",
+              "why": "He asks whether her encouragement was a sham to win his rival, then says only Heaven knows: he hints without telling.",
+              "standards": [
+                "R.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-lonely-road-05",
@@ -18523,35 +18654,87 @@
             "note": "Timothy: a grass grown for hay. The horse dreams of feasts."
           },
           "question": {
-            "type": "character_clue",
-            "prompt": "Which trait shows in how Ichabod treats Gunpowder now?",
-            "keywords": [
-              "trait"
-            ],
-            "choices": [
-              {
-                "text": "Angry and bitter, taking it out on his mount",
-                "best": true
-              },
-              {
-                "text": "Gentle and patient, softly stroking his mount"
-              },
-              {
-                "text": "Cheerful and proud, singing to his mount"
-              }
-            ],
-            "proof": {
-              "words": [
-                "several hearty cuffs and kicks"
+            "type": "shades",
+            "format": "dnd",
+            "dnd": {
+              "kind": "word_feeling",
+              "slots": [
+                {
+                  "id": "hope",
+                  "label": "Hopeful, before"
+                },
+                {
+                  "id": "bitter",
+                  "label": "Bitter, after"
+                }
+              ],
+              "items": [
+                {
+                  "id": "gloat",
+                  "text": "He had often gloated over the farm's wealth",
+                  "slot": "hope",
+                  "line": "Without looking to the right or left to notice the scene\nof rural wealth, on which he had so often gloated, he went straight to\nthe stable, and with several hearty cuffs and kicks roused his steed\nmost uncourteously from the comfortable quarters in which he was soundly\nsleeping, dreaming of mountains of corn and oats, and whole valleys of\ntimothy and clover."
+                },
+                {
+                  "id": "straight",
+                  "text": "He goes straight to the stable, looking neither way",
+                  "slot": "bitter",
+                  "line": "Without looking to the right or left to notice the scene\nof rural wealth, on which he had so often gloated, he went straight to\nthe stable, and with several hearty cuffs and kicks roused his steed\nmost uncourteously from the comfortable quarters in which he was soundly\nsleeping, dreaming of mountains of corn and oats, and whole valleys of\ntimothy and clover."
+                },
+                {
+                  "id": "cuffs",
+                  "text": "He rouses the horse with cuffs and kicks",
+                  "slot": "bitter",
+                  "line": "Without looking to the right or left to notice the scene\nof rural wealth, on which he had so often gloated, he went straight to\nthe stable, and with several hearty cuffs and kicks roused his steed\nmost uncourteously from the comfortable quarters in which he was soundly\nsleeping, dreaming of mountains of corn and oats, and whole valleys of\ntimothy and clover."
+                }
               ]
             },
-            "hint": "How does he wake the sleeping horse?",
-            "why": "He roused his steed most uncourteously, with several hearty cuffs and kicks.",
+            "prompt": "Sort each detail: does it show Ichabod's hopeful mood before the talk, or his bitter mood after?",
+            "keywords": [],
+            "hint": "Is the detail about what he used to do, or what he does now?",
+            "why": "He used to gloat over the farm's riches; now he looks neither left nor right and kicks his horse awake.",
             "standards": [
-              "R.1.1",
-              "K12.EE.1.1"
+              "V.1.3",
+              "R.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "shades",
+              "prompt": "Why might the narrator say he woke his horse \"most uncourteously\"?",
+              "keywords": [
+                "uncourteously"
+              ],
+              "focus": "most uncourteously",
+              "choices": [
+                {
+                  "text": "He wakes the horse with a gentle song"
+                },
+                {
+                  "text": "He lets the tired horse sleep on"
+                },
+                {
+                  "text": "He wakes the horse rudely and roughly",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Without looking to the right or left to notice the scene\nof rural wealth, on which he had so often gloated, he went straight to\nthe stable, and with several hearty cuffs and kicks roused his steed\nmost uncourteously from the comfortable quarters in which he was soundly\nsleeping, dreaming of mountains of corn and oats, and whole valleys of\ntimothy and clover."
+                ]
+              },
+              "hint": "How does he wake the horse?",
+              "why": "With several hearty cuffs and kicks: uncourteous means rude, with no manners at all.",
+              "standards": [
+                "V.1.3",
+                "R.3.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "several hearty cuffs and kicks"
+              ]
+            }
+          ]
         },
         {
           "id": "the-lonely-road-06",
@@ -18605,14 +18788,51 @@
                 "The hour was as dismal as himself."
               ]
             },
-            "hint": "How does the narrator describe the hour, compared with Ichabod?",
-            "why": "The hour was as dismal as himself: crestfallen means sad and let down.",
+            "hint": "What is the hour as dismal as?",
+            "why": "The hour was as dismal as himself: crestfallen means downcast after a disappointment.",
             "standards": [
               "V.1.3",
               "K12.EE.1.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "word_detective",
+              "prompt": "Which meaning of dusky fits the water below him?",
+              "keywords": [
+                "dusky"
+              ],
+              "focus": "dusky",
+              "choices": [
+                {
+                  "text": "Rough and stormy"
+                },
+                {
+                  "text": "Dark and dim",
+                  "best": true
+                },
+                {
+                  "text": "Bright and sparkling"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Far below\nhim the Tappan Zee spread its dusky and indistinct waste of waters, with\nhere and there the tall mast of a sloop, riding quietly at anchor under\nthe land."
+                ]
+              },
+              "hint": "Can he see the water clearly?",
+              "why": "The water is a \"dusky and indistinct waste\": dusky means dark and hard to see.",
+              "standards": [
+                "V.1.3",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "indistinct"
+              ]
+            }
+          ]
         },
         {
           "id": "the-lonely-road-07",
@@ -18663,7 +18883,28 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "catch_lie",
+              "prompt": "Katrina imagines his ride home. One detail is untrue. Tap the sentence that shows it.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "Now and then, too, the long-drawn crowing\nof a cock, accidentally awakened, would sound far, far off, from some\nfarmhouse away among the hills--but it was like a dreaming sound in his\near."
+                ]
+              },
+              "testimony": {
+                "speaker": "katrina-van-tassel",
+                "text": "Every creature was sound asleep. Not one sound broke the silence the whole way."
+              },
+              "hint": "What did he hear far off among the hills?",
+              "why": "Now and then the long-drawn crowing of a cock sounded far off among the hills.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-lonely-road-08",
@@ -18695,34 +18936,84 @@
           },
           "question": {
             "type": "theme_thread",
-            "prompt": "Which idea returns as Ichabod rides on by himself?",
-            "keywords": [
-              "by himself"
-            ],
-            "choices": [
-              {
-                "text": "Hard work always brings its own reward in the end"
-              },
-              {
-                "text": "True friends appear when you need them"
-              },
-              {
-                "text": "Tales heard by the fire now feed his terror in the dark",
-                "best": true
-              }
-            ],
+            "format": "written",
+            "written": {
+              "key_ideas": [
+                [
+                  "tale",
+                  "stor",
+                  "heard",
+                  "hear",
+                  "legend"
+                ],
+                [
+                  "fear",
+                  "terror",
+                  "scar",
+                  "fright",
+                  "haunt",
+                  "danger",
+                  "dread"
+                ]
+              ],
+              "model": "Frightening tales we hear can come back to haunt us, making ordinary darkness feel full of danger."
+            },
+            "prompt": "In one sentence, explain what Ichabod's lonely ride suggests about how the tales we hear shape our fears.",
+            "keywords": [],
             "proof": {
               "lines": [
                 "All the stories of ghosts and goblins that he had heard in the afternoon\nnow came crowding upon his recollection."
               ]
             },
-            "hint": "What comes back to him from the afternoon?",
-            "why": "All the stories of ghosts and goblins he had heard came crowding upon his recollection.",
+            "hint": "What comes crowding back as the night grows darker?",
+            "why": "All the ghost stories he heard come crowding upon his recollection: the tales now feed his terror.",
             "standards": [
               "R.1.2",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "theme_thread",
+              "format": "written",
+              "written": {
+                "key_ideas": [
+                  [
+                    "alone",
+                    "lonely",
+                    "dark",
+                    "night",
+                    "by himself",
+                    "isolat"
+                  ],
+                  [
+                    "mind",
+                    "imagin",
+                    "fear",
+                    "wild",
+                    "memor",
+                    "scare",
+                    "dread",
+                    "run"
+                  ]
+                ],
+                "model": "Being alone in the dark makes the mind run wild, turning every memory into a fear."
+              },
+              "prompt": "Using your own words, tell in one sentence what this chunk suggests about being alone at night.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "All the stories of ghosts and goblins that he had heard in the afternoon\nnow came crowding upon his recollection."
+                ]
+              },
+              "hint": "What does his mind do as he rides alone?",
+              "why": "He never felt so lonely and dismal, and every story comes crowding back: alone in the dark, the mind runs wild.",
+              "standards": [
+                "R.1.2",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-lonely-road-09",
@@ -18753,37 +19044,69 @@
             "note": "Gnarled: twisted and knotty."
           },
           "question": {
-            "type": "shades",
-            "prompt": "Why does the narrator say the tree towered instead of just stood?",
+            "type": "between_lines",
+            "prompt": "Why might people feel both respect and fear around the great tree?",
             "keywords": [
-              "towered"
+              "respect and fear"
             ],
-            "focus": "towered",
             "choices": [
               {
-                "text": "It shows the tree is leaning and about to fall over"
-              },
-              {
-                "text": "It shows the tree is enormous and looming over everything",
+                "text": "It is tied to a sad death and to eerie tales",
                 "best": true
               },
               {
-                "text": "It shows the tree is small, young and easy to miss"
+                "text": "It is the oldest tree the Dutch planted"
+              },
+              {
+                "text": "Its bark is used to cure sickness"
               }
             ],
             "proof": {
-              "words": [
-                "large enough to form trunks for ordinary trees"
+              "lines": [
+                "The common people regarded it with a\nmixture of respect and superstition, partly out of sympathy for the\nfate of its ill-starred namesake, and partly from the tales of strange\nsights, and doleful lamentations, told concerning it."
               ]
             },
-            "hint": "How big are its branches?",
-            "why": "Its limbs are large enough to form trunks for ordinary trees: it towers.",
+            "hint": "Whose fate is it named for, and what is told about it?",
+            "why": "People feel sympathy for the fate of Major André and fear from the tales of strange sights told about the tree.",
             "standards": [
-              "V.1.3",
-              "R.3.1"
+              "K12.EE.3.1",
+              "K12.EE.1.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "What does calling the tree \"a kind of landmark\" suggest?",
+              "keywords": [
+                "landmark"
+              ],
+              "choices": [
+                {
+                  "text": "Everyone in the area knows it",
+                  "best": true
+                },
+                {
+                  "text": "It marks a buried treasure"
+                },
+                {
+                  "text": "It is a dangerous place to stop"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "In the centre of the road\nstood an enormous tulip-tree, which towered like a giant above all the\nother trees of the neighborhood, and formed a kind of landmark."
+                ]
+              },
+              "hint": "What is a landmark used for?",
+              "why": "It towers above every other tree: a landmark everyone knows and finds their way by.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "the-lonely-road-10",
@@ -18814,22 +19137,106 @@
             "note": "His knees knock together in fear."
           },
           "question": {
-            "type": "find_it",
-            "prompt": "Which line explains the pale thing he spots in the tree?",
-            "keywords": [
-              "pale thing"
-            ],
-            "proof": {
-              "lines": [
-                "As he approached a little nearer, he thought he saw\nsomething white, hanging in the midst of the tree: he paused and ceased\nwhistling but, on looking more narrowly, perceived that it was a place\nwhere the tree had been scathed by lightning, and the white wood laid\nbare."
+            "type": "story_structure",
+            "format": "dnd",
+            "dnd": {
+              "kind": "cause_effect",
+              "slots": [
+                {
+                  "id": "wind",
+                  "label": "A blast of wind in the dry branches"
+                },
+                {
+                  "id": "scar",
+                  "label": "A lightning scar on the trunk"
+                },
+                {
+                  "id": "boughs",
+                  "label": "Two boughs rubbing together"
+                }
+              ],
+              "items": [
+                {
+                  "id": "answer",
+                  "text": "He thinks his whistle is answered",
+                  "slot": "wind",
+                  "line": "As Ichabod approached this fearful tree, he began to whistle; he thought\nhis whistle was answered; it was but a blast sweeping sharply through\nthe dry branches."
+                },
+                {
+                  "id": "white",
+                  "text": "He thinks something white hangs in the tree",
+                  "slot": "scar",
+                  "line": "As he approached a little nearer, he thought he saw\nsomething white, hanging in the midst of the tree: he paused and ceased\nwhistling but, on looking more narrowly, perceived that it was a place\nwhere the tree had been scathed by lightning, and the white wood laid\nbare."
+                },
+                {
+                  "id": "groan",
+                  "text": "He hears a groan and his teeth chatter",
+                  "slot": "boughs",
+                  "line": "Suddenly he heard a groan--his teeth chattered, and his knees\nsmote against the saddle: it was but the rubbing of one huge bough upon\nanother, as they were swayed about by the breeze."
+                }
               ]
             },
-            "hint": "Look for what lightning did.",
-            "why": "It was a place where lightning had scathed the tree and laid the white wood bare.",
+            "prompt": "Connect each real cause at the tree to the fright it gives Ichabod.",
+            "keywords": [],
+            "hint": "Each sentence gives a fright and then what it really was.",
+            "why": "The wind sounds like an answering whistle, the bare lightning scar looks like something white, and rubbing boughs groan.",
             "standards": [
-              "K12.EE.1.1"
+              "R.1.1",
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "story_structure",
+              "prompt": "What do all three frights at the tree turn out to be?",
+              "keywords": [
+                "turn out to be"
+              ],
+              "choices": [
+                {
+                  "text": "Real ghosts from the old fireside tales"
+                },
+                {
+                  "text": "Tricks played on him by Brom's gang"
+                },
+                {
+                  "text": "Ordinary sights and sounds of nature",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Suddenly he heard a groan--his teeth chattered, and his knees\nsmote against the saddle: it was but the rubbing of one huge bough upon\nanother, as they were swayed about by the breeze."
+                ]
+              },
+              "hint": "What was the groan, really?",
+              "why": "Each fright is something natural: wind, a lightning scar, and boughs rubbing in the breeze.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
+        }
+      ],
+      "lightning": [
+        {
+          "id": "mather",
+          "chunk": 1,
+          "after": 4,
+          "question": "Whose book did Ichabod quote from to repay the old men's tales?",
+          "answer": [
+            "He repaid them in kind with large extracts from his invaluable\nauthor, Cotton Mather, and added many marvellous events that had taken\nplace in his native State of Connecticut, and fearful sights which he\nhad seen in his nightly walks about Sleepy Hollow."
+          ]
+        },
+        {
+          "id": "tappan-zee",
+          "chunk": 6,
+          "after": 8,
+          "question": "What spread out far below him on the ride home?",
+          "answer": [
+            "Far below\nhim the Tappan Zee spread its dusky and indistinct waste of waters, with\nhere and there the tall mast of a sloop, riding quietly at anchor under\nthe land."
+          ]
         }
       ],
       "interview": {
@@ -18947,7 +19354,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line shows how dark the trees made the spot?",
+              "keywords": [
+                "how dark"
+              ],
+              "proof": {
+                "lines": [
+                  "On that side of the road where the brook entered the\nwood, a group of oaks and chestnuts, matted thick with wild grape-vines,\nthrew a cavernous gloom over it."
+                ]
+              },
+              "hint": "Look for oaks, chestnuts and grape-vines.",
+              "why": "Oaks and chestnuts matted with wild grape-vines threw a cavernous gloom over it.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-headless-horseman-02",
@@ -19007,7 +19433,40 @@
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "What does the detail about the schoolboy add to the scene?",
+              "keywords": [
+                "schoolboy"
+              ],
+              "choices": [
+                {
+                  "text": "Children like to play games at the stream"
+                },
+                {
+                  "text": "The school stands right beside the bridge"
+                },
+                {
+                  "text": "Even locals fear the spot alone at night",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "This has ever since been\nconsidered a haunted stream, and fearful are the feelings of the\nschoolboy who has to pass it alone after dark."
+                ]
+              },
+              "hint": "How does the boy feel passing it alone?",
+              "why": "Fearful are the feelings of the schoolboy who has to pass it alone after dark: everyone who knows the place dreads it.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "the-headless-horseman-03",
@@ -19056,17 +19515,49 @@
               }
             ],
             "proof": {
-              "words": [
-                "the perverse old animal made a lateral movement"
+              "lines": [
+                "As he approached the stream, his heart began to thump; he summoned up,\nhowever, all his resolution, gave his horse half a score of kicks in the\nribs, and attempted to dash briskly across the bridge; but instead of\nstarting forward, the perverse old animal made a lateral movement, and\nran broadside against the fence."
               ]
             },
             "hint": "What does the horse do instead of starting forward?",
-            "why": "Instead of starting forward, the perverse old animal made a lateral movement into the fence.",
+            "why": "The perverse old animal makes a sideways move and runs against the fence instead of crossing.",
             "standards": [
               "R.1.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "character_clue",
+              "prompt": "What does all his frantic effort show about Ichabod at the bridge?",
+              "keywords": [
+                "frantic effort"
+              ],
+              "choices": [
+                {
+                  "text": "He is desperate to get across fast",
+                  "best": true
+                },
+                {
+                  "text": "He is angry at the horse for no reason"
+                },
+                {
+                  "text": "He is calm and fully in control"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Ichabod, whose fears increased with the\ndelay, jerked the reins on the other side, and kicked lustily with the\ncontrary foot: it was all in vain; his steed started, it is true, but\nit was only to plunge to the opposite side of the road into a thicket of\nbrambles and alder bushes."
+                ]
+              },
+              "hint": "What happens to his fears as he waits?",
+              "why": "His fears increase with the delay, and he jerks the reins and kicks lustily, all in vain.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-headless-horseman-04",
@@ -19098,7 +19589,7 @@
           },
           "question": {
             "type": "figure_it_out",
-            "prompt": "Read the words like some gigantic monster ready to spring. What kind of figurative language is this?",
+            "prompt": "Read the words \"like some gigantic monster ready to spring.\" What kind of figurative language is this?",
             "keywords": [
               "gigantic monster"
             ],
@@ -19130,13 +19621,55 @@
                 }
               ]
             },
-            "hint": "Look for the word like. What does the shape seem about to do?",
-            "why": "Like some gigantic monster ready to spring: a simile making the shadow feel huge and threatening.",
+            "hint": "Look for the word like. What would a monster ready to spring do?",
+            "why": "The shape is compared to a monster gathered to pounce: huge, still and threatening.",
             "standards": [
               "R.3.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "figure_it_out",
+              "prompt": "The narrator writes \"a plashy tramp.\" Which device is this?",
+              "keywords": [
+                "plashy tramp"
+              ],
+              "focus": "a plashy tramp",
+              "choices": [
+                {
+                  "text": "Simile: the sound is compared using like"
+                },
+                {
+                  "text": "Personification: the brook walks"
+                },
+                {
+                  "text": "Onomatopoeia: the words copy a wet step",
+                  "best": true
+                }
+              ],
+              "choices2": {
+                "prompt": "What does Ichabod hear?",
+                "options": [
+                  {
+                    "text": "Something heavy stepping in wet ground",
+                    "best": true
+                  },
+                  {
+                    "text": "Rain pattering down on the old log bridge"
+                  },
+                  {
+                    "text": "A small frog jumping into the water"
+                  }
+                ]
+              },
+              "hint": "Say it out loud. What does it sound like?",
+              "why": "Plashy tramp sounds like a heavy foot splashing in mud: something large is moving by the brook.",
+              "standards": [
+                "R.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-headless-horseman-05",
@@ -19187,7 +19720,28 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "catch_lie",
+              "prompt": "Hans Van Ripper tells it another way. One detail is untrue. Tap the sentence that shows it.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "He received no reply."
+                ]
+              },
+              "testimony": {
+                "speaker": "hans-van-ripper",
+                "text": "The stranger answered him straight off and told him his name."
+              },
+              "hint": "What came back when Ichabod asked who it was?",
+              "why": "He received no reply.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-headless-horseman-06",
@@ -19218,37 +19772,97 @@
             "note": "Involuntary: without meaning to. He bursts into song from pure fear."
           },
           "question": {
-            "type": "shades",
-            "prompt": "Why does the narrator say Ichabod's voice is agitated instead of just loud?",
-            "keywords": [
-              "agitated"
-            ],
-            "focus": "agitated",
-            "choices": [
-              {
-                "text": "It shows he is shaken and nervous",
-                "best": true
-              },
-              {
-                "text": "It shows he is angry and ready to fight"
-              },
-              {
-                "text": "It shows he is bored and half asleep"
-              }
-            ],
-            "proof": {
-              "words": [
-                "shutting his eyes"
+            "type": "story_structure",
+            "format": "dnd",
+            "dnd": {
+              "kind": "order_events",
+              "slots": [
+                {
+                  "id": "1",
+                  "label": "First"
+                },
+                {
+                  "id": "2",
+                  "label": "Next"
+                },
+                {
+                  "id": "3",
+                  "label": "Then"
+                },
+                {
+                  "id": "4",
+                  "label": "Last"
+                }
+              ],
+              "items": [
+                {
+                  "id": "repeat",
+                  "text": "He asks again, in a shakier voice",
+                  "slot": "1",
+                  "line": "He repeated his demand in a still more agitated\nvoice."
+                },
+                {
+                  "id": "silence",
+                  "text": "Still there is no answer",
+                  "slot": "2",
+                  "line": "Still there was no answer."
+                },
+                {
+                  "id": "psalm",
+                  "text": "He shuts his eyes and bursts into a psalm",
+                  "slot": "3",
+                  "line": "Once more he cudgelled the sides\nof the inflexible Gunpowder, and, shutting his eyes, broke forth with\ninvoluntary fervor into a psalm tune."
+                },
+                {
+                  "id": "bound",
+                  "text": "The shape bounds into the middle of the road",
+                  "slot": "4",
+                  "line": "Just then the shadowy object of\nalarm put itself in motion, and with a scramble and a bound stood at\nonce in the middle of the road."
+                }
               ]
             },
-            "hint": "What does he do next with his eyes?",
-            "why": "Agitated means shaken: next he shuts his eyes and bursts into a psalm.",
+            "prompt": "Put the moments before the shape moves in order.",
+            "keywords": [],
+            "hint": "Follow the sentences one by one.",
+            "why": "He repeats his demand, gets no answer, sings a psalm with his eyes shut, and then the shape springs into the road.",
             "standards": [
-              "V.1.3",
-              "R.3.1"
-            ],
-            "reviewed": true
-          }
+              "R.1.1",
+              "K12.EE.3.1"
+            ]
+          },
+          "bank": [
+            {
+              "type": "story_structure",
+              "prompt": "What happens just as Ichabod begins his psalm?",
+              "keywords": [
+                "just as"
+              ],
+              "choices": [
+                {
+                  "text": "The shape leaps into the road",
+                  "best": true
+                },
+                {
+                  "text": "The shape calls him by name"
+                },
+                {
+                  "text": "The shape melts into the trees"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Just then the shadowy object of\nalarm put itself in motion, and with a scramble and a bound stood at\nonce in the middle of the road."
+                ]
+              },
+              "hint": "Read the sentence that starts \"Just then.\"",
+              "why": "Just then the shadowy object put itself in motion and stood at once in the middle of the road.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.3.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "the-headless-horseman-07",
@@ -19285,34 +19899,67 @@
           },
           "question": {
             "type": "between_lines",
-            "prompt": "What can you infer about the newcomer from the way he keeps up?",
+            "format": "multi",
+            "pick": 2,
+            "prompt": "Which two things make the stranger seem threatening?",
             "keywords": [
-              "infer"
+              "threatening"
             ],
             "choices": [
               {
-                "text": "He wants to race Ichabod for a prize"
-              },
-              {
-                "text": "He means to stay with Ichabod no matter what",
+                "text": "He keeps pace whenever Ichabod speeds up",
                 "best": true
               },
               {
-                "text": "He is lost in the dark and needs directions home"
+                "text": "He rides silently on the horse's blind side",
+                "best": true
+              },
+              {
+                "text": "He offers to guide Ichabod safely home"
+              },
+              {
+                "text": "He waves a lantern as a friendly greeting"
               }
             ],
-            "proof": {
-              "lines": [
-                "The\nstranger, however, quickened his horse to an equal pace."
-              ]
-            },
-            "hint": "What happens when Ichabod speeds up?",
-            "why": "The stranger quickened his horse to an equal pace: he will not be left behind.",
+            "hint": "What does he do, and what does he never do?",
+            "why": "He keeps aloof on Gunpowder's blind side without a word, and quickens his horse to match every change of pace.",
             "standards": [
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "What does the rider's keeping up suggest he wants?",
+              "keywords": [
+                "keeping up"
+              ],
+              "choices": [
+                {
+                  "text": "To race Ichabod for a bowl of punch"
+                },
+                {
+                  "text": "To stay with Ichabod no matter what",
+                  "best": true
+                },
+                {
+                  "text": "To ask the way home through the dark"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "The\nstranger, however, quickened his horse to an equal pace."
+                ]
+              },
+              "hint": "What happens each time Ichabod tries to leave him behind?",
+              "why": "When Ichabod quickens his steed to leave him behind, the stranger quickens his horse to an equal pace.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-headless-horseman-08",
@@ -19362,18 +20009,52 @@
               }
             ],
             "proof": {
-              "words": [
-                "did the same"
+              "lines": [
+                "Ichabod pulled\nup, and fell into a walk, thinking to lag behind,--the other did the\nsame."
               ]
             },
-            "hint": "What does the companion do when Ichabod slows down?",
-            "why": "When Ichabod lagged behind, the other did the same: a companion who stubbornly sticks close.",
+            "hint": "What does the companion do every time Ichabod changes pace?",
+            "why": "Whenever Ichabod slows, \"the other did the same\": pertinacious means stubbornly holding on.",
             "standards": [
               "V.1.3",
               "K12.EE.1.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "word_detective",
+              "prompt": "Which meaning of dogged fits the stranger's silence?",
+              "keywords": [
+                "dogged"
+              ],
+              "focus": "dogged",
+              "choices": [
+                {
+                  "text": "Stubborn and unbroken",
+                  "best": true
+                },
+                {
+                  "text": "Barking loudly and noisily"
+                },
+                {
+                  "text": "Friendly, warm and chatty"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Ichabod pulled\nup, and fell into a walk, thinking to lag behind,--the other did the\nsame."
+                ]
+              },
+              "hint": "Does the companion ever give up or speak?",
+              "why": "He copies every move and never says a word: a dogged silence is stubborn and unbroken.",
+              "standards": [
+                "V.1.3",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "the-headless-horseman-09",
@@ -19405,34 +20086,88 @@
           },
           "question": {
             "type": "theme_thread",
-            "prompt": "Which idea about Ichabod reaches its peak in this chase?",
-            "keywords": [
-              "chase"
-            ],
-            "choices": [
-              {
-                "text": "His bravery makes him a hero at last"
-              },
-              {
-                "text": "His belief in ghost tales turns into pure terror",
-                "best": true
-              },
-              {
-                "text": "His greed finally wins him a fortune and a farm"
-              }
-            ],
+            "format": "written",
+            "written": {
+              "key_ideas": [
+                [
+                  "fear",
+                  "terror",
+                  "panic",
+                  "scar",
+                  "dread",
+                  "fright"
+                ],
+                [
+                  "take over",
+                  "grow",
+                  "control",
+                  "desperat",
+                  "reckless",
+                  "wild",
+                  "overwhelm",
+                  "swallow",
+                  "consume",
+                  "think"
+                ]
+              ],
+              "model": "Fear can grow until it takes over completely, driving a person to desperate, reckless action."
+            },
+            "prompt": "In one sentence, explain what the chase suggests about how fear can take over a person.",
+            "keywords": [],
             "proof": {
               "lines": [
                 "His terror rose to desperation; he rained a shower of kicks and\nblows upon Gunpowder, hoping by a sudden movement to give his companion\nthe slip; but the spectre started full jump with him."
               ]
             },
-            "hint": "What has his fear grown into?",
-            "why": "His terror rose to desperation: every tale he believed has come to life.",
+            "hint": "What does his terror rise to?",
+            "why": "His terror rises to desperation, and he rains kicks and blows on Gunpowder: fear takes over completely.",
             "standards": [
               "R.1.2",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "theme_thread",
+              "format": "written",
+              "written": {
+                "key_ideas": [
+                  [
+                    "believ",
+                    "belief",
+                    "ghost",
+                    "stor",
+                    "tale",
+                    "superstit"
+                  ],
+                  [
+                    "panic",
+                    "terror",
+                    "fear",
+                    "scar",
+                    "desperat",
+                    "flee",
+                    "run",
+                    "worse"
+                  ]
+                ],
+                "model": "Believing too strongly in ghost stories can turn a frightening moment into pure panic."
+              },
+              "prompt": "Using your own words, tell in one sentence what this chase suggests about believing in ghost stories.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "His terror rose to desperation; he rained a shower of kicks and\nblows upon Gunpowder, hoping by a sudden movement to give his companion\nthe slip; but the spectre started full jump with him."
+                ]
+              },
+              "hint": "Think of all the tales he heard that evening.",
+              "why": "Full of the evening's tales, he believes the spectre is real and his terror rises to desperation.",
+              "standards": [
+                "R.1.2",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-headless-horseman-10",
@@ -19463,22 +20198,106 @@
             "note": "The horse acts as if a demon were driving it."
           },
           "question": {
-            "type": "find_it",
-            "prompt": "Which line shows Gunpowder heading the other way from home?",
-            "keywords": [
-              "other way"
-            ],
-            "proof": {
-              "lines": [
-                "They had now reached the road which turns off to Sleepy Hollow; but\nGunpowder, who seemed possessed with a demon, instead of keeping up it,\nmade an opposite turn, and plunged headlong downhill to the left."
+            "type": "story_structure",
+            "format": "dnd",
+            "dnd": {
+              "kind": "order_events",
+              "slots": [
+                {
+                  "id": "1",
+                  "label": "First"
+                },
+                {
+                  "id": "2",
+                  "label": "Next"
+                },
+                {
+                  "id": "3",
+                  "label": "Last"
+                }
+              ],
+              "items": [
+                {
+                  "id": "reach",
+                  "text": "They reach the road to Sleepy Hollow",
+                  "slot": "1",
+                  "line": "They had now reached the road which turns off to Sleepy Hollow; but\nGunpowder, who seemed possessed with a demon, instead of keeping up it,\nmade an opposite turn, and plunged headlong downhill to the left."
+                },
+                {
+                  "id": "turn",
+                  "text": "Gunpowder turns the opposite way, downhill",
+                  "slot": "2",
+                  "line": "They had now reached the road which turns off to Sleepy Hollow; but\nGunpowder, who seemed possessed with a demon, instead of keeping up it,\nmade an opposite turn, and plunged headlong downhill to the left."
+                },
+                {
+                  "id": "bridge",
+                  "text": "The road leads on toward the goblin bridge",
+                  "slot": "3",
+                  "line": "This\nroad leads through a sandy hollow shaded by trees for about a quarter\nof a mile, where it crosses the bridge famous in goblin story; and just\nbeyond swells the green knoll on which stands the whitewashed church."
+                }
               ]
             },
-            "hint": "Which way does he go at the road to Sleepy Hollow?",
-            "why": "Instead of keeping up the road to Sleepy Hollow, he plunged headlong downhill to the left.",
+            "prompt": "Put the end of the chase in order.",
+            "keywords": [],
+            "hint": "Which road should they take, and which do they take?",
+            "why": "They reach the Sleepy Hollow road, Gunpowder plunges the other way downhill, and that road leads to the bridge famous in goblin story.",
             "standards": [
-              "K12.EE.1.1"
+              "R.1.1",
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "story_structure",
+              "prompt": "Why is Gunpowder's wrong turn bad news for Ichabod?",
+              "keywords": [
+                "wrong turn"
+              ],
+              "choices": [
+                {
+                  "text": "It heads to the bridge of goblin tales",
+                  "best": true
+                },
+                {
+                  "text": "It leads back to the Van Tassel farm"
+                },
+                {
+                  "text": "It ends at a deep, wide river"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "This\nroad leads through a sandy hollow shaded by trees for about a quarter\nof a mile, where it crosses the bridge famous in goblin story; and just\nbeyond swells the green knoll on which stands the whitewashed church."
+                ]
+              },
+              "hint": "What does this road cross?",
+              "why": "The road crosses \"the bridge famous in goblin story,\" right where the Horseman is said to ride.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
+        }
+      ],
+      "lightning": [
+        {
+          "id": "logs",
+          "chunk": 1,
+          "after": 4,
+          "question": "What served as the bridge at Wiley's Swamp?",
+          "answer": [
+            "A few rough logs, laid side by side, served for a bridge\nover this stream."
+          ]
+        },
+        {
+          "id": "psalm",
+          "chunk": 6,
+          "after": 8,
+          "question": "What did Ichabod burst into, with his eyes shut?",
+          "answer": [
+            "Once more he cudgelled the sides\nof the inflexible Gunpowder, and, shutting his eyes, broke forth with\ninvoluntary fervor into a psalm tune."
+          ]
         }
       ],
       "interview": {
@@ -21897,8 +22716,6 @@
   },
   "expedition_rules": {
     "arc_pending": [
-      "the-lonely-road",
-      "the-headless-horseman",
       "gone",
       "the-postscript"
     ]
