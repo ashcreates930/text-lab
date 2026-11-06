@@ -60,7 +60,7 @@ export const SPEC: MapSpec = {
       chunks: ["wiley-swamp", "wiley-swamp", "wiley-swamp", "wiley-swamp", "wiley-swamp", "wiley-swamp", "hollow-road", "hollow-road", "hollow-road", "hollow-road"] },
     "gone": { name: "Gone", finale: "brook", twist: 3, boss: 7, secrets: [7],
       chunks: ["hollow-road", "hollow-road", "church-bridge", "church-bridge", "church-bridge", "hans-farm", "brook", "hans-farm", "hans-farm", "schoolhouse"] },
-    "the-postscript": { name: "The postscript", finale: "city", twist: 6, boss: 3, secrets: [],
+    "the-postscript": { name: "The postscript", finale: "city", twist: 4, boss: 6, secrets: [],
       chunks: ["city", "vt-house", "schoolhouse", "city", "city", "city", "city"] },
   },
 };

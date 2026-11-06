@@ -85,7 +85,7 @@ test("scoring: two-step questions need the right answer AND the right proof; one
     // Word-level taps no longer count: the proof is the sentence.
     assert.equal(scoreAnswer(q, { choice: best(q.choices), words: [0, 1, 2] }, tokens, 1000, lim).points, 0, `${t}: words are not a proof`);
   }
-  for (const t of ["between_lines", "theme_thread"]) {
+  for (const t of ["between_lines", "character_clue"]) {
     const { q, tokens, c } = byType(t);
     assert.ok(scoreAnswer(q, { choice: best(q.choices), lines: [q.proof!.lines![0]] }, tokens, 1000, lim).correct, t);
     assert.equal(scoreAnswer(q, { choice: wrong(q.choices), lines: [q.proof!.lines![0]] }, tokens, 1000, lim).points, 0, t);
@@ -177,9 +177,10 @@ test("text evidence is a whole sentence everywhere: the UI taps sentences, no wo
   assert.match(race, /Tap the sentence that proves it\. Tap it again to clear it\./);
   assert.match(race, /Choose this sentence/, "Look closer steps through sentences");
   assert.match(after, /Tap the sentence that proves it, then lock in\./);
-  // The focus word never sits in the accepted sentence (or the tap would give it away); a single-sentence chunk is exempt.
+  // The focus word never sits in the accepted sentence (or the tap would give it away); a single-sentence chunk is exempt,
+  // and so is a vocabulary question that asks for the clue words instead of the sentence.
   for (const e of sh.expeditions!) { const cs = expeditionChunks(sh, shp, e.id);
-    e.chunks.forEach((x, k) => { const q = x.question; if (!q.focus || cs[k].lines.length < 2) return; const t = chunkTokens(cs[k].lines), r = phraseRange(t, q.focus); if (!r) return;
+    e.chunks.forEach((x, k) => { const q = x.question; if (!q.focus || q.clues?.length || cs[k].lines.length < 2) return; const t = chunkTokens(cs[k].lines), r = phraseRange(t, q.focus); if (!r) return;
       assert.ok(!proofLineIndexes(q, t).includes(t[r[0]].line), `${e.id} chunk ${k + 1}: focus "${q.focus}" is in the proof sentence`); }); }
 });
 

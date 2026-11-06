@@ -20415,7 +20415,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line shows how Ichabod kept from tumbling off?",
+              "keywords": [
+                "tumbling off"
+              ],
+              "proof": {
+                "lines": [
+                  "He seized it by the pommel, and endeavored to hold it firm,\nbut in vain; and had just time to save himself by clasping old Gunpowder\nround the neck, when the saddle fell to the earth, and he heard it\ntrampled under foot by his pursuer."
+                ]
+              },
+              "hint": "What does he grab hold of?",
+              "why": "He had just time to save himself by clasping old Gunpowder round the neck.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "gone-02",
@@ -20474,7 +20493,40 @@
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "What does the aside \"(unskilful rider that he was!)\" suggest about the chase?",
+              "keywords": [
+                "unskilful rider"
+              ],
+              "choices": [
+                {
+                  "text": "He is the finest rider in the valley"
+                },
+                {
+                  "text": "He is riding a horse for the first time"
+                },
+                {
+                  "text": "Staying on the horse is a struggle for him",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "For a moment the terror of Hans Van\nRipper’s wrath passed across his mind,--for it was his Sunday saddle;\nbut this was no time for petty fears; the goblin was hard on his\nhaunches; and (unskilful rider that he was!) he had much ado to maintain\nhis seat; sometimes slipping on one side, sometimes on another, and\nsometimes jolted on the high ridge of his horse’s backbone, with a\nviolence that he verily feared would cleave him asunder."
+                ]
+              },
+              "hint": "How well does he keep his seat?",
+              "why": "He has much ado to keep his seat, slipping from side to side and jolted on the horse's backbone.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "gone-03",
@@ -20525,7 +20577,28 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "catch_lie",
+              "prompt": "Katrina imagines his flight. One detail is untrue. Tap the sentence that shows it.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "He saw the walls\nof the church dimly glaring under the trees beyond."
+                ]
+              },
+              "testimony": {
+                "speaker": "katrina-van-tassel",
+                "text": "In that darkness he had no idea where he was. He never even saw the church."
+              },
+              "hint": "What did he see beyond the trees?",
+              "why": "He saw the walls of the church dimly glaring under the trees beyond.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "gone-04",
@@ -20557,34 +20630,67 @@
           },
           "question": {
             "type": "between_lines",
-            "prompt": "What can you infer about Ichabod's danger at this moment?",
+            "format": "multi",
+            "pick": 2,
+            "prompt": "Which two details show how close the pursuer has come?",
             "keywords": [
-              "infer"
+              "how close"
             ],
             "choices": [
               {
-                "text": "The pursuer is right on his heels",
+                "text": "It stops to drink at the brook"
+              },
+              {
+                "text": "Ichabod hears it panting right behind him",
                 "best": true
               },
               {
-                "text": "The pursuer has fallen far behind him"
+                "text": "He imagines he feels its hot breath",
+                "best": true
               },
               {
-                "text": "The pursuer has turned off toward the church"
+                "text": "He sees it far back beside the church"
               }
             ],
-            "proof": {
-              "lines": [
-                "Just then he heard\nthe black steed panting and blowing close behind him; he even fancied\nthat he felt his hot breath."
-              ]
-            },
-            "hint": "How close does he hear the black steed?",
-            "why": "He hears the black steed panting close behind and even fancies he feels its hot breath.",
+            "hint": "What can he hear and feel?",
+            "why": "He hears the black steed panting and blowing close behind him, and even fancies he feels its hot breath.",
             "standards": [
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "Why does Ichabod glance over his shoulder once he has crossed?",
+              "keywords": [
+                "glance over his shoulder"
+              ],
+              "choices": [
+                {
+                  "text": "He wants to wave goodbye to Katrina's house"
+                },
+                {
+                  "text": "He hopes to spot his fallen saddle"
+                },
+                {
+                  "text": "He expects the goblin to vanish, as in the tales",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Another convulsive kick in the ribs, and\nold Gunpowder sprang upon the bridge; he thundered over the resounding\nplanks; he gained the opposite side; and now Ichabod cast a look behind\nto see if his pursuer should vanish, according to rule, in a flash of\nfire and brimstone."
+                ]
+              },
+              "hint": "What is supposed to happen \"according to rule\"?",
+              "why": "He looks to see if his pursuer will vanish, according to rule, in a flash of fire and brimstone, as in Brom's tale.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "gone-05",
@@ -20615,46 +20721,96 @@
             "note": "Missile: something thrown. The head becomes a weapon."
           },
           "question": {
-            "type": "figure_it_out",
-            "prompt": "Read the words passed by like a whirlwind. What kind of figurative language is this?",
-            "keywords": [
-              "whirlwind"
-            ],
-            "focus": "passed by like a whirlwind",
-            "choices": [
-              {
-                "text": "Simile: the riders rush past like a whirlwind",
-                "best": true
-              },
-              {
-                "text": "Metaphor: the riders are called a storm, without like"
-              },
-              {
-                "text": "Onomatopoeia: the words copy the sound of wind"
-              }
-            ],
-            "choices2": {
-              "prompt": "What does it mean?",
-              "options": [
+            "type": "story_structure",
+            "format": "dnd",
+            "dnd": {
+              "kind": "order_events",
+              "slots": [
                 {
-                  "text": "A real tornado strikes the bridge and the church"
+                  "id": "1",
+                  "label": "First"
                 },
                 {
-                  "text": "The riders slowly circle around Ichabod"
+                  "id": "2",
+                  "label": "Next"
                 },
                 {
-                  "text": "The horses and rider race past in a sudden, wild rush",
-                  "best": true
+                  "id": "3",
+                  "label": "Then"
+                },
+                {
+                  "id": "4",
+                  "label": "Last"
+                }
+              ],
+              "items": [
+                {
+                  "id": "rise",
+                  "text": "The goblin rises in his stirrups to throw his head",
+                  "slot": "1",
+                  "line": "Just then he saw the goblin rising in his stirrups,\nand in the very act of hurling his head at him."
+                },
+                {
+                  "id": "dodge",
+                  "text": "Ichabod tries to dodge, too late",
+                  "slot": "2",
+                  "line": "Ichabod endeavored to\ndodge the horrible missile, but too late."
+                },
+                {
+                  "id": "crash",
+                  "text": "It strikes him with a tremendous crash",
+                  "slot": "3",
+                  "line": "It encountered his cranium\nwith a tremendous crash,--he was tumbled headlong into the dust, and\nGunpowder, the black steed, and the goblin rider, passed by like a\nwhirlwind."
+                },
+                {
+                  "id": "whirl",
+                  "text": "The horses and rider sweep past like a whirlwind",
+                  "slot": "4",
+                  "line": "It encountered his cranium\nwith a tremendous crash,--he was tumbled headlong into the dust, and\nGunpowder, the black steed, and the goblin rider, passed by like a\nwhirlwind."
                 }
               ]
             },
-            "hint": "Look for the word like. How fast and wild is a whirlwind?",
-            "why": "Like a whirlwind: everything sweeps past in a sudden, violent rush.",
+            "prompt": "Put the goblin's attack in order.",
+            "keywords": [],
+            "hint": "Follow the three sentences from start to finish.",
+            "why": "The goblin rises and hurls his head, Ichabod's dodge comes too late, it crashes against him, and everything sweeps past like a whirlwind.",
             "standards": [
-              "R.3.1"
-            ],
-            "reviewed": true
-          }
+              "R.1.1",
+              "K12.EE.3.1"
+            ]
+          },
+          "bank": [
+            {
+              "type": "story_structure",
+              "prompt": "What finally knocks Ichabod to the ground?",
+              "keywords": [
+                "knocks"
+              ],
+              "choices": [
+                {
+                  "text": "The head the goblin hurls at him",
+                  "best": true
+                },
+                {
+                  "text": "A low branch over the bridge"
+                },
+                {
+                  "text": "Gunpowder bucking him off"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "It encountered his cranium\nwith a tremendous crash,--he was tumbled headlong into the dust, and\nGunpowder, the black steed, and the goblin rider, passed by like a\nwhirlwind."
+                ]
+              },
+              "hint": "What hits his cranium?",
+              "why": "The horrible missile meets his cranium with a tremendous crash and he tumbles headlong into the dust.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "gone-06",
@@ -20703,17 +20859,50 @@
               }
             ],
             "proof": {
-              "words": [
-                "the fate of poor Ichabod, and his saddle"
+              "lines": [
+                "Hans\nVan Ripper now began to feel some uneasiness about the fate of poor\nIchabod, and his saddle."
               ]
             },
-            "hint": "What two things is he uneasy about?",
-            "why": "He began to feel some uneasiness about the fate of poor Ichabod, and his saddle.",
+            "hint": "What is he uneasy about, besides Ichabod?",
+            "why": "He begins to feel uneasy about the fate of poor Ichabod, and his saddle: worried, but not only for his boarder.",
             "standards": [
               "R.1.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "character_clue",
+              "prompt": "What does Gunpowder's behavior the next morning suggest about him?",
+              "keywords": [
+                "next morning"
+              ],
+              "choices": [
+                {
+                  "text": "He is badly hurt and cannot stand up"
+                },
+                {
+                  "text": "He is calm, as if nothing much happened",
+                  "best": true
+                },
+                {
+                  "text": "He is wild and still running in terror"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "The next morning the old horse was found without his saddle, and with\nthe bridle under his feet, soberly cropping the grass at his master’s\ngate."
+                ]
+              },
+              "hint": "What is he doing at the gate?",
+              "why": "He is found soberly cropping the grass at his master's gate: quite untroubled.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "gone-07",
@@ -20745,34 +20934,90 @@
           },
           "question": {
             "type": "theme_thread",
-            "prompt": "Which idea about the mystery keeps the story open?",
-            "keywords": [
-              "mystery"
-            ],
-            "choices": [
-              {
-                "text": "The clues show Ichabod simply moved away happily"
-              },
-              {
-                "text": "The clues could point to a ghost or to a human trick",
-                "best": true
-              },
-              {
-                "text": "Every clue proves beyond doubt that the ghost is real"
-              }
-            ],
+            "format": "written",
+            "written": {
+              "key_ideas": [
+                [
+                  "clue",
+                  "evidence",
+                  "hat",
+                  "pumpkin",
+                  "sign",
+                  "proof",
+                  "track"
+                ],
+                [
+                  "different",
+                  "explain",
+                  "more than one",
+                  "believ",
+                  "choose",
+                  "interpret",
+                  "read",
+                  "ways",
+                  "decide",
+                  "expect"
+                ]
+              ],
+              "model": "The same clues can be explained in different ways, and people tend to choose the explanation they already believe."
+            },
+            "prompt": "In one sentence, explain what this mystery suggests about how people interpret evidence.",
+            "keywords": [],
             "proof": {
               "lines": [
                 "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin."
               ]
             },
-            "hint": "Look at what lies beside the hat. Is it a ghost's head?",
-            "why": "Hoofprints, a hat and a shattered pumpkin: the evidence fits the ghost story and a prankster just as well.",
+            "hint": "Could a hat and a shattered pumpkin mean more than one thing?",
+            "why": "A trampled saddle, hoofprints, a hat and a shattered pumpkin could point to a ghost or to a trick: the clues alone don't decide it.",
             "standards": [
               "R.1.2",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "theme_thread",
+              "format": "written",
+              "written": {
+                "key_ideas": [
+                  [
+                    "mystery",
+                    "unknown",
+                    "not know",
+                    "question",
+                    "unsolved",
+                    "answer"
+                  ],
+                  [
+                    "explain",
+                    "explanation",
+                    "story",
+                    "need",
+                    "want",
+                    "reach",
+                    "guess",
+                    "believ",
+                    "fill"
+                  ]
+                ],
+                "model": "When people face a mystery, they reach for an explanation, even a strange one, rather than live with not knowing."
+              },
+              "prompt": "Using your own words, tell in one sentence what an unsolved mystery suggests about people's need for answers.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "In one part of the road leading\nto the church was found the saddle trampled in the dirt; the tracks of\nhorses’ hoofs deeply dented in the road, and evidently at furious speed,\nwere traced to the bridge, beyond which, on the bank of a broad part of\nthe brook, where the water ran deep and black, was found the hat of the\nunfortunate Ichabod, and close beside it a shattered pumpkin."
+                ]
+              },
+              "hint": "What do people do when they find clues but no body?",
+              "why": "With only clues by the brook, the village needs a story to explain them, and soon finds one.",
+              "standards": [
+                "R.1.2",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "gone-08",
@@ -20818,7 +21063,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line shows no one could locate him in the water?",
+              "keywords": [
+                "locate"
+              ],
+              "proof": {
+                "lines": [
+                  "The brook was searched, but the body of the schoolmaster was not to\nbe discovered."
+                ]
+              },
+              "hint": "What happened when the brook was searched?",
+              "why": "The brook was searched, but the body of the schoolmaster was not to be discovered.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "gone-09",
@@ -20849,35 +21113,90 @@
             "note": "Consigned to the flames: thrown into the fire."
           },
           "question": {
-            "type": "whose_eyes",
-            "prompt": "How does the narrator want us to see Hans's decision about learning?",
-            "keywords": [
-              "narrator"
-            ],
-            "choices": [
-              {
-                "text": "As a sad choice forced on him by poverty"
-              },
-              {
-                "text": "As a foolish overreaction, poking fun at Hans",
-                "best": true
-              },
-              {
-                "text": "As wise advice every parent should follow"
-              }
-            ],
-            "proof": {
-              "lines": [
-                "These magic books and the poetic scrawl were forthwith consigned to the\nflames by Hans Van Ripper; who, from that time forward, determined to\nsend his children no more to school, observing that he never knew\nany good come of this same reading and writing."
+            "type": "weigh_evidence",
+            "format": "dnd",
+            "dnd": {
+              "kind": "build_case",
+              "slots": [
+                {
+                  "id": "claim",
+                  "label": "Claim"
+                },
+                {
+                  "id": "proof",
+                  "label": "Proof sentence"
+                },
+                {
+                  "id": "reason",
+                  "label": "Reason"
+                }
+              ],
+              "items": [
+                {
+                  "id": "claim",
+                  "text": "Hans blames book learning for Ichabod's fate",
+                  "slot": "claim"
+                },
+                {
+                  "id": "proof",
+                  "text": "\"he never knew any good come of this same reading and writing\"",
+                  "slot": "proof",
+                  "line": "These magic books and the poetic scrawl were forthwith consigned to the\nflames by Hans Van Ripper; who, from that time forward, determined to\nsend his children no more to school, observing that he never knew\nany good come of this same reading and writing."
+                },
+                {
+                  "id": "reason",
+                  "text": "So he burns the books and keeps his children home from school",
+                  "slot": "reason",
+                  "line": "These magic books and the poetic scrawl were forthwith consigned to the\nflames by Hans Van Ripper; who, from that time forward, determined to\nsend his children no more to school, observing that he never knew\nany good come of this same reading and writing."
+                },
+                {
+                  "id": "pay",
+                  "text": "Ichabod had been paid a day or two before",
+                  "slot": null
+                }
               ]
             },
-            "hint": "What does Hans conclude from one missing teacher?",
-            "why": "He decides never to send his children to school, since he never knew any good come of reading and writing: the narrator is poking fun.",
+            "prompt": "Build the case that Hans blames book learning for what happened.",
+            "keywords": [],
+            "hint": "A case needs a claim, a quotation that proves it, and a reason that connects them.",
+            "why": "Hans says no good comes of reading and writing, so he burns the books and ends his children's schooling; the pay proves nothing about his view.",
             "standards": [
-              "R.1.3",
-              "K12.EE.1.1"
+              "K12.EE.1.1",
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "weigh_evidence",
+              "prompt": "Which detail best supports the claim that Ichabod hoped to win Katrina with words?",
+              "keywords": [
+                "win Katrina"
+              ],
+              "choices": [
+                {
+                  "text": "He had just received a quarter's wages"
+                },
+                {
+                  "text": "He kept trying to write her a poem",
+                  "best": true
+                },
+                {
+                  "text": "He owned a book of dreams and fortunes"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "As to the\nbooks and furniture of the schoolhouse, they belonged to the community,\nexcepting Cotton Mather’s “History of Witchcraft,” a “New England\nAlmanac,” and a book of dreams and fortune-telling; in which last was\na sheet of foolscap much scribbled and blotted in several fruitless\nattempts to make a copy of verses in honor of the heiress of Van Tassel."
+                ]
+              },
+              "hint": "What was scribbled on the sheet of foolscap?",
+              "why": "The sheet was blotted with several fruitless attempts at verses in honor of the heiress of Van Tassel.",
+              "standards": [
+                "K12.EE.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "gone-10",
@@ -20909,9 +21228,9 @@
           },
           "question": {
             "type": "between_lines",
-            "prompt": "What can you infer about how much the village misses Ichabod?",
+            "prompt": "How much does the village seem to miss Ichabod?",
             "keywords": [
-              "infer"
+              "miss"
             ],
             "choices": [
               {
@@ -20930,13 +21249,66 @@
                 "As he was a bachelor, and in nobody’s\ndebt, nobody troubled his head any more about him; the school was\nremoved to a different quarter of the hollow, and another pedagogue\nreigned in his stead."
               ]
             },
-            "hint": "Who troubled about him afterward?",
-            "why": "As he owed nobody, nobody troubled his head any more about him, and another pedagogue reigned in his stead.",
+            "hint": "What happens to the school once he is gone?",
+            "why": "Since he owed no one, nobody troubled about him any more, and another teacher took his place.",
             "standards": [
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "Why do the gossips decide the Galloping Hessian carried him off?",
+              "keywords": [
+                "carried him off"
+              ],
+              "choices": [
+                {
+                  "text": "His fate matches the old ghost stories",
+                  "best": true
+                },
+                {
+                  "text": "Brom confessed it in front of everyone"
+                },
+                {
+                  "text": "Ichabod left a note that said so"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "The stories of Brouwer, of Bones, and a whole budget of\nothers were called to mind; and when they had diligently considered them\nall, and compared them with the symptoms of the present case, they shook\ntheir heads, and came to the conclusion that Ichabod had been carried\noff by the Galloping Hessian."
+                ]
+              },
+              "hint": "What did they compare the case with?",
+              "why": "They recall the stories of Brouwer, of Bones and others, compare them with the case, and decide the Hessian took him.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
+        }
+      ],
+      "lightning": [
+        {
+          "id": "sunday-saddle",
+          "chunk": 2,
+          "after": 4,
+          "question": "Whose Sunday saddle did Ichabod lose?",
+          "answer": [
+            "For a moment the terror of Hans Van\nRipper’s wrath passed across his mind,--for it was his Sunday saddle;\nbut this was no time for petty fears; the goblin was hard on his\nhaunches; and (unskilful rider that he was!) he had much ado to maintain\nhis seat; sometimes slipping on one side, sometimes on another, and\nsometimes jolted on the high ridge of his horse’s backbone, with a\nviolence that he verily feared would cleave him asunder."
+          ]
+        },
+        {
+          "id": "at-the-gate",
+          "chunk": 6,
+          "after": 8,
+          "question": "Where was Gunpowder found the next morning?",
+          "answer": [
+            "The next morning the old horse was found without his saddle, and with\nthe bridle under his feet, soberly cropping the grass at his master’s\ngate."
+          ]
         }
       ],
       "interview": {
@@ -21054,7 +21426,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line explains why Ichabod went away?",
+              "keywords": [
+                "went away"
+              ],
+              "proof": {
+                "lines": [
+                  "It is true, an old farmer, who had been down to New York on a visit\nseveral years after, and from whom this account of the ghostly adventure\nwas received, brought home the intelligence that Ichabod Crane was still\nalive; that he had left the neighborhood partly through fear of the\ngoblin and Hans Van Ripper, and partly in mortification at having been\nsuddenly dismissed by the heiress; that he had changed his quarters to a\ndistant part of the country; had kept school and studied law at the same\ntime; had been admitted to the bar; turned politician; electioneered;\nwritten for the newspapers; and finally had been made a justice of\nthe Ten Pound Court."
+                ]
+              },
+              "hint": "Look for the words partly through fear.",
+              "why": "He left partly through fear of the goblin and Hans Van Ripper, and partly in mortification at being dismissed by the heiress.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-postscript-02",
@@ -21085,35 +21476,88 @@
             "note": "He marries her as if winning a prize."
           },
           "question": {
-            "type": "between_lines",
-            "prompt": "What can you infer about Brom's part in that night?",
-            "keywords": [
-              "infer"
-            ],
-            "choices": [
-              {
-                "text": "He was away in town that night and knew nothing"
-              },
-              {
-                "text": "He may have played the headless rider himself",
-                "best": true
-              },
-              {
-                "text": "He searched all night to save Ichabod"
-              }
-            ],
-            "proof": {
-              "lines": [
-                "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
+            "type": "weigh_evidence",
+            "format": "dnd",
+            "dnd": {
+              "kind": "fact_or_claim",
+              "slots": [
+                {
+                  "id": "text",
+                  "label": "The text reports it"
+                },
+                {
+                  "id": "claim",
+                  "label": "Only some suspect it"
+                }
+              ],
+              "items": [
+                {
+                  "id": "married",
+                  "text": "Brom married Katrina soon after",
+                  "slot": "text",
+                  "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
+                },
+                {
+                  "id": "knowing",
+                  "text": "Brom looks knowing when the story is told",
+                  "slot": "text",
+                  "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
+                },
+                {
+                  "id": "laugh",
+                  "text": "Brom laughs heartily at any mention of the pumpkin",
+                  "slot": "text",
+                  "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
+                },
+                {
+                  "id": "more",
+                  "text": "Brom knew more than he chose to tell",
+                  "slot": "claim",
+                  "line": "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
+                }
               ]
             },
-            "hint": "When does he laugh, and what did some suspect?",
-            "why": "He bursts into a hearty laugh at the mention of the pumpkin, so some suspect he knew more than he chose to tell.",
+            "prompt": "Sort what the text reports about Brom from what some people only suspect.",
+            "keywords": [],
+            "hint": "Look for the words \"led some to suspect.\"",
+            "why": "The marriage, the knowing look and the laugh are reported; that he knew more is only what \"some\" suspect.",
             "standards": [
-              "K12.EE.3.1",
-              "K12.EE.1.1"
+              "K12.EE.1.1",
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "weigh_evidence",
+              "prompt": "Which detail most strongly suggests Brom was behind Ichabod's fright?",
+              "keywords": [
+                "behind"
+              ],
+              "choices": [
+                {
+                  "text": "He marries Katrina soon after the ride"
+                },
+                {
+                  "text": "An old farmer later sees Ichabod in New York"
+                },
+                {
+                  "text": "He laughs heartily whenever the pumpkin comes up",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
+                ]
+              },
+              "hint": "Which object was found by the brook?",
+              "why": "A shattered pumpkin lay by the hat, and Brom bursts into a hearty laugh at every mention of it.",
+              "standards": [
+                "K12.EE.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-postscript-03",
@@ -21145,34 +21589,88 @@
           },
           "question": {
             "type": "theme_thread",
-            "prompt": "Which idea from the start of the story wins out in the end?",
-            "keywords": [
-              "wins out"
-            ],
-            "choices": [
-              {
-                "text": "True love always conquers every obstacle in its way"
-              },
-              {
-                "text": "The valley prefers its ghost story to a plain explanation",
-                "best": true
-              },
-              {
-                "text": "Hard work always makes a poor man rich in the end, however long it takes"
-              }
-            ],
+            "format": "written",
+            "written": {
+              "key_ideas": [
+                [
+                  "prefer",
+                  "choose",
+                  "rather",
+                  "keep",
+                  "believ",
+                  "want"
+                ],
+                [
+                  "tale",
+                  "story",
+                  "stories",
+                  "legend",
+                  "ghost",
+                  "thrill",
+                  "exciting",
+                  "fun",
+                  "mystery",
+                  "magic"
+                ]
+              ],
+              "model": "People often prefer a thrilling tale to a plain explanation, because a good story is more fun to believe and to share."
+            },
+            "prompt": "In one sentence, explain what the neighbors' choice suggests about why people prefer a thrilling tale to a plain answer.",
+            "keywords": [],
             "proof": {
               "lines": [
                 "The old country wives, however, who are the best judges of these\nmatters, maintain to this day that Ichabod was spirited away by\nsupernatural means; and it is a favorite story often told about the\nneighborhood round the winter evening fire."
               ]
             },
-            "hint": "What do the old wives maintain, even with the farmer's news?",
-            "why": "The old country wives maintain to this day that Ichabod was spirited away: the valley's spell holds.",
+            "hint": "What do the old wives maintain, and when do they tell it?",
+            "why": "The old wives insist he was spirited away, and it is a favorite story told round the winter fire: the thrilling version wins.",
             "standards": [
               "R.1.2",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "theme_thread",
+              "format": "written",
+              "written": {
+                "key_ideas": [
+                  [
+                    "legend",
+                    "stor",
+                    "tale",
+                    "myth",
+                    "ghost"
+                  ],
+                  [
+                    "grow",
+                    "retell",
+                    "repeat",
+                    "spread",
+                    "keep",
+                    "change",
+                    "bigger",
+                    "place",
+                    "haunt"
+                  ]
+                ],
+                "model": "Legends grow as people keep retelling them, until even a bridge or an empty schoolhouse becomes part of the tale."
+              },
+              "prompt": "Using your own words, tell in one sentence what this chunk suggests about how legends grow.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "The schoolhouse being deserted soon fell to\ndecay, and was reported to be haunted by the ghost of the unfortunate\npedagogue and the plowboy, loitering homeward of a still summer evening,\nhas often fancied his voice at a distance, chanting a melancholy psalm\ntune among the tranquil solitudes of Sleepy Hollow."
+                ]
+              },
+              "hint": "What happens to the bridge and the old schoolhouse?",
+              "why": "The bridge becomes an object of awe and the deserted schoolhouse is reported haunted: the legend keeps spreading to new places.",
+              "standards": [
+                "R.1.2",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-postscript-04",
@@ -21203,35 +21701,45 @@
             "note": "Pepper-and-salt: cloth speckled black and white."
           },
           "question": {
-            "type": "whose_eyes",
-            "prompt": "Who does the postscript say first told this tale?",
-            "keywords": [
-              "postscript"
-            ],
-            "choices": [
-              {
-                "text": "Ichabod Crane himself, years after the ride"
-              },
-              {
-                "text": "Katrina Van Tassel, telling it at her own wedding feast"
-              },
-              {
-                "text": "A shabby, cheerful old storyteller at a city meeting",
-                "best": true
-              }
-            ],
+            "type": "catch_lie",
+            "prompt": "Hans Van Ripper describes the man who first told this tale. One thing he says is false. Tap the sentence that proves it.",
+            "keywords": [],
             "proof": {
               "lines": [
                 "The narrator was a pleasant, shabby, gentlemanly\nold fellow, in pepper-and-salt clothes, with a sadly humourous face,\nand one whom I strongly suspected of being poor--he made such efforts\nto be entertaining."
               ]
             },
-            "hint": "Look for a description of the narrator who related it.",
-            "why": "The narrator was a pleasant, shabby, gentlemanly old fellow, suspected of being poor.",
+            "testimony": {
+              "speaker": "hans-van-ripper",
+              "text": "That storyteller was a rich man in fine clothes, with nothing to prove to anyone."
+            },
+            "hint": "How was the storyteller dressed, and why did he try so hard?",
+            "why": "He was a shabby old fellow in pepper-and-salt clothes, suspected of being poor because he tried so hard to entertain.",
             "standards": [
-              "R.1.3",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "catch_lie",
+              "prompt": "Brom Bones claims to know how the tale went over. One detail is untrue. Tap the sentence that shows it.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "When his story was concluded, there was much\nlaughter and approbation, particularly from two or three deputy\naldermen, who had been asleep the greater part of the time."
+                ]
+              },
+              "testimony": {
+                "speaker": "brom-bones",
+                "text": "Every listener hung on each word and stayed wide awake to the very end."
+              },
+              "hint": "What were some of the deputy aldermen doing?",
+              "why": "Two or three deputy aldermen had been asleep the greater part of the time.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-postscript-05",
@@ -21262,35 +21770,93 @@
             "note": "Beetling: sticking out over the eyes, like a frown."
           },
           "question": {
-            "type": "character_clue",
-            "prompt": "Which trait fits the frowning listener?",
-            "keywords": [
-              "trait"
-            ],
-            "choices": [
-              {
-                "text": "Sleepy and not really listening at all"
-              },
-              {
-                "text": "Serious and doubtful, slow to be amused",
-                "best": true
-              },
-              {
-                "text": "Jolly and quick to laugh at anything"
-              }
-            ],
-            "proof": {
-              "words": [
-                "maintained a grave and rather severe face throughout"
+            "type": "shades",
+            "format": "dnd",
+            "dnd": {
+              "kind": "word_feeling",
+              "slots": [
+                {
+                  "id": "think",
+                  "label": "Thinking it over"
+                },
+                {
+                  "id": "demand",
+                  "label": "Demanding an answer"
+                }
+              ],
+              "items": [
+                {
+                  "id": "floor",
+                  "text": "Folds his arms and looks at the floor",
+                  "slot": "think",
+                  "line": "There was,\nhowever, one tall, dry-looking old gentleman, with beetling eyebrows,\nwho maintained a grave and rather severe face throughout, now and then\nfolding his arms, inclining his head, and looking down upon the floor,\nas if turning a doubt over in his mind."
+                },
+                {
+                  "id": "doubt",
+                  "text": "Turns a doubt over in his mind",
+                  "slot": "think",
+                  "line": "There was,\nhowever, one tall, dry-looking old gentleman, with beetling eyebrows,\nwho maintained a grave and rather severe face throughout, now and then\nfolding his arms, inclining his head, and looking down upon the floor,\nas if turning a doubt over in his mind."
+                },
+                {
+                  "id": "akimbo",
+                  "text": "Sticks one arm akimbo",
+                  "slot": "demand",
+                  "line": "When the mirth of the rest of the company had subsided, and\nsilence was restored, he leaned one arm on the elbow of his chair, and\nsticking the other akimbo, demanded, with a slight, but exceedingly\nsage motion of the head, and contraction of the brow, what was the\nmoral of the story, and what it went to prove?"
+                },
+                {
+                  "id": "moral",
+                  "text": "Asks what the story went to prove",
+                  "slot": "demand",
+                  "line": "When the mirth of the rest of the company had subsided, and\nsilence was restored, he leaned one arm on the elbow of his chair, and\nsticking the other akimbo, demanded, with a slight, but exceedingly\nsage motion of the head, and contraction of the brow, what was the\nmoral of the story, and what it went to prove?"
+                }
               ]
             },
-            "hint": "How does his face look while everyone else laughs?",
-            "why": "He maintained a grave and rather severe face throughout, as if turning a doubt over in his mind.",
+            "prompt": "Sort the gentleman's gestures: is he thinking it over, or demanding an answer?",
+            "keywords": [],
+            "hint": "Is he quietly weighing the tale, or challenging the teller?",
+            "why": "Folded arms, a lowered gaze and a doubt turned over show him thinking; the arm akimbo and his question demand an answer.",
             "standards": [
-              "R.1.1",
-              "K12.EE.1.1"
+              "V.1.3",
+              "R.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "shades",
+              "prompt": "Why might the narrator give the gentleman \"beetling eyebrows\" rather than plain ones?",
+              "keywords": [
+                "beetling"
+              ],
+              "focus": "beetling eyebrows",
+              "choices": [
+                {
+                  "text": "They jut out over a stern face",
+                  "best": true
+                },
+                {
+                  "text": "They are thin, pale and hard to see"
+                },
+                {
+                  "text": "They twitch whenever he laughs"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "There was,\nhowever, one tall, dry-looking old gentleman, with beetling eyebrows,\nwho maintained a grave and rather severe face throughout, now and then\nfolding his arms, inclining his head, and looking down upon the floor,\nas if turning a doubt over in his mind."
+                ]
+              },
+              "hint": "What kind of face are they part of?",
+              "why": "Beetling brows jut out heavily, matching his grave and rather severe face.",
+              "standards": [
+                "V.1.3",
+                "R.3.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "grave and rather severe face"
+              ]
+            }
+          ]
         },
         {
           "id": "the-postscript-06",
@@ -21336,26 +21902,68 @@
             "note": "Troopers: cavalry soldiers; here, ghostly riders."
           },
           "question": {
-            "type": "catch_lie",
-            "prompt": "Brom Bones explains the storyteller's lesson. One thing he says is false. Tap the line that proves it.",
+            "type": "story_structure",
+            "prompt": "What does the storyteller's chain of \"therefore\" and \"ergo\" really prove?",
             "keywords": [
-              "false"
+              "really prove"
+            ],
+            "choices": [
+              {
+                "text": "Nothing serious: it is a joke dressed as logic",
+                "best": true
+              },
+              {
+                "text": "That ghosts are real and very dangerous"
+              },
+              {
+                "text": "That teachers should marry rich heiresses"
+              }
             ],
             "proof": {
               "lines": [
-                "“That there is no situation in life but has its advantages and\npleasures--provided we will but take a joke as we find it:"
+                "“Ergo, for a country schoolmaster to be refused the hand of a Dutch\nheiress is a certain step to high preferment in the state.”"
               ]
             },
-            "testimony": {
-              "speaker": "brom-bones",
-              "text": "The fellow said the tale's lesson is plain: never tell jokes about ghosts."
-            },
-            "hint": "What does the storyteller say about jokes?",
-            "why": "He says every situation has its pleasures, provided we will but take a joke as we find it.",
+            "hint": "Does being refused by an heiress really lead to high office?",
+            "why": "\"Ergo,\" being refused an heiress leads to high preferment: the solemn logic is a joke that proves nothing.",
             "standards": [
-              "K12.EE.1.1"
-            ]
-          }
+              "R.1.1",
+              "K12.EE.3.1"
+            ],
+            "reviewed": true
+          },
+          "bank": [
+            {
+              "type": "story_structure",
+              "prompt": "What is the first step in the storyteller's argument?",
+              "keywords": [
+                "first step"
+              ],
+              "choices": [
+                {
+                  "text": "Goblin troopers always win their races"
+                },
+                {
+                  "text": "Heiresses never marry schoolteachers"
+                },
+                {
+                  "text": "Every situation has its pleasures",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "“That there is no situation in life but has its advantages and\npleasures--provided we will but take a joke as we find it:"
+                ]
+              },
+              "hint": "Read his first quoted sentence.",
+              "why": "He begins: there is no situation in life but has its advantages and pleasures, provided we take a joke as we find it.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-postscript-07",
@@ -21419,7 +22027,60 @@
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "Why might the storyteller give the gentleman a \"triumphant leer\"?",
+              "keywords": [
+                "triumphant leer"
+              ],
+              "choices": [
+                {
+                  "text": "He is tired and about to fall asleep"
+                },
+                {
+                  "text": "He enjoys puzzling the serious gentleman",
+                  "best": true
+                },
+                {
+                  "text": "He is angry at being questioned so closely"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "The cautious old gentleman knit his brows tenfold closer after this\nexplanation, being sorely puzzled by the ratiocination of the\nsyllogism, while, methought, the one in pepper-and-salt eyed him with\nsomething of a triumphant leer."
+                ]
+              },
+              "hint": "How does the gentleman look after the explanation?",
+              "why": "As the gentleman knits his brows, sorely puzzled, the storyteller eyes him with a triumphant leer: he enjoys it.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
+        }
+      ],
+      "lightning": [
+        {
+          "id": "ten-pound-court",
+          "chunk": 1,
+          "after": 3,
+          "question": "What post did Ichabod finally hold, according to the old farmer?",
+          "answer": [
+            "It is true, an old farmer, who had been down to New York on a visit\nseveral years after, and from whom this account of the ghostly adventure\nwas received, brought home the intelligence that Ichabod Crane was still\nalive; that he had left the neighborhood partly through fear of the\ngoblin and Hans Van Ripper, and partly in mortification at having been\nsuddenly dismissed by the heiress; that he had changed his quarters to a\ndistant part of the country; had kept school and studied law at the same\ntime; had been admitted to the bar; turned politician; electioneered;\nwritten for the newspapers; and finally had been made a justice of\nthe Ten Pound Court."
+          ]
+        },
+        {
+          "id": "asleep",
+          "chunk": 4,
+          "after": 5,
+          "question": "Who slept through most of the storyteller's tale?",
+          "answer": [
+            "When his story was concluded, there was much\nlaughter and approbation, particularly from two or three deputy\naldermen, who had been asleep the greater part of the time."
+          ]
         }
       ],
       "interview": {
@@ -22677,14 +23338,14 @@
             "chunk": 3,
             "place": "schoolhouse",
             "x": 1360,
-            "y": 793,
-            "landmark": "boss"
+            "y": 793
           },
           {
             "chunk": 4,
             "place": "city",
             "x": 241,
-            "y": 889
+            "y": 889,
+            "landmark": "twist"
           },
           {
             "chunk": 5,
@@ -22697,7 +23358,7 @@
             "place": "city",
             "x": 333,
             "y": 889,
-            "landmark": "twist"
+            "landmark": "boss"
           },
           {
             "chunk": 7,
@@ -22715,9 +23376,6 @@
     ]
   },
   "expedition_rules": {
-    "arc_pending": [
-      "gone",
-      "the-postscript"
-    ]
+    "arc_pending": []
   }
 }
