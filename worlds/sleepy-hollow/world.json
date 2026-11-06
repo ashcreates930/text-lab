@@ -13041,7 +13041,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line shows what the old women say when the riders go by after dark?",
+              "keywords": [
+                "old women"
+              ],
+              "proof": {
+                "lines": [
+                  "Sometimes his crew would be heard dashing along past the farmhouses at\nmidnight, with whoop and halloo, like a troop of Don Cossacks; and the\nold dames, startled out of their sleep, would listen for a moment till\nthe hurry-scurry had clattered by, and then exclaim, “Ay, there goes\nBrom Bones and his gang!”"
+                ]
+              },
+              "hint": "Look for words in quotation marks.",
+              "why": "Startled from sleep, the old dames exclaim, \"Ay, there goes Brom Bones and his gang!\"",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feud-02",
@@ -13078,34 +13097,67 @@
           },
           "question": {
             "type": "between_lines",
-            "prompt": "What can you infer about how Katrina feels about Brom?",
+            "format": "multi",
+            "pick": 2,
+            "prompt": "Which two feelings do the neighbors have toward Brom?",
             "keywords": [
-              "infer"
+              "two feelings"
             ],
             "choices": [
               {
-                "text": "She may like him more than she lets on",
+                "text": "They think he is lazy and dull"
+              },
+              {
+                "text": "They are a little afraid of him",
                 "best": true
               },
               {
-                "text": "She is afraid of him and avoids him"
+                "text": "They like and admire him",
+                "best": true
               },
               {
-                "text": "She has never even met him once"
+                "text": "They want him to leave the Hollow"
               }
             ],
-            "proof": {
-              "lines": [
-                "This rantipole hero had for some time singled out the blooming Katrina\nfor the object of his uncouth gallantries, and though his amorous\ntoyings were something like the gentle caresses and endearments of a\nbear, yet it was whispered that she did not altogether discourage his\nhopes."
-              ]
-            },
-            "hint": "What was whispered about her and his hopes?",
-            "why": "It was whispered that she did not altogether discourage his hopes.",
+            "hint": "Look at the three words for how they look upon him.",
+            "why": "They look upon him with a mixture of awe, admiration and good-will.",
             "standards": [
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "How might Katrina really feel about Brom?",
+              "keywords": [
+                "really feel"
+              ],
+              "choices": [
+                {
+                  "text": "She may like him more than she lets on",
+                  "best": true
+                },
+                {
+                  "text": "She is afraid of him and avoids him"
+                },
+                {
+                  "text": "She has never even met him once"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "This rantipole hero had for some time singled out the blooming Katrina\nfor the object of his uncouth gallantries, and though his amorous\ntoyings were something like the gentle caresses and endearments of a\nbear, yet it was whispered that she did not altogether discourage his\nhopes."
+                ]
+              },
+              "hint": "What was whispered about her and his hopes?",
+              "why": "It was whispered that she did not altogether discourage his hopes.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feud-03",
@@ -13155,18 +13207,59 @@
               }
             ],
             "proof": {
-              "words": [
-                "his master was courting"
+              "lines": [
+                "Certain it is, his advances were signals for rival candidates to\nretire, who felt no inclination to cross a lion in his amours; insomuch,\nthat when his horse was seen tied to Van Tassel’s paling, on a Sunday\nnight, a sure sign that his master was courting, or, as it is termed,\n“sparking,” within, all other suitors passed by in despair, and carried\nthe war into other quarters."
               ]
             },
-            "hint": "The narrator explains it right before the word.",
-            "why": "His master was courting, or, as it is termed, sparking.",
+            "hint": "Find the words just before it that say what Brom is doing inside.",
+            "why": "\"His master was courting, or, as it is termed, sparking\": sparking means courting.",
             "standards": [
               "V.1.3",
               "K12.EE.1.1"
             ],
-            "reviewed": true
-          }
+            "reviewed": true,
+            "clues": [
+              "his master was courting"
+            ]
+          },
+          "bank": [
+            {
+              "type": "word_detective",
+              "prompt": "What does retire mean in this sentence?",
+              "keywords": [
+                "retire"
+              ],
+              "focus": "retire",
+              "choices": [
+                {
+                  "text": "Stop working because of old age"
+                },
+                {
+                  "text": "Go to bed early for the night"
+                },
+                {
+                  "text": "Give up and step back",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Certain it is, his advances were signals for rival candidates to\nretire, who felt no inclination to cross a lion in his amours; insomuch,\nthat when his horse was seen tied to Van Tassel’s paling, on a Sunday\nnight, a sure sign that his master was courting, or, as it is termed,\n“sparking,” within, all other suitors passed by in despair, and carried\nthe war into other quarters."
+                ]
+              },
+              "hint": "What do the other suitors do when they see Brom's horse?",
+              "why": "The other suitors pass by in despair and court elsewhere: to retire is to give up and withdraw.",
+              "standards": [
+                "V.1.3",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "passed by in despair",
+                "carried the war into other quarters"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feud-04",
@@ -13198,7 +13291,7 @@
           },
           "question": {
             "type": "figure_it_out",
-            "prompt": "Read the words in form and spirit like a supple-jack. What kind of figurative language is this?",
+            "prompt": "Read the words \"in form and spirit like a supple-jack.\" What kind of figurative language is this?",
             "keywords": [
               "supple-jack"
             ],
@@ -13230,13 +13323,55 @@
                 }
               ]
             },
-            "hint": "A supple-jack is a springy cane. What happens when you bend one and let go?",
-            "why": "Like a supple-jack, yielding but tough: he bends, but never breaks.",
+            "hint": "A supple-jack is a springy cane. Look for like.",
+            "why": "Like a supple-jack he is yielding but tough: he bends but never breaks.",
             "standards": [
               "R.3.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "figure_it_out",
+              "prompt": "The narrator adds \"though he bent, he never broke.\" How does that phrase build on the comparison?",
+              "keywords": [
+                "he never broke"
+              ],
+              "focus": "though he bent, he never broke",
+              "choices": [
+                {
+                  "text": "Metaphor: it keeps picturing him as a springy cane",
+                  "best": true
+                },
+                {
+                  "text": "Simile: it adds a new comparison using as"
+                },
+                {
+                  "text": "Onomatopoeia: the words copy a snapping sound"
+                }
+              ],
+              "choices2": {
+                "prompt": "What does that phrase show about Ichabod?",
+                "options": [
+                  {
+                    "text": "He gives up as soon as he is pushed"
+                  },
+                  {
+                    "text": "He is stronger than Brom in a fight"
+                  },
+                  {
+                    "text": "He always recovers from a setback",
+                    "best": true
+                  }
+                ]
+              },
+              "hint": "A cane bends; does it snap?",
+              "why": "\"Though he bent, he never broke\" keeps describing him as a springy cane: knocked down, he pops right back.",
+              "standards": [
+                "R.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feud-05",
@@ -13295,7 +13430,39 @@
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "Why doesn't Katrina's family stand between her and Ichabod?",
+              "keywords": [
+                "stand between"
+              ],
+              "choices": [
+                {
+                  "text": "They have already promised her to Brom"
+                },
+                {
+                  "text": "They have left the valley on a long trip"
+                },
+                {
+                  "text": "They let their daughter make her own choices",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Under cover of his character\nof singing-master, he made frequent visits at the farmhouse; not that he\nhad anything to apprehend from the meddlesome interference of parents,\nwhich is so often a stumbling-block in the path of lovers."
+                ]
+              },
+              "hint": "Does he have anything to fear from her parents?",
+              "why": "He has nothing to fear from the meddlesome interference of parents: they leave the choice to her.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feud-06",
@@ -13327,35 +13494,87 @@
           },
           "question": {
             "type": "character_clue",
-            "prompt": "Which trait fits the man of the house?",
-            "keywords": [
-              "trait"
-            ],
-            "choices": [
-              {
-                "text": "Strict and watchful, guarding her every move"
-              },
-              {
-                "text": "Cold and distant, ignoring his own wife and daughter"
-              },
-              {
-                "text": "Easygoing and generous, letting her do as she likes",
-                "best": true
-              }
-            ],
-            "proof": {
-              "words": [
-                "an easy indulgent soul",
-                "let her have her way in everything"
+            "format": "dnd",
+            "dnd": {
+              "kind": "match_character",
+              "slots": [
+                {
+                  "id": "balt",
+                  "label": "Balt"
+                },
+                {
+                  "id": "wife",
+                  "label": "His wife"
+                }
+              ],
+              "items": [
+                {
+                  "id": "pipe",
+                  "text": "Loves his daughter better than his pipe",
+                  "slot": "balt",
+                  "line": "Balt Van\nTassel was an easy indulgent soul; he loved his daughter better even\nthan his pipe, and, like a reasonable man and an excellent father, let\nher have her way in everything."
+                },
+                {
+                  "id": "way",
+                  "text": "Lets her have her way in everything",
+                  "slot": "balt",
+                  "line": "Balt Van\nTassel was an easy indulgent soul; he loved his daughter better even\nthan his pipe, and, like a reasonable man and an excellent father, let\nher have her way in everything."
+                },
+                {
+                  "id": "poultry",
+                  "text": "Is busy with the housekeeping and the poultry",
+                  "slot": "wife",
+                  "line": "His notable little wife, too, had enough\nto do to attend to her housekeeping and manage her poultry; for, as she\nsagely observed, ducks and geese are foolish things, and must be looked\nafter, but girls can take care of themselves."
+                },
+                {
+                  "id": "girls",
+                  "text": "Believes girls can take care of themselves",
+                  "slot": "wife",
+                  "line": "His notable little wife, too, had enough\nto do to attend to her housekeeping and manage her poultry; for, as she\nsagely observed, ducks and geese are foolish things, and must be looked\nafter, but girls can take care of themselves."
+                }
               ]
             },
-            "hint": "How does he treat his daughter?",
-            "why": "He was an easy indulgent soul who let her have her way in everything.",
+            "prompt": "Match each detail to Balt Van Tassel or to his wife.",
+            "keywords": [],
+            "hint": "One sentence is about each parent.",
+            "why": "Balt loves his daughter and indulges her; his wife minds the house and the birds, sure that girls can look after themselves.",
             "standards": [
               "R.1.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "character_clue",
+              "prompt": "Which trait fits the head of the Van Tassel household?",
+              "keywords": [
+                "head of the Van Tassel household"
+              ],
+              "choices": [
+                {
+                  "text": "Strict and watchful, guarding her every move"
+                },
+                {
+                  "text": "Cold and distant, ignoring his own wife and daughter"
+                },
+                {
+                  "text": "Easygoing and generous, letting her do as she likes",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Balt Van\nTassel was an easy indulgent soul; he loved his daughter better even\nthan his pipe, and, like a reasonable man and an excellent father, let\nher have her way in everything."
+                ]
+              },
+              "hint": "How does he treat his daughter's wishes?",
+              "why": "He is an easy, indulgent soul who lets her have her way in everything.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feud-07",
@@ -13405,7 +13624,28 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "catch_lie",
+              "prompt": "Hans Van Ripper recalls the Van Tassel farm. One detail is untrue. Tap the sentence that shows it.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "Thus, while the busy dame\nbustled about the house, or plied her spinning-wheel at one end of the\npiazza, honest Balt would sit smoking his evening pipe at the other,\nwatching the achievements of a little wooden warrior, who, armed with a\nsword in each hand, was most valiantly fighting the wind on the pinnacle\nof the barn."
+                ]
+              },
+              "testimony": {
+                "speaker": "hans-van-ripper",
+                "text": "Old Balt never took his eyes off his daughter. He watched every minute of that courting."
+              },
+              "hint": "What was Balt watching while he smoked?",
+              "why": "Balt sat smoking his pipe, watching the little wooden warrior fight the wind on top of the barn.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feud-08",
@@ -13464,7 +13704,40 @@
               "R.1.3",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "whose_eyes",
+              "prompt": "The narrator talks of battling \"at every door and window.\" What does he suggest about keeping a coquette's heart?",
+              "keywords": [
+                "every door and window"
+              ],
+              "choices": [
+                {
+                  "text": "It needs real soldiers to guard it"
+                },
+                {
+                  "text": "It is a constant fight to hold on to it",
+                  "best": true
+                },
+                {
+                  "text": "It is easy once she says yes"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "It is a\ngreat triumph of skill to gain the former, but a still greater proof of\ngeneralship to maintain possession of the latter, for man must battle\nfor his fortress at every door and window."
+                ]
+              },
+              "hint": "Is the battle won once, or fought again and again?",
+              "why": "A man \"must battle for his fortress at every door and window\": keeping a coquette's heart is a never-ending fight.",
+              "standards": [
+                "R.1.3",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "the-feud-09",
@@ -13496,34 +13769,86 @@
           },
           "question": {
             "type": "theme_thread",
-            "prompt": "Which idea keeps coming back as the rivalry grows?",
-            "keywords": [
-              "rivalry"
-            ],
-            "choices": [
-              {
-                "text": "Competition for Katrina turns the two men into enemies",
-                "best": true
-              },
-              {
-                "text": "Friendship between the two men grows stronger each week"
-              },
-              {
-                "text": "Katrina decides to leave the valley for good"
-              }
-            ],
+            "format": "written",
+            "written": {
+              "key_ideas": [
+                [
+                  "compet",
+                  "rival",
+                  "contest",
+                  "both want",
+                  "same",
+                  "jealous"
+                ],
+                [
+                  "enem",
+                  "feud",
+                  "hate",
+                  "bitter",
+                  "conflict",
+                  "fight",
+                  "hostil",
+                  "divide",
+                  "anger"
+                ]
+              ],
+              "model": "Competition for the same prize can turn people into bitter enemies, even when it starts quietly."
+            },
+            "prompt": "In one sentence, explain what the rivalry over Katrina suggests about competition among people.",
+            "keywords": [],
             "proof": {
               "lines": [
                 "Certain it is, this\nwas not the case with the redoubtable Brom Bones; and from the moment\nIchabod Crane made his advances, the interests of the former evidently\ndeclined: his horse was no longer seen tied to the palings on Sunday\nnights, and a deadly feud gradually arose between him and the preceptor\nof Sleepy Hollow."
               ]
             },
-            "hint": "What arises between Brom and the teacher?",
-            "why": "A deadly feud gradually arose between him and the preceptor of Sleepy Hollow.",
+            "hint": "What grows between the two men?",
+            "why": "As Ichabod advances, a deadly feud gradually arises: competing for the same person turns rivals into enemies.",
             "standards": [
               "R.1.2",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "theme_thread",
+              "format": "written",
+              "written": {
+                "key_ideas": [
+                  [
+                    "jealous",
+                    "envy",
+                    "rival",
+                    "compet"
+                  ],
+                  [
+                    "feud",
+                    "enem",
+                    "hate",
+                    "bitter",
+                    "change",
+                    "turn",
+                    "fight",
+                    "anger",
+                    "deadly"
+                  ]
+                ],
+                "model": "Jealousy can turn a quiet rivalry into a deadly feud between people who want the same thing."
+              },
+              "prompt": "Using your own words, tell in one sentence what this chunk suggests about how jealousy changes people.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "Certain it is, this\nwas not the case with the redoubtable Brom Bones; and from the moment\nIchabod Crane made his advances, the interests of the former evidently\ndeclined: his horse was no longer seen tied to the palings on Sunday\nnights, and a deadly feud gradually arose between him and the preceptor\nof Sleepy Hollow."
+                ]
+              },
+              "hint": "How does Brom's interest change, and what grows instead?",
+              "why": "Brom's horse stops appearing on Sunday nights and a deadly feud arises: jealousy turns rivals bitter.",
+              "standards": [
+                "R.1.2",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feud-10",
@@ -13554,37 +13879,106 @@
             "note": "Single combat: a one-on-one fight to settle a quarrel."
           },
           "question": {
-            "type": "shades",
-            "prompt": "Why does the narrator call Ichabod wary instead of just scared?",
-            "keywords": [
-              "wary"
-            ],
-            "focus": "wary",
-            "choices": [
-              {
-                "text": "It suggests he is lazy, sleepy and careless"
-              },
-              {
-                "text": "It suggests he is angry and eager to fight"
-              },
-              {
-                "text": "It suggests he is careful and alert to danger",
-                "best": true
-              }
-            ],
-            "proof": {
-              "words": [
-                "too conscious of the superior might of his adversary"
+            "type": "story_structure",
+            "format": "dnd",
+            "dnd": {
+              "kind": "cause_effect",
+              "slots": [
+                {
+                  "id": "honor",
+                  "label": "Brom's rough sense of honor"
+                },
+                {
+                  "id": "might",
+                  "label": "Ichabod knows Brom is far stronger"
+                },
+                {
+                  "id": "boast",
+                  "label": "Ichabod overhears Brom's boast"
+                }
+              ],
+              "items": [
+                {
+                  "id": "combat",
+                  "text": "Brom wants to settle it in single combat",
+                  "slot": "honor",
+                  "line": "Brom, who had a degree of rough chivalry in his nature, would fain have\ncarried matters to open warfare and have settled their pretensions\nto the lady, according to the mode of those most concise and simple\nreasoners, the knights-errant of yore,--by single combat; but Ichabod\nwas too conscious of the superior might of his adversary to enter the\nlists against him; he had overheard a boast of Bones, that he would\n“double the schoolmaster up, and lay him on a shelf of his own\nschoolhouse;” and he was too wary to give him an opportunity."
+                },
+                {
+                  "id": "refuse",
+                  "text": "Ichabod will not agree to a duel",
+                  "slot": "might",
+                  "line": "Brom, who had a degree of rough chivalry in his nature, would fain have\ncarried matters to open warfare and have settled their pretensions\nto the lady, according to the mode of those most concise and simple\nreasoners, the knights-errant of yore,--by single combat; but Ichabod\nwas too conscious of the superior might of his adversary to enter the\nlists against him; he had overheard a boast of Bones, that he would\n“double the schoolmaster up, and lay him on a shelf of his own\nschoolhouse;” and he was too wary to give him an opportunity."
+                },
+                {
+                  "id": "wary",
+                  "text": "Ichabod is careful never to give him a chance",
+                  "slot": "boast",
+                  "line": "Brom, who had a degree of rough chivalry in his nature, would fain have\ncarried matters to open warfare and have settled their pretensions\nto the lady, according to the mode of those most concise and simple\nreasoners, the knights-errant of yore,--by single combat; but Ichabod\nwas too conscious of the superior might of his adversary to enter the\nlists against him; he had overheard a boast of Bones, that he would\n“double the schoolmaster up, and lay him on a shelf of his own\nschoolhouse;” and he was too wary to give him an opportunity."
+                }
               ]
             },
-            "hint": "What does Ichabod know about Brom's strength?",
-            "why": "Wary means watchful: he was too conscious of Brom's superior might to give him a chance.",
+            "prompt": "Connect each cause to what happens between the rivals.",
+            "keywords": [],
+            "hint": "Read the long sentence for each reason and what follows from it.",
+            "why": "Brom's rough chivalry wants single combat; Ichabod, knowing Brom's might, won't fight; having heard the boast, he never gives him an opening.",
             "standards": [
-              "V.1.3",
-              "R.3.1"
-            ],
-            "reviewed": true
-          }
+              "R.1.1",
+              "K12.EE.3.1"
+            ]
+          },
+          "bank": [
+            {
+              "type": "story_structure",
+              "prompt": "Why does the quarrel never come to blows?",
+              "keywords": [
+                "come to blows"
+              ],
+              "choices": [
+                {
+                  "text": "Ichabod is too wary to give Brom a chance",
+                  "best": true
+                },
+                {
+                  "text": "The parson forbids any fighting in the Hollow"
+                },
+                {
+                  "text": "Katrina makes the two of them shake hands"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Brom, who had a degree of rough chivalry in his nature, would fain have\ncarried matters to open warfare and have settled their pretensions\nto the lady, according to the mode of those most concise and simple\nreasoners, the knights-errant of yore,--by single combat; but Ichabod\nwas too conscious of the superior might of his adversary to enter the\nlists against him; he had overheard a boast of Bones, that he would\n“double the schoolmaster up, and lay him on a shelf of his own\nschoolhouse;” and he was too wary to give him an opportunity."
+                ]
+              },
+              "hint": "What does Brom want, and what does Ichabod do about it?",
+              "why": "Brom would settle it by single combat, but Ichabod is too wary to give him the opportunity.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
+        }
+      ],
+      "lightning": [
+        {
+          "id": "fox-tail",
+          "chunk": 1,
+          "after": 4,
+          "question": "What tops Brom's fur cap in cold weather?",
+          "answer": [
+            "In cold weather he was distinguished by a\nfur cap, surmounted with a flaunting fox’s tail; and when the folks at a\ncountry gathering descried this well-known crest at a distance, whisking\nabout among a squad of hard riders, they always stood by for a squall."
+          ]
+        },
+        {
+          "id": "pipe",
+          "chunk": 6,
+          "after": 8,
+          "question": "What does Balt love his daughter even more than?",
+          "answer": [
+            "Balt Van\nTassel was an easy indulgent soul; he loved his daughter better even\nthan his pipe, and, like a reasonable man and an excellent father, let\nher have her way in everything."
+          ]
         }
       ],
       "interview": {
@@ -13702,7 +14096,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line shows who Brom's pranks are aimed at?",
+              "keywords": [
+                "aimed at"
+              ],
+              "proof": {
+                "lines": [
+                  "Ichabod became the object of whimsical persecution to Bones and his gang\nof rough riders."
+                ]
+              },
+              "hint": "Look for the word persecution.",
+              "why": "Ichabod became the object of whimsical persecution to Bones and his gang of rough riders.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-invitation-02",
@@ -13733,26 +14146,67 @@
             "note": "Brom teaches his dog to whine so it can play a fake singing teacher."
           },
           "question": {
-            "type": "catch_lie",
-            "prompt": "Katrina remembers the pranks. One thing she says is false. Tap the line that proves it.",
+            "type": "weigh_evidence",
+            "prompt": "Which detail best supports the claim that Brom wants to shame Ichabod in front of Katrina?",
             "keywords": [
-              "false"
+              "in front of Katrina"
+            ],
+            "choices": [
+              {
+                "text": "He stops up the singing school chimney"
+              },
+              {
+                "text": "He breaks into the schoolhouse at night"
+              },
+              {
+                "text": "He mocks Ichabod whenever she is there",
+                "best": true
+              }
             ],
             "proof": {
               "lines": [
                 "But what was still more annoying, Brom took all\nopportunities of turning him into ridicule in presence of his mistress,\nand had a scoundrel dog whom he taught to whine in the most ludicrous\nmanner, and introduced as a rival of Ichabod’s, to instruct her in\npsalmody."
               ]
             },
-            "testimony": {
-              "speaker": "katrina-van-tassel",
-              "text": "Brom never once made fun of the schoolmaster when I was around. He was a perfect gentleman about it."
-            },
-            "hint": "Check what Brom did whenever Katrina was present.",
-            "why": "Brom took every chance to turn Ichabod into ridicule in front of her, with a whining dog as a rival.",
+            "hint": "Which prank happens when she is present?",
+            "why": "Brom takes every chance to ridicule him \"in presence of his mistress\"; the other pranks happen when she isn't there.",
             "standards": [
-              "K12.EE.1.1"
+              "K12.EE.1.1",
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "weigh_evidence",
+              "prompt": "What evidence suggests the pranks fill Ichabod's head with the supernatural?",
+              "keywords": [
+                "supernatural"
+              ],
+              "choices": [
+                {
+                  "text": "He hears a dog whining like a singer"
+                },
+                {
+                  "text": "He suspects witches meet in his school",
+                  "best": true
+                },
+                {
+                  "text": "He finds his singing school full of smoke"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "They harried his hitherto peaceful domains; smoked\nout his singing school by stopping up the chimney; broke into the\nschoolhouse at night, in spite of its formidable fastenings of withe\nand window stakes, and turned everything topsy-turvy, so that the poor\nschoolmaster began to think all the witches in the country held\ntheir meetings there."
+                ]
+              },
+              "hint": "What does he begin to think after the break-in?",
+              "why": "After everything is turned topsy-turvy, he begins to think all the witches in the country held their meetings there.",
+              "standards": [
+                "K12.EE.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-invitation-03",
@@ -13784,7 +14238,7 @@
           },
           "question": {
             "type": "figure_it_out",
-            "prompt": "Read the words that sceptre of despotic power. What kind of figurative language is this?",
+            "prompt": "Read the words \"that sceptre of despotic power.\" What kind of figurative language is this?",
             "keywords": [
               "sceptre"
             ],
@@ -13816,13 +14270,55 @@
                 }
               ]
             },
-            "hint": "A sceptre is what a king holds. What is Ichabod holding, and what does that make him?",
-            "why": "The ferule is called a sceptre of despotic power: Ichabod rules the room like a king.",
+            "hint": "Who usually holds a sceptre? Is the ruler really one?",
+            "why": "The ruler is called a sceptre: Ichabod rules his little classroom like a stern king.",
             "standards": [
               "R.3.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "figure_it_out",
+              "prompt": "The switch is called \"the birch of justice.\" Which device is this?",
+              "keywords": [
+                "birch of justice"
+              ],
+              "focus": "the birch of justice",
+              "choices": [
+                {
+                  "text": "Alliteration: the words share a first sound"
+                },
+                {
+                  "text": "Metaphor: the switch is treated as a judge's tool",
+                  "best": true
+                },
+                {
+                  "text": "Simile: the switch is compared using like"
+                }
+              ],
+              "choices2": {
+                "prompt": "What does it suggest about the classroom?",
+                "options": [
+                  {
+                    "text": "The birch tree outside is very old"
+                  },
+                  {
+                    "text": "Ichabod plays a judge punishing wrongdoers",
+                    "best": true
+                  },
+                  {
+                    "text": "The class holds real trials every afternoon"
+                  }
+                ]
+              },
+              "hint": "Where does justice usually happen?",
+              "why": "The switch becomes a tool of justice, a constant terror to evil doers: Ichabod plays judge over his pupils.",
+              "standards": [
+                "R.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-invitation-04",
@@ -13854,34 +14350,67 @@
           },
           "question": {
             "type": "between_lines",
-            "prompt": "What can you infer just happened in the classroom before this moment?",
+            "format": "multi",
+            "pick": 2,
+            "prompt": "Which two clues suggest someone was just punished?",
             "keywords": [
-              "infer"
+              "just punished"
             ],
             "choices": [
               {
-                "text": "A storm just hit, so everyone is hiding inside"
+                "text": "A broken switch lies on the classroom floor"
               },
               {
-                "text": "Someone was punished, so everyone is acting busy",
+                "text": "Ichabod is laughing out loud at his desk"
+              },
+              {
+                "text": "Every pupil is suddenly hard at work on a book",
                 "best": true
               },
               {
-                "text": "A party was held, so everyone is tired"
+                "text": "Some pupils keep one eye fixed on the master",
+                "best": true
               }
             ],
-            "proof": {
-              "lines": [
-                "Apparently there had been some appalling act of justice\nrecently inflicted, for his scholars were all busily intent upon their\nbooks, or slyly whispering behind them with one eye kept upon the\nmaster; and a kind of buzzing stillness reigned throughout the\nschoolroom."
-              ]
-            },
-            "hint": "Why are the scholars all so busy, with one eye on the master?",
-            "why": "Some appalling act of justice had recently been inflicted, so everyone is intent on their books.",
+            "hint": "How are the pupils behaving, and who are they watching?",
+            "why": "The scholars are busily intent on their books or whispering with one eye on the master: an appalling act of justice has just happened.",
             "standards": [
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "How do the pupils seem to feel this afternoon?",
+              "keywords": [
+                "seem to feel"
+              ],
+              "choices": [
+                {
+                  "text": "Excited about a coming holiday"
+                },
+                {
+                  "text": "Nervous, as if afraid of trouble",
+                  "best": true
+                },
+                {
+                  "text": "Bored and sleepy after lunch"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Apparently there had been some appalling act of justice\nrecently inflicted, for his scholars were all busily intent upon their\nbooks, or slyly whispering behind them with one eye kept upon the\nmaster; and a kind of buzzing stillness reigned throughout the\nschoolroom."
+                ]
+              },
+              "hint": "Where do they keep one eye?",
+              "why": "They stay busy or whisper with one eye on the master: they are wary of more punishment.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-invitation-05",
@@ -13932,7 +14461,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line shows the room had been calm only moments before?",
+              "keywords": [
+                "calm"
+              ],
+              "proof": {
+                "lines": [
+                  "All was now bustle and hubbub in the late quiet schoolroom."
+                ]
+              },
+              "hint": "Look for the word late.",
+              "why": "Bustle and hubbub fill \"the late quiet schoolroom\": it had just been still.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-invitation-06",
@@ -13963,36 +14511,97 @@
             "note": "A simile: the freed children burst out like a crowd of little devils."
           },
           "question": {
-            "type": "character_clue",
-            "prompt": "Which trait does Ichabod show by rushing the afternoon?",
-            "keywords": [
-              "trait"
-            ],
-            "choices": [
-              {
-                "text": "Eager and impatient to get to the party",
-                "best": true
-              },
-              {
-                "text": "Careful and patient with every lesson"
-              },
-              {
-                "text": "Calm, careful and in no hurry at all"
-              }
-            ],
-            "proof": {
-              "words": [
-                "hurried through their lessons",
-                "an hour before the usual time"
+            "type": "story_structure",
+            "format": "dnd",
+            "dnd": {
+              "kind": "order_events",
+              "slots": [
+                {
+                  "id": "1",
+                  "label": "First"
+                },
+                {
+                  "id": "2",
+                  "label": "Next"
+                },
+                {
+                  "id": "3",
+                  "label": "Then"
+                },
+                {
+                  "id": "4",
+                  "label": "Last"
+                }
+              ],
+              "items": [
+                {
+                  "id": "lessons",
+                  "text": "Lessons are rushed through, skipping trifles",
+                  "slot": "1",
+                  "line": "The scholars\nwere hurried through their lessons without stopping at trifles; those\nwho were nimble skipped over half with impunity, and those who were\ntardy had a smart application now and then in the rear, to quicken their\nspeed or help them over a tall word."
+                },
+                {
+                  "id": "books",
+                  "text": "Books are flung aside and inkstands tipped over",
+                  "slot": "2",
+                  "line": "Books were flung aside without\nbeing put away on the shelves, inkstands were overturned, benches thrown\ndown, and the whole school was turned loose an hour before the usual\ntime, bursting forth like a legion of young imps, yelping and racketing\nabout the green in joy at their early emancipation."
+                },
+                {
+                  "id": "loose",
+                  "text": "The school is let out an hour early",
+                  "slot": "3",
+                  "line": "Books were flung aside without\nbeing put away on the shelves, inkstands were overturned, benches thrown\ndown, and the whole school was turned loose an hour before the usual\ntime, bursting forth like a legion of young imps, yelping and racketing\nabout the green in joy at their early emancipation."
+                },
+                {
+                  "id": "green",
+                  "text": "The children race yelping about the green",
+                  "slot": "4",
+                  "line": "Books were flung aside without\nbeing put away on the shelves, inkstands were overturned, benches thrown\ndown, and the whole school was turned loose an hour before the usual\ntime, bursting forth like a legion of young imps, yelping and racketing\nabout the green in joy at their early emancipation."
+                }
               ]
             },
-            "hint": "How does he treat the lessons, and when does school end?",
-            "why": "The scholars were hurried through their lessons and turned loose an hour before the usual time.",
+            "prompt": "Put the end of the school day in the order it happens.",
+            "keywords": [],
+            "hint": "Follow the two sentences from start to finish.",
+            "why": "The lessons are hurried, books and benches go flying, the school is turned loose early, and the children burst out onto the green.",
             "standards": [
               "R.1.1",
-              "K12.EE.1.1"
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "story_structure",
+              "prompt": "Why do the slow pupils get \"a smart application now and then in the rear\"?",
+              "keywords": [
+                "slow pupils"
+              ],
+              "choices": [
+                {
+                  "text": "To punish a stolen apple"
+                },
+                {
+                  "text": "To wake them from a nap"
+                },
+                {
+                  "text": "To make them finish faster",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "The scholars\nwere hurried through their lessons without stopping at trifles; those\nwho were nimble skipped over half with impunity, and those who were\ntardy had a smart application now and then in the rear, to quicken their\nspeed or help them over a tall word."
+                ]
+              },
+              "hint": "Read to the end of that sentence.",
+              "why": "The smacks are meant \"to quicken their speed or help them over a tall word\": Ichabod wants the lessons over.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.3.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "the-invitation-07",
@@ -14023,22 +14632,45 @@
             "note": "A simile: Ichabod rides out like a knight in an old romance, with mock grandeur."
           },
           "question": {
-            "type": "find_it",
-            "prompt": "Which line tells whose animal Ichabod rides?",
-            "keywords": [
-              "whose animal"
-            ],
+            "type": "catch_lie",
+            "prompt": "Hans Van Ripper talks about the schoolmaster's ride. Part of what he says is false. Tap the sentence that proves it.",
+            "keywords": [],
             "proof": {
               "lines": [
                 "That he might make his appearance before his\nmistress in the true style of a cavalier, he borrowed a horse from the\nfarmer with whom he was domiciliated, a choleric old Dutchman of the\nname of Hans Van Ripper, and, thus gallantly mounted, issued forth like\na knight-errant in quest of adventures."
               ]
             },
-            "hint": "Whose stable does it come from?",
-            "why": "He borrowed a horse from Hans Van Ripper, the farmer he was staying with.",
+            "testimony": {
+              "speaker": "hans-van-ripper",
+              "text": "I never lent that schoolmaster anything, least of all one of my horses."
+            },
+            "hint": "Whose horse does Ichabod borrow?",
+            "why": "Ichabod borrowed a horse from the farmer he lodged with, Hans Van Ripper himself.",
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "catch_lie",
+              "prompt": "Brom Bones mocks the schoolmaster's preparations. One detail is untrue. Tap the sentence that shows it.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "The gallant Ichabod now spent at least an extra half hour at his toilet,\nbrushing and furbishing up his best, and indeed only suit of rusty\nblack, and arranging his locks by a bit of broken looking-glass that\nhung up in the schoolhouse."
+                ]
+              },
+              "testimony": {
+                "speaker": "brom-bones",
+                "text": "He set off just as he was. He didn't so much as comb his hair."
+              },
+              "hint": "How long did he spend getting ready?",
+              "why": "He spent an extra half hour brushing his suit and arranging his locks in a broken looking-glass.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-invitation-08",
@@ -14069,35 +14701,99 @@
             "note": "A simile: the horse's head is long and blocky like a hammer."
           },
           "question": {
-            "type": "whose_eyes",
-            "prompt": "What tone does the narrator take toward Ichabod's ride?",
-            "keywords": [
-              "tone"
-            ],
-            "choices": [
-              {
-                "text": "Admiring, praising a fine and noble war horse"
-              },
-              {
-                "text": "Fearful, warning readers that the animal is really a ghost"
-              },
-              {
-                "text": "Mocking, treating a broken-down nag like a grand charger",
-                "best": true
-              }
-            ],
-            "proof": {
-              "lines": [
-                "The animal he bestrode was\na broken-down plow-horse, that had outlived almost everything but its\nviciousness."
+            "type": "shades",
+            "format": "dnd",
+            "dnd": {
+              "kind": "word_feeling",
+              "slots": [
+                {
+                  "id": "worn",
+                  "label": "Worn out"
+                },
+                {
+                  "id": "fierce",
+                  "label": "Still fierce"
+                }
+              ],
+              "items": [
+                {
+                  "id": "plow",
+                  "text": "A broken-down plow-horse",
+                  "slot": "worn",
+                  "line": "The animal he bestrode was\na broken-down plow-horse, that had outlived almost everything but its\nviciousness."
+                },
+                {
+                  "id": "gaunt",
+                  "text": "Gaunt and shaggy, with a ewe neck",
+                  "slot": "worn",
+                  "line": "He was gaunt and shagged, with a ewe neck, and a head like\na hammer; his rusty mane and tail were tangled and knotted with burs;\none eye had lost its pupil, and was glaring and spectral, but the other\nhad the gleam of a genuine devil in it."
+                },
+                {
+                  "id": "burs",
+                  "text": "A mane knotted with burs",
+                  "slot": "worn",
+                  "line": "He was gaunt and shagged, with a ewe neck, and a head like\na hammer; his rusty mane and tail were tangled and knotted with burs;\none eye had lost its pupil, and was glaring and spectral, but the other\nhad the gleam of a genuine devil in it."
+                },
+                {
+                  "id": "vicious",
+                  "text": "Outlived everything but its viciousness",
+                  "slot": "fierce",
+                  "line": "The animal he bestrode was\na broken-down plow-horse, that had outlived almost everything but its\nviciousness."
+                },
+                {
+                  "id": "devil",
+                  "text": "One eye with the gleam of a devil",
+                  "slot": "fierce",
+                  "line": "He was gaunt and shagged, with a ewe neck, and a head like\na hammer; his rusty mane and tail were tangled and knotted with burs;\none eye had lost its pupil, and was glaring and spectral, but the other\nhad the gleam of a genuine devil in it."
+                }
               ]
             },
-            "hint": "He promises a romantic account. Then what does he describe?",
-            "why": "In the true spirit of romantic story he presents a broken-down plow-horse that outlived everything but its viciousness.",
+            "prompt": "Sort each detail about the horse: does it make him seem worn out, or still fierce?",
+            "keywords": [],
+            "hint": "Which details show age, and which show a temper?",
+            "why": "He is broken-down, gaunt and burred, yet he keeps his viciousness and a devilish gleam in one eye.",
             "standards": [
-              "R.1.3",
-              "K12.EE.1.1"
+              "V.1.3",
+              "R.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "shades",
+              "prompt": "Why might the narrator call one eye \"glaring and spectral\" rather than just blind?",
+              "keywords": [
+                "glaring and spectral"
+              ],
+              "focus": "glaring and spectral",
+              "choices": [
+                {
+                  "text": "It shows the horse is calm and gentle"
+                },
+                {
+                  "text": "It means the horse can see in the dark"
+                },
+                {
+                  "text": "It makes the horse look ghostly and wild",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "He was gaunt and shagged, with a ewe neck, and a head like\na hammer; his rusty mane and tail were tangled and knotted with burs;\none eye had lost its pupil, and was glaring and spectral, but the other\nhad the gleam of a genuine devil in it."
+                ]
+              },
+              "hint": "What is in his other eye?",
+              "why": "Next to \"the gleam of a genuine devil,\" a glaring, spectral eye makes the horse look ghostly and wild.",
+              "standards": [
+                "V.1.3",
+                "R.3.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "gleam of a genuine devil"
+              ]
+            }
+          ]
         },
         {
           "id": "the-invitation-09",
@@ -14128,37 +14824,92 @@
             "note": "A hidden wild streak, as if a little devil lives inside."
           },
           "question": {
-            "type": "shades",
-            "prompt": "Why might the horse be called Gunpowder instead of a gentle name?",
-            "keywords": [
-              "Gunpowder"
-            ],
-            "focus": "Gunpowder",
-            "choices": [
-              {
-                "text": "It hints he is gray like a puff of smoke"
-              },
-              {
-                "text": "It hints he was once fiery and explosive",
-                "best": true
-              },
-              {
-                "text": "It hints he is slow and very sleepy"
-              }
-            ],
+            "type": "theme_thread",
+            "format": "written",
+            "written": {
+              "key_ideas": [
+                [
+                  "appear",
+                  "look",
+                  "seem",
+                  "outside",
+                  "judge",
+                  "cover"
+                ],
+                [
+                  "fool",
+                  "deceiv",
+                  "mislead",
+                  "wrong",
+                  "inside",
+                  "really",
+                  "hidden",
+                  "still",
+                  "fire",
+                  "spirit"
+                ]
+              ],
+              "model": "Appearances can fool us, since something that looks old and worn out may still have plenty of fire inside."
+            },
+            "prompt": "In one sentence, explain what the old horse suggests about judging by appearances.",
+            "keywords": [],
             "proof": {
-              "words": [
-                "more of the lurking devil in him"
+              "lines": [
+                "He had, in fact, been a favorite steed of his master’s, the choleric Van\nRipper, who was a furious rider, and had infused, very probably, some of\nhis own spirit into the animal; for, old and broken-down as he looked,\nthere was more of the lurking devil in him than in any young filly in\nthe country."
               ]
             },
-            "hint": "Read what the narrator says is still in him.",
-            "why": "There is more of the lurking devil in him than in any young filly: a fiery horse, true to his name.",
+            "hint": "Notice the words \"old and broken-down as he looked.\"",
+            "why": "Old and broken-down as he looked, Gunpowder had more lurking devil in him than any young filly: looks can deceive.",
             "standards": [
-              "V.1.3",
-              "R.3.1"
-            ],
-            "reviewed": true
-          }
+              "R.1.2",
+              "K12.EE.1.1"
+            ]
+          },
+          "bank": [
+            {
+              "type": "theme_thread",
+              "format": "written",
+              "written": {
+                "key_ideas": [
+                  [
+                    "spirit",
+                    "fire",
+                    "fiery",
+                    "mettle",
+                    "devil",
+                    "energy",
+                    "wild",
+                    "temper"
+                  ],
+                  [
+                    "old",
+                    "age",
+                    "worn",
+                    "broken",
+                    "last",
+                    "remain",
+                    "still",
+                    "even",
+                    "never"
+                  ]
+                ],
+                "model": "A fiery spirit can last even when the body grows old and worn."
+              },
+              "prompt": "Using your own words, tell in one sentence what Gunpowder suggests about fire and energy in old age.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "He had, in fact, been a favorite steed of his master’s, the choleric Van\nRipper, who was a furious rider, and had infused, very probably, some of\nhis own spirit into the animal; for, old and broken-down as he looked,\nthere was more of the lurking devil in him than in any young filly in\nthe country."
+                ]
+              },
+              "hint": "What is still inside the old horse?",
+              "why": "Old and broken-down, he still has more of the lurking devil in him than any young filly: spirit can outlast age.",
+              "standards": [
+                "R.1.2",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-invitation-10",
@@ -14189,21 +14940,21 @@
             "note": "His sharp, bent elbows stick out like grasshopper legs."
           },
           "question": {
-            "type": "theme_thread",
-            "prompt": "Which idea about Ichabod's looks keeps coming back?",
+            "type": "character_clue",
+            "prompt": "How does Ichabod come across as he rides?",
             "keywords": [
-              "keeps coming back"
+              "come across"
             ],
             "choices": [
               {
-                "text": "He looks strong and dashing, a true horseman"
-              },
-              {
-                "text": "He looks rich and stylish, dressed like a lord"
-              },
-              {
-                "text": "He looks awkward and comical, all bony limbs",
+                "text": "Awkward and comical, all elbows",
                 "best": true
+              },
+              {
+                "text": "Strong and dashing, a true horseman"
+              },
+              {
+                "text": "Rich and stylish, dressed like a lord"
               }
             ],
             "proof": {
@@ -14211,13 +14962,66 @@
                 "He rode with short\nstirrups, which brought his knees nearly up to the pommel of the saddle;\nhis sharp elbows stuck out like grasshoppers’; he carried his whip\nperpendicularly in his hand, like a sceptre, and as his horse jogged on,\nthe motion of his arms was not unlike the flapping of a pair of wings."
               ]
             },
-            "hint": "Remember the scarecrow from earlier. What do his elbows look like now?",
-            "why": "With knees at the pommel and elbows like grasshoppers', he is as gangly and comic as ever.",
+            "hint": "Look at his knees, his elbows and his arms.",
+            "why": "Knees up to the saddle, elbows like a grasshopper's, arms flapping like wings: he looks awkward and comical.",
             "standards": [
-              "R.1.2",
+              "R.1.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "character_clue",
+              "prompt": "The narrator calls Ichabod \"a suitable figure for such a steed.\" What does he mean?",
+              "keywords": [
+                "suitable figure"
+              ],
+              "choices": [
+                {
+                  "text": "Ichabod is the finest rider in the county"
+                },
+                {
+                  "text": "The horse was chosen to fit his height"
+                },
+                {
+                  "text": "Rider and horse are equally odd-looking",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Ichabod was a suitable figure for such a steed."
+                ]
+              },
+              "hint": "What was the horse like?",
+              "why": "A gangly rider suits a broken-down horse: the two are an equally odd pair.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
+        }
+      ],
+      "lightning": [
+        {
+          "id": "chimney",
+          "chunk": 2,
+          "after": 4,
+          "question": "How did the gang smoke out the singing school?",
+          "answer": [
+            "They harried his hitherto peaceful domains; smoked\nout his singing school by stopping up the chimney; broke into the\nschoolhouse at night, in spite of its formidable fastenings of withe\nand window stakes, and turned everything topsy-turvy, so that the poor\nschoolmaster began to think all the witches in the country held\ntheir meetings there."
+          ]
+        },
+        {
+          "id": "early-out",
+          "chunk": 6,
+          "after": 8,
+          "question": "How much earlier than usual was the school let out?",
+          "answer": [
+            "Books were flung aside without\nbeing put away on the shelves, inkstands were overturned, benches thrown\ndown, and the whole school was turned loose an hour before the usual\ntime, bursting forth like a legion of young imps, yelping and racketing\nabout the green in joy at their early emancipation."
+          ]
         }
       ],
       "interview": {
@@ -14348,7 +15152,40 @@
               "R.1.3",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "whose_eyes",
+              "prompt": "The narrator calls Ichabod's forehead a \"scanty strip.\" What does that show about the narrator's attitude?",
+              "keywords": [
+                "scanty strip"
+              ],
+              "choices": [
+                {
+                  "text": "He admires Ichabod's handsome face"
+                },
+                {
+                  "text": "He pities Ichabod for being ill"
+                },
+                {
+                  "text": "He enjoys poking fun at Ichabod's looks",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "A\nsmall wool hat rested on the top of his nose, for so his scanty strip of\nforehead might be called, and the skirts of his black coat fluttered out\nalmost to the horses tail."
+                ]
+              },
+              "hint": "Is the description kind or teasing?",
+              "why": "A hat resting on his nose, since his scanty strip of forehead might be called one: the narrator is teasing.",
+              "standards": [
+                "R.1.3",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "the-ride-to-the-party-02",
@@ -14380,7 +15217,7 @@
           },
           "question": {
             "type": "figure_it_out",
-            "prompt": "Read the words nature wore that rich and golden livery. What kind of figurative language is this?",
+            "prompt": "Read the words \"nature wore that rich and golden livery.\" What kind of figurative language is this?",
             "keywords": [
               "golden livery"
             ],
@@ -14412,13 +15249,55 @@
                 }
               ]
             },
-            "hint": "Livery is a servant's uniform. Who is wearing it here?",
-            "why": "Nature wears golden livery like a person in fine clothes: the land glows gold in autumn.",
+            "hint": "Livery is a uniform. Who wears clothes?",
+            "why": "Nature is dressed in golden livery like a person: the autumn land glows gold.",
             "standards": [
               "R.3.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "figure_it_out",
+              "prompt": "Some trees were \"nipped by the frosts.\" Which device is this?",
+              "keywords": [
+                "nipped"
+              ],
+              "focus": "nipped by the frosts",
+              "choices": [
+                {
+                  "text": "Simile: frost is compared using like"
+                },
+                {
+                  "text": "Onomatopoeia: the word copies a sound"
+                },
+                {
+                  "text": "Personification: frost bites like a beast",
+                  "best": true
+                }
+              ],
+              "choices2": {
+                "prompt": "What does it show?",
+                "options": [
+                  {
+                    "text": "Farmers have cut the old trees right down"
+                  },
+                  {
+                    "text": "Animals have chewed the green leaves away"
+                  },
+                  {
+                    "text": "The cold has turned the leaves bright colors",
+                    "best": true
+                  }
+                ]
+              },
+              "hint": "What usually nips?",
+              "why": "The frost nips like a creature with teeth, and the bitten leaves turn orange, purple and scarlet.",
+              "standards": [
+                "R.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-ride-to-the-party-03",
@@ -14454,22 +15333,69 @@
             "note": "The birds' last feasts before they fly south for winter."
           },
           "question": {
-            "type": "find_it",
-            "prompt": "Which line shows flocks heading south across the sky?",
+            "type": "between_lines",
+            "format": "multi",
+            "pick": 2,
+            "prompt": "Which two signs show that the season is changing?",
             "keywords": [
-              "heading south"
+              "season is changing"
             ],
-            "proof": {
-              "lines": [
-                "Streaming files of wild ducks began to make their appearance high in the\nair; the bark of the squirrel might be heard from the groves of beech\nand hickory-nuts, and the pensive whistle of the quail at intervals from\nthe neighboring stubble field."
-              ]
-            },
-            "hint": "Look high in the air.",
-            "why": "Streaming files of wild ducks began to appear high in the air.",
+            "choices": [
+              {
+                "text": "Wild ducks stream high across the sky",
+                "best": true
+              },
+              {
+                "text": "Small birds hold their last big feasts",
+                "best": true
+              },
+              {
+                "text": "Snow already covers the stubble fields"
+              },
+              {
+                "text": "Every tree in the grove has lost its leaves"
+              }
+            ],
+            "hint": "What are the birds doing, and why now?",
+            "why": "Wild ducks fly over in streaming files and small birds take their farewell banquets: birds are leaving before winter.",
             "standards": [
+              "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "What do the words \"farewell banquets\" suggest the small birds will soon do?",
+              "keywords": [
+                "farewell banquets"
+              ],
+              "choices": [
+                {
+                  "text": "Fight over the last seeds"
+                },
+                {
+                  "text": "Leave for the winter",
+                  "best": true
+                },
+                {
+                  "text": "Build nests for spring"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "The small birds were taking their farewell banquets."
+                ]
+              },
+              "hint": "Why would you say farewell?",
+              "why": "A farewell feast comes before going away: the birds will soon fly south.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "the-ride-to-the-party-04",
@@ -14503,7 +15429,7 @@
             "type": "shades",
             "prompt": "Why does the narrator call the blue jay a noisy coxcomb?",
             "keywords": [
-              "coxcomb"
+              "noisy coxcomb"
             ],
             "focus": "noisy coxcomb",
             "choices": [
@@ -14519,18 +15445,59 @@
               }
             ],
             "proof": {
-              "words": [
-                "in his gay light blue coat and white underclothes"
+              "lines": [
+                "There was the honest cock robin, the favorite game of\nstripling sportsmen, with its loud querulous note; and the twittering\nblackbirds flying in sable clouds; and the golden-winged woodpecker with\nhis crimson crest, his broad black gorget, and splendid plumage; and the\ncedar bird, with its red-tipt wings and yellow-tipt tail and its little\nmonteiro cap of feathers; and the blue jay, that noisy coxcomb, in his\ngay light blue coat and white underclothes, screaming and chattering,\nnodding and bobbing and bowing, and pretending to be on good terms with\nevery songster of the grove."
               ]
             },
-            "hint": "A coxcomb is a showy dresser. Find his outfit.",
-            "why": "He struts in his gay light blue coat and white underclothes, screaming and bowing: a vain show-off.",
+            "hint": "Look at how the jay is dressed and how it behaves.",
+            "why": "In his gay light blue coat, bowing and pretending to be everyone's friend, the jay is a vain show-off.",
             "standards": [
               "V.1.3",
               "R.3.1"
             ],
-            "reviewed": true
-          }
+            "reviewed": true,
+            "clues": [
+              "gay light blue coat",
+              "pretending to be on good terms"
+            ]
+          },
+          "bank": [
+            {
+              "type": "shades",
+              "prompt": "Why might the narrator describe the blackbirds as \"sable clouds\"?",
+              "keywords": [
+                "sable clouds"
+              ],
+              "focus": "sable clouds",
+              "choices": [
+                {
+                  "text": "They bring the rain with them"
+                },
+                {
+                  "text": "They fly in dark, thick flocks",
+                  "best": true
+                },
+                {
+                  "text": "They are made of drifting smoke"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "There was the honest cock robin, the favorite game of\nstripling sportsmen, with its loud querulous note; and the twittering\nblackbirds flying in sable clouds; and the golden-winged woodpecker with\nhis crimson crest, his broad black gorget, and splendid plumage; and the\ncedar bird, with its red-tipt wings and yellow-tipt tail and its little\nmonteiro cap of feathers; and the blue jay, that noisy coxcomb, in his\ngay light blue coat and white underclothes, screaming and chattering,\nnodding and bobbing and bowing, and pretending to be on good terms with\nevery songster of the grove."
+                ]
+              },
+              "hint": "What color are these birds?",
+              "why": "Sable means black: the blackbirds fly in dark, cloud-like flocks.",
+              "standards": [
+                "V.1.3",
+                "R.3.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "blackbirds"
+              ]
+            }
+          ]
         },
         {
           "id": "the-ride-to-the-party-05",
@@ -14579,17 +15546,49 @@
               }
             ],
             "proof": {
-              "words": [
-                "every symptom of culinary abundance"
+              "lines": [
+                "As Ichabod jogged slowly on his way, his eye, ever open to every symptom\nof culinary abundance, ranged with delight over the treasures of jolly\nautumn."
               ]
             },
             "hint": "What is his eye always open to?",
-            "why": "His eye was ever open to every symptom of culinary abundance.",
+            "why": "His eye is \"ever open to every symptom of culinary abundance\": food is what he notices.",
             "standards": [
               "R.1.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "character_clue",
+              "prompt": "What does his unhurried ride suggest about his mood?",
+              "keywords": [
+                "unhurried"
+              ],
+              "choices": [
+                {
+                  "text": "He is nervous about being late"
+                },
+                {
+                  "text": "He is angry at the borrowed horse"
+                },
+                {
+                  "text": "He is relaxed and enjoying himself",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "As Ichabod jogged slowly on his way, his eye, ever open to every symptom\nof culinary abundance, ranged with delight over the treasures of jolly\nautumn."
+                ]
+              },
+              "hint": "How does he feel as he looks around?",
+              "why": "He jogs slowly while his eye ranges with delight over jolly autumn: he is in no hurry and happy.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-ride-to-the-party-06",
@@ -14620,35 +15619,86 @@
             "note": "Personification: the pumpkins lie like people sunbathing."
           },
           "question": {
-            "type": "between_lines",
-            "prompt": "What can you infer Ichabod daydreams about near the end of this chunk?",
-            "keywords": [
-              "infer"
-            ],
-            "choices": [
-              {
-                "text": "Winning first prize at the harvest fair"
-              },
-              {
-                "text": "Selling the corn crop for a fortune"
-              },
-              {
-                "text": "Katrina serving him pancakes as his wife",
-                "best": true
-              }
-            ],
-            "proof": {
-              "lines": [
-                "Farther on he beheld great fields of Indian corn, with its golden ears\npeeping from their leafy coverts, and holding out the promise of cakes\nand hasty-pudding; and the yellow pumpkins lying beneath them, turning\nup their fair round bellies to the sun, and giving ample prospects of\nthe most luxurious of pies; and anon he passed the fragrant buckwheat\nfields breathing the odor of the beehive, and as he beheld them, soft\nanticipations stole over his mind of dainty slapjacks, well buttered,\nand garnished with honey or treacle, by the delicate little dimpled hand\nof Katrina Van Tassel."
+            "type": "story_structure",
+            "format": "dnd",
+            "dnd": {
+              "kind": "cause_effect",
+              "slots": [
+                {
+                  "id": "corn",
+                  "label": "Golden ears of Indian corn"
+                },
+                {
+                  "id": "pumpkin",
+                  "label": "Yellow pumpkins in the sun"
+                },
+                {
+                  "id": "buckwheat",
+                  "label": "Fragrant buckwheat fields"
+                }
+              ],
+              "items": [
+                {
+                  "id": "pudding",
+                  "text": "Cakes and hasty-pudding",
+                  "slot": "corn",
+                  "line": "Farther on he beheld great fields of Indian corn, with its golden ears\npeeping from their leafy coverts, and holding out the promise of cakes\nand hasty-pudding; and the yellow pumpkins lying beneath them, turning\nup their fair round bellies to the sun, and giving ample prospects of\nthe most luxurious of pies; and anon he passed the fragrant buckwheat\nfields breathing the odor of the beehive, and as he beheld them, soft\nanticipations stole over his mind of dainty slapjacks, well buttered,\nand garnished with honey or treacle, by the delicate little dimpled hand\nof Katrina Van Tassel."
+                },
+                {
+                  "id": "pies",
+                  "text": "The most luxurious of pies",
+                  "slot": "pumpkin",
+                  "line": "Farther on he beheld great fields of Indian corn, with its golden ears\npeeping from their leafy coverts, and holding out the promise of cakes\nand hasty-pudding; and the yellow pumpkins lying beneath them, turning\nup their fair round bellies to the sun, and giving ample prospects of\nthe most luxurious of pies; and anon he passed the fragrant buckwheat\nfields breathing the odor of the beehive, and as he beheld them, soft\nanticipations stole over his mind of dainty slapjacks, well buttered,\nand garnished with honey or treacle, by the delicate little dimpled hand\nof Katrina Van Tassel."
+                },
+                {
+                  "id": "slapjacks",
+                  "text": "Buttered slapjacks served by Katrina",
+                  "slot": "buckwheat",
+                  "line": "Farther on he beheld great fields of Indian corn, with its golden ears\npeeping from their leafy coverts, and holding out the promise of cakes\nand hasty-pudding; and the yellow pumpkins lying beneath them, turning\nup their fair round bellies to the sun, and giving ample prospects of\nthe most luxurious of pies; and anon he passed the fragrant buckwheat\nfields breathing the odor of the beehive, and as he beheld them, soft\nanticipations stole over his mind of dainty slapjacks, well buttered,\nand garnished with honey or treacle, by the delicate little dimpled hand\nof Katrina Van Tassel."
+                }
               ]
             },
-            "hint": "Whose hand serves the slapjacks in his mind?",
-            "why": "He imagines dainty slapjacks served by the delicate little hand of Katrina Van Tassel.",
+            "prompt": "Connect each crop Ichabod sees to the treat it makes him imagine.",
+            "keywords": [],
+            "hint": "Follow the long sentence crop by crop.",
+            "why": "The corn promises cakes and pudding, the pumpkins pies, and the buckwheat slapjacks from Katrina's dimpled hand.",
             "standards": [
-              "K12.EE.3.1",
-              "K12.EE.1.1"
+              "R.1.1",
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "story_structure",
+              "prompt": "Where does Ichabod's chain of food thoughts end up?",
+              "keywords": [
+                "end up"
+              ],
+              "choices": [
+                {
+                  "text": "With Katrina serving him pancakes",
+                  "best": true
+                },
+                {
+                  "text": "With selling the crops at market"
+                },
+                {
+                  "text": "With a feast for the whole school"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Farther on he beheld great fields of Indian corn, with its golden ears\npeeping from their leafy coverts, and holding out the promise of cakes\nand hasty-pudding; and the yellow pumpkins lying beneath them, turning\nup their fair round bellies to the sun, and giving ample prospects of\nthe most luxurious of pies; and anon he passed the fragrant buckwheat\nfields breathing the odor of the beehive, and as he beheld them, soft\nanticipations stole over his mind of dainty slapjacks, well buttered,\nand garnished with honey or treacle, by the delicate little dimpled hand\nof Katrina Van Tassel."
+                ]
+              },
+              "hint": "Whose hand appears at the very end of the sentence?",
+              "why": "The daydream ends with dainty slapjacks served by the dimpled little hand of Katrina Van Tassel.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-ride-to-the-party-07",
@@ -14694,7 +15744,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line shows evening coming on?",
+              "keywords": [
+                "evening coming on"
+              ],
+              "proof": {
+                "lines": [
+                  "The sun\ngradually wheeled his broad disk down in the west."
+                ]
+              },
+              "hint": "Look to the west.",
+              "why": "The sun gradually wheeled his broad disk down in the west.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-ride-to-the-party-08",
@@ -14745,7 +15814,28 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "catch_lie",
+              "prompt": "Katrina describes the river that night. One detail is untrue. Tap the sentence that shows it.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "A sloop was loitering\nin the distance, dropping slowly down with the tide, her sail hanging\nuselessly against the mast; and as the reflection of the sky gleamed\nalong the still water, it seemed as if the vessel was suspended in the\nair."
+                ]
+              },
+              "testimony": {
+                "speaker": "katrina-van-tassel",
+                "text": "By then every boat on the river had been tied up and left empty for the night."
+              },
+              "hint": "Is anything moving on the water?",
+              "why": "A sloop was loitering in the distance, drifting slowly down with the tide.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-ride-to-the-party-09",
@@ -14776,22 +15866,88 @@
             "note": "Leathern-faced: faces tanned and tough as leather from outdoor work."
           },
           "question": {
-            "type": "find_it",
-            "prompt": "Which line tells when Ichabod reaches the gathering?",
-            "keywords": [
-              "reaches"
-            ],
-            "proof": {
-              "lines": [
-                "It was toward evening that Ichabod arrived at the castle of the Heer\nVan Tassel, which he found thronged with the pride and flower of the\nadjacent country."
+            "type": "character_clue",
+            "format": "dnd",
+            "dnd": {
+              "kind": "match_character",
+              "slots": [
+                {
+                  "id": "farmers",
+                  "label": "The old farmers"
+                },
+                {
+                  "id": "dames",
+                  "label": "Their wives"
+                }
+              ],
+              "items": [
+                {
+                  "id": "coats",
+                  "text": "Homespun coats and huge shoes",
+                  "slot": "farmers",
+                  "line": "Old farmers, a spare leathern-faced race, in homespun\ncoats and breeches, blue stockings, huge shoes, and magnificent pewter\nbuckles."
+                },
+                {
+                  "id": "buckles",
+                  "text": "Magnificent pewter buckles",
+                  "slot": "farmers",
+                  "line": "Old farmers, a spare leathern-faced race, in homespun\ncoats and breeches, blue stockings, huge shoes, and magnificent pewter\nbuckles."
+                },
+                {
+                  "id": "caps",
+                  "text": "Close-crimped caps",
+                  "slot": "dames",
+                  "line": "Their brisk, withered little dames, in close-crimped caps,\nlong-waisted short gowns, homespun petticoats, with scissors and\npincushions, and gay calico pockets hanging on the outside."
+                },
+                {
+                  "id": "pockets",
+                  "text": "Gay calico pockets hung outside",
+                  "slot": "dames",
+                  "line": "Their brisk, withered little dames, in close-crimped caps,\nlong-waisted short gowns, homespun petticoats, with scissors and\npincushions, and gay calico pockets hanging on the outside."
+                }
               ]
             },
-            "hint": "Look for a time of day.",
-            "why": "It was toward evening that Ichabod arrived at the castle of the Heer Van Tassel.",
+            "prompt": "Match each detail to the old farmers or to their wives.",
+            "keywords": [],
+            "hint": "One sentence describes the men, the next their wives.",
+            "why": "The farmers wear homespun, huge shoes and pewter buckles; their dames wear crimped caps and calico pockets.",
             "standards": [
+              "R.1.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "character_clue",
+              "prompt": "What do the husbands' clothes suggest about them?",
+              "keywords": [
+                "husbands"
+              ],
+              "choices": [
+                {
+                  "text": "They are rich merchants from the city"
+                },
+                {
+                  "text": "They are soldiers just home from war"
+                },
+                {
+                  "text": "They are plain, hardworking country people",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Old farmers, a spare leathern-faced race, in homespun\ncoats and breeches, blue stockings, huge shoes, and magnificent pewter\nbuckles."
+                ]
+              },
+              "hint": "Who made their coats?",
+              "why": "A spare, leathern-faced race in homespun coats: weathered country people who make their own clothes.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-ride-to-the-party-10",
@@ -14823,34 +15979,108 @@
           },
           "question": {
             "type": "theme_thread",
-            "prompt": "Which idea keeps coming back in the way the narrator describes valley folk?",
-            "keywords": [
-              "keeps coming back"
-            ],
-            "choices": [
-              {
-                "text": "Old ways hold on, with only small touches of change",
-                "best": true
-              },
-              {
-                "text": "Everyone rushes to copy the newest fashions"
-              },
-              {
-                "text": "The valley folk are poor and dress in patched rags"
-              }
-            ],
+            "format": "written",
+            "written": {
+              "key_ideas": [
+                [
+                  "old",
+                  "tradition",
+                  "past",
+                  "antiquated",
+                  "same",
+                  "custom"
+                ],
+                [
+                  "change",
+                  "new",
+                  "innovation",
+                  "modern",
+                  "city",
+                  "small",
+                  "creep",
+                  "slowly",
+                  "little"
+                ]
+              ],
+              "model": "Old ways can hold on for a long time, with only small signs of change creeping in."
+            },
+            "prompt": "In one sentence, explain what the young guests' clothing suggests about old ways and change.",
+            "keywords": [],
             "proof": {
               "lines": [
                 "Buxom\nlasses, almost as antiquated as their mothers, excepting where a straw\nhat, a fine ribbon, or perhaps a white frock, gave symptoms of city\ninnovation."
               ]
             },
-            "hint": "Remember the quiet valley where customs stay fixed. How new are the girls' clothes?",
-            "why": "The lasses are almost as antiquated as their mothers, with only small symptoms of city innovation.",
+            "hint": "Look for the few signs of the city.",
+            "why": "The lasses are almost as antiquated as their mothers, except for a hat or ribbon showing city innovation: old ways linger while change creeps in.",
             "standards": [
               "R.1.2",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "theme_thread",
+              "format": "written",
+              "written": {
+                "key_ideas": [
+                  [
+                    "new",
+                    "city",
+                    "modern",
+                    "innovation",
+                    "fashion",
+                    "change",
+                    "idea"
+                  ],
+                  [
+                    "slow",
+                    "little",
+                    "small",
+                    "detail",
+                    "few",
+                    "bit",
+                    "gradual",
+                    "creep"
+                  ]
+                ],
+                "model": "New ideas spread slowly into quiet places, showing up first in small details like a ribbon or a hat."
+              },
+              "prompt": "Using your own words, tell in one sentence what these fashions suggest about how new ideas spread.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "Buxom\nlasses, almost as antiquated as their mothers, excepting where a straw\nhat, a fine ribbon, or perhaps a white frock, gave symptoms of city\ninnovation."
+                ]
+              },
+              "hint": "Which small items came from the city?",
+              "why": "Only a straw hat, a ribbon or a white frock shows city innovation: change arrives a little at a time.",
+              "standards": [
+                "R.1.2",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
+        }
+      ],
+      "lightning": [
+        {
+          "id": "frost-colors",
+          "chunk": 2,
+          "after": 4,
+          "question": "What colors had the frost turned the tender trees?",
+          "answer": [
+            "The forests had put on their sober\nbrown and yellow, while some trees of the tenderer kind had been nipped\nby the frosts into brilliant dyes of orange, purple, and scarlet."
+          ]
+        },
+        {
+          "id": "apples",
+          "chunk": 5,
+          "after": 7,
+          "question": "Where were the gathered apples going?",
+          "answer": [
+            "On all sides he beheld vast store of apples; some hanging in\noppressive opulence on the trees; some gathered into baskets and barrels\nfor the market; others heaped up in rich piles for the cider-press."
+          ]
         }
       ],
       "interview": {
@@ -19275,8 +20505,7 @@
             "chunk": 2,
             "place": "schoolhouse",
             "x": 1337,
-            "y": 780,
-            "landmark": "twist"
+            "y": 780
           },
           {
             "chunk": 3,
@@ -19306,7 +20535,8 @@
             "chunk": 7,
             "place": "hans-farm",
             "x": 1021,
-            "y": 823
+            "y": 823,
+            "landmark": "twist"
           },
           {
             "chunk": 8,
@@ -19873,9 +21103,6 @@
   },
   "expedition_rules": {
     "arc_pending": [
-      "the-feud",
-      "the-invitation",
-      "the-ride-to-the-party",
       "the-feast-and-the-dance",
       "ghost-stories",
       "the-lonely-road",
