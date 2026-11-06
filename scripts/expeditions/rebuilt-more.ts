@@ -62,11 +62,11 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
           lines: [R("p018", 6)], hint: "What did the people sitting by their doors hear?", why: "The good people sitting by their doors were filled with awe at hearing his nasal melody floating from the distant hill.", standards: ["K12.EE.1.1"] }] },
       // 8 · Theme Thread, written (every student writes): the pleasure of fear, and why people believe strange stories.
       { q: { type: "theme_thread", format: "written", prompt: "In one sentence, explain what these cozy nights suggest about why people enjoy being scared.",
-          written: { key_ideas: [["scare", "scary", "fear", "fright", "terror", "spook", "eerie", "ghost", "goblin", "creepy"], ["enjoy", "pleasure", "love", "fun", "delight", "thrill", "exciting", "like", "entertain"]],
+          written: { key_ideas: [["scare", "scary", "fear", "fright", "terror", "spook", "eerie", "ghost", "goblin", "creepy"], ["enjoy", "pleasure", "love", "fun", "delight", "thrill", "exciting", "entertain"]],
             model: "People enjoy being scared by stories because fear feels thrilling when they are safe and warm among friends." },
           lines: [R("p019", 0)], hint: "Notice the words \"fearful pleasure.\"", why: "Listening to tales of ghosts and goblins is a \"fearful pleasure\": a scare can be fun when it is shared by a warm fire.", standards: ["R.1.2", "K12.EE.1.1"] },
         bank: [{ type: "theme_thread", format: "written", prompt: "Using your own words, tell in one sentence what these gatherings suggest about why people believe strange stories.",
-          written: { key_ideas: [["believ", "trust", "accept", "convinc", "credul", "true", "real"], ["everyone", "together", "share", "each other", "others", "group", "neighbor", "around them", "same", "community"]],
+          written: { key_ideas: [["believ", "trust", "accept", "convinc", "credul"], ["together", "share", "each other", "group", "neighbor", "around them", "community", "everyone", "circle"]],
             model: "People believe strange stories more easily when everyone around them shares and trusts the same stories." },
           lines: [R("p019", 0)], hint: "Who tells the tales, and who believes them?", why: "The old wives share their marvellous tales and Ichabod adds his own: a whole circle that believes makes the stories feel true.", standards: ["R.1.2", "K12.EE.1.1"] }] },
       // 9 · Shades of Meaning (the boss): wistful (proof: the snug fireside), and "ghastly glare" (clue words).
@@ -91,7 +91,7 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
   // Expedition 4: whose eyes, word detective, character clue, find it, build the case (drag and drop), figure it out,
   // Catch the Lie (twist), feeling of the word (drag and drop), choose two, theme in writing (boss).
   "the-van-tassel-farm": {
-    lightning: [{ id: "eighteen", chunk: 2, after: 4, question: "How old is Katrina when Ichabod meets her?", answer: [R("p022", 1)] },
+    lightning: [{ id: "saardam-gold", chunk: 3, after: 4, question: "Where did Katrina's gold ornaments first come from?", answer: [R("p022", 3)] },
       { id: "elm-spring", chunk: 5, after: 8, question: "What bubbles up at the foot of the great elm?", answer: [R("p023", 5)] }],
     chunks: [
       // 1 · Whose Eyes? (warm-up): the original (the joke about a woman), and the narrator's view of the night frights.
@@ -158,19 +158,19 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
         bank: ["original"] },
       // 10 · Theme Thread (the boss), written (every student writes): wanting something shapes what people see; greed.
       { q: { type: "theme_thread", format: "written", prompt: "In one sentence, explain what this scene suggests about how wanting something changes what people see.",
-          written: { key_ideas: [["want", "desire", "greed", "hunger", "hungry", "appetite", "wish", "long"], ["see", "view", "look", "imagin", "picture", "everything", "world", "the way", "notice"]],
+          written: { key_ideas: [["want", "desire", "greed", "hunger", "hungry", "appetite", "wish", "crav"], ["view", "imagin", "pictur", "notice", "perceiv", "see the world", "see every", "through that", "shape"]],
             model: "When people want something badly, they see the world through that desire, the way hungry Ichabod sees every animal as a meal." },
           lines: [R("p024", 2)], hint: "What does he see when he looks at a living rooster?", why: "Even the proud rooster becomes a side dish in his eyes: what a person wants shapes everything they see.", standards: ["R.1.2", "K12.EE.1.1"] },
         bank: [{ type: "theme_thread", format: "written", prompt: "Using your own words, tell in one sentence what lesson about greed this scene suggests.",
-          written: { key_ideas: [["greed", "greedy", "hunger", "appetite", "want", "desire"], ["everything", "anything", "see", "turn", "take", "consume", "use", "living", "alive"]],
+          written: { key_ideas: [["greed", "greedy", "hunger", "appetite", "desire", "crav"], ["consume", "devour", "living", "alive", "creature", "prey", "meal", "grab", "seize", "exploit"]],
             model: "Greed can turn everything a person sees into something to take or consume, even creatures that are alive and happy." },
           lines: [R("p024", 2)], hint: "Look at what happens to each happy animal in his mind.", why: "Pigs, turkeys and even chanticleer become bacon, sausages and side dishes: greed turns living things into things to devour.", standards: ["R.1.2", "K12.EE.1.1"] }] },
     ],
   },
-  // Expedition 5: word detective, find it, word detective, shades, build the case (drag and drop), whose eyes, theme in
-  // writing (boss), find it, Catch the Lie (twist), match the character (drag and drop).
+  // Expedition 5: word detective, find it, word detective, Catch the Lie (twist), build the case (drag and drop), whose eyes,
+  // theme in writing (boss), find it, between the lines, match the character (drag and drop).
   "a-rival-appears": {
-    lightning: [{ id: "kentucky", chunk: 2, after: 4, question: "Where does Ichabod picture himself riding off to?", answer: [R("p025", 1)] },
+    lightning: [{ id: "kentucky", chunk: 2, after: 3, question: "Where does Ichabod picture himself riding off to?", answer: [R("p025", 1)] },
       { id: "ostrich-egg", chunk: 5, after: 8, question: "What hangs from the centre of the best parlor?", answer: [R("p026", 6)] }],
     chunks: [
       // 1 · Word Detective (warm-up): enraptured (clue words); the original inference as its bank.
@@ -187,13 +187,13 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
       { bank: [{ type: "word_detective", focus: "husbandry", prompt: "What does husbandry mean in this chunk?", keywords: ["husbandry"],
         choices: [["Farming and the care of the land", true], ["Being a good husband to a wife"], ["Saving money for hard times"]],
         lines: [R("p026", 2)], clues: ["flails", "harness", "nets for fishing"], hint: "Look at the other tools hung up beside them.", why: "Flails, harness and fishing nets hang with them: husbandry means farming.", standards: ["V.1.3", "K12.EE.1.1"], reviewed: true }] },
-      // 4 · Shades: the original (wondering, proved by the dazzling pewter), and resplendent (clue words).
-      { q: { type: "shades", focus: "wondering", prompt: "Why does the narrator call him the wondering Ichabod instead of just Ichabod?", keywords: ["wondering"],
-          choices: [["It shows he is amazed by everything he sees", true], ["It shows he is lost and cannot find the hall"], ["It shows he suspects the family of something"]],
-          lines: [R("p026", 5)], hint: "What happens to his eyes when he steps inside?", why: "The pewter dazzles his eyes: he is full of wonder at everything in the house.", standards: ["V.1.3", "R.3.1"] },
-        bank: [{ type: "shades", focus: "resplendent", prompt: "Why might the narrator call the pewter \"resplendent\" rather than simply clean?", keywords: ["resplendent"],
-          choices: [["It shines so brightly it dazzles him", true], ["It is old and dented, and dull to look at"], ["It is far too heavy for anyone to lift"]],
-          lines: [R("p026", 5)], clues: ["dazzled his eyes"], hint: "What does the pewter do to his eyes?", why: "The pewter dazzles his eyes: resplendent means brilliantly shining.", standards: ["V.1.3", "R.3.1"], reviewed: true }] },
+      // 4 · Catch the Lie (the twist, before the boss): Hans on the pewter, and Katrina on the porch.
+      { q: { type: "catch_lie", prompt: "Hans Van Ripper describes the inside of the house. Part of what he says is false. Tap the sentence that proves it.",
+          testimony: { speaker: "hans-van-ripper", text: "The pewter in that hall was so dull and dusty it hardly caught the light." },
+          lines: [R("p026", 5)], hint: "What did the pewter do to Ichabod's eyes?", why: "Rows of resplendent pewter on a long dresser dazzled his eyes.", standards: ["K12.EE.1.1"] },
+        bank: [{ type: "catch_lie", prompt: "Katrina describes the front of the house. One detail is untrue. Tap the sentence that shows it.",
+          testimony: { speaker: "katrina-van-tassel", text: "Our porch was bare. There was nothing on it but one old bench." },
+          lines: [R("p026", 3)], hint: "What stood at each end of the porch?", why: "Benches ran along the sides, with a great spinning-wheel at one end and a churn at the other.", standards: ["K12.EE.1.1"] }] },
       // 5 · Weigh the Evidence, drag and drop: build the case that the house shows off its wealth; the bank asks about "shone like mirrors".
       { q: { type: "weigh_evidence", format: "dnd", prompt: "Build the case that the Van Tassels like visitors to see their riches.",
           dnd: { kind: "build_case", slots: [{ id: "claim", label: "Claim" }, { id: "proof", label: "Proof sentence" }, { id: "reason", label: "Reason" }],
@@ -214,20 +214,23 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
           lines: [R("p027", 1)], hint: "Are dragons really easy to beat?", why: "Calling dragons easy, like carving a Christmas pie, is a playful joke at the old romances.", standards: ["R.1.3", "K12.EE.1.1"], reviewed: true }] },
       // 7 · Theme Thread (the boss), written (every student writes): real life is harder than old tales; winning love.
       { q: { type: "theme_thread", format: "written", prompt: "In one sentence, explain what this chunk suggests about everyday life compared with old tales of heroes.",
-          written: { key_ideas: [["real", "actual", "everyday", "life", "people"], ["hard", "difficult", "trouble", "complicat", "struggle", "tougher", "more than", "messier"]],
+          written: { key_ideas: [["everyday", "ordinary", "daily", "actual", "in reality", "real life", "real people", "flesh and blood"], ["hard", "difficult", "trouble", "complicat", "struggle", "tougher", "messier"]],
             model: "Everyday life can be harder than old tales of heroes, because real people and real rivals cause more trouble than any dragon." },
           lines: [R("p027", 2)], hint: "What does Ichabod face instead of dragons?", why: "Instead of easily beaten giants, he faces a whimsical coquette and real rivals of flesh and blood: real life is harder than the romances.", standards: ["R.1.2", "K12.EE.1.1"] },
         bank: [{ type: "theme_thread", format: "written", prompt: "Using your own words, tell in one sentence what this chunk suggests about winning someone's love.",
-          written: { key_ideas: [["love", "win", "court", "affection", "someone"], ["hard", "difficult", "change", "whim", "rival", "compet", "others", "trouble", "patience"]],
+          written: { key_ideas: [["love", "win", "court", "affection", "heart", "romance"], ["hard", "difficult", "whim", "rival", "compet", "trouble", "patience", "changeable", "many others"]],
             model: "Winning someone's love is hard when that person keeps changing and many others want the same thing." },
           lines: [R("p027", 2)], hint: "Think about Katrina's whims and the rivals at every door.", why: "A labyrinth of whims and a host of angry rivals stand in his way: love is hard to win.", standards: ["R.1.2", "K12.EE.1.1"] }] },
       // 8 · Find It: the original (the nickname), and his looks and mood.
       { bank: [{ type: "find_it", prompt: "Which line describes Brom's looks and his mood?", keywords: ["looks"], lines: [R("p028", 1)],
         hint: "Look for his hair, his shoulders and his face.", why: "Broad-shouldered, curly-haired, with a mingled air of fun and arrogance.", standards: ["K12.EE.1.1"] }] },
-      // 9 · Catch the Lie (the twist): the original (Hans on his riding), and Katrina on the races.
-      { bank: [{ type: "catch_lie", prompt: "Katrina has her own story about Brom. One detail is untrue. Tap the sentence that shows it.",
-        testimony: { speaker: "katrina-van-tassel", text: "At the races Brom always hung back and let the other young men win." },
-        lines: [R("p028", 4)], hint: "Where was Brom at every race?", why: "He was foremost at all races and cock fights, not hanging back.", standards: ["K12.EE.1.1"] }] },
+      // 9 · Between the lines: how people see Brom as umpire, and what his riding says about him.
+      { q: { type: "between_lines", prompt: "What does Brom's role in every dispute suggest about how people see him?", keywords: ["every dispute"],
+          choices: [["They respect his strength and accept his word", true], ["They laugh at him and ignore what he says"], ["They are afraid to speak to him at all"]],
+          lines: [R("p028", 4)], hint: "Can anyone argue with his decisions?", why: "Strength wins him the upper hand in rustic life: he is umpire in all disputes, and his decisions admit no appeal.", standards: ["K12.EE.3.1", "K12.EE.1.1"], reviewed: true },
+        bank: [{ type: "between_lines", prompt: "What does \"as dexterous on horseback as a Tartar\" suggest about Brom?", keywords: ["dexterous on horseback"],
+          choices: [["He is a superb, fearless rider", true], ["He has never sat on a horse"], ["He rides only slow farm horses"]],
+          lines: [R("p028", 3)], hint: "What is he famed for?", why: "He is famed for great knowledge and skill in horsemanship.", standards: ["K12.EE.3.1", "K12.EE.1.1"], reviewed: true }] },
       // 10 · Character Clue, drag and drop: Brom or his companions; and the mix of traits in Brom.
       { q: { type: "character_clue", format: "dnd", prompt: "Match each description to Brom or to his band of friends.",
           dnd: { kind: "match_character", slots: [{ id: "brom", label: "Brom" }, { id: "friends", label: "His three or four friends" }],
@@ -298,11 +301,11 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
         lines: [R("p032", 3)], hint: "Is the battle won once, or fought again and again?", why: "A man \"must battle for his fortress at every door and window\": keeping a coquette's heart is a never-ending fight.", standards: ["R.1.3", "K12.EE.1.1"], reviewed: true }] },
       // 9 · Theme Thread (the boss), written (every student writes): competition, and jealousy.
       { q: { type: "theme_thread", format: "written", prompt: "In one sentence, explain what the rivalry over Katrina suggests about competition among people.",
-          written: { key_ideas: [["compet", "rival", "contest", "both want", "same", "jealous"], ["enem", "feud", "hate", "bitter", "conflict", "fight", "hostil", "divide", "anger"]],
+          written: { key_ideas: [["compet", "rival", "contest", "both want", "jealous", "same prize"], ["enem", "feud", "hate", "bitter", "conflict", "fight", "hostil", "divide", "anger"]],
             model: "Competition for the same prize can turn people into bitter enemies, even when it starts quietly." },
           lines: [R("p032", 5)], hint: "What grows between the two men?", why: "As Ichabod advances, a deadly feud gradually arises: competing for the same person turns rivals into enemies.", standards: ["R.1.2", "K12.EE.1.1"] },
         bank: [{ type: "theme_thread", format: "written", prompt: "Using your own words, tell in one sentence what this chunk suggests about how jealousy changes people.",
-          written: { key_ideas: [["jealous", "envy", "rival", "compet"], ["feud", "enem", "hate", "bitter", "change", "turn", "fight", "anger", "deadly"]],
+          written: { key_ideas: [["jealous", "envy", "rival", "compet"], ["feud", "enem", "hate", "bitter", "fight", "anger", "deadly", "hostil"]],
             model: "Jealousy can turn a quiet rivalry into a deadly feud between people who want the same thing." },
           lines: [R("p032", 5)], hint: "How does Brom's interest change, and what grows instead?", why: "Brom's horse stops appearing on Sunday nights and a deadly feud arises: jealousy turns rivals bitter.", standards: ["R.1.2", "K12.EE.1.1"] }] },
       // 10 · Story Order, drag and drop: cause and effect in the feud; and how Brom wants to end it.
@@ -385,11 +388,11 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
           lines: [R("p036", 4)], clues: ["gleam of a genuine devil"], hint: "What is in his other eye?", why: "Next to \"the gleam of a genuine devil,\" a glaring, spectral eye makes the horse look ghostly and wild.", standards: ["V.1.3", "R.3.1"], reviewed: true }] },
       // 9 · Theme Thread, written (every student writes): judging by appearances; a fiery spirit in old age.
       { q: { type: "theme_thread", format: "written", prompt: "In one sentence, explain what the old horse suggests about judging by appearances.",
-          written: { key_ideas: [["appear", "look", "seem", "outside", "judge", "cover"], ["fool", "deceiv", "mislead", "wrong", "inside", "really", "hidden", "still", "fire", "spirit"]],
+          written: { key_ideas: [["appear", "seem", "outside", "judge", "cover", "looks old", "looks can"], ["fool", "deceiv", "mislead", "wrong", "inside", "hidden", "fire", "spirit"]],
             model: "Appearances can fool us, since something that looks old and worn out may still have plenty of fire inside." },
           lines: [R("p036", 6)], hint: "Notice the words \"old and broken-down as he looked.\"", why: "Old and broken-down as he looked, Gunpowder had more lurking devil in him than any young filly: looks can deceive.", standards: ["R.1.2", "K12.EE.1.1"] },
         bank: [{ type: "theme_thread", format: "written", prompt: "Using your own words, tell in one sentence what Gunpowder suggests about fire and energy in old age.",
-          written: { key_ideas: [["spirit", "fire", "fiery", "mettle", "devil", "energy", "wild", "temper"], ["old", "age", "worn", "broken", "last", "remain", "still", "even", "never"]],
+          written: { key_ideas: [["spirit", "fire", "fiery", "mettle", "devil", "energy", "wild", "temper"], ["old", "age", "worn", "broken", "last", "remain", "endure", "outlast", "grows old"]],
             model: "A fiery spirit can last even when the body grows old and worn." },
           lines: [R("p036", 6)], hint: "What is still inside the old horse?", why: "Old and broken-down, he still has more of the lurking devil in him than any young filly: spirit can outlast age.", standards: ["R.1.2", "K12.EE.1.1"] }] },
       // 10 · Character Clue (the boss): how Ichabod comes across as he rides; rider and horse alike.
@@ -471,11 +474,11 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
           lines: [R("p042", 1)], hint: "Who made their coats?", why: "A spare, leathern-faced race in homespun coats: weathered country people who make their own clothes.", standards: ["R.1.1", "K12.EE.1.1"] }] },
       // 10 · Theme Thread (the boss), written (every student writes): old ways and change; how new ideas spread.
       { q: { type: "theme_thread", format: "written", prompt: "In one sentence, explain what the young guests' clothing suggests about old ways and change.",
-          written: { key_ideas: [["old", "tradition", "past", "antiquated", "same", "custom"], ["change", "new", "innovation", "modern", "city", "small", "creep", "slowly", "little"]],
+          written: { key_ideas: [["old way", "tradition", "past", "antiquated", "custom", "old-fashioned", "hold on"], ["change", "new", "innovation", "modern", "city", "creep", "slowly", "gradual", "small sign"]],
             model: "Old ways can hold on for a long time, with only small signs of change creeping in." },
           lines: [R("p042", 3)], hint: "Look for the few signs of the city.", why: "The lasses are almost as antiquated as their mothers, except for a hat or ribbon showing city innovation: old ways linger while change creeps in.", standards: ["R.1.2", "K12.EE.1.1"] },
         bank: [{ type: "theme_thread", format: "written", prompt: "Using your own words, tell in one sentence what these fashions suggest about how new ideas spread.",
-          written: { key_ideas: [["new", "city", "modern", "innovation", "fashion", "change", "idea"], ["slow", "little", "small", "detail", "few", "bit", "gradual", "creep"]],
+          written: { key_ideas: [["new", "city", "modern", "innovation", "fashion", "idea", "change"], ["slow", "small", "detail", "gradual", "creep", "a little at a time", "ribbon", "hat"]],
             model: "New ideas spread slowly into quiet places, showing up first in small details like a ribbon or a hat." },
           lines: [R("p042", 3)], hint: "Which small items came from the city?", why: "Only a straw hat, a ribbon or a white frock shows city innovation: change arrives a little at a time.", standards: ["R.1.2", "K12.EE.1.1"] }] },
     ],
@@ -512,10 +515,13 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
         bank: [{ type: "shades", focus: "dilated", prompt: "What does it mean that Ichabod's heart \"dilated\" as he ate?", keywords: ["dilated"],
           choices: [["His heart swells with happiness", true], ["His heart is sick from the rich food"], ["His heart races with sudden fear"]],
           lines: [R("p045", 0)], clues: ["spirits rose with eating"], hint: "What else rises as he eats?", why: "His spirits rose with eating: his heart swells with good cheer as his stomach fills.", standards: ["V.1.3", "R.3.1"], reviewed: true }] },
-      // 5 · Catch the Lie (the twist): the original (Hans: he'd never turn on his friends), and Brom on what he thought about.
-      { bank: [{ type: "catch_lie", prompt: "Brom Bones claims to know what was on Ichabod's mind at the feast. One detail is untrue. Tap the sentence that shows it.",
-        testimony: { speaker: "brom-bones", text: "All through that feast he sat thinking about his pupils and the lessons he'd teach the next day." },
-        lines: [R("p045", 2)], hint: "What does he imagine doing to the old schoolhouse?", why: "He imagines how soon he would turn his back upon the old schoolhouse, not teach in it.", standards: ["K12.EE.1.1"] }] },
+      // 5 · Catch the Lie (the twist): Hans and Brom, both disproved by the sentence about owning the farm (not the next one).
+      { q: { type: "catch_lie", prompt: "Hans Van Ripper speaks up for the schoolmaster. Part of what he says is false. Tap the sentence that proves it.",
+          testimony: { speaker: "hans-van-ripper", text: "The schoolmaster never once dreamed of owning a place like that. He only thought about his school." },
+          lines: [R("p045", 1)], hint: "What possibility makes him chuckle as he eats?", why: "He chuckles at the possibility that he might one day be lord of all this scene of luxury.", standards: ["K12.EE.1.1"] },
+        bank: [{ type: "catch_lie", prompt: "Brom Bones claims to know Ichabod's mood at the feast. One detail is untrue. Tap the sentence that shows it.",
+          testimony: { speaker: "brom-bones", text: "He sat stone-faced through the whole meal and never once smiled." },
+          lines: [R("p045", 1)], hint: "What does he do as he rolls his eyes around the room?", why: "He keeps rolling his large eyes round and chuckling at the thought of owning it all.", standards: ["K12.EE.1.1"] }] },
       // 6 · Between the lines, choose two: Baltus as host; why his welcome is so short.
       { q: { type: "between_lines", format: "multi", pick: 2, prompt: "Which two actions show Baltus is a warm host?", keywords: ["warm host"],
           choices: [["He shakes hands and slaps shoulders", true], ["He urges everyone to help themselves", true], ["He gives a long and very formal speech"], ["He serves every plate of food himself"]],
@@ -591,11 +597,11 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
           hint: "Who walks rounds at night?", why: "Like a watchman on his rounds, the ghost has a routine of visits, but no one is left to call on.", standards: ["R.3.1"] }] },
       // 5 · Theme Thread, written (every student writes): how beliefs spread; where people live and what they believe.
       { q: { type: "theme_thread", format: "written", prompt: "In one sentence, explain what this chunk suggests about how beliefs travel from place to place.",
-          written: { key_ideas: [["belief", "believ", "story", "stories", "dream", "fanc", "idea", "superstit", "legend"], ["spread", "pass", "catch", "contag", "infect", "everyone", "neighbor", "whole", "others", "sickness", "travel"]],
+          written: { key_ideas: [["belief", "believ", "story", "stories", "dream", "fanc", "idea", "superstit", "legend"], ["spread", "pass", "catch", "contag", "infect", "neighbor", "sickness", "travel", "whole area"]],
             model: "Beliefs can spread like a sickness, passing from one place and person to the next until a whole area shares them." },
           lines: [R("p053", 1)], hint: "Notice the words \"contagion\" and \"infecting.\"", why: "A contagion in the air from the haunted Hollow infects all the land with dreams and fancies: beliefs spread like a disease.", standards: ["R.1.2", "K12.EE.1.1"] },
         bank: [{ type: "theme_thread", format: "written", prompt: "Using your own words, tell in one sentence what this suggests about where people live and what they believe.",
-          written: { key_ideas: [["place", "live", "where", "land", "region", "surround", "home", "nearby"], ["believ", "belief", "imagin", "dream", "fanc", "stories", "think", "shape", "ghost"]],
+          written: { key_ideas: [["where", "land", "region", "surround", "home", "nearby", "valley", "setting", "haunted place"], ["believ", "belief", "imagin", "dream", "fanc", "stories", "shape", "ghost"]],
             model: "Where people live can shape what they believe, since a dreamy, haunted place fills its neighbors' heads with ghost stories." },
           lines: [R("p053", 1)], hint: "What blows over from the Hollow?", why: "Living near the Hollow, people breathe an atmosphere of dreams and fancies: the place shapes their beliefs.", standards: ["R.1.2", "K12.EE.1.1"] }] },
       // 6 · Catch the Lie (the twist): Katrina on the Horseman, and Hans on the other ghosts.
@@ -668,7 +674,7 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
         lines: [R("p057", 5)], hint: "What does Ichabod look like coming out?", why: "Something must have gone wrong, for he sallied forth \"quite desolate and chapfallen.\"", standards: ["R.1.3", "K12.EE.1.1"] }] },
       // 4 · Figure It Out: the original (sacking a henroost, quoted), and the narrator's question about Katrina's tricks.
       { q: { type: "figure_it_out", focus: "sacking a henroost", prompt: "Read the words \"sacking a henroost.\" What kind of figurative language is this?", keywords: ["henroost"],
-          choices: [["Comparison: he leaves looking like a guilty chicken thief", true], ["Personification: the hens chase him out of the house"], ["Onomatopoeia: the words copy the sound of a chicken's cluck"]],
+          choices: [["Metaphor (implied comparison): he slinks off like a chicken thief", true], ["Personification: the hens chase him out of the house"], ["Onomatopoeia: the words copy the sound of a chicken's cluck"]],
           choices2: { prompt: "What does it mean?", options: [["He sneaks away ashamed and defeated", true], ["He leaves carrying stolen chickens"], ["He runs off proud of his great success"]] },
           hint: "How would a chicken thief slip away? Compare that with a winning suitor.", why: "He steals away like a chicken thief rather than a man who won a lady's heart: ashamed and defeated.", standards: ["R.3.1"], reviewed: true },
         bank: [{ type: "figure_it_out", focus: "playing off any of her coquettish tricks", prompt: "The narrator asks whether Katrina was \"playing off any of her coquettish tricks.\" Which device is this?", keywords: ["coquettish tricks"],
@@ -702,7 +708,7 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
             model: "Frightening tales we hear can come back to haunt us, making ordinary darkness feel full of danger." },
           lines: [R("p059", 0)], hint: "What comes crowding back as the night grows darker?", why: "All the ghost stories he heard come crowding upon his recollection: the tales now feed his terror.", standards: ["R.1.2", "K12.EE.1.1"] },
         bank: [{ type: "theme_thread", format: "written", prompt: "Using your own words, tell in one sentence what this chunk suggests about being alone at night.",
-          written: { key_ideas: [["alone", "lonely", "dark", "night", "by himself", "isolat"], ["mind", "imagin", "fear", "wild", "memor", "scare", "dread", "run"]],
+          written: { key_ideas: [["alone", "lonely", "dark", "night", "by himself", "isolat"], ["mind", "imagin", "fear", "wild", "memor", "scare", "dread", "spiral"]],
             model: "Being alone in the dark makes the mind run wild, turning every memory into a fear." },
           lines: [R("p059", 0)], hint: "What does his mind do as he rides alone?", why: "He never felt so lonely and dismal, and every story comes crowding back: alone in the dark, the mind runs wild.", standards: ["R.1.2", "K12.EE.1.1"] }] },
       // 9 · Between the lines (the boss): respect and fear around the tree; what "landmark" suggests.
@@ -784,11 +790,11 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
           lines: [R("p064", 2)], hint: "Does the companion ever give up or speak?", why: "He copies every move and never says a word: a dogged silence is stubborn and unbroken.", standards: ["V.1.3", "K12.EE.1.1"], reviewed: true }] },
       // 9 · Theme Thread (the boss), written (every student writes): how fear takes over; believing ghost stories.
       { q: { type: "theme_thread", format: "written", prompt: "In one sentence, explain what the chase suggests about how fear can take over a person.",
-          written: { key_ideas: [["fear", "terror", "panic", "scar", "dread", "fright"], ["take over", "grow", "control", "desperat", "reckless", "wild", "overwhelm", "swallow", "consume", "think"]],
+          written: { key_ideas: [["fear", "terror", "panic", "scar", "dread", "fright"], ["take over", "takes over", "grow", "control", "desperat", "reckless", "overwhelm", "swallow", "consume"]],
             model: "Fear can grow until it takes over completely, driving a person to desperate, reckless action." },
           lines: [R("p064", 7)], hint: "What does his terror rise to?", why: "His terror rises to desperation, and he rains kicks and blows on Gunpowder: fear takes over completely.", standards: ["R.1.2", "K12.EE.1.1"] },
         bank: [{ type: "theme_thread", format: "written", prompt: "Using your own words, tell in one sentence what this chase suggests about believing in ghost stories.",
-          written: { key_ideas: [["believ", "belief", "ghost", "stor", "tale", "superstit"], ["panic", "terror", "fear", "scar", "desperat", "flee", "run", "worse"]],
+          written: { key_ideas: [["believ", "belief", "ghost", "stor", "tale", "superstit"], ["panic", "terror", "fear", "scar", "desperat", "flee", "worse"]],
             model: "Believing too strongly in ghost stories can turn a frightening moment into pure panic." },
           lines: [R("p064", 7)], hint: "Think of all the tales he heard that evening.", why: "Full of the evening's tales, he believes the spectre is real and his terror rises to desperation.", standards: ["R.1.2", "K12.EE.1.1"] }] },
       // 10 · Story Order, drag and drop: the wrong turn in order; why it is bad news.
@@ -847,11 +853,11 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
           lines: [R("p068", 0)], hint: "What is he doing at the gate?", why: "He is found soberly cropping the grass at his master's gate: quite untroubled.", standards: ["R.1.1", "K12.EE.1.1"], reviewed: true }] },
       // 7 · Theme Thread (the boss), written (every student writes): how people read evidence; the need for an explanation.
       { q: { type: "theme_thread", format: "written", prompt: "In one sentence, explain what this mystery suggests about how people interpret evidence.",
-          written: { key_ideas: [["clue", "evidence", "hat", "pumpkin", "sign", "proof", "track"], ["different", "explain", "more than one", "believ", "choose", "interpret", "read", "ways", "decide", "expect"]],
+          written: { key_ideas: [["clue", "evidence", "hat", "pumpkin", "sign", "proof", "track"], ["different", "explain", "more than one", "believ", "choose", "interpret", "ways", "decide", "expect"]],
             model: "The same clues can be explained in different ways, and people tend to choose the explanation they already believe." },
           lines: [R("p068", 5)], hint: "Could a hat and a shattered pumpkin mean more than one thing?", why: "A trampled saddle, hoofprints, a hat and a shattered pumpkin could point to a ghost or to a trick: the clues alone don't decide it.", standards: ["R.1.2", "K12.EE.1.1"] },
         bank: [{ type: "theme_thread", format: "written", prompt: "Using your own words, tell in one sentence what an unsolved mystery suggests about people's need for answers.",
-          written: { key_ideas: [["mystery", "unknown", "not know", "question", "unsolved", "answer"], ["explain", "explanation", "story", "need", "want", "reach", "guess", "believ", "fill"]],
+          written: { key_ideas: [["mystery", "unknown", "not know", "question", "unsolved", "answer"], ["explain", "explanation", "story", "need", "reach", "guess", "believ", "fill"]],
             model: "When people face a mystery, they reach for an explanation, even a strange one, rather than live with not knowing." },
           lines: [R("p068", 5)], hint: "What do people do when they find clues but no body?", why: "With only clues by the brook, the village needs a story to explain them, and soon finds one.", standards: ["R.1.2", "K12.EE.1.1"] }] },
       // 8 · Find It: the original (all he owned), and the search of the brook.
@@ -899,11 +905,11 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
           lines: [R("p071", 1)], hint: "Which object was found by the brook?", why: "A shattered pumpkin lay by the hat, and Brom bursts into a hearty laugh at every mention of it.", standards: ["K12.EE.1.1", "K12.EE.3.1"] }] },
       // 3 · Theme Thread, written (every student writes): preferring a thrilling tale; how legends grow.
       { q: { type: "theme_thread", format: "written", prompt: "In one sentence, explain what the neighbors' choice suggests about why people prefer a thrilling tale to a plain answer.",
-          written: { key_ideas: [["prefer", "choose", "rather", "keep", "believ", "want"], ["tale", "story", "stories", "legend", "ghost", "thrill", "exciting", "fun", "mystery", "magic"]],
+          written: { key_ideas: [["prefer", "choose", "rather", "believ", "favorite", "retell", "repeat"], ["tale", "story", "stories", "legend", "ghost", "thrill", "exciting", "fun", "mystery", "magic"]],
             model: "People often prefer a thrilling tale to a plain explanation, because a good story is more fun to believe and to share." },
           lines: [R("p072", 0)], hint: "What do the old wives maintain, and when do they tell it?", why: "The old wives insist he was spirited away, and it is a favorite story told round the winter fire: the thrilling version wins.", standards: ["R.1.2", "K12.EE.1.1"] },
         bank: [{ type: "theme_thread", format: "written", prompt: "Using your own words, tell in one sentence what this chunk suggests about how legends grow.",
-          written: { key_ideas: [["legend", "stor", "tale", "myth", "ghost"], ["grow", "retell", "repeat", "spread", "keep", "change", "bigger", "place", "haunt"]],
+          written: { key_ideas: [["legend", "stor", "tale", "myth", "ghost"], ["grow", "retell", "repeat", "spread", "bigger", "haunt", "continue", "preserve"]],
             model: "Legends grow as people keep retelling them, until even a bridge or an empty schoolhouse becomes part of the tale." },
           lines: [R("p072", 2)], hint: "What happens to the bridge and the old schoolhouse?", why: "The bridge becomes an object of awe and the deserted schoolhouse is reported haunted: the legend keeps spreading to new places.", standards: ["R.1.2", "K12.EE.1.1"] }] },
       // 4 · Catch the Lie (the twist): Hans on the storyteller, and Brom on the listeners.

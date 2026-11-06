@@ -5,7 +5,9 @@
 import type { WorldPack } from "./world-schema.ts";
 import { TYPE_INFO } from "./expedition.ts";
 import { benchmark, type BenchmarkFamily, type Grade } from "./best-standards.ts";
+import { classLevels, codeOf, evidenceFrom, levelHistory, masteryOf } from "./mastery.ts";
 import type { CaseNote } from "./case-notes.ts";
+import { provedFirstTry } from "./case-notes.ts";
 import type { InterviewNote } from "./interview.ts";
 import type { ExpeditionResultRow } from "./classroom/store.ts";
 
@@ -13,10 +15,12 @@ import type { ExpeditionResultRow } from "./classroom/store.ts";
 export type ExpeditionAttempt = {
   attemptId: string; worldId: string; expeditionId: string; startedAt: string; finishedAt: string | null; complete: boolean;
   score: number; notes: CaseNote[]; interview: InterviewNote | null; award: { stars: number; of: number; badge: string | null } | null;
+  // The one-sentence reflection after the skill report ("Which skill improved, and how do you know?").
+  reflection?: string | null;
 };
 // A saved row (expedition_results) as an attempt.
 export const toAttempt = (r: ExpeditionResultRow): ExpeditionAttempt => ({ ...(r.record as unknown as ExpeditionAttempt), attemptId: r.attempt_id, worldId: r.world_id, expeditionId: r.expedition_id, startedAt: r.started_at, finishedAt: r.finished_at, complete: r.complete });
-export const firstTryOf = (a: Pick<ExpeditionAttempt, "notes">) => a.notes.filter((n) => n.rightFirstTry).length;
+export const firstTryOf = (a: Pick<ExpeditionAttempt, "notes">) => a.notes.filter(provedFirstTry).length;
 
 // ---------- The map ----------
 // Stars for first-try proof: 3 for 9 or more of 10, 2 for 7, 1 for 4.
@@ -83,12 +87,12 @@ const pct = (a: number, b: number) => (b ? Math.round((a / b) * 100) : null);
 export function skillMap(attempts: ExpeditionAttempt[], grade: Grade, firsts = false) {
   const notes = (firsts ? attempts : firstAttempts(attempts)).flatMap((a) => a.notes);
   const byStd = new Map<string, { right: number; total: number }>();
-  for (const n of notes) for (const s of n.standards) { const code = benchmark(s as BenchmarkFamily, grade).code, x = byStd.get(code) ?? { right: 0, total: 0 }; x.total++; if (n.rightFirstTry) x.right++; byStd.set(code, x); }
+  for (const n of notes) for (const s of n.standards) { const code = benchmark(s as BenchmarkFamily, grade).code, x = byStd.get(code) ?? { right: 0, total: 0 }; x.total++; if (provedFirstTry(n)) x.right++; byStd.set(code, x); }
   const gists = notes.filter((n) => n.gistPick !== null);
   const gistStd = benchmark("R.3.2", grade).code, g = byStd.get(gistStd) ?? { right: 0, total: 0 };
   byStd.set(gistStd, { right: g.right + gists.filter((n) => n.gistRight).length, total: g.total + gists.length });
   const byType = new Map<string, { right: number; total: number }>();
-  for (const n of notes) { const x = byType.get(n.type) ?? { right: 0, total: 0 }; x.total++; if (n.rightFirstTry) x.right++; byType.set(n.type, x); }
+  for (const n of notes) { const x = byType.get(n.type) ?? { right: 0, total: 0 }; x.total++; if (provedFirstTry(n)) x.right++; byType.set(n.type, x); }
   return {
     standards: [...byStd.entries()].map(([code, x]) => ({ code, ...x, pct: pct(x.right, x.total) })).sort((a, b) => a.code.localeCompare(b.code)),
     types: [...byType.entries()].map(([type, x]) => ({ type, ...x, pct: pct(x.right, x.total) })).sort((a, b) => a.type.localeCompare(b.type)),
@@ -103,15 +107,19 @@ export function expeditionEvidence(world: WorldPack, students: StudentExpedition
   const all = students.flatMap((s) => firstAttempts(s.attempts));
   return {
     class: skillMap(all, grade, true),
+    // Mastery levels (lib/mastery.ts): the same level names and rules the students see.
+    levels: classLevels(students).map((l) => ({ ...l, code: codeOf(l.family, grade) })),
     expeditions: exps.map((e) => {
       const rows = students.map((s) => {
         const mine = s.attempts.filter((a) => a.expeditionId === e.id), first = firstAttempts(mine)[0] ?? null, done = mine.find((a) => a.finishedAt);
-        return { id: s.id, nickname: s.nickname, finished: done?.finishedAt ?? null, attempts: mine.length, firstTry: first ? firstTryOf(first) : null, total: first?.notes.length ?? null, score: first?.score ?? null,
+        return { id: s.id, nickname: s.nickname, attemptId: first?.attemptId ?? null, finished: done?.finishedAt ?? null, attempts: mine.length, firstTry: first ? firstTryOf(first) : null, total: first?.notes.length ?? null, score: first?.score ?? null,
           solved: first?.interview ? first.interview.solved : null, liar: first?.interview ?? null, notes: first?.notes ?? [] };
       });
       const a = assignments.find((x) => x.expeditionId === e.id);
       return { id: e.id, title: e.title, assigned: a ? { due: a.due } : null, finished: rows.filter((r) => r.finished).length, of: rows.length, rows };
     }),
-    students: students.map((s) => ({ id: s.id, nickname: s.nickname, finished: new Set(s.attempts.filter((a) => a.finishedAt).map((a) => a.expeditionId)).size, rank: rankFor(new Set(s.attempts.filter((a) => a.finishedAt).map((a) => a.expeditionId)).size, exps.length), skills: skillMap(s.attempts, grade), badges: skillBadges(s.attempts).filter((b) => b.earned).map((b) => b.skill) })),
+    students: students.map((s) => ({ id: s.id, nickname: s.nickname, finished: new Set(s.attempts.filter((a) => a.finishedAt).map((a) => a.expeditionId)).size, rank: rankFor(new Set(s.attempts.filter((a) => a.finishedAt).map((a) => a.expeditionId)).size, exps.length), skills: skillMap(s.attempts, grade),
+      levels: masteryOf(evidenceFrom(s.attempts)).map((l) => ({ family: l.family, code: codeOf(l.family, grade), name: l.name, level: l.level, right: l.right, total: l.total })),
+      reflections: levelHistory(s.attempts).filter((h) => h.reflection).map((h) => ({ expedition: exps.find((e) => e.id === h.expedition)?.title ?? h.expedition, text: h.reflection! })), badges: skillBadges(s.attempts).filter((b) => b.earned).map((b) => b.skill) })),
   };
 }

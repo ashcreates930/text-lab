@@ -112,7 +112,8 @@ function ClassEvidenceTab({classId,className}:{classId:string;className:string})
  if(!evidence)return <p className="text-base text-muted">Loading evidence…</p>;
  return <EvidenceView evidence={evidence} className={className}
   onAssign={async(id,due)=>{await teacherFetch(`/api/teacher/classes/${classId}/expedition-assignments`,{method:"POST",body:JSON.stringify({expeditionId:id,dueDate:due})});await load()}}
-  onUnassign={async id=>{await teacherFetch(`/api/teacher/classes/${classId}/expedition-assignments?expeditionId=${encodeURIComponent(id)}`,{method:"DELETE"});await load()}}/>;
+  onUnassign={async id=>{await teacherFetch(`/api/teacher/classes/${classId}/expedition-assignments?expeditionId=${encodeURIComponent(id)}`,{method:"DELETE"});await load()}}
+  onOverride={async(studentId,attemptId,chunk,verdict)=>{await teacherFetch(`/api/teacher/classes/${classId}/written-override`,{method:"POST",body:JSON.stringify({studentId,attemptId,chunk,verdict})});await load()}}/>;
 }
 
 function AssignLessons({classId,detail,onChange}:{classId:string;detail:Detail;onChange:()=>void}){

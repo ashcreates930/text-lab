@@ -22,6 +22,8 @@ import {AnswerBars,ArcBanner,ChunkText,CountdownRing,DiscoveryBurst,KeywordPromp
 import {SplitStage,useStickyOffsets} from "../split-stage";
 import {DragDrop} from "../drag-drop";
 import {QuestionNote} from "../content-note";
+import {contentNotes} from "@/lib/content-notes";
+import {LevelUp,SkillTag} from "../skill-feedback";
 import {RaceMap} from "../world-map";
 import {InterviewHost,InterviewPlayer,interviewBeat} from "./interview-live";
 
@@ -91,12 +93,15 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
  const next=<button type="button" onClick={()=>act({action:"race.next"})} className="host-btn">{round.beat==="countdown"?(round.step+1>=round.total?(round.interview?"Name the Liar":"Final podium"):"Next chunk"):"Next"} <ArrowRight size={22} aria-hidden/></button>;
  const tokens=chunkTokens(round.chunk.lines);
  const q=round.question;
+ // A heads-up for the teacher one chunk before a passage that carries a content note (lib/content-notes.ts).
+ const nextNote=world?(()=>{const n=world.expeditions?.find(e=>e.id===round.expedition.id)?.chunks[round.step+1];if(!n)return null;const notes=contentNotes(world);return n.segments.map(x=>notes.get(x.p)).find(Boolean)??null})():null;
  const questions=<div className="mt-3"><p className="text-[20px]">Student questions (no names):</p><ul className="mt-2 grid gap-2">{race.questions.slice(0,3).map(x=><li key={x.id} className="flex items-center justify-between gap-3 rounded-card bg-panel px-5 py-3 text-[clamp(18px,1.8vw,26px)]"><span>{x.text}</span><button type="button" onClick={()=>act({action:"race.pin",questionId:race.pinned===x.id?null:x.id})} aria-pressed={race.pinned===x.id} className="host-btn-secondary"><Pin size={18} aria-hidden/>{race.pinned===x.id?"Pinned":"Pin"}</button></li>)}
   {!race.questions.length&&<li className="text-[18px] text-muted">Waiting for questions…</li>}</ul></div>;
  return <section className="mt-4" aria-labelledby="race-h">
   <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="race-h" className="text-[clamp(24px,2.4vw,38px)] font-bold">Chunk {round.step+1} of {round.total} · {BEAT_LABEL[round.beat]}</h2>{next}</div>
   <p className="text-[18px] text-muted">{round.expedition.title} · Grade {round.grade??7}</p>
   {timed&&left!==null&&<div className="mt-2"><TimerTrack left={left} seconds={(totalMs??1000)/1000}/></div>}
+  {nextNote&&<aside role="note" aria-label="Teacher heads-up" className="mt-3 rounded-card border-2 border-gold bg-panel-2 px-5 py-3"><p className="text-[14px] font-extrabold uppercase tracking-[.08em] text-gold">Heads-up for you: the next chunk</p><p className="mt-1 text-[clamp(16px,1.4vw,22px)] font-bold text-ink">Chunk {round.step+2} shows a passage with a content note. Students will see: "{nextNote}"</p></aside>}
   {state.session.paused&&<p role="status" className="mt-2 rounded-card bg-gold px-4 py-2 text-[18px] font-bold text-on-gold">Paused. Everyone stays on this screen.</p>}
   {round.beat==="read"&&world&&<><p className="mt-2 text-[clamp(18px,1.6vw,26px)] text-muted" aria-live="polite">{race.ready.ready} of {race.ready.total} ready · no timer while reading</p>
    <div className="mt-3"><ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} large/></div></>}
@@ -203,6 +208,9 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
     <div className="moment-pop w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{q?.name}{(mine.tap.mult??1)>1?" · Double points":""}</p><h1 id="rp-h" className="mt-1 text-[40px] leading-none outline-none">Proof!<span className="sr-only"> Plus {mine.tap.points} points.</span></h1><p className="mt-2 text-[16px] font-bold">{round.reveal?.why}</p></div>
     {(mine.tap.bonus??0)>0&&<p role="status" className="moment-pop rounded-full bg-gold px-4 py-1.5 font-display text-[17px] font-bold text-on-gold">Streak bonus! +{mine.tap.bonus}</p>}</div>
    :<div className="notyet-shake rounded-[24px] bg-notyet p-5 text-on-notyet shadow-[0_8px_0_var(--color-notyet-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{q?.name}{mine.tap?.late||!mine.tap?" · Time's up":""}</p><h1 id="rp-h" className="mt-1 text-[36px] leading-none outline-none">Not yet.</h1><p className="mt-2 text-[17px] font-bold">You'll get another shot in the Refresher.</p></div>}
+   {/* Mastery, private to this phone: the skill tag, and a level-up moment (lib/mastery.ts). */}
+   {race.skill?.tag&&<p className="mt-3 flex justify-center"><SkillTag s={race.skill.tag}/></p>}
+   {race.skill?.ups.map(s=><div key={s.family} className="mt-3"><LevelUp s={s}/></div>)}
    {/* The newer formats: drag and drop pieces, a written verdict, the choose-two answers. */}
    {q?.format==="dnd"&&q.dnd&&race.revealKey?.dnd&&<div className="mt-3"><DragDrop view={q.dnd} placed={mine.tap?.answer.placed??{}} onChange={()=>{}} disabled reveal={race.revealKey.dnd}/></div>}
    {q?.format==="written"&&<div className="mt-3 flex flex-col gap-2 rounded-card bg-panel p-4">{mine.tap?.answer.text&&<p className="font-serif text-[17px]">"{mine.tap.answer.text}"</p>}

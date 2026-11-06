@@ -70,7 +70,13 @@ export type CaseNote = {
   chunk: number; type: string; question: string; answer: string; proof: string; rightFirstTry: boolean; fixed: boolean | null;
   gistPick: string | null; gistRight: boolean; typedQuestion: string | null; unknownWords: string[]; correctProof: string; standards: string[]; note: string;
   version?: Version; bank?: number;
+  // The question's format (lib/formats.ts), for the mastery rule of two formats.
+  format?: string;
+  // A teacher's override of a written answer's score (app/api/teacher/classes/[id]/written-override).
+  teacherVerdict?: "Strong" | "Solid" | "Needs more evidence" | null;
 };
+// Proved on the first try, with a teacher's override of a written answer taking the place of the judge's verdict.
+export const provedFirstTry = (n: Pick<CaseNote, "rightFirstTry" | "teacherVerdict">) => (n.teacherVerdict ? n.teacherVerdict !== "Needs more evidence" : n.rightFirstTry);
 // The student's answer and proof, in words.
 export function answerText(q: ExpQuestion, a: Answer | null, chunk: RaceChunk) {
   if (!a) return { answer: "No answer (time ran out)", proof: "" };
@@ -105,7 +111,7 @@ export function caseNotes(chunks: RaceChunk[], results: ChunkResult[], refresher
     return {
       chunk: c.index + 1, type: TYPE_INFO[q.type].name, question: q.prompt, answer: t.answer, proof: t.proof, rightFirstTry: !!r?.correct,
       fixed: k >= 0 ? !!refresher.fixed[k] : null, gistPick: r?.gist != null ? c.chunk.gist.options[r.gist]?.text ?? null : null, gistRight: gistRight(c, r?.gist ?? null),
-      typedQuestion: r?.typed ?? null, unknownWords: r?.unknown ?? [], correctProof: correctProofText(q, c), standards: q.standards, note: notes[c.index] ?? "", version, bank: r?.bank,
+      typedQuestion: r?.typed ?? null, unknownWords: r?.unknown ?? [], correctProof: correctProofText(q, c), standards: q.standards, note: notes[c.index] ?? "", version, bank: r?.bank, format: formatOf(q),
     };
   });
 }
@@ -174,8 +180,9 @@ function pdfWriter(title: string, subtitle: string) {
   doc.setTextColor(17, 17, 17); text(title, 20, true, 6); text(subtitle, 11, false, 10); y += 6;
   return { doc, text, rule, space: (h: number) => { y += h; } };
 }
-export function caseNotesPdf(student: string, story: string, expedition: string, notes: CaseNote[], interview?: InterviewNote | null, grade?: number) {
+export function caseNotesPdf(student: string, story: string, expedition: string, notes: CaseNote[], interview?: InterviewNote | null, grade?: number, reflection?: string | null) {
   const w = pdfWriter(`Case Notes: ${expedition}`, `${story} · ${student}`);
+  if (reflection) { w.text("My reflection: which skill improved, and how do you know?", 12, true); w.text(`"${reflection}"`); w.space(10); }
   if (interview) {
     w.text("The Interview", 13, true);
     for (const s of interview.said) w.text(saidLine(s));

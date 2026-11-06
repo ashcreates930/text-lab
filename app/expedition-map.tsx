@@ -5,7 +5,9 @@
 // without one shows the vertical trail of expeditions. Both keep the rank and skill badges. Rules:
 // lib/expedition-progress.ts and lib/world-map.ts.
 import {useEffect,useLayoutEffect,useMemo,useState} from "react";
-import {ArrowLeft,ArrowRight,Award,CalendarDays,Check,Crown,List,Lock,Map as MapIcon,Medal,Sparkles,Star,X,Zap} from "lucide-react";
+import {ArrowLeft,ArrowRight,Award,CalendarDays,Check,Crown,List,Lock,Map as MapIcon,Medal,Sparkles,Star,TrendingUp,X,Zap} from "lucide-react";
+import {evidenceFrom,levelHistory,masteryOf} from "@/lib/mastery";
+import {SkillPage} from "./skill-feedback";
 import type {WorldPack} from "@/lib/world-schema";
 import {expeditionMap,rankFor,RANKS,skillBadges,type ExpeditionAttempt} from "@/lib/expedition-progress";
 import {secretOf,tokenAt,worldMapView,type MapRegionView,type MapStopView} from "@/lib/world-map";
@@ -15,11 +17,15 @@ import {loadSecrets,saveSecret} from "./map-store";
 
 type Auth={token:string}|null|undefined;
 export function ExpeditionMap({world,attempts,assigned=[],justEarned,onStart,onBack,auth}:{world:WorldPack;attempts:ExpeditionAttempt[];assigned?:{expeditionId:string;due:string|null}[];justEarned?:string|null;onStart:(id:string)=>void;onBack:()=>void;auth?:Auth}){
- useLayoutEffect(()=>{focusScreenTop()},[]);
+ const [skillsOpen,setSkillsOpen]=useState(false);
+ useLayoutEffect(()=>{if(!skillsOpen)focusScreenTop()},[skillsOpen]);
  const stops=expeditionMap(world,attempts,assigned),finished=stops.filter(s=>s.state==="proven").length;
+ // My skills: the student's private levels (lib/mastery.ts); never shown on the map itself.
+ if(skillsOpen)return <SkillPage skills={masteryOf(evidenceFrom(attempts))} history={levelHistory(attempts)} expeditionTitle={id=>world.expeditions?.find(e=>e.id===id)?.title??id} onBack={()=>setSkillsOpen(false)}/>;
  const rank=rankFor(finished,stops.length),badges=skillBadges(attempts);
  return <div className="case-ui mx-auto flex max-w-xl flex-col gap-4 px-4 pb-16 pt-4 md:max-w-6xl">
-  <button type="button" onClick={onBack} className="case-secondary w-fit !min-h-11"><ArrowLeft size={18} aria-hidden/>Back</button>
+  <div className="flex flex-wrap items-center justify-between gap-2"><button type="button" onClick={onBack} className="case-secondary w-fit !min-h-11"><ArrowLeft size={18} aria-hidden/>Back</button>
+   <button type="button" onClick={()=>setSkillsOpen(true)} className="case-secondary w-fit !min-h-11"><TrendingUp size={18} aria-hidden/>My skills</button></div>
   <section aria-labelledby="map-h">
    <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{world.title}</p>
    <h1 id="map-h" className="text-[30px] leading-tight outline-none">{world.world_map?"Story map":"Expedition map"}</h1>

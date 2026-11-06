@@ -22,6 +22,7 @@
     "381ff48ddd762fbb": "You preserve local stories while checking which parts have evidence behind them.",
     "c10e53a0334ee102": "Write the story of that night the way the town tells it, then show which parts are legend and which parts the evidence supports.",
     "2014029f139c0b7e": "The morning after the party, Ichabod Crane, the schoolteacher, is missing. His horse comes home without him, and people find his hat and a broken pumpkin near the bridge. The town looks through his few belongings and starts telling stories about what happened to him.",
+    "37d16d335381e26d": "This case begins at the end. Read what the town found the morning after, then go back to the beginning to meet Ichabod and the legend he believed.",
     "0c6874660d453f43": "Morning light reaches the empty schoolhouse. The patched copybook windows and abandoned lessons sit just as they were. Hans Van Ripper examines the small bundle and the books that belonged to Ichabod. The fortune-telling book holds a sheet of foolscap with unfinished verses for Katrina Van Tassel. Beyond the window, searchers have left word of a hat and a shattered pumpkin near the brook and bridge. What disappeared: a schoolteacher, a rival, or the truth between them?",
     "633f1a1ab59357c8": "The searchers found a hat and a shattered pumpkin. Ichabod owned books about witchcraft. Which explanation does the evidence support better: a ghost or a trick? What can’t you prove yet?",
     "da51095cd8fafd3e": "The trail leads back to the night before. Where do you begin?",
@@ -227,6 +228,14 @@
     "f074ae836d984046": "heiress",
     "249ceaa60e5c4cf7": "A woman who will receive a family's land or money in the future.",
     "f7be4ca6d4143c1d": "mortification",
-    "9fdf48f788c6d13d": "A strong feeling of shame or embarrassment."
+    "9fdf48f788c6d13d": "A strong feeling of shame or embarrassment.",
+    "23a6ed43b990d0b8": "discrimination",
+    "1a2706cc01c3d5e9": "Good judgment: telling cases apart and treating each one fairly.",
+    "e08df8ca38afbdf7": "consigned",
+    "bff2a520cfe8c7f4": "Handed over or sent away, here to be burned.",
+    "d10f652044bd0d64": "forthwith",
+    "f95e65fe4c297766": "Right away; at once.",
+    "bfb05947bd593f24": "niggardly",
+    "171fb5fab4b7327b": "stingy (an old word, unrelated to any slur)"
   }
 }

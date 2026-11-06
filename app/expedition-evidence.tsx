@@ -5,6 +5,7 @@
 import {useState} from "react";
 import {CalendarDays,Check,Compass,X} from "lucide-react";
 import type {ClassEvidence} from "@/lib/classroom/evidence";
+import {LEVELS} from "@/lib/mastery";
 
 type Exp=NonNullable<ClassEvidence["expeditions"]>;
 type Skills=Exp["class"];
@@ -22,12 +23,16 @@ function SkillPanels({s}:{s:Skills}){
    {s.unknownWords.length>0&&<p className="mt-1 text-[14px] text-muted">Words students marked: {s.unknownWords.join(", ")}</p>}</div>
  </div>;
 }
-export function ExpeditionEvidence({data,onAssign,onUnassign}:{data:Exp;onAssign?:(id:string,due:string|null)=>Promise<void>;onUnassign?:(id:string)=>Promise<void>}){
+// onOverride: a teacher overrides the score on a written answer (or clears it with null).
+export function ExpeditionEvidence({data,onAssign,onUnassign,onOverride}:{data:Exp;onAssign?:(id:string,due:string|null)=>Promise<void>;onUnassign?:(id:string)=>Promise<void>;onOverride?:(studentId:string,attemptId:string,chunk:number,verdict:string|null)=>Promise<void>}){
  const [due,setDue]=useState<Record<string,string>>({}),[busy,setBusy]=useState("");
  return <section aria-labelledby="exp-ev-h" className="space-y-3">
   <h3 id="exp-ev-h" className="flex items-center gap-2 text-[22px] font-bold text-ink"><Compass size={20} className="text-highlight"/>Proof Race expeditions</h3>
   <p className="max-w-2xl text-[15px] leading-6 text-muted">Solo expeditions your students played while signed in to the class. First-try results come from each student's first attempt; every result is tagged to B.E.S.T.</p>
   <div className="rounded-3xl bg-panel p-5"><SkillPanels s={data.class}/></div>
+  {data.levels.length>0&&<div className="rounded-3xl bg-panel p-5"><p className="text-[13px] font-bold uppercase tracking-wide text-highlight">Mastery levels (the same levels students see; first tries only)</p>
+   <div className="mt-2 overflow-x-auto"><table className="w-full text-left text-[14px] text-ink"><thead><tr className="text-muted"><th className="py-1 pr-3 font-semibold">Skill</th>{LEVELS.map(l=><th key={l} className="py-1 pr-3 font-semibold">{l}</th>)}</tr></thead>
+    <tbody>{data.levels.map(r=><tr key={r.family} className="border-t border-edge"><td className="py-1 pr-3"><span className="font-semibold">{r.name}</span> <span className="text-muted">{r.code}</span></td>{LEVELS.map(l=><td key={l} className="py-1 pr-3 tabular-nums">{r.counts[l]}</td>)}</tr>)}</tbody></table></div></div>}
   <ul className="grid gap-3">{data.expeditions.map((x,k)=><li key={x.id} className="rounded-3xl bg-panel p-5">
    <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-[17px] font-semibold text-ink">{k+1}. {x.title} <span className="text-[14px] font-normal text-muted">· {x.finished} of {x.of} finished</span></p>
     {onAssign&&<div className="flex flex-wrap items-center gap-2">{x.assigned?<><span className="inline-flex items-center gap-1 rounded-full bg-success px-3 py-1 text-[13px] font-bold text-on-success"><CalendarDays size={14}/>Assigned{x.assigned.due?` · due ${x.assigned.due}`:""}</span>
@@ -39,6 +44,9 @@ export function ExpeditionEvidence({data,onAssign,onUnassign}:{data:Exp;onAssign
      <tbody>{x.rows.map(r=><tr key={r.id} className="border-t border-edge align-top"><td className="py-1 pr-3 font-semibold">{r.nickname}</td><td className="py-1 pr-3">{r.finished?<><Check size={14} className="mr-1 inline text-success"/>{r.finished.slice(0,10)}</>:<><X size={14} className="mr-1 inline text-muted"/>Not yet</>}</td>
       <td className="py-1 pr-3 tabular-nums">{r.firstTry===null?"·":`${r.firstTry}/${r.total}`}</td><td className="py-1 pr-3 tabular-nums">{r.score??"·"}</td>
       <td className="py-1">{r.liar?`${r.liar.solved?"Solved":"Not solved"} · named ${r.liar.pick??"no one"}`:"·"}</td></tr>)}</tbody></table></div>
+    {x.rows.some(r=>r.notes.some(n=>n.format==="written"))&&<div className="mt-2 rounded-2xl bg-panel-2 p-3"><p className="text-[14px] font-bold text-ink">Written answers (you can change the score)</p>
+     <ul className="mt-1 space-y-2 text-[14px] text-ink">{x.rows.flatMap(r=>r.notes.filter(n=>n.format==="written").map(n=><li key={`${r.id}-${n.chunk}`} className="grid gap-1"><span><b>{r.nickname}</b>, chunk {n.chunk}: {n.answer}</span>
+      <label className="text-[13px] text-muted">Score{n.teacherVerdict?" (set by you)":" (by the rubric)"}: <select disabled={!onOverride||!r.attemptId} value={n.teacherVerdict??""} onChange={async e=>{setBusy(`${r.id}-${n.chunk}`);await onOverride?.(r.id,r.attemptId!,n.chunk,e.target.value||null);setBusy("")}} className="ml-1 rounded-row bg-panel px-2 py-1 text-[14px] text-ink"><option value="">Rubric score ({/(Strong|Solid|Needs more evidence)/.exec(n.answer)?.[1]??"none"})</option><option>Strong</option><option>Solid</option><option>Needs more evidence</option></select></label></li>))}</ul></div>}
     {x.rows.filter(r=>r.notes.some(n=>n.note)).map(r=><div key={r.id} className="mt-2 rounded-2xl bg-panel-2 p-3"><p className="text-[14px] font-bold text-ink">{r.nickname}'s Case Notes</p>
      <ul className="mt-1 space-y-1 text-[14px] text-ink">{r.notes.filter(n=>n.note).map(n=><li key={n.chunk}>Chunk {n.chunk} ({n.type}): {n.note}</li>)}</ul></div>)}
    </details>
@@ -47,6 +55,8 @@ export function ExpeditionEvidence({data,onAssign,onUnassign}:{data:Exp;onAssign
    <ul className="mt-2 grid gap-3 md:grid-cols-2">{data.students.map(s=><li key={s.id} className="rounded-2xl border border-edge p-3">
     <p className="text-[15px] font-bold text-ink">{s.nickname} <span className="font-normal text-muted">· {s.finished} expedition{s.finished===1?"":"s"}{s.rank?` · ${s.rank}`:""}</span></p>
     {s.badges.length>0&&<p className="mt-1 text-[13px] text-ink">Badges: {s.badges.join(", ")}</p>}
+    {s.levels.length>0&&<ul aria-label={`${s.nickname}'s mastery levels`} className="mt-1 flex flex-wrap gap-1">{s.levels.map(l=><li key={l.family} className="rounded-full bg-panel-2 px-2 py-0.5 text-[12px] text-ink" title={l.code}>{l.name}: <b>{l.level}</b> ({l.right}/{l.total})</li>)}</ul>}
+    {s.reflections.map((x,i)=><p key={i} className="mt-1 text-[13px] text-ink">Reflection after {x.expedition}: "{x.text}"</p>)}
     {s.skills.types.length>0&&<p className="mt-1 text-[13px] text-muted">{s.skills.types.map(t=>`${t.type} ${pctText(t.pct)}`).join(" · ")}</p>}
     {s.skills.unknownWords.length>0&&<p className="mt-1 text-[13px] text-muted">Words marked: {s.skills.unknownWords.join(", ")}</p>}
    </li>)}</ul></div>

@@ -64,7 +64,7 @@ export const aRivalAppears: E = {
   interview: [
     { character: "brom-bones", cards: ["Who are you, exactly?", "What are you good at?"],
       truth: { text: "I'm built wide and strong, with a dark mop on my head and a grin that's half joke, half swagger.", lines: [["p028", 1]] },
-      lie: { text: "I'm no rider. Give me my own two feet any day.", lines: [["p028", 3]], gesture: "laughing" },
+      lie: { text: "Nobody around here listens to me when there's an argument. They settle it without me.", lines: [["p028", 4]], gesture: "laughing" },
       caught: "Ha! As if I could stay off a saddle. You got me." },
     { character: "hans-van-ripper", cards: ["What did the schoolmaster think of the Van Tassel house?", "Where does the schoolmaster dream of going?"],
       truth: { text: "He dreamed of hauling all their belongings and a brood of little ones off to the frontier.", lines: [["p025", 1]] },

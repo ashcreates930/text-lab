@@ -14,6 +14,8 @@ import {raceBoard,type BoardRow} from "@/lib/proof-race";
 import {contentNotes} from "@/lib/content-notes";
 import {Pill} from "./game-ui";
 import {ContentNote,QuestionNote} from "./content-note";
+import {LevelUp,SkillReport,SkillTag} from "./skill-feedback";
+import {evidenceFrom,levelOf,levelUps,mainFamily,masteryOf} from "@/lib/mastery";
 import {ReadingPanel} from "./reading-panel";
 import {Leaderboard,Podium,cue,reducedMotion,useBeatClock} from "./proof-race";
 import {BURST_POINTS,BURST_SECONDS,LIGHTNING_POINTS,LIGHTNING_SECONDS,arcOf,beatKind,isCheckpoint,multiplierAt,questionAt,streakBonus,versionFor,type Lightning,type Version} from "@/lib/pacing";
@@ -30,7 +32,7 @@ import {InterviewScreen,LiarVerdict,NameTheLiar} from "./interview";
 import type {ExpeditionAttempt} from "@/lib/expedition-progress";
 import {evidenceSentences} from "@/lib/lies";
 
-type Beat="interview"|"read"|"gist"|"question"|"result"|"lightning"|"board"|"burst"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"notes";
+type Beat="interview"|"read"|"gist"|"question"|"result"|"lightning"|"board"|"burst"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"skills"|"notes";
 // points include the boss or surprise double; bonus: the streak bonus; version: the question version this student saw.
 export type ChunkRecord={gist:number|null;answer:Answer;correct:boolean;points:number;late:boolean;coins:number;unknown:string[];discovered:boolean;bonus:number;mult:number;version:Version;bank:number;judged?:{strength:Strength;note:string;next:string}|null};
 const AUTO:Partial<Record<Beat,"result"|"board"|"countdown">>={result:"result",board:"board",countdown:"countdown"};
@@ -263,7 +265,7 @@ export function DiscoveryBurst({chunks,world,timeSetting,sound,onDone,onFind,squ
 }
 
 // ---------- The solo expedition ----------
-export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,timeSetting="1",highlighter=false,studentKey,onSave,onFinish,onExit,replay=0,classToken=null}:{world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;grade?:number;timeSetting?:string;highlighter?:boolean;studentKey?:string;onSave?:(a:ExpeditionAttempt)=>void;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void;replay?:number;classToken?:string|null}){
+export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,history=[],timeSetting="1",highlighter=false,studentKey,onSave,onFinish,onExit,replay=0,classToken=null}:{world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;grade?:number;history?:ExpeditionAttempt[];timeSetting?:string;highlighter?:boolean;studentKey?:string;onSave?:(a:ExpeditionAttempt)=>void;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void;replay?:number;classToken?:string|null}){
  const [sound,toggleSound]=useSoundPref("effects",preset);
  const chunks=useMemo(()=>expeditionChunks(world,passages,expeditionId),[world,passages,expeditionId]);
  const exp=world.expeditions?.find(e=>e.id===expeditionId);
@@ -347,9 +349,18 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,timeS
  const attemptId=useMemo(()=>{try{return crypto.randomUUID()}catch{return `a${Date.now()}${Math.random().toString(36).slice(2)}`}},[]),startedIso=useMemo(()=>new Date().toISOString(),[]),finishedIso=useRef<string|null>(null);
  function save(complete:boolean){if(!onSave||!iv&&records.length<chunks.length)return;finishedIso.current??=new Date().toISOString();
   const liarAt=refItems.findIndex(x=>x.kind==="liar");
-  onSave({attemptId,worldId:world.id,expeditionId,startedAt:startedIso,finishedAt:finishedIso.current,complete,score,notes:caseNotes(askedChunks,results,{items:refItems,fixed},notesText),
+  onSave({attemptId,worldId:world.id,expeditionId,startedAt:startedIso,finishedAt:finishedIso.current,complete,score,notes:caseNotes(askedChunks,results,{items:refItems,fixed},notesText),reflection:reflection.trim()||null,
    interview:iv?interviewNote(world,iv,liar,cards,liarAnswer,liarAt>=0?!!fixed[liarAt]:null):null,award:complete?refresherAward(refItems,fixed):null})}
  const saved=useRef(false);
+ // Mastery (lib/mastery.ts): this run as an attempt so far, on top of the student's earlier attempts. Only an
+ // expedition's first attempt counts, so a replay shows levels but never changes them.
+ const [reflection,setReflection]=useState("");
+ const runSoFar=(n:number):ExpeditionAttempt=>({attemptId,worldId:world.id,expeditionId,startedAt:startedIso,finishedAt:null,complete:false,score:0,notes:caseNotes(askedChunks.slice(0,n),results.slice(0,n)),interview:null,award:null});
+ const evidenceAt=(n:number)=>evidenceFrom([...history.filter(a=>a.worldId===world.id),runSoFar(n)]);
+ const skillNow=useMemo(()=>{if(beat!=="result"||!records[k])return null;const fam=mainFamily(askedChunks[k].chunk.question.standards);const after=evidenceAt(k+1);
+  return {tag:fam?levelOf(fam,after):null,ups:levelUps(evidenceAt(k),after)}},[beat,k,records.length]);// eslint-disable-line react-hooks/exhaustive-deps
+ const runFamilies=new Set(askedChunks.flatMap(x=>x.chunk.question.standards));
+ const report=beat==="skills"?masteryOf(evidenceAt(chunks.length)).filter(s=>runFamilies.has(s.family)||(s.family==="R.3.2"&&results.some(r=>r.gist!==null))):[];
  useEffect(()=>{if(beat==="finish"&&!saved.current){saved.current=true;save(false)}},[beat]);// eslint-disable-line react-hooks/exhaustive-deps
  if(!c||!q||!exp)return null;
  const info=TYPE_INFO[q.type];
@@ -387,6 +398,8 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,timeS
      {record.bonus>0&&<p role="status" className="moment-pop rounded-full bg-gold px-4 py-1.5 font-display text-[17px] font-bold text-on-gold">Streak bonus! +{record.bonus} for {streak} in a row</p>}</div>
     :<div className="notyet-shake mt-3 rounded-[24px] bg-notyet p-5 text-on-notyet shadow-[0_8px_0_var(--color-notyet-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{info.name}{record.late?" · Time's up":""}</p><h1 id="ex-h" className="mt-1 text-[36px] leading-none outline-none">Not yet.</h1><p className="mt-2 text-[17px] font-bold">You'll get another shot in the Refresher.</p></div>}
    <FormatResult q={q} answer={record.answer} judged={record.judged??null} points={record.points}/>
+   {skillNow?.tag&&<p className="mt-3 flex justify-center"><SkillTag s={skillNow.tag}/></p>}
+   {skillNow?.ups.map(s=><div key={s.family} className="mt-3"><LevelUp s={s}/></div>)}
    {meRow&&<p className="mt-3 flex justify-center"><RankPill move={meRow.move} rank={meRow.rank} of={board.length} first={meRow.prevRank===null}/></p>}
    {q.type==="make_call"
     ?<><p className="mt-3 text-[13px] font-extrabold uppercase tracking-[.08em] text-highlight">{record.correct?"The proof":"Here's the proof"}</p><ReadingPanel className="mt-1" glossary={world.glossary} passages={callPassages as SourcePassage[]} results={shown.lines.map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/></>
@@ -412,8 +425,9 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,timeS
   {beat==="finish"&&<section className="mt-4"><Podium main sound={sound} entries={board.map(r=>({id:r.id,name:r.name,points:r.points}))} title="Final results"/>
    <p className="mt-6 text-center text-[16px] text-muted">Every point came from a line you proved in the story.</p>
    <button type="button" onClick={()=>go("refresher")} className="case-primary mt-5 min-h-[52px] w-full justify-center">{refItems.length?`Refresher: fix ${refItems.length}`:"Refresher"} <ArrowRight size={18} aria-hidden/></button></section>}
-  {beat==="refresher"&&<Refresher seed={seedKey} items={refViews} world={world} check={(i,a)=>{const it=refItems[i];return refresherShown(it,askedChunks,refresherCorrect(it,askedChunks[it.index],a,callAll.flatMap(p=>evidenceSentences(p.text)),lie?.lines),lie?.lines)}} onDone={f=>{setFixed(f);go("notes")}}/>}
-  {beat==="notes"&&<CaseNotesView grade={grade} onDone={()=>{save(true);onExit?.()}} interview={iv?interviewNote(world,iv,liar,cards,liarAnswer,refItems.findIndex(x=>x.kind==="liar")>=0?!!fixed[refItems.findIndex(x=>x.kind==="liar")]:null):null} student="You" story={world.title} expedition={exp.title} notes={caseNotes(askedChunks,results,{items:refItems,fixed},notesText)} award={refresherAward(refItems,fixed)} onNote={(i,t)=>setNotesText(n=>({...n,[i]:t}))}
+  {beat==="refresher"&&<Refresher seed={seedKey} items={refViews} world={world} check={(i,a)=>{const it=refItems[i];return refresherShown(it,askedChunks,refresherCorrect(it,askedChunks[it.index],a,callAll.flatMap(p=>evidenceSentences(p.text)),lie?.lines),lie?.lines)}} onDone={f=>{setFixed(f);go("skills")}}/>}
+  {beat==="skills"&&<SkillReport skills={report} reflection={reflection} onReflect={setReflection} onDone={()=>go("notes")}/>}
+  {beat==="notes"&&<CaseNotesView grade={grade} reflection={reflection.trim()||null} onDone={()=>{save(true);onExit?.()}} interview={iv?interviewNote(world,iv,liar,cards,liarAnswer,refItems.findIndex(x=>x.kind==="liar")>=0?!!fixed[refItems.findIndex(x=>x.kind==="liar")]:null):null} student="You" story={world.title} expedition={exp.title} notes={caseNotes(askedChunks,results,{items:refItems,fixed},notesText)} award={refresherAward(refItems,fixed)} onNote={(i,t)=>setNotesText(n=>({...n,[i]:t}))}
    bonus={<p className="no-print rounded-card bg-violet-soft p-4 text-[16px] font-bold">Bonus Round: in class, your squad compares Case Notes and agrees on the best proof for every question you answered differently.</p>} />}
  </div>;
 }

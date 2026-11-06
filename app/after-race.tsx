@@ -71,16 +71,17 @@ export function Refresher({items,world,check,onDone,seed}:{items:RefresherView[]
 
 // ---------- Case Notes ----------
 const status=(n:CaseNote)=>n.rightFirstTry?{label:"Proved on the one try",cls:"bg-success text-on-success",Icon:Check}:n.fixed?{label:"Fixed in the Refresher",cls:"bg-gold text-on-gold",Icon:Star}:{label:n.fixed===false?"Not fixed yet":"Missed",cls:"bg-panel-2 text-ink",Icon:null};
-export function CaseNotesView({notes,student,story,expedition,award,onNote,bonus,onDone,interview,grade}:{grade?:number;notes:CaseNote[];student:string;story:string;expedition:string;award?:{stars:number;of:number;badge:string|null};onNote?:(chunk:number,text:string)=>void;bonus?:React.ReactNode;onDone?:()=>void;interview?:InterviewNote|null}){
+export function CaseNotesView({notes,student,story,expedition,award,onNote,bonus,onDone,interview,grade,reflection=null}:{grade?:number;reflection?:string|null;notes:CaseNote[];student:string;story:string;expedition:string;award?:{stars:number;of:number;badge:string|null};onNote?:(chunk:number,text:string)=>void;bonus?:React.ReactNode;onDone?:()=>void;interview?:InterviewNote|null}){
  useLayoutEffect(()=>{focusScreenTop()},[]);
  const file=useMemo(()=>`case-notes-${expedition.toLowerCase().replace(/[^a-z0-9]+/g,"-")}.pdf`,[expedition]);
- function download(){caseNotesPdf(student,story,expedition,notes,interview,grade).save(file)}
+ function download(){caseNotesPdf(student,story,expedition,notes,interview,grade,reflection).save(file)}
  const right=notes.filter(n=>n.rightFirstTry).length;
  return <section aria-labelledby="cn-h" className="case-notes mt-2 flex flex-col gap-3">
   <div><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{story} · {expedition}</p><h1 id="cn-h" className="text-[30px] outline-none">Case Notes</h1>
    <p className="text-[16px] text-muted">{student} · {right} of {notes.length} proved on the one try{award&&award.of>0?` · ${award.stars} of ${award.of} fixed in the Refresher`:""}</p></div>
   {award?.badge&&<p className="no-print inline-flex w-fit items-center gap-2 rounded-full bg-gold px-4 py-2 font-display text-[18px] font-bold text-on-gold"><Star size={18} className="fill-on-gold" aria-hidden/>Badge: {award.badge}</p>}
   <div className="no-print flex flex-wrap gap-2"><button type="button" onClick={()=>window.print()} className="case-secondary !min-h-11"><Printer size={18} aria-hidden/>Print</button><button type="button" onClick={download} className="case-secondary !min-h-11"><Download size={18} aria-hidden/>Download PDF</button></div>
+  {reflection&&<section aria-labelledby="cn-refl" className="rounded-card bg-panel p-4"><h2 id="cn-refl" className="font-display text-[18px] font-bold">My reflection</h2><p className="mt-1 text-[13px] text-muted">Which skill improved, and how do you know?</p><p className="mt-1 text-[16px]">"{reflection}"</p></section>}
   {interview&&<section aria-labelledby="cn-iv" className="rounded-card bg-panel p-4">
    <div className="flex flex-wrap items-center justify-between gap-2"><h2 id="cn-iv" className="font-display text-[18px] font-bold">The Interview</h2>
     <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[13px] font-extrabold ${interview.solved?"bg-gold text-on-gold":interview.fixed?"bg-gold text-on-gold":"bg-panel-2 text-ink"}`}>{interview.solved?<><Check size={14} aria-hidden/>Case solved</>:interview.fixed?<><Star size={14} aria-hidden/>Fixed in the Refresher</>:"Not solved"}</span></div>

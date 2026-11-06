@@ -63,7 +63,7 @@ export const theRideToTheParty: E = {
   interview: [
     { character: "brom-bones", cards: ["What did the schoolmaster look like riding out?", "What was the weather like that evening?"],
       truth: { text: "His little cap perched way down near his beak, and the back of his jacket flapped clear to his mount's rump.", lines: [["p037", 2]] },
-      lie: { text: "The wind was howling that evening, whipping everything every which way.", lines: [["p041", 3]], gesture: "laughing" },
+      lie: { text: "Every orchard he rode past had been stripped clean. Nothing left to pick.", lines: [["p040", 1]], gesture: "laughing" },
       caught: "Ha! Still as a pond, it was. I just like a stormy tale." },
     { character: "hans-van-ripper", cards: ["What did folks wear to the party?", "Who came to the Van Tassel place?"],
       truth: { text: "The grandfathers came in home-woven jackets, with great clumsy footwear and big shiny clasps.", lines: [["p042", 1]] },

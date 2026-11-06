@@ -186,3 +186,37 @@ test("clue words, grade codes, a written answer for everyone, and the choice and
   const trait = structuredClone(e2); const tq = bankOf(trait.chunks[9])[0]; tq.prompt = "In a single sentence, explain what Ichabod is proudest of."; tq.written!.model = "He is proudest of his singing voice.";
   const tp = variety(e2.id, trait).join(" | "); assert.match(tp, /an idea, not a character trait/); assert.match(tp, /states an idea, not a character's trait/);
 });
+
+test("content review of Expeditions 3 to 14: twists never repeat an interview lie, no vague key ideas, the teacher override, content-note heads-up, niggardly", async () => {
+  const { provedFirstTry } = await import("../lib/case-notes.ts");
+  const { VAGUE_KEY_WORDS } = await import("../lib/expedition-check.ts");
+  const exps = sh.expeditions!;
+  // No Catch the Lie testimony shares its disproving line with an interview lie in the same expedition.
+  for (const e of exps) { const lies = new Set((e.interview?.witnesses ?? []).flatMap((w) => w.lie.lines));
+    e.chunks.forEach((c, k) => bankOf(c).forEach((q) => { if (q.type === "catch_lie") assert.ok(!(q.proof?.lines ?? []).some((l) => lies.has(l)), `${e.id} chunk ${k + 1}`); })); }
+  const twin = structuredClone(sh), e5 = twin.expeditions!.find((x) => x.id === "a-rival-appears")!, tk = e5.chunks.findIndex((c) => c.question.type === "catch_lie");
+  e5.chunks[tk].question.proof = { lines: [e5.interview!.witnesses[0].lie.lines[0]] };
+  assert.match(expeditionProblems(twin, shp).join(" | "), /disproved by the same line as an interview lie/);
+  // The twist comes before the boss in Expedition 5.
+  const a5 = arcProblems(sh); assert.deepEqual(a5, []);
+  const r5 = sh.world_map!.regions.find((r) => r.expedition === "a-rival-appears")!;
+  assert.ok(exps.find((x) => x.id === "a-rival-appears")!.chunks.findIndex((c) => c.question.type === "catch_lie") + 1 < r5.stops.find((s) => s.landmark === "boss")!.chunk);
+  // Written key ideas carry the idea: none of the vague words.
+  for (const e of exps) for (const c of e.chunks) for (const q of bankOf(c)) for (const g of q.written?.key_ideas ?? []) for (const w of g) assert.ok(!VAGUE_KEY_WORDS.includes(w.toLowerCase()), `${e.id}: "${w}"`);
+  const vague = structuredClone(e1); const wq = bankOf(vague.chunks.find((c) => formatOf(c.question) === "written")!)[0]; wq.written!.key_ideas[0].push("see");
+  assert.match(variety(e1.id, vague).join(" | "), /too vague/);
+  // A teacher override replaces the judge's verdict on a written answer.
+  assert.equal(provedFirstTry({ rightFirstTry: true, teacherVerdict: "Needs more evidence" }), false);
+  assert.equal(provedFirstTry({ rightFirstTry: false, teacherVerdict: "Solid" }), true);
+  assert.equal(provedFirstTry({ rightFirstTry: true, teacherVerdict: null }), true);
+  assert.match(src("app/api/teacher/classes/[id]/written-override/route.ts"), /teacherVerdict = verdict/); assert.match(src("app/expedition-evidence.tsx"), /you can change the score/);
+  // The host board warns the teacher one chunk before a content-noted passage.
+  assert.match(src("app/live/race-live.tsx"), /aria-label="Teacher heads-up"/);
+  // Expedition 9 chunk 5: the twist questions avoid the line with "niggardly", which is glossed in the passage.
+  const c5 = exps.find((x) => x.id === "the-feast-and-the-dance")!.chunks[4];
+  for (const q of bankOf(c5)) assert.ok(!(q.proof?.lines ?? []).some((l) => /niggardly/.test(l)));
+  assert.equal(sh.glossary.find((g) => g.term === "niggardly")?.student_friendly_definition, "stingy (an old word, unrelated to any slur)");
+  // The lightning beat in Expedition 4 no longer asks Katrina's age; Expedition 11's device label.
+  assert.ok(!exps.find((x) => x.id === "the-van-tassel-farm")!.lightning!.some((l) => /old is Katrina/.test(l.question)));
+  assert.ok(bankOf(exps.find((x) => x.id === "the-lonely-road")!.chunks[3]).some((q) => (q.choices ?? []).some((o) => o.text.startsWith("Metaphor (implied comparison)"))));
+});

@@ -4156,7 +4156,7 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 
 - Question (Theme Thread, one-sentence written answer): In one sentence, explain what the Hollow does to anyone who settles there.
   - A strong answer: Anyone who stays in the Hollow for a while starts to dream and see ghosts, because the valley's sleepy, witching air gets into them.
-  - Key ideas (one from each group): dream, imagin, vision, ghost, apparition, see things, fanc, superstit, strange, spell, witch, haunt | every, anyone, newcomer, people, those who, outsider, visitor, settle, come, move, live, stay
+  - Key ideas (one from each group): dream, imagin, vision, ghost, apparition, fanc, superstit, spell, witch, haunt | anyone, newcomer, outsider, visitor, settle, stay, arriv, everyone who, all who
   - Proof sentence: "It is remarkable that the visionary propensity I have mentioned is not confined to the native inhabitants of the valley, but is unconsciously imbibed by every one who resides there for a time."
   - Proof sentence: "However wide awake they may have been before they entered that sleepy region, they are sure, in a little time, to inhale the witching influence of the air, and begin to grow imaginative, to dream dreams, and see apparitions."
   - Hint: Think about newcomers, not just the people born there.
@@ -4164,7 +4164,7 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what happens to newcomers who settle in the Hollow.
   - A strong answer: Newcomers who settle in the Hollow soon begin to imagine things and see ghosts, because its dreamy air takes hold of them.
-  - Key ideas (one from each group): dream, imagin, vision, ghost, apparition, see things, fanc, superstit, strange, spell, witch, haunt | newcomer, anyone, every, people, those who, outsider, visitor, settle, come, move, live, stay, arriv
+  - Key ideas (one from each group): dream, imagin, vision, ghost, apparition, fanc, superstit, spell, witch, haunt | anyone, newcomer, outsider, visitor, settle, stay, arriv, everyone who, all who
   - Proof sentence: "However wide awake they may have been before they entered that sleepy region, they are sure, in a little time, to inhale the witching influence of the air, and begin to grow imaginative, to dream dreams, and see apparitions."
   - Proof sentence: "It is remarkable that the visionary propensity I have mentioned is not confined to the native inhabitants of the valley, but is unconsciously imbibed by every one who resides there for a time."
   - Hint: Even people who arrive wide awake don't stay that way.
@@ -4395,14 +4395,14 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 
 - Question (Theme Thread, one-sentence written answer): In one sentence, explain what Ichabod's pride in leading the choir suggests about how people see themselves.
   - A strong answer: Pride can make people see themselves as greater than they really are, just as Ichabod believes his choir leading outshines even the parson.
-  - Key ideas (one from each group): pride, proud, vain, vanity, conceit, full of himself, think highly, ego, admir, show off | see themselves, see himself, own mind, imagin, believ, think, picture, better than, greater, than they, really, truly, others
+  - Key ideas (one from each group): pride, proud, vain, vanity, conceit, full of himself, think highly, ego, admir, show off | see themselves, see himself, own mind, imagin, believ, pictur, better than, greater than, convinc, in his mind
   - Proof sentence: "It was a matter of no little vanity to him on Sundays, to take his station in front of the church gallery, with a band of chosen singers; where, in his own mind, he completely carried away the palm from the parson."
   - Hint: Notice the words "in his own mind."
   - Why: Leading the choir is "a matter of no little vanity," and only "in his own mind" does he beat the parson: pride shapes how he sees himself.
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Bank question (Theme Thread, one-sentence written answer): Using one sentence, state the lesson about people that Ichabod's pride in leading the choir suggests.
   - A strong answer: Pride can make people believe they are better than they really are, the way Ichabod thinks he outdoes the parson.
-  - Key ideas (one from each group): pride, proud, vain, vanity, conceit, full of himself, think highly, ego, admir, show off | see themselves, see himself, own mind, imagin, believ, think, picture, better than, greater, than they, really, truly, others
+  - Key ideas (one from each group): pride, proud, vain, vanity, conceit, full of himself, think highly, ego, admir, show off | see themselves, see himself, own mind, imagin, believ, pictur, better than, greater than, convinc, in his mind
   - Proof sentence: "It was a matter of no little vanity to him on Sundays, to take his station in front of the church gallery, with a band of chosen singers; where, in his own mind, he completely carried away the palm from the parson."
   - Hint: Whose opinion is it that he beats the parson?
   - Why: Only "in his own mind" does he carry away the palm from the parson: vanity colors how he sees himself.
@@ -4580,14 +4580,14 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 
 - Question (Theme Thread, one-sentence written answer): In one sentence, explain what these cozy nights suggest about why people enjoy being scared.
   - A strong answer: People enjoy being scared by stories because fear feels thrilling when they are safe and warm among friends.
-  - Key ideas (one from each group): scare, scary, fear, fright, terror, spook, eerie, ghost, goblin, creepy | enjoy, pleasure, love, fun, delight, thrill, exciting, like, entertain
+  - Key ideas (one from each group): scare, scary, fear, fright, terror, spook, eerie, ghost, goblin, creepy | enjoy, pleasure, love, fun, delight, thrill, exciting, entertain
   - Proof sentence: "Another of his sources of fearful pleasure was to pass long winter evenings with the old Dutch wives, as they sat spinning by the fire, with a row of apples roasting and spluttering along the hearth, and listen to their marvellous tales of ghosts and goblins, and haunted fields, and haunted brooks, and haunted bridges, and haunted houses, and particularly of the headless horseman, or Galloping Hessian of the Hollow, as they sometimes called him."
   - Hint: Notice the words "fearful pleasure."
   - Why: Listening to tales of ghosts and goblins is a "fearful pleasure": a scare can be fun when it is shared by a warm fire.
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what these gatherings suggest about why people believe strange stories.
   - A strong answer: People believe strange stories more easily when everyone around them shares and trusts the same stories.
-  - Key ideas (one from each group): believ, trust, accept, convinc, credul, true, real | everyone, together, share, each other, others, group, neighbor, around them, same, community
+  - Key ideas (one from each group): believ, trust, accept, convinc, credul | together, share, each other, group, neighbor, around them, community, everyone, circle
   - Proof sentence: "Another of his sources of fearful pleasure was to pass long winter evenings with the old Dutch wives, as they sat spinning by the fire, with a row of apples roasting and spluttering along the hearth, and listen to their marvellous tales of ghosts and goblins, and haunted fields, and haunted brooks, and haunted bridges, and haunted houses, and particularly of the headless horseman, or Galloping Hessian of the Hollow, as they sometimes called him."
   - Hint: Who tells the tales, and who believes them?
   - Why: The old wives share their marvellous tales and Ichabod adds his own: a whole circle that believes makes the stories feel true.
@@ -4670,7 +4670,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. The Gist check comes on chunks 1, 4, 7 and 10. Each student gets one question per chunk from its bank (seeded by who they are; a replay gets another), at their version: easier (one wrong choice fewer, the hint shown) or harder (no highlighted key words, the proof step added), derived unless written out.
 
-- Lightning beat after chunk 4 (10 seconds, recalls chunk 2): How old is Katrina when Ichabod meets her? Answer: "She was a blooming lass of fresh eighteen; plump as a partridge; ripe and melting and rosy-cheeked as one of her father’s peaches, and universally famed, not merely for her beauty, but her vast expectations."
+- Lightning beat after chunk 4 (10 seconds, recalls chunk 3): Where did Katrina's gold ornaments first come from? Answer: "She wore the ornaments of pure yellow gold, which her great-great-grandmother had brought over from Saardam; the tempting stomacher of the olden time, and withal a provokingly short petticoat, to display the prettiest foot and ankle in the country round."
 - Lightning beat after chunk 8 (10 seconds, recalls chunk 5): What bubbles up at the foot of the great elm? Answer: "A great elm tree spread its broad branches over it, at the foot of which bubbled up a spring of the softest and sweetest water, in a little well formed of a barrel; and then stole sparkling away through the grass, to a neighboring brook, that babbled along among alders and dwarf willows."
 
 **Chunk 1** (¶21 sentences 1 to 1; 102 words) · warm-up
@@ -4847,14 +4847,14 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 
 - Question (Theme Thread, one-sentence written answer): In one sentence, explain what this scene suggests about how wanting something changes what people see.
   - A strong answer: When people want something badly, they see the world through that desire, the way hungry Ichabod sees every animal as a meal.
-  - Key ideas (one from each group): want, desire, greed, hunger, hungry, appetite, wish, long | see, view, look, imagin, picture, everything, world, the way, notice
+  - Key ideas (one from each group): want, desire, greed, hunger, hungry, appetite, wish, crav | view, imagin, pictur, notice, perceiv, see the world, see every, through that, shape
   - Proof sentence: "In the porkers he saw carved out the future sleek side of bacon, and juicy relishing ham; not a turkey but he beheld daintily trussed up, with its gizzard under its wing, and, peradventure, a necklace of savory sausages; and even bright chanticleer himself lay sprawling on his back, in a side dish, with uplifted claws, as if craving that quarter which his chivalrous spirit disdained to ask while living."
   - Hint: What does he see when he looks at a living rooster?
   - Why: Even the proud rooster becomes a side dish in his eyes: what a person wants shapes everything they see.
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what lesson about greed this scene suggests.
   - A strong answer: Greed can turn everything a person sees into something to take or consume, even creatures that are alive and happy.
-  - Key ideas (one from each group): greed, greedy, hunger, appetite, want, desire | everything, anything, see, turn, take, consume, use, living, alive
+  - Key ideas (one from each group): greed, greedy, hunger, appetite, desire, crav | consume, devour, living, alive, creature, prey, meal, grab, seize, exploit
   - Proof sentence: "In the porkers he saw carved out the future sleek side of bacon, and juicy relishing ham; not a turkey but he beheld daintily trussed up, with its gizzard under its wing, and, peradventure, a necklace of savory sausages; and even bright chanticleer himself lay sprawling on his back, in a side dish, with uplifted claws, as if craving that quarter which his chivalrous spirit disdained to ask while living."
   - Hint: Look at what happens to each happy animal in his mind.
   - Why: Pigs, turkeys and even chanticleer become bacon, sausages and side dishes: greed turns living things into things to devour.
@@ -4873,8 +4873,8 @@ Each student picks one card per witness; one witness, picked at random per stude
 - Question cards: "Who are you, exactly?" / "What are you good at?"
 - True: "I'm built wide and strong, with a dark mop on my head and a grin that's half joke, half swagger."
   - Confirmed by: "He was broad-shouldered and double-jointed, with short curly black hair, and a bluff but not unpleasant countenance, having a mingled air of fun and arrogance."
-- False (laughing): "I'm no rider. Give me my own two feet any day."
-  - Disproved by: "He was famed for great knowledge and skill in horsemanship, being as dexterous on horseback as a Tartar."
+- False (laughing): "Nobody around here listens to me when there's an argument. They settle it without me."
+  - Disproved by: "He was foremost at all races and cock fights; and, with the ascendancy which bodily strength always acquires in rustic life, was the umpire in all disputes, setting his hat on one side, and giving his decisions with an air and tone that admitted of no gainsay or appeal."
 - When caught: "Ha! As if I could stay off a saddle. You got me."
 
 **Hans Van Ripper**
@@ -4899,7 +4899,7 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 
 Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. The Gist check comes on chunks 1, 4, 7 and 10. Each student gets one question per chunk from its bank (seeded by who they are; a replay gets another), at their version: easier (one wrong choice fewer, the hint shown) or harder (no highlighted key words, the proof step added), derived unless written out.
 
-- Lightning beat after chunk 4 (10 seconds, recalls chunk 2): Where does Ichabod picture himself riding off to? Answer: "Nay, his busy fancy already realized his hopes, and presented to him the blooming Katrina, with a whole family of children, mounted on the top of a wagon loaded with household trumpery, with pots and kettles dangling beneath; and he beheld himself bestriding a pacing mare, with a colt at her heels, setting out for Kentucky, Tennessee,--or the Lord knows where!"
+- Lightning beat after chunk 3 (10 seconds, recalls chunk 2): Where does Ichabod picture himself riding off to? Answer: "Nay, his busy fancy already realized his hopes, and presented to him the blooming Katrina, with a whole family of children, mounted on the top of a wagon loaded with household trumpery, with pots and kettles dangling beneath; and he beheld himself bestriding a pacing mare, with a colt at her heels, setting out for Kentucky, Tennessee,--or the Lord knows where!"
 - Lightning beat after chunk 8 (10 seconds, recalls chunk 5): What hangs from the centre of the best parlor? Answer: "In one corner stood a huge bag of wool, ready to be spun; in another, a quantity of linsey-woolsey just from the loom; ears of Indian corn, and strings of dried apples and peaches, hung in gay festoons along the walls, mingled with the gaud of red peppers; and a door left ajar gave him a peep into the best parlor, where the claw-footed chairs and dark mahogany tables shone like mirrors; andirons, with their accompanying shovel and tongs, glistened from their covert of asparagus tops; mock-oranges and conch-shells decorated the mantelpiece; strings of various-colored birds eggs were suspended above it; a great ostrich egg was hung from the centre of the room, and a corner cupboard, knowingly left open, displayed immense treasures of old silver and well-mended china."
 
 **Chunk 1** (¶25 sentences 1 to 1; 90 words) · warm-up
@@ -4958,27 +4958,24 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
   - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
 - Discovery (vocabulary): "utensils of husbandry". Husbandry: farming. These are farm tools.
 
-**Chunk 4** (¶26 sentences 4 to 6; 69 words) · surprise double points
+**Chunk 4** (¶26 sentences 4 to 6; 69 words) · the twist
 
-- Question (Shades of Meaning, two-part evidence): Why does the narrator call him the wondering Ichabod instead of just Ichabod?
-  - Key words highlighted: wondering
-  - Choices: It shows he is amazed by everything he sees ✓ / It shows he is lost and cannot find the hall / It shows he suspects the family of something
+- Question (Catch the Lie, tap the sentence): Hans Van Ripper describes the inside of the house. Part of what he says is false. Tap the sentence that proves it.
+  - Testimony (Hans Van Ripper): "The pewter in that hall was so dull and dusty it hardly caught the light."
   - Proof sentence: "Here rows of resplendent pewter, ranged on a long dresser, dazzled his eyes."
-  - Hint: What happens to his eyes when he steps inside?
-  - Why: The pewter dazzles his eyes: he is full of wonder at everything in the house.
-  - Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Bank question (Shades of Meaning, two-part evidence): Why might the narrator call the pewter "resplendent" rather than simply clean?
-  - Key words highlighted: resplendent
-  - Choices: It is old and dented, and dull to look at / It is far too heavy for anyone to lift / It shines so brightly it dazzles him ✓
-  - Part B: tap the clue words that show the meaning (any one): "dazzled his eyes"
-  - Proof sentence: "Here rows of resplendent pewter, ranged on a long dresser, dazzled his eyes."
-  - Hint: What does the pewter do to his eyes?
-  - Why: The pewter dazzles his eyes: resplendent means brilliantly shining.
-  - Standards: ELA.7.V.1.3, ELA.7.R.3.1
+  - Hint: What did the pewter do to Ichabod's eyes?
+  - Why: Rows of resplendent pewter on a long dresser dazzled his eyes.
+  - Standards: ELA.K12.EE.1.1
+- Bank question (Catch the Lie, tap the sentence): Katrina describes the front of the house. One detail is untrue. Tap the sentence that shows it.
+  - Testimony (Katrina Van Tassel): "Our porch was bare. There was nothing on it but one old bench."
+  - Proof sentence: "Benches were built along the sides for summer use; and a great spinning-wheel at one end, and a churn at the other, showed the various uses to which this important porch might be devoted."
+  - Hint: What stood at each end of the porch?
+  - Why: Benches ran along the sides, with a great spinning-wheel at one end and a churn at the other.
+  - Standards: ELA.K12.EE.1.1
 - Gist check: The busy porch leads to a main hall where rows of shining pewter dazzle Ichabod. ✓ / The empty porch leads to a dark hall where Ichabod trips over broken dishes. / The busy porch leads to a kitchen where Ichabod is put straight to work churning.
 - Discovery (vocabulary): "a churn". A churn turns cream into butter.
 
-**Chunk 5** (¶26 sentences 7 to 7; 129 words) · checkpoint after this chunk, then the burst
+**Chunk 5** (¶26 sentences 7 to 7; 129 words) · surprise double points, checkpoint after this chunk, then the burst
 
 - Question (Weigh the Evidence, drag and drop: Build the case): Build the case that the Van Tassels like visitors to see their riches.
   - Slots: Claim / Proof sentence / Reason
@@ -5020,14 +5017,14 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 
 - Question (Theme Thread, one-sentence written answer): In one sentence, explain what this chunk suggests about everyday life compared with old tales of heroes.
   - A strong answer: Everyday life can be harder than old tales of heroes, because real people and real rivals cause more trouble than any dragon.
-  - Key ideas (one from each group): real, actual, everyday, life, people | hard, difficult, trouble, complicat, struggle, tougher, more than, messier
+  - Key ideas (one from each group): everyday, ordinary, daily, actual, in reality, real life, real people, flesh and blood | hard, difficult, trouble, complicat, struggle, tougher, messier
   - Proof sentence: "Ichabod, on the contrary, had to win his way to the heart of a country coquette, beset with a labyrinth of whims and caprices, which were forever presenting new difficulties and impediments; and he had to encounter a host of fearful adversaries of real flesh and blood, the numerous rustic admirers, who beset every portal to her heart, keeping a watchful and angry eye upon each other, but ready to fly out in the common cause against any new competitor."
   - Hint: What does Ichabod face instead of dragons?
   - Why: Instead of easily beaten giants, he faces a whimsical coquette and real rivals of flesh and blood: real life is harder than the romances.
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what this chunk suggests about winning someone's love.
   - A strong answer: Winning someone's love is hard when that person keeps changing and many others want the same thing.
-  - Key ideas (one from each group): love, win, court, affection, someone | hard, difficult, change, whim, rival, compet, others, trouble, patience
+  - Key ideas (one from each group): love, win, court, affection, heart, romance | hard, difficult, whim, rival, compet, trouble, patience, changeable, many others
   - Proof sentence: "Ichabod, on the contrary, had to win his way to the heart of a country coquette, beset with a labyrinth of whims and caprices, which were forever presenting new difficulties and impediments; and he had to encounter a host of fearful adversaries of real flesh and blood, the numerous rustic admirers, who beset every portal to her heart, keeping a watchful and angry eye upon each other, but ready to fly out in the common cause against any new competitor."
   - Hint: Think about Katrina's whims and the rivals at every door.
   - Why: A labyrinth of whims and a host of angry rivals stand in his way: love is hard to win.
@@ -5051,21 +5048,22 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
   - Standards: ELA.K12.EE.1.1
 - Discovery (vocabulary): "roystering blade". A roystering blade: a loud, rowdy young man who loves a good time.
 
-**Chunk 9** (¶28 sentences 4 to 5; 67 words) · the twist
+**Chunk 9** (¶28 sentences 4 to 5; 67 words)
 
-- Question (Catch the Lie, tap the sentence): Hans Van Ripper sizes up Brom Bones. One thing he says is false. Tap the line that proves it.
-  - Key words highlighted: false
-  - Testimony (Hans Van Ripper): "Brom? He can barely stay in the saddle. I've seen him tumble off at a trot."
-  - Proof sentence: "He was famed for great knowledge and skill in horsemanship, being as dexterous on horseback as a Tartar."
-  - Hint: Check what the story says about his riding.
-  - Why: He was famed for skill in horsemanship, as dexterous on horseback as a Tartar.
-  - Standards: ELA.K12.EE.1.1
-- Bank question (Catch the Lie, tap the sentence): Katrina has her own story about Brom. One detail is untrue. Tap the sentence that shows it.
-  - Testimony (Katrina Van Tassel): "At the races Brom always hung back and let the other young men win."
+- Question (Read Between the Lines, two-part evidence): What does Brom's role in every dispute suggest about how people see him?
+  - Key words highlighted: every dispute
+  - Choices: They respect his strength and accept his word ✓ / They laugh at him and ignore what he says / They are afraid to speak to him at all
   - Proof sentence: "He was foremost at all races and cock fights; and, with the ascendancy which bodily strength always acquires in rustic life, was the umpire in all disputes, setting his hat on one side, and giving his decisions with an air and tone that admitted of no gainsay or appeal."
-  - Hint: Where was Brom at every race?
-  - Why: He was foremost at all races and cock fights, not hanging back.
-  - Standards: ELA.K12.EE.1.1
+  - Hint: Can anyone argue with his decisions?
+  - Why: Strength wins him the upper hand in rustic life: he is umpire in all disputes, and his decisions admit no appeal.
+  - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Bank question (Read Between the Lines, two-part evidence): What does "as dexterous on horseback as a Tartar" suggest about Brom?
+  - Key words highlighted: dexterous on horseback
+  - Choices: He is a superb, fearless rider ✓ / He has never sat on a horse / He rides only slow farm horses
+  - Proof sentence: "He was famed for great knowledge and skill in horsemanship, being as dexterous on horseback as a Tartar."
+  - Hint: What is he famed for?
+  - Why: He is famed for great knowledge and skill in horsemanship.
+  - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
 - Discovery (figurative): "as dexterous on horseback as a Tartar". A simile: he rides as skillfully as the famous horsemen of Central Asia.
 
 **Chunk 10** (¶28 sentences 6 to 7; 70 words)
@@ -5280,14 +5278,14 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 
 - Question (Theme Thread, one-sentence written answer): In one sentence, explain what the rivalry over Katrina suggests about competition among people.
   - A strong answer: Competition for the same prize can turn people into bitter enemies, even when it starts quietly.
-  - Key ideas (one from each group): compet, rival, contest, both want, same, jealous | enem, feud, hate, bitter, conflict, fight, hostil, divide, anger
+  - Key ideas (one from each group): compet, rival, contest, both want, jealous, same prize | enem, feud, hate, bitter, conflict, fight, hostil, divide, anger
   - Proof sentence: "Certain it is, this was not the case with the redoubtable Brom Bones; and from the moment Ichabod Crane made his advances, the interests of the former evidently declined: his horse was no longer seen tied to the palings on Sunday nights, and a deadly feud gradually arose between him and the preceptor of Sleepy Hollow."
   - Hint: What grows between the two men?
   - Why: As Ichabod advances, a deadly feud gradually arises: competing for the same person turns rivals into enemies.
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what this chunk suggests about how jealousy changes people.
   - A strong answer: Jealousy can turn a quiet rivalry into a deadly feud between people who want the same thing.
-  - Key ideas (one from each group): jealous, envy, rival, compet | feud, enem, hate, bitter, change, turn, fight, anger, deadly
+  - Key ideas (one from each group): jealous, envy, rival, compet | feud, enem, hate, bitter, fight, anger, deadly, hostil
   - Proof sentence: "Certain it is, this was not the case with the redoubtable Brom Bones; and from the moment Ichabod Crane made his advances, the interests of the former evidently declined: his horse was no longer seen tied to the palings on Sunday nights, and a deadly feud gradually arose between him and the preceptor of Sleepy Hollow."
   - Hint: How does Brom's interest change, and what grows instead?
   - Why: Brom's horse stops appearing on Sunday nights and a deadly feud arises: jealousy turns rivals bitter.
@@ -5504,14 +5502,14 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 
 - Question (Theme Thread, one-sentence written answer): In one sentence, explain what the old horse suggests about judging by appearances.
   - A strong answer: Appearances can fool us, since something that looks old and worn out may still have plenty of fire inside.
-  - Key ideas (one from each group): appear, look, seem, outside, judge, cover | fool, deceiv, mislead, wrong, inside, really, hidden, still, fire, spirit
+  - Key ideas (one from each group): appear, seem, outside, judge, cover, looks old, looks can | fool, deceiv, mislead, wrong, inside, hidden, fire, spirit
   - Proof sentence: "He had, in fact, been a favorite steed of his master’s, the choleric Van Ripper, who was a furious rider, and had infused, very probably, some of his own spirit into the animal; for, old and broken-down as he looked, there was more of the lurking devil in him than in any young filly in the country."
   - Hint: Notice the words "old and broken-down as he looked."
   - Why: Old and broken-down as he looked, Gunpowder had more lurking devil in him than any young filly: looks can deceive.
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what Gunpowder suggests about fire and energy in old age.
   - A strong answer: A fiery spirit can last even when the body grows old and worn.
-  - Key ideas (one from each group): spirit, fire, fiery, mettle, devil, energy, wild, temper | old, age, worn, broken, last, remain, still, even, never
+  - Key ideas (one from each group): spirit, fire, fiery, mettle, devil, energy, wild, temper | old, age, worn, broken, last, remain, endure, outlast, grows old
   - Proof sentence: "He had, in fact, been a favorite steed of his master’s, the choleric Van Ripper, who was a furious rider, and had infused, very probably, some of his own spirit into the animal; for, old and broken-down as he looked, there was more of the lurking devil in him than in any young filly in the country."
   - Hint: What is still inside the old horse?
   - Why: Old and broken-down, he still has more of the lurking devil in him than any young filly: spirit can outlast age.
@@ -5548,8 +5546,8 @@ Each student picks one card per witness; one witness, picked at random per stude
 - Question cards: "What did the schoolmaster look like riding out?" / "What was the weather like that evening?"
 - True: "His little cap perched way down near his beak, and the back of his jacket flapped clear to his mount's rump."
   - Confirmed by: "A small wool hat rested on the top of his nose, for so his scanty strip of forehead might be called, and the skirts of his black coat fluttered out almost to the horses tail."
-- False (laughing): "The wind was howling that evening, whipping everything every which way."
-  - Disproved by: "A few amber clouds floated in the sky, without a breath of air to move them."
+- False (laughing): "Every orchard he rode past had been stripped clean. Nothing left to pick."
+  - Disproved by: "On all sides he beheld vast store of apples; some hanging in oppressive opulence on the trees; some gathered into baskets and barrels for the market; others heaped up in rich piles for the cider-press."
 - When caught: "Ha! Still as a pond, it was. I just like a stormy tale."
 
 **Hans Van Ripper**
@@ -5748,14 +5746,14 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 
 - Question (Theme Thread, one-sentence written answer): In one sentence, explain what the young guests' clothing suggests about old ways and change.
   - A strong answer: Old ways can hold on for a long time, with only small signs of change creeping in.
-  - Key ideas (one from each group): old, tradition, past, antiquated, same, custom | change, new, innovation, modern, city, small, creep, slowly, little
+  - Key ideas (one from each group): old way, tradition, past, antiquated, custom, old-fashioned, hold on | change, new, innovation, modern, city, creep, slowly, gradual, small sign
   - Proof sentence: "Buxom lasses, almost as antiquated as their mothers, excepting where a straw hat, a fine ribbon, or perhaps a white frock, gave symptoms of city innovation."
   - Hint: Look for the few signs of the city.
   - Why: The lasses are almost as antiquated as their mothers, except for a hat or ribbon showing city innovation: old ways linger while change creeps in.
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what these fashions suggest about how new ideas spread.
   - A strong answer: New ideas spread slowly into quiet places, showing up first in small details like a ribbon or a hat.
-  - Key ideas (one from each group): new, city, modern, innovation, fashion, change, idea | slow, little, small, detail, few, bit, gradual, creep
+  - Key ideas (one from each group): new, city, modern, innovation, fashion, idea, change | slow, small, detail, gradual, creep, a little at a time, ribbon, hat
   - Proof sentence: "Buxom lasses, almost as antiquated as their mothers, excepting where a straw hat, a fine ribbon, or perhaps a white frock, gave symptoms of city innovation."
   - Hint: Which small items came from the city?
   - Why: Only a straw hat, a ribbon or a white frock shows city innovation: change arrives a little at a time.
@@ -5878,18 +5876,17 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 
 **Chunk 5** (¶45 sentences 2 to 3; 79 words) · the twist, checkpoint after this chunk, then the burst
 
-- Question (Catch the Lie, tap the sentence): Hans Van Ripper speaks up for the schoolmaster. One thing he says is false. Tap the line that proves it.
-  - Key words highlighted: false
-  - Testimony (Hans Van Ripper): "The schoolmaster was grateful to all of us who gave him a roof. He'd never dream of turning on his old friends."
-  - Proof sentence: "Then, he thought, how soon he’d turn his back upon the old schoolhouse; snap his fingers in the face of Hans Van Ripper, and every other niggardly patron, and kick any itinerant pedagogue out of doors that should dare to call him comrade!"
-  - Hint: What does Ichabod imagine doing once he is rich?
-  - Why: He pictures snapping his fingers in the face of Hans Van Ripper and every other patron.
+- Question (Catch the Lie, tap the sentence): Hans Van Ripper speaks up for the schoolmaster. Part of what he says is false. Tap the sentence that proves it.
+  - Testimony (Hans Van Ripper): "The schoolmaster never once dreamed of owning a place like that. He only thought about his school."
+  - Proof sentence: "He could not help, too, rolling his large eyes round him as he ate, and chuckling with the possibility that he might one day be lord of all this scene of almost unimaginable luxury and splendor."
+  - Hint: What possibility makes him chuckle as he eats?
+  - Why: He chuckles at the possibility that he might one day be lord of all this scene of luxury.
   - Standards: ELA.K12.EE.1.1
-- Bank question (Catch the Lie, tap the sentence): Brom Bones claims to know what was on Ichabod's mind at the feast. One detail is untrue. Tap the sentence that shows it.
-  - Testimony (Brom Bones): "All through that feast he sat thinking about his pupils and the lessons he'd teach the next day."
-  - Proof sentence: "Then, he thought, how soon he’d turn his back upon the old schoolhouse; snap his fingers in the face of Hans Van Ripper, and every other niggardly patron, and kick any itinerant pedagogue out of doors that should dare to call him comrade!"
-  - Hint: What does he imagine doing to the old schoolhouse?
-  - Why: He imagines how soon he would turn his back upon the old schoolhouse, not teach in it.
+- Bank question (Catch the Lie, tap the sentence): Brom Bones claims to know Ichabod's mood at the feast. One detail is untrue. Tap the sentence that shows it.
+  - Testimony (Brom Bones): "He sat stone-faced through the whole meal and never once smiled."
+  - Proof sentence: "He could not help, too, rolling his large eyes round him as he ate, and chuckling with the possibility that he might one day be lord of all this scene of almost unimaginable luxury and splendor."
+  - Hint: What does he do as he rolls his eyes around the room?
+  - Why: He keeps rolling his large eyes round and chuckling at the thought of owning it all.
   - Standards: ELA.K12.EE.1.1
 - Discovery (figurative): "lord of all this scene". He imagines himself ruling the whole rich farm like a lord.
 
@@ -6101,14 +6098,14 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 
 - Question (Theme Thread, one-sentence written answer): In one sentence, explain what this chunk suggests about how beliefs travel from place to place.
   - A strong answer: Beliefs can spread like a sickness, passing from one place and person to the next until a whole area shares them.
-  - Key ideas (one from each group): belief, believ, story, stories, dream, fanc, idea, superstit, legend | spread, pass, catch, contag, infect, everyone, neighbor, whole, others, sickness, travel
+  - Key ideas (one from each group): belief, believ, story, stories, dream, fanc, idea, superstit, legend | spread, pass, catch, contag, infect, neighbor, sickness, travel, whole area
   - Proof sentence: "There was a contagion in the very air that blew from that haunted region; it breathed forth an atmosphere of dreams and fancies infecting all the land."
   - Hint: Notice the words "contagion" and "infecting."
   - Why: A contagion in the air from the haunted Hollow infects all the land with dreams and fancies: beliefs spread like a disease.
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what this suggests about where people live and what they believe.
   - A strong answer: Where people live can shape what they believe, since a dreamy, haunted place fills its neighbors' heads with ghost stories.
-  - Key ideas (one from each group): place, live, where, land, region, surround, home, nearby | believ, belief, imagin, dream, fanc, stories, think, shape, ghost
+  - Key ideas (one from each group): where, land, region, surround, home, nearby, valley, setting, haunted place | believ, belief, imagin, dream, fanc, stories, shape, ghost
   - Proof sentence: "There was a contagion in the very air that blew from that haunted region; it breathed forth an atmosphere of dreams and fancies infecting all the land."
   - Hint: What blows over from the Hollow?
   - Why: Living near the Hollow, people breathe an atmosphere of dreams and fancies: the place shapes their beliefs.
@@ -6309,7 +6306,7 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 
 - Question (Figure It Out, multiple choice): Read the words "sacking a henroost." What kind of figurative language is this?
   - Key words highlighted: henroost
-  - Choices: Onomatopoeia: the words copy the sound of a chicken's cluck / Comparison: he leaves looking like a guilty chicken thief ✓ / Personification: the hens chase him out of the house
+  - Choices: Personification: the hens chase him out of the house / Onomatopoeia: the words copy the sound of a chicken's cluck / Metaphor (implied comparison): he slinks off like a chicken thief ✓
   - What does it mean? He leaves carrying stolen chickens / He runs off proud of his great success / He sneaks away ashamed and defeated ✓
   - Hint: How would a chicken thief slip away? Compare that with a winning suitor.
   - Why: He steals away like a chicken thief rather than a man who won a lady's heart: ashamed and defeated.
@@ -6393,7 +6390,7 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what this chunk suggests about being alone at night.
   - A strong answer: Being alone in the dark makes the mind run wild, turning every memory into a fear.
-  - Key ideas (one from each group): alone, lonely, dark, night, by himself, isolat | mind, imagin, fear, wild, memor, scare, dread, run
+  - Key ideas (one from each group): alone, lonely, dark, night, by himself, isolat | mind, imagin, fear, wild, memor, scare, dread, spiral
   - Proof sentence: "All the stories of ghosts and goblins that he had heard in the afternoon now came crowding upon his recollection."
   - Hint: What does his mind do as he rides alone?
   - Why: He never felt so lonely and dismal, and every story comes crowding back: alone in the dark, the mind runs wild.
@@ -6629,14 +6626,14 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 
 - Question (Theme Thread, one-sentence written answer): In one sentence, explain what the chase suggests about how fear can take over a person.
   - A strong answer: Fear can grow until it takes over completely, driving a person to desperate, reckless action.
-  - Key ideas (one from each group): fear, terror, panic, scar, dread, fright | take over, grow, control, desperat, reckless, wild, overwhelm, swallow, consume, think
+  - Key ideas (one from each group): fear, terror, panic, scar, dread, fright | take over, takes over, grow, control, desperat, reckless, overwhelm, swallow, consume
   - Proof sentence: "His terror rose to desperation; he rained a shower of kicks and blows upon Gunpowder, hoping by a sudden movement to give his companion the slip; but the spectre started full jump with him."
   - Hint: What does his terror rise to?
   - Why: His terror rises to desperation, and he rains kicks and blows on Gunpowder: fear takes over completely.
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what this chase suggests about believing in ghost stories.
   - A strong answer: Believing too strongly in ghost stories can turn a frightening moment into pure panic.
-  - Key ideas (one from each group): believ, belief, ghost, stor, tale, superstit | panic, terror, fear, scar, desperat, flee, run, worse
+  - Key ideas (one from each group): believ, belief, ghost, stor, tale, superstit | panic, terror, fear, scar, desperat, flee, worse
   - Proof sentence: "His terror rose to desperation; he rained a shower of kicks and blows upon Gunpowder, hoping by a sudden movement to give his companion the slip; but the spectre started full jump with him."
   - Hint: Think of all the tales he heard that evening.
   - Why: Full of the evening's tales, he believes the spectre is real and his terror rises to desperation.
@@ -6816,14 +6813,14 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 
 - Question (Theme Thread, one-sentence written answer): In one sentence, explain what this mystery suggests about how people interpret evidence.
   - A strong answer: The same clues can be explained in different ways, and people tend to choose the explanation they already believe.
-  - Key ideas (one from each group): clue, evidence, hat, pumpkin, sign, proof, track | different, explain, more than one, believ, choose, interpret, read, ways, decide, expect
+  - Key ideas (one from each group): clue, evidence, hat, pumpkin, sign, proof, track | different, explain, more than one, believ, choose, interpret, ways, decide, expect
   - Proof sentence: "In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin."
   - Hint: Could a hat and a shattered pumpkin mean more than one thing?
   - Why: A trampled saddle, hoofprints, a hat and a shattered pumpkin could point to a ghost or to a trick: the clues alone don't decide it.
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what an unsolved mystery suggests about people's need for answers.
   - A strong answer: When people face a mystery, they reach for an explanation, even a strange one, rather than live with not knowing.
-  - Key ideas (one from each group): mystery, unknown, not know, question, unsolved, answer | explain, explanation, story, need, want, reach, guess, believ, fill
+  - Key ideas (one from each group): mystery, unknown, not know, question, unsolved, answer | explain, explanation, story, need, reach, guess, believ, fill
   - Proof sentence: "In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin."
   - Hint: What do people do when they find clues but no body?
   - Why: With only clues by the brook, the village needs a story to explain them, and soon finds one.
@@ -6967,14 +6964,14 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 4; level 2: chunks 5 to 7. Th
 
 - Question (Theme Thread, one-sentence written answer): In one sentence, explain what the neighbors' choice suggests about why people prefer a thrilling tale to a plain answer.
   - A strong answer: People often prefer a thrilling tale to a plain explanation, because a good story is more fun to believe and to share.
-  - Key ideas (one from each group): prefer, choose, rather, keep, believ, want | tale, story, stories, legend, ghost, thrill, exciting, fun, mystery, magic
+  - Key ideas (one from each group): prefer, choose, rather, believ, favorite, retell, repeat | tale, story, stories, legend, ghost, thrill, exciting, fun, mystery, magic
   - Proof sentence: "The old country wives, however, who are the best judges of these matters, maintain to this day that Ichabod was spirited away by supernatural means; and it is a favorite story often told about the neighborhood round the winter evening fire."
   - Hint: What do the old wives maintain, and when do they tell it?
   - Why: The old wives insist he was spirited away, and it is a favorite story told round the winter fire: the thrilling version wins.
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what this chunk suggests about how legends grow.
   - A strong answer: Legends grow as people keep retelling them, until even a bridge or an empty schoolhouse becomes part of the tale.
-  - Key ideas (one from each group): legend, stor, tale, myth, ghost | grow, retell, repeat, spread, keep, change, bigger, place, haunt
+  - Key ideas (one from each group): legend, stor, tale, myth, ghost | grow, retell, repeat, spread, bigger, haunt, continue, preserve
   - Proof sentence: "The schoolhouse being deserted soon fell to decay, and was reported to be haunted by the ghost of the unfortunate pedagogue and the plowboy, loitering homeward of a still summer evening, has often fancied his voice at a distance, chanting a melancholy psalm tune among the tranquil solitudes of Sleepy Hollow."
   - Hint: What happens to the bridge and the old schoolhouse?
   - Why: The bridge becomes an object of awe and the deserted schoolhouse is reported haunted: the legend keeps spreading to new places.

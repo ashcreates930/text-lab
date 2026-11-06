@@ -12,7 +12,8 @@ import { beatMs, burstFound, interviewOf, liveArc, playerAsked, playerVersion, l
 import { firstName, interviewAudio, liarBreakdown, liarIndex } from "../interview.ts";
 import { TYPE_INFO, hasExpeditions, joinedPassages, timeScale, type RaceChunk } from "../expedition.ts";
 import { beatKind, isCheckpoint, multiplierAt, questionAt, type Version } from "../pacing.ts";
-import { formatView } from "../formats.ts";
+import { formatOf, formatView } from "../formats.ts";
+import { levelOf, levelUps, mainFamily, type Evidence } from "../mastery.ts";
 import { judgeWritten, ruleVerdict } from "../written-judge.ts";
 import { chunkTokens, sentenceProves } from "../expedition.ts";
 import { screenBoardText } from "../safety.ts";
@@ -366,9 +367,22 @@ export function playerView(st: LiveState, playerId: string) {
       const asked = playerQuestion(st, round, me.id), light = liveArc(st.world, round)?.lightning.find((l) => l.after === round.step)?.item;
       const squadIds = round.squadsOn && me.squadId ? st.players.filter((p) => p.squadId === me.squadId).map((p) => p.id) : [me.id];
       // Once the question has closed: the key to this player's own question (drag and drop, choose two, a written model).
+      const mainAsked = playerAsked(liveRaceChunks(st.world, st.passages ?? [], round), st.responses, i, me.id, round.step)?.question ?? null;
       const mineAsked = playerAsked(liveRaceChunks(st.world, st.passages ?? [], round), st.responses, i, me.id, round.step)?.question;
       const revealKey = mineAsked && (round.beat === "reveal" || round.beat === "lightning" || round.beat === "board" || round.beat === "countdown") ? { dnd: mineAsked.dnd ? { slotOf: Object.fromEntries(mineAsked.dnd.items.map((it) => [it.id, it.slot])), lines: Object.fromEntries(mineAsked.dnd.items.map((it) => [it.id, it.line])) } : null, best: mineAsked.format === "multi" ? (mineAsked.choices ?? []).filter((c) => c.best).map((c) => c.text) : null, model: mineAsked.written?.model ?? null } : null;
-      const extra = { revealKey, version: asked.version, myQuestion: round.beat === "race" || round.beat === "reveal" ? asked.question : null, lightningAnswer: mine.lightning && light ? light.answer : null, burstFound: round.beat === "burst" ? burstFound(st.responses, i, squadIds) : [] };
+      // Mastery on this phone (lib/mastery.ts), from this player's first tries in this game: the skill tag after each reveal,
+      // and any level-up it brought. Private to this phone.
+      const revealed = round.beat === "reveal" || round.beat === "lightning" || round.beat === "board" || round.beat === "countdown";
+      const skill = revealed ? (() => {
+        const chunksR = liveRaceChunks(st.world, st.passages ?? [], round), ev = (upto: number): Evidence[] => Array.from({ length: upto }, (_, k) => {
+          const a = playerAsked(chunksR, st.responses, i, me.id, k); if (!a) return [];
+          const right = !!playerChunk(st.responses, i, k, me.id).correct;
+          return a.question.standards.flatMap((f) => (f in { "R.1.1": 1, "R.1.2": 1, "R.1.3": 1, "R.3.1": 1, "R.3.2": 1, "V.1.3": 1, "K12.EE.1.1": 1, "K12.EE.3.1": 1, "K12.EE.4.1": 1 } ? [{ family: f as Evidence["family"], right, format: formatOf(a.question), expedition: round.settings.expeditionId, harder: a.version === "harder", proof: "", question: a.question.prompt, at: "" }] : []));
+        }).flat();
+        const fam = mainAsked ? mainFamily(mainAsked.standards) : null, after = ev(round.step + 1);
+        return { tag: fam ? levelOf(fam, after) : null, ups: levelUps(ev(round.step), after) };
+      })() : null;
+      const extra = { skill, revealKey, version: asked.version, myQuestion: round.beat === "race" || round.beat === "reveal" ? asked.question : null, lightningAnswer: mine.lightning && light ? light.answer : null, burstFound: round.beat === "burst" ? burstFound(st.responses, i, squadIds) : [] };
       return { ...extra, mine, total: raceTotals(st.responses, i, st.players, counted).get(me.id) ?? 0, place: meRow ? { rank: meRow.rank, of: board.rows.length, move: meRow.move, gained: meRow.gained, row: meRow } : null, scale: timeScale(setting), extraTime: setting !== "1",
         // The map: this player's stops so far (stars: 3 proved with the Gist right or not asked, 2 proved, 0 not yet), once each is revealed.
         path: Array.from({ length: round.beat === "reveal" || round.beat === "lightning" || round.beat === "board" || round.beat === "burst" || round.beat === "countdown" ? round.step + 1 : round.step }, (_, k) => { const c = playerChunk(st.responses, i, k, me.id); return c.correct ? (c.gistRight !== false ? 3 : 2) : 0; }),

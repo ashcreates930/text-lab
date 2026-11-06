@@ -69,11 +69,11 @@ export const REBUILT: Record<string, Rebuilt> = {
           lines: [["p006", 3]], hint: "Look at the end of the long sentence.", why: "He is belated and must get back to the churchyard before daybreak.", standards: ["R.1.1", "K12.EE.3.1"] }] },
       // 9 · Theme Thread (the boss), written; the original as its bank question.
       { q: { type: "theme_thread", format: "written", prompt: "In one sentence, explain what the Hollow does to anyone who settles there.",
-          written: { key_ideas: [["dream", "imagin", "vision", "ghost", "apparition", "see things", "fanc", "superstit", "strange", "spell", "witch", "haunt"], ["every", "anyone", "newcomer", "people", "those who", "outsider", "visitor", "settle", "come", "move", "live", "stay"]],
+          written: { key_ideas: [["dream", "imagin", "vision", "ghost", "apparition", "fanc", "superstit", "spell", "witch", "haunt"], ["anyone", "newcomer", "outsider", "visitor", "settle", "stay", "arriv", "everyone who", "all who"]],
             model: "Anyone who stays in the Hollow for a while starts to dream and see ghosts, because the valley's sleepy, witching air gets into them." },
           lines: [["p008", 0], ["p008", 1]], hint: "Think about newcomers, not just the people born there.", why: "Even newcomers soon breathe in the valley's witching air and start to dream and see apparitions.", standards: ["R.1.2", "K12.EE.1.1"] },
         bank: [{ type: "theme_thread", format: "written", prompt: "Using your own words, tell in one sentence what happens to newcomers who settle in the Hollow.",
-          written: { key_ideas: [["dream", "imagin", "vision", "ghost", "apparition", "see things", "fanc", "superstit", "strange", "spell", "witch", "haunt"], ["newcomer", "anyone", "every", "people", "those who", "outsider", "visitor", "settle", "come", "move", "live", "stay", "arriv"]],
+          written: { key_ideas: [["dream", "imagin", "vision", "ghost", "apparition", "fanc", "superstit", "spell", "witch", "haunt"], ["anyone", "newcomer", "outsider", "visitor", "settle", "stay", "arriv", "everyone who", "all who"]],
             model: "Newcomers who settle in the Hollow soon begin to imagine things and see ghosts, because its dreamy air takes hold of them." },
           lines: [["p008", 1], ["p008", 0]], hint: "Even people who arrive wide awake don't stay that way.", why: "However wide awake they were before, newcomers soon inhale the witching influence and begin to dream dreams and see apparitions.", standards: ["R.1.2", "K12.EE.1.1"] }] },
       // 10 · Read Between the Lines: the original, and the narrator's hope.
@@ -145,11 +145,11 @@ export const REBUILT: Record<string, Rebuilt> = {
           lines: [["p014", 3]], hint: "Find the lion in the sentence about the cradle.", why: "Like a lion gently holding a lamb, the stern master turns wonderfully gentle and ingratiating.", standards: ["R.1.1", "K12.EE.1.1"] }] },
       // 10 · Theme Thread, written: pride and how people see themselves; a theme question in its bank too.
       { q: { type: "theme_thread", format: "written", prompt: "In one sentence, explain what Ichabod's pride in leading the choir suggests about how people see themselves.",
-          written: { key_ideas: [["pride", "proud", "vain", "vanity", "conceit", "full of himself", "think highly", "ego", "admir", "show off"], ["see themselves", "see himself", "own mind", "imagin", "believ", "think", "picture", "better than", "greater", "than they", "really", "truly", "others"]],
+          written: { key_ideas: [["pride", "proud", "vain", "vanity", "conceit", "full of himself", "think highly", "ego", "admir", "show off"], ["see themselves", "see himself", "own mind", "imagin", "believ", "pictur", "better than", "greater than", "convinc", "in his mind"]],
             model: "Pride can make people see themselves as greater than they really are, just as Ichabod believes his choir leading outshines even the parson." },
           lines: [["p015", 1]], hint: "Notice the words \"in his own mind.\"", why: "Leading the choir is \"a matter of no little vanity,\" and only \"in his own mind\" does he beat the parson: pride shapes how he sees himself.", standards: ["R.1.2", "K12.EE.1.1"] },
         bank: [{ type: "theme_thread", format: "written", prompt: "Using one sentence, state the lesson about people that Ichabod's pride in leading the choir suggests.",
-          written: { key_ideas: [["pride", "proud", "vain", "vanity", "conceit", "full of himself", "think highly", "ego", "admir", "show off"], ["see themselves", "see himself", "own mind", "imagin", "believ", "think", "picture", "better than", "greater", "than they", "really", "truly", "others"]],
+          written: { key_ideas: [["pride", "proud", "vain", "vanity", "conceit", "full of himself", "think highly", "ego", "admir", "show off"], ["see themselves", "see himself", "own mind", "imagin", "believ", "pictur", "better than", "greater than", "convinc", "in his mind"]],
             model: "Pride can make people believe they are better than they really are, the way Ichabod thinks he outdoes the parson." },
           lines: [["p015", 1]], hint: "Whose opinion is it that he beats the parson?", why: "Only \"in his own mind\" does he carry away the palm from the parson: vanity colors how he sees himself.", standards: ["R.1.2", "K12.EE.1.1"] }] },
     ],

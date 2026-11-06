@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "eslint .",
     "pretest": "npm run sync:worlds",
-    "test": "node --experimental-strip-types --test tests/core.test.ts tests/design-tokens.test.ts tests/expedition.test.ts tests/expedition-race.test.ts tests/after-race.test.ts tests/interview.test.ts tests/expedition-progress.test.ts tests/world-map.test.ts tests/pacing.test.ts tests/formats.test.ts",
+    "test": "node --experimental-strip-types --test tests/core.test.ts tests/design-tokens.test.ts tests/expedition.test.ts tests/expedition-race.test.ts tests/after-race.test.ts tests/interview.test.ts tests/expedition-progress.test.ts tests/world-map.test.ts tests/pacing.test.ts tests/formats.test.ts tests/mastery.test.ts",
     "validate:worlds": "node --experimental-strip-types scripts/validate-worlds.ts",
     "assets": "node --experimental-strip-types scripts/generate-assets.ts",
     "sync:worlds": "node --experimental-strip-types scripts/generate-assets.ts --sync-only",

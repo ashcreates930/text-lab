@@ -42,7 +42,7 @@ export const SPEC: MapSpec = {
       chunks: ["farmhouses", "farmhouses", "farmhouses", "farmhouses", "fireside", "brook", "brook", "fireside", "fireside", "brook"] },
     "the-van-tassel-farm": { name: "The Van Tassel farm", finale: "vt-house", twist: 7, boss: 10, secrets: [6],
       chunks: ["schoolhouse", "vt-house", "vt-house", "vt-house", "vt-house", "vt-barnyard", "vt-barnyard", "vt-barnyard", "vt-barnyard", "vt-barnyard"] },
-    "a-rival-appears": { name: "A rival appears", finale: "vt-house", twist: 9, boss: 7, secrets: [5],
+    "a-rival-appears": { name: "A rival appears", finale: "vt-house", twist: 4, boss: 7, secrets: [5],
       chunks: ["vt-barnyard", "vt-barnyard", "vt-house", "vt-house", "vt-house", "vt-house", "vt-house", "vt-house", "vt-house", "vt-house"] },
     "the-feud": { name: "The feud", finale: "vt-spring", twist: 7, boss: 9, secrets: [3],
       chunks: ["farmhouses", "vt-house", "vt-house", "vt-spring", "vt-spring", "vt-house", "vt-spring", "vt-spring", "vt-spring", "vt-spring"] },

@@ -27,6 +27,9 @@ export function distractorProblems(at: string, options: { text: string; best?: b
 
 // Drag and drop: 3 to 5 pieces, every slot real and used, one piece per slot where the kind needs it, and each backing
 // sentence copied exactly from the chunk.
+// Words too vague to count as a key idea in a written answer (they match almost any sentence).
+export const VAGUE_KEY_WORDS = ["see", "look", "like", "still", "even", "never", "keep", "real", "people", "life", "same", "think", "run", "take", "turn", "use", "place", "someone",
+  "everything", "anything", "every", "others", "the way", "really", "truly", "also", "despite", "more than", "than they", "come", "move", "bit", "world"];
 // Vocabulary questions: a word or phrase and its meaning.
 const VOCAB_TYPES = new Set(["word_detective", "shades"]);
 // Content words of a choice (for spotting two choices that say the same thing).
@@ -74,6 +77,8 @@ export function variety(at: string, exp: Expedition) {
       const x = contentWords(set[a]), y = contentWords(set[b]), shared = [...x].filter((w) => y.has(w)).length, small = Math.min(x.size, y.size);
       if (small >= 3 && shared / small > 0.6) out.push(`${where}: choices "${set[a].slice(0, 30)}" and "${set[b].slice(0, 30)}" share most of their words`);
     }
+    // Written key ideas carry the idea itself: no vague words that could match almost any sentence.
+    for (const g of q.written?.key_ideas ?? []) for (const w of g) if (VAGUE_KEY_WORDS.includes(w.trim().toLowerCase())) out.push(`${where}: the key idea "${w}" is too vague; use words that carry the idea`);
     // Theme questions ask about an idea, never a character's trait: the answer states an idea about people or life.
     if (q.type === "theme_thread") {
       const answer = q.written?.model ?? q.choices?.find((o) => o.best)?.text ?? "";
@@ -118,6 +123,9 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
     const calls = types.filter((t) => t === "make_call").length;
     if (exp.interview ? calls > 0 : calls !== 1 || types.at(-1) !== "make_call") out.push(exp.interview ? `${world.id}/${exp.id}: Name the Liar is the finale; no Make the Call` : `${world.id}/${exp.id}: Make the Call is the last chunk, once`);
     out.push(...interviewProblems(world, exp, allLines, names));
+    // A Catch the Lie testimony (main or bank) never shares its disproving line with an interview lie: the same claim twice.
+    if (exp.interview) { const lieLines = new Set(exp.interview.witnesses.flatMap((w) => w.lie.lines).map(norm));
+      exp.chunks.forEach((c, k) => bankOf(c).forEach((q, i) => { if (q.type === "catch_lie" && (q.proof?.lines ?? []).some((l) => lieLines.has(norm(l)))) out.push(`${world.id}/${exp.id}: chunk ${k + 1} ${i ? "bank question" : "question"}: its testimony is disproved by the same line as an interview lie`); })); }
     if (!(world.expedition_rules?.arc_pending ?? []).includes(exp.id)) out.push(...variety(`${world.id}/${exp.id}`, exp));
     exp.chunks.forEach((c, k) => {
       const at = `${world.id}/${exp.id}/${c.id}`, rc = chunks[k], tokens = chunkTokens(rc.lines), q = c.question;
