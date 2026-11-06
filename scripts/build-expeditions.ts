@@ -6,7 +6,9 @@ import { evidenceSentences } from "../lib/lies.ts";
 import { SLEEPY_HOLLOW_MORE } from "./expeditions/sleepy-hollow.ts";
 import { theVultureEye } from "./expeditions/tell-tale-heart.ts";
 import { theWrightKitchen } from "./expeditions/trifles.ts";
-import { REBUILT } from "./expeditions/rebuilt.ts";
+import { REBUILT as REBUILT_1_2 } from "./expeditions/rebuilt.ts";
+import { REBUILT_MORE } from "./expeditions/rebuilt-more.ts";
+const REBUILT = { ...REBUILT_1_2, ...REBUILT_MORE };
 
 export type Ref = [string, number];
 // format, pick, dnd and written: the phase 3 formats (lib/formats.ts); a drag-and-drop piece's line is the sentence
@@ -23,7 +25,7 @@ const SPEC: Record<string, { front_matter: string[]; expeditions: E[]; draft?: b
   "sleepy-hollow": {
     front_matter: ["p001", "p002", "p073", "p074", "p082"],
     // Expeditions still to be rebuilt to the arc (lib/pacing.ts); validate:worlds checks the arc on every other one.
-    rules: { arc_pending: ["tales-by-the-fire", "the-van-tassel-farm", "a-rival-appears", "the-feud", "the-invitation", "the-ride-to-the-party", "the-feast-and-the-dance", "ghost-stories", "the-lonely-road", "the-headless-horseman", "gone", "the-postscript"] },
+    rules: { arc_pending: ["tales-by-the-fire", "the-van-tassel-farm", "a-rival-appears", "the-feud", "the-invitation", "the-ride-to-the-party", "the-feast-and-the-dance", "ghost-stories", "the-lonely-road", "the-headless-horseman", "gone", "the-postscript"].filter((id) => !REBUILT[id]) },
     expeditions: [{
       id: "into-the-hollow", title: "Into the Hollow",
       // Lightning beats (lib/pacing.ts): recall, one tap, 10 seconds; from the approved Proof Race sprints.

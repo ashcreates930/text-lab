@@ -4445,138 +4445,191 @@ Each student picks one card per witness; one witness, picked at random per stude
 
 Screen text: "One witness will lie to you. Listen closely: after the race you'll name the liar and prove it with a line from the story." · "Which witness lied?" · "Tap the line anywhere in the expedition that shows this is false, then lock in." · "Case solved" · "Not this time." · "It's in your Refresher." · Live: "What should we ask [witness]?" · "Locked in" · "Nothing is revealed until everyone has locked in. Watch the board."
 
-##### Whose Eyes?
+Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. The Gist check comes on chunks 1, 4, 7 and 10. Each student gets one question per chunk from its bank (seeded by who they are; a replay gets another), at their version: easier (one wrong choice fewer, the hint shown) or harder (no highlighted key words, the proof step added), derived unless written out.
 
-**Chunk 1** (¶15 sentences 3 to 4; 108 words)
+- Lightning beat after chunk 4 (10 seconds, recalls chunk 2): What extra treat appears when the schoolmaster visits a farmhouse? Answer: "His appearance, therefore, is apt to occasion some little stir at the tea-table of a farmhouse, and the addition of a supernumerary dish of cakes or sweetmeats, or, peradventure, the parade of a silver teapot."
+- Lightning beat after chunk 8 (10 seconds, recalls chunk 5): Where did Ichabod like to stretch out and read after school? Answer: "It was often his delight, after his school was dismissed in the afternoon, to stretch himself on the rich bed of clover bordering the little brook that whimpered by his schoolhouse, and there con over old Mather’s direful tales, until the gathering dusk of evening made the printed page a mere mist before his eyes."
 
-- Question: How does the narrator treat Ichabod's singing?
-- Key words highlighted: narrator
-- Choices: As a ghost story told to frighten the children / As a joke, tracing odd church sounds back to his nose ✓ / As serious praise for a truly gifted church performer
-- Proof line: "Certain it is, his voice resounded far above all the rest of the congregation; and there are peculiar quavers still to be heard in that church, and which may even be heard half a mile off, quite to the opposite side of the millpond, on a still Sunday morning, which are said to be legitimately descended from the nose of Ichabod Crane."
-- Refresher hint: Where does the narrator say those strange quavers come from?
-- Why: The quavers still heard half a mile off are said to descend from the nose of Ichabod Crane, a playful exaggeration.
-- Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
+**Chunk 1** (¶15 sentences 3 to 4; 108 words) · warm-up
+
+- Question (Whose Eyes?, two-part evidence): How does the narrator treat Ichabod's singing?
+  - Key words highlighted: narrator
+  - Choices: As a ghost story told to frighten the children / As a joke, tracing odd church sounds back to his nose ✓ / As serious praise for a truly gifted church performer
+  - Proof sentence: "Certain it is, his voice resounded far above all the rest of the congregation; and there are peculiar quavers still to be heard in that church, and which may even be heard half a mile off, quite to the opposite side of the millpond, on a still Sunday morning, which are said to be legitimately descended from the nose of Ichabod Crane."
+  - Hint: Where does the narrator say those strange quavers come from?
+  - Why: The quavers still heard half a mile off are said to descend from the nose of Ichabod Crane, a playful exaggeration.
+  - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
+- Bank question (Whose Eyes?, two-part evidence): According to the narrator, who thinks the schoolmaster's living is simple?
+  - Key words highlighted: According to the narrator
+  - Choices: The parson, who envies all of his many jobs / Only people who know nothing of mental work ✓ / Every parent who sends a child to his school
+  - Proof sentence: "Thus, by divers little makeshifts, in that ingenious way which is commonly denominated “by hook and by crook,” the worthy pedagogue got on tolerably enough, and was thought, by all who understood nothing of the labor of headwork, to have a wonderfully easy life of it."
+  - Hint: Read the end of the sentence about his makeshifts.
+  - Why: Only those "who understood nothing of the labor of headwork" think he has an easy life: the narrator hints the farmers misjudge him.
+  - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
 - Gist check: Ichabod sings so softly that nobody in the church can ever hear him. / Ichabod earns a fortune from one big job and stops working small jobs altogether. / Ichabod sings louder than everyone, and he gets by through many small, clever jobs. ✓
 - Discovery (figurative): "by hook and by crook". By hook and by crook: by any means he can manage.
 
-##### Read Between the Lines
+**Chunk 2** (¶16 sentences 1 to 2; 80 words) · warm-up
 
-**Chunk 2** (¶16 sentences 1 to 2; 80 words)
-
-- Question: What can you infer about how families treat a visiting teacher?
-- Key words highlighted: infer
-- Choices: They ignore him and keep working in the barn / They put out their best dishes to impress him ✓ / They hide their best food so he won't eat it all
-- Proof line: "His appearance, therefore, is apt to occasion some little stir at the tea-table of a farmhouse, and the addition of a supernumerary dish of cakes or sweetmeats, or, peradventure, the parade of a silver teapot."
-- Refresher hint: Look at what appears on the table when he arrives.
-- Why: His arrival brings an extra dish of cakes, or even the silver teapot.
-- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Country women think the schoolmaster is poor, so families send him a basket of food each night. / Country women think the schoolmaster is refined, so families bring out treats when he visits. ✓ / Country women think the schoolmaster is rude, so families lock their doors when he visits.
+- Question (Read Between the Lines, two-part evidence): What can you infer about how families treat a visiting teacher?
+  - Key words highlighted: infer
+  - Choices: They ignore him and keep working in the barn / They put out their best dishes to impress him ✓ / They hide their best food so he won't eat it all
+  - Proof sentence: "His appearance, therefore, is apt to occasion some little stir at the tea-table of a farmhouse, and the addition of a supernumerary dish of cakes or sweetmeats, or, peradventure, the parade of a silver teapot."
+  - Hint: Look at what appears on the table when he arrives.
+  - Why: His arrival brings an extra dish of cakes, or even the silver teapot.
+  - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Bank question (Read Between the Lines, two-part evidence): Why might the farm women look up to the new teacher?
+  - Key words highlighted: look up to
+  - Choices: He comes from a famous and wealthy family / He seems finer than the rough local young men ✓ / He owns the largest farm in the whole valley
+  - Proof sentence: "The schoolmaster is generally a man of some importance in the female circle of a rural neighborhood; being considered a kind of idle, gentlemanlike personage, of vastly superior taste and accomplishments to the rough country swains, and, indeed, inferior in learning only to the parson."
+  - Hint: Compare him with the other young men of the neighborhood.
+  - Why: They think him gentlemanlike, of far superior taste to the rough country swains, and second in learning only to the parson.
+  - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
 - Discovery (vocabulary): "supernumerary dish". Supernumerary: extra. The family adds an extra dish of cakes for the guest.
-
-**Chunk 4** (¶17 sentences 1 to 2; 77 words)
-
-- Question: What can you infer about why Ichabod is welcome in every home?
-- Key words highlighted: infer
-- Choices: He fixes their broken furniture for free / He brings the latest local news with him ✓ / He pays each family well for his meals
-- Proof line: "From his half-itinerant life, also, he was a kind of travelling gazette, carrying the whole budget of local gossip from house to house, so that his appearance was always greeted with satisfaction."
-- Refresher hint: What does he carry from house to house?
-- Why: He is a traveling gazette carrying local gossip, so his arrival is always greeted with satisfaction.
-- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Ichabod carries gossip from house to house and is admired for reading books on witchcraft. ✓ / Ichabod refuses to carry gossip and is mocked by the women for never reading a single book. / Ichabod prints a newspaper and sells copies to every family in the valley.
-- Discovery (figurative): "travelling gazette". A traveling gazette: Ichabod is like a walking newspaper, spreading news as he goes.
-
-**Chunk 7** (¶18 sentences 7 to 7; 62 words)
-
-- Question: What can you infer about why Ichabod bursts into song on lonely walks?
-- Key words highlighted: infer
-- Choices: He wants the farmers to hire him / He is practicing for a singing contest / He is trying to calm his own fear ✓
-- Proof line: "His only resource on such occasions, either to drown thought or drive away evil spirits, was to sing psalm tunes and the good people of Sleepy Hollow, as they sat by their doors of an evening, were often filled with awe at hearing his nasal melody, “in linked sweetness long drawn out,” floating from the distant hill, or along the dusky road."
-- Refresher hint: What does singing chase away?
-- Why: Singing psalm tunes was his only way to drown thought or drive away evil spirits.
-- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: To show off, Ichabod sings love songs, and neighbors throw open their windows. / To earn money, Ichabod sings at farmhouse doors, and the neighbors pay him in apples. / To fight his fear, Ichabod sings hymns, and neighbors hear his nasal voice in the dark. ✓
-- Discovery (vocabulary): "nasal melody". Nasal melody: singing through the nose. Ichabod's hymns float over the hills.
-
-##### Character Clue
 
 **Chunk 3** (¶16 sentences 3 to 4; 82 words)
 
-- Question: Which trait does Ichabod show with the young women?
-- Key words highlighted: trait
-- Choices: Rude and bored by their company / Showy and eager to impress ✓ / Shy and tongue-tied around them
-- Proof words (any one): "superior elegance and address", "reciting for their amusement"
-- Refresher hint: Look at how he performs for them, and how the other young men feel.
-- Why: He recites for their amusement, and the bumpkins envy his superior elegance and address.
-- Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: The young women adore Ichabod, who entertains them while the shy farm boys look on jealously. ✓ / The young women laugh at Ichabod, who hides from them behind the church every Sunday morning. / The young women ignore Ichabod, who spends his Sundays reading alone by the millpond.
+- Question (Character Clue, drag and drop: Match the character): Match each action in the Sunday churchyard to the person who does it.
+  - Slots: Ichabod / The bashful country boys
+  - Piece: Gathers wild grapes for the young women → Ichabod (backed by "How he would figure among them in the churchyard, between services on Sundays; gathering g…")
+  - Piece: Recites the words on the tombstones to amuse them → Ichabod (backed by "How he would figure among them in the churchyard, between services on Sundays; gathering g…")
+  - Piece: Hangs back sheepishly → The bashful country boys (backed by "How he would figure among them in the churchyard, between services on Sundays; gathering g…")
+  - Piece: Envies another man's elegance → The bashful country boys (backed by "How he would figure among them in the churchyard, between services on Sundays; gathering g…")
+  - Hint: Who shows off, and who watches from the side?
+  - Why: Ichabod gathers grapes and recites epitaphs for the young women, while the bashful country boys hang back, envying his elegance.
+  - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
+- Bank question (Character Clue, two-part evidence): What does his Sunday behavior with the young women reveal about him?
+  - Key words highlighted: reveal
+  - Choices: He is rude and bored by their company / He loves to show off and be admired ✓ / He is shy and tongue-tied around them
+  - Proof sentence: "How he would figure among them in the churchyard, between services on Sundays; gathering grapes for them from the wild vines that overran the surrounding trees; reciting for their amusement all the epitaphs on the tombstones; or sauntering, with a whole bevy of them, along the banks of the adjacent millpond; while the more bashful country bumpkins hung sheepishly back, envying his superior elegance and address."
+  - Hint: Look at all the ways he entertains them.
+  - Why: He gathers grapes, recites epitaphs and strolls with a whole bevy of them, showing off his elegance.
+  - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
 - Discovery (vocabulary): "a whole bevy of them". Bevy: a group, often of young women, like a flock of birds.
 
-##### Figure It Out
+**Chunk 4** (¶17 sentences 1 to 2; 77 words) · surprise double points
 
-**Chunk 5** (¶18 sentences 1 to 4; 105 words) · shared words reviewed
+- Question (Read Between the Lines, choose two): Which two reasons make the farm wives glad to see him at their doors?
+  - Key words highlighted: glad to see him
+  - Choices (choose 2): He brings news and gossip from every house ✓ / They think he is a man of great learning ✓ / He pays each family well for his meals / He mends their broken spinning wheels
+  - Hint: Look at what he brings with him, and what the women think of him.
+  - Why: He is a travelling gazette full of local gossip, and the women esteem him as a man of great erudition.
+  - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Bank question (Read Between the Lines, two-part evidence): What does his favorite author tell you about Ichabod's own beliefs?
+  - Key words highlighted: favorite author
+  - Choices: He cares only for practical farming advice / He is ready to believe in the supernatural ✓ / He doubts every ghost story he hears
+  - Proof sentence: "He was, moreover, esteemed by the women as a man of great erudition, for he had read several books quite through, and was a perfect master of Cotton Mather’s “History of New England Witchcraft,” in which, by the way, he most firmly and potently believed."
+  - Hint: What is Cotton Mather's book about, and how much does Ichabod trust it?
+  - Why: He is a perfect master of Mather's history of witchcraft, in which he most firmly and potently believes.
+  - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Gist check: Ichabod carries gossip from house to house and is admired for reading books on witchcraft. ✓ / Ichabod refuses to carry gossip and is mocked by the women for never reading a single book. / Ichabod prints a newspaper and sells copies to every family in the valley.
+- Discovery (figurative): "travelling gazette". A traveling gazette: Ichabod is like a walking newspaper, spreading news as he goes.
 
-- Question: Read the words for his capacious swallow. What kind of figurative language is this?
-- Key words highlighted: capacious swallow
-- Choices: Onomatopoeia: the word swallow imitates a gulping sound / Metaphor: believing stories is described as swallowing food ✓ / Simile: it compares stories to food using like or as
-- What does it mean? He eats huge meals while reading stories / He tells his stories much too fast / He will believe any tale, however wild ✓
-- Refresher hint: Is he really eating the tales? Think about what he does with a story he hears.
-- Why: His capacious swallow means his huge appetite for believing marvels: no tale is too wild for him.
-- Standards: ELA.7.R.3.1
-- Gist check: Ichabod is foolish and doubts every tale, so he never reads ghost stories. / Ichabod is clever and writes his own ghost stories, which he sells in town each week. / Ichabod is clever yet believes every wild tale, and he reads ghost stories until dark. ✓
+**Chunk 5** (¶18 sentences 1 to 4; 105 words) · checkpoint after this chunk, then the burst
+
+- Question (Figure It Out, multiple choice): Read the words "for his capacious swallow." What kind of figurative language is this?
+  - Key words highlighted: capacious swallow
+  - Choices: Onomatopoeia: the word swallow imitates a gulping sound / Metaphor: believing stories is described as swallowing food ✓ / Simile: it compares stories to food using like or as
+  - What does it mean? He eats huge meals while reading stories / He tells his stories much too fast / He will believe any tale, however wild ✓
+  - Hint: Can you really swallow a story? Think about what he does with the tales he hears.
+  - Why: He swallows tales the way a big eater swallows food: no story is too monstrous for him to believe.
+  - Standards: ELA.7.R.3.1
+- Bank question (Figure It Out, multiple choice): The narrator says the little brook "whimpered." Which device is this?
+  - Key words highlighted: whimpered
+  - Choices: Simile: the brook is compared using like or as / Alliteration: the same first sound repeats / Personification: the brook is given a human cry ✓
+  - What does it suggest about the brook? It is too loud for him to read by / It makes a soft, sad little sound ✓ / It floods the schoolhouse every spring
+  - Hint: Who usually whimpers?
+  - Why: Only people and animals whimper: the brook gets a soft, sad, human sound.
+  - Standards: ELA.7.R.3.1
 - Discovery (vocabulary): "simple credulity". Credulity: being too ready to believe things.
-
-##### Find It
 
 **Chunk 6** (¶18 sentences 5 to 6; 136 words)
 
-- Question: Which line describes a bug that nearly frightens him to death?
-- Key words highlighted: bug
-- Proof line: "The fireflies, too, which sparkled most vividly in the darkest places, now and then startled him, as one of uncommon brightness would stream across his path; and if, by chance, a huge blockhead of a beetle came winging his blundering flight against him, the poor varlet was ready to give up the ghost, with the idea that he was struck with a witch’s token."
-- Refresher hint: Look for something with wings that crashes into him.
-- Why: A huge blockhead of a beetle flies against him, and he is ready to give up the ghost.
-- Standards: ELA.K12.EE.1.1
-- Gist check: Walking home at dusk, Ichabod calmly names each bird, toad and beetle he hears. / Walking home at dusk, Ichabod hunts birds and toads for his supper. / Walking home at dusk, Ichabod jumps at every bird, toad and beetle he hears. ✓
+- Question (Find It, tap the sentence): Which line describes a bug that nearly frightens him to death?
+  - Key words highlighted: bug
+  - Proof sentence: "The fireflies, too, which sparkled most vividly in the darkest places, now and then startled him, as one of uncommon brightness would stream across his path; and if, by chance, a huge blockhead of a beetle came winging his blundering flight against him, the poor varlet was ready to give up the ghost, with the idea that he was struck with a witch’s token."
+  - Hint: Look for something with wings that crashes into him.
+  - Why: A huge blockhead of a beetle flies against him, and he is ready to give up the ghost.
+  - Standards: ELA.K12.EE.1.1
+- Bank question (Find It, tap the sentence): Which line lists the night noises that make his mind run wild?
+  - Key words highlighted: night noises
+  - Proof sentence: "Then, as he wended his way by swamp and stream and awful woodland, to the farmhouse where he happened to be quartered, every sound of nature, at that witching hour, fluttered his excited imagination,--the moan of the whip-poor-will from the hillside, the boding cry of the tree toad, that harbinger of storm, the dreary hooting of the screech owl, or the sudden rustling in the thicket of birds frightened from their roost."
+  - Hint: Look for a list of birds, toads and rustling.
+  - Why: The whip-poor-will, the tree toad, the screech owl and the rustling in the thicket all flutter his excited imagination.
+  - Standards: ELA.K12.EE.1.1
 - Discovery (figurative): "give up the ghost". Give up the ghost: to die. A beetle bumping him nearly scares him to death.
 
-##### Theme Thread
+**Chunk 7** (¶18 sentences 7 to 7; 62 words) · the twist
+
+- Question (Catch the Lie, tap the sentence): Brom Bones explains why the schoolmaster made music at night. Part of what he says is false. Tap the sentence that proves it.
+  - Testimony (Brom Bones): "He only sang on those walks home to show off his voice to the farmers along the road."
+  - Proof sentence: "His only resource on such occasions, either to drown thought or drive away evil spirits, was to sing psalm tunes and the good people of Sleepy Hollow, as they sat by their doors of an evening, were often filled with awe at hearing his nasal melody, “in linked sweetness long drawn out,” floating from the distant hill, or along the dusky road."
+  - Hint: Why did he sing when he was alone at night?
+  - Why: He sang psalm tunes to drown thought or drive away evil spirits, not to show off.
+  - Standards: ELA.K12.EE.1.1
+- Bank question (Catch the Lie, tap the sentence): Hans Van Ripper remembers it differently. One detail is untrue. Tap the sentence that shows it.
+  - Testimony (Hans Van Ripper): "Nobody ever heard him. He sang so softly on that dark road that not a note reached the houses."
+  - Proof sentence: "His only resource on such occasions, either to drown thought or drive away evil spirits, was to sing psalm tunes and the good people of Sleepy Hollow, as they sat by their doors of an evening, were often filled with awe at hearing his nasal melody, “in linked sweetness long drawn out,” floating from the distant hill, or along the dusky road."
+  - Hint: What did the people sitting by their doors hear?
+  - Why: The good people sitting by their doors were filled with awe at hearing his nasal melody floating from the distant hill.
+  - Standards: ELA.K12.EE.1.1
+- Gist check: To show off, Ichabod sings love songs, and neighbors throw open their windows. / To earn money, Ichabod sings at farmhouse doors, and the neighbors pay him in apples. / To fight his fear, Ichabod sings hymns, and neighbors hear his nasal voice in the dark. ✓
+- Discovery (vocabulary): "nasal melody". Nasal melody: singing through the nose. Ichabod's hymns float over the hills.
 
 **Chunk 8** (¶19 sentences 1 to 2; 138 words)
 
-- Question: Which idea keeps coming up in these pages?
-- Key words highlighted: keeps coming up
-- Choices: Hard work on the farm matters far more than book learning / Neighbors in the Hollow distrust every outsider / People in the valley love to share and believe eerie stories ✓
-- Proof line: "Another of his sources of fearful pleasure was to pass long winter evenings with the old Dutch wives, as they sat spinning by the fire, with a row of apples roasting and spluttering along the hearth, and listen to their marvellous tales of ghosts and goblins, and haunted fields, and haunted brooks, and haunted bridges, and haunted houses, and particularly of the headless horseman, or Galloping Hessian of the Hollow, as they sometimes called him."
-- Refresher hint: What do Ichabod and the old wives trade all evening?
-- Why: They trade marvellous tales of ghosts, goblins and the headless horseman, again showing the valley's love of the uncanny.
-- Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: On winter nights Ichabod goes to bed early and avoids the old Dutch wives. / On winter nights Ichabod trades ghost tales with old Dutch wives by the fire. ✓ / On winter nights Ichabod teaches the old Dutch wives to read and write by the fire.
+- Question (Theme Thread, one-sentence written answer): In one sentence, explain what these cozy nights suggest about why people enjoy being scared.
+  - A strong answer: People enjoy being scared by stories because fear feels thrilling when they are safe and warm among friends.
+  - Key ideas (one from each group): scare, scary, fear, fright, terror, spook, eerie, ghost, goblin, creepy | enjoy, pleasure, love, fun, delight, thrill, exciting, like, entertain
+  - Proof sentence: "Another of his sources of fearful pleasure was to pass long winter evenings with the old Dutch wives, as they sat spinning by the fire, with a row of apples roasting and spluttering along the hearth, and listen to their marvellous tales of ghosts and goblins, and haunted fields, and haunted brooks, and haunted bridges, and haunted houses, and particularly of the headless horseman, or Galloping Hessian of the Hollow, as they sometimes called him."
+  - Hint: Notice the words "fearful pleasure."
+  - Why: Listening to tales of ghosts and goblins is a "fearful pleasure": a scare can be fun when it is shared by a warm fire.
+  - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
+- Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what these gatherings suggest about why people believe strange stories.
+  - A strong answer: People believe strange stories more easily when everyone around them shares and trusts the same stories.
+  - Key ideas (one from each group): believ, trust, accept, convinc, credul, true, real | everyone, together, share, each other, others, group, neighbor, around them, same, community
+  - Proof sentence: "Another of his sources of fearful pleasure was to pass long winter evenings with the old Dutch wives, as they sat spinning by the fire, with a row of apples roasting and spluttering along the hearth, and listen to their marvellous tales of ghosts and goblins, and haunted fields, and haunted brooks, and haunted bridges, and haunted houses, and particularly of the headless horseman, or Galloping Hessian of the Hollow, as they sometimes called him."
+  - Hint: Who tells the tales, and who believes them?
+  - Why: The old wives share their marvellous tales and Ichabod adds his own: a whole circle that believes makes the stories feel true.
+  - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Discovery (figurative): "fearful pleasure". Fearful pleasure: he loves being scared, both at once.
 
-##### Shades of Meaning
+**Chunk 9** (¶20 sentences 1 to 3; 93 words) · the boss (double points)
 
-**Chunk 9** (¶20 sentences 1 to 3; 93 words) · shared words reviewed
-
-- Question: Why does the narrator call his look wistful instead of just sad?
-- Key words highlighted: wistful
-- Choices: It shows he is angry at the people inside / It shows he is bored by the cold, empty fields he crosses / It shows a longing for the warm, safe homes he sees ✓
-- Proof words (any one): "snugly cuddling in the chimney corner"
-- Refresher hint: Think about where he would rather be. Find the cozy place he just left.
-- Why: Wistful means longing: he has just left snugly cuddling in the chimney corner, and every lit window reminds him of it.
-- Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: Ichabod stays the whole night by the fire so he never has to walk home in the dark. / Ichabod enjoys the cozy fireside tales but pays for them with a terrifying walk home. ✓ / Ichabod hates the fireside tales but enjoys a peaceful walk home afterward.
+- Question (Shades of Meaning, two-part evidence): Why does the narrator call his look wistful instead of just sad?
+  - Key words highlighted: wistful
+  - Choices: It shows he is angry at the people inside / It shows he is bored by the cold, empty fields he crosses / It shows a longing for the warm, safe homes he sees ✓
+  - Proof sentence: "But if there was a pleasure in all this, while snugly cuddling in the chimney corner of a chamber that was all of a ruddy glow from the crackling wood fire, and where, of course, no spectre dared to show its face, it was dearly purchased by the terrors of his subsequent walk homewards."
+  - Hint: Where was he snug and safe earlier that evening?
+  - Why: After snugly cuddling in a glowing chimney corner, he eyes every distant window with longing.
+  - Standards: ELA.7.V.1.3, ELA.7.R.3.1
+- Bank question (Shades of Meaning, two-part evidence): Why might the narrator call the snowy light a "ghastly glare" rather than a bright shine?
+  - Key words highlighted: ghastly glare
+  - Choices: It shows the moon is shining warmly / It means the snow is melting quickly / It makes the light seem eerie and scary ✓
+  - Part B: tap the clue words that show the meaning (any one): "fearful shapes and shadows"
+  - Proof sentence: "What fearful shapes and shadows beset his path, amidst the dim and ghastly glare of a snowy night!"
+  - Hint: What does that light show him on the path?
+  - Why: The light shows "fearful shapes and shadows": ghastly means ghostly and terrifying, not just bright.
+  - Standards: ELA.7.V.1.3, ELA.7.R.3.1
 - Discovery (figurative): "dearly purchased". Dearly purchased: the fun had a high price, paid in fear on the way home.
-
-##### Catch the Lie
 
 **Chunk 10** (¶20 sentences 4 to 6; 92 words)
 
-- Question: Katrina describes his winter walks. One thing she says is false. Tap the line that proves it.
-- Key words highlighted: false
-- Testimony (Katrina Van Tassel): "Poor Ichabod would stroll home through the snow without a care in the world, never once glancing behind him."
-- Proof line: "How often did he shrink with curdling awe at the sound of his own steps on the frosty crust beneath his feet; and dread to look over his shoulder, lest he should behold some uncouth being tramping close behind him!"
-- Refresher hint: Check how he felt about his own steps, and whether he looked behind him.
-- Why: He shrank at the sound of his own steps and dreaded looking over his shoulder.
-- Standards: ELA.K12.EE.1.1
+- Question (Story Order, drag and drop: Cause and effect): Connect each sight or sound on his walk to the fear it stirs up.
+  - Slots: A shrub covered with snow / The crunch of his own steps / A rushing blast howling in the trees
+  - Piece: He thinks a ghost in a sheet blocks his path → A shrub covered with snow (backed by "How often was he appalled by some shrub covered with snow, which, like a sheeted spectre, …")
+  - Piece: He is afraid to look over his shoulder → The crunch of his own steps (backed by "How often did he shrink with curdling awe at the sound of his own steps on the frosty crus…")
+  - Piece: He thinks the Galloping Hessian is riding by → A rushing blast howling in the trees (backed by "And how often was he thrown into complete dismay by some rushing blast, howling among the …")
+  - Hint: Each "How often" sentence pairs something he notices with what he fears.
+  - Why: The snowy shrub looks like a sheeted spectre, his own steps make him dread looking back, and the wind sounds like the Hessian.
+  - Standards: ELA.7.R.1.1, ELA.K12.EE.3.1
+- Bank question (Story Order, two-part evidence): What do the three frights on his walk build up to?
+  - Key words highlighted: build up to
+  - Choices: His worst fear: the Galloping Hessian is near ✓ / His plan to move closer to the schoolhouse / His choice to stop visiting the old wives
+  - Proof sentence: "And how often was he thrown into complete dismay by some rushing blast, howling among the trees, in the idea that it was the Galloping Hessian on one of his nightly scourings!"
+  - Hint: Which fear comes last, and which is the biggest?
+  - Why: The frights grow from a shrub to his own footsteps to the wind he takes for the Galloping Hessian himself.
+  - Standards: ELA.7.R.1.1, ELA.K12.EE.3.1
 - Gist check: Snowy bushes, his own footsteps and the wind all help Ichabod find the right road home. / Snowy bushes, his own footsteps and the wind all make Ichabod think a ghost is near. ✓ / Snowy bushes, his own footsteps and the wind all make Ichabod feel calm and sleepy.
 - Discovery (figurative): "like a sheeted spectre". A simile: a snow-covered bush looks like a ghost wrapped in a sheet.
 
@@ -4615,142 +4668,197 @@ Each student picks one card per witness; one witness, picked at random per stude
 
 Screen text: "One witness will lie to you. Listen closely: after the race you'll name the liar and prove it with a line from the story." · "Which witness lied?" · "Tap the line anywhere in the expedition that shows this is false, then lock in." · "Case solved" · "Not this time." · "It's in your Refresher." · Live: "What should we ask [witness]?" · "Locked in" · "Nothing is revealed until everyone has locked in. Watch the board."
 
-##### Whose Eyes?
+Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. The Gist check comes on chunks 1, 4, 7 and 10. Each student gets one question per chunk from its bank (seeded by who they are; a replay gets another), at their version: easier (one wrong choice fewer, the hint shown) or harder (no highlighted key words, the proof step added), derived unless written out.
 
-**Chunk 1** (¶21 sentences 1 to 1; 102 words)
+- Lightning beat after chunk 4 (10 seconds, recalls chunk 2): How old is Katrina when Ichabod meets her? Answer: "She was a blooming lass of fresh eighteen; plump as a partridge; ripe and melting and rosy-cheeked as one of her father’s peaches, and universally famed, not merely for her beauty, but her vast expectations."
+- Lightning beat after chunk 8 (10 seconds, recalls chunk 5): What bubbles up at the foot of the great elm? Answer: "A great elm tree spread its broad branches over it, at the foot of which bubbled up a spring of the softest and sweetest water, in a little well formed of a barrel; and then stole sparkling away through the grass, to a neighboring brook, that babbled along among alders and dwarf willows."
 
-- Question: What does the narrator's joke at the end of this chunk suggest?
-- Key words highlighted: narrator's joke
-- Choices: That a woman will trouble Ichabod more than any ghost ✓ / That Ichabod will soon meet the real Headless Horseman / That Ichabod plans to leave the Hollow forever
-- Proof line: "All these, however, were mere terrors of the night, phantoms of the mind that walk in darkness; and though he had seen many spectres in his time, and been more than once beset by Satan in divers shapes, in his lonely perambulations, yet daylight put an end to all these evils; and he would have passed a pleasant life of it, in despite of the Devil and all his works, if his path had not been crossed by a being that causes more perplexity to mortal man than ghosts, goblins, and the whole race of witches put together, and that was--a woman."
-- Refresher hint: Read the very last words of the chunk. What causes more perplexity than ghosts?
-- Why: The narrator says a woman causes more perplexity than ghosts, goblins and witches put together.
-- Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
+**Chunk 1** (¶21 sentences 1 to 1; 102 words) · warm-up
+
+- Question (Whose Eyes?, two-part evidence): What does the narrator's joke at the end of this chunk suggest?
+  - Key words highlighted: narrator's joke
+  - Choices: That a woman will trouble Ichabod more than any ghost ✓ / That Ichabod will soon meet the real Headless Horseman / That Ichabod plans to leave the Hollow forever
+  - Proof sentence: "All these, however, were mere terrors of the night, phantoms of the mind that walk in darkness; and though he had seen many spectres in his time, and been more than once beset by Satan in divers shapes, in his lonely perambulations, yet daylight put an end to all these evils; and he would have passed a pleasant life of it, in despite of the Devil and all his works, if his path had not been crossed by a being that causes more perplexity to mortal man than ghosts, goblins, and the whole race of witches put together, and that was--a woman."
+  - Hint: Read the very last words of the chunk. What causes more perplexity than ghosts?
+  - Why: The narrator says a woman causes more perplexity than ghosts, goblins and witches put together.
+  - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
+- Bank question (Whose Eyes?, two-part evidence): What does the narrator believe about the scary things Ichabod saw?
+  - Key words highlighted: narrator believe
+  - Choices: They were real spirits haunting the roads / They were tricks the farm boys played / They were made up inside his own head ✓
+  - Proof sentence: "All these, however, were mere terrors of the night, phantoms of the mind that walk in darkness; and though he had seen many spectres in his time, and been more than once beset by Satan in divers shapes, in his lonely perambulations, yet daylight put an end to all these evils; and he would have passed a pleasant life of it, in despite of the Devil and all his works, if his path had not been crossed by a being that causes more perplexity to mortal man than ghosts, goblins, and the whole race of witches put together, and that was--a woman."
+  - Hint: What does the narrator call them at the start of the sentence?
+  - Why: He calls them "mere terrors of the night, phantoms of the mind": the narrator treats them as imagined.
+  - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
 - Gist check: Daylight brings new fears to Ichabod, but a kind woman helps him feel brave again. / Daylight never reaches the Hollow, so Ichabod's fears never leave him at all. / Daylight ends Ichabod's night fears, but a woman is about to cause him real trouble. ✓
 - Discovery (figurative): "phantoms of the mind". Phantoms of the mind: ghosts that exist only in his imagination.
 
-##### Word Detective
+**Chunk 2** (¶22 sentences 1 to 2; 66 words) · warm-up
 
-**Chunk 2** (¶22 sentences 1 to 2; 66 words) · shared words reviewed
-
-- Question: In this chunk, what do the words vast expectations mean?
-- Key words highlighted: vast expectations
-- Choices: Very high hopes for her lovely singing voice / A long list of chores she must finish / A large fortune she is expected to inherit ✓
-- Proof words (any one): "only child of a substantial Dutch farmer"
-- Refresher hint: Whose daughter is she, and how many children does he have?
-- Why: As the only child of a substantial farmer, she can expect to inherit everything.
-- Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: Katrina, the youngest of ten poor children, sweeps Ichabod's schoolhouse every evening. / Katrina, a traveler from the city, teaches the singing class in Ichabod's place each week. / Katrina, the only child of a rich farmer, joins Ichabod's singing class and is famous in the valley. ✓
+- Question (Word Detective, two-part evidence): In this chunk, what do the words vast expectations mean?
+  - Key words highlighted: vast expectations
+  - Choices: Very high hopes for her lovely singing voice / A long list of chores she must finish / A large fortune she is expected to inherit ✓
+  - Proof sentence: "Among the musical disciples who assembled, one evening in each week, to receive his instructions in psalmody, was Katrina Van Tassel, the daughter and only child of a substantial Dutch farmer."
+  - Hint: Whose only child is she?
+  - Why: As the only child of a substantial farmer, she expects to inherit his fortune.
+  - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
+- Bank question (Word Detective, two-part evidence): Which meaning of blooming fits Katrina?
+  - Key words highlighted: blooming
+  - Choices: Pale and tired from too much work / Healthy and fresh, in the bloom of youth ✓ / Covered with flowers from her garden
+  - Part B: tap the clue words that show the meaning (any one): "fresh eighteen", "rosy-cheeked"
+  - Proof sentence: "She was a blooming lass of fresh eighteen; plump as a partridge; ripe and melting and rosy-cheeked as one of her father’s peaches, and universally famed, not merely for her beauty, but her vast expectations."
+  - Hint: Find the words nearby that describe her age and her cheeks.
+  - Why: She is "fresh eighteen" and "rosy-cheeked": blooming means healthy and in the bloom of youth.
+  - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
 - Discovery (figurative): "plump as a partridge". A simile comparing Katrina to a plump little bird.
 
-##### Character Clue
+**Chunk 3** (¶22 sentences 3 to 4; 73 words) · surprise double points
 
-**Chunk 3** (¶22 sentences 3 to 4; 73 words)
-
-- Question: Which trait do Katrina's clothes reveal?
-- Key words highlighted: trait
-- Choices: She doesn't care at all how she looks / She wears only plain work clothes / She likes to be noticed and admired ✓
-- Proof words (any one): "a little of a coquette"
-- Refresher hint: The narrator names it outright. Find the word for someone who enjoys attention.
-- Why: She is a little of a coquette: she enjoys being admired, and her outfit is chosen to set off her charms.
-- Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: Katrina sells her family's old gold so she can buy the newest city fashions. / Katrina dresses to catch the eye, mixing old family gold with new fashions. ✓ / Katrina dresses plainly, hiding her family's old gold away in a chest.
+- Question (Character Clue, two-part evidence): Which trait do Katrina's clothes reveal?
+  - Key words highlighted: trait
+  - Choices: She doesn't care at all how she looks / She wears only plain work clothes / She likes to be noticed and admired ✓
+  - Proof sentence: "She was withal a little of a coquette, as might be perceived even in her dress, which was a mixture of ancient and modern fashions, as most suited to set off her charms."
+  - Hint: What does the narrator call her, and why does she mix her fashions?
+  - Why: She is "a little of a coquette," choosing whatever fashions best set off her charms.
+  - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
+- Bank question (Character Clue, two-part evidence): What does Katrina's choice of jewelry show about her?
+  - Key words highlighted: jewelry
+  - Choices: She cannot afford any jewelry of her own / She dislikes anything old-fashioned / She proudly shows off old family wealth ✓
+  - Proof sentence: "She wore the ornaments of pure yellow gold, which her great-great-grandmother had brought over from Saardam; the tempting stomacher of the olden time, and withal a provokingly short petticoat, to display the prettiest foot and ankle in the country round."
+  - Hint: Where did the gold come from?
+  - Why: She wears the pure gold her great-great-grandmother brought from Saardam: family wealth on show.
+  - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
 - Discovery (vocabulary): "brought over from Saardam". Saardam: a town in Holland. The gold came with her family from the old country.
-
-##### Find It
 
 **Chunk 4** (¶23 sentences 1 to 3; 83 words)
 
-- Question: Which line sums up what kind of man Katrina's father is?
-- Key words highlighted: Katrina's father
-- Proof line: "Old Baltus Van Tassel was a perfect picture of a thriving, contented, liberal-hearted farmer."
-- Refresher hint: Look for a quick picture of him, full of describing words.
-- Why: Old Baltus Van Tassel was a perfect picture of a thriving, contented, liberal-hearted farmer.
-- Standards: ELA.K12.EE.1.1
+- Question (Find It, tap the sentence): Which line sums up what kind of man Katrina's father is?
+  - Key words highlighted: Katrina's father
+  - Proof sentence: "Old Baltus Van Tassel was a perfect picture of a thriving, contented, liberal-hearted farmer."
+  - Hint: Look for a quick picture of him, full of describing words.
+  - Why: Old Baltus Van Tassel was a perfect picture of a thriving, contented, liberal-hearted farmer.
+  - Standards: ELA.K12.EE.1.1
+- Bank question (Find It, tap the sentence): Which line shows Baltus rarely thinks past his own fences?
+  - Key words highlighted: own fences
+  - Proof sentence: "He seldom, it is true, sent either his eyes or his thoughts beyond the boundaries of his own farm; but within those everything was snug, happy and well-conditioned."
+  - Hint: Look for the word boundaries.
+  - Why: He seldom sent his eyes or his thoughts beyond the boundaries of his own farm.
+  - Standards: ELA.K12.EE.1.1
 - Gist check: Ichabod falls for Katrina, and her father turns out to be a happy, generous, well-off farmer. ✓ / Ichabod falls for Katrina, but her father turns out to be a stingy and angry farmer. / Ichabod ignores Katrina, but her stern father hires him to manage the whole farm.
 - Discovery (vocabulary): "paternal mansion". Paternal mansion: her father's big house.
 
-##### Read Between the Lines
+**Chunk 5** (¶23 sentences 4 to 6; 107 words) · checkpoint after this chunk, then the burst
 
-**Chunk 5** (¶23 sentences 4 to 6; 107 words)
-
-- Question: What can you infer about how Baltus feels about his riches?
-- Key words highlighted: infer
-- Choices: He worries constantly about losing his money / He loves to boast about how rich he is / He enjoys plenty but has no need to show off ✓
-- Proof line: "He was satisfied with his wealth, but not proud of it; and piqued himself upon the hearty abundance, rather than the style in which he lived."
-- Refresher hint: Does he care more about having plenty, or about looking grand?
-- Why: He was satisfied with his wealth but not proud of it, prizing abundance over style.
-- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Baltus is ashamed of being poor, and his farm sits on a dry, rocky hill far from water. / Baltus is bored with his wealth, and his farm sits in a crowded, dusty town square. / Baltus is content with his wealth, and his farm sits in a green, sheltered spot by the river. ✓
+- Question (Weigh the Evidence, drag and drop: Build the case): Build the case that Baltus is happy with the life he has.
+  - Slots: Claim / Proof sentence / Reason
+  - Piece: Baltus is happy with the life he has → Claim
+  - Piece: "He was satisfied with his wealth, but not proud of it" → Proof sentence (backed by "He was satisfied with his wealth, but not proud of it; and piqued himself upon the hearty …")
+  - Piece: He enjoys plenty without needing to show off → Reason (backed by "He was satisfied with his wealth, but not proud of it; and piqued himself upon the hearty …")
+  - Piece: A great elm tree spreads its branches over the house → belongs nowhere
+  - Hint: A case needs a claim, a quotation that proves it, and a reason that connects them.
+  - Why: The quotation shows he is satisfied, the reason explains it (plenty, not style), and the elm tree proves nothing about his feelings.
+  - Standards: ELA.K12.EE.1.1, ELA.K12.EE.3.1
+- Bank question (Weigh the Evidence, two-part evidence): Which detail best supports the claim that the farm has everything it needs close at hand?
+  - Key words highlighted: close at hand
+  - Choices: Baltus is satisfied with his wealth but not proud / Dutch farmers like to settle in sheltered spots / A spring of the sweetest water bubbles up under the elm ✓
+  - Proof sentence: "A great elm tree spread its broad branches over it, at the foot of which bubbled up a spring of the softest and sweetest water, in a little well formed of a barrel; and then stole sparkling away through the grass, to a neighboring brook, that babbled along among alders and dwarf willows."
+  - Hint: Which detail is about something useful right beside the house?
+  - Why: Fresh water bubbles up right at the foot of the elm by the house; the other details are about feelings or about farmers in general.
+  - Standards: ELA.K12.EE.1.1, ELA.K12.EE.3.1
 - Discovery (figurative): "His stronghold". Stronghold: a fort. The narrator jokes that the farmhouse is a castle.
 
-**Chunk 9** (¶24 sentences 1 to 2; 85 words)
+**Chunk 6** (¶23 sentences 7 to 7; 93 words)
 
-- Question: What can you infer Ichabod sees when he studies the animals?
-- Key words highlighted: infer
-- Choices: Pets he would like to care for / Hard chores he would rather avoid / Future feasts he hopes to enjoy ✓
-- Proof line: "The pedagogue’s mouth watered as he looked upon this sumptuous promise of luxurious winter fare."
-- Proof line: "In his devouring mind’s eye, he pictured to himself every roasting-pig running about with a pudding in his belly, and an apple in his mouth; the pigeons were snugly put to bed in a comfortable pie, and tucked in with a coverlet of crust; the geese were swimming in their own gravy; and the ducks pairing cosily in dishes, like snug married couples, with a decent competency of onion sauce."
-- Refresher hint: What happens to his mouth as he looks?
-- Why: His mouth watered, and in his mind's eye every pig and pigeon was already roasted or baked in a pie.
-- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: Ichabod looks at the animals and imagines them all cooked and served as dinner. ✓ / Ichabod looks at the animals and imagines them all as his own loyal pets. / Ichabod looks at the animals and imagines selling them at the market.
-- Discovery (figurative): "coverlet of crust". A coverlet is a blanket: the pigeons are tucked into a pie under a crust blanket.
-
-##### Figure It Out
-
-**Chunk 6** (¶23 sentences 7 to 7; 93 words) · shared words reviewed
-
-- Question: Read the words might have served for a church. What kind of figurative language is this?
-- Key words highlighted: served for a church
-- Choices: Personification: the barn prays like a person / Hyperbole: the barn is so huge it could be a church ✓ / Simile: it compares the barn to a church using like
-- What does it mean? The barn is enormous ✓ / The barn holds Sunday worship / The barn is quiet and peaceful
-- Refresher hint: Is it really a church? Think about why someone would say it could be one.
-- Why: The barn is so vast it might have served for a church: an exaggeration showing its size.
-- Standards: ELA.7.R.3.1
-- Gist check: A tiny barn sits empty and silent while a few birds peck at its broken roof. / A burned barn stands silent while the birds fly far away from the farm. / A huge barn overflows with the harvest while birds of every kind crowd its roof. ✓
+- Question (Figure It Out, multiple choice): Read the words "might have served for a church." What kind of figurative language is this?
+  - Key words highlighted: served for a church
+  - Choices: Personification: the barn prays like a person / Hyperbole: the barn is so huge it could be a church ✓ / Simile: it compares the barn to a church using like
+  - What does it mean? The barn is enormous ✓ / The barn holds Sunday worship / The barn is quiet and peaceful
+  - Hint: Could a barn really hold a whole congregation? Think about its size.
+  - Why: The barn is exaggerated to the size of a church: it is enormous.
+  - Standards: ELA.7.R.3.1
+- Bank question (Figure It Out, multiple choice): Some pigeons are "bowing about their dames." Which device is this?
+  - Key words highlighted: bowing
+  - Choices: Hyperbole: a wild exaggeration of size / Personification: birds act like gentlemen ✓ / Simile: birds compared using like or as
+  - What does it show about the farm? The pigeons are about to fly off / The barn is falling into ruin / It feels lively, cozy and content ✓
+  - Hint: Who usually bows to a lady?
+  - Why: The pigeons bow to their mates like gentlemen: the whole farm seems happy and well mannered.
+  - Standards: ELA.7.R.3.1
 - Discovery (figurative): "bursting forth with the treasures of the farm". The barn is so full that the harvest seems to burst out of every crack.
 
-##### Catch the Lie
+**Chunk 7** (¶23 sentences 8 to 9; 69 words) · the twist
 
-**Chunk 7** (¶23 sentences 8 to 9; 69 words)
-
-- Question: Brom Bones describes the Van Tassel place. One thing he says is false. Tap the line that proves it.
-- Key words highlighted: false
-- Testimony (Brom Bones): "Old Van Tassel's place is a sorry sight. A couple of skinny hogs, and not a single goose in sight."
-- Proof line: "Sleek unwieldy porkers were grunting in the repose and abundance of their pens, from whence sallied forth, now and then, troops of sucking pigs, as if to snuff the air."
-- Proof line: "A stately squadron of snowy geese were riding in an adjoining pond, convoying whole fleets of ducks; regiments of turkeys were gobbling through the farmyard, and Guinea fowls fretting about it, like ill-tempered housewives, with their peevish, discontented cry."
-- Refresher hint: Brom talks big. Check the pigs, and check the pond.
-- Why: The porkers are sleek and grunting in abundance, and a stately squadron of snowy geese rides on the pond.
-- Standards: ELA.K12.EE.1.1
+- Question (Catch the Lie, tap the sentence): Brom Bones describes the Van Tassel place. One thing he says is false. Tap the line that proves it.
+  - Key words highlighted: false
+  - Testimony (Brom Bones): "Old Van Tassel's place is a sorry sight. A couple of skinny hogs, and not a single goose in sight."
+  - Proof sentence: "Sleek unwieldy porkers were grunting in the repose and abundance of their pens, from whence sallied forth, now and then, troops of sucking pigs, as if to snuff the air."
+  - Proof sentence: "A stately squadron of snowy geese were riding in an adjoining pond, convoying whole fleets of ducks; regiments of turkeys were gobbling through the farmyard, and Guinea fowls fretting about it, like ill-tempered housewives, with their peevish, discontented cry."
+  - Hint: Brom talks big. Check the pigs, and check the pond.
+  - Why: The porkers are sleek and grunting in abundance, and a stately squadron of snowy geese rides on the pond.
+  - Standards: ELA.K12.EE.1.1
+- Bank question (Catch the Lie, tap the sentence): Katrina adds her own memory of the animals. One detail is untrue. Tap the sentence that shows it.
+  - Testimony (Katrina Van Tassel): "Our farmyard birds were the gentlest things. Even the guinea fowls never made a sound."
+  - Proof sentence: "A stately squadron of snowy geese were riding in an adjoining pond, convoying whole fleets of ducks; regiments of turkeys were gobbling through the farmyard, and Guinea fowls fretting about it, like ill-tempered housewives, with their peevish, discontented cry."
+  - Hint: What noise do the guinea fowls make?
+  - Why: The guinea fowls fret about the farmyard with a peevish, discontented cry.
+  - Standards: ELA.K12.EE.1.1
 - Gist check: Wolves have chased every last animal out of the empty farmyard. / Fat pigs, geese, ducks, turkeys and fussy guinea fowl fill the busy farmyard. ✓ / A few thin goats and one tired old horse wander the quiet, empty farmyard.
 - Discovery (figurative): "like ill-tempered housewives". A simile: the noisy guinea fowl fuss like cranky people.
 
-##### Shades of Meaning
+**Chunk 8** (¶23 sentences 10 to 10; 60 words)
 
-**Chunk 8** (¶23 sentences 10 to 10; 60 words) · shared words reviewed
-
-- Question: Why does the narrator call the rooster gallant instead of just proud?
-- Key words highlighted: gallant
-- Choices: It makes him sound sick, weak and too tired to crow / It makes him sound lazy and sleepy / It makes him sound like a brave, polite gentleman ✓
-- Proof words (any one): "generously calling his ever-hungry family"
-- Refresher hint: Gallant is a word for a fine gentleman. Find what he does with the food he discovers.
-- Why: Gallant suggests a courteous gentleman, and he generously calls his ever-hungry family to share his find.
-- Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: A proud rooster struts by the barn and shares the food he finds with his family. ✓ / A sick rooster hides behind the barn and refuses to eat any food. / A greedy rooster gobbles all the food he finds and chases his family away.
+- Question (Shades of Meaning, drag and drop: Feeling of the word): Sort each phrase about the rooster: does it show his pride, or his care for his family?
+  - Slots: Shows his pride / Shows his care for his family
+  - Piece: Struts before the barn door → Shows his pride (backed by "Before the barn door strutted the gallant cock, that pattern of a husband, a warrior and a…")
+  - Piece: Claps his shining wings → Shows his pride (backed by "Before the barn door strutted the gallant cock, that pattern of a husband, a warrior and a…")
+  - Piece: Crows with pride and gladness → Shows his pride (backed by "Before the barn door strutted the gallant cock, that pattern of a husband, a warrior and a…")
+  - Piece: Calls his hungry family over → Shows his care for his family (backed by "Before the barn door strutted the gallant cock, that pattern of a husband, a warrior and a…")
+  - Piece: Shares the tasty morsel he found → Shows his care for his family (backed by "Before the barn door strutted the gallant cock, that pattern of a husband, a warrior and a…")
+  - Hint: Is he showing himself off, or looking after the others?
+  - Why: Strutting, wing-clapping and crowing show off his pride; calling his family to the morsel shows his care.
+  - Standards: ELA.7.V.1.3, ELA.7.R.3.1
+- Bank question (Shades of Meaning, two-part evidence): Why does the narrator call the rooster gallant instead of just proud?
+  - Key words highlighted: gallant
+  - Choices: It makes him sound weak and too tired to crow / It makes him sound lazy and sleepy / It makes him sound like a brave, polite gentleman ✓
+  - Part B: tap the clue words that show the meaning (any one): "a warrior and a fine gentleman", "generously calling"
+  - Proof sentence: "Before the barn door strutted the gallant cock, that pattern of a husband, a warrior and a fine gentleman, clapping his burnished wings and crowing in the pride and gladness of his heart,--sometimes tearing up the earth with his feet, and then generously calling his ever-hungry family of wives and children to enjoy the rich morsel which he had discovered."
+  - Hint: Find the words nearby that make him sound like a hero.
+  - Why: He is "a warrior and a fine gentleman" who generously calls his family: gallant means brave and courteous.
+  - Standards: ELA.7.V.1.3, ELA.7.R.3.1
 - Discovery (figurative): "pattern of a husband". The rooster is described like a model husband and gentleman.
 
-##### Theme Thread
+**Chunk 9** (¶24 sentences 1 to 2; 85 words)
 
-**Chunk 10** (¶24 sentences 3 to 3; 70 words)
+- Question (Read Between the Lines, choose two): Which two things does Ichabod's daydream at the farm reveal about him?
+  - Key words highlighted: daydream
+  - Choices (choose 2): He hopes to work as a butcher / He thinks about food nearly all the time ✓ / He has a lively, vivid imagination ✓ / He feels sorry for the farm animals
+  - Hint: What does he picture, and how detailed is the picture?
+  - Why: His mouth waters as he pictures every animal as a richly detailed dish: food is always on his mind, and his imagination runs wild.
+  - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Bank question (Read Between the Lines, two-part evidence): What can you infer Ichabod sees when he studies the animals?
+  - Key words highlighted: infer
+  - Choices: Pets he would like to care for / Hard chores he would rather avoid / Future feasts he hopes to enjoy ✓
+  - Proof sentence: "The pedagogue’s mouth watered as he looked upon this sumptuous promise of luxurious winter fare."
+  - Proof sentence: "In his devouring mind’s eye, he pictured to himself every roasting-pig running about with a pudding in his belly, and an apple in his mouth; the pigeons were snugly put to bed in a comfortable pie, and tucked in with a coverlet of crust; the geese were swimming in their own gravy; and the ducks pairing cosily in dishes, like snug married couples, with a decent competency of onion sauce."
+  - Hint: What happens to his mouth as he looks?
+  - Why: His mouth watered, and in his mind's eye every pig and pigeon was already roasted or baked in a pie.
+  - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Discovery (figurative): "coverlet of crust". A coverlet is a blanket: the pigeons are tucked into a pie under a crust blanket.
 
-- Question: Which idea about Ichabod keeps coming back?
-- Key words highlighted: keeps coming back
-- Choices: His kindness wins him friends wherever he goes / His hunger and greed shape how he sees the world ✓ / His courage helps him face every single danger he meets
-- Proof line: "In the porkers he saw carved out the future sleek side of bacon, and juicy relishing ham; not a turkey but he beheld daintily trussed up, with its gizzard under its wing, and, peradventure, a necklace of savory sausages; and even bright chanticleer himself lay sprawling on his back, in a side dish, with uplifted claws, as if craving that quarter which his chivalrous spirit disdained to ask while living."
-- Refresher hint: Even the proud rooster from before ends up somewhere. Where?
-- Why: Even bright chanticleer lies in a side dish: his appetite rules what he sees.
-- Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
+**Chunk 10** (¶24 sentences 3 to 3; 70 words) · the boss (double points)
+
+- Question (Theme Thread, one-sentence written answer): In one sentence, explain what this scene suggests about how wanting something changes what people see.
+  - A strong answer: When people want something badly, they see the world through that desire, the way hungry Ichabod sees every animal as a meal.
+  - Key ideas (one from each group): want, desire, greed, hunger, hungry, appetite, wish, long | see, view, look, imagin, picture, everything, world, the way, notice
+  - Proof sentence: "In the porkers he saw carved out the future sleek side of bacon, and juicy relishing ham; not a turkey but he beheld daintily trussed up, with its gizzard under its wing, and, peradventure, a necklace of savory sausages; and even bright chanticleer himself lay sprawling on his back, in a side dish, with uplifted claws, as if craving that quarter which his chivalrous spirit disdained to ask while living."
+  - Hint: What does he see when he looks at a living rooster?
+  - Why: Even the proud rooster becomes a side dish in his eyes: what a person wants shapes everything they see.
+  - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
+- Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what lesson about greed this scene suggests.
+  - A strong answer: Greed can turn everything a person sees into something to take or consume, even creatures that are alive and happy.
+  - Key ideas (one from each group): greed, greedy, hunger, appetite, want, desire | everything, anything, see, turn, take, consume, use, living, alive
+  - Proof sentence: "In the porkers he saw carved out the future sleek side of bacon, and juicy relishing ham; not a turkey but he beheld daintily trussed up, with its gizzard under its wing, and, peradventure, a necklace of savory sausages; and even bright chanticleer himself lay sprawling on his back, in a side dish, with uplifted claws, as if craving that quarter which his chivalrous spirit disdained to ask while living."
+  - Hint: Look at what happens to each happy animal in his mind.
+  - Why: Pigs, turkeys and even chanticleer become bacon, sausages and side dishes: greed turns living things into things to devour.
+  - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Gist check: In his mind every pig, turkey and even the rooster ends up on a platter. ✓ / In his mind every pig, turkey and rooster becomes a friend to talk with. / In his mind every pig, turkey and rooster belongs back in the wild woods.
 - Discovery (vocabulary): "bright chanticleer". Chanticleer: an old storybook name for a rooster.
 
@@ -4789,139 +4897,195 @@ Each student picks one card per witness; one witness, picked at random per stude
 
 Screen text: "One witness will lie to you. Listen closely: after the race you'll name the liar and prove it with a line from the story." · "Which witness lied?" · "Tap the line anywhere in the expedition that shows this is false, then lock in." · "Case solved" · "Not this time." · "It's in your Refresher." · Live: "What should we ask [witness]?" · "Locked in" · "Nothing is revealed until everyone has locked in. Watch the board."
 
-##### Read Between the Lines
+Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. The Gist check comes on chunks 1, 4, 7 and 10. Each student gets one question per chunk from its bank (seeded by who they are; a replay gets another), at their version: easier (one wrong choice fewer, the hint shown) or harder (no highlighted key words, the proof step added), derived unless written out.
 
-**Chunk 1** (¶25 sentences 1 to 1; 90 words)
+- Lightning beat after chunk 4 (10 seconds, recalls chunk 2): Where does Ichabod picture himself riding off to? Answer: "Nay, his busy fancy already realized his hopes, and presented to him the blooming Katrina, with a whole family of children, mounted on the top of a wagon loaded with household trumpery, with pots and kettles dangling beneath; and he beheld himself bestriding a pacing mare, with a colt at her heels, setting out for Kentucky, Tennessee,--or the Lord knows where!"
+- Lightning beat after chunk 8 (10 seconds, recalls chunk 5): What hangs from the centre of the best parlor? Answer: "In one corner stood a huge bag of wool, ready to be spun; in another, a quantity of linsey-woolsey just from the loom; ears of Indian corn, and strings of dried apples and peaches, hung in gay festoons along the walls, mingled with the gaud of red peppers; and a door left ajar gave him a peep into the best parlor, where the claw-footed chairs and dark mahogany tables shone like mirrors; andirons, with their accompanying shovel and tongs, glistened from their covert of asparagus tops; mock-oranges and conch-shells decorated the mantelpiece; strings of various-colored birds eggs were suspended above it; a great ostrich egg was hung from the centre of the room, and a corner cupboard, knowingly left open, displayed immense treasures of old silver and well-mended china."
 
-- Question: What can you infer Ichabod really prizes about Katrina?
-- Key words highlighted: infer
-- Choices: The land and riches she will inherit ✓ / Her lovely voice in the singing class / Her kindness to the pupils at school
-- Proof line: "As the enraptured Ichabod fancied all this, and as he rolled his great green eyes over the fat meadow lands, the rich fields of wheat, of rye, of buckwheat, and Indian corn, and the orchards burdened with ruddy fruit, which surrounded the warm tenement of Van Tassel, his heart yearned after the damsel who was to inherit these domains, and his imagination expanded with the idea, how they might be readily turned into cash, and the money invested in immense tracts of wild land, and shingle palaces in the wilderness."
-- Refresher hint: What is he looking at while his heart yearns? What does he plan to do with it?
-- Why: He yearns for the damsel who will inherit these domains and imagines turning them into cash.
-- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+**Chunk 1** (¶25 sentences 1 to 1; 90 words) · warm-up
+
+- Question (Word Detective, two-part evidence): Which meaning of enraptured fits Ichabod here?
+  - Key words highlighted: enraptured
+  - Choices: Filled with delight, carried away by joy ✓ / Trapped inside the farmhouse by a storm / Angry and jealous of the farmer's riches
+  - Part B: tap the clue words that show the meaning (any one): "his heart yearned", "his imagination expanded"
+  - Proof sentence: "As the enraptured Ichabod fancied all this, and as he rolled his great green eyes over the fat meadow lands, the rich fields of wheat, of rye, of buckwheat, and Indian corn, and the orchards burdened with ruddy fruit, which surrounded the warm tenement of Van Tassel, his heart yearned after the damsel who was to inherit these domains, and his imagination expanded with the idea, how they might be readily turned into cash, and the money invested in immense tracts of wild land, and shingle palaces in the wilderness."
+  - Hint: Find the words that show what his heart and imagination do.
+  - Why: His heart yearns and his imagination expands: enraptured means carried away with delight.
+  - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
+- Bank question (Word Detective, two-part evidence): What does domains mean here?
+  - Key words highlighted: domains
+  - Choices: Rooms inside the big farmhouse / Lands and property she will own ✓ / Kingdoms ruled by a faraway king
+  - Part B: tap the clue words that show the meaning (any one): "fat meadow lands", "rich fields of wheat", "orchards burdened with ruddy fruit"
+  - Proof sentence: "As the enraptured Ichabod fancied all this, and as he rolled his great green eyes over the fat meadow lands, the rich fields of wheat, of rye, of buckwheat, and Indian corn, and the orchards burdened with ruddy fruit, which surrounded the warm tenement of Van Tassel, his heart yearned after the damsel who was to inherit these domains, and his imagination expanded with the idea, how they might be readily turned into cash, and the money invested in immense tracts of wild land, and shingle palaces in the wilderness."
+  - Hint: Look at the list of what surrounds the house.
+  - Why: Meadows, fields and orchards surround the house: her domains are the lands she will inherit.
+  - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
 - Gist check: Gazing at the poor farm, Ichabod decides Katrina must work hard to earn her own money. / Gazing at the rich farm, Ichabod plans to buy it all with his small teaching pay. / Gazing at the rich farm, Ichabod dreams of marrying Katrina and turning the land into money. ✓
 - Discovery (figurative): "shingle palaces in the wilderness". Shingle palaces: grand houses of wooden shingles. He dreams big about a frontier fortune.
 
-##### Find It
+**Chunk 2** (¶25 sentences 2 to 2; 61 words) · warm-up
 
-**Chunk 2** (¶25 sentences 2 to 2; 61 words)
-
-- Question: Which line shows Ichabod picturing a move out west?
-- Key words highlighted: out west
-- Proof line: "Nay, his busy fancy already realized his hopes, and presented to him the blooming Katrina, with a whole family of children, mounted on the top of a wagon loaded with household trumpery, with pots and kettles dangling beneath; and he beheld himself bestriding a pacing mare, with a colt at her heels, setting out for Kentucky, Tennessee,--or the Lord knows where!"
-- Refresher hint: Look for faraway places he might ride off to.
-- Why: He sees himself setting out for Kentucky, Tennessee, or the Lord knows where.
-- Standards: ELA.K12.EE.1.1
-- Gist check: Ichabod pictures himself leading Katrina and their children west on a loaded wagon. ✓ / Ichabod pictures himself staying forever as the Hollow's poor schoolteacher. / Ichabod pictures Katrina leaving the valley to marry a rich merchant in New York.
+- Question (Find It, tap the sentence): Which line shows Ichabod picturing a move out west?
+  - Key words highlighted: out west
+  - Proof sentence: "Nay, his busy fancy already realized his hopes, and presented to him the blooming Katrina, with a whole family of children, mounted on the top of a wagon loaded with household trumpery, with pots and kettles dangling beneath; and he beheld himself bestriding a pacing mare, with a colt at her heels, setting out for Kentucky, Tennessee,--or the Lord knows where!"
+  - Hint: Look for faraway places he might ride off to.
+  - Why: He sees himself setting out for Kentucky, Tennessee, or the Lord knows where.
+  - Standards: ELA.K12.EE.1.1
+- Bank question (Find It, tap the sentence): Which line shows how they would travel on their way west?
+  - Key words highlighted: travel
+  - Proof sentence: "Nay, his busy fancy already realized his hopes, and presented to him the blooming Katrina, with a whole family of children, mounted on the top of a wagon loaded with household trumpery, with pots and kettles dangling beneath; and he beheld himself bestriding a pacing mare, with a colt at her heels, setting out for Kentucky, Tennessee,--or the Lord knows where!"
+  - Hint: Look for a wagon and a horse.
+  - Why: Katrina and the children ride on a loaded wagon while Ichabod bestrides a pacing mare.
+  - Standards: ELA.K12.EE.1.1
 - Discovery (vocabulary): "household trumpery". Trumpery: odds and ends of little value, here all their household stuff.
 
-**Chunk 8** (¶28 sentences 1 to 3; 88 words)
+**Chunk 3** (¶26 sentences 1 to 3; 72 words)
 
-- Question: Which line explains why folks call him Brom Bones?
-- Key words highlighted: call him
-- Proof line: "From his Herculean frame and great powers of limb he had received the nickname of BROM BONES, by which he was universally known."
-- Refresher hint: Look for what his body is like.
-- Why: From his Herculean frame and great powers of limb he got the nickname Brom Bones.
-- Standards: ELA.K12.EE.1.1
-- Gist check: Ichabod's toughest rival is a rich merchant from the city who hates horses and dancing. / Ichabod's toughest rival is Brom Van Brunt, a big, strong local hero called Brom Bones. ✓ / Ichabod's only friend is Brom Van Brunt, a quiet, small farmer called Brom Bones.
-- Discovery (vocabulary): "roystering blade". A roystering blade: a loud, rowdy young man who loves a good time.
-
-##### Word Detective
-
-**Chunk 3** (¶26 sentences 1 to 3; 72 words) · shared words reviewed
-
-- Question: In this chunk, what does piazza mean?
-- Key words highlighted: piazza
-- Choices: A covered porch along the front of the house ✓ / A large wooden bowl of fresh fruit / A barn used for storing the year's whole harvest
-- Proof line: "Under this were hung flails, harness, various utensils of husbandry, and nets for fishing in the neighboring river."
-- Refresher hint: What hangs under it?
-- Why: Flails, harness and fishing nets were hung under it: a covered porch along the front.
-- Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
-- Gist check: The run-down shack, with its broken roof and empty porch, frightens Ichabod away. / The old Dutch farmhouse, with its long porch full of tools and nets, wins Ichabod's heart. ✓ / The new city mansion, with its marble steps and splashing fountains, wins Ichabod's heart.
+- Question (Word Detective, two-part evidence): In this chunk, what does piazza mean?
+  - Key words highlighted: piazza
+  - Choices: A covered porch along the front of the house ✓ / A large wooden bowl of fresh fruit / A barn used for storing the year's whole harvest
+  - Proof sentence: "Under this were hung flails, harness, various utensils of husbandry, and nets for fishing in the neighboring river."
+  - Hint: What hangs under it?
+  - Why: Flails, harness and fishing nets were hung under it: a covered porch along the front.
+  - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
+- Bank question (Word Detective, two-part evidence): What does husbandry mean in this chunk?
+  - Key words highlighted: husbandry
+  - Choices: Farming and the care of the land ✓ / Being a good husband to a wife / Saving money for hard times
+  - Part B: tap the clue words that show the meaning (any one): "flails", "harness", "nets for fishing"
+  - Proof sentence: "Under this were hung flails, harness, various utensils of husbandry, and nets for fishing in the neighboring river."
+  - Hint: Look at the other tools hung up beside them.
+  - Why: Flails, harness and fishing nets hang with them: husbandry means farming.
+  - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
 - Discovery (vocabulary): "utensils of husbandry". Husbandry: farming. These are farm tools.
 
-##### Shades of Meaning
+**Chunk 4** (¶26 sentences 4 to 6; 69 words) · surprise double points
 
-**Chunk 4** (¶26 sentences 4 to 6; 69 words) · shared words reviewed
-
-- Question: Why does the narrator call him the wondering Ichabod instead of just Ichabod?
-- Key words highlighted: wondering
-- Choices: It shows he is amazed by everything he sees ✓ / It shows he is lost and cannot find the hall / It shows he suspects the family of something
-- Proof words (any one): "dazzled his eyes"
-- Refresher hint: What does the pewter do to him?
-- Why: Wondering means full of amazement: the pewter dazzled his eyes.
-- Standards: ELA.7.V.1.3, ELA.7.R.3.1
+- Question (Shades of Meaning, two-part evidence): Why does the narrator call him the wondering Ichabod instead of just Ichabod?
+  - Key words highlighted: wondering
+  - Choices: It shows he is amazed by everything he sees ✓ / It shows he is lost and cannot find the hall / It shows he suspects the family of something
+  - Proof sentence: "Here rows of resplendent pewter, ranged on a long dresser, dazzled his eyes."
+  - Hint: What happens to his eyes when he steps inside?
+  - Why: The pewter dazzles his eyes: he is full of wonder at everything in the house.
+  - Standards: ELA.7.V.1.3, ELA.7.R.3.1
+- Bank question (Shades of Meaning, two-part evidence): Why might the narrator call the pewter "resplendent" rather than simply clean?
+  - Key words highlighted: resplendent
+  - Choices: It is old and dented, and dull to look at / It is far too heavy for anyone to lift / It shines so brightly it dazzles him ✓
+  - Part B: tap the clue words that show the meaning (any one): "dazzled his eyes"
+  - Proof sentence: "Here rows of resplendent pewter, ranged on a long dresser, dazzled his eyes."
+  - Hint: What does the pewter do to his eyes?
+  - Why: The pewter dazzles his eyes: resplendent means brilliantly shining.
+  - Standards: ELA.7.V.1.3, ELA.7.R.3.1
 - Gist check: The busy porch leads to a main hall where rows of shining pewter dazzle Ichabod. ✓ / The empty porch leads to a dark hall where Ichabod trips over broken dishes. / The busy porch leads to a kitchen where Ichabod is put straight to work churning.
 - Discovery (vocabulary): "a churn". A churn turns cream into butter.
 
-##### Figure It Out
+**Chunk 5** (¶26 sentences 7 to 7; 129 words) · checkpoint after this chunk, then the burst
 
-**Chunk 5** (¶26 sentences 7 to 7; 129 words) · shared words reviewed
-
-- Question: Read the words shone like mirrors. What kind of figurative language is this?
-- Key words highlighted: shone like mirrors
-- Choices: Simile: the polished tables are compared to mirrors with like ✓ / Metaphor: the tables are called mirrors, without like / Hyperbole: the tables are said to be bigger than the house
-- What does it mean? The furniture is polished until it gleams ✓ / The room is lined with real tall mirrors / The tables are made of clear glass
-- Refresher hint: Look for the word like. What are the tables being compared to, and why?
-- Why: Shone like mirrors: a simile showing furniture polished to a gleam.
-- Standards: ELA.7.R.3.1
-- Gist check: The house overflows with food, cloth and treasures, from shining tables to old silver. ✓ / The house is nearly empty, with only one chair and a single cracked plate. / The house is covered in dust and cobwebs because the family never cleans it.
+- Question (Weigh the Evidence, drag and drop: Build the case): Build the case that the Van Tassels like visitors to see their riches.
+  - Slots: Claim / Proof sentence / Reason
+  - Piece: The Van Tassels like visitors to see their riches → Claim
+  - Piece: "a corner cupboard, knowingly left open, displayed immense treasures of old silver and well-mended china" → Proof sentence (backed by "In one corner stood a huge bag of wool, ready to be spun; in another, a quantity of linsey…")
+  - Piece: The cupboard is left open on purpose, so guests can admire what is inside → Reason (backed by "In one corner stood a huge bag of wool, ready to be spun; in another, a quantity of linsey…")
+  - Piece: A huge bag of wool stands ready to be spun → belongs nowhere
+  - Hint: Which detail shows something displayed on purpose?
+  - Why: The cupboard is "knowingly left open" to display the silver and china; the bag of wool shows work, not showing off.
+  - Standards: ELA.K12.EE.1.1, ELA.K12.EE.3.1
+- Bank question (Weigh the Evidence, two-part evidence): Which detail most strongly supports the claim that this rich household also works hard?
+  - Key words highlighted: works hard
+  - Choices: Cloth sits in a corner fresh from the loom ✓ / The mahogany tables gleam like mirrors / Shells decorate the parlor mantelpiece
+  - Proof sentence: "In one corner stood a huge bag of wool, ready to be spun; in another, a quantity of linsey-woolsey just from the loom; ears of Indian corn, and strings of dried apples and peaches, hung in gay festoons along the walls, mingled with the gaud of red peppers; and a door left ajar gave him a peep into the best parlor, where the claw-footed chairs and dark mahogany tables shone like mirrors; andirons, with their accompanying shovel and tongs, glistened from their covert of asparagus tops; mock-oranges and conch-shells decorated the mantelpiece; strings of various-colored birds eggs were suspended above it; a great ostrich egg was hung from the centre of the room, and a corner cupboard, knowingly left open, displayed immense treasures of old silver and well-mended china."
+  - Hint: Which detail shows a job just finished?
+  - Why: Linsey-woolsey just from the loom and wool ready to be spun show the family at work; the tables and shells only show comfort.
+  - Standards: ELA.K12.EE.1.1, ELA.K12.EE.3.1
 - Discovery (vocabulary): "gay festoons". Festoons: decorations hung in loops along the walls.
-
-##### Whose Eyes?
 
 **Chunk 6** (¶27 sentences 1 to 2; 138 words)
 
-- Question: Why does the narrator bring up heroes from old romances?
-- Key words highlighted: old romances
-- Choices: To warn that real dragons once lived near the Hollow / To joke that Ichabod's task is harder than slaying dragons ✓ / To show that Ichabod is a real knight in armor
-- Proof line: "In this enterprise, however, he had more real difficulties than generally fell to the lot of a knight-errant of yore, who seldom had anything but giants, enchanters, fiery dragons, and such like easily conquered adversaries, to contend with and had to make his way merely through gates of iron and brass, and walls of adamant to the castle keep, where the lady of his heart was confined; all which he achieved as easily as a man would carve his way to the centre of a Christmas pie; and then the lady gave him her hand as a matter of course."
-- Refresher hint: What did those heroes face, and how easily did they win?
-- Why: Knights faced giants and dragons that were easily conquered: the narrator jokes Ichabod has it harder.
-- Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: Ichabod sets his heart on winning Katrina, a task the narrator calls harder than a knight's. ✓ / Ichabod gives up on Katrina at once, a task the narrator calls far too easy to bother with. / Ichabod fights a real dragon to win Katrina, just like a brave knight of old.
+- Question (Whose Eyes?, two-part evidence): What point is the narrator making by bringing up heroes from old romances?
+  - Key words highlighted: old romances
+  - Choices: To joke that real rivals are harder than dragons ✓ / To show that Ichabod once fought in a real war / To prove that Katrina loves tales of knights
+  - Proof sentence: "In this enterprise, however, he had more real difficulties than generally fell to the lot of a knight-errant of yore, who seldom had anything but giants, enchanters, fiery dragons, and such like easily conquered adversaries, to contend with and had to make his way merely through gates of iron and brass, and walls of adamant to the castle keep, where the lady of his heart was confined; all which he achieved as easily as a man would carve his way to the centre of a Christmas pie; and then the lady gave him her hand as a matter of course."
+  - Hint: How hard were the knights' battles, according to him?
+  - Why: Giants and dragons were "easily conquered adversaries": he jokes that Ichabod's task is harder.
+  - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
+- Bank question (Whose Eyes?, two-part evidence): What is the narrator's tone when he calls dragons "easily conquered adversaries"?
+  - Key words highlighted: tone
+  - Choices: Fearful and grim / Playful and mocking ✓ / Serious and respectful
+  - Proof sentence: "In this enterprise, however, he had more real difficulties than generally fell to the lot of a knight-errant of yore, who seldom had anything but giants, enchanters, fiery dragons, and such like easily conquered adversaries, to contend with and had to make his way merely through gates of iron and brass, and walls of adamant to the castle keep, where the lady of his heart was confined; all which he achieved as easily as a man would carve his way to the centre of a Christmas pie; and then the lady gave him her hand as a matter of course."
+  - Hint: Are dragons really easy to beat?
+  - Why: Calling dragons easy, like carving a Christmas pie, is a playful joke at the old romances.
+  - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
 - Discovery (vocabulary): "walls of adamant". Adamant: an imaginary stone too hard to break.
 
-##### Character Clue
+**Chunk 7** (¶27 sentences 3 to 3; 80 words) · the boss (double points)
 
-**Chunk 7** (¶27 sentences 3 to 3; 80 words)
-
-- Question: Which trait does the narrator give Katrina in this chunk?
-- Key words highlighted: trait
-- Choices: Steady, always saying exactly what she means / Shy, refusing to speak to any young man who calls / Changeable, full of whims that keep suitors guessing ✓
-- Proof words (any one): "a labyrinth of whims and caprices"
-- Refresher hint: Find the maze the narrator says Ichabod must get through.
-- Why: She is a country coquette in a labyrinth of whims and caprices that keep changing.
-- Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
+- Question (Theme Thread, one-sentence written answer): In one sentence, explain what this chunk suggests about everyday life compared with old tales of heroes.
+  - A strong answer: Everyday life can be harder than old tales of heroes, because real people and real rivals cause more trouble than any dragon.
+  - Key ideas (one from each group): real, actual, everyday, life, people | hard, difficult, trouble, complicat, struggle, tougher, more than, messier
+  - Proof sentence: "Ichabod, on the contrary, had to win his way to the heart of a country coquette, beset with a labyrinth of whims and caprices, which were forever presenting new difficulties and impediments; and he had to encounter a host of fearful adversaries of real flesh and blood, the numerous rustic admirers, who beset every portal to her heart, keeping a watchful and angry eye upon each other, but ready to fly out in the common cause against any new competitor."
+  - Hint: What does Ichabod face instead of dragons?
+  - Why: Instead of easily beaten giants, he faces a whimsical coquette and real rivals of flesh and blood: real life is harder than the romances.
+  - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
+- Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what this chunk suggests about winning someone's love.
+  - A strong answer: Winning someone's love is hard when that person keeps changing and many others want the same thing.
+  - Key ideas (one from each group): love, win, court, affection, someone | hard, difficult, change, whim, rival, compet, others, trouble, patience
+  - Proof sentence: "Ichabod, on the contrary, had to win his way to the heart of a country coquette, beset with a labyrinth of whims and caprices, which were forever presenting new difficulties and impediments; and he had to encounter a host of fearful adversaries of real flesh and blood, the numerous rustic admirers, who beset every portal to her heart, keeping a watchful and angry eye upon each other, but ready to fly out in the common cause against any new competitor."
+  - Hint: Think about Katrina's whims and the rivals at every door.
+  - Why: A labyrinth of whims and a host of angry rivals stand in his way: love is hard to win.
+  - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Gist check: Katrina's changing moods and a crowd of jealous rivals stand between Ichabod and her heart. ✓ / Katrina's steady kindness and her father's blessing make Ichabod's path easy. / Katrina's strict father and a locked iron gate keep every suitor far away from her.
 - Discovery (figurative): "every portal to her heart". Portal: a door. Her admirers guard every door to her heart.
 
-##### Catch the Lie
+**Chunk 8** (¶28 sentences 1 to 3; 88 words)
 
-**Chunk 9** (¶28 sentences 4 to 5; 67 words)
+- Question (Find It, tap the sentence): Which line explains why folks call him Brom Bones?
+  - Key words highlighted: call him
+  - Proof sentence: "From his Herculean frame and great powers of limb he had received the nickname of BROM BONES, by which he was universally known."
+  - Hint: Look for what his body is like.
+  - Why: From his Herculean frame and great powers of limb he got the nickname Brom Bones.
+  - Standards: ELA.K12.EE.1.1
+- Bank question (Find It, tap the sentence): Which line describes Brom's looks and his mood?
+  - Key words highlighted: looks
+  - Proof sentence: "He was broad-shouldered and double-jointed, with short curly black hair, and a bluff but not unpleasant countenance, having a mingled air of fun and arrogance."
+  - Hint: Look for his hair, his shoulders and his face.
+  - Why: Broad-shouldered, curly-haired, with a mingled air of fun and arrogance.
+  - Standards: ELA.K12.EE.1.1
+- Discovery (vocabulary): "roystering blade". A roystering blade: a loud, rowdy young man who loves a good time.
 
-- Question: Hans Van Ripper sizes up Brom Bones. One thing he says is false. Tap the line that proves it.
-- Key words highlighted: false
-- Testimony (Hans Van Ripper): "Brom? He can barely stay in the saddle. I've seen him tumble off at a trot."
-- Proof line: "He was famed for great knowledge and skill in horsemanship, being as dexterous on horseback as a Tartar."
-- Refresher hint: Check what the story says about his riding.
-- Why: He was famed for skill in horsemanship, as dexterous on horseback as a Tartar.
-- Standards: ELA.K12.EE.1.1
-- Gist check: Brom is a judge from town who settles arguments with law books. / Brom is a superb rider and the strong man who settles every local argument. ✓ / Brom is a poor rider who avoids the races and stays out of every local argument.
+**Chunk 9** (¶28 sentences 4 to 5; 67 words) · the twist
+
+- Question (Catch the Lie, tap the sentence): Hans Van Ripper sizes up Brom Bones. One thing he says is false. Tap the line that proves it.
+  - Key words highlighted: false
+  - Testimony (Hans Van Ripper): "Brom? He can barely stay in the saddle. I've seen him tumble off at a trot."
+  - Proof sentence: "He was famed for great knowledge and skill in horsemanship, being as dexterous on horseback as a Tartar."
+  - Hint: Check what the story says about his riding.
+  - Why: He was famed for skill in horsemanship, as dexterous on horseback as a Tartar.
+  - Standards: ELA.K12.EE.1.1
+- Bank question (Catch the Lie, tap the sentence): Katrina has her own story about Brom. One detail is untrue. Tap the sentence that shows it.
+  - Testimony (Katrina Van Tassel): "At the races Brom always hung back and let the other young men win."
+  - Proof sentence: "He was foremost at all races and cock fights; and, with the ascendancy which bodily strength always acquires in rustic life, was the umpire in all disputes, setting his hat on one side, and giving his decisions with an air and tone that admitted of no gainsay or appeal."
+  - Hint: Where was Brom at every race?
+  - Why: He was foremost at all races and cock fights, not hanging back.
+  - Standards: ELA.K12.EE.1.1
 - Discovery (figurative): "as dexterous on horseback as a Tartar". A simile: he rides as skillfully as the famous horsemen of Central Asia.
-
-##### Theme Thread
 
 **Chunk 10** (¶28 sentences 6 to 7; 70 words)
 
-- Question: Which idea about Brom do these pages keep returning to?
-- Key words highlighted: keep returning
-- Choices: He is cruel and wants to hurt everyone he meets / He is quiet and gentle and keeps to himself at home / He is rough and wild, but more playful than cruel ✓
-- Proof line: "He was always ready for either a fight or a frolic; but had more mischief than ill-will in his composition; and with all his overbearing roughness, there was a strong dash of waggish good humor at bottom."
-- Refresher hint: Is he out to hurt people, or to have fun?
-- Why: He had more mischief than ill-will, with a strong dash of waggish good humor.
-- Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
+- Question (Character Clue, drag and drop: Match the character): Match each description to Brom or to his band of friends.
+  - Slots: Brom / His three or four friends
+  - Piece: Always ready for a fight or a frolic → Brom (backed by "He was always ready for either a fight or a frolic; but had more mischief than ill-will in…")
+  - Piece: Has more mischief than ill-will in him → Brom (backed by "He was always ready for either a fight or a frolic; but had more mischief than ill-will in…")
+  - Piece: Look up to him as their model → His three or four friends (backed by "He had three or four boon companions, who regarded him as their model, and at the head of …")
+  - Piece: Ride behind him to every feud or party → His three or four friends (backed by "He had three or four boon companions, who regarded him as their model, and at the head of …")
+  - Hint: One person leads; the others follow and admire.
+  - Why: Brom is ready for a fight or a frolic and full of mischief; his boon companions regard him as their model and follow him everywhere.
+  - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
+- Bank question (Character Clue, two-part evidence): What mix of traits does the narrator give Brom?
+  - Key words highlighted: mix of traits
+  - Choices: Quiet and gentle, keeping to himself / Rough, but more playful than cruel ✓ / Cruel, wanting to hurt everyone he meets
+  - Proof sentence: "He was always ready for either a fight or a frolic; but had more mischief than ill-will in his composition; and with all his overbearing roughness, there was a strong dash of waggish good humor at bottom."
+  - Hint: What lies at the bottom of all his roughness?
+  - Why: With all his overbearing roughness, there is a strong dash of waggish good humor at bottom.
+  - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
 - Gist check: Brom loves fights and fun, but means mischief more than harm, and his friends follow him everywhere. ✓ / Brom hates fights and fun, so he stays home alone and avoids his neighbors. / Brom means real harm to everyone he meets, and even his own friends are terrified of him.
 - Discovery (vocabulary): "boon companions". Boon companions: close, cheerful friends.
 

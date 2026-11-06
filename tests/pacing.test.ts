@@ -74,11 +74,15 @@ test("adaptive challenge: start standard, up after two first-try answers in a ro
 
 test("validator: the arc on expeditions built to it, lightning answers in the chunk they recall", () => {
   assert.deepEqual(arcProblems(sh), []);
-  assert.deepEqual(sh.expedition_rules?.arc_pending?.length, 12, "expeditions 3 to 14 wait for their rebuild");
+  // Only expeditions not yet rebuilt wait; each one listed is a real expedition.
+  for (const id of sh.expedition_rules?.arc_pending ?? []) assert.ok(sh.expeditions!.some((e) => e.id === id), id);
+  // Each arc fault is caught: a first chunk that isn't a warm-up, a twist too early, a missing lightning beat.
   const bad = structuredClone(sh); bad.expedition_rules = { ...bad.expedition_rules, arc_pending: [] };
+  const [b1, b2, b3] = bad.expeditions!;
+  b1.chunks[0].question.type = "between_lines"; b2.chunks[1].question.type = "catch_lie"; b3.lightning = [];
   const p = arcProblems(bad).join(" | ");
-  assert.match(p, /the-invitation: the twist is chunk 2, not mid-expedition/); assert.match(p, /a-rival-appears: chunk 1 is between_lines, not a warm-up type/);
-  assert.match(p, /tales-by-the-fire: 0 lightning beats/);
+  assert.match(p, new RegExp(`${b1.id}: chunk 1 is between_lines, not a warm-up type`)); assert.match(p, new RegExp(`${b2.id}: the twist is chunk 2, not mid-expedition`));
+  assert.match(p, new RegExp(`${b3.id}: 0 lightning beats`));
   const early = structuredClone(sh); early.expeditions![0].lightning![1].after = 7;
   assert.match(arcProblems(early).join(" | "), /recalls chunk 7 too soon|follows the twist/);
   const wrong = structuredClone(sh); wrong.expeditions![0].lightning![0].answer = ["Not a sentence of that chunk."];

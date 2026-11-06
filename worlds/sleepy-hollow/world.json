@@ -9914,7 +9914,39 @@
               "R.1.3",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "whose_eyes",
+              "prompt": "According to the narrator, who thinks the schoolmaster's living is simple?",
+              "keywords": [
+                "According to the narrator"
+              ],
+              "choices": [
+                {
+                  "text": "The parson, who envies all of his many jobs"
+                },
+                {
+                  "text": "Only people who know nothing of mental work",
+                  "best": true
+                },
+                {
+                  "text": "Every parent who sends a child to his school"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Thus, by divers little makeshifts, in that ingenious way which is\ncommonly denominated “by hook and by crook,” the worthy pedagogue got on\ntolerably enough, and was thought, by all who understood nothing of the\nlabor of headwork, to have a wonderfully easy life of it."
+                ]
+              },
+              "hint": "Read the end of the sentence about his makeshifts.",
+              "why": "Only those \"who understood nothing of the labor of headwork\" think he has an easy life: the narrator hints the farmers misjudge him.",
+              "standards": [
+                "R.1.3",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "tales-by-the-fire-02",
@@ -9973,7 +10005,39 @@
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "Why might the farm women look up to the new teacher?",
+              "keywords": [
+                "look up to"
+              ],
+              "choices": [
+                {
+                  "text": "He comes from a famous and wealthy family"
+                },
+                {
+                  "text": "He seems finer than the rough local young men",
+                  "best": true
+                },
+                {
+                  "text": "He owns the largest farm in the whole valley"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "The schoolmaster is generally a man of some importance in the female\ncircle of a rural neighborhood; being considered a kind of idle,\ngentlemanlike personage, of vastly superior taste and accomplishments to\nthe rough country swains, and, indeed, inferior in learning only to the\nparson."
+                ]
+              },
+              "hint": "Compare him with the other young men of the neighborhood.",
+              "why": "They think him gentlemanlike, of far superior taste to the rough country swains, and second in learning only to the parson.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "tales-by-the-fire-03",
@@ -10005,35 +10069,87 @@
           },
           "question": {
             "type": "character_clue",
-            "prompt": "Which trait does Ichabod show with the young women?",
-            "keywords": [
-              "trait"
-            ],
-            "choices": [
-              {
-                "text": "Rude and bored by their company"
-              },
-              {
-                "text": "Showy and eager to impress",
-                "best": true
-              },
-              {
-                "text": "Shy and tongue-tied around them"
-              }
-            ],
-            "proof": {
-              "words": [
-                "superior elegance and address",
-                "reciting for their amusement"
+            "format": "dnd",
+            "dnd": {
+              "kind": "match_character",
+              "slots": [
+                {
+                  "id": "ichabod",
+                  "label": "Ichabod"
+                },
+                {
+                  "id": "boys",
+                  "label": "The bashful country boys"
+                }
+              ],
+              "items": [
+                {
+                  "id": "grapes",
+                  "text": "Gathers wild grapes for the young women",
+                  "slot": "ichabod",
+                  "line": "How he would figure among them in the\nchurchyard, between services on Sundays; gathering grapes for them from\nthe wild vines that overran the surrounding trees; reciting for their\namusement all the epitaphs on the tombstones; or sauntering, with a\nwhole bevy of them, along the banks of the adjacent millpond; while the\nmore bashful country bumpkins hung sheepishly back, envying his superior\nelegance and address."
+                },
+                {
+                  "id": "epitaphs",
+                  "text": "Recites the words on the tombstones to amuse them",
+                  "slot": "ichabod",
+                  "line": "How he would figure among them in the\nchurchyard, between services on Sundays; gathering grapes for them from\nthe wild vines that overran the surrounding trees; reciting for their\namusement all the epitaphs on the tombstones; or sauntering, with a\nwhole bevy of them, along the banks of the adjacent millpond; while the\nmore bashful country bumpkins hung sheepishly back, envying his superior\nelegance and address."
+                },
+                {
+                  "id": "hang",
+                  "text": "Hangs back sheepishly",
+                  "slot": "boys",
+                  "line": "How he would figure among them in the\nchurchyard, between services on Sundays; gathering grapes for them from\nthe wild vines that overran the surrounding trees; reciting for their\namusement all the epitaphs on the tombstones; or sauntering, with a\nwhole bevy of them, along the banks of the adjacent millpond; while the\nmore bashful country bumpkins hung sheepishly back, envying his superior\nelegance and address."
+                },
+                {
+                  "id": "envy",
+                  "text": "Envies another man's elegance",
+                  "slot": "boys",
+                  "line": "How he would figure among them in the\nchurchyard, between services on Sundays; gathering grapes for them from\nthe wild vines that overran the surrounding trees; reciting for their\namusement all the epitaphs on the tombstones; or sauntering, with a\nwhole bevy of them, along the banks of the adjacent millpond; while the\nmore bashful country bumpkins hung sheepishly back, envying his superior\nelegance and address."
+                }
               ]
             },
-            "hint": "Look at how he performs for them, and how the other young men feel.",
-            "why": "He recites for their amusement, and the bumpkins envy his superior elegance and address.",
+            "prompt": "Match each action in the Sunday churchyard to the person who does it.",
+            "keywords": [],
+            "hint": "Who shows off, and who watches from the side?",
+            "why": "Ichabod gathers grapes and recites epitaphs for the young women, while the bashful country boys hang back, envying his elegance.",
             "standards": [
               "R.1.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "character_clue",
+              "prompt": "What does his Sunday behavior with the young women reveal about him?",
+              "keywords": [
+                "reveal"
+              ],
+              "choices": [
+                {
+                  "text": "He is rude and bored by their company"
+                },
+                {
+                  "text": "He loves to show off and be admired",
+                  "best": true
+                },
+                {
+                  "text": "He is shy and tongue-tied around them"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "How he would figure among them in the\nchurchyard, between services on Sundays; gathering grapes for them from\nthe wild vines that overran the surrounding trees; reciting for their\namusement all the epitaphs on the tombstones; or sauntering, with a\nwhole bevy of them, along the banks of the adjacent millpond; while the\nmore bashful country bumpkins hung sheepishly back, envying his superior\nelegance and address."
+                ]
+              },
+              "hint": "Look at all the ways he entertains them.",
+              "why": "He gathers grapes, recites epitaphs and strolls with a whole bevy of them, showing off his elegance.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "tales-by-the-fire-04",
@@ -10065,34 +10181,67 @@
           },
           "question": {
             "type": "between_lines",
-            "prompt": "What can you infer about why Ichabod is welcome in every home?",
+            "format": "multi",
+            "pick": 2,
+            "prompt": "Which two reasons make the farm wives glad to see him at their doors?",
             "keywords": [
-              "infer"
+              "glad to see him"
             ],
             "choices": [
               {
-                "text": "He fixes their broken furniture for free"
+                "text": "He brings news and gossip from every house",
+                "best": true
               },
               {
-                "text": "He brings the latest local news with him",
+                "text": "They think he is a man of great learning",
                 "best": true
               },
               {
                 "text": "He pays each family well for his meals"
+              },
+              {
+                "text": "He mends their broken spinning wheels"
               }
             ],
-            "proof": {
-              "lines": [
-                "From his half-itinerant life, also, he was a kind of travelling gazette,\ncarrying the whole budget of local gossip from house to house, so that\nhis appearance was always greeted with satisfaction."
-              ]
-            },
-            "hint": "What does he carry from house to house?",
-            "why": "He is a traveling gazette carrying local gossip, so his arrival is always greeted with satisfaction.",
+            "hint": "Look at what he brings with him, and what the women think of him.",
+            "why": "He is a travelling gazette full of local gossip, and the women esteem him as a man of great erudition.",
             "standards": [
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "What does his favorite author tell you about Ichabod's own beliefs?",
+              "keywords": [
+                "favorite author"
+              ],
+              "choices": [
+                {
+                  "text": "He cares only for practical farming advice"
+                },
+                {
+                  "text": "He is ready to believe in the supernatural",
+                  "best": true
+                },
+                {
+                  "text": "He doubts every ghost story he hears"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "He was, moreover,\nesteemed by the women as a man of great erudition, for he had read\nseveral books quite through, and was a perfect master of Cotton Mather’s\n“History of New England Witchcraft,” in which, by the way, he most\nfirmly and potently believed."
+                ]
+              },
+              "hint": "What is Cotton Mather's book about, and how much does Ichabod trust it?",
+              "why": "He is a perfect master of Mather's history of witchcraft, in which he most firmly and potently believes.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "tales-by-the-fire-05",
@@ -10124,7 +10273,7 @@
           },
           "question": {
             "type": "figure_it_out",
-            "prompt": "Read the words for his capacious swallow. What kind of figurative language is this?",
+            "prompt": "Read the words \"for his capacious swallow.\" What kind of figurative language is this?",
             "keywords": [
               "capacious swallow"
             ],
@@ -10156,13 +10305,55 @@
                 }
               ]
             },
-            "hint": "Is he really eating the tales? Think about what he does with a story he hears.",
-            "why": "His capacious swallow means his huge appetite for believing marvels: no tale is too wild for him.",
+            "hint": "Can you really swallow a story? Think about what he does with the tales he hears.",
+            "why": "He swallows tales the way a big eater swallows food: no story is too monstrous for him to believe.",
             "standards": [
               "R.3.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "figure_it_out",
+              "prompt": "The narrator says the little brook \"whimpered.\" Which device is this?",
+              "keywords": [
+                "whimpered"
+              ],
+              "focus": "whimpered",
+              "choices": [
+                {
+                  "text": "Simile: the brook is compared using like or as"
+                },
+                {
+                  "text": "Alliteration: the same first sound repeats"
+                },
+                {
+                  "text": "Personification: the brook is given a human cry",
+                  "best": true
+                }
+              ],
+              "choices2": {
+                "prompt": "What does it suggest about the brook?",
+                "options": [
+                  {
+                    "text": "It is too loud for him to read by"
+                  },
+                  {
+                    "text": "It makes a soft, sad little sound",
+                    "best": true
+                  },
+                  {
+                    "text": "It floods the schoolhouse every spring"
+                  }
+                ]
+              },
+              "hint": "Who usually whimpers?",
+              "why": "Only people and animals whimper: the brook gets a soft, sad, human sound.",
+              "standards": [
+                "R.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "tales-by-the-fire-06",
@@ -10208,7 +10399,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line lists the night noises that make his mind run wild?",
+              "keywords": [
+                "night noises"
+              ],
+              "proof": {
+                "lines": [
+                  "Then, as he\nwended his way by swamp and stream and awful woodland, to the farmhouse\nwhere he happened to be quartered, every sound of nature, at that\nwitching hour, fluttered his excited imagination,--the moan of the\nwhip-poor-will from the hillside, the boding cry of the tree toad, that\nharbinger of storm, the dreary hooting of the screech owl, or the\nsudden rustling in the thicket of birds frightened from their roost."
+                ]
+              },
+              "hint": "Look for a list of birds, toads and rustling.",
+              "why": "The whip-poor-will, the tree toad, the screech owl and the rustling in the thicket all flutter his excited imagination.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "tales-by-the-fire-07",
@@ -10239,35 +10449,45 @@
             "note": "Nasal melody: singing through the nose. Ichabod's hymns float over the hills."
           },
           "question": {
-            "type": "between_lines",
-            "prompt": "What can you infer about why Ichabod bursts into song on lonely walks?",
-            "keywords": [
-              "infer"
-            ],
-            "choices": [
-              {
-                "text": "He wants the farmers to hire him"
-              },
-              {
-                "text": "He is practicing for a singing contest"
-              },
-              {
-                "text": "He is trying to calm his own fear",
-                "best": true
-              }
-            ],
+            "type": "catch_lie",
+            "prompt": "Brom Bones explains why the schoolmaster made music at night. Part of what he says is false. Tap the sentence that proves it.",
+            "keywords": [],
             "proof": {
               "lines": [
                 "His\nonly resource on such occasions, either to drown thought or drive away\nevil spirits, was to sing psalm tunes and the good people of Sleepy\nHollow, as they sat by their doors of an evening, were often filled with\nawe at hearing his nasal melody, “in linked sweetness long drawn out,”\n floating from the distant hill, or along the dusky road."
               ]
             },
-            "hint": "What does singing chase away?",
-            "why": "Singing psalm tunes was his only way to drown thought or drive away evil spirits.",
+            "testimony": {
+              "speaker": "brom-bones",
+              "text": "He only sang on those walks home to show off his voice to the farmers along the road."
+            },
+            "hint": "Why did he sing when he was alone at night?",
+            "why": "He sang psalm tunes to drown thought or drive away evil spirits, not to show off.",
             "standards": [
-              "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "catch_lie",
+              "prompt": "Hans Van Ripper remembers it differently. One detail is untrue. Tap the sentence that shows it.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "His\nonly resource on such occasions, either to drown thought or drive away\nevil spirits, was to sing psalm tunes and the good people of Sleepy\nHollow, as they sat by their doors of an evening, were often filled with\nawe at hearing his nasal melody, “in linked sweetness long drawn out,”\n floating from the distant hill, or along the dusky road."
+                ]
+              },
+              "testimony": {
+                "speaker": "hans-van-ripper",
+                "text": "Nobody ever heard him. He sang so softly on that dark road that not a note reached the houses."
+              },
+              "hint": "What did the people sitting by their doors hear?",
+              "why": "The good people sitting by their doors were filled with awe at hearing his nasal melody floating from the distant hill.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "tales-by-the-fire-08",
@@ -10299,34 +10519,94 @@
           },
           "question": {
             "type": "theme_thread",
-            "prompt": "Which idea keeps coming up in these pages?",
-            "keywords": [
-              "keeps coming up"
-            ],
-            "choices": [
-              {
-                "text": "Hard work on the farm matters far more than book learning"
-              },
-              {
-                "text": "Neighbors in the Hollow distrust every outsider"
-              },
-              {
-                "text": "People in the valley love to share and believe eerie stories",
-                "best": true
-              }
-            ],
+            "format": "written",
+            "written": {
+              "key_ideas": [
+                [
+                  "scare",
+                  "scary",
+                  "fear",
+                  "fright",
+                  "terror",
+                  "spook",
+                  "eerie",
+                  "ghost",
+                  "goblin",
+                  "creepy"
+                ],
+                [
+                  "enjoy",
+                  "pleasure",
+                  "love",
+                  "fun",
+                  "delight",
+                  "thrill",
+                  "exciting",
+                  "like",
+                  "entertain"
+                ]
+              ],
+              "model": "People enjoy being scared by stories because fear feels thrilling when they are safe and warm among friends."
+            },
+            "prompt": "In one sentence, explain what these cozy nights suggest about why people enjoy being scared.",
+            "keywords": [],
             "proof": {
               "lines": [
                 "Another of his sources of fearful pleasure was to pass long winter\nevenings with the old Dutch wives, as they sat spinning by the fire,\nwith a row of apples roasting and spluttering along the hearth, and\nlisten to their marvellous tales of ghosts and goblins, and haunted\nfields, and haunted brooks, and haunted bridges, and haunted houses,\nand particularly of the headless horseman, or Galloping Hessian of the\nHollow, as they sometimes called him."
               ]
             },
-            "hint": "What do Ichabod and the old wives trade all evening?",
-            "why": "They trade marvellous tales of ghosts, goblins and the headless horseman, again showing the valley's love of the uncanny.",
+            "hint": "Notice the words \"fearful pleasure.\"",
+            "why": "Listening to tales of ghosts and goblins is a \"fearful pleasure\": a scare can be fun when it is shared by a warm fire.",
             "standards": [
               "R.1.2",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "theme_thread",
+              "format": "written",
+              "written": {
+                "key_ideas": [
+                  [
+                    "believ",
+                    "trust",
+                    "accept",
+                    "convinc",
+                    "credul",
+                    "true",
+                    "real"
+                  ],
+                  [
+                    "everyone",
+                    "together",
+                    "share",
+                    "each other",
+                    "others",
+                    "group",
+                    "neighbor",
+                    "around them",
+                    "same",
+                    "community"
+                  ]
+                ],
+                "model": "People believe strange stories more easily when everyone around them shares and trusts the same stories."
+              },
+              "prompt": "Using your own words, tell in one sentence what these gatherings suggest about why people believe strange stories.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "Another of his sources of fearful pleasure was to pass long winter\nevenings with the old Dutch wives, as they sat spinning by the fire,\nwith a row of apples roasting and spluttering along the hearth, and\nlisten to their marvellous tales of ghosts and goblins, and haunted\nfields, and haunted brooks, and haunted bridges, and haunted houses,\nand particularly of the headless horseman, or Galloping Hessian of the\nHollow, as they sometimes called him."
+                ]
+              },
+              "hint": "Who tells the tales, and who believes them?",
+              "why": "The old wives share their marvellous tales and Ichabod adds his own: a whole circle that believes makes the stories feel true.",
+              "standards": [
+                "R.1.2",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "tales-by-the-fire-09",
@@ -10376,18 +10656,54 @@
               }
             ],
             "proof": {
-              "words": [
-                "snugly cuddling in the chimney corner"
+              "lines": [
+                "But if there was a pleasure in all this, while snugly cuddling in\nthe chimney corner of a chamber that was all of a ruddy glow from the\ncrackling wood fire, and where, of course, no spectre dared to show\nits face, it was dearly purchased by the terrors of his subsequent walk\nhomewards."
               ]
             },
-            "hint": "Think about where he would rather be. Find the cozy place he just left.",
-            "why": "Wistful means longing: he has just left snugly cuddling in the chimney corner, and every lit window reminds him of it.",
+            "hint": "Where was he snug and safe earlier that evening?",
+            "why": "After snugly cuddling in a glowing chimney corner, he eyes every distant window with longing.",
             "standards": [
               "V.1.3",
               "R.3.1"
-            ],
-            "reviewed": true
-          }
+            ]
+          },
+          "bank": [
+            {
+              "type": "shades",
+              "prompt": "Why might the narrator call the snowy light a \"ghastly glare\" rather than a bright shine?",
+              "keywords": [
+                "ghastly glare"
+              ],
+              "focus": "ghastly glare",
+              "choices": [
+                {
+                  "text": "It shows the moon is shining warmly"
+                },
+                {
+                  "text": "It means the snow is melting quickly"
+                },
+                {
+                  "text": "It makes the light seem eerie and scary",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "What fearful shapes and shadows beset his path, amidst the\ndim and ghastly glare of a snowy night!"
+                ]
+              },
+              "hint": "What does that light show him on the path?",
+              "why": "The light shows \"fearful shapes and shadows\": ghastly means ghostly and terrifying, not just bright.",
+              "standards": [
+                "V.1.3",
+                "R.3.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "fearful shapes and shadows"
+              ]
+            }
+          ]
         },
         {
           "id": "tales-by-the-fire-10",
@@ -10418,26 +10734,106 @@
             "note": "A simile: a snow-covered bush looks like a ghost wrapped in a sheet."
           },
           "question": {
-            "type": "catch_lie",
-            "prompt": "Katrina describes his winter walks. One thing she says is false. Tap the line that proves it.",
-            "keywords": [
-              "false"
-            ],
-            "proof": {
-              "lines": [
-                "How often\ndid he shrink with curdling awe at the sound of his own steps on the\nfrosty crust beneath his feet; and dread to look over his shoulder, lest\nhe should behold some uncouth being tramping close behind him!"
+            "type": "story_structure",
+            "format": "dnd",
+            "dnd": {
+              "kind": "cause_effect",
+              "slots": [
+                {
+                  "id": "shrub",
+                  "label": "A shrub covered with snow"
+                },
+                {
+                  "id": "steps",
+                  "label": "The crunch of his own steps"
+                },
+                {
+                  "id": "blast",
+                  "label": "A rushing blast howling in the trees"
+                }
+              ],
+              "items": [
+                {
+                  "id": "sheet",
+                  "text": "He thinks a ghost in a sheet blocks his path",
+                  "slot": "shrub",
+                  "line": "How often was he appalled by some shrub covered\nwith snow, which, like a sheeted spectre, beset his very path!"
+                },
+                {
+                  "id": "shoulder",
+                  "text": "He is afraid to look over his shoulder",
+                  "slot": "steps",
+                  "line": "How often\ndid he shrink with curdling awe at the sound of his own steps on the\nfrosty crust beneath his feet; and dread to look over his shoulder, lest\nhe should behold some uncouth being tramping close behind him!"
+                },
+                {
+                  "id": "hessian",
+                  "text": "He thinks the Galloping Hessian is riding by",
+                  "slot": "blast",
+                  "line": "And how\noften was he thrown into complete dismay by some rushing blast, howling\namong the trees, in the idea that it was the Galloping Hessian on one of\nhis nightly scourings!"
+                }
               ]
             },
-            "testimony": {
-              "speaker": "katrina-van-tassel",
-              "text": "Poor Ichabod would stroll home through the snow without a care in the world, never once glancing behind him."
-            },
-            "hint": "Check how he felt about his own steps, and whether he looked behind him.",
-            "why": "He shrank at the sound of his own steps and dreaded looking over his shoulder.",
+            "prompt": "Connect each sight or sound on his walk to the fear it stirs up.",
+            "keywords": [],
+            "hint": "Each \"How often\" sentence pairs something he notices with what he fears.",
+            "why": "The snowy shrub looks like a sheeted spectre, his own steps make him dread looking back, and the wind sounds like the Hessian.",
             "standards": [
-              "K12.EE.1.1"
+              "R.1.1",
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "story_structure",
+              "prompt": "What do the three frights on his walk build up to?",
+              "keywords": [
+                "build up to"
+              ],
+              "choices": [
+                {
+                  "text": "His worst fear: the Galloping Hessian is near",
+                  "best": true
+                },
+                {
+                  "text": "His plan to move closer to the schoolhouse"
+                },
+                {
+                  "text": "His choice to stop visiting the old wives"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "And how\noften was he thrown into complete dismay by some rushing blast, howling\namong the trees, in the idea that it was the Galloping Hessian on one of\nhis nightly scourings!"
+                ]
+              },
+              "hint": "Which fear comes last, and which is the biggest?",
+              "why": "The frights grow from a shrub to his own footsteps to the wind he takes for the Galloping Hessian himself.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
+        }
+      ],
+      "lightning": [
+        {
+          "id": "tea-table",
+          "chunk": 2,
+          "after": 4,
+          "question": "What extra treat appears when the schoolmaster visits a farmhouse?",
+          "answer": [
+            "His appearance, therefore, is apt to occasion some little stir\nat the tea-table of a farmhouse, and the addition of a supernumerary\ndish of cakes or sweetmeats, or, peradventure, the parade of a silver\nteapot."
+          ]
+        },
+        {
+          "id": "clover-bed",
+          "chunk": 5,
+          "after": 8,
+          "question": "Where did Ichabod like to stretch out and read after school?",
+          "answer": [
+            "It was often his delight, after his school\nwas dismissed in the afternoon, to stretch himself on the rich bed of\nclover bordering the little brook that whimpered by his schoolhouse, and\nthere con over old Mather’s direful tales, until the gathering dusk of\nevening made the printed page a mere mist before his eyes."
+          ]
         }
       ],
       "interview": {
@@ -10568,7 +10964,39 @@
               "R.1.3",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "whose_eyes",
+              "prompt": "What does the narrator believe about the scary things Ichabod saw?",
+              "keywords": [
+                "narrator believe"
+              ],
+              "choices": [
+                {
+                  "text": "They were real spirits haunting the roads"
+                },
+                {
+                  "text": "They were tricks the farm boys played"
+                },
+                {
+                  "text": "They were made up inside his own head",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "All these, however, were mere terrors of the night, phantoms of the mind\nthat walk in darkness; and though he had seen many spectres in his time,\nand been more than once beset by Satan in divers shapes, in his lonely\nperambulations, yet daylight put an end to all these evils; and he would\nhave passed a pleasant life of it, in despite of the Devil and all his\nworks, if his path had not been crossed by a being that causes more\nperplexity to mortal man than ghosts, goblins, and the whole race of\nwitches put together, and that was--a woman."
+                ]
+              },
+              "hint": "What does the narrator call them at the start of the sentence?",
+              "why": "He calls them \"mere terrors of the night, phantoms of the mind\": the narrator treats them as imagined.",
+              "standards": [
+                "R.1.3",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-van-tassel-farm-02",
@@ -10618,18 +11046,56 @@
               }
             ],
             "proof": {
-              "words": [
-                "only child of a substantial Dutch farmer"
+              "lines": [
+                "Among the musical disciples who assembled, one evening in each week,\nto receive his instructions in psalmody, was Katrina Van Tassel,\nthe daughter and only child of a substantial Dutch farmer."
               ]
             },
-            "hint": "Whose daughter is she, and how many children does he have?",
-            "why": "As the only child of a substantial farmer, she can expect to inherit everything.",
+            "hint": "Whose only child is she?",
+            "why": "As the only child of a substantial farmer, she expects to inherit his fortune.",
             "standards": [
               "V.1.3",
               "K12.EE.1.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "word_detective",
+              "prompt": "Which meaning of blooming fits Katrina?",
+              "keywords": [
+                "blooming"
+              ],
+              "focus": "blooming",
+              "choices": [
+                {
+                  "text": "Pale and tired from too much work"
+                },
+                {
+                  "text": "Healthy and fresh, in the bloom of youth",
+                  "best": true
+                },
+                {
+                  "text": "Covered with flowers from her garden"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "She was a\nblooming lass of fresh eighteen; plump as a partridge; ripe and melting\nand rosy-cheeked as one of her father’s peaches, and universally famed,\nnot merely for her beauty, but her vast expectations."
+                ]
+              },
+              "hint": "Find the words nearby that describe her age and her cheeks.",
+              "why": "She is \"fresh eighteen\" and \"rosy-cheeked\": blooming means healthy and in the bloom of youth.",
+              "standards": [
+                "V.1.3",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "fresh eighteen",
+                "rosy-cheeked"
+              ]
+            }
+          ]
         },
         {
           "id": "the-van-tassel-farm-03",
@@ -10678,17 +11144,49 @@
               }
             ],
             "proof": {
-              "words": [
-                "a little of a coquette"
+              "lines": [
+                "She was withal a\nlittle of a coquette, as might be perceived even in her dress, which was\na mixture of ancient and modern fashions, as most suited to set off\nher charms."
               ]
             },
-            "hint": "The narrator names it outright. Find the word for someone who enjoys attention.",
-            "why": "She is a little of a coquette: she enjoys being admired, and her outfit is chosen to set off her charms.",
+            "hint": "What does the narrator call her, and why does she mix her fashions?",
+            "why": "She is \"a little of a coquette,\" choosing whatever fashions best set off her charms.",
             "standards": [
               "R.1.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "character_clue",
+              "prompt": "What does Katrina's choice of jewelry show about her?",
+              "keywords": [
+                "jewelry"
+              ],
+              "choices": [
+                {
+                  "text": "She cannot afford any jewelry of her own"
+                },
+                {
+                  "text": "She dislikes anything old-fashioned"
+                },
+                {
+                  "text": "She proudly shows off old family wealth",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "She wore the ornaments of pure yellow gold, which her\ngreat-great-grandmother had brought over from Saardam; the tempting\nstomacher of the olden time, and withal a provokingly short petticoat,\nto display the prettiest foot and ankle in the country round."
+                ]
+              },
+              "hint": "Where did the gold come from?",
+              "why": "She wears the pure gold her great-great-grandmother brought from Saardam: family wealth on show.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-van-tassel-farm-04",
@@ -10734,7 +11232,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line shows Baltus rarely thinks past his own fences?",
+              "keywords": [
+                "own fences"
+              ],
+              "proof": {
+                "lines": [
+                  "He seldom, it is true, sent either his eyes or\nhis thoughts beyond the boundaries of his own farm; but within those\neverything was snug, happy and well-conditioned."
+                ]
+              },
+              "hint": "Look for the word boundaries.",
+              "why": "He seldom sent his eyes or his thoughts beyond the boundaries of his own farm.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-van-tassel-farm-05",
@@ -10765,35 +11282,90 @@
             "note": "Stronghold: a fort. The narrator jokes that the farmhouse is a castle."
           },
           "question": {
-            "type": "between_lines",
-            "prompt": "What can you infer about how Baltus feels about his riches?",
-            "keywords": [
-              "infer"
-            ],
-            "choices": [
-              {
-                "text": "He worries constantly about losing his money"
-              },
-              {
-                "text": "He loves to boast about how rich he is"
-              },
-              {
-                "text": "He enjoys plenty but has no need to show off",
-                "best": true
-              }
-            ],
-            "proof": {
-              "lines": [
-                "He was satisfied with\nhis wealth, but not proud of it; and piqued himself upon the hearty\nabundance, rather than the style in which he lived."
+            "type": "weigh_evidence",
+            "format": "dnd",
+            "dnd": {
+              "kind": "build_case",
+              "slots": [
+                {
+                  "id": "claim",
+                  "label": "Claim"
+                },
+                {
+                  "id": "proof",
+                  "label": "Proof sentence"
+                },
+                {
+                  "id": "reason",
+                  "label": "Reason"
+                }
+              ],
+              "items": [
+                {
+                  "id": "claim",
+                  "text": "Baltus is happy with the life he has",
+                  "slot": "claim"
+                },
+                {
+                  "id": "proof",
+                  "text": "\"He was satisfied with his wealth, but not proud of it\"",
+                  "slot": "proof",
+                  "line": "He was satisfied with\nhis wealth, but not proud of it; and piqued himself upon the hearty\nabundance, rather than the style in which he lived."
+                },
+                {
+                  "id": "reason",
+                  "text": "He enjoys plenty without needing to show off",
+                  "slot": "reason",
+                  "line": "He was satisfied with\nhis wealth, but not proud of it; and piqued himself upon the hearty\nabundance, rather than the style in which he lived."
+                },
+                {
+                  "id": "elm",
+                  "text": "A great elm tree spreads its branches over the house",
+                  "slot": null
+                }
               ]
             },
-            "hint": "Does he care more about having plenty, or about looking grand?",
-            "why": "He was satisfied with his wealth but not proud of it, prizing abundance over style.",
+            "prompt": "Build the case that Baltus is happy with the life he has.",
+            "keywords": [],
+            "hint": "A case needs a claim, a quotation that proves it, and a reason that connects them.",
+            "why": "The quotation shows he is satisfied, the reason explains it (plenty, not style), and the elm tree proves nothing about his feelings.",
             "standards": [
-              "K12.EE.3.1",
-              "K12.EE.1.1"
+              "K12.EE.1.1",
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "weigh_evidence",
+              "prompt": "Which detail best supports the claim that the farm has everything it needs close at hand?",
+              "keywords": [
+                "close at hand"
+              ],
+              "choices": [
+                {
+                  "text": "Baltus is satisfied with his wealth but not proud"
+                },
+                {
+                  "text": "Dutch farmers like to settle in sheltered spots"
+                },
+                {
+                  "text": "A spring of the sweetest water bubbles up under the elm",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "A\ngreat elm tree spread its broad branches over it, at the foot of which\nbubbled up a spring of the softest and sweetest water, in a little well\nformed of a barrel; and then stole sparkling away through the grass, to\na neighboring brook, that babbled along among alders and dwarf willows."
+                ]
+              },
+              "hint": "Which detail is about something useful right beside the house?",
+              "why": "Fresh water bubbles up right at the foot of the elm by the house; the other details are about feelings or about farmers in general.",
+              "standards": [
+                "K12.EE.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-van-tassel-farm-06",
@@ -10825,7 +11397,7 @@
           },
           "question": {
             "type": "figure_it_out",
-            "prompt": "Read the words might have served for a church. What kind of figurative language is this?",
+            "prompt": "Read the words \"might have served for a church.\" What kind of figurative language is this?",
             "keywords": [
               "served for a church"
             ],
@@ -10857,13 +11429,55 @@
                 }
               ]
             },
-            "hint": "Is it really a church? Think about why someone would say it could be one.",
-            "why": "The barn is so vast it might have served for a church: an exaggeration showing its size.",
+            "hint": "Could a barn really hold a whole congregation? Think about its size.",
+            "why": "The barn is exaggerated to the size of a church: it is enormous.",
             "standards": [
               "R.3.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "figure_it_out",
+              "prompt": "Some pigeons are \"bowing about their dames.\" Which device is this?",
+              "keywords": [
+                "bowing"
+              ],
+              "focus": "bowing about their dames",
+              "choices": [
+                {
+                  "text": "Hyperbole: a wild exaggeration of size"
+                },
+                {
+                  "text": "Personification: birds act like gentlemen",
+                  "best": true
+                },
+                {
+                  "text": "Simile: birds compared using like or as"
+                }
+              ],
+              "choices2": {
+                "prompt": "What does it show about the farm?",
+                "options": [
+                  {
+                    "text": "The pigeons are about to fly off"
+                  },
+                  {
+                    "text": "The barn is falling into ruin"
+                  },
+                  {
+                    "text": "It feels lively, cozy and content",
+                    "best": true
+                  }
+                ]
+              },
+              "hint": "Who usually bows to a lady?",
+              "why": "The pigeons bow to their mates like gentlemen: the whole farm seems happy and well mannered.",
+              "standards": [
+                "R.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-van-tassel-farm-07",
@@ -10914,7 +11528,28 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "catch_lie",
+              "prompt": "Katrina adds her own memory of the animals. One detail is untrue. Tap the sentence that shows it.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "A stately squadron of snowy geese were riding in an adjoining pond,\nconvoying whole fleets of ducks; regiments of turkeys were gobbling\nthrough the farmyard, and Guinea fowls fretting about it, like\nill-tempered housewives, with their peevish, discontented cry."
+                ]
+              },
+              "testimony": {
+                "speaker": "katrina-van-tassel",
+                "text": "Our farmyard birds were the gentlest things. Even the guinea fowls never made a sound."
+              },
+              "hint": "What noise do the guinea fowls make?",
+              "why": "The guinea fowls fret about the farmyard with a peevish, discontented cry.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-van-tassel-farm-08",
@@ -10946,36 +11581,99 @@
           },
           "question": {
             "type": "shades",
-            "prompt": "Why does the narrator call the rooster gallant instead of just proud?",
-            "keywords": [
-              "gallant"
-            ],
-            "focus": "gallant",
-            "choices": [
-              {
-                "text": "It makes him sound sick, weak and too tired to crow"
-              },
-              {
-                "text": "It makes him sound lazy and sleepy"
-              },
-              {
-                "text": "It makes him sound like a brave, polite gentleman",
-                "best": true
-              }
-            ],
-            "proof": {
-              "words": [
-                "generously calling his ever-hungry family"
+            "format": "dnd",
+            "dnd": {
+              "kind": "word_feeling",
+              "slots": [
+                {
+                  "id": "pride",
+                  "label": "Shows his pride"
+                },
+                {
+                  "id": "care",
+                  "label": "Shows his care for his family"
+                }
+              ],
+              "items": [
+                {
+                  "id": "strut",
+                  "text": "Struts before the barn door",
+                  "slot": "pride",
+                  "line": "Before\nthe barn door strutted the gallant cock, that pattern of a husband, a\nwarrior and a fine gentleman, clapping his burnished wings and crowing\nin the pride and gladness of his heart,--sometimes tearing up the earth\nwith his feet, and then generously calling his ever-hungry family of\nwives and children to enjoy the rich morsel which he had discovered."
+                },
+                {
+                  "id": "wings",
+                  "text": "Claps his shining wings",
+                  "slot": "pride",
+                  "line": "Before\nthe barn door strutted the gallant cock, that pattern of a husband, a\nwarrior and a fine gentleman, clapping his burnished wings and crowing\nin the pride and gladness of his heart,--sometimes tearing up the earth\nwith his feet, and then generously calling his ever-hungry family of\nwives and children to enjoy the rich morsel which he had discovered."
+                },
+                {
+                  "id": "crow",
+                  "text": "Crows with pride and gladness",
+                  "slot": "pride",
+                  "line": "Before\nthe barn door strutted the gallant cock, that pattern of a husband, a\nwarrior and a fine gentleman, clapping his burnished wings and crowing\nin the pride and gladness of his heart,--sometimes tearing up the earth\nwith his feet, and then generously calling his ever-hungry family of\nwives and children to enjoy the rich morsel which he had discovered."
+                },
+                {
+                  "id": "call",
+                  "text": "Calls his hungry family over",
+                  "slot": "care",
+                  "line": "Before\nthe barn door strutted the gallant cock, that pattern of a husband, a\nwarrior and a fine gentleman, clapping his burnished wings and crowing\nin the pride and gladness of his heart,--sometimes tearing up the earth\nwith his feet, and then generously calling his ever-hungry family of\nwives and children to enjoy the rich morsel which he had discovered."
+                },
+                {
+                  "id": "share",
+                  "text": "Shares the tasty morsel he found",
+                  "slot": "care",
+                  "line": "Before\nthe barn door strutted the gallant cock, that pattern of a husband, a\nwarrior and a fine gentleman, clapping his burnished wings and crowing\nin the pride and gladness of his heart,--sometimes tearing up the earth\nwith his feet, and then generously calling his ever-hungry family of\nwives and children to enjoy the rich morsel which he had discovered."
+                }
               ]
             },
-            "hint": "Gallant is a word for a fine gentleman. Find what he does with the food he discovers.",
-            "why": "Gallant suggests a courteous gentleman, and he generously calls his ever-hungry family to share his find.",
+            "prompt": "Sort each phrase about the rooster: does it show his pride, or his care for his family?",
+            "keywords": [],
+            "hint": "Is he showing himself off, or looking after the others?",
+            "why": "Strutting, wing-clapping and crowing show off his pride; calling his family to the morsel shows his care.",
             "standards": [
               "V.1.3",
               "R.3.1"
-            ],
-            "reviewed": true
-          }
+            ]
+          },
+          "bank": [
+            {
+              "type": "shades",
+              "prompt": "Why does the narrator call the rooster gallant instead of just proud?",
+              "keywords": [
+                "gallant"
+              ],
+              "focus": "gallant",
+              "choices": [
+                {
+                  "text": "It makes him sound weak and too tired to crow"
+                },
+                {
+                  "text": "It makes him sound lazy and sleepy"
+                },
+                {
+                  "text": "It makes him sound like a brave, polite gentleman",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Before\nthe barn door strutted the gallant cock, that pattern of a husband, a\nwarrior and a fine gentleman, clapping his burnished wings and crowing\nin the pride and gladness of his heart,--sometimes tearing up the earth\nwith his feet, and then generously calling his ever-hungry family of\nwives and children to enjoy the rich morsel which he had discovered."
+                ]
+              },
+              "hint": "Find the words nearby that make him sound like a hero.",
+              "why": "He is \"a warrior and a fine gentleman\" who generously calls his family: gallant means brave and courteous.",
+              "standards": [
+                "V.1.3",
+                "R.3.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "a warrior and a fine gentleman",
+                "generously calling"
+              ]
+            }
+          ]
         },
         {
           "id": "the-van-tassel-farm-09",
@@ -11007,35 +11705,68 @@
           },
           "question": {
             "type": "between_lines",
-            "prompt": "What can you infer Ichabod sees when he studies the animals?",
+            "format": "multi",
+            "pick": 2,
+            "prompt": "Which two things does Ichabod's daydream at the farm reveal about him?",
             "keywords": [
-              "infer"
+              "daydream"
             ],
             "choices": [
               {
-                "text": "Pets he would like to care for"
+                "text": "He hopes to work as a butcher"
               },
               {
-                "text": "Hard chores he would rather avoid"
-              },
-              {
-                "text": "Future feasts he hopes to enjoy",
+                "text": "He thinks about food nearly all the time",
                 "best": true
+              },
+              {
+                "text": "He has a lively, vivid imagination",
+                "best": true
+              },
+              {
+                "text": "He feels sorry for the farm animals"
               }
             ],
-            "proof": {
-              "lines": [
-                "The pedagogue’s mouth watered as he looked upon this sumptuous promise\nof luxurious winter fare.",
-                "In his devouring mind’s eye, he pictured to\nhimself every roasting-pig running about with a pudding in his belly,\nand an apple in his mouth; the pigeons were snugly put to bed in a\ncomfortable pie, and tucked in with a coverlet of crust; the geese were\nswimming in their own gravy; and the ducks pairing cosily in dishes,\nlike snug married couples, with a decent competency of onion sauce."
-              ]
-            },
-            "hint": "What happens to his mouth as he looks?",
-            "why": "His mouth watered, and in his mind's eye every pig and pigeon was already roasted or baked in a pie.",
+            "hint": "What does he picture, and how detailed is the picture?",
+            "why": "His mouth waters as he pictures every animal as a richly detailed dish: food is always on his mind, and his imagination runs wild.",
             "standards": [
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "What can you infer Ichabod sees when he studies the animals?",
+              "keywords": [
+                "infer"
+              ],
+              "choices": [
+                {
+                  "text": "Pets he would like to care for"
+                },
+                {
+                  "text": "Hard chores he would rather avoid"
+                },
+                {
+                  "text": "Future feasts he hopes to enjoy",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "The pedagogue’s mouth watered as he looked upon this sumptuous promise\nof luxurious winter fare.",
+                  "In his devouring mind’s eye, he pictured to\nhimself every roasting-pig running about with a pudding in his belly,\nand an apple in his mouth; the pigeons were snugly put to bed in a\ncomfortable pie, and tucked in with a coverlet of crust; the geese were\nswimming in their own gravy; and the ducks pairing cosily in dishes,\nlike snug married couples, with a decent competency of onion sauce."
+                ]
+              },
+              "hint": "What happens to his mouth as he looks?",
+              "why": "His mouth watered, and in his mind's eye every pig and pigeon was already roasted or baked in a pie.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-van-tassel-farm-10",
@@ -11067,34 +11798,110 @@
           },
           "question": {
             "type": "theme_thread",
-            "prompt": "Which idea about Ichabod keeps coming back?",
-            "keywords": [
-              "keeps coming back"
-            ],
-            "choices": [
-              {
-                "text": "His kindness wins him friends wherever he goes"
-              },
-              {
-                "text": "His hunger and greed shape how he sees the world",
-                "best": true
-              },
-              {
-                "text": "His courage helps him face every single danger he meets"
-              }
-            ],
+            "format": "written",
+            "written": {
+              "key_ideas": [
+                [
+                  "want",
+                  "desire",
+                  "greed",
+                  "hunger",
+                  "hungry",
+                  "appetite",
+                  "wish",
+                  "long"
+                ],
+                [
+                  "see",
+                  "view",
+                  "look",
+                  "imagin",
+                  "picture",
+                  "everything",
+                  "world",
+                  "the way",
+                  "notice"
+                ]
+              ],
+              "model": "When people want something badly, they see the world through that desire, the way hungry Ichabod sees every animal as a meal."
+            },
+            "prompt": "In one sentence, explain what this scene suggests about how wanting something changes what people see.",
+            "keywords": [],
             "proof": {
               "lines": [
                 "In\nthe porkers he saw carved out the future sleek side of bacon, and juicy\nrelishing ham; not a turkey but he beheld daintily trussed up, with\nits gizzard under its wing, and, peradventure, a necklace of savory\nsausages; and even bright chanticleer himself lay sprawling on his back,\nin a side dish, with uplifted claws, as if craving that quarter which\nhis chivalrous spirit disdained to ask while living."
               ]
             },
-            "hint": "Even the proud rooster from before ends up somewhere. Where?",
-            "why": "Even bright chanticleer lies in a side dish: his appetite rules what he sees.",
+            "hint": "What does he see when he looks at a living rooster?",
+            "why": "Even the proud rooster becomes a side dish in his eyes: what a person wants shapes everything they see.",
             "standards": [
               "R.1.2",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "theme_thread",
+              "format": "written",
+              "written": {
+                "key_ideas": [
+                  [
+                    "greed",
+                    "greedy",
+                    "hunger",
+                    "appetite",
+                    "want",
+                    "desire"
+                  ],
+                  [
+                    "everything",
+                    "anything",
+                    "see",
+                    "turn",
+                    "take",
+                    "consume",
+                    "use",
+                    "living",
+                    "alive"
+                  ]
+                ],
+                "model": "Greed can turn everything a person sees into something to take or consume, even creatures that are alive and happy."
+              },
+              "prompt": "Using your own words, tell in one sentence what lesson about greed this scene suggests.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "In\nthe porkers he saw carved out the future sleek side of bacon, and juicy\nrelishing ham; not a turkey but he beheld daintily trussed up, with\nits gizzard under its wing, and, peradventure, a necklace of savory\nsausages; and even bright chanticleer himself lay sprawling on his back,\nin a side dish, with uplifted claws, as if craving that quarter which\nhis chivalrous spirit disdained to ask while living."
+                ]
+              },
+              "hint": "Look at what happens to each happy animal in his mind.",
+              "why": "Pigs, turkeys and even chanticleer become bacon, sausages and side dishes: greed turns living things into things to devour.",
+              "standards": [
+                "R.1.2",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
+        }
+      ],
+      "lightning": [
+        {
+          "id": "eighteen",
+          "chunk": 2,
+          "after": 4,
+          "question": "How old is Katrina when Ichabod meets her?",
+          "answer": [
+            "She was a\nblooming lass of fresh eighteen; plump as a partridge; ripe and melting\nand rosy-cheeked as one of her father’s peaches, and universally famed,\nnot merely for her beauty, but her vast expectations."
+          ]
+        },
+        {
+          "id": "elm-spring",
+          "chunk": 5,
+          "after": 8,
+          "question": "What bubbles up at the foot of the great elm?",
+          "answer": [
+            "A\ngreat elm tree spread its broad branches over it, at the foot of which\nbubbled up a spring of the softest and sweetest water, in a little well\nformed of a barrel; and then stole sparkling away through the grass, to\na neighboring brook, that babbled along among alders and dwarf willows."
+          ]
         }
       ],
       "interview": {
@@ -11197,21 +12004,22 @@
             "note": "Shingle palaces: grand houses of wooden shingles. He dreams big about a frontier fortune."
           },
           "question": {
-            "type": "between_lines",
-            "prompt": "What can you infer Ichabod really prizes about Katrina?",
+            "type": "word_detective",
+            "prompt": "Which meaning of enraptured fits Ichabod here?",
             "keywords": [
-              "infer"
+              "enraptured"
             ],
+            "focus": "enraptured",
             "choices": [
               {
-                "text": "The land and riches she will inherit",
+                "text": "Filled with delight, carried away by joy",
                 "best": true
               },
               {
-                "text": "Her lovely voice in the singing class"
+                "text": "Trapped inside the farmhouse by a storm"
               },
               {
-                "text": "Her kindness to the pupils at school"
+                "text": "Angry and jealous of the farmer's riches"
               }
             ],
             "proof": {
@@ -11219,13 +12027,57 @@
                 "As the enraptured Ichabod fancied all this, and as he rolled his great\ngreen eyes over the fat meadow lands, the rich fields of wheat, of rye,\nof buckwheat, and Indian corn, and the orchards burdened with ruddy\nfruit, which surrounded the warm tenement of Van Tassel, his heart\nyearned after the damsel who was to inherit these domains, and his\nimagination expanded with the idea, how they might be readily turned\ninto cash, and the money invested in immense tracts of wild land, and\nshingle palaces in the wilderness."
               ]
             },
-            "hint": "What is he looking at while his heart yearns? What does he plan to do with it?",
-            "why": "He yearns for the damsel who will inherit these domains and imagines turning them into cash.",
+            "hint": "Find the words that show what his heart and imagination do.",
+            "why": "His heart yearns and his imagination expands: enraptured means carried away with delight.",
             "standards": [
-              "K12.EE.3.1",
+              "V.1.3",
               "K12.EE.1.1"
+            ],
+            "reviewed": true,
+            "clues": [
+              "his heart yearned",
+              "his imagination expanded"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "word_detective",
+              "prompt": "What does domains mean here?",
+              "keywords": [
+                "domains"
+              ],
+              "focus": "domains",
+              "choices": [
+                {
+                  "text": "Rooms inside the big farmhouse"
+                },
+                {
+                  "text": "Lands and property she will own",
+                  "best": true
+                },
+                {
+                  "text": "Kingdoms ruled by a faraway king"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "As the enraptured Ichabod fancied all this, and as he rolled his great\ngreen eyes over the fat meadow lands, the rich fields of wheat, of rye,\nof buckwheat, and Indian corn, and the orchards burdened with ruddy\nfruit, which surrounded the warm tenement of Van Tassel, his heart\nyearned after the damsel who was to inherit these domains, and his\nimagination expanded with the idea, how they might be readily turned\ninto cash, and the money invested in immense tracts of wild land, and\nshingle palaces in the wilderness."
+                ]
+              },
+              "hint": "Look at the list of what surrounds the house.",
+              "why": "Meadows, fields and orchards surround the house: her domains are the lands she will inherit.",
+              "standards": [
+                "V.1.3",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "fat meadow lands",
+                "rich fields of wheat",
+                "orchards burdened with ruddy fruit"
+              ]
+            }
+          ]
         },
         {
           "id": "a-rival-appears-02",
@@ -11271,7 +12123,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line shows how they would travel on their way west?",
+              "keywords": [
+                "travel"
+              ],
+              "proof": {
+                "lines": [
+                  "Nay, his busy fancy already realized\nhis hopes, and presented to him the blooming Katrina, with a whole\nfamily of children, mounted on the top of a wagon loaded with household\ntrumpery, with pots and kettles dangling beneath; and he beheld himself\nbestriding a pacing mare, with a colt at her heels, setting out for\nKentucky, Tennessee,--or the Lord knows where!"
+                ]
+              },
+              "hint": "Look for a wagon and a horse.",
+              "why": "Katrina and the children ride on a loaded wagon while Ichabod bestrides a pacing mare.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "a-rival-appears-03",
@@ -11332,7 +12203,46 @@
               "K12.EE.1.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "word_detective",
+              "prompt": "What does husbandry mean in this chunk?",
+              "keywords": [
+                "husbandry"
+              ],
+              "focus": "husbandry",
+              "choices": [
+                {
+                  "text": "Farming and the care of the land",
+                  "best": true
+                },
+                {
+                  "text": "Being a good husband to a wife"
+                },
+                {
+                  "text": "Saving money for hard times"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Under this were hung flails, harness, various\nutensils of husbandry, and nets for fishing in the neighboring\nriver."
+                ]
+              },
+              "hint": "Look at the other tools hung up beside them.",
+              "why": "Flails, harness and fishing nets hang with them: husbandry means farming.",
+              "standards": [
+                "V.1.3",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "flails",
+                "harness",
+                "nets for fishing"
+              ]
+            }
+          ]
         },
         {
           "id": "a-rival-appears-04",
@@ -11382,18 +12292,54 @@
               }
             ],
             "proof": {
-              "words": [
-                "dazzled his eyes"
+              "lines": [
+                "Here rows of resplendent\npewter, ranged on a long dresser, dazzled his eyes."
               ]
             },
-            "hint": "What does the pewter do to him?",
-            "why": "Wondering means full of amazement: the pewter dazzled his eyes.",
+            "hint": "What happens to his eyes when he steps inside?",
+            "why": "The pewter dazzles his eyes: he is full of wonder at everything in the house.",
             "standards": [
               "V.1.3",
               "R.3.1"
-            ],
-            "reviewed": true
-          }
+            ]
+          },
+          "bank": [
+            {
+              "type": "shades",
+              "prompt": "Why might the narrator call the pewter \"resplendent\" rather than simply clean?",
+              "keywords": [
+                "resplendent"
+              ],
+              "focus": "resplendent",
+              "choices": [
+                {
+                  "text": "It is old and dented, and dull to look at"
+                },
+                {
+                  "text": "It is far too heavy for anyone to lift"
+                },
+                {
+                  "text": "It shines so brightly it dazzles him",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Here rows of resplendent\npewter, ranged on a long dresser, dazzled his eyes."
+                ]
+              },
+              "hint": "What does the pewter do to his eyes?",
+              "why": "The pewter dazzles his eyes: resplendent means brilliantly shining.",
+              "standards": [
+                "V.1.3",
+                "R.3.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "dazzled his eyes"
+              ]
+            }
+          ]
         },
         {
           "id": "a-rival-appears-05",
@@ -11424,46 +12370,90 @@
             "note": "Festoons: decorations hung in loops along the walls."
           },
           "question": {
-            "type": "figure_it_out",
-            "prompt": "Read the words shone like mirrors. What kind of figurative language is this?",
-            "keywords": [
-              "shone like mirrors"
-            ],
-            "focus": "shone like mirrors",
-            "choices": [
-              {
-                "text": "Simile: the polished tables are compared to mirrors with like",
-                "best": true
-              },
-              {
-                "text": "Metaphor: the tables are called mirrors, without like"
-              },
-              {
-                "text": "Hyperbole: the tables are said to be bigger than the house"
-              }
-            ],
-            "choices2": {
-              "prompt": "What does it mean?",
-              "options": [
+            "type": "weigh_evidence",
+            "format": "dnd",
+            "dnd": {
+              "kind": "build_case",
+              "slots": [
                 {
-                  "text": "The furniture is polished until it gleams",
-                  "best": true
+                  "id": "claim",
+                  "label": "Claim"
                 },
                 {
-                  "text": "The room is lined with real tall mirrors"
+                  "id": "proof",
+                  "label": "Proof sentence"
                 },
                 {
-                  "text": "The tables are made of clear glass"
+                  "id": "reason",
+                  "label": "Reason"
+                }
+              ],
+              "items": [
+                {
+                  "id": "claim",
+                  "text": "The Van Tassels like visitors to see their riches",
+                  "slot": "claim"
+                },
+                {
+                  "id": "proof",
+                  "text": "\"a corner cupboard, knowingly left open, displayed immense treasures of old silver and well-mended china\"",
+                  "slot": "proof",
+                  "line": "In one corner\nstood a huge bag of wool, ready to be spun; in another, a quantity of\nlinsey-woolsey just from the loom; ears of Indian corn, and strings of\ndried apples and peaches, hung in gay festoons along the walls, mingled\nwith the gaud of red peppers; and a door left ajar gave him a peep into\nthe best parlor, where the claw-footed chairs and dark mahogany tables\nshone like mirrors; andirons, with their accompanying shovel and\ntongs, glistened from their covert of asparagus tops; mock-oranges and\nconch-shells decorated the mantelpiece; strings of various-colored birds\neggs were suspended above it; a great ostrich egg was hung from\nthe centre of the room, and a corner cupboard, knowingly left open,\ndisplayed immense treasures of old silver and well-mended china."
+                },
+                {
+                  "id": "reason",
+                  "text": "The cupboard is left open on purpose, so guests can admire what is inside",
+                  "slot": "reason",
+                  "line": "In one corner\nstood a huge bag of wool, ready to be spun; in another, a quantity of\nlinsey-woolsey just from the loom; ears of Indian corn, and strings of\ndried apples and peaches, hung in gay festoons along the walls, mingled\nwith the gaud of red peppers; and a door left ajar gave him a peep into\nthe best parlor, where the claw-footed chairs and dark mahogany tables\nshone like mirrors; andirons, with their accompanying shovel and\ntongs, glistened from their covert of asparagus tops; mock-oranges and\nconch-shells decorated the mantelpiece; strings of various-colored birds\neggs were suspended above it; a great ostrich egg was hung from\nthe centre of the room, and a corner cupboard, knowingly left open,\ndisplayed immense treasures of old silver and well-mended china."
+                },
+                {
+                  "id": "wool",
+                  "text": "A huge bag of wool stands ready to be spun",
+                  "slot": null
                 }
               ]
             },
-            "hint": "Look for the word like. What are the tables being compared to, and why?",
-            "why": "Shone like mirrors: a simile showing furniture polished to a gleam.",
+            "prompt": "Build the case that the Van Tassels like visitors to see their riches.",
+            "keywords": [],
+            "hint": "Which detail shows something displayed on purpose?",
+            "why": "The cupboard is \"knowingly left open\" to display the silver and china; the bag of wool shows work, not showing off.",
             "standards": [
-              "R.3.1"
-            ],
-            "reviewed": true
-          }
+              "K12.EE.1.1",
+              "K12.EE.3.1"
+            ]
+          },
+          "bank": [
+            {
+              "type": "weigh_evidence",
+              "prompt": "Which detail most strongly supports the claim that this rich household also works hard?",
+              "keywords": [
+                "works hard"
+              ],
+              "choices": [
+                {
+                  "text": "Cloth sits in a corner fresh from the loom",
+                  "best": true
+                },
+                {
+                  "text": "The mahogany tables gleam like mirrors"
+                },
+                {
+                  "text": "Shells decorate the parlor mantelpiece"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "In one corner\nstood a huge bag of wool, ready to be spun; in another, a quantity of\nlinsey-woolsey just from the loom; ears of Indian corn, and strings of\ndried apples and peaches, hung in gay festoons along the walls, mingled\nwith the gaud of red peppers; and a door left ajar gave him a peep into\nthe best parlor, where the claw-footed chairs and dark mahogany tables\nshone like mirrors; andirons, with their accompanying shovel and\ntongs, glistened from their covert of asparagus tops; mock-oranges and\nconch-shells decorated the mantelpiece; strings of various-colored birds\neggs were suspended above it; a great ostrich egg was hung from\nthe centre of the room, and a corner cupboard, knowingly left open,\ndisplayed immense treasures of old silver and well-mended china."
+                ]
+              },
+              "hint": "Which detail shows a job just finished?",
+              "why": "Linsey-woolsey just from the loom and wool ready to be spun show the family at work; the tables and shells only show comfort.",
+              "standards": [
+                "K12.EE.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "a-rival-appears-06",
@@ -11495,20 +12485,20 @@
           },
           "question": {
             "type": "whose_eyes",
-            "prompt": "Why does the narrator bring up heroes from old romances?",
+            "prompt": "What point is the narrator making by bringing up heroes from old romances?",
             "keywords": [
               "old romances"
             ],
             "choices": [
               {
-                "text": "To warn that real dragons once lived near the Hollow"
-              },
-              {
-                "text": "To joke that Ichabod's task is harder than slaying dragons",
+                "text": "To joke that real rivals are harder than dragons",
                 "best": true
               },
               {
-                "text": "To show that Ichabod is a real knight in armor"
+                "text": "To show that Ichabod once fought in a real war"
+              },
+              {
+                "text": "To prove that Katrina loves tales of knights"
               }
             ],
             "proof": {
@@ -11516,13 +12506,46 @@
                 "In this enterprise,\nhowever, he had more real difficulties than generally fell to the lot of\na knight-errant of yore, who seldom had anything but giants, enchanters,\nfiery dragons, and such like easily conquered adversaries, to contend\nwith and had to make his way merely through gates of iron and brass,\nand walls of adamant to the castle keep, where the lady of his heart was\nconfined; all which he achieved as easily as a man would carve his way\nto the centre of a Christmas pie; and then the lady gave him her hand as\na matter of course."
               ]
             },
-            "hint": "What did those heroes face, and how easily did they win?",
-            "why": "Knights faced giants and dragons that were easily conquered: the narrator jokes Ichabod has it harder.",
+            "hint": "How hard were the knights' battles, according to him?",
+            "why": "Giants and dragons were \"easily conquered adversaries\": he jokes that Ichabod's task is harder.",
             "standards": [
               "R.1.3",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "whose_eyes",
+              "prompt": "What is the narrator's tone when he calls dragons \"easily conquered adversaries\"?",
+              "keywords": [
+                "tone"
+              ],
+              "choices": [
+                {
+                  "text": "Fearful and grim"
+                },
+                {
+                  "text": "Playful and mocking",
+                  "best": true
+                },
+                {
+                  "text": "Serious and respectful"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "In this enterprise,\nhowever, he had more real difficulties than generally fell to the lot of\na knight-errant of yore, who seldom had anything but giants, enchanters,\nfiery dragons, and such like easily conquered adversaries, to contend\nwith and had to make his way merely through gates of iron and brass,\nand walls of adamant to the castle keep, where the lady of his heart was\nconfined; all which he achieved as easily as a man would carve his way\nto the centre of a Christmas pie; and then the lady gave him her hand as\na matter of course."
+                ]
+              },
+              "hint": "Are dragons really easy to beat?",
+              "why": "Calling dragons easy, like carving a Christmas pie, is a playful joke at the old romances.",
+              "standards": [
+                "R.1.3",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "a-rival-appears-07",
@@ -11553,35 +12576,86 @@
             "note": "Portal: a door. Her admirers guard every door to her heart."
           },
           "question": {
-            "type": "character_clue",
-            "prompt": "Which trait does the narrator give Katrina in this chunk?",
-            "keywords": [
-              "trait"
-            ],
-            "choices": [
-              {
-                "text": "Steady, always saying exactly what she means"
-              },
-              {
-                "text": "Shy, refusing to speak to any young man who calls"
-              },
-              {
-                "text": "Changeable, full of whims that keep suitors guessing",
-                "best": true
-              }
-            ],
+            "type": "theme_thread",
+            "format": "written",
+            "written": {
+              "key_ideas": [
+                [
+                  "real",
+                  "actual",
+                  "everyday",
+                  "life",
+                  "people"
+                ],
+                [
+                  "hard",
+                  "difficult",
+                  "trouble",
+                  "complicat",
+                  "struggle",
+                  "tougher",
+                  "more than",
+                  "messier"
+                ]
+              ],
+              "model": "Everyday life can be harder than old tales of heroes, because real people and real rivals cause more trouble than any dragon."
+            },
+            "prompt": "In one sentence, explain what this chunk suggests about everyday life compared with old tales of heroes.",
+            "keywords": [],
             "proof": {
-              "words": [
-                "a labyrinth of whims and caprices"
+              "lines": [
+                "Ichabod, on the contrary, had to win his way to\nthe heart of a country coquette, beset with a labyrinth of whims\nand caprices, which were forever presenting new difficulties and\nimpediments; and he had to encounter a host of fearful adversaries of\nreal flesh and blood, the numerous rustic admirers, who beset every\nportal to her heart, keeping a watchful and angry eye upon each other,\nbut ready to fly out in the common cause against any new competitor."
               ]
             },
-            "hint": "Find the maze the narrator says Ichabod must get through.",
-            "why": "She is a country coquette in a labyrinth of whims and caprices that keep changing.",
+            "hint": "What does Ichabod face instead of dragons?",
+            "why": "Instead of easily beaten giants, he faces a whimsical coquette and real rivals of flesh and blood: real life is harder than the romances.",
             "standards": [
-              "R.1.1",
+              "R.1.2",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "theme_thread",
+              "format": "written",
+              "written": {
+                "key_ideas": [
+                  [
+                    "love",
+                    "win",
+                    "court",
+                    "affection",
+                    "someone"
+                  ],
+                  [
+                    "hard",
+                    "difficult",
+                    "change",
+                    "whim",
+                    "rival",
+                    "compet",
+                    "others",
+                    "trouble",
+                    "patience"
+                  ]
+                ],
+                "model": "Winning someone's love is hard when that person keeps changing and many others want the same thing."
+              },
+              "prompt": "Using your own words, tell in one sentence what this chunk suggests about winning someone's love.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "Ichabod, on the contrary, had to win his way to\nthe heart of a country coquette, beset with a labyrinth of whims\nand caprices, which were forever presenting new difficulties and\nimpediments; and he had to encounter a host of fearful adversaries of\nreal flesh and blood, the numerous rustic admirers, who beset every\nportal to her heart, keeping a watchful and angry eye upon each other,\nbut ready to fly out in the common cause against any new competitor."
+                ]
+              },
+              "hint": "Think about Katrina's whims and the rivals at every door.",
+              "why": "A labyrinth of whims and a host of angry rivals stand in his way: love is hard to win.",
+              "standards": [
+                "R.1.2",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "a-rival-appears-08",
@@ -11627,7 +12701,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line describes Brom's looks and his mood?",
+              "keywords": [
+                "looks"
+              ],
+              "proof": {
+                "lines": [
+                  "He was broad-shouldered and double-jointed,\nwith short curly black hair, and a bluff but not unpleasant countenance,\nhaving a mingled air of fun and arrogance."
+                ]
+              },
+              "hint": "Look for his hair, his shoulders and his face.",
+              "why": "Broad-shouldered, curly-haired, with a mingled air of fun and arrogance.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "a-rival-appears-09",
@@ -11677,7 +12770,28 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "catch_lie",
+              "prompt": "Katrina has her own story about Brom. One detail is untrue. Tap the sentence that shows it.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "He was foremost at all races and cock fights; and, with the ascendancy\nwhich bodily strength always acquires in rustic life, was the umpire in\nall disputes, setting his hat on one side, and giving his decisions with\nan air and tone that admitted of no gainsay or appeal."
+                ]
+              },
+              "testimony": {
+                "speaker": "katrina-van-tassel",
+                "text": "At the races Brom always hung back and let the other young men win."
+              },
+              "hint": "Where was Brom at every race?",
+              "why": "He was foremost at all races and cock fights, not hanging back.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "a-rival-appears-10",
@@ -11708,35 +12822,108 @@
             "note": "Boon companions: close, cheerful friends."
           },
           "question": {
-            "type": "theme_thread",
-            "prompt": "Which idea about Brom do these pages keep returning to?",
-            "keywords": [
-              "keep returning"
-            ],
-            "choices": [
-              {
-                "text": "He is cruel and wants to hurt everyone he meets"
-              },
-              {
-                "text": "He is quiet and gentle and keeps to himself at home"
-              },
-              {
-                "text": "He is rough and wild, but more playful than cruel",
-                "best": true
-              }
-            ],
-            "proof": {
-              "lines": [
-                "He was always\nready for either a fight or a frolic; but had more mischief than\nill-will in his composition; and with all his overbearing roughness,\nthere was a strong dash of waggish good humor at bottom."
+            "type": "character_clue",
+            "format": "dnd",
+            "dnd": {
+              "kind": "match_character",
+              "slots": [
+                {
+                  "id": "brom",
+                  "label": "Brom"
+                },
+                {
+                  "id": "friends",
+                  "label": "His three or four friends"
+                }
+              ],
+              "items": [
+                {
+                  "id": "fight",
+                  "text": "Always ready for a fight or a frolic",
+                  "slot": "brom",
+                  "line": "He was always\nready for either a fight or a frolic; but had more mischief than\nill-will in his composition; and with all his overbearing roughness,\nthere was a strong dash of waggish good humor at bottom."
+                },
+                {
+                  "id": "mischief",
+                  "text": "Has more mischief than ill-will in him",
+                  "slot": "brom",
+                  "line": "He was always\nready for either a fight or a frolic; but had more mischief than\nill-will in his composition; and with all his overbearing roughness,\nthere was a strong dash of waggish good humor at bottom."
+                },
+                {
+                  "id": "model",
+                  "text": "Look up to him as their model",
+                  "slot": "friends",
+                  "line": "He had three or\nfour boon companions, who regarded him as their model, and at the\nhead of whom he scoured the country, attending every scene of feud or\nmerriment for miles round."
+                },
+                {
+                  "id": "follow",
+                  "text": "Ride behind him to every feud or party",
+                  "slot": "friends",
+                  "line": "He had three or\nfour boon companions, who regarded him as their model, and at the\nhead of whom he scoured the country, attending every scene of feud or\nmerriment for miles round."
+                }
               ]
             },
-            "hint": "Is he out to hurt people, or to have fun?",
-            "why": "He had more mischief than ill-will, with a strong dash of waggish good humor.",
+            "prompt": "Match each description to Brom or to his band of friends.",
+            "keywords": [],
+            "hint": "One person leads; the others follow and admire.",
+            "why": "Brom is ready for a fight or a frolic and full of mischief; his boon companions regard him as their model and follow him everywhere.",
             "standards": [
-              "R.1.2",
+              "R.1.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "character_clue",
+              "prompt": "What mix of traits does the narrator give Brom?",
+              "keywords": [
+                "mix of traits"
+              ],
+              "choices": [
+                {
+                  "text": "Quiet and gentle, keeping to himself"
+                },
+                {
+                  "text": "Rough, but more playful than cruel",
+                  "best": true
+                },
+                {
+                  "text": "Cruel, wanting to hurt everyone he meets"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "He was always\nready for either a fight or a frolic; but had more mischief than\nill-will in his composition; and with all his overbearing roughness,\nthere was a strong dash of waggish good humor at bottom."
+                ]
+              },
+              "hint": "What lies at the bottom of all his roughness?",
+              "why": "With all his overbearing roughness, there is a strong dash of waggish good humor at bottom.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
+        }
+      ],
+      "lightning": [
+        {
+          "id": "kentucky",
+          "chunk": 2,
+          "after": 4,
+          "question": "Where does Ichabod picture himself riding off to?",
+          "answer": [
+            "Nay, his busy fancy already realized\nhis hopes, and presented to him the blooming Katrina, with a whole\nfamily of children, mounted on the top of a wagon loaded with household\ntrumpery, with pots and kettles dangling beneath; and he beheld himself\nbestriding a pacing mare, with a colt at her heels, setting out for\nKentucky, Tennessee,--or the Lord knows where!"
+          ]
+        },
+        {
+          "id": "ostrich-egg",
+          "chunk": 5,
+          "after": 8,
+          "question": "What hangs from the centre of the best parlor?",
+          "answer": [
+            "In one corner\nstood a huge bag of wool, ready to be spun; in another, a quantity of\nlinsey-woolsey just from the loom; ears of Indian corn, and strings of\ndried apples and peaches, hung in gay festoons along the walls, mingled\nwith the gaud of red peppers; and a door left ajar gave him a peep into\nthe best parlor, where the claw-footed chairs and dark mahogany tables\nshone like mirrors; andirons, with their accompanying shovel and\ntongs, glistened from their covert of asparagus tops; mock-oranges and\nconch-shells decorated the mantelpiece; strings of various-colored birds\neggs were suspended above it; a great ostrich egg was hung from\nthe centre of the room, and a corner cupboard, knowingly left open,\ndisplayed immense treasures of old silver and well-mended china."
+          ]
         }
       ],
       "interview": {
@@ -17803,27 +18990,27 @@
             "chunk": 7,
             "place": "brook",
             "x": 1204,
-            "y": 722
+            "y": 722,
+            "landmark": "twist"
           },
           {
             "chunk": 8,
             "place": "fireside",
             "x": 868,
-            "y": 800,
-            "landmark": "boss"
+            "y": 800
           },
           {
             "chunk": 9,
             "place": "fireside",
             "x": 913,
-            "y": 813
+            "y": 813,
+            "landmark": "boss"
           },
           {
             "chunk": 10,
             "place": "brook",
             "x": 1229,
-            "y": 754,
-            "landmark": "twist"
+            "y": 754
           }
         ],
         "finale": {
@@ -17961,7 +19148,8 @@
             "chunk": 7,
             "place": "vt-house",
             "x": 459,
-            "y": 235
+            "y": 235,
+            "landmark": "boss"
           },
           {
             "chunk": 8,
@@ -17980,8 +19168,7 @@
             "chunk": 10,
             "place": "vt-house",
             "x": 321,
-            "y": 221,
-            "landmark": "boss"
+            "y": 221
           }
         ],
         "finale": {
@@ -18686,9 +19873,6 @@
   },
   "expedition_rules": {
     "arc_pending": [
-      "tales-by-the-fire",
-      "the-van-tassel-farm",
-      "a-rival-appears",
       "the-feud",
       "the-invitation",
       "the-ride-to-the-party",
