@@ -16183,35 +16183,41 @@
             "note": "Mettle: courage and spirit. The horse is as bold and tricky as Brom."
           },
           "question": {
-            "type": "character_clue",
-            "prompt": "Which trait does Brom's choice of steed reveal?",
+            "type": "find_it",
+            "prompt": "Which line names Brom's horse and describes its nature?",
             "keywords": [
-              "trait"
-            ],
-            "choices": [
-              {
-                "text": "Lazy, he would rather walk everywhere"
-              },
-              {
-                "text": "Daring, he loves danger and a challenge",
-                "best": true
-              },
-              {
-                "text": "Careful, he always picks the safest ride"
-              }
+              "names"
             ],
             "proof": {
-              "words": [
-                "unworthy of a lad of spirit"
+              "lines": [
+                "Brom Bones, however, was the hero of the scene, having come to the\ngathering on his favorite steed Daredevil, a creature, like himself,\nfull of mettle and mischief, and which no one but himself could manage."
               ]
             },
-            "hint": "What does he think of a calm, well-trained horse?",
-            "why": "He held a tractable, well-broken horse unworthy of a lad of spirit.",
+            "hint": "Look for the horse's name.",
+            "why": "He came on his favorite steed Daredevil, full of mettle and mischief like himself.",
             "standards": [
-              "R.1.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line explains Brom's taste in mounts?",
+              "keywords": [
+                "taste in mounts"
+              ],
+              "proof": {
+                "lines": [
+                  "He was, in fact, noted for preferring vicious animals, given to all\nkinds of tricks which kept the rider in constant risk of his neck, for\nhe held a tractable, well-broken horse as unworthy of a lad of spirit."
+                ]
+              },
+              "hint": "Look for what he thinks a lad of spirit should ride.",
+              "why": "He prefers vicious animals, holding a well-broken horse unworthy of a lad of spirit.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feast-and-the-dance-02",
@@ -16270,7 +16276,40 @@
               "R.1.3",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "whose_eyes",
+              "prompt": "The narrator calls the cakes \"almost indescribable.\" What is his tone?",
+              "keywords": [
+                "tone"
+              ],
+              "choices": [
+                {
+                  "text": "Bored by the plain country food"
+                },
+                {
+                  "text": "Disgusted by the messy table"
+                },
+                {
+                  "text": "Playfully amazed at the huge spread",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Such heaped up\nplatters of cakes of various and almost indescribable kinds, known only\nto experienced Dutch housewives!"
+                ]
+              },
+              "hint": "Is he complaining, or marveling?",
+              "why": "Heaped-up platters of cakes \"of various and almost indescribable kinds\": he is happily amazed.",
+              "standards": [
+                "R.1.3",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "the-feast-and-the-dance-03",
@@ -16302,7 +16341,7 @@
           },
           "question": {
             "type": "figure_it_out",
-            "prompt": "Read the words the motherly teapot. What kind of figurative language is this?",
+            "prompt": "Read the words \"the motherly teapot.\" What kind of figurative language is this?",
             "keywords": [
               "motherly teapot"
             ],
@@ -16334,13 +16373,55 @@
                 }
               ]
             },
-            "hint": "Can a teapot be a mother? What feeling does the word give the table?",
-            "why": "The motherly teapot is given a mother's warmth, steaming at the heart of the feast.",
+            "hint": "Can a teapot be a mother? Think about how it sits in the middle of everything.",
+            "why": "The teapot is described like a mother at the center of her family: warm and welcoming.",
             "standards": [
               "R.3.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "figure_it_out",
+              "prompt": "The narrator writes \"the doughty doughnut.\" Which device is this?",
+              "keywords": [
+                "doughty doughnut"
+              ],
+              "focus": "the doughty doughnut",
+              "choices": [
+                {
+                  "text": "Onomatopoeia: the words copy a sizzle"
+                },
+                {
+                  "text": "Alliteration: the repeated d sound is fun",
+                  "best": true
+                },
+                {
+                  "text": "Simile: the doughnut is compared using like"
+                }
+              ],
+              "choices2": {
+                "prompt": "What effect does it have?",
+                "options": [
+                  {
+                    "text": "It shows the narrator dislikes sweets"
+                  },
+                  {
+                    "text": "It makes the list of food playful",
+                    "best": true
+                  },
+                  {
+                    "text": "It warns that the doughnuts are burnt"
+                  }
+                ]
+              },
+              "hint": "Say it out loud. What sound repeats?",
+              "why": "Doughty doughnut, tender oly koek, crisp crumbling cruller: repeated sounds make the feast sound playful.",
+              "standards": [
+                "R.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feast-and-the-dance-04",
@@ -16395,18 +16476,55 @@
               }
             ],
             "proof": {
-              "words": [
-                "whose spirits rose with eating"
+              "lines": [
+                "He was a kind and thankful creature, whose heart dilated in proportion\nas his skin was filled with good cheer, and whose spirits rose with\neating, as some men’s do with drink."
               ]
             },
-            "hint": "Is anyone on trial? Look at what eating does to him.",
-            "why": "Doing ample justice is a grand way to say he ate his fill: his spirits rose with eating.",
+            "hint": "How does eating make him feel?",
+            "why": "His spirits rose with eating: he \"did justice\" to the food by eating a great deal of it.",
             "standards": [
               "V.1.3",
               "R.3.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "shades",
+              "prompt": "What does it mean that Ichabod's heart \"dilated\" as he ate?",
+              "keywords": [
+                "dilated"
+              ],
+              "focus": "dilated",
+              "choices": [
+                {
+                  "text": "His heart swells with happiness",
+                  "best": true
+                },
+                {
+                  "text": "His heart is sick from the rich food"
+                },
+                {
+                  "text": "His heart races with sudden fear"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "He was a kind and thankful creature, whose heart dilated in proportion\nas his skin was filled with good cheer, and whose spirits rose with\neating, as some men’s do with drink."
+                ]
+              },
+              "hint": "What else rises as he eats?",
+              "why": "His spirits rose with eating: his heart swells with good cheer as his stomach fills.",
+              "standards": [
+                "V.1.3",
+                "R.3.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "spirits rose with eating"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feast-and-the-dance-05",
@@ -16456,7 +16574,28 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "catch_lie",
+              "prompt": "Brom Bones claims to know what was on Ichabod's mind at the feast. One detail is untrue. Tap the sentence that shows it.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "Then, he thought, how soon he’d turn his back upon the old\nschoolhouse; snap his fingers in the face of Hans Van Ripper, and every\nother niggardly patron, and kick any itinerant pedagogue out of doors\nthat should dare to call him comrade!"
+                ]
+              },
+              "testimony": {
+                "speaker": "brom-bones",
+                "text": "All through that feast he sat thinking about his pupils and the lessons he'd teach the next day."
+              },
+              "hint": "What does he imagine doing to the old schoolhouse?",
+              "why": "He imagines how soon he would turn his back upon the old schoolhouse, not teach in it.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feast-and-the-dance-06",
@@ -16487,37 +16626,68 @@
             "note": "A simile: his happy face is as round and bright as a full moon."
           },
           "question": {
-            "type": "word_detective",
-            "prompt": "In this chunk, what does hospitable mean?",
+            "type": "between_lines",
+            "format": "multi",
+            "pick": 2,
+            "prompt": "Which two actions show Baltus is a warm host?",
             "keywords": [
-              "hospitable"
+              "warm host"
             ],
-            "focus": "hospitable",
             "choices": [
               {
-                "text": "Sick and in need of a doctor"
+                "text": "He urges everyone to help themselves",
+                "best": true
               },
               {
-                "text": "Shy and nervous around strangers"
+                "text": "He gives a long and very formal speech"
               },
               {
-                "text": "Welcoming and generous to guests",
+                "text": "He serves every plate of food himself"
+              },
+              {
+                "text": "He shakes hands and slaps shoulders",
                 "best": true
               }
             ],
-            "proof": {
-              "lines": [
-                "Old Baltus Van Tassel moved about among his guests with a face dilated\nwith content and good humor, round and jolly as the harvest moon."
-              ]
-            },
-            "hint": "How does he move among his guests?",
-            "why": "He moves among his guests with a face full of content and good humor: a welcoming host.",
+            "hint": "What does he do as he moves among the guests?",
+            "why": "His welcome is a shake of the hand, a slap on the shoulder, a loud laugh, and a pressing invitation to fall to.",
             "standards": [
-              "V.1.3",
+              "K12.EE.3.1",
               "K12.EE.1.1"
-            ],
-            "reviewed": true
-          }
+            ]
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "Why might Baltus keep his welcome to guests so short?",
+              "keywords": [
+                "so short"
+              ],
+              "choices": [
+                {
+                  "text": "He has lost his voice tonight"
+                },
+                {
+                  "text": "He wants them to start eating",
+                  "best": true
+                },
+                {
+                  "text": "He is angry that so many came"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "His\nhospitable attentions were brief, but expressive, being confined to a\nshake of the hand, a slap on the shoulder, a loud laugh, and a pressing\ninvitation to “fall to, and help themselves.”"
+                ]
+              },
+              "hint": "What does he press them to do?",
+              "why": "His attentions are brief, ending in a pressing invitation to \"fall to, and help themselves.\"",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feast-and-the-dance-07",
@@ -16563,7 +16733,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line shows what part of the house the tunes come from?",
+              "keywords": [
+                "tunes"
+              ],
+              "proof": {
+                "lines": [
+                  "And now the sound of the music from the common room, or hall, summoned\nto the dance."
+                ]
+              },
+              "hint": "Look for the common room, or hall.",
+              "why": "The sound of the music from the common room, or hall, summoned to the dance.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feast-and-the-dance-08",
@@ -16594,35 +16783,94 @@
             "note": "St. Vitus: a saint linked to dancing; a joke about wild, jerky moves."
           },
           "question": {
-            "type": "between_lines",
-            "prompt": "What can you infer about Ichabod's moves on the floor?",
-            "keywords": [
-              "infer"
-            ],
-            "choices": [
-              {
-                "text": "Graceful, like a trained performer"
-              },
-              {
-                "text": "Wild, with every bony limb flying",
-                "best": true
-              },
-              {
-                "text": "Stiff, barely moving his feet"
-              }
-            ],
-            "proof": {
-              "lines": [
-                "Not a limb, not a fibre about him was idle; and to have seen his\nloosely hung frame in full motion, and clattering about the room, you\nwould have thought St. Vitus himself, that blessed patron of the dance,\nwas figuring before you in person."
+            "type": "shades",
+            "format": "dnd",
+            "dnd": {
+              "kind": "word_feeling",
+              "slots": [
+                {
+                  "id": "pride",
+                  "label": "Shows his pride"
+                },
+                {
+                  "id": "motion",
+                  "label": "Shows his wild motion"
+                }
+              ],
+              "items": [
+                {
+                  "id": "prided",
+                  "text": "Prides himself on his dancing",
+                  "slot": "pride",
+                  "line": "Ichabod prided himself upon his dancing as much as upon his vocal\npowers."
+                },
+                {
+                  "id": "vocal",
+                  "text": "As proud of it as of his singing",
+                  "slot": "pride",
+                  "line": "Ichabod prided himself upon his dancing as much as upon his vocal\npowers."
+                },
+                {
+                  "id": "limb",
+                  "text": "Not a limb was idle",
+                  "slot": "motion",
+                  "line": "Not a limb, not a fibre about him was idle; and to have seen his\nloosely hung frame in full motion, and clattering about the room, you\nwould have thought St. Vitus himself, that blessed patron of the dance,\nwas figuring before you in person."
+                },
+                {
+                  "id": "clatter",
+                  "text": "Clattering about the room",
+                  "slot": "motion",
+                  "line": "Not a limb, not a fibre about him was idle; and to have seen his\nloosely hung frame in full motion, and clattering about the room, you\nwould have thought St. Vitus himself, that blessed patron of the dance,\nwas figuring before you in person."
+                }
               ]
             },
-            "hint": "Is any part of him still?",
-            "why": "Not a limb, not a fibre was idle: his loosely hung frame clatters about the room.",
+            "prompt": "Sort each phrase: does it show Ichabod's pride, or his wild motion?",
+            "keywords": [],
+            "hint": "Is the phrase about how he feels, or how he moves?",
+            "why": "He prides himself on his dancing as much as his singing; on the floor every limb flies as he clatters about.",
             "standards": [
-              "K12.EE.3.1",
-              "K12.EE.1.1"
+              "V.1.3",
+              "R.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "shades",
+              "prompt": "Why compare Ichabod's dancing to \"St. Vitus himself\"?",
+              "keywords": [
+                "St. Vitus"
+              ],
+              "focus": "St. Vitus himself",
+              "choices": [
+                {
+                  "text": "His dancing is wild, jerky and nonstop",
+                  "best": true
+                },
+                {
+                  "text": "He dances slowly, like a saint at prayer"
+                },
+                {
+                  "text": "He refuses to dance with anyone"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Not a limb, not a fibre about him was idle; and to have seen his\nloosely hung frame in full motion, and clattering about the room, you\nwould have thought St. Vitus himself, that blessed patron of the dance,\nwas figuring before you in person."
+                ]
+              },
+              "hint": "Find the words that show how much of him is moving.",
+              "why": "Not a limb, not a fibre is idle as he clatters about: like the patron of the dance, he never stops moving.",
+              "standards": [
+                "V.1.3",
+                "R.3.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "not a fibre about him was idle",
+                "clattering about the room"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feast-and-the-dance-09",
@@ -16654,34 +16902,86 @@
           },
           "question": {
             "type": "theme_thread",
-            "prompt": "Which idea about the rivalry keeps coming back?",
-            "keywords": [
-              "keeps coming back"
-            ],
-            "choices": [
-              {
-                "text": "Katrina ignores both of the men all evening long"
-              },
-              {
-                "text": "Ichabod's success with Katrina stirs Brom's jealousy",
-                "best": true
-              },
-              {
-                "text": "Brom and Ichabod become friends at the dance"
-              }
-            ],
+            "format": "written",
+            "written": {
+              "key_ideas": [
+                [
+                  "success",
+                  "win",
+                  "happy",
+                  "favor",
+                  "partner",
+                  "smil",
+                  "joy"
+                ],
+                [
+                  "jealous",
+                  "envy",
+                  "resent",
+                  "brood",
+                  "bitter",
+                  "hurt",
+                  "rival",
+                  "angry",
+                  "sulk"
+                ]
+              ],
+              "model": "One person's success can stir up jealousy and resentment in a rival who is left watching."
+            },
+            "prompt": "In one sentence, explain what the evening suggests about how one person's success can affect a rival.",
+            "keywords": [],
             "proof": {
               "lines": [
                 "The\nlady of his heart was his partner in the dance, and smiling graciously\nin reply to all his amorous oglings; while Brom Bones, sorely smitten\nwith love and jealousy, sat brooding by himself in one corner."
               ]
             },
-            "hint": "Where is Brom while Katrina smiles at Ichabod?",
-            "why": "While she smiles at Ichabod, Brom, sorely smitten with love and jealousy, broods alone.",
+            "hint": "Where is Brom while Katrina dances with Ichabod?",
+            "why": "Katrina smiles at Ichabod while Brom, sorely smitten with love and jealousy, broods alone in a corner.",
             "standards": [
               "R.1.2",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "theme_thread",
+              "format": "written",
+              "written": {
+                "key_ideas": [
+                  [
+                    "jealous",
+                    "envy",
+                    "resent"
+                  ],
+                  [
+                    "alone",
+                    "brood",
+                    "withdraw",
+                    "sulk",
+                    "quiet",
+                    "corner",
+                    "isolat",
+                    "silent",
+                    "apart"
+                  ]
+                ],
+                "model": "Jealousy can make even a proud, lively person pull away and brood alone."
+              },
+              "prompt": "Using your own words, tell in one sentence what Brom's sulking suggests about envy.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "The\nlady of his heart was his partner in the dance, and smiling graciously\nin reply to all his amorous oglings; while Brom Bones, sorely smitten\nwith love and jealousy, sat brooding by himself in one corner."
+                ]
+              },
+              "hint": "What does the hero of the gathering end up doing?",
+              "why": "Brom, the hero of the scene, ends up brooding by himself in a corner, sorely smitten with jealousy.",
+              "standards": [
+                "R.1.2",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-feast-and-the-dance-10",
@@ -16717,22 +17017,106 @@
             "note": "Border chivalry: raiders and rough fighters along the war line, called knights as a joke."
           },
           "question": {
-            "type": "find_it",
-            "prompt": "Which line explains why the old men here have so many battle tales?",
-            "keywords": [
-              "battle tales"
-            ],
-            "proof": {
-              "lines": [
-                "The\nBritish and American line had run near it during the war; it had,\ntherefore, been the scene of marauding and infested with refugees,\ncowboys, and all kinds of border chivalry."
+            "type": "story_structure",
+            "format": "dnd",
+            "dnd": {
+              "kind": "cause_effect",
+              "slots": [
+                {
+                  "id": "end",
+                  "label": "The dance comes to an end"
+                },
+                {
+                  "id": "line",
+                  "label": "The war's front line ran nearby"
+                },
+                {
+                  "id": "men",
+                  "label": "The neighborhood is full of great men"
+                }
+              ],
+              "items": [
+                {
+                  "id": "piazza",
+                  "text": "Ichabod drifts over to the older guests",
+                  "slot": "end",
+                  "line": "When the dance was at an end, Ichabod was attracted to a knot of the\nsager folks, who, with Old Van Tassel, sat smoking at one end of the\npiazza, gossiping over former times, and drawing out long stories about\nthe war."
+                },
+                {
+                  "id": "raiders",
+                  "text": "Raiders and refugees roamed the area",
+                  "slot": "line",
+                  "line": "The\nBritish and American line had run near it during the war; it had,\ntherefore, been the scene of marauding and infested with refugees,\ncowboys, and all kinds of border chivalry."
+                },
+                {
+                  "id": "chronicle",
+                  "text": "It abounds with tales and history",
+                  "slot": "men",
+                  "line": "This neighborhood, at the time of which I am speaking, was one of those\nhighly favored places which abound with chronicle and great men."
+                }
               ]
             },
-            "hint": "Look for where the fighting lines ran.",
-            "why": "The British and American line had run near it during the war.",
+            "prompt": "Connect each cause to what follows from it.",
+            "keywords": [],
+            "hint": "Read each sentence for what made what happen.",
+            "why": "When the dance ends Ichabod joins the old folks; the nearby front line brought raiders; and a place of great men is rich in chronicle.",
             "standards": [
-              "K12.EE.1.1"
+              "R.1.1",
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "story_structure",
+              "prompt": "What pulls Ichabod over to the older guests later that evening?",
+              "keywords": [
+                "pulls"
+              ],
+              "choices": [
+                {
+                  "text": "Their offer of better-paid work"
+                },
+                {
+                  "text": "A fight that breaks out among them"
+                },
+                {
+                  "text": "Their long stories about the war",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "When the dance was at an end, Ichabod was attracted to a knot of the\nsager folks, who, with Old Van Tassel, sat smoking at one end of the\npiazza, gossiping over former times, and drawing out long stories about\nthe war."
+                ]
+              },
+              "hint": "What are the old men doing as they smoke?",
+              "why": "They sit smoking, gossiping over former times and drawing out long stories about the war.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
+        }
+      ],
+      "lightning": [
+        {
+          "id": "daredevil",
+          "chunk": 1,
+          "after": 4,
+          "question": "What is the name of Brom's horse?",
+          "answer": [
+            "Brom Bones, however, was the hero of the scene, having come to the\ngathering on his favorite steed Daredevil, a creature, like himself,\nfull of mettle and mischief, and which no one but himself could manage."
+          ]
+        },
+        {
+          "id": "fall-to",
+          "chunk": 6,
+          "after": 7,
+          "question": "How does Baltus invite his guests to eat?",
+          "answer": [
+            "His\nhospitable attentions were brief, but expressive, being confined to a\nshake of the hand, a slap on the shoulder, a loud laugh, and a pressing\ninvitation to “fall to, and help themselves.”"
+          ]
         }
       ],
       "interview": {
@@ -16868,7 +17252,40 @@
               "R.1.3",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "whose_eyes",
+              "prompt": "According to the narrator, who ends up the hero of each old man's story?",
+              "keywords": [
+                "hero"
+              ],
+              "choices": [
+                {
+                  "text": "General Washington himself"
+                },
+                {
+                  "text": "A British sea captain"
+                },
+                {
+                  "text": "The man telling the story",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Just sufficient time had\nelapsed to enable each storyteller to dress up his tale with a little\nbecoming fiction, and, in the indistinctness of his recollection, to\nmake himself the hero of every exploit."
+                ]
+              },
+              "hint": "What has time let each storyteller do?",
+              "why": "With a little becoming fiction, each storyteller makes himself the hero of every exploit.",
+              "standards": [
+                "R.1.3",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "ghost-stories-02",
@@ -16899,26 +17316,41 @@
             "note": "Master of defence: an expert swordsman."
           },
           "question": {
-            "type": "catch_lie",
-            "prompt": "Brom Bones retells an old soldier's tale. One thing he says is false. Tap the line that proves it.",
+            "type": "find_it",
+            "prompt": "Which line shows an old man offering an object to back up his story?",
             "keywords": [
-              "false"
+              "back up"
             ],
             "proof": {
               "lines": [
                 "And there was an old gentleman who shall be nameless, being too rich\na mynheer to be lightly mentioned, who, in the battle of White Plains,\nbeing an excellent master of defence, parried a musket-ball with a small\nsword, insomuch that he absolutely felt it whiz round the blade, and\nglance off at the hilt; in proof of which he was ready at any time to\nshow the sword, with the hilt a little bent."
               ]
             },
-            "testimony": {
-              "speaker": "brom-bones",
-              "text": "That rich old gentleman? He just ducked for cover like everybody else, and he never told a tall tale about it."
-            },
-            "hint": "What does the old gentleman claim he did, and what will he show you?",
-            "why": "He claims he parried a musket-ball with a small sword, and is ready to show the bent hilt as proof.",
+            "hint": "What is he always ready to show?",
+            "why": "He is ready at any time to show the sword, with the hilt a little bent.",
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which line shows every old soldier believes he helped end the war?",
+              "keywords": [
+                "helped end the war"
+              ],
+              "proof": {
+                "lines": [
+                  "There were several more\nthat had been equally great in the field, not one of whom but was\npersuaded that he had a considerable hand in bringing the war to a happy\ntermination."
+                ]
+              },
+              "hint": "Look for the words a considerable hand.",
+              "why": "Not one of them but was persuaded he had a considerable hand in bringing the war to a happy termination.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "ghost-stories-03",
@@ -16950,34 +17382,67 @@
           },
           "question": {
             "type": "between_lines",
-            "prompt": "What can you infer about why this valley keeps its old legends?",
+            "format": "multi",
+            "pick": 2,
+            "prompt": "Which two ideas about legends does the narrator suggest?",
             "keywords": [
-              "infer"
+              "legends"
             ],
             "choices": [
               {
-                "text": "Visitors from the city bring brand new tales every week"
-              },
-              {
-                "text": "Families stay put for generations, so the stories stay too",
+                "text": "They fade where people keep moving away",
                 "best": true
               },
               {
-                "text": "A library in town collects and prints every story"
+                "text": "They are written down in the church records"
+              },
+              {
+                "text": "They are only told by small children"
+              },
+              {
+                "text": "They thrive in quiet, long-settled places",
+                "best": true
               }
             ],
-            "proof": {
-              "lines": [
-                "Local tales and superstitions thrive best in these sheltered,\nlong-settled retreats; but are trampled under foot by the shifting\nthrong that forms the population of most of our country places."
-              ]
-            },
-            "hint": "Where do such tales thrive, and what tramples them?",
-            "why": "Local tales thrive in sheltered, long-settled retreats but are trampled by shifting crowds elsewhere.",
+            "hint": "Where do local tales do best, and where are they trampled?",
+            "why": "Local tales thrive in sheltered, long-settled retreats, but are trampled under foot by a shifting population.",
             "standards": [
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "How do the spooky stories compare with the war stories before them?",
+              "keywords": [
+                "compare"
+              ],
+              "choices": [
+                {
+                  "text": "They are all about the war"
+                },
+                {
+                  "text": "They are even more thrilling",
+                  "best": true
+                },
+                {
+                  "text": "They are shorter and duller"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "But all these were nothing to the tales of ghosts and apparitions that\nsucceeded."
+                ]
+              },
+              "hint": "What were the war stories next to them?",
+              "why": "All the war stories \"were nothing to\" the tales of ghosts that followed.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "ghost-stories-04",
@@ -17009,7 +17474,7 @@
           },
           "question": {
             "type": "figure_it_out",
-            "prompt": "Read the words finish their first nap. What kind of figurative language is this?",
+            "prompt": "Read the words \"finish their first nap.\" What kind of figurative language is this?",
             "keywords": [
               "first nap"
             ],
@@ -17041,13 +17506,55 @@
                 }
               ]
             },
-            "hint": "Ghosts don't really nap. What has happened by the time they wake?",
-            "why": "Before a ghost can finish its first nap, its friends have traveled away: no one is left to haunt.",
+            "hint": "Who takes naps? Then ask why the ghosts find no friends left.",
+            "why": "Ghosts barely finish a nap before their friends have moved away: in busy towns nobody stays long enough to be haunted.",
             "standards": [
               "R.3.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "figure_it_out",
+              "prompt": "Ghosts \"turn out at night to walk their rounds.\" Which device is this?",
+              "keywords": [
+                "walk their rounds"
+              ],
+              "focus": "walk their rounds",
+              "choices": [
+                {
+                  "text": "Simile: ghosts are compared using like"
+                },
+                {
+                  "text": "Alliteration: the words share a first sound"
+                },
+                {
+                  "text": "Personification: ghosts act like night watchmen",
+                  "best": true
+                }
+              ],
+              "choices2": {
+                "prompt": "What does it suggest about the ghosts?",
+                "options": [
+                  {
+                    "text": "They keep habits, like people with jobs",
+                    "best": true
+                  },
+                  {
+                    "text": "They are guarding a treasure in town"
+                  },
+                  {
+                    "text": "They are afraid of the dark"
+                  }
+                ]
+              },
+              "hint": "Who walks rounds at night?",
+              "why": "Like a watchman on his rounds, the ghost has a routine of visits, but no one is left to call on.",
+              "standards": [
+                "R.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "ghost-stories-05",
@@ -17079,34 +17586,95 @@
           },
           "question": {
             "type": "theme_thread",
-            "prompt": "Which idea from the very start of the story returns here?",
-            "keywords": [
-              "very start"
-            ],
-            "choices": [
-              {
-                "text": "Hard work always pays off in the end for the honest folk who stay"
-              },
-              {
-                "text": "Strangers are never welcome in the valley"
-              },
-              {
-                "text": "The Hollow's dreamy air spreads its spell to everyone nearby",
-                "best": true
-              }
-            ],
+            "format": "written",
+            "written": {
+              "key_ideas": [
+                [
+                  "belief",
+                  "believ",
+                  "story",
+                  "stories",
+                  "dream",
+                  "fanc",
+                  "idea",
+                  "superstit",
+                  "legend"
+                ],
+                [
+                  "spread",
+                  "pass",
+                  "catch",
+                  "contag",
+                  "infect",
+                  "everyone",
+                  "neighbor",
+                  "whole",
+                  "others",
+                  "sickness",
+                  "travel"
+                ]
+              ],
+              "model": "Beliefs can spread like a sickness, passing from one place and person to the next until a whole area shares them."
+            },
+            "prompt": "In one sentence, explain what this chunk suggests about how beliefs travel from place to place.",
+            "keywords": [],
             "proof": {
               "lines": [
                 "There was a contagion in the very air that blew from that haunted\nregion; it breathed forth an atmosphere of dreams and fancies infecting\nall the land."
               ]
             },
-            "hint": "Remember the spell over the valley in the first expedition. What spreads from the haunted region?",
-            "why": "A contagion in the air breathed forth dreams and fancies infecting all the land, just like the valley's spell.",
+            "hint": "Notice the words \"contagion\" and \"infecting.\"",
+            "why": "A contagion in the air from the haunted Hollow infects all the land with dreams and fancies: beliefs spread like a disease.",
             "standards": [
               "R.1.2",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "theme_thread",
+              "format": "written",
+              "written": {
+                "key_ideas": [
+                  [
+                    "place",
+                    "live",
+                    "where",
+                    "land",
+                    "region",
+                    "surround",
+                    "home",
+                    "nearby"
+                  ],
+                  [
+                    "believ",
+                    "belief",
+                    "imagin",
+                    "dream",
+                    "fanc",
+                    "stories",
+                    "think",
+                    "shape",
+                    "ghost"
+                  ]
+                ],
+                "model": "Where people live can shape what they believe, since a dreamy, haunted place fills its neighbors' heads with ghost stories."
+              },
+              "prompt": "Using your own words, tell in one sentence what this suggests about where people live and what they believe.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "There was a contagion in the very air that blew from that haunted\nregion; it breathed forth an atmosphere of dreams and fancies infecting\nall the land."
+                ]
+              },
+              "hint": "What blows over from the Hollow?",
+              "why": "Living near the Hollow, people breathe an atmosphere of dreams and fancies: the place shapes their beliefs.",
+              "standards": [
+                "R.1.2",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "ghost-stories-06",
@@ -17137,22 +17705,45 @@
             "note": "Funeral trains: long lines of mourners following a coffin."
           },
           "question": {
-            "type": "find_it",
-            "prompt": "Which line describes a pale lady and the cliff where she was lost?",
-            "keywords": [
-              "pale lady"
-            ],
+            "type": "catch_lie",
+            "prompt": "Katrina recalls the spooky talk at the party. One thing she says is false. Tap the sentence that proves it.",
+            "keywords": [],
             "proof": {
               "lines": [
-                "Some mention was made also of the woman in white, that haunted the\ndark glen at Raven Rock, and was often heard to shriek on winter nights\nbefore a storm, having perished there in the snow."
+                "The chief part of the\nstories, however, turned upon the favorite spectre of Sleepy Hollow, the\nHeadless Horseman, who had been heard several times of late, patrolling\nthe country; and, it was said, tethered his horse nightly among the\ngraves in the churchyard."
               ]
             },
-            "hint": "Look for a color and a rock.",
-            "why": "The woman in white haunted the dark glen at Raven Rock, having perished there in the snow.",
+            "testimony": {
+              "speaker": "katrina-van-tassel",
+              "text": "Nobody so much as mentioned the Headless Horseman that night. The guests stuck to other ghosts."
+            },
+            "hint": "Which spectre did most of the stories turn on?",
+            "why": "The chief part of the stories turned upon the favorite spectre of Sleepy Hollow, the Headless Horseman.",
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "catch_lie",
+              "prompt": "Hans Van Ripper remembers the tales differently. One detail is untrue. Tap the sentence that shows it.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "Some mention was made also of the woman in white, that haunted the\ndark glen at Raven Rock, and was often heard to shriek on winter nights\nbefore a storm, having perished there in the snow."
+                ]
+              },
+              "testimony": {
+                "speaker": "hans-van-ripper",
+                "text": "The only ghost anyone spoke of was the Horseman. Not one word about any other spirit."
+              },
+              "hint": "Who haunted the glen at Raven Rock?",
+              "why": "The guests also told of the woman in white who haunted the dark glen at Raven Rock.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "ghost-stories-07",
@@ -17183,37 +17774,71 @@
             "note": "Metaphor: the calm pond looks like a sheet of silver."
           },
           "question": {
-            "type": "shades",
-            "prompt": "Why does the narrator call the church's spot sequestered instead of just quiet?",
+            "type": "word_detective",
+            "prompt": "In this chunk, what does sequestered mean?",
             "keywords": [
               "sequestered"
             ],
             "focus": "sequestered",
             "choices": [
               {
-                "text": "It stresses that the church is hidden away and set apart",
+                "text": "Crowded with visitors every day"
+              },
+              {
+                "text": "Built only a year ago"
+              },
+              {
+                "text": "Hidden away and set apart",
                 "best": true
-              },
-              {
-                "text": "It means the church is crowded with visitors every day"
-              },
-              {
-                "text": "It means the church was built only last year"
               }
             ],
             "proof": {
-              "words": [
-                "surrounded by locust-trees and lofty elms"
+              "lines": [
+                "It stands on a knoll, surrounded by\nlocust-trees and lofty elms, from among which its decent, whitewashed\nwalls shine modestly forth, like Christian purity beaming through the\nshades of retirement."
               ]
             },
-            "hint": "Where does it stand, and what surrounds it?",
-            "why": "Sequestered means tucked away: it stands on a knoll surrounded by locust-trees and lofty elms.",
+            "hint": "What surrounds the church?",
+            "why": "Surrounded by locust-trees and lofty elms, the church is tucked away and set apart.",
             "standards": [
               "V.1.3",
-              "R.3.1"
+              "K12.EE.1.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "word_detective",
+              "prompt": "Which meaning of knoll fits the church's spot?",
+              "keywords": [
+                "knoll"
+              ],
+              "focus": "knoll",
+              "choices": [
+                {
+                  "text": "A small, rounded hill",
+                  "best": true
+                },
+                {
+                  "text": "A deep, rocky hollow"
+                },
+                {
+                  "text": "A flat, muddy field"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "A gentle slope descends from it to a silver sheet\nof water, bordered by high trees, between which, peeps may be caught at\nthe blue hills of the Hudson."
+                ]
+              },
+              "hint": "What goes down from the church to the water?",
+              "why": "A gentle slope descends from it to the water: the church sits on a small hill.",
+              "standards": [
+                "V.1.3",
+                "K12.EE.1.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "ghost-stories-08",
@@ -17244,37 +17869,100 @@
             "note": "Personification: sunlight rests as if asleep."
           },
           "question": {
-            "type": "word_detective",
-            "prompt": "In this chunk, what does dell mean?",
-            "keywords": [
-              "dell"
-            ],
-            "focus": "dell",
-            "choices": [
-              {
-                "text": "A tall, narrow stone tower"
-              },
-              {
-                "text": "A wide and sandy beach"
-              },
-              {
-                "text": "A small wooded valley",
-                "best": true
-              }
-            ],
-            "proof": {
-              "lines": [
-                "Over a deep black part of the stream, not far\nfrom the church, was formerly thrown a wooden bridge; the road that led\nto it, and the bridge itself, were thickly shaded by overhanging trees,\nwhich cast a gloom about it, even in the daytime; but occasioned a\nfearful darkness at night."
+            "type": "shades",
+            "format": "dnd",
+            "dnd": {
+              "kind": "word_feeling",
+              "slots": [
+                {
+                  "id": "peace",
+                  "label": "Peaceful"
+                },
+                {
+                  "id": "gloom",
+                  "label": "Gloomy"
+                }
+              ],
+              "items": [
+                {
+                  "id": "sunbeams",
+                  "text": "Sunbeams seem to sleep quietly in the yard",
+                  "slot": "peace",
+                  "line": "To look upon its grass-grown yard, where\nthe sunbeams seem to sleep so quietly, one would think that there at\nleast the dead might rest in peace."
+                },
+                {
+                  "id": "rest",
+                  "text": "The dead might rest in peace",
+                  "slot": "peace",
+                  "line": "To look upon its grass-grown yard, where\nthe sunbeams seem to sleep so quietly, one would think that there at\nleast the dead might rest in peace."
+                },
+                {
+                  "id": "rocks",
+                  "text": "A brook raves among broken rocks",
+                  "slot": "gloom",
+                  "line": "On one side of the church extends a\nwide woody dell, along which raves a large brook among broken rocks and\ntrunks of fallen trees."
+                },
+                {
+                  "id": "shade",
+                  "text": "Trees cast a gloom even by day",
+                  "slot": "gloom",
+                  "line": "Over a deep black part of the stream, not far\nfrom the church, was formerly thrown a wooden bridge; the road that led\nto it, and the bridge itself, were thickly shaded by overhanging trees,\nwhich cast a gloom about it, even in the daytime; but occasioned a\nfearful darkness at night."
+                },
+                {
+                  "id": "dark",
+                  "text": "A fearful darkness falls at night",
+                  "slot": "gloom",
+                  "line": "Over a deep black part of the stream, not far\nfrom the church, was formerly thrown a wooden bridge; the road that led\nto it, and the bridge itself, were thickly shaded by overhanging trees,\nwhich cast a gloom about it, even in the daytime; but occasioned a\nfearful darkness at night."
+                }
               ]
             },
-            "hint": "Look at the stream and the trees nearby.",
-            "why": "A deep stream runs under thickly overhanging trees: a dell is a small wooded valley.",
+            "prompt": "Sort each detail near the church: does it feel peaceful, or gloomy?",
+            "keywords": [],
+            "hint": "Does the detail make you feel calm, or uneasy?",
+            "why": "The sleepy sunbeams and resting dead feel peaceful; the raving brook, the gloom and the fearful darkness by the bridge feel menacing.",
             "standards": [
               "V.1.3",
-              "K12.EE.1.1"
-            ],
-            "reviewed": true
-          }
+              "R.3.1"
+            ]
+          },
+          "bank": [
+            {
+              "type": "shades",
+              "prompt": "Why might the narrator say the brook \"raves\" instead of flows?",
+              "keywords": [
+                "raves"
+              ],
+              "focus": "raves",
+              "choices": [
+                {
+                  "text": "It has nearly dried up"
+                },
+                {
+                  "text": "It rushes wildly and loudly",
+                  "best": true
+                },
+                {
+                  "text": "It runs slowly and softly"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "On one side of the church extends a\nwide woody dell, along which raves a large brook among broken rocks and\ntrunks of fallen trees."
+                ]
+              },
+              "hint": "What does the brook crash over?",
+              "why": "Rushing among broken rocks and fallen trunks, the brook roars wildly like someone raving.",
+              "standards": [
+                "V.1.3",
+                "R.3.1"
+              ],
+              "reviewed": true,
+              "clues": [
+                "broken rocks",
+                "trunks of fallen trees"
+              ]
+            }
+          ]
         },
         {
           "id": "ghost-stories-09",
@@ -17305,35 +17993,68 @@
             "note": "Heretical: going against what everyone believes. Brouwer refused to believe in ghosts."
           },
           "question": {
-            "type": "between_lines",
-            "prompt": "What can you infer the storytellers want listeners to think about the crossing?",
+            "type": "story_structure",
+            "prompt": "How does old Brouwer's ride with the Horseman end?",
             "keywords": [
-              "infer"
+              "end"
             ],
             "choices": [
               {
-                "text": "That it is a safe shortcut on stormy nights"
-              },
-              {
-                "text": "That it is being rebuilt and widened by the church"
-              },
-              {
-                "text": "That it is the most dangerous place to meet the ghost",
+                "text": "He is thrown into the brook",
                 "best": true
+              },
+              {
+                "text": "He wins a race against the Horseman"
+              },
+              {
+                "text": "He rides safely home before dawn"
               }
             ],
             "proof": {
               "lines": [
-                "Such was one of the favorite haunts of\nthe Headless Horseman, and the place where he was most frequently\nencountered."
+                "The tale was told of old Brouwer, a most heretical\ndisbeliever in ghosts, how he met the Horseman returning from his foray\ninto Sleepy Hollow, and was obliged to get up behind him; how they\ngalloped over bush and brake, over hill and swamp, until they reached\nthe bridge; when the Horseman suddenly turned into a skeleton, threw old\nBrouwer into the brook, and sprang away over the tree-tops with a clap\nof thunder."
               ]
             },
-            "hint": "What is the place to the Horseman?",
-            "why": "It was one of his favorite haunts, the place where he was most frequently encountered.",
+            "hint": "What happens when they reach the bridge?",
+            "why": "At the bridge the Horseman turns into a skeleton and throws old Brouwer into the brook.",
             "standards": [
-              "K12.EE.3.1",
-              "K12.EE.1.1"
+              "R.1.1",
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "story_structure",
+              "prompt": "Why does the tale begin by calling Brouwer a disbeliever in ghosts?",
+              "keywords": [
+                "disbeliever"
+              ],
+              "choices": [
+                {
+                  "text": "It makes his ride a lesson for doubters",
+                  "best": true
+                },
+                {
+                  "text": "It explains why he owned a fast horse"
+                },
+                {
+                  "text": "It shows he was the Horseman's friend"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "The tale was told of old Brouwer, a most heretical\ndisbeliever in ghosts, how he met the Horseman returning from his foray\ninto Sleepy Hollow, and was obliged to get up behind him; how they\ngalloped over bush and brake, over hill and swamp, until they reached\nthe bridge; when the Horseman suddenly turned into a skeleton, threw old\nBrouwer into the brook, and sprang away over the tree-tops with a clap\nof thunder."
+                ]
+              },
+              "hint": "What happens to the man who said ghosts aren't real?",
+              "why": "The most heretical disbeliever is the one carried off and dumped in the brook: the tale warns doubters.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.3.1"
+              ],
+              "reviewed": true
+            }
+          ]
         },
         {
           "id": "ghost-stories-10",
@@ -17364,35 +18085,108 @@
             "note": "Arrant: complete. Brom calls the ghost nothing but a common rider."
           },
           "question": {
-            "type": "character_clue",
-            "prompt": "Which trait does Brom show in his own spooky tale?",
-            "keywords": [
-              "trait"
-            ],
-            "choices": [
-              {
-                "text": "Timid, admitting he fled the rider in terror"
-              },
-              {
-                "text": "Honest, saying he saw nothing at all"
-              },
-              {
-                "text": "Boastful and bold, claiming he beat the ghost",
-                "best": true
-              }
-            ],
-            "proof": {
-              "words": [
-                "Daredevil beat the goblin horse all hollow"
+            "type": "weigh_evidence",
+            "format": "dnd",
+            "dnd": {
+              "kind": "fact_or_claim",
+              "slots": [
+                {
+                  "id": "text",
+                  "label": "The narrator reports it"
+                },
+                {
+                  "id": "claim",
+                  "label": "Only Brom claims it"
+                }
+              ],
+              "items": [
+                {
+                  "id": "matched",
+                  "text": "Brom's story follows right after Brouwer's tale",
+                  "slot": "text",
+                  "line": "This story was immediately matched by a thrice marvellous adventure of\nBrom Bones, who made light of the Galloping Hessian as an arrant jockey."
+                },
+                {
+                  "id": "light",
+                  "text": "Brom makes light of the Galloping Hessian",
+                  "slot": "text",
+                  "line": "This story was immediately matched by a thrice marvellous adventure of\nBrom Bones, who made light of the Galloping Hessian as an arrant jockey."
+                },
+                {
+                  "id": "beat",
+                  "text": "Daredevil beat the goblin horse easily",
+                  "slot": "claim",
+                  "line": "He affirmed that on returning one night from the neighboring village of\nSing Sing, he had been overtaken by this midnight trooper; that he had\noffered to race with him for a bowl of punch, and should have won it\ntoo, for Daredevil beat the goblin horse all hollow, but just as they\ncame to the church bridge, the Hessian bolted, and vanished in a flash\nof fire."
+                },
+                {
+                  "id": "fire",
+                  "text": "The Hessian vanished in a flash of fire",
+                  "slot": "claim",
+                  "line": "He affirmed that on returning one night from the neighboring village of\nSing Sing, he had been overtaken by this midnight trooper; that he had\noffered to race with him for a bowl of punch, and should have won it\ntoo, for Daredevil beat the goblin horse all hollow, but just as they\ncame to the church bridge, the Hessian bolted, and vanished in a flash\nof fire."
+                }
               ]
             },
-            "hint": "Who wins the race in Brom's version?",
-            "why": "He claims Daredevil beat the goblin horse all hollow: a boast.",
+            "prompt": "Sort what the narrator reports from what only Brom claims.",
+            "keywords": [],
+            "hint": "Look for \"he affirmed that\": everything after it is Brom's own word.",
+            "why": "The narrator tells us Brom's tale matched Brouwer's and that he made light of the Hessian; the race and the flash of fire are only what Brom \"affirmed.\"",
             "standards": [
-              "R.1.1",
-              "K12.EE.1.1"
+              "K12.EE.1.1",
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "weigh_evidence",
+              "prompt": "Which detail most strongly suggests Brom's story is a boast?",
+              "keywords": [
+                "boast"
+              ],
+              "choices": [
+                {
+                  "text": "He was riding home from Sing Sing"
+                },
+                {
+                  "text": "The race ended near the church bridge"
+                },
+                {
+                  "text": "He says Daredevil beat the goblin horse",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "He affirmed that on returning one night from the neighboring village of\nSing Sing, he had been overtaken by this midnight trooper; that he had\noffered to race with him for a bowl of punch, and should have won it\ntoo, for Daredevil beat the goblin horse all hollow, but just as they\ncame to the church bridge, the Hessian bolted, and vanished in a flash\nof fire."
+                ]
+              },
+              "hint": "Which detail makes Brom look best?",
+              "why": "He claims Daredevil beat the goblin horse all hollow and would have won the punch: a boast that makes him the hero.",
+              "standards": [
+                "K12.EE.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
+        }
+      ],
+      "lightning": [
+        {
+          "id": "sword",
+          "chunk": 2,
+          "after": 4,
+          "question": "What did the rich old gentleman say he turned a musket-ball aside with?",
+          "answer": [
+            "And there was an old gentleman who shall be nameless, being too rich\na mynheer to be lightly mentioned, who, in the battle of White Plains,\nbeing an excellent master of defence, parried a musket-ball with a small\nsword, insomuch that he absolutely felt it whiz round the blade, and\nglance off at the hilt; in proof of which he was ready at any time to\nshow the sword, with the hilt a little bent."
+          ]
+        },
+        {
+          "id": "raven-rock",
+          "chunk": 6,
+          "after": 8,
+          "question": "Where did the woman in white perish?",
+          "answer": [
+            "Some mention was made also of the woman in white, that haunted the\ndark glen at Raven Rock, and was often heard to shriek on winter nights\nbefore a storm, having perished there in the snow."
+          ]
         }
       ],
       "interview": {
@@ -20742,8 +21536,7 @@
             "chunk": 2,
             "place": "vt-parlor",
             "x": 297,
-            "y": 211,
-            "landmark": "twist"
+            "y": 211
           },
           {
             "chunk": 3,
@@ -20767,7 +21560,8 @@
             "chunk": 6,
             "place": "vt-parlor",
             "x": 343,
-            "y": 243
+            "y": 243,
+            "landmark": "twist"
           },
           {
             "chunk": 7,
@@ -21103,8 +21897,6 @@
   },
   "expedition_rules": {
     "arc_pending": [
-      "the-feast-and-the-dance",
-      "ghost-stories",
       "the-lonely-road",
       "the-headless-horseman",
       "gone",

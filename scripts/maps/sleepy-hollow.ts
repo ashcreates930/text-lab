@@ -52,7 +52,7 @@ export const SPEC: MapSpec = {
       chunks: ["hans-farm", "ride", "ride", "ride", "ride", "ride", "ride", "ride", "vt-house", "vt-house"] },
     "the-feast-and-the-dance": { name: "The feast and the dance", finale: "vt-parlor", twist: 5, boss: 9, secrets: [6],
       chunks: ["vt-house", "vt-parlor", "vt-parlor", "vt-parlor", "vt-parlor", "vt-parlor", "vt-parlor", "vt-parlor", "vt-parlor", "vt-parlor"] },
-    "ghost-stories": { name: "Ghost stories", finale: "vt-parlor", twist: 2, boss: 10, secrets: [7],
+    "ghost-stories": { name: "Ghost stories", finale: "vt-parlor", twist: 6, boss: 10, secrets: [7],
       chunks: ["vt-parlor", "vt-parlor", "vt-parlor", "vt-parlor", "vt-parlor", "vt-parlor", "vt-parlor", "vt-parlor", "vt-parlor", "vt-parlor"] },
     "the-lonely-road": { name: "The lonely road", finale: "andre-tree", twist: 7, boss: 9, secrets: [10],
       chunks: ["vt-parlor", "vt-house", "vt-house", "vt-house", "vt-barnyard", "andre-tree", "andre-tree", "andre-tree", "andre-tree", "andre-tree"] },
