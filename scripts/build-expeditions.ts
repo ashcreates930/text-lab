@@ -11,7 +11,7 @@ import { REBUILT } from "./expeditions/rebuilt.ts";
 export type Ref = [string, number];
 // format, pick, dnd and written: the phase 3 formats (lib/formats.ts); a drag-and-drop piece's line is the sentence
 // that backs it, as [paragraph, sentence index].
-export type Q = { type: string; format?: string; pick?: number; dnd?: { kind: string; slots: { id: string; label: string }[]; items: { id: string; text: string; slot: string | null; line?: Ref }[] }; written?: { key_ideas: string[][]; model: string }; prompt: string; keywords?: string[]; focus?: string; choices?: [string, boolean?][]; choices2?: { prompt: string; options: [string, boolean?][] }; lines?: Ref[]; words?: string[]; testimony?: { speaker: string; text: string }; theories?: { id: string; name: string; lines: Ref[] }[]; hint: string; why: string; standards: string[]; reviewed?: boolean; note?: string };
+export type Q = { type: string; format?: string; pick?: number; dnd?: { kind: string; slots: { id: string; label: string }[]; items: { id: string; text: string; slot: string | null; line?: Ref }[] }; written?: { key_ideas: string[][]; model: string }; prompt: string; keywords?: string[]; focus?: string; choices?: [string, boolean?][]; choices2?: { prompt: string; options: [string, boolean?][] }; lines?: Ref[]; words?: string[]; testimony?: { speaker: string; text: string }; theories?: { id: string; name: string; lines: Ref[] }[]; hint: string; why: string; standards: string[]; reviewed?: boolean; note?: string; clues?: string[] };
 export type C = { seg: [string, number, number][]; gist: [string, boolean?][]; discovery: [string, "figurative" | "vocabulary", string]; q: Q };
 export type S = { text: string; lines: Ref[]; gesture?: "laughing" | "head-shake" };
 export type W = { character: string; cards: [string, string]; truth: S; lie: S; caught: string };
@@ -124,7 +124,7 @@ for (const [worldId, spec] of Object.entries(SPEC)) {
         ...(q.written ? { written: q.written } : {}), prompt: q.prompt, keywords: q.keywords ?? [], ...(q.focus ? { focus: q.focus } : {}), ...(q.choices ? { choices: opts(q.choices) } : {}), ...(q.choices2 ? { choices2: { prompt: q.choices2.prompt, options: opts(q.choices2.options) } } : {}),
         ...(q.lines || q.words ? { proof: { ...(q.lines ? { lines: q.lines.map(line) } : {}), ...(q.words ? { words: q.words } : {}) } } : {}),
         ...(q.testimony ? { testimony: q.testimony } : {}), ...(q.theories ? { theories: q.theories.map((t) => ({ id: t.id, name: t.name, lines: t.lines.map(line) })) } : {}),
-        hint: q.hint, why: q.why, standards: q.standards, ...(q.reviewed ? { reviewed: true } : {}), ...(q.note ? { note: q.note } : {}) });
+        hint: q.hint, why: q.why, standards: q.standards, ...(q.reviewed ? { reviewed: true } : {}), ...(q.note ? { note: q.note } : {}), ...(q.clues ? { clues: q.clues } : {}) });
   const built = spec.expeditions.map((e) => { const re = REBUILT[e.id]; return { id: e.id, title: e.title, chunks: e.chunks.map((c, k) => {
     const o = re?.chunks[k];
     return { id: `${e.id}-${String(k + 1).padStart(2, "0")}`, segments: c.seg.map(([p, from, to]) => ({ p, from, to })), gist: { options: opts(c.gist) },

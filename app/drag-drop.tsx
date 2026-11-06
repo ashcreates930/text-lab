@@ -4,9 +4,10 @@
 // - drag (laptops and tablets with a mouse): drag a piece onto a slot, or back to the tray;
 // - keyboard and screen reader: Enter or Space picks a piece up, then on a slot places it; every move is announced.
 // Targets are at least 44 px. After locking in, pieces in the right slot snap in teal and wrong ones slide to their right
-// place with the sentence that proves it (no motion under reduced motion).
+// place with the sentence that proves it (no motion under reduced motion). On a phone the tray is a collapsed "Pieces" bar
+// pinned above Lock in: tap it to see the pieces; picking one closes it so the slots are in view.
 import {useEffect,useRef,useState} from "react";
-import {ArrowDownToLine,Check,GripVertical,Undo2} from "lucide-react";
+import {ArrowDownToLine,Check,ChevronDown,ChevronUp,GripVertical,Undo2} from "lucide-react";
 import type {DndKind} from "@/lib/formats";
 import {DND_INFO} from "@/lib/formats";
 
@@ -16,22 +17,25 @@ export type DndReveal={slotOf:Record<string,string|null>;lines:Record<string,str
 const ONE_EACH:DndKind[]=["order_events","build_case","story_map","cause_effect"];
 
 export function DragDrop({view,placed,onChange,disabled=false,reveal}:{view:DndView;placed:Record<string,string|null>;onChange:(p:Record<string,string|null>)=>void;disabled?:boolean;reveal?:DndReveal|null}){
- const [held,setHeld]=useState<string|null>(null),[said,setSaid]=useState("");
+ const [held,setHeld]=useState<string|null>(null),[said,setSaid]=useState(""),[trayOpen,setTrayOpen]=useState(false);
  const one=ONE_EACH.includes(view.kind),label=(id:string)=>view.items.find(i=>i.id===id)?.text??"",slotLabel=(id:string|null)=>id?view.slots.find(s=>s.id===id)?.label??"":"the tray";
  const dragId=useRef<string|null>(null),btns=useRef<Record<string,HTMLButtonElement|null>>({}),[focusTo,setFocusTo]=useState<string|null>(null);
  useEffect(()=>{if(disabled)setHeld(null)},[disabled]);
  // Keyboard: after a piece is placed it moves to another list, so focus follows to the next piece in the tray (or the
  // placed piece when the tray is empty) instead of falling back to the page.
  useEffect(()=>{if(focusTo){btns.current[focusTo]?.focus({preventScroll:true});setFocusTo(null)}},[focusTo]);
- function place(item:string,slot:string|null){
+ // keyboard: a placement made with the keyboard (no pointer) reopens the bar, so focus can follow to the next piece.
+ function place(item:string,slot:string|null,keyboard=false){
   const next={...placed};
   // A slot that holds one piece sends its current piece back to the tray.
   if(slot&&one)for(const [k,v] of Object.entries(next))if(v===slot&&k!==item)next[k]=null;
   next[item]=slot;onChange(next);setHeld(null);
-  setFocusTo(view.items.find(i=>i.id!==item&&!next[i.id])?.id??item);
+  const nextPiece=view.items.find(i=>i.id!==item&&!next[i.id])?.id;
+  if(keyboard&&nextPiece)setTrayOpen(true);
+  setFocusTo(nextPiece??item);
   setSaid(slot?`Placed "${label(item)}" in ${slotLabel(slot)}.`:`"${label(item)}" is back in the tray.`);
  }
- function pick(item:string){if(disabled)return;if(held===item){setHeld(null);setSaid(`Put "${label(item)}" down.`);return}setHeld(item);setSaid(`Picked up "${label(item)}". Now choose a slot.`)}
+ function pick(item:string){if(disabled)return;if(held===item){setHeld(null);setSaid(`Put "${label(item)}" down.`);return}setHeld(item);if(!placed[item])setTrayOpen(false);setSaid(`Picked up "${label(item)}". Now choose a slot.`)}
  const inTray=view.items.filter(i=>!placed[i.id]);
  const shown=(slot:string|null)=>(reveal?view.items.filter(i=>(reveal.slotOf[i.id]??null)===slot):view.items.filter(i=>(placed[i.id]??null)===slot));
  // In the reveal each proof sentence shows once, under the first moved piece it proves (pieces often share a sentence).
@@ -50,14 +54,18 @@ export function DragDrop({view,placed,onChange,disabled=false,reveal}:{view:DndV
   <p className="sr-only" role="status" aria-live="polite">{said}</p>
   <div className={`grid gap-2 ${view.slots.length===3?"sm:grid-cols-3":"sm:grid-cols-2"}`}>{view.slots.map(s=>{const here=shown(s.id),full=one&&!reveal&&here.length>0;
    return <section key={s.id} aria-label={s.label} {...drop(s.id)} className={`flex min-h-[88px] flex-col gap-1.5 rounded-card border-2 p-2 ${held&&!full?"border-primary bg-primary/10":"border-edge bg-panel-2"}`}>
-    <button type="button" disabled={!held||disabled} onClick={()=>held&&place(held,s.id)} className="flex min-h-11 items-center justify-between gap-2 rounded-row px-2 text-left font-display text-[15px] font-bold disabled:opacity-100">
+    <button type="button" disabled={!held||disabled} onClick={e=>held&&place(held,s.id,e.detail===0)} className="flex min-h-11 items-center justify-between gap-2 rounded-row px-2 text-left font-display text-[15px] font-bold disabled:opacity-100">
      <span>{s.label}</span>{held&&!disabled&&<span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[12px] text-on-primary"><ArrowDownToLine size={13} aria-hidden/>Place here</span>}</button>
     <ul className="grid gap-1.5">{here.map(piece)}</ul></section>})}</div>
-  {!reveal&&<section aria-label="Pieces to place" {...drop(null)} className="rounded-card border-2 border-dashed border-edge p-2">
-   <div className="flex items-center justify-between gap-2"><p className="text-[13px] font-extrabold uppercase tracking-[.08em] text-muted">Pieces ({inTray.length} left)</p>
+  {!reveal&&<section aria-label="Pieces to place" {...drop(null)} className="rounded-card border-2 border-dashed border-edge p-2 max-md:sticky max-md:bottom-0 max-md:z-10 max-md:border-solid max-md:bg-panel-2 max-md:shadow-[0_-8px_16px_rgba(0,0,0,.35)]">
+   <div className="flex items-center justify-between gap-2"><p className="text-[13px] font-extrabold uppercase tracking-[.08em] text-muted max-md:hidden">Pieces ({inTray.length} left)</p>
+    <button type="button" aria-expanded={trayOpen} onClick={()=>setTrayOpen(o=>!o)} className="flex min-h-11 flex-1 items-center justify-between gap-2 rounded-row px-1 text-left md:hidden">
+     <span className="text-[13px] font-extrabold uppercase tracking-[.08em] text-muted">Pieces ({inTray.length} left)</span>
+     <span className="inline-flex items-center gap-1 text-[14px] font-bold text-ink">{trayOpen?"Hide":"Show"}{trayOpen?<ChevronDown size={16} aria-hidden/>:<ChevronUp size={16} aria-hidden/>}</span></button>
     {held&&placed[held]&&<button type="button" onClick={()=>place(held,null)} className="inline-flex min-h-11 items-center gap-1 rounded-full bg-panel px-3 text-[14px] font-bold"><Undo2 size={14} aria-hidden/>Back to the tray</button>}</div>
-   <ul className="mt-1.5 grid gap-1.5">{inTray.map(piece)}</ul>
-   {!inTray.length&&<p className="text-[14px] text-muted">Every piece is placed. Tap one to move it, then lock in.</p>}</section>}
+   {held&&!trayOpen&&<p className="mt-1 text-[14px] font-bold text-ink md:hidden">Holding "{label(held)}". Tap its place above.</p>}
+   <ul className={`mt-1.5 grid gap-1.5 ${trayOpen?"max-md:max-h-[40vh] max-md:overflow-y-auto":"max-md:hidden"}`}>{inTray.map(piece)}</ul>
+   {!inTray.length&&<p className={`text-[14px] text-muted ${trayOpen?"":"max-md:hidden"}`}>Every piece is placed. Tap one to move it, then lock in.</p>}</section>}
   {reveal&&shown(null).length>0&&<section aria-label="Pieces that belong nowhere" className="rounded-card border-2 border-dashed border-edge p-2"><p className="text-[13px] font-extrabold uppercase tracking-[.08em] text-muted">Left out (they belong nowhere)</p><ul className="mt-1.5 grid gap-1.5">{shown(null).map(piece)}</ul></section>}
  </div>;
 }

@@ -26,7 +26,8 @@ test("Refresher: only misses, up to 4, race questions before Gist checks", () =>
   const items = refresherItems(chunks, results);
   assert.equal(items.length, REFRESHER_MAX);
   assert.deepEqual(items.map((i) => i.kind), ["question", "question", "question", "question"], "race questions come first");
-  assert.deepEqual(items.map((i) => i.index), [1, 3, 5, 7]);
+  // Missed drag and drops and two-step questions first (chunks 4, 8 and 10), then the rest (chunk 2).
+  assert.deepEqual(items.map((i) => i.index), [3, 7, 9, 1]);
   // Two misses and a missed Gist: the Gist check comes after the questions.
   const few = chunks.map((c) => result(c.index, ![2, 4].includes(c.index), c.index !== 0));
   assert.deepEqual(refresherItems(chunks, few), [{ index: 2, kind: "question" }, { index: 4, kind: "question" }, { index: 0, kind: "gist" }]);

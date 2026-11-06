@@ -4052,6 +4052,7 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 - Bank question (Shades of Meaning, two-part evidence): Why might he call the valley a retreat rather than just a spot?
   - Key words highlighted: retreat
   - Choices: It suggests the narrator once lost a fight in the valley / It suggests a quiet hiding place to rest from the world ✓ / It suggests a place where soldiers fall back in battle
+  - Part B: tap the clue words that show the meaning (any one): "steal from the world and its distractions"
   - Proof sentence: "If ever I should wish for a retreat whither I might steal from the world and its distractions, and dream quietly away the remnant of a troubled life, I know of none more promising than this little valley."
   - Hint: Read the sentence where he imagines escaping from the world.
   - Why: He would steal away from the world and its distractions to dream quietly there: a retreat is a peaceful place to get away.
@@ -4070,8 +4071,9 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
 - Bank question (Word Detective, two-part evidence): Which meaning of drowsy fits this land?
   - Key words highlighted: drowsy
   - Choices: Sleepy and slow, as if ready to doze off ✓ / Wet and gloomy, as if always under rain / Loud and lively, as if never at rest
+  - Part B: tap the clue words that show the meaning (any one): "dreamy", "listless repose"
   - Proof sentence: "A drowsy, dreamy influence seems to hang over the land, and to pervade the very atmosphere."
-  - Hint: Find the sentence about the mood that hangs over the land.
+  - Hint: Find the words nearby that feel sleepy.
   - Why: A drowsy, dreamy influence hangs over the land and fills the air: drowsy means sleepy.
   - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
 - Gist check: The Dutch settlers left the Hollow because it was too quiet. / Boys from the Hollow are known for their hard work. / The valley's sleepy mood gave Sleepy Hollow its name. ✓
@@ -4085,13 +4087,13 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
   - Piece: An old chief held his powwows there long ago → Only some people claim it (backed by "Some say that the place was bewitched by a High German doctor, during the early days of th…")
   - Piece: A witching power still rules the place → The text says it is so (backed by "Certain it is, the place still continues under the sway of some witching power, that holds…")
   - Piece: The people walk about in a constant daydream → The text says it is so (backed by "Certain it is, the place still continues under the sway of some witching power, that holds…")
-  - Discussion note (shown with the question): Irving wrote this in 1820. He calls a Native American leader a "wizard" who held "powwows," words that make Native people seem magical and mysterious instead of real people with their own beliefs and history. Many white writers of his time described Native people this way. Your teacher may talk with your class about it.
+  - Discussion note (shown with the question): Teacher note: Irving, writing in 1820, describes Native people through the stereotypes of his time ("powwows," "the prophet or wizard of his tribe"). Consider pausing here: Whose voice tells this story? How might a Native person describe this land and its history?
   - Hint: Watch for the words "some say" and "certain it is."
   - Why: "Some say" and "others" mark rumors; "certain it is" marks what the narrator states as fact.
   - Standards: ELA.K12.EE.1.1, ELA.K12.EE.3.1
 - Bank question (Weigh the Evidence, two-part evidence): Which detail does the narrator present as sure, not just gossip?
   - Choices: An old chief held his meetings in the glen / Some witching power still holds the place ✓ / A German doctor once cast a spell on it
-  - Discussion note (shown with the question): Irving wrote this in 1820. He calls a Native American leader a "wizard" who held "powwows," words that make Native people seem magical and mysterious instead of real people with their own beliefs and history. Many white writers of his time described Native people this way. Your teacher may talk with your class about it.
+  - Discussion note (shown with the question): Teacher note: Irving, writing in 1820, describes Native people through the stereotypes of his time ("powwows," "the prophet or wizard of his tribe"). Consider pausing here: Whose voice tells this story? How might a Native person describe this land and its history?
   - Proof sentence: "Certain it is, the place still continues under the sway of some witching power, that holds a spell over the minds of the good people, causing them to walk in a continual reverie."
   - Hint: One sentence begins by saying it is certain.
   - Why: "Certain it is": the witching power is stated as fact, while the doctor and the chief are only what some say.
@@ -4160,13 +4162,13 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
   - Hint: Think about newcomers, not just the people born there.
   - Why: Even newcomers soon breathe in the valley's witching air and start to dream and see apparitions.
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Bank question (Theme Thread, two-part evidence): Which idea keeps coming back in the story so far?
-  - Key words highlighted: keeps coming back
-  - Choices: Hard work always wins out over idle dreaming in the end / Strangers are never welcome in small towns / This valley's dreamy spell takes hold of anyone who stays there ✓
+- Bank question (Theme Thread, one-sentence written answer): Using your own words, tell in one sentence what happens to newcomers who settle in the Hollow.
+  - A strong answer: Newcomers who settle in the Hollow soon begin to imagine things and see ghosts, because its dreamy air takes hold of them.
+  - Key ideas (one from each group): dream, imagin, vision, ghost, apparition, see things, fanc, superstit, strange, spell, witch, haunt | newcomer, anyone, every, people, those who, outsider, visitor, settle, come, move, live, stay, arriv
   - Proof sentence: "However wide awake they may have been before they entered that sleepy region, they are sure, in a little time, to inhale the witching influence of the air, and begin to grow imaginative, to dream dreams, and see apparitions."
   - Proof sentence: "It is remarkable that the visionary propensity I have mentioned is not confined to the native inhabitants of the valley, but is unconsciously imbibed by every one who resides there for a time."
-  - Hint: Even folks who arrive wide awake don't stay that way. Find where it says so.
-  - Why: The same dreamy spell shows up again: anyone who stays begins to dream dreams and see apparitions.
+  - Hint: Even people who arrive wide awake don't stay that way.
+  - Why: However wide awake they were before, newcomers soon inhale the witching influence and begin to dream dreams and see apparitions.
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Discovery (figurative): "region of shadows". Region of shadows: a dark, mysterious place where wild stories grow.
 
@@ -4398,9 +4400,9 @@ Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. T
   - Hint: Notice the words "in his own mind."
   - Why: Leading the choir is "a matter of no little vanity," and only "in his own mind" does he beat the parson: pride shapes how he sees himself.
   - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Bank question (Theme Thread, two-part evidence): What does Ichabod's pride in leading the choir suggest about people in general?
-  - Key words highlighted: people in general
-  - Choices: Real talent always earns people the respect it deserves / Music is the best way to bring a whole village together / Pride can make people see themselves as better than they are ✓
+- Bank question (Theme Thread, one-sentence written answer): Using one sentence, state the lesson about people that Ichabod's pride in leading the choir suggests.
+  - A strong answer: Pride can make people believe they are better than they really are, the way Ichabod thinks he outdoes the parson.
+  - Key ideas (one from each group): pride, proud, vain, vanity, conceit, full of himself, think highly, ego, admir, show off | see themselves, see himself, own mind, imagin, believ, think, picture, better than, greater, than they, really, truly, others
   - Proof sentence: "It was a matter of no little vanity to him on Sundays, to take his station in front of the church gallery, with a band of chosen singers; where, in his own mind, he completely carried away the palm from the parson."
   - Hint: Whose opinion is it that he beats the parson?
   - Why: Only "in his own mind" does he carry away the palm from the parson: vanity colors how he sees himself.

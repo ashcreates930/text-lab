@@ -11,7 +11,8 @@ import {caseNotesPdf,refresherAward,type CaseNote,type RefresherViewData} from "
 import {saidLine,type InterviewNote} from "@/lib/interview";
 import {AnswerBars,ChunkText,MultiBars,type ChunkView} from "./expedition-race";
 import {DragDrop} from "./drag-drop";
-import {ContentNote} from "./content-note";
+import {codesFor} from "@/lib/best-standards";
+import {QuestionNote} from "./content-note";
 import {SplitStage} from "./split-stage";
 import {ReadingPanel} from "./reading-panel";
 import {focusScreenTop} from "./screen-focus";
@@ -38,7 +39,7 @@ export function Refresher({items,world,check,onDone,seed}:{items:RefresherView[]
  const award=refresherAward(items.map(x=>({index:x.chunk-1,kind:x.kind})),items.map((_,i)=>fixed[i]??false));
  const head=<><div className="flex items-center justify-between"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Refresher · {k+1} of {items.length} · no timer</p><p className="flex items-center gap-1 font-display text-[18px] font-bold text-gold" aria-label={`${award.stars} stars`}>{Array.from({length:items.length},(_,i)=><Star key={i} size={18} className={fixed[i]?"fill-gold text-gold":"text-muted"} aria-hidden/>)}</p></div>
   <h1 id="rf-h" className="text-[24px] leading-tight outline-none">{it.kind==="liar"?`${it.typeName}: ${it.prompt}`:it.kind==="gist"?`Chunk ${it.chunk}: which is the best summary?`:`Chunk ${it.chunk} · ${it.typeName}: ${it.prompt}`}</h1></>;
- const hint=<>{it.note&&<ContentNote label="Discussion note" text={it.note}/>}<p className="flex items-start gap-2 rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold"><Lightbulb size={18} className="mt-0.5 shrink-0 text-gold" aria-hidden/>{it.hint}</p></>;
+ const hint=<>{it.note&&<QuestionNote text={it.note}/>}<p className="flex items-start gap-2 rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold"><Lightbulb size={18} className="mt-0.5 shrink-0 text-gold" aria-hidden/>{it.hint}</p></>;
  const lockBtn=(ok:boolean)=><button type="button" disabled={!ok} onClick={()=>lock(draft)} className="case-primary w-full justify-center">Lock in <ArrowRight size={18} aria-hidden/></button>;
  // The passage side: the chunk (a sentence to tap for a question's proof), or the whole expedition for Name the Liar
  // and Make the Call. After trying, the proof lights up there.
@@ -48,7 +49,8 @@ export function Refresher({items,world,check,onDone,seed}:{items:RefresherView[]
    :<ChunkText chunk={it.chunkView} world={world} tokens={tokens} shown={result.shown} shownStyle={result.fixed?"right":"missed"}/>)
   :it.task==="pin2"?<ReadingPanel passages={(it.callPassages??it.passages) as SourcePassage[]} glossary={world.glossary} kept={draft.lines??[]} onTap={l=>setDraft(d=>{const ls=d.lines??[];return {lines:ls.includes(l.text)?ls.filter(x=>x!==l.text):ls.length>=2?ls:[...ls,l.text]}})}/>
   :wide?<ReadingPanel passages={it.passages as SourcePassage[]} glossary={world.glossary} selected={draft.lines?.[0]} kept={[]} onTap={l=>setDraft(d=>d.lines?.[0]===l.text?{}:{lines:[l.text]})}/>
-  :<ChunkText chunk={it.chunkView} world={world} tokens={tokens} pick={it.task==="line"?{selected:draft.lines?.[0]??null,onPick:t=>setDraft(t?{lines:[t]}:{})}:undefined}/>;
+  :<ChunkText chunk={it.chunkView} world={world} tokens={tokens} pick={it.task==="line"?{selected:draft.lines?.[0]??null,onPick:t=>setDraft(t?{lines:[t]}:{})}:undefined}
+   wordPick={it.task==="clues"?{selected:draft.words??[],onToggle:i=>setDraft(d=>{const w=d.words??[];return {...d,words:w.includes(i)?w.filter(x=>x!==i):[...w,i].slice(0,30)}})}:undefined}/>;
  const body=result?<div aria-live="assertive">{result.fixed
    ?<div className="moment-pop rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">+1 star</p><p className="font-display text-[32px] font-bold leading-none">Fixed!</p></div>
    :<div className="rounded-card bg-panel p-5"><p className="font-display text-[26px] font-bold leading-none">Here's the proof</p><p className="mt-1 text-[15px] text-muted">Read it once more. It's saved in your Case Notes.</p></div>}
@@ -56,22 +58,23 @@ export function Refresher({items,world,check,onDone,seed}:{items:RefresherView[]
   :<div className="flex flex-col gap-2">{hint}
    {(it.task==="gist"||it.task==="meaning")&&it.options&&<AnswerBars seed={seed?`${seed}|${it.kind}|${it.chunk}|${it.task}`:undefined} label={it.prompt} options={it.options.map(t=>({text:t}))} picked={null} onPick={i=>lock(it.task==="gist"?{choice:i}:{choice2:i})}/>}
    {it.task==="line"&&<p className="text-[15px] font-bold text-muted">Tap the sentence that proves it, then lock in.</p>}
+   {it.task==="clues"&&<p className="text-[15px] font-bold text-muted">Tap the clue words that show the meaning, then lock in.</p>}
    {/* Drag and drop and choose two are done again, untimed. */}
    {it.task==="dnd"&&it.dnd&&<DragDrop view={it.dnd} placed={draft.placed??{}} onChange={p=>setDraft(d=>({...d,placed:p}))}/>}
    {it.task==="multi"&&it.options&&<MultiBars seed={seed?`${seed}|${it.chunk}|multi`:undefined} label={it.prompt} need={it.pick??2} options={it.options.map(t=>({text:t}))} picked={draft.picks??[]} onToggle={i=>setDraft(d=>{const p=d.picks??[];return {...d,picks:p.includes(i)?p.filter(x=>x!==i):[...p,i]}})}/>}
    {it.task==="pin2"&&<p className="text-[15px] font-bold text-muted">Pin 2 lines that back one of the calls ({draft.lines?.length??0} of 2).</p>}</div>;
  const action=result?<button type="button" onClick={next} className="case-primary w-full justify-center">{k+1>=items.length?"Open my Case Notes":"Next"} <ArrowRight size={18} aria-hidden/></button>
-  :it.task==="line"?lockBtn(!!draft.lines?.length):it.task==="pin2"?lockBtn((draft.lines?.length??0)===2)
+  :it.task==="line"?lockBtn(!!draft.lines?.length):it.task==="clues"?lockBtn(!!draft.words?.length):it.task==="pin2"?lockBtn((draft.lines?.length??0)===2)
   :it.task==="dnd"?lockBtn(Object.values(draft.placed??{}).filter(Boolean).length>0):it.task==="multi"?lockBtn((draft.picks?.length??0)===(it.pick??2)):undefined;
- return <SplitStage key={k} label="Refresher" passage={passage} head={head} body={body} action={action} collapse={!result&&(it.task==="line"||it.task==="pin2")}/>;
+ return <SplitStage key={k} label="Refresher" passage={passage} head={head} body={body} action={action} collapse={!result&&(it.task==="line"||it.task==="pin2"||it.task==="clues")}/>;
 }
 
 // ---------- Case Notes ----------
 const status=(n:CaseNote)=>n.rightFirstTry?{label:"Proved on the one try",cls:"bg-success text-on-success",Icon:Check}:n.fixed?{label:"Fixed in the Refresher",cls:"bg-gold text-on-gold",Icon:Star}:{label:n.fixed===false?"Not fixed yet":"Missed",cls:"bg-panel-2 text-ink",Icon:null};
-export function CaseNotesView({notes,student,story,expedition,award,onNote,bonus,onDone,interview}:{notes:CaseNote[];student:string;story:string;expedition:string;award?:{stars:number;of:number;badge:string|null};onNote?:(chunk:number,text:string)=>void;bonus?:React.ReactNode;onDone?:()=>void;interview?:InterviewNote|null}){
+export function CaseNotesView({notes,student,story,expedition,award,onNote,bonus,onDone,interview,grade}:{grade?:number;notes:CaseNote[];student:string;story:string;expedition:string;award?:{stars:number;of:number;badge:string|null};onNote?:(chunk:number,text:string)=>void;bonus?:React.ReactNode;onDone?:()=>void;interview?:InterviewNote|null}){
  useLayoutEffect(()=>{focusScreenTop()},[]);
  const file=useMemo(()=>`case-notes-${expedition.toLowerCase().replace(/[^a-z0-9]+/g,"-")}.pdf`,[expedition]);
- function download(){caseNotesPdf(student,story,expedition,notes,interview).save(file)}
+ function download(){caseNotesPdf(student,story,expedition,notes,interview,grade).save(file)}
  const right=notes.filter(n=>n.rightFirstTry).length;
  return <section aria-labelledby="cn-h" className="case-notes mt-2 flex flex-col gap-3">
   <div><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{story} · {expedition}</p><h1 id="cn-h" className="text-[30px] outline-none">Case Notes</h1>
@@ -96,7 +99,7 @@ export function CaseNotesView({notes,student,story,expedition,award,onNote,bonus
     {n.gistPick&&<div><dt className="inline font-extrabold">Gist pick: </dt><dd className="inline">{n.gistPick} ({n.gistRight?"best summary":"not the best"})</dd></div>}
     {n.typedQuestion&&<div><dt className="inline font-extrabold">My question: </dt><dd className="inline">{n.typedQuestion}</dd></div>}
     {n.unknownWords.length>0&&<div><dt className="inline font-extrabold">Words I didn't know: </dt><dd className="inline">{n.unknownWords.join(", ")}</dd></div>}
-    <div className="text-[13px] text-muted"><dt className="inline">Standards: </dt><dd className="inline">{n.standards.join(", ")}</dd></div>
+    <div className="text-[13px] text-muted"><dt className="inline">Standards: </dt><dd className="inline">{codesFor(n.standards,grade).join(", ")}</dd></div>
    </dl>
    <label className="mt-3 block text-[14px] font-extrabold" htmlFor={`note-${n.chunk}`}>My notes</label>
    {onNote?<textarea id={`note-${n.chunk}`} defaultValue={n.note} onBlur={e=>onNote(n.chunk-1,e.target.value)} rows={2} className="no-print mt-1 w-full rounded-row border-2 border-edge bg-panel-2 px-3 py-2 text-[15px] focus:border-highlight" placeholder="What I noticed, what I'd check again…"/>:null}

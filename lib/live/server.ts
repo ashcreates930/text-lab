@@ -164,7 +164,7 @@ function publicRace(st: LiveState, round: LiveRaceRound) {
   const exp = st.world.expeditions?.find((e) => e.id === round.settings.expeditionId);
   return {
     type: "race" as const, step: round.step, total: chunks.length, beat: round.beat, beatStartedAt: round.beatStartedAt, squadsOn: round.squadsOn, paused: !!round.pausedAt,
-    beatMs: beatMs(round, c, "1"), expedition: { id: round.settings.expeditionId, title: exp?.title ?? "" }, gradeBand: round.settings.gradeBand, highlighter: round.settings.highlighter,
+    beatMs: beatMs(round, c, "1"), expedition: { id: round.settings.expeditionId, title: exp?.title ?? "" }, gradeBand: round.settings.gradeBand, grade: round.settings.grade ?? 7, highlighter: round.settings.highlighter,
     chunk: { id: c.id, index: c.index, passages: c.passages, lines: c.lines, gist: strip(c.chunk.gist.options), discovery: { phrase: c.chunk.discovery.phrase, note: c.chunk.discovery.note } },
     // The arc's moment at this chunk (the twist, the boss, a surprise double), for the banners; the checkpoint follows level 1.
     arc: arc ? beatKind(arc, round.step) : null, double: arc ? multiplierAt(arc, round.step) > 1 : false, checkpoint: isCheckpoint(round.step, chunks.length),

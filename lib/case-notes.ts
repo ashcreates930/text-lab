@@ -3,9 +3,10 @@
 // browser and in tests.
 import { jsPDF } from "jspdf";
 import type { ExpQuestion } from "./world-schema.ts";
-import { TYPE_INFO, chunkTokens, norm, proofShown, proofTokens, sentenceProves, type Answer, type RaceChunk } from "./expedition.ts";
-import { dndResult, formatOf, gistAt, multiRight } from "./formats.ts";
+import { TYPE_INFO, chunkTokens, cluesProve, norm, proofShown, proofTokens, sentenceProves, type Answer, type RaceChunk } from "./expedition.ts";
+import { dndResult, formatOf, gistAt, multiRight, stepsOf } from "./formats.ts";
 import type { Version } from "./formats.ts";
+import { codesFor } from "./best-standards.ts";
 import { liarCheck, saidLine, witnessName, type InterviewNote, type LiarAnswer } from "./interview.ts";
 import type { Interview, WorldPack } from "./world-schema.ts";
 
@@ -22,7 +23,10 @@ export const REFRESHER_MAX = 4;
 export type RefresherItem = { index: number; kind: "question" | "gist" | "liar" };
 export function refresherItems(chunks: RaceChunk[], results: ChunkResult[], liarMissed = false): RefresherItem[] {
   const liar = liarMissed ? [{ index: -1, kind: "liar" as const }] : [];
-  const q = results.filter((r) => !r.correct).map((r) => ({ index: r.index, kind: "question" as const }));
+  // Missed drag and drops and two-step questions first (Name the Liar is two steps too), then the rest, then Gist.
+  const missed = results.filter((r) => !r.correct).map((r) => ({ index: r.index, kind: "question" as const }));
+  const heavy = (i: number) => { const x = chunks[i]?.chunk.question; if (!x) return false; const f = formatOf(x); return f === "dnd" || stepsOf(f, x.type, !!x.proof?.lines?.length || !!x.clues?.length) === 2; };
+  const q = [...missed.filter((m) => heavy(m.index)), ...missed.filter((m) => !heavy(m.index))];
   // Only the chunks that have a Gist check (about every third: lib/formats.ts gistAt).
   const g = results.filter((r) => gistAt(r.index) && !gistRight(chunks[r.index], r.gist)).map((r) => ({ index: r.index, kind: "gist" as const }));
   return [...liar, ...q, ...g].slice(0, REFRESHER_MAX);
@@ -37,15 +41,17 @@ export function refresherCorrect(item: RefresherItem, chunk: RaceChunk | undefin
   // Drag and drop and choose two are done again, untimed; only a fully right answer fixes them.
   if (f === "dnd") return dndResult(q, a.placed).all;
   if (f === "multi") return multiRight(q, a.picks);
+  if (q.clues?.length) return cluesProve(q, chunkTokens(chunk.lines), a.words);
   if (q.type === "figure_it_out") return a.choice2 === bestOf(q.choices2?.options);
   if (q.type === "make_call") { const got = [...new Set((a.lines ?? []).map(norm))]; return got.length === 2 && (q.theories ?? []).some((t) => got.every((g) => t.lines.some((l) => norm(l) === g))) && got.every((g) => callLines.length === 0 || callLines.some((l) => norm(l) === g)); }
   return sentenceProves(q, chunkTokens(chunk.lines), a.lines);
 }
 // What the Refresher asks the student to do for an item.
-export function refresherTask(item: RefresherItem, q: ExpQuestion | undefined): "gist" | "meaning" | "line" | "pin2" | "dnd" | "multi" {
+export function refresherTask(item: RefresherItem, q: ExpQuestion | undefined): "gist" | "meaning" | "line" | "pin2" | "dnd" | "multi" | "clues" {
   if (item.kind === "gist") return "gist";
   if (item.kind === "liar" || !q) return "line";
   if (formatOf(q) === "dnd") return "dnd";
+  if (q.clues?.length) return "clues";
   if (formatOf(q) === "multi") return "multi";
   if (q.type === "figure_it_out") return "meaning";
   if (q.type === "make_call") return "pin2";
@@ -76,6 +82,7 @@ export function answerText(q: ExpQuestion, a: Answer | null, chunk: RaceChunk) {
   if (a.picks?.length) parts.push(a.picks.map((i) => q.choices?.[i]?.text).filter(Boolean).join(" and "));
   if (a.text) parts.push(`"${a.text.replace(/\s+/g, " ").trim()}"${a.judged ? ` (${a.judged})` : ""}`);
   if (q.dnd && a.placed) { const r = dndResult(q, a.placed); parts.push(`${r.right.length} of ${r.total} pieces in place: ${q.dnd.items.map((it) => `${it.text} in ${q.dnd!.slots.find((x) => x.id === a.placed![it.id])?.label ?? "the tray"}`).join("; ")}`); }
+  if (a.words?.length) parts.push(`Clue words: ${[...a.words].sort((x, y) => x - y).map((i) => tokens.find((t) => t.i === i)?.text ?? "").filter(Boolean).map((w) => `"${w}"`).join(", ")}`);
   void tokens;
   const proof = (a.lines ?? []).map((l) => `"${l.replace(/\s+/g, " ")}"`).join(" ");
   return { answer: parts.join(" · ") || (proof ? "Tapped a line" : "No answer"), proof };
@@ -86,6 +93,7 @@ export function correctProofText(q: ExpQuestion, chunk: RaceChunk) {
   if (formatOf(q) === "multi") return (q.choices ?? []).filter((c) => c.best).map((c) => c.text).join(" and ");
   if (q.written && !s.lines.length) return q.written.model;
   if (q.type === "figure_it_out") return q.choices2?.options.find((o) => o.best)?.text ?? "";
+  if (q.clues?.length) return `Clue words: ${q.clues.map((c) => `"${c}"`).join(" or ")}`;
   return s.lines.map((l) => `"${l.replace(/\s+/g, " ")}"`).join(" ");
 }
 // One entry per chunk, built during play, with blank space for the student's own notes.
@@ -166,7 +174,7 @@ function pdfWriter(title: string, subtitle: string) {
   doc.setTextColor(17, 17, 17); text(title, 20, true, 6); text(subtitle, 11, false, 10); y += 6;
   return { doc, text, rule, space: (h: number) => { y += h; } };
 }
-export function caseNotesPdf(student: string, story: string, expedition: string, notes: CaseNote[], interview?: InterviewNote | null) {
+export function caseNotesPdf(student: string, story: string, expedition: string, notes: CaseNote[], interview?: InterviewNote | null, grade?: number) {
   const w = pdfWriter(`Case Notes: ${expedition}`, `${story} · ${student}`);
   if (interview) {
     w.text("The Interview", 13, true);
@@ -184,7 +192,7 @@ export function caseNotesPdf(student: string, story: string, expedition: string,
     if (n.gistPick) w.text(`Gist pick: ${n.gistPick} (${n.gistRight ? "best summary" : "not the best"})`);
     if (n.typedQuestion) w.text(`My question: ${n.typedQuestion}`);
     if (n.unknownWords.length) w.text(`Words I didn't know: ${n.unknownWords.join(", ")}`);
-    w.text(`Standards: ${n.standards.join(", ")}`, 9);
+    w.text(`Standards: ${codesFor(n.standards, grade).join(", ")}`, 9);
     w.text("My notes:", 11, true); if (n.note) w.text(n.note); w.rule(n.note ? 1 : 3); w.space(6);
   }
   return w.doc;

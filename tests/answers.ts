@@ -1,7 +1,7 @@
 // Test helper: the right answer (with its proof) for a question in any format (lib/formats.ts), for the tests that play
 // expeditions through.
 import type { ExpQuestion } from "../lib/world-schema.ts";
-import { chunkTokens, phraseRange, type Answer, type RaceChunk } from "../lib/expedition.ts";
+import { chunkTokens, clueTokens, phraseRange, type Answer, type RaceChunk } from "../lib/expedition.ts";
 import { formatOf } from "../lib/formats.ts";
 
 const best = (o?: { best?: boolean }[]) => (o ?? []).findIndex((x) => x.best);
@@ -12,6 +12,8 @@ export function rightAnswerFor(q: ExpQuestion, rc: RaceChunk): Answer {
   if (f === "written") return { text: q.written!.model, judged: "Strong", lines: q.proof?.lines?.slice(0, 1) ?? [] };
   if (q.type === "make_call") return { theory: q.theories![1].id, lines: q.theories![1].lines.slice(0, 2) };
   if (q.type === "figure_it_out") return { choice: best(q.choices), choice2: best(q.choices2!.options) };
+  // Clue words: the clue phrase's words (the vocabulary questions whose sentence holds the word).
+  if (q.clues?.length) return { choice: best(q.choices), words: [...clueTokens(q, tokens)] };
   // Text evidence is a whole sentence: a word proof is the sentence that holds the word.
   if (q.proof?.words?.length) { const r = phraseRange(tokens, q.proof.words[0])!; return { choice: best(q.choices), lines: [rc.lines[tokens[r[0]].line].text] }; }
   return { ...(q.choices ? { choice: best(q.choices) } : {}), lines: [q.proof!.lines![0]] };

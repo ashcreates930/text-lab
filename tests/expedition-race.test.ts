@@ -17,7 +17,8 @@ const shp = parseSourcePassages(src("public/worlds/sleepy-hollow/source.md"));
 const exp = sh.expeditions![0], chunks = expeditionChunks(sh, shp, exp.id);
 // A question of a type (and format) from Expeditions 1 and 2, main or bank (the rebuilt expeditions mix formats).
 const e2 = sh.expeditions![1], chunks2 = expeditionChunks(sh, shp, e2.id);
-const everyQ = [...exp.chunks.flatMap((c, k) => bankOf(c).map((q) => ({ c: chunks[k], q }))), ...e2.chunks.flatMap((c, k) => bankOf(c).map((q) => ({ c: chunks2[k], q })))];
+// Every question in the story (main and bank), Expeditions 1 and 2 first.
+const everyQ = sh.expeditions!.flatMap((e) => { const cs = expeditionChunks(sh, shp, e.id); return e.chunks.flatMap((c, k) => bankOf(c).map((q) => ({ c: cs[k], q }))); });
 const byType = (t: string, f?: string) => { const x = everyQ.find((y) => y.q.type === t && (f ? formatOf(y.q) === f : formatOf(y.q) !== "dnd" && formatOf(y.q) !== "multi" && formatOf(y.q) !== "written"))!; return { c: x.c, q: x.q, tokens: chunkTokens(x.c.lines) }; };
 const best = (o?: { best?: boolean }[]) => (o ?? []).findIndex((x) => x.best), wrong = (o?: { best?: boolean }[]) => (o ?? []).findIndex((x) => !x.best);
 // Text evidence is a whole sentence: the accepted sentence, and one that isn't.

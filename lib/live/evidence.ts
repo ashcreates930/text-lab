@@ -72,7 +72,7 @@ export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] 
       prompt = world.verdict?.question ?? "";
       for (const s of scoreVerdictRound(squads, responses, i)) results.set(s.squadId, { result: s.theoryId ? `${world.verdict?.theories.find((t) => t.id === s.theoryId)?.name ?? s.theoryId} · ${s.detail}` : s.detail, points: s.points });
     } else if (round.type === "race") {
-      prompt = `Proof Race · ${world.expeditions?.find((e) => e.id === round.settings.expeditionId)?.title ?? "Expedition"} · grades ${round.settings.gradeBand.replace("-", " to ")}`;
+      prompt = `Proof Race · ${world.expeditions?.find((e) => e.id === round.settings.expeditionId)?.title ?? "Expedition"} · grade ${round.settings.grade ?? 7}`;
     } else if (round.type === "bonus") {
       prompt = "Bonus Round · squads compare Case Notes and agree on the strongest proof";
       for (const sq of squads) { const picks = rows.filter((r) => r.kind === "bonus_pick" && r.squadId === sq.id), agreed = new Set(picks.map((r) => Number(r.payload.index))).size, handed = rows.some((r) => r.kind === "bonus_submit" && r.squadId === sq.id); results.set(sq.id, { result: `${agreed} question${agreed === 1 ? "" : "s"} agreed${handed ? " · Squad Case File handed in" : ""}`, points: 0 }); }

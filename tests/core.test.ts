@@ -2798,7 +2798,7 @@ test("proof race live: expedition beats, readiness, gist and question saving, on
   const ev=liveRoundEvidence({session:st.session,world:st.world,squads:st.squads,players:st.players,responses:st.responses});
   const race=ev.find(rd=>rd.type==="Proof Race")!;assert.equal(race.questions!.length,3);assert.equal(race.questions!.filter(q=>q.flagged).length,2);assert.equal(race.questions!.find(q=>q.flagged)!.text,"Where do you live?");
   assert.ok(race.squads[0].members.find(m=>m.nickname==="Ben Cole")!.actions.some(a=>/right answer, proof missed/.test(a)));
-  assert.match(race.prompt,/Into the Hollow · grades 6 to 8/);
+  assert.match(race.prompt,/Into the Hollow · grade 7/);
 });
 
 test("production fixes: mission questions hold the student's pieces, and round 1 counts the pouch's 3 lines", async()=>{

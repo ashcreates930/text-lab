@@ -20,10 +20,11 @@ import { GIST_SECONDS, SCREEN_MS, TESTIMONY_MS, TYPED_SECONDS, TYPE_INFO, chunkT
 import { podium, raceBoard, readiness, squadTotals } from "../proof-race.ts";
 import { BURST_POINTS, BURST_SECONDS, LIGHTNING_POINTS, LIGHTNING_SECONDS, arcOf, isCheckpoint, multiplierAt, streakBonus, versionFor, type Arc, type Version } from "../pacing.ts";
 import { askedQuestion, bankPick, gistAt } from "../formats.ts";
-import { bandOf, type GradeBand } from "../best-standards.ts";
+import { bandOf, type GradeBand, gradeOf, type Grade } from "../best-standards.ts";
 import { screenBoardText } from "../safety.ts";
 
-export type ExpSettings = { expeditionId: string; gradeBand: GradeBand; questions: boolean; highlighter: boolean; autoAdvance: boolean };
+// grade: the class grade (6 to 10) that picks each benchmark's code; gradeBand follows from it.
+export type ExpSettings = { expeditionId: string; grade?: Grade; gradeBand: GradeBand; questions: boolean; highlighter: boolean; autoAdvance: boolean };
 export const LIVE_BEATS = ["vote", "testify", "read", "process", "ask", "race", "reveal", "lightning", "board", "burst", "countdown", "liar", "verdict"] as const;
 export type LiveBeat = (typeof LIVE_BEATS)[number];
 export type LiveRaceRound = { type: "race"; settings: ExpSettings; step: number; beat: LiveBeat; beatStartedAt: string; squadsOn: boolean; pinned?: string | null; pausedAt?: string | null; interview?: { liar: number; witnesses: number } | null };
@@ -34,7 +35,8 @@ export function parseExpSettings(x: unknown, world: WorldPack, grade = 7): ExpSe
   const o = (x ?? {}) as Record<string, unknown>;
   const id = typeof o.expeditionId === "string" && world.expeditions?.some((e) => e.id === o.expeditionId) ? o.expeditionId : world.expeditions?.[0]?.id;
   if (!id) return null;
-  return { expeditionId: id, gradeBand: o.gradeBand === "9-10" || o.gradeBand === "6-8" ? o.gradeBand : bandOf(grade), questions: o.questions !== false, highlighter: o.highlighter === true, autoAdvance: o.autoAdvance !== false };
+  const g = gradeOf([6, 7, 8, 9, 10].includes(Number(o.grade)) ? o.grade : o.gradeBand === "9-10" ? 9 : grade);
+  return { expeditionId: id, grade: g, gradeBand: bandOf(g), questions: o.questions !== false, highlighter: o.highlighter === true, autoAdvance: o.autoAdvance !== false };
 }
 export const liveArc = (world: WorldPack, round: Pick<LiveRaceRound, "settings">): Arc | null => { const e = world.expeditions?.find((x) => x.id === round.settings.expeditionId); return e ? arcOf(world, e) : null; };
 export const liveRaceChunks = (world: WorldPack, passages: SourcePassage[], round: Pick<LiveRaceRound, "settings">) => expeditionChunks(world, passages, round.settings.expeditionId);

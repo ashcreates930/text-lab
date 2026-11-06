@@ -27,6 +27,10 @@ export function distractorProblems(at: string, options: { text: string; best?: b
 
 // Drag and drop: 3 to 5 pieces, every slot real and used, one piece per slot where the kind needs it, and each backing
 // sentence copied exactly from the chunk.
+// Vocabulary questions: a word or phrase and its meaning.
+const VOCAB_TYPES = new Set(["word_detective", "shades"]);
+// Content words of a choice (for spotting two choices that say the same thing).
+const contentWords = (t: string) => new Set(t.toLowerCase().replace(/[^a-z' ]/g, " ").split(/\s+/).filter((w) => w.length > 3 && !["that", "with", "they", "them", "their", "this", "from", "what", "when", "were", "have", "about", "into", "than"].includes(w)));
 export function dndProblems(at: string, q: ExpQuestion, lines: string[]) {
   const out: string[] = [], d = q.dnd; if (!d) return [`${at}: drag and drop needs its pieces and slots`];
   const slots = new Set(d.slots.map((x) => x.id));
@@ -60,6 +64,22 @@ export function variety(at: string, exp: Expedition) {
     const f = formatOf(q), where = `${at}: chunk ${k + 1} ${i ? "bank question" : "question"}`;
     if ((f === "two_part" || f === "tap") && q.type !== "make_call" && !q.proof?.lines?.length) out.push(`${where} needs a proof sentence`);
     if (/\bread the words (?!")/i.test(q.prompt)) out.push(`${where}: put the quoted words in quotation marks`);
+  }));
+  // A written answer every student reaches: one chunk whose every question is written.
+  if (!exp.chunks.some((c) => bankOf(c).every((q) => formatOf(q) === "written"))) out.push(`${at}: needs a chunk where every bank question is written, so every student writes`);
+  exp.chunks.forEach((c, k) => bankOf(c).forEach((q, i) => {
+    const where = `${at}: chunk ${k + 1} ${i ? "bank question" : "question"}`;
+    // No two choices share most of their words.
+    for (const set of [q.choices?.map((o) => o.text) ?? [], q.choices2?.options.map((o) => o.text) ?? []]) for (let a = 0; a < set.length; a++) for (let b = a + 1; b < set.length; b++) {
+      const x = contentWords(set[a]), y = contentWords(set[b]), shared = [...x].filter((w) => y.has(w)).length, small = Math.min(x.size, y.size);
+      if (small >= 3 && shared / small > 0.6) out.push(`${where}: choices "${set[a].slice(0, 30)}" and "${set[b].slice(0, 30)}" share most of their words`);
+    }
+    // Theme questions ask about an idea, never a character's trait: the answer states an idea about people or life.
+    if (q.type === "theme_thread") {
+      const answer = q.written?.model ?? q.choices?.find((o) => o.best)?.text ?? "";
+      if (/\b(proudest|trait|what kind of (person|man|woman)|kind of teacher)\b/i.test(q.prompt)) out.push(`${where}: a theme question asks about an idea, not a character trait`);
+      if (/^(he|she|his|her|ichabod|brom|katrina|hans|baltus)\b/i.test(answer.trim())) out.push(`${where}: a theme answer states an idea, not a character's trait`);
+    }
   }));
   const frames = exp.chunks.flatMap((c) => bankOf(c).map((q) => q.prompt.toLowerCase().replace(/[^a-z ]/g, "").split(/\s+/).slice(0, 4).join(" ")));
   const seen = new Set<string>(); for (const fr of frames) { if (seen.has(fr)) out.push(`${at}: the question frame "${fr}" repeats`); seen.add(fr); }
@@ -136,7 +156,10 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
       if (q.focus) {
         const fr = phraseRange(tokens, q.focus);
         if (!fr) out.push(`${at}: focus "${q.focus}" is not in the chunk`);
-        else { const sentences = new Set(proofLineIndexes(q, tokens)); if (!q.reviewed && rc.lines.length > 1 && (sentences.has(tokens[fr[0]].line) || sentences.has(tokens[fr[1]].line))) out.push(`${at}: focus "${q.focus}" sits in a proof sentence; it would point to the answer`); }
+        else { const sentences = new Set(proofLineIndexes(q, tokens)); if (!q.clues?.length && rc.lines.length > 1 && (sentences.has(tokens[fr[0]].line) || sentences.has(tokens[fr[1]].line))) out.push(`${at}: focus "${q.focus}" sits in a proof sentence; it would point to the answer (ask for clue words instead)`); }
+        // Clue words: in the chunk, never the word itself, and only on a vocabulary question answered in two parts.
+        for (const c of q.clues ?? []) { const r = phraseRange(tokens, c); if (!r) out.push(`${at}: clue words "${c}" are not in the chunk`); else if (fr && r[0] <= fr[1] && fr[0] <= r[1]) out.push(`${at}: clue words "${c}" include the word itself`); }
+        if (q.clues?.length && !(VOCAB_TYPES.has(q.type) && f === "two_part")) out.push(`${at}: clue words are for a vocabulary question in two parts`);
       } else if (FOCUS_TYPES.has(q.type) && f !== "dnd") out.push(`${at}: ${q.type} is about a word or phrase; name it as focus`);
       for (const kw of q.keywords) if (!q.prompt.toLowerCase().includes(kw.toLowerCase())) out.push(`${at}: key word "${kw}" is not in the question`);
       if (!q.standards.some((s) => TYPE_INFO[q.type].standards.includes(s))) out.push(`${at}: standards must include one of ${TYPE_INFO[q.type].standards.join(", ")}`);

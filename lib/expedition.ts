@@ -108,9 +108,9 @@ export const speedBonus = (elapsedMs: number, limit: number) => (limit > 0 ? Mat
 // Each step's verdict (answer, proof) and the points. Time ran out: 0, whatever was picked.
 export function scoreAnswer(q: ExpQuestion, a: Answer, tokens: Token[], elapsedMs: number, limit: number) {
   const late = elapsedMs > limit;
-  // Every proof is one tapped sentence (lib: sentenceProves).
+  // Every proof is one tapped sentence (lib: sentenceProves), or for clue-word questions the tapped clue words.
   const proofLinesOk = () => sentenceProves(q, tokens, a.lines);
-  const proofOk = proofLinesOk;
+  const proofOk = () => (q.clues?.length ? cluesProve(q, tokens, a.words) : proofLinesOk());
   let answer = true, proof = true;
   // The formats with their own rules (lib/formats.ts). Drag and drop scores each piece; a written response by its strength.
   const f = formatOf(q);
@@ -140,6 +140,19 @@ export function scoreAnswer(q: ExpQuestion, a: Answer, tokens: Token[], elapsedM
 }
 export const gistPoints = (chunk: Pick<ExpChunk, "gist">, choice: number | null) => (choice !== null && chunk.gist.options[choice]?.best ? POINTS.gist : 0);
 
+// Clue words: the token positions of the clue phrases (never the focus word itself).
+export function clueTokens(q: Pick<ExpQuestion, "clues" | "focus">, tokens: Token[]) {
+  const focus = new Set(focusTokens(tokens, q.focus)), out = new Set<number>();
+  for (const c of q.clues ?? []) { const r = phraseRange(tokens, c); if (r) for (let k = r[0]; k <= r[1]; k++) if (!focus.has(k)) out.add(k); }
+  return out;
+}
+// Proved when the student taps at least one clue word and most of what they tap is clue words (the word itself
+// doesn't count either way).
+export function cluesProve(q: Pick<ExpQuestion, "clues" | "focus">, tokens: Token[], words: number[] | undefined) {
+  const clue = clueTokens(q, tokens), focus = new Set(focusTokens(tokens, q.focus)), got = [...new Set(words ?? [])].filter((i) => !focus.has(i));
+  const hits = got.filter((i) => clue.has(i)).length;
+  return hits > 0 && hits * 2 >= got.length;
+}
 // The word or phrase a question is about, as token positions (highlighted in the passage from the start).
 export function focusTokens(tokens: Token[], focus: string | null | undefined) {
   const r = focus ? phraseRange(tokens, focus) : null; return r ? Array.from({ length: r[1] - r[0] + 1 }, (_, k) => r[0] + k) : [];
@@ -147,6 +160,7 @@ export function focusTokens(tokens: Token[], focus: string | null | undefined) {
 // The proof as token positions in this chunk: every word of the proof sentence (for a word or phrase, the sentence
 // with the first accepted phrase). Lit up after the answer only.
 export function proofTokens(q: ExpQuestion, tokens: Token[], _lines?: { text: string }[]) {
+  if (q.clues?.length) return [...clueTokens(q, tokens)].sort((a, b) => a - b);
   const shownLines = new Set(proofShownLines(q, tokens));
   return tokens.filter((t) => shownLines.has(t.line)).map((t) => t.i);
 }

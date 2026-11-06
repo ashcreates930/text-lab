@@ -12,8 +12,8 @@ import type { Q } from "../build-expeditions.ts";
 
 type Lightning = { sprint?: string; id?: string; chunk: number; after: number; question?: string; answer?: [string, number][] };export type Rebuilt = { chunks: { q?: Q; bank?: (Q | "original")[] }[]; lightning?: Lightning[] };
 
-// A discussion note shown with every question that brings up Irving's description of the "old Indian chief".
-const POWWOW_NOTE = "Irving wrote this in 1820. He calls a Native American leader a \"wizard\" who held \"powwows,\" words that make Native people seem magical and mysterious instead of real people with their own beliefs and history. Many white writers of his time described Native people this way. Your teacher may talk with your class about it.";
+// The teacher's discussion note (the user's wording), shown with every question that brings up Irving's description of the "old Indian chief".
+const POWWOW_NOTE = "Teacher note: Irving, writing in 1820, describes Native people through the stereotypes of his time (\"powwows,\" \"the prophet or wizard of his tribe\"). Consider pausing here: Whose voice tells this story? How might a Native person describe this land and its history?";
 
 // Lightning beats recall a detail from earlier in the expedition, never the proof of the chunk just before the beat.
 export const REBUILT: Record<string, Rebuilt> = {
@@ -30,11 +30,11 @@ export const REBUILT: Record<string, Rebuilt> = {
       // 3 · Shades of Meaning: the original (stripling), and retreat.
       { bank: [{ type: "shades", prompt: "Why might he call the valley a retreat rather than just a spot?", keywords: ["retreat"], focus: "retreat",
         choices: [["It suggests a quiet hiding place to rest from the world", true], ["It suggests a place where soldiers fall back in battle"], ["It suggests the narrator once lost a fight in the valley"]],
-        lines: [["p004", 2]], hint: "Read the sentence where he imagines escaping from the world.", why: "He would steal away from the world and its distractions to dream quietly there: a retreat is a peaceful place to get away.", standards: ["V.1.3", "R.3.1"], reviewed: true }] },
+        lines: [["p004", 2]], clues: ["steal from the world and its distractions"], hint: "Read the sentence where he imagines escaping from the world.", why: "He would steal away from the world and its distractions to dream quietly there: a retreat is a peaceful place to get away.", standards: ["V.1.3", "R.3.1"], reviewed: true }] },
       // 4 · Word Detective: the original (listless), and drowsy.
       { bank: [{ type: "word_detective", prompt: "Which meaning of drowsy fits this land?", keywords: ["drowsy"], focus: "drowsy",
         choices: [["Sleepy and slow, as if ready to doze off", true], ["Wet and gloomy, as if always under rain"], ["Loud and lively, as if never at rest"]],
-        lines: [["p005", 1]], hint: "Find the sentence about the mood that hangs over the land.", why: "A drowsy, dreamy influence hangs over the land and fills the air: drowsy means sleepy.", standards: ["V.1.3", "K12.EE.1.1"], reviewed: true }] },
+        lines: [["p005", 1]], clues: ["dreamy", "listless repose"], hint: "Find the words nearby that feel sleepy.", why: "A drowsy, dreamy influence hangs over the land and fills the air: drowsy means sleepy.", standards: ["V.1.3", "K12.EE.1.1"], reviewed: true }] },
       // 5 · Weigh the Evidence, drag and drop: fact or claim.
       { q: { type: "weigh_evidence", format: "dnd", prompt: "Sort what the narrator states as certain from what only some people claim.",
           dnd: { kind: "fact_or_claim", slots: [{ id: "text", label: "The text says it is so" }, { id: "claim", label: "Only some people claim it" }],
@@ -72,7 +72,10 @@ export const REBUILT: Record<string, Rebuilt> = {
           written: { key_ideas: [["dream", "imagin", "vision", "ghost", "apparition", "see things", "fanc", "superstit", "strange", "spell", "witch", "haunt"], ["every", "anyone", "newcomer", "people", "those who", "outsider", "visitor", "settle", "come", "move", "live", "stay"]],
             model: "Anyone who stays in the Hollow for a while starts to dream and see ghosts, because the valley's sleepy, witching air gets into them." },
           lines: [["p008", 0], ["p008", 1]], hint: "Think about newcomers, not just the people born there.", why: "Even newcomers soon breathe in the valley's witching air and start to dream and see apparitions.", standards: ["R.1.2", "K12.EE.1.1"] },
-        bank: ["original"] },
+        bank: [{ type: "theme_thread", format: "written", prompt: "Using your own words, tell in one sentence what happens to newcomers who settle in the Hollow.",
+          written: { key_ideas: [["dream", "imagin", "vision", "ghost", "apparition", "see things", "fanc", "superstit", "strange", "spell", "witch", "haunt"], ["newcomer", "anyone", "every", "people", "those who", "outsider", "visitor", "settle", "come", "move", "live", "stay", "arriv"]],
+            model: "Newcomers who settle in the Hollow soon begin to imagine things and see ghosts, because its dreamy air takes hold of them." },
+          lines: [["p008", 1], ["p008", 0]], hint: "Even people who arrive wide awake don't stay that way.", why: "However wide awake they were before, newcomers soon inhale the witching influence and begin to dream dreams and see apparitions.", standards: ["R.1.2", "K12.EE.1.1"] }] },
       // 10 · Read Between the Lines: the original, and the narrator's hope.
       { bank: [{ type: "between_lines", prompt: "How does the narrator hope the valley will be if he ever returns?",
         choices: [["Unchanged, as if no time had passed at all", true], ["Grown into a busy, modern market town"], ["Empty, since everyone moved away long ago"]],
@@ -145,8 +148,9 @@ export const REBUILT: Record<string, Rebuilt> = {
           written: { key_ideas: [["pride", "proud", "vain", "vanity", "conceit", "full of himself", "think highly", "ego", "admir", "show off"], ["see themselves", "see himself", "own mind", "imagin", "believ", "think", "picture", "better than", "greater", "than they", "really", "truly", "others"]],
             model: "Pride can make people see themselves as greater than they really are, just as Ichabod believes his choir leading outshines even the parson." },
           lines: [["p015", 1]], hint: "Notice the words \"in his own mind.\"", why: "Leading the choir is \"a matter of no little vanity,\" and only \"in his own mind\" does he beat the parson: pride shapes how he sees himself.", standards: ["R.1.2", "K12.EE.1.1"] },
-        bank: [{ type: "theme_thread", prompt: "What does Ichabod's pride in leading the choir suggest about people in general?", keywords: ["people in general"],
-          choices: [["Pride can make people see themselves as better than they are", true], ["Real talent always earns people the respect it deserves"], ["Music is the best way to bring a whole village together"]],
+        bank: [{ type: "theme_thread", format: "written", prompt: "Using one sentence, state the lesson about people that Ichabod's pride in leading the choir suggests.",
+          written: { key_ideas: [["pride", "proud", "vain", "vanity", "conceit", "full of himself", "think highly", "ego", "admir", "show off"], ["see themselves", "see himself", "own mind", "imagin", "believ", "think", "picture", "better than", "greater", "than they", "really", "truly", "others"]],
+            model: "Pride can make people believe they are better than they really are, the way Ichabod thinks he outdoes the parson." },
           lines: [["p015", 1]], hint: "Whose opinion is it that he beats the parson?", why: "Only \"in his own mind\" does he carry away the palm from the parson: vanity colors how he sees himself.", standards: ["R.1.2", "K12.EE.1.1"] }] },
     ],
   },

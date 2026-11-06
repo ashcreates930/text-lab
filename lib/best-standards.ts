@@ -1,6 +1,6 @@
-// Florida B.E.S.T. ELA benchmarks used by Proof Race question types, verified on 2026-10-31 against CPALMS, Florida's
+// Florida B.E.S.T. ELA benchmarks used by Proof Race question types, verified on 2026-10-31 and again on 2026-11-06 (all 33 codes and texts, from CPALMS LoadBenchmarkDetails) against CPALMS, Florida's
 // official standards site (www.cpalms.org/PreviewStandard/Preview/<id>; all "State Board Approved"). Text is verbatim.
-// Teachers pick a grade band (6 to 8, or 9 to 10); a question is tagged with benchmark families (for example "R.1.3")
+// The class grade (6 to 10; 7 in the demo) picks each code; a question is tagged with benchmark families (for example "R.1.3")
 // and the class's grade picks the exact code. Never add a code here that hasn't been checked against CPALMS.
 export type GradeBand = "6-8" | "9-10";
 export type Grade = 6 | 7 | 8 | 9 | 10;
@@ -53,6 +53,10 @@ const K12: Record<Extract<BenchmarkFamily, `K12.${string}`>, [number, string]> =
 
 export const GRADES: Record<GradeBand, Grade[]> = { "6-8": [6, 7, 8], "9-10": [9, 10] };
 export const bandOf = (grade: number): GradeBand => (grade >= 9 ? "9-10" : "6-8");
+// A class's grade (6 to 10); grade 7 when none is set (the demo).
+export const gradeOf = (g: unknown): Grade => ([6, 7, 8, 9, 10].includes(Number(g)) ? Number(g) : 7) as Grade;
+// The codes a student or teacher sees for a question's benchmark families, at the class's grade (ELA.7.R.1.1).
+export const codesFor = (families: string[], grade: unknown) => families.map((f) => (BENCHMARK_FAMILIES.includes(f as BenchmarkFamily) ? benchmark(f as BenchmarkFamily, gradeOf(grade)).code : f));
 export const BENCHMARK_FAMILIES = [...Object.keys(GRADE), ...Object.keys(K12)] as BenchmarkFamily[];
 
 // The exact benchmark for a family at a grade: code, verbatim text and its CPALMS page.

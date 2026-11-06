@@ -21,7 +21,7 @@ import {focusScreenTop} from "../screen-focus";
 import {AnswerBars,ArcBanner,ChunkText,CountdownRing,DiscoveryBurst,KeywordPrompt,QuestionPanel,RaceHud,RankPill,TimerTrack} from "../expedition-race";
 import {SplitStage,useStickyOffsets} from "../split-stage";
 import {DragDrop} from "../drag-drop";
-import {ContentNote} from "../content-note";
+import {QuestionNote} from "../content-note";
 import {RaceMap} from "../world-map";
 import {InterviewHost,InterviewPlayer,interviewBeat} from "./interview-live";
 
@@ -55,7 +55,7 @@ export function LobbyBoard({state,act}:{state:HostView;act:(b:Record<string,unkn
 // ---------- Starting a Proof Race expedition (host) ----------
 export function RacePick({state,act}:{state:HostView;act:(b:Record<string,unknown>)=>void}){
  const exps=state.expeditions;
- const [o,setO]=useState({expeditionId:exps[0]?.id??"",gradeBand:"6-8",questions:true,highlighter:false,autoAdvance:true,squads:false});
+ const [o,setO]=useState({expeditionId:exps[0]?.id??"",grade:"7",questions:true,highlighter:false,autoAdvance:true,squads:false});
  const set=(k:string,v:unknown)=>setO(x=>({...x,[k]:v}));
  const sel="mt-1 w-full rounded-row bg-panel-2 px-3 py-2 text-[16px] text-ink";
  const box=(k:"questions"|"highlighter"|"autoAdvance"|"squads",label:string)=><label className="inline-flex min-h-11 items-center gap-2"><input type="checkbox" checked={o[k]} onChange={e=>set(k,e.target.checked)} className="h-5 w-5"/>{label}</label>;
@@ -63,7 +63,7 @@ export function RacePick({state,act}:{state:HostView;act:(b:Record<string,unknow
   <p className="mt-1 text-[16px] text-muted">Everyone reads a chunk, checks the gist and answers one question with proof. The board moves on by itself; you can pause or skip ahead.</p>
   <div className="mt-3 grid gap-3 text-[15px] text-muted md:grid-cols-2">
    <label>Expedition<select value={o.expeditionId} onChange={e=>set("expeditionId",e.target.value)} className={sel}>{exps.map(e=><option key={e.id} value={e.id}>{e.title} · {e.chunks} chunks</option>)}</select></label>
-   <label>Grade band<select value={o.gradeBand} onChange={e=>set("gradeBand",e.target.value)} className={sel}><option value="6-8">Grades 6 to 8</option><option value="9-10">Grades 9 to 10</option></select></label>
+   <label>Grade (picks each standard's code)<select value={o.grade} onChange={e=>set("grade",e.target.value)} className={sel}>{[6,7,8,9,10].map(g=><option key={g} value={String(g)}>Grade {g}</option>)}</select></label>
    <span className="flex flex-col">{box("questions","Your question (every third chunk)")}{box("highlighter","Highlighter: mark words students don't know")}</span>
    <span className="flex flex-col">{box("autoAdvance","Move on when 90% are ready")}{state.squads.some(q=>q.members.length)&&box("squads","Squads pool their points")}</span>
   </div>
@@ -95,7 +95,7 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
   {!race.questions.length&&<li className="text-[18px] text-muted">Waiting for questions…</li>}</ul></div>;
  return <section className="mt-4" aria-labelledby="race-h">
   <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="race-h" className="text-[clamp(24px,2.4vw,38px)] font-bold">Chunk {round.step+1} of {round.total} · {BEAT_LABEL[round.beat]}</h2>{next}</div>
-  <p className="text-[18px] text-muted">{round.expedition.title} · Grades {round.gradeBand.replace("-"," to ")}</p>
+  <p className="text-[18px] text-muted">{round.expedition.title} · Grade {round.grade??7}</p>
   {timed&&left!==null&&<div className="mt-2"><TimerTrack left={left} seconds={(totalMs??1000)/1000}/></div>}
   {state.session.paused&&<p role="status" className="mt-2 rounded-card bg-gold px-4 py-2 text-[18px] font-bold text-on-gold">Paused. Everyone stays on this screen.</p>}
   {round.beat==="read"&&world&&<><p className="mt-2 text-[clamp(18px,1.6vw,26px)] text-muted" aria-live="polite">{race.ready.ready} of {race.ready.total} ready · no timer while reading</p>
@@ -105,7 +105,7 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
   {round.beat==="ask"&&<div className="mt-3"><p className="text-[20px] text-muted">{race.answered} of {state.counters.players} asked · you can move on once most have</p>{questions}</div>}
   {round.pinned&&<p className="mt-3 rounded-card bg-highlight px-5 py-3 text-[clamp(18px,1.8vw,26px)] font-bold text-on-primary"><Pin size={20} className="mr-2 inline" aria-hidden/>For discussion: {round.pinned}</p>}
   {round.beat==="race"&&q&&<div className="mt-3"><ArcBanner kind={round.arc} speaker={q.testimony?.speaker}/><p className="mt-2 text-[14px] font-extrabold uppercase tracking-[.08em] text-highlight">{q.name}</p><p className="font-display text-[clamp(26px,2.8vw,44px)] font-bold leading-tight"><KeywordPrompt prompt={q.prompt} keywords={q.keywords}/></p>
-   {q.note&&<ContentNote label="Discussion note" text={q.note} className="mt-3 max-w-4xl"/>}
+   {q.note&&<QuestionNote text={q.note} className="mt-3 max-w-4xl"/>}
    {q.testimony&&<blockquote className="mt-3 rounded-card bg-violet p-5 text-on-violet"><p className="text-[14px] font-extrabold uppercase tracking-[.08em]">{q.testimony.speaker} testifies</p><p className="mt-1 text-[clamp(20px,2vw,30px)] font-bold">“{q.testimony.text}”</p></blockquote>}
    {(q.choices??q.theories?.map(t=>t.name))&&<ol className="mt-3 grid gap-2 md:grid-cols-3">{(q.choices??q.theories!.map(t=>t.name)).map((c,i)=><li key={i} className="rounded-card bg-panel px-4 py-3 text-[clamp(16px,1.5vw,22px)] font-bold">{c}</li>)}</ol>}
    <p className="mt-2 text-[20px] text-muted">{race.answered} of {state.counters.players} answered{maxScale>1?" · extra time still running for some":""}</p>
@@ -242,7 +242,7 @@ export function RaceEndedPlayer({state,world,act}:{state:PlayerView;world:WorldP
  const after=state.after;
  const mine=f.kind==="squad"?null:f.podium.findIndex(r=>r.id===state.me.id);
  if(stage==="refresher"&&after)return <Refresher seed={state.me.id} items={after.refresher} world={world} check={async(k,a)=>{await act("race_refresh",{k,answer:a})}} onDone={()=>setStage("notes")}/>;
- if(stage==="notes"&&after)return <CaseNotesView interview={after.interview} notes={after.notes} student={state.me.nickname} story={world.title} expedition={round.expedition.title} award={after.award} onNote={(i,t)=>act("race_note",{index:i,text:t})}
+ if(stage==="notes"&&after)return <CaseNotesView grade={round?.grade??7} interview={after.interview} notes={after.notes} student={state.me.nickname} story={world.title} expedition={round.expedition.title} award={after.award} onNote={(i,t)=>act("race_note",{index:i,text:t})}
   bonus={<p className="no-print rounded-card bg-violet-soft p-4 text-[16px] font-bold">Bonus Round: when your teacher starts it, your squad compares Case Notes and agrees on the best proof.</p>}/>;
  return <section className="mt-6 text-center"><h1 className="text-[30px] font-bold outline-none">Race over</h1>
   {state.race.place&&<p className="mt-2 text-[20px]">You finished <b>#{state.race.place.rank}</b> of {state.race.place.of} with {state.race.total.toLocaleString()} points.</p>}

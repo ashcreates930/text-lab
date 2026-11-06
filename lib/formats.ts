@@ -34,7 +34,7 @@ export const stepsOf = (f: Format, type: QuestionType, hasProof: boolean): 1 | 2
 export function formatView(q: ExpQuestion & { showHint?: boolean }) {
   const format = formatOf(q);
   return { format, steps: stepsOf(format, q.type, !!q.proof?.lines?.length), pick: format === "multi" ? q.pick ?? (q.choices?.filter((c) => c.best).length ?? 2) : null,
-    dnd: q.dnd ? { kind: q.dnd.kind, slots: q.dnd.slots, items: q.dnd.items.map((i) => ({ id: i.id, text: i.text })) } : null, written: format === "written", hint: q.showHint ? q.hint : null, note: q.note ?? null,
+    dnd: q.dnd ? { kind: q.dnd.kind, slots: q.dnd.slots, items: q.dnd.items.map((i) => ({ id: i.id, text: i.text })) } : null, written: format === "written", hint: q.showHint ? q.hint : null, note: q.note ?? null, clues: !!q.clues?.length,
     name: q.dnd ? DND_INFO[q.dnd.kind].name : null };
 }
 // Whether a format ends with tapping the proof sentence.

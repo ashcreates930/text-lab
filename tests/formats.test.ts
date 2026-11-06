@@ -69,7 +69,9 @@ test("drag and drop: all 8 kinds, 3 to 5 pieces, one piece per slot where the ki
 
 test("drag and drop on every device: tap to place, drag, the keyboard, every move announced, 44 px targets, the reveal", () => {
   const ui = src("app/drag-drop.tsx");
-  assert.match(ui, /onClick=\{\(\)=>pick\(id\)\}/, "tap a piece to pick it up"); assert.match(ui, /onClick=\{\(\)=>held&&place\(held,s\.id\)\}/, "then tap its slot");
+  assert.match(ui, /onClick=\{\(\)=>pick\(id\)\}/, "tap a piece to pick it up"); assert.match(ui, /onClick=\{e=>held&&place\(held,s\.id,e\.detail===0\)\}/, "then tap its slot");
+  // On a phone the tray is a collapsed "Pieces" bar pinned above Lock in; picking a piece closes it.
+  assert.match(ui, /max-md:sticky max-md:bottom-0/); assert.match(ui, /aria-expanded=\{trayOpen\}/); assert.match(ui, /if\(!placed\[item\]\)setTrayOpen\(false\)/);
   assert.match(ui, /draggable=\{!disabled\}/); assert.match(ui, /onDrop:/, "drag onto a slot");
   assert.match(ui, /role="status" aria-live="polite">\{said\}/, "moves are announced");
   assert.match(ui, /Picked up "\$\{label\(item\)\}"\. Now choose a slot\./); assert.match(ui, /Placed "\$\{label\(item\)\}" in \$\{slotLabel\(slot\)\}\./);
@@ -148,7 +150,39 @@ test("the review lessons hold: proof sentences, quoted words, quoted build-the-c
   const ep = expeditionProblems(echoBeat, shp).join(" | "); assert.match(ep, /recalls the proof of chunk 8, just before it/); assert.match(ep, /must recall a chunk before chunk 8/);
   // The discussion note travels with every question that mentions the old chief, and to the view the phones see.
   const chief = e1.chunks.flatMap((c) => bankOf(c)).filter((q) => JSON.stringify(q).includes("old chief"));
-  assert.ok(chief.length >= 2 && chief.every((q) => /Irving wrote this in 1820/.test(q.note ?? "")));
+  assert.ok(chief.length >= 2 && chief.every((q) => /^Teacher note: Irving, writing in 1820, describes Native people through the stereotypes of his time/.test(q.note ?? "")));
   assert.match(src("lib/formats.ts"), /note: q\.note \?\? null/);
-  assert.match(src("app/expedition-race.tsx"), /label="Discussion note"/); assert.match(src("app/live/race-live.tsx"), /label="Discussion note"/); assert.match(src("app/after-race.tsx"), /label="Discussion note"/);
+  assert.match(src("app/expedition-race.tsx"), /<QuestionNote text={vq.note}/); assert.match(src("app/live/race-live.tsx"), /<QuestionNote text={q.note}/); assert.match(src("app/after-race.tsx"), /<QuestionNote text={it.note}/);
+  // The card takes its label from the note ("Teacher note"), so the wording shows exactly as written.
+  assert.match(src("app/content-note.tsx"), /([A-Z][a-z]+(?: [a-z]+)? note)/);
+});
+
+test("clue words, grade codes, a written answer for everyone, and the choice and theme checks", async () => {
+  const { cluesProve, clueTokens } = await import("../lib/expedition.ts");
+  const { codesFor, gradeOf } = await import("../lib/best-standards.ts");
+  const { parseExpSettings } = await import("../lib/live/race.ts");
+  // Clue words: the retreat question's Part B is the clue words, never the word itself or the whole sentence.
+  const k = e1.chunks.findIndex((c) => bankOf(c).some((q) => q.clues?.length)), q = bankOf(e1.chunks[k]).find((x) => x.clues?.length)!, tokens = chunkTokens(c1[k].lines);
+  const clue = [...clueTokens(q, tokens)], focus = tokens.filter((t) => t.text.toLowerCase().startsWith(q.focus!)).map((t) => t.i);
+  assert.ok(clue.length > 0 && clue.every((i) => !focus.includes(i)));
+  assert.ok(cluesProve(q, tokens, clue.slice(0, 2)), "a couple of clue words prove it");
+  assert.ok(!cluesProve(q, tokens, focus), "the word itself does not");
+  assert.ok(!cluesProve(q, tokens, [clue[0], 0, 1, 2, 3]), "mostly other words do not");
+  const r = scoreAnswer(q, { choice: q.choices!.findIndex((o) => o.best), words: clue }, tokens, 1000, lim); assert.ok(r.correct);
+  assert.ok(!scoreAnswer(q, { choice: q.choices!.findIndex((o) => o.best), lines: [q.proof!.lines![0]] }, tokens, 1000, lim).correct, "tapping the sentence is not the clue words");
+  // Grade codes: the class grade picks each benchmark's code; grade 7 by default; live settings carry the grade.
+  assert.deepEqual(codesFor(["R.1.2", "K12.EE.1.1"], 9), ["ELA.9.R.1.2", "ELA.K12.EE.1.1"]);
+  assert.deepEqual(codesFor(["R.1.2"], undefined), ["ELA.7.R.1.2"]); assert.equal(gradeOf("11"), 7);
+  const live = parseExpSettings({ expeditionId: e1.id, grade: "8" }, sh)!; assert.equal(live.grade, 8); assert.equal(live.gradeBand, "6-8");
+  assert.equal(parseExpSettings({ expeditionId: e1.id, gradeBand: "9-10" }, sh)!.grade, 9);
+  assert.match(src("app/after-race.tsx"), /codesFor\(n\.standards,grade\)/); assert.match(src("lib/case-notes.ts"), /codesFor\(n\.standards, grade\)/);
+  // A written answer every student reaches: one chunk whose every bank question is written.
+  for (const e of [e1, e2]) assert.ok(e.chunks.some((c) => bankOf(c).every((x) => formatOf(x) === "written")), e.id);
+  const noWrite = structuredClone(e1); const wk = noWrite.chunks.findIndex((c) => bankOf(c).every((x) => formatOf(x) === "written")); noWrite.chunks[wk].bank = [e1.chunks[0].question];
+  assert.match(variety(e1.id, noWrite).join(" | "), /every student writes/);
+  // No two choices share most of their words; theme questions ask about an idea.
+  const twin = structuredClone(e1); twin.chunks[9].question.choices![1].text = twin.chunks[9].question.choices![0].text.replace(/\w+$/, "today");
+  assert.match(variety(e1.id, twin).join(" | "), /share most of their words/);
+  const trait = structuredClone(e2); const tq = bankOf(trait.chunks[9])[0]; tq.prompt = "In a single sentence, explain what Ichabod is proudest of."; tq.written!.model = "He is proudest of his singing voice.";
+  const tp = variety(e2.id, trait).join(" | "); assert.match(tp, /an idea, not a character trait/); assert.match(tp, /states an idea, not a character's trait/);
 });
