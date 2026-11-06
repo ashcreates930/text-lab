@@ -6,9 +6,12 @@ import { evidenceSentences } from "../lib/lies.ts";
 import { SLEEPY_HOLLOW_MORE } from "./expeditions/sleepy-hollow.ts";
 import { theVultureEye } from "./expeditions/tell-tale-heart.ts";
 import { theWrightKitchen } from "./expeditions/trifles.ts";
+import { REBUILT } from "./expeditions/rebuilt.ts";
 
 export type Ref = [string, number];
-export type Q = { type: string; prompt: string; keywords?: string[]; focus?: string; choices?: [string, boolean?][]; choices2?: { prompt: string; options: [string, boolean?][] }; lines?: Ref[]; words?: string[]; testimony?: { speaker: string; text: string }; theories?: { id: string; name: string; lines: Ref[] }[]; hint: string; why: string; standards: string[]; reviewed?: boolean };
+// format, pick, dnd and written: the phase 3 formats (lib/formats.ts); a drag-and-drop piece's line is the sentence
+// that backs it, as [paragraph, sentence index].
+export type Q = { type: string; format?: string; pick?: number; dnd?: { kind: string; slots: { id: string; label: string }[]; items: { id: string; text: string; slot: string | null; line?: Ref }[] }; written?: { key_ideas: string[][]; model: string }; prompt: string; keywords?: string[]; focus?: string; choices?: [string, boolean?][]; choices2?: { prompt: string; options: [string, boolean?][] }; lines?: Ref[]; words?: string[]; testimony?: { speaker: string; text: string }; theories?: { id: string; name: string; lines: Ref[] }[]; hint: string; why: string; standards: string[]; reviewed?: boolean };
 export type C = { seg: [string, number, number][]; gist: [string, boolean?][]; discovery: [string, "figurative" | "vocabulary", string]; q: Q };
 export type S = { text: string; lines: Ref[]; gesture?: "laughing" | "head-shake" };
 export type W = { character: string; cards: [string, string]; truth: S; lie: S; caught: string };
@@ -20,7 +23,7 @@ const SPEC: Record<string, { front_matter: string[]; expeditions: E[]; draft?: b
   "sleepy-hollow": {
     front_matter: ["p001", "p002", "p073", "p074", "p082"],
     // Expeditions still to be rebuilt to the arc (lib/pacing.ts); validate:worlds checks the arc on every other one.
-    rules: { arc_pending: ["the-schoolmaster", "tales-by-the-fire", "the-van-tassel-farm", "a-rival-appears", "the-feud", "the-invitation", "the-ride-to-the-party", "the-feast-and-the-dance", "ghost-stories", "the-lonely-road", "the-headless-horseman", "gone", "the-postscript"] },
+    rules: { arc_pending: ["tales-by-the-fire", "the-van-tassel-farm", "a-rival-appears", "the-feud", "the-invitation", "the-ride-to-the-party", "the-feast-and-the-dance", "ghost-stories", "the-lonely-road", "the-headless-horseman", "gone", "the-postscript"] },
     expeditions: [{
       id: "into-the-hollow", title: "Into the Hollow",
       // Lightning beats (lib/pacing.ts): recall, one tap, 10 seconds; from the approved Proof Race sprints.
@@ -103,8 +106,9 @@ const SPEC: Record<string, { front_matter: string[]; expeditions: E[]; draft?: b
           caught: "Oh, you caught that? Clever. I only wanted to see if you were listening." },
       ] }, ...SLEEPY_HOLLOW_MORE],
   },
-  "tell-tale-heart": { front_matter: [], expeditions: [theVultureEye], draft: true, rules: { max_sentences: 10 } },
-  trifles: { front_matter: [], expeditions: [theWrightKitchen], draft: true, rules: { max_sentences: 15 } },
+  // Drafts wait for review and their rebuild to the phase 3 rules (arc_pending).
+  "tell-tale-heart": { front_matter: [], expeditions: [theVultureEye], draft: true, rules: { max_sentences: 10, arc_pending: ["the-vulture-eye"] } },
+  trifles: { front_matter: [], expeditions: [theWrightKitchen], draft: true, rules: { max_sentences: 15, arc_pending: ["the-wright-kitchen"] } },
 };
 
 for (const [worldId, spec] of Object.entries(SPEC)) {
@@ -115,19 +119,21 @@ for (const [worldId, spec] of Object.entries(SPEC)) {
   const opts = (o: [string, boolean?][]) => { const list = o.map(([text, best]) => (best ? { text, best: true } : { text })); let h = 2166136261; for (const ch of o.map((x) => x[0]).join("|")) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); const r = (h >>> 0) % list.length; return [...list.slice(r), ...list.slice(0, r)]; };
   world.front_matter = spec.front_matter;
   if (spec.rules) world.expedition_rules = spec.rules;
-  const built = spec.expeditions.map((e) => ({ id: e.id, title: e.title, chunks: e.chunks.map((c, k) => {
-    const q = c.q;
-    return { id: `${e.id}-${String(k + 1).padStart(2, "0")}`, segments: c.seg.map(([p, from, to]) => ({ p, from, to })), gist: { options: opts(c.gist) },
-      discovery: { phrase: c.discovery[0], kind: c.discovery[1], note: c.discovery[2] },
-      question: { type: q.type, prompt: q.prompt, keywords: q.keywords ?? [], ...(q.focus ? { focus: q.focus } : {}), ...(q.choices ? { choices: opts(q.choices) } : {}), ...(q.choices2 ? { choices2: { prompt: q.choices2.prompt, options: opts(q.choices2.options) } } : {}),
+  const question = (q: Q) => ({ type: q.type, ...(q.format ? { format: q.format } : {}), ...(q.pick ? { pick: q.pick } : {}),
+        ...(q.dnd ? { dnd: { kind: q.dnd.kind, slots: q.dnd.slots, items: q.dnd.items.map((it) => ({ id: it.id, text: it.text, slot: it.slot, ...(it.line ? { line: line(it.line) } : {}) })) } } : {}),
+        ...(q.written ? { written: q.written } : {}), prompt: q.prompt, keywords: q.keywords ?? [], ...(q.focus ? { focus: q.focus } : {}), ...(q.choices ? { choices: opts(q.choices) } : {}), ...(q.choices2 ? { choices2: { prompt: q.choices2.prompt, options: opts(q.choices2.options) } } : {}),
         ...(q.lines || q.words ? { proof: { ...(q.lines ? { lines: q.lines.map(line) } : {}), ...(q.words ? { words: q.words } : {}) } } : {}),
         ...(q.testimony ? { testimony: q.testimony } : {}), ...(q.theories ? { theories: q.theories.map((t) => ({ id: t.id, name: t.name, lines: t.lines.map(line) })) } : {}),
-        hint: q.hint, why: q.why, standards: q.standards, ...(q.reviewed ? { reviewed: true } : {}) } };
-  }), ...(e.lightning ? { lightning: e.lightning.map((l) => { const sp = l.sprint ? (world.scenes as { sprints?: { id: string; question: string; answers: string[] }[] }[]).flatMap((x) => x.sprints ?? []).find((x) => x.id === l.sprint) : null; if (l.sprint && !sp) throw new Error(`${e.id}: no sprint ${l.sprint}`);
-    return { id: l.id ?? l.sprint!, chunk: l.chunk, after: l.after, question: l.question ?? sp!.question, answer: l.answer ? l.answer.map(line) : sp!.answers }; }) } : {}), ...(e.interview ? { interview: { witnesses: e.interview.map((w) => {
+        hint: q.hint, why: q.why, standards: q.standards, ...(q.reviewed ? { reviewed: true } : {}) });
+  const built = spec.expeditions.map((e) => { const re = REBUILT[e.id]; return { id: e.id, title: e.title, chunks: e.chunks.map((c, k) => {
+    const o = re?.chunks[k];
+    return { id: `${e.id}-${String(k + 1).padStart(2, "0")}`, segments: c.seg.map(([p, from, to]) => ({ p, from, to })), gist: { options: opts(c.gist) },
+      discovery: { phrase: c.discovery[0], kind: c.discovery[1], note: c.discovery[2] },
+      question: question(o?.q ?? c.q), ...(o?.bank?.length ? { bank: o.bank.map((b) => question(b === "original" ? c.q : b)) } : {}) };
+  }), ...(re?.lightning ?? e.lightning ? { lightning: (re?.lightning ?? e.lightning)!.map((l) => { const sp = l.sprint ? (world.scenes as { sprints?: { id: string; question: string; answers: string[] }[] }[]).flatMap((x) => x.sprints ?? []).find((x) => x.id === l.sprint) : null; if (l.sprint && !sp) throw new Error(`${e.id}: no sprint ${l.sprint}`);    return { id: l.id ?? l.sprint!, chunk: l.chunk, after: l.after, question: l.question ?? sp!.question, answer: l.answer ? l.answer.map(line) : sp!.answers }; }) } : {}), ...(e.interview ? { interview: { witnesses: e.interview.map((w) => {
     const st = (x: S) => ({ text: x.text, lines: x.lines.map(line), ...(x.gesture ? { gesture: x.gesture } : {}) });
     return { character: w.character, cards: w.cards, truth: st(w.truth), lie: st(w.lie), caught: w.caught };
-  }) } } : {}) }));
+  }) } } : {}) }; });
   if (spec.draft) world.draft_expeditions = built; else world.expeditions = built;
   writeFileSync(path, JSON.stringify(world, null, 2) + "\n");
   console.log(`${worldId}: ${built.length} ${spec.draft ? "draft " : ""}expedition(s), ${built.reduce((a: number, e: { chunks: unknown[] }) => a + e.chunks.length, 0)} chunks`);

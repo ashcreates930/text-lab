@@ -7831,7 +7831,39 @@
               "R.1.3",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "whose_eyes",
+              "prompt": "Who first came up with the explanation the narrator passes along?",
+              "keywords": [
+                "passes along"
+              ],
+              "choices": [
+                {
+                  "text": "The Dutch sailors who crossed the Tappan Zee"
+                },
+                {
+                  "text": "The farm wives nearby, or so the story goes",
+                  "best": true
+                },
+                {
+                  "text": "The narrator himself, on his very first visit"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "This name was given, we are told, in\nformer days, by the good housewives of the adjacent country, from the\ninveterate propensity of their husbands to linger about the village\ntavern on market days."
+                ]
+              },
+              "hint": "Look for the words that show he heard this from other people.",
+              "why": "\"We are told\" shows the explanation came from the local housewives, passed along by others.",
+              "standards": [
+                "R.1.3",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "into-the-hollow-02",
@@ -7877,7 +7909,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which sentence tells you what noises a visitor might hear there?",
+              "keywords": [
+                "noises"
+              ],
+              "proof": {
+                "lines": [
+                  "A small brook glides through it,\nwith just murmur enough to lull one to repose; and the occasional\nwhistle of a quail or tapping of a woodpecker is almost the only sound\nthat ever breaks in upon the uniform tranquillity."
+                ]
+              },
+              "hint": "Listen for birds.",
+              "why": "Only a quail's whistle or a woodpecker's tapping breaks the quiet.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "into-the-hollow-03",
@@ -7938,7 +7989,40 @@
               "R.3.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "shades",
+              "prompt": "Why might he call the valley a retreat rather than just a spot?",
+              "keywords": [
+                "retreat"
+              ],
+              "focus": "retreat",
+              "choices": [
+                {
+                  "text": "It suggests the narrator once lost a fight in the valley"
+                },
+                {
+                  "text": "It suggests a quiet hiding place to rest from the world",
+                  "best": true
+                },
+                {
+                  "text": "It suggests a place where soldiers fall back in battle"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "I had wandered into it at noontime, when all nature\nis peculiarly quiet, and was startled by the roar of my own gun, as it\nbroke the Sabbath stillness around and was prolonged and reverberated\nby the angry echoes."
+                ]
+              },
+              "hint": "What is the valley like when he wanders into it?",
+              "why": "All nature is peculiarly quiet there: a retreat is a peaceful place to get away from the world.",
+              "standards": [
+                "V.1.3",
+                "R.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "into-the-hollow-04",
@@ -8001,7 +8085,40 @@
               "K12.EE.1.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "word_detective",
+              "prompt": "Which meaning of drowsy fits this land?",
+              "keywords": [
+                "drowsy"
+              ],
+              "focus": "drowsy",
+              "choices": [
+                {
+                  "text": "Sleepy and slow, as if ready to doze off",
+                  "best": true
+                },
+                {
+                  "text": "Wet and gloomy, as if always under rain"
+                },
+                {
+                  "text": "Loud and lively, as if never at rest"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "From the listless repose of the place, and the peculiar character of its\ninhabitants, who are descendants from the original Dutch settlers, this\nsequestered glen has long been known by the name of SLEEPY HOLLOW, and\nits rustic lads are called the Sleepy Hollow Boys throughout all the\nneighboring country."
+                ]
+              },
+              "hint": "What is the glen called, and why?",
+              "why": "The glen is so restful it is named Sleepy Hollow: drowsy means sleepy.",
+              "standards": [
+                "V.1.3",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "into-the-hollow-05",
@@ -8032,46 +8149,86 @@
             "note": "Reverie: a daydream. A continual reverie means drifting through life half-dreaming."
           },
           "question": {
-            "type": "figure_it_out",
-            "prompt": "Read the words holds a spell over the minds of the good people. What kind of figurative language is this?",
-            "keywords": [
-              "holds a spell over the minds"
-            ],
-            "focus": "holds a spell over the minds of the good people",
-            "choices": [
-              {
-                "text": "Hyperbole: a wild exaggeration for a laugh"
-              },
-              {
-                "text": "Metaphor: the valley's mood is called a spell, without like or as",
-                "best": true
-              },
-              {
-                "text": "Simile: the spell is compared to sleep using the word like"
-              }
-            ],
-            "choices2": {
-              "prompt": "What does it mean?",
-              "options": [
+            "type": "weigh_evidence",
+            "format": "dnd",
+            "dnd": {
+              "kind": "fact_or_claim",
+              "slots": [
                 {
-                  "text": "The people are tired from working too hard"
+                  "id": "text",
+                  "label": "The text says it is so"
                 },
                 {
-                  "text": "Something about the place shapes what people think and believe",
-                  "best": true
+                  "id": "claim",
+                  "label": "Only some people claim it"
+                }
+              ],
+              "items": [
+                {
+                  "id": "doctor",
+                  "text": "A High German doctor put a spell on the place",
+                  "slot": "claim",
+                  "line": "Some say that the place\nwas bewitched by a High German doctor, during the early days of the\nsettlement; others, that an old Indian chief, the prophet or wizard of\nhis tribe, held his powwows there before the country was discovered by\nMaster Hendrick Hudson."
                 },
                 {
-                  "text": "A real witch is casting nightly spells on the farmers' crops"
+                  "id": "chief",
+                  "text": "An old chief held his powwows there long ago",
+                  "slot": "claim",
+                  "line": "Some say that the place\nwas bewitched by a High German doctor, during the early days of the\nsettlement; others, that an old Indian chief, the prophet or wizard of\nhis tribe, held his powwows there before the country was discovered by\nMaster Hendrick Hudson."
+                },
+                {
+                  "id": "power",
+                  "text": "A witching power still rules the place",
+                  "slot": "text",
+                  "line": "Certain it is, the place still continues under\nthe sway of some witching power, that holds a spell over the minds of\nthe good people, causing them to walk in a continual reverie."
+                },
+                {
+                  "id": "reverie",
+                  "text": "The people walk about in a constant daydream",
+                  "slot": "text",
+                  "line": "Certain it is, the place still continues under\nthe sway of some witching power, that holds a spell over the minds of\nthe good people, causing them to walk in a continual reverie."
                 }
               ]
             },
-            "hint": "Does a spell have to be real magic? Think about what keeps their minds dreamy.",
-            "why": "The spell stands for the dreamy mood that rules how people think.",
+            "prompt": "Sort what the narrator states as certain from what only some people claim.",
+            "keywords": [],
+            "hint": "Watch for the words \"some say\" and \"certain it is.\"",
+            "why": "\"Some say\" and \"others\" mark rumors; \"certain it is\" marks what the narrator states as fact.",
             "standards": [
-              "R.3.1"
-            ],
-            "reviewed": true
-          }
+              "K12.EE.1.1",
+              "K12.EE.3.1"
+            ]
+          },
+          "bank": [
+            {
+              "type": "weigh_evidence",
+              "prompt": "Which detail does the narrator present as sure, not just gossip?",
+              "keywords": [],
+              "choices": [
+                {
+                  "text": "An old chief held his meetings in the glen"
+                },
+                {
+                  "text": "Some witching power still holds the place",
+                  "best": true
+                },
+                {
+                  "text": "A German doctor once cast a spell on it"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Certain it is, the place still continues under\nthe sway of some witching power, that holds a spell over the minds of\nthe good people, causing them to walk in a continual reverie."
+                ]
+              },
+              "hint": "One sentence begins by saying it is certain.",
+              "why": "\"Certain it is\": the witching power is stated as fact, while the doctor and the chief are only what some say.",
+              "standards": [
+                "K12.EE.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "into-the-hollow-06",
@@ -8103,35 +8260,65 @@
           },
           "question": {
             "type": "between_lines",
-            "prompt": "What can you infer about the people of the Hollow?",
+            "format": "multi",
+            "pick": 2,
+            "prompt": "Which habits show the people here are ready to believe in marvels?",
             "keywords": [
-              "infer"
+              "believe in marvels"
             ],
             "choices": [
               {
-                "text": "They are quick to accept the uncanny as real",
+                "text": "They laugh at every ghost story they hear"
+              },
+              {
+                "text": "They move away whenever meteors appear"
+              },
+              {
+                "text": "They often see strange sights and hear voices",
                 "best": true
               },
               {
-                "text": "They are afraid to leave home after dark"
-              },
-              {
-                "text": "They doubt every tale they are told"
+                "text": "They tell many tales of haunted spots",
+                "best": true
               }
             ],
-            "proof": {
-              "lines": [
-                "They are\ngiven to all kinds of marvellous beliefs, are subject to trances and\nvisions, and frequently see strange sights, and hear music and voices in\nthe air.",
-                "The whole neighborhood abounds with local tales, haunted spots,\nand twilight superstitions; stars shoot and meteors glare oftener across\nthe valley than in any other part of the country, and the nightmare,\nwith her whole ninefold, seems to make it the favorite scene of her\ngambols."
-              ]
-            },
-            "hint": "Look at what they see and hear that nobody else does.",
-            "why": "They hold marvellous beliefs and see strange sights, so they accept the uncanny easily.",
+            "hint": "Find two things they do or say, not things they avoid.",
+            "why": "They see strange sights, hear voices in the air, and fill the valley with tales of haunted spots.",
             "standards": [
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "What does the restless sky suggest about this region?",
+              "keywords": [],
+              "choices": [
+                {
+                  "text": "The weather here is the finest in the whole country"
+                },
+                {
+                  "text": "Sailors use these stars to find their way home"
+                },
+                {
+                  "text": "Even nature seems stranger here than anywhere else",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "The whole neighborhood abounds with local tales, haunted spots,\nand twilight superstitions; stars shoot and meteors glare oftener across\nthe valley than in any other part of the country, and the nightmare,\nwith her whole ninefold, seems to make it the favorite scene of her\ngambols."
+                ]
+              },
+              "hint": "Compare this valley's sky with the rest of the country.",
+              "why": "Stars shoot and meteors glare more often here than anywhere: even nature seems haunted.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "into-the-hollow-07",
@@ -8181,7 +8368,28 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "catch_lie",
+              "prompt": "Hans Van Ripper tells it differently. Part of what he says is false. Tap the sentence that shows it.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "The dominant spirit, however, that haunts this enchanted region, and\nseems to be commander-in-chief of all the powers of the air, is the\napparition of a figure on horseback, without a head."
+                ]
+              },
+              "testimony": {
+                "speaker": "hans-van-ripper",
+                "text": "The ghost that rules this valley is a lady in white who drifts along without a sound."
+              },
+              "hint": "What does the ruling spirit look like?",
+              "why": "The ruling spirit is a figure on horseback without a head, not a lady in white.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "into-the-hollow-08",
@@ -8212,36 +8420,84 @@
             "note": "Like a midnight blast: a simile. The rider rushes past like a sudden gust of night wind."
           },
           "question": {
-            "type": "character_clue",
-            "prompt": "Which trait fits the headless spirit in this chunk?",
-            "keywords": [
-              "trait"
-            ],
-            "choices": [
-              {
-                "text": "Lost, unable to find his way home"
-              },
-              {
-                "text": "Driven and pressed for time, racing to beat the dawn",
-                "best": true
-              },
-              {
-                "text": "Calm and patient, waiting quietly for travelers to pass"
-              }
-            ],
-            "proof": {
-              "words": [
-                "in a hurry to get back to the churchyard before daybreak",
-                "rushing speed"
+            "type": "story_structure",
+            "format": "dnd",
+            "dnd": {
+              "kind": "cause_effect",
+              "slots": [
+                {
+                  "id": "buried",
+                  "label": "His body lies buried in the churchyard"
+                },
+                {
+                  "id": "head",
+                  "label": "He is searching for his lost head"
+                },
+                {
+                  "id": "late",
+                  "label": "He is running late"
+                }
+              ],
+              "items": [
+                {
+                  "id": "dawn",
+                  "text": "He hurries back before daybreak",
+                  "slot": "buried",
+                  "line": "Indeed,\ncertain of the most authentic historians of those parts, who have been\ncareful in collecting and collating the floating facts concerning this\nspectre, allege that the body of the trooper having been buried in the\nchurchyard, the ghost rides forth to the scene of battle in nightly\nquest of his head, and that the rushing speed with which he sometimes\npasses along the Hollow, like a midnight blast, is owing to his being\nbelated, and in a hurry to get back to the churchyard before daybreak."
+                },
+                {
+                  "id": "battle",
+                  "text": "He rides out to the old battlefield each night",
+                  "slot": "head",
+                  "line": "Indeed,\ncertain of the most authentic historians of those parts, who have been\ncareful in collecting and collating the floating facts concerning this\nspectre, allege that the body of the trooper having been buried in the\nchurchyard, the ghost rides forth to the scene of battle in nightly\nquest of his head, and that the rushing speed with which he sometimes\npasses along the Hollow, like a midnight blast, is owing to his being\nbelated, and in a hurry to get back to the churchyard before daybreak."
+                },
+                {
+                  "id": "blast",
+                  "text": "He rushes through the Hollow like a midnight blast",
+                  "slot": "late",
+                  "line": "Indeed,\ncertain of the most authentic historians of those parts, who have been\ncareful in collecting and collating the floating facts concerning this\nspectre, allege that the body of the trooper having been buried in the\nchurchyard, the ghost rides forth to the scene of battle in nightly\nquest of his head, and that the rushing speed with which he sometimes\npasses along the Hollow, like a midnight blast, is owing to his being\nbelated, and in a hurry to get back to the churchyard before daybreak."
+                }
               ]
             },
-            "hint": "Look at how fast he moves, and why.",
-            "why": "He passes with rushing speed, in a hurry to get back to the churchyard before daybreak.",
+            "prompt": "Match each cause to what it leads the rider to do.",
+            "keywords": [],
+            "hint": "Read the long sentence slowly: each reason comes with what it makes him do.",
+            "why": "Buried in the churchyard, he must be back by dawn; seeking his head, he rides out each night; running late, he speeds like a blast.",
             "standards": [
               "R.1.1",
-              "K12.EE.1.1"
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "story_structure",
+              "prompt": "What makes the phantom race the way he does?",
+              "keywords": [],
+              "choices": [
+                {
+                  "text": "He is late getting back to his grave by dawn",
+                  "best": true
+                },
+                {
+                  "text": "He is chasing travelers out of the valley"
+                },
+                {
+                  "text": "He is racing another rider to the church"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Indeed,\ncertain of the most authentic historians of those parts, who have been\ncareful in collecting and collating the floating facts concerning this\nspectre, allege that the body of the trooper having been buried in the\nchurchyard, the ghost rides forth to the scene of battle in nightly\nquest of his head, and that the rushing speed with which he sometimes\npasses along the Hollow, like a midnight blast, is owing to his being\nbelated, and in a hurry to get back to the churchyard before daybreak."
+                ]
+              },
+              "hint": "Look at the end of the long sentence.",
+              "why": "He is belated and must get back to the churchyard before daybreak.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "into-the-hollow-09",
@@ -8278,35 +8534,88 @@
           },
           "question": {
             "type": "theme_thread",
-            "prompt": "Which idea keeps coming back in the story so far?",
-            "keywords": [
-              "keeps coming back"
-            ],
-            "choices": [
-              {
-                "text": "Hard work always wins out over idle dreaming in the end"
-              },
-              {
-                "text": "Strangers are never welcome in small towns"
-              },
-              {
-                "text": "This valley's dreamy spell takes hold of anyone who stays there",
-                "best": true
-              }
-            ],
+            "format": "written",
+            "written": {
+              "key_ideas": [
+                [
+                  "dream",
+                  "imagin",
+                  "vision",
+                  "ghost",
+                  "apparition",
+                  "see things",
+                  "fanc",
+                  "superstit",
+                  "strange",
+                  "spell",
+                  "witch",
+                  "haunt"
+                ],
+                [
+                  "every",
+                  "anyone",
+                  "newcomer",
+                  "people",
+                  "those who",
+                  "outsider",
+                  "visitor",
+                  "settle",
+                  "come",
+                  "move",
+                  "live",
+                  "stay"
+                ]
+              ],
+              "model": "Anyone who stays in the Hollow for a while starts to dream and see ghosts, because the valley's sleepy, witching air gets into them."
+            },
+            "prompt": "In one sentence, explain what the Hollow does to anyone who settles there.",
+            "keywords": [],
             "proof": {
               "lines": [
-                "However wide awake\nthey may have been before they entered that sleepy region, they are\nsure, in a little time, to inhale the witching influence of the air, and\nbegin to grow imaginative, to dream dreams, and see apparitions.",
-                "It is remarkable that the visionary propensity I have mentioned is not\nconfined to the native inhabitants of the valley, but is unconsciously\nimbibed by every one who resides there for a time."
+                "It is remarkable that the visionary propensity I have mentioned is not\nconfined to the native inhabitants of the valley, but is unconsciously\nimbibed by every one who resides there for a time.",
+                "However wide awake\nthey may have been before they entered that sleepy region, they are\nsure, in a little time, to inhale the witching influence of the air, and\nbegin to grow imaginative, to dream dreams, and see apparitions."
               ]
             },
-            "hint": "Even folks who arrive wide awake don't stay that way. Find where it says so.",
-            "why": "The same dreamy spell shows up again: anyone who stays begins to dream dreams and see apparitions.",
+            "hint": "Think about newcomers, not just the people born there.",
+            "why": "Even newcomers soon breathe in the valley's witching air and start to dream and see apparitions.",
             "standards": [
               "R.1.2",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "theme_thread",
+              "prompt": "Which idea keeps coming back in the story so far?",
+              "keywords": [
+                "keeps coming back"
+              ],
+              "choices": [
+                {
+                  "text": "Hard work always wins out over idle dreaming in the end"
+                },
+                {
+                  "text": "Strangers are never welcome in small towns"
+                },
+                {
+                  "text": "This valley's dreamy spell takes hold of anyone who stays there",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "However wide awake\nthey may have been before they entered that sleepy region, they are\nsure, in a little time, to inhale the witching influence of the air, and\nbegin to grow imaginative, to dream dreams, and see apparitions.",
+                  "It is remarkable that the visionary propensity I have mentioned is not\nconfined to the native inhabitants of the valley, but is unconsciously\nimbibed by every one who resides there for a time."
+                ]
+              },
+              "hint": "Even folks who arrive wide awake don't stay that way. Find where it says so.",
+              "why": "The same dreamy spell shows up again: anyone who stays begins to dream dreams and see apparitions.",
+              "standards": [
+                "R.1.2",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "into-the-hollow-10",
@@ -8367,7 +8676,37 @@
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "How does the narrator hope the valley will be if he ever returns?",
+              "keywords": [],
+              "choices": [
+                {
+                  "text": "Grown into a busy, modern market town"
+                },
+                {
+                  "text": "Empty, since everyone moved away long ago"
+                },
+                {
+                  "text": "Unchanged, as if no time had passed at all",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Though many\nyears have elapsed since I trod the drowsy shades of Sleepy Hollow, yet\nI question whether I should not still find the same trees and the same\nfamilies vegetating in its sheltered bosom."
+                ]
+              },
+              "hint": "Read his last sentence about coming back.",
+              "why": "He expects to find the same trees and the same families, as if nothing had changed.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         }
       ],
       "lightning": [
@@ -8506,7 +8845,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Tap the sentence that explains why his last name suits him.",
+              "keywords": [
+                "last name"
+              ],
+              "proof": {
+                "lines": [
+                  "The cognomen of Crane was not inapplicable to his person."
+                ]
+              },
+              "hint": "Look for a word that means family name.",
+              "why": "\"Cognomen\" means name: a crane, a tall thin bird, fits the way he looks.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-schoolmaster-02",
@@ -8576,7 +8934,49 @@
               "R.3.1"
             ],
             "reviewed": true
-          }
+          },
+          "bank": [
+            {
+              "type": "figure_it_out",
+              "prompt": "His hands dangled a mile out of his sleeves. Which device is the narrator using?",
+              "keywords": [
+                "a mile out of his sleeves"
+              ],
+              "focus": "dangled a mile out of his sleeves",
+              "choices": [
+                {
+                  "text": "Simile: a comparison using like or as"
+                },
+                {
+                  "text": "Personification: giving a thing human feelings"
+                },
+                {
+                  "text": "Hyperbole: a huge exaggeration for effect",
+                  "best": true
+                }
+              ],
+              "choices2": {
+                "prompt": "What does the exaggeration show?",
+                "options": [
+                  {
+                    "text": "He likes to stretch to reach high shelves"
+                  },
+                  {
+                    "text": "His arms are far too long for his clothes",
+                    "best": true
+                  },
+                  {
+                    "text": "His coat sleeves were sewn a mile long"
+                  }
+                ]
+              },
+              "hint": "Could anything really hang a mile out of a sleeve?",
+              "why": "A mile is an exaggeration: it shows how long and gangly his arms are.",
+              "standards": [
+                "R.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-schoolmaster-03",
@@ -8607,35 +9007,86 @@
             "note": "An eelpot is a trap eels swim into easily but can't get out of, just like the schoolhouse for a thief."
           },
           "question": {
-            "type": "between_lines",
-            "prompt": "What can you infer about where Ichabod holds class?",
-            "keywords": [
-              "infer"
-            ],
-            "choices": [
-              {
-                "text": "It is the grandest and best built hall in the valley"
-              },
-              {
-                "text": "It is brand new, put up by skilled workers from town"
-              },
-              {
-                "text": "It is plain and patched together from whatever was at hand",
-                "best": true
-              }
-            ],
-            "proof": {
-              "lines": [
-                "His schoolhouse was a low building of one large room, rudely constructed\nof logs; the windows partly glazed, and partly patched with leaves of\nold copybooks."
+            "type": "weigh_evidence",
+            "format": "dnd",
+            "dnd": {
+              "kind": "sort_evidence",
+              "slots": [
+                {
+                  "id": "supports",
+                  "label": "Supports the claim"
+                },
+                {
+                  "id": "disproves",
+                  "label": "Disproves the claim"
+                }
+              ],
+              "items": [
+                {
+                  "id": "withe",
+                  "text": "A twisted branch holds the door shut",
+                  "slot": "supports",
+                  "line": "It was most ingeniously secured at vacant hours, by a\nwithe twisted in the handle of the door, and stakes set against the\nwindow shutters; so that though a thief might get in with perfect ease,\nhe would find some embarrassment in getting out,--an idea most probably\nborrowed by the architect, Yost Van Houten, from the mystery of an\neelpot."
+                },
+                {
+                  "id": "stakes",
+                  "text": "Stakes are set against the window shutters",
+                  "slot": "supports",
+                  "line": "It was most ingeniously secured at vacant hours, by a\nwithe twisted in the handle of the door, and stakes set against the\nwindow shutters; so that though a thief might get in with perfect ease,\nhe would find some embarrassment in getting out,--an idea most probably\nborrowed by the architect, Yost Van Houten, from the mystery of an\neelpot."
+                },
+                {
+                  "id": "thief",
+                  "text": "A thief could get in with perfect ease",
+                  "slot": "disproves",
+                  "line": "It was most ingeniously secured at vacant hours, by a\nwithe twisted in the handle of the door, and stakes set against the\nwindow shutters; so that though a thief might get in with perfect ease,\nhe would find some embarrassment in getting out,--an idea most probably\nborrowed by the architect, Yost Van Houten, from the mystery of an\neelpot."
+                },
+                {
+                  "id": "patched",
+                  "text": "Some windows are patched with paper pages",
+                  "slot": "disproves",
+                  "line": "His schoolhouse was a low building of one large room, rudely constructed\nof logs; the windows partly glazed, and partly patched with leaves of\nold copybooks."
+                }
               ]
             },
-            "hint": "Look at what fills the window holes.",
-            "why": "It is rudely built of logs, with windows patched with old copybook pages.",
+            "prompt": "Sort each detail: does it support or disprove the claim that the schoolhouse is well protected?",
+            "keywords": [],
+            "hint": "Ask of each detail: would it stop someone from getting in?",
+            "why": "The twisted branch and the stakes guard the door and shutters, but a thief could still get in easily and some windows are only paper.",
             "standards": [
-              "K12.EE.3.1",
-              "K12.EE.1.1"
+              "K12.EE.1.1",
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "weigh_evidence",
+              "prompt": "Which detail about the building does the narrator only suppose?",
+              "keywords": [],
+              "choices": [
+                {
+                  "text": "That it was a single room made of logs"
+                },
+                {
+                  "text": "That its lock was copied from an eel trap",
+                  "best": true
+                },
+                {
+                  "text": "That its windows were patched with paper"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "It was most ingeniously secured at vacant hours, by a\nwithe twisted in the handle of the door, and stakes set against the\nwindow shutters; so that though a thief might get in with perfect ease,\nhe would find some embarrassment in getting out,--an idea most probably\nborrowed by the architect, Yost Van Houten, from the mystery of an\neelpot."
+                ]
+              },
+              "hint": "One detail comes with \"most probably.\"",
+              "why": "The eelpot idea is \"most probably\" borrowed: a guess, not a fact.",
+              "standards": [
+                "K12.EE.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-schoolmaster-04",
@@ -8695,7 +9146,37 @@
               "R.1.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "character_clue",
+              "prompt": "Judging by what drifts out of the classroom, what kind of teacher is Ichabod?",
+              "keywords": [],
+              "choices": [
+                {
+                  "text": "Gentle, letting pupils learn at their own pace"
+                },
+                {
+                  "text": "Distracted, ignoring the class to read his books"
+                },
+                {
+                  "text": "Strict, quick to threaten and to use the switch",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "From hence the low\nmurmur of his pupils’ voices, conning over their lessons, might be heard\nin a drowsy summer’s day, like the hum of a beehive; interrupted now and\nthen by the authoritative voice of the master, in the tone of menace or\ncommand, or, peradventure, by the appalling sound of the birch, as he\nurged some tardy loiterer along the flowery path of knowledge."
+                ]
+              },
+              "hint": "Listen past the humming lessons.",
+              "why": "His voice of menace or command and the sound of the birch show a strict master.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-schoolmaster-05",
@@ -8726,35 +9207,46 @@
             "note": "Potentate: a powerful ruler. The narrator jokes that a schoolmaster rules his class like a king."
           },
           "question": {
-            "type": "whose_eyes",
-            "prompt": "How does the narrator want readers to see Ichabod's punishments?",
-            "keywords": [
-              "narrator"
-            ],
-            "choices": [
-              {
-                "text": "As rare events that almost never really happened"
-              },
-              {
-                "text": "As fair in Ichabod's own eyes, while the narrator teases him",
-                "best": true
-              },
-              {
-                "text": "As cruel acts that the narrator plainly condemns and regrets"
-              }
-            ],
+            "type": "catch_lie",
+            "prompt": "Brom Bones remembers Ichabod's punishments. Part of what he says is false. Tap the sentence that proves it.",
+            "keywords": [],
             "proof": {
               "lines": [
-                "I would not have it imagined, however, that he was one of those cruel\npotentates of the school who joy in the smart of their subjects; on\nthe contrary, he administered justice with discrimination rather than\nseverity; taking the burden off the backs of the weak, and laying it on\nthose of the strong."
+                "I would not have it imagined, however, that he was one of those cruel\npotentates of the school who joy in the smart of their subjects; on\nthe contrary, he administered justice with discrimination rather than\nseverity; taking the burden off the backs of the weak, and laying it on\nthose of the strong.",
+                "Your mere puny stripling, that winced at the least\nflourish of the rod, was passed by with indulgence; but the claims of\njustice were satisfied by inflicting a double portion on some little\ntough wrong-headed, broad-skirted Dutch urchin, who sulked and swelled\nand grew dogged and sullen beneath the birch."
               ]
             },
-            "hint": "Notice how the narrator defends him, and how grand the words get.",
-            "why": "The narrator insists he was no cruel potentate and did justice with discrimination, a playful defense.",
+            "testimony": {
+              "speaker": "brom-bones",
+              "text": "That schoolmaster went easy on the big, tough boys and saved his birch for the little weak ones."
+            },
+            "hint": "Who got the lighter punishments: the weak or the strong?",
+            "why": "Ichabod took the burden off the weak and laid it on the strong, the opposite of what Brom says.",
             "standards": [
-              "R.1.3",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "catch_lie",
+              "prompt": "Katrina adds her own memory of the schoolroom. One detail is untrue. Tap the sentence that shows it.",
+              "keywords": [],
+              "proof": {
+                "lines": [
+                  "All this he called “doing\nhis duty by their parents;” and he never inflicted a chastisement\nwithout following it by the assurance, so consolatory to the smarting\nurchin, that “he would remember it and thank him for it the longest day\nhe had to live.”"
+                ]
+              },
+              "testimony": {
+                "speaker": "katrina-van-tassel",
+                "text": "He never explained himself. He would punish a boy and say nothing at all about it afterward."
+              },
+              "hint": "What did he tell the boys after a punishment?",
+              "why": "He always followed a punishment with a promise that the boy would thank him for it one day.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-schoolmaster-06",
@@ -8786,34 +9278,65 @@
           },
           "question": {
             "type": "between_lines",
-            "prompt": "Why might Ichabod pick certain children to escort after class?",
+            "format": "multi",
+            "pick": 2,
+            "prompt": "Which reasons might lie behind his choice of after-school companions?",
             "keywords": [
-              "escort"
+              "after-school companions"
             ],
             "choices": [
               {
-                "text": "He hopes for a good meal or a chance to meet pretty sisters",
+                "text": "Some of them had pretty older sisters",
                 "best": true
               },
               {
-                "text": "He wants to keep the youngest pupils safe from ghosts"
+                "text": "Some had mothers known for their cooking",
+                "best": true
               },
               {
-                "text": "He is paid a few extra pennies for every child he brings home"
+                "text": "They lived closest to the schoolhouse"
+              },
+              {
+                "text": "They were the best readers in the class"
               }
             ],
-            "proof": {
-              "lines": [
-                "When school hours were over, he was even the companion and playmate\nof the larger boys; and on holiday afternoons would convoy some of\nthe smaller ones home, who happened to have pretty sisters, or good\nhousewives for mothers, noted for the comforts of the cupboard."
-              ]
-            },
-            "hint": "Look at which families he chooses.",
-            "why": "He walks home the ones with pretty sisters or mothers noted for the comforts of the cupboard.",
+            "hint": "Look at whom he walked home, and what their families had.",
+            "why": "He walked home children with pretty sisters or mothers famous for the comforts of the cupboard.",
             "standards": [
               "K12.EE.3.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "between_lines",
+              "prompt": "Why would a teacher want to stay friendly with his students here?",
+              "keywords": [],
+              "choices": [
+                {
+                  "text": "The school paid him extra for every friendship"
+                },
+                {
+                  "text": "He had no friends his own age in the valley"
+                },
+                {
+                  "text": "It brought him meals and company in their homes",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "Indeed,\nit behooved him to keep on good terms with his pupils."
+                ]
+              },
+              "hint": "What did those families have that he wanted?",
+              "why": "It paid him to keep on good terms with his pupils: their families fed and welcomed him.",
+              "standards": [
+                "K12.EE.3.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-schoolmaster-07",
@@ -8844,35 +9367,88 @@
             "note": "Worldly effects: everything a person owns. Ichabod's fit in one handkerchief."
           },
           "question": {
-            "type": "between_lines",
-            "prompt": "Why might Ichabod stay with a different family each week?",
-            "keywords": [
-              "different family"
-            ],
-            "choices": [
-              {
-                "text": "He wants to learn farming from every neighbor"
-              },
-              {
-                "text": "A town law makes teachers move every week"
-              },
-              {
-                "text": "His pay is too small to feed such a big eater",
-                "best": true
-              }
-            ],
-            "proof": {
-              "lines": [
-                "The revenue\narising from his school was small, and would have been scarcely\nsufficient to furnish him with daily bread, for he was a huge feeder,\nand, though lank, had the dilating powers of an anaconda; but to help\nout his maintenance, he was, according to country custom in those\nparts, boarded and lodged at the houses of the farmers whose children\nhe instructed."
+            "type": "weigh_evidence",
+            "format": "dnd",
+            "dnd": {
+              "kind": "build_case",
+              "slots": [
+                {
+                  "id": "claim",
+                  "label": "Claim"
+                },
+                {
+                  "id": "proof",
+                  "label": "Proof sentence"
+                },
+                {
+                  "id": "reason",
+                  "label": "Reason"
+                }
+              ],
+              "items": [
+                {
+                  "id": "claim",
+                  "text": "His school pay was not enough to live on",
+                  "slot": "claim"
+                },
+                {
+                  "id": "proof",
+                  "text": "His school earned little and would barely buy his bread",
+                  "slot": "proof",
+                  "line": "The revenue\narising from his school was small, and would have been scarcely\nsufficient to furnish him with daily bread, for he was a huge feeder,\nand, though lank, had the dilating powers of an anaconda; but to help\nout his maintenance, he was, according to country custom in those\nparts, boarded and lodged at the houses of the farmers whose children\nhe instructed."
+                },
+                {
+                  "id": "reason",
+                  "text": "So he ate and slept at his pupils' farmhouses, a week at a time",
+                  "slot": "reason",
+                  "line": "With these he lived successively a week at a time, thus\ngoing the rounds of the neighborhood, with all his worldly effects tied\nup in a cotton handkerchief."
+                },
+                {
+                  "id": "logs",
+                  "text": "The schoolhouse was a single room of logs",
+                  "slot": null
+                }
               ]
             },
-            "hint": "Look at his pay and at his appetite.",
-            "why": "His pay was scarcely enough for such a huge feeder, so he was boarded at the farmers' houses.",
+            "prompt": "Build the case that the schoolmaster could not live on his pay alone.",
+            "keywords": [],
+            "hint": "A case needs a claim, a sentence that proves it, and a reason that connects them.",
+            "why": "Small pay is the claim, the line about his revenue proves it, and boarding with farm families is how he got by; the log schoolhouse has nothing to do with it.",
             "standards": [
-              "K12.EE.3.1",
-              "K12.EE.1.1"
+              "K12.EE.1.1",
+              "K12.EE.3.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "weigh_evidence",
+              "prompt": "Which detail best shows that his teaching could not support him?",
+              "keywords": [],
+              "choices": [
+                {
+                  "text": "He earned shillings for singing lessons"
+                },
+                {
+                  "text": "It would scarcely buy him his daily bread",
+                  "best": true
+                },
+                {
+                  "text": "He owned more books than he could carry"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "The revenue\narising from his school was small, and would have been scarcely\nsufficient to furnish him with daily bread, for he was a huge feeder,\nand, though lank, had the dilating powers of an anaconda; but to help\nout his maintenance, he was, according to country custom in those\nparts, boarded and lodged at the houses of the farmers whose children\nhe instructed."
+                ]
+              },
+              "hint": "Look at what his school revenue could buy.",
+              "why": "His revenue was small, scarcely enough for daily bread.",
+              "standards": [
+                "K12.EE.1.1",
+                "K12.EE.3.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-schoolmaster-08",
@@ -8918,7 +9494,26 @@
             "standards": [
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "find_it",
+              "prompt": "Which sentence tells why he worked so hard to please the farm families?",
+              "keywords": [
+                "please"
+              ],
+              "proof": {
+                "lines": [
+                  "That all this might not be too onerous on the purses of his rustic\npatrons, who are apt to consider the costs of schooling a grievous\nburden, and schoolmasters as mere drones, he had various ways of\nrendering himself both useful and agreeable."
+                ]
+              },
+              "hint": "Look for what the farmers thought of the cost of schooling.",
+              "why": "The farmers thought schooling a grievous burden, so he made himself useful and agreeable.",
+              "standards": [
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-schoolmaster-09",
@@ -8949,26 +9544,66 @@
             "note": "Like the lion bold: Ichabod, lord of the schoolroom, turns as gentle as a lion holding a lamb."
           },
           "question": {
-            "type": "catch_lie",
-            "prompt": "Hans Van Ripper remembers the schoolmaster. One thing he says is false. Tap the line that proves it.",
-            "keywords": [
-              "false"
+            "type": "character_clue",
+            "prompt": "Away from the classroom, which side of Ichabod comes out with the families?",
+            "keywords": [],
+            "choices": [
+              {
+                "text": "Soft and charming, eager to win the mothers over",
+                "best": true
+              },
+              {
+                "text": "Bossy and loud, just as he is with his class"
+              },
+              {
+                "text": "Shy and nervous, hiding away from the parents"
+              }
             ],
             "proof": {
               "lines": [
+                "He laid aside, too, all the\ndominant dignity and absolute sway with which he lorded it in his little\nempire, the school, and became wonderfully gentle and ingratiating.",
                 "He found favor in the eyes of the mothers by petting the children,\nparticularly the youngest; and like the lion bold, which whilom so\nmagnanimously the lamb did hold, he would sit with a child on one knee,\nand rock a cradle with his foot for whole hours together."
               ]
             },
-            "testimony": {
-              "speaker": "hans-van-ripper",
-              "text": "That schoolmaster was a stern one even in our homes. He had no patience for little ones and would never so much as hold a baby."
-            },
-            "hint": "Hans sounds sure. Check how Ichabod treated the youngest children.",
-            "why": "He petted the youngest and would sit with a child on one knee, rocking a cradle for hours.",
+            "hint": "Compare the master in school with the man rocking a cradle.",
+            "why": "He drops his lordly ways and turns gentle, petting the children and rocking a cradle to win the mothers' favor.",
             "standards": [
+              "R.1.1",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "character_clue",
+              "prompt": "The narrator compares him to a lion holding a lamb. What does that picture say about him?",
+              "keywords": [
+                "lion holding a lamb"
+              ],
+              "choices": [
+                {
+                  "text": "He keeps animals on the farms where he stays"
+                },
+                {
+                  "text": "A stern man turns tender when he wants favor",
+                  "best": true
+                },
+                {
+                  "text": "He is fierce and dangerous to small children"
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "He laid aside, too, all the\ndominant dignity and absolute sway with which he lorded it in his little\nempire, the school, and became wonderfully gentle and ingratiating."
+                ]
+              },
+              "hint": "What did he lay aside outside school?",
+              "why": "Like a lion gently holding a lamb, the stern master turns wonderfully gentle and ingratiating.",
+              "standards": [
+                "R.1.1",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
         },
         {
           "id": "the-schoolmaster-10",
@@ -9000,34 +9635,100 @@
           },
           "question": {
             "type": "theme_thread",
-            "prompt": "Which idea about Ichabod keeps showing up?",
-            "keywords": [
-              "keeps showing up"
-            ],
-            "choices": [
-              {
-                "text": "He is shy and hides from attention whenever he can"
-              },
-              {
-                "text": "He cares only about money and never about any praise"
-              },
-              {
-                "text": "He thinks highly of himself and enjoys being admired",
-                "best": true
-              }
-            ],
+            "format": "written",
+            "written": {
+              "key_ideas": [
+                [
+                  "sing",
+                  "psalm",
+                  "choir",
+                  "voice",
+                  "music"
+                ],
+                [
+                  "vain",
+                  "vanity",
+                  "proud",
+                  "pride",
+                  "show",
+                  "better",
+                  "parson",
+                  "admir",
+                  "impress",
+                  "best",
+                  "beat",
+                  "outshin"
+                ]
+              ],
+              "model": "Ichabod is proudest of his singing, because he believes he outshines even the parson when he leads the choir on Sundays."
+            },
+            "prompt": "In a single sentence, explain what Ichabod is proudest of.",
+            "keywords": [],
             "proof": {
               "lines": [
                 "It was a matter of no little vanity to him on\nSundays, to take his station in front of the church gallery, with a band\nof chosen singers; where, in his own mind, he completely carried away\nthe palm from the parson."
               ]
             },
-            "hint": "Look at how he feels standing before the singers.",
-            "why": "It was a matter of no little vanity to him, and in his own mind he outshone the parson.",
+            "hint": "Look at how he feels standing in front of the church gallery.",
+            "why": "Leading the choir is \"a matter of no little vanity\": in his own mind he beats even the parson.",
             "standards": [
               "R.1.2",
               "K12.EE.1.1"
             ]
-          }
+          },
+          "bank": [
+            {
+              "type": "theme_thread",
+              "prompt": "Which idea about Ichabod keeps showing up?",
+              "keywords": [
+                "keeps showing up"
+              ],
+              "choices": [
+                {
+                  "text": "He is shy and hides from attention whenever he can"
+                },
+                {
+                  "text": "He cares only about money and never about any praise"
+                },
+                {
+                  "text": "He thinks highly of himself and enjoys being admired",
+                  "best": true
+                }
+              ],
+              "proof": {
+                "lines": [
+                  "It was a matter of no little vanity to him on\nSundays, to take his station in front of the church gallery, with a band\nof chosen singers; where, in his own mind, he completely carried away\nthe palm from the parson."
+                ]
+              },
+              "hint": "Look at how he feels standing before the singers.",
+              "why": "It was a matter of no little vanity to him, and in his own mind he outshone the parson.",
+              "standards": [
+                "R.1.2",
+                "K12.EE.1.1"
+              ]
+            }
+          ]
+        }
+      ],
+      "lightning": [
+        {
+          "id": "born",
+          "chunk": 1,
+          "after": 3,
+          "question": "Where was Ichabod born?",
+          "answer": [
+            "He was a native of Connecticut, a State which supplies the\nUnion with pioneers for the mind as well as for the forest, and sends\nforth yearly its legions of frontier woodmen and country schoolmasters."
+          ]
+        },
+        {
+          "id": "meals-bed",
+          "chunk": 7,
+          "after": 8,
+          "question": "How did Ichabod get his meals and a bed?",
+          "answer": [
+            "The revenue\narising from his school was small, and would have been scarcely\nsufficient to furnish him with daily bread, for he was a huge feeder,\nand, though lank, had the dilating powers of an anaconda; but to help\nout his maintenance, he was, according to country custom in those\nparts, boarded and lodged at the houses of the farmers whose children\nhe instructed.",
+            "With these he lived successively a week at a time, thus\ngoing the rounds of the neighborhood, with all his worldly effects tied\nup in a cotton handkerchief."
+          ]
         }
       ],
       "interview": {
@@ -16956,7 +17657,8 @@
             "chunk": 5,
             "place": "schoolhouse",
             "x": 1383,
-            "y": 830
+            "y": 830,
+            "landmark": "twist"
           },
           {
             "chunk": 6,
@@ -16981,14 +17683,13 @@
             "place": "farmhouses",
             "x": 846,
             "y": 853,
-            "landmark": "twist"
+            "landmark": "boss"
           },
           {
             "chunk": 10,
             "place": "church",
             "x": 1420,
-            "y": 463,
-            "landmark": "boss"
+            "y": 463
           }
         ],
         "finale": {
@@ -17930,7 +18631,6 @@
   },
   "expedition_rules": {
     "arc_pending": [
-      "the-schoolmaster",
       "tales-by-the-fire",
       "the-van-tassel-farm",
       "a-rival-appears",

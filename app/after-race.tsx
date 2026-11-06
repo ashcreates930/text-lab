@@ -9,7 +9,8 @@ import type {SourcePassage} from "@/lib/source-passages";
 import {chunkTokens,type Answer} from "@/lib/expedition";
 import {caseNotesPdf,refresherAward,type CaseNote,type RefresherViewData} from "@/lib/case-notes";
 import {saidLine,type InterviewNote} from "@/lib/interview";
-import {AnswerBars,ChunkText,type ChunkView} from "./expedition-race";
+import {AnswerBars,ChunkText,MultiBars,type ChunkView} from "./expedition-race";
+import {DragDrop} from "./drag-drop";
 import {SplitStage} from "./split-stage";
 import {ReadingPanel} from "./reading-panel";
 import {focusScreenTop} from "./screen-focus";
@@ -49,13 +50,18 @@ export function Refresher({items,world,check,onDone,seed}:{items:RefresherView[]
   :<ChunkText chunk={it.chunkView} world={world} tokens={tokens} pick={it.task==="line"?{selected:draft.lines?.[0]??null,onPick:t=>setDraft(t?{lines:[t]}:{})}:undefined}/>;
  const body=result?<div aria-live="assertive">{result.fixed
    ?<div className="moment-pop rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">+1 star</p><p className="font-display text-[32px] font-bold leading-none">Fixed!</p></div>
-   :<div className="rounded-card bg-panel p-5"><p className="font-display text-[26px] font-bold leading-none">Here's the proof</p><p className="mt-1 text-[15px] text-muted">Read it once more. It's saved in your Case Notes.</p></div>}</div>
+   :<div className="rounded-card bg-panel p-5"><p className="font-display text-[26px] font-bold leading-none">Here's the proof</p><p className="mt-1 text-[15px] text-muted">Read it once more. It's saved in your Case Notes.</p></div>}
+   {(it.task==="dnd"||it.task==="multi")&&result.lines[0]&&<p className="mt-3 rounded-card bg-panel px-4 py-3 text-[16px]"><b>The answer:</b> {result.lines[0]}</p>}</div>
   :<div className="flex flex-col gap-2">{hint}
    {(it.task==="gist"||it.task==="meaning")&&it.options&&<AnswerBars seed={seed?`${seed}|${it.kind}|${it.chunk}|${it.task}`:undefined} label={it.prompt} options={it.options.map(t=>({text:t}))} picked={null} onPick={i=>lock(it.task==="gist"?{choice:i}:{choice2:i})}/>}
    {it.task==="line"&&<p className="text-[15px] font-bold text-muted">Tap the sentence that proves it, then lock in.</p>}
+   {/* Drag and drop and choose two are done again, untimed. */}
+   {it.task==="dnd"&&it.dnd&&<DragDrop view={it.dnd} placed={draft.placed??{}} onChange={p=>setDraft(d=>({...d,placed:p}))}/>}
+   {it.task==="multi"&&it.options&&<MultiBars seed={seed?`${seed}|${it.chunk}|multi`:undefined} label={it.prompt} need={it.pick??2} options={it.options.map(t=>({text:t}))} picked={draft.picks??[]} onToggle={i=>setDraft(d=>{const p=d.picks??[];return {...d,picks:p.includes(i)?p.filter(x=>x!==i):[...p,i]}})}/>}
    {it.task==="pin2"&&<p className="text-[15px] font-bold text-muted">Pin 2 lines that back one of the calls ({draft.lines?.length??0} of 2).</p>}</div>;
  const action=result?<button type="button" onClick={next} className="case-primary w-full justify-center">{k+1>=items.length?"Open my Case Notes":"Next"} <ArrowRight size={18} aria-hidden/></button>
-  :it.task==="line"?lockBtn(!!draft.lines?.length):it.task==="pin2"?lockBtn((draft.lines?.length??0)===2):undefined;
+  :it.task==="line"?lockBtn(!!draft.lines?.length):it.task==="pin2"?lockBtn((draft.lines?.length??0)===2)
+  :it.task==="dnd"?lockBtn(Object.values(draft.placed??{}).filter(Boolean).length>0):it.task==="multi"?lockBtn((draft.picks?.length??0)===(it.pick??2)):undefined;
  return <SplitStage key={k} label="Refresher" passage={passage} head={head} body={body} action={action} collapse={!result&&(it.task==="line"||it.task==="pin2")}/>;
 }
 

@@ -18,7 +18,8 @@ import type { SourcePassage } from "../source-passages.ts";
 import type { LivePlayer, LiveResponse, LiveSquad } from "./engine.ts";
 import { GIST_SECONDS, SCREEN_MS, TESTIMONY_MS, TYPED_SECONDS, TYPE_INFO, chunkTokens, expeditionChunks, gistPoints, limitMs, proofShown, scoreAnswer, timeScale, type Answer, type RaceChunk } from "../expedition.ts";
 import { podium, raceBoard, readiness, squadTotals } from "../proof-race.ts";
-import { BURST_POINTS, BURST_SECONDS, LIGHTNING_POINTS, LIGHTNING_SECONDS, arcOf, isCheckpoint, multiplierAt, questionAt, streakBonus, versionFor, type Arc, type Version } from "../pacing.ts";
+import { BURST_POINTS, BURST_SECONDS, LIGHTNING_POINTS, LIGHTNING_SECONDS, arcOf, isCheckpoint, multiplierAt, streakBonus, versionFor, type Arc, type Version } from "../pacing.ts";
+import { askedQuestion, bankPick, gistAt } from "../formats.ts";
 import { bandOf, type GradeBand } from "../best-standards.ts";
 import { screenBoardText } from "../safety.ts";
 
@@ -48,7 +49,8 @@ export function nextBeat(round: LiveRaceRound, chunks: RaceChunk[], arc: Arc | n
   if (b === "testify") return s + 1 < (round.interview?.witnesses ?? 0) ? { step: s + 1, beat: "vote" } : { step: 0, beat: "read" };
   if (b === "liar") return { step: s, beat: "verdict" };
   if (b === "verdict") return "end";
-  if (b === "read") return { step: s, beat: "process" };
+  // The Gist check about every third chunk (lib/formats.ts gistAt); otherwise straight on.
+  if (b === "read") return { step: s, beat: gistAt(s) ? "process" : asksHere(round, s) ? "ask" : "race" };
   if (b === "process") return { step: s, beat: asksHere(round, s) ? "ask" : "race" };
   if (b === "ask") return { step: s, beat: "race" };
   if (b === "race") return { step: s, beat: "reveal" };
@@ -78,7 +80,7 @@ export function beatMs(round: LiveRaceRound, chunk: RaceChunk | undefined, setti
 
 // ---------- One player's chunk ----------
 // points include the double (mult) and the streak bonus; version: the question version this player saw.
-export type LiveTap = { step: number; answer: Answer; correct: boolean; answerRight: boolean; proofRight: boolean; late: boolean; points: number; elapsedMs: number; version?: Version; mult?: number; bonus?: number };
+export type LiveTap = { step: number; answer: Answer; correct: boolean; answerRight: boolean; proofRight: boolean; late: boolean; points: number; elapsedMs: number; version?: Version; bank?: number; mult?: number; bonus?: number; verdict?: { strength: string; note: string; next: string } };
 export function playerChunk(responses: LiveResponse[], roundIndex: number, step: number, playerId: string) {
   const mine = (kind: string) => rows(responses, roundIndex, kind, step).filter((r) => r.playerId === playerId);
   const tap = mine("race_tap")[0]?.payload as LiveTap | undefined;
@@ -96,6 +98,12 @@ export function playerChunk(responses: LiveResponse[], roundIndex: number, step:
 // The question version for a player at a step: from their results on every earlier step (lib/pacing.ts).
 export function playerVersion(responses: LiveResponse[], roundIndex: number, step: number, playerId: string): Version {
   return versionFor(Array.from({ length: step }, (_, k) => playerChunk(responses, roundIndex, k, playerId).correct));
+}
+// The question a player is asked at a step: their pick from the chunk's bank (seeded by the player) at their version.
+export function playerAsked(chunks: RaceChunk[], responses: LiveResponse[], roundIndex: number, playerId: string, step: number) {
+  const c = chunks[step]; if (!c) return null;
+  const version = playerVersion(responses, roundIndex, step, playerId), bank = bankPick(c.chunk, playerId);
+  return { question: askedQuestion(c.chunk, { bank, version }), bank, version };
 }
 // The burst: which level 1 chunks' discoveries a player (or their squad) has found.
 export function burstFound(responses: LiveResponse[], roundIndex: number, ids: string[]) {
@@ -174,13 +182,18 @@ export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses:
     if (round.beat !== "race") return "The question isn't open.";
     if (me.done) return "You've already answered this one.";
     // This player's version of the question (lib/pacing.ts).
-    const asked = questionAt(chunk.chunk.question, playerVersion(responses, roundIndex, round.step, playerId)), q = asked.question, limit = limitMs(TYPE_INFO[q.type].seconds, timeSetting);
+    const asked = playerAsked(chunks, responses, roundIndex, playerId, round.step)!, q = asked.question, limit = limitMs(TYPE_INFO[q.type].seconds, timeSetting);
     const elapsed = Math.max(0, since - (q.type === "catch_lie" ? TESTIMONY_MS : 0));
     const a = (payload.answer ?? {}) as Record<string, unknown>;
     const answer: Answer = {
       choice: Number.isInteger(a.choice) ? (a.choice as number) : null, choice2: Number.isInteger(a.choice2) ? (a.choice2 as number) : null,
       lines: Array.isArray(a.lines) ? a.lines.map(String).slice(0, 2) : [], words: Array.isArray(a.words) ? a.words.filter((w) => Number.isInteger(w)).map(Number).slice(0, 60) : [],
       theory: typeof a.theory === "string" ? a.theory : null,
+      picks: Array.isArray(a.picks) ? a.picks.filter((p) => Number.isInteger(p)).map(Number).slice(0, 5) : [],
+      placed: a.placed && typeof a.placed === "object" ? Object.fromEntries(Object.entries(a.placed as Record<string, unknown>).slice(0, 8).map(([k, v]) => [String(k).slice(0, 40), typeof v === "string" ? v.slice(0, 40) : null])) : {},
+      text: typeof a.text === "string" ? a.text.replace(/\s+/g, " ").trim().slice(0, 240) : undefined,
+      // A written answer's strength comes only from the server's judge (the act route), never from the phone.
+      judged: payload.__judged === "Strong" || payload.__judged === "Solid" || payload.__judged === "Needs more evidence" ? payload.__judged : null,
     };
     // A small grace for the network; past it the answer still counts as the one shot, for 0.
     const r = scoreAnswer(q, answer, chunkTokens(chunk.lines), elapsed, limit + 1500);
@@ -189,7 +202,7 @@ export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses:
     const correct = r.correct && !late, mult = arc ? multiplierAt(arc, round.step) : 1;
     let before = 0; for (let k = round.step - 1; k >= 0 && playerChunk(responses, roundIndex, k, playerId).correct; k--) before++;
     const bonus = streakBonus(before, correct ? before + 1 : 0);
-    const tap: LiveTap = { step: round.step, answer, correct, answerRight: r.answer, proofRight: r.proof, late, points: late ? 0 : r.points * mult + bonus, elapsedMs: elapsed, version: asked.version, mult, bonus };
+    const tap: LiveTap = { step: round.step, answer, correct, answerRight: r.answer, proofRight: r.proof, late, points: late ? 0 : r.points * mult + bonus, elapsedMs: elapsed, version: asked.version, bank: asked.bank, mult, bonus, ...(payload.__verdict ? { verdict: payload.__verdict as { strength: string; note: string; next: string } } : {}) };
     return { payload: tap as unknown as Record<string, unknown>, flagged: false };
   }
   return "That isn't a Proof Race answer.";

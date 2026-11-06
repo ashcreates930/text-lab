@@ -5,7 +5,7 @@
 // streak, coins, sound, chunk count, seconds left) sits on every race screen. Extended time multiplies every timer and
 // every automatic screen. Screen readers hear the result and the new rank before anything moves.
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
-import {ArrowRight,Check,Crown,Flame,Highlighter,Pause,Play,Sparkles,Star,Timer,Volume2,VolumeX,X,Zap} from "lucide-react";
+import {ArrowRight,Check,Crown,Flame,Highlighter,Lightbulb,Pause,Play,Sparkles,Star,Timer,Volume2,VolumeX,X,Zap} from "lucide-react";
 import type {ExpQuestion,QuestionType,WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
 import {DISCOVERY_COINS,GIST_SECONDS,TESTIMONY_MS,TYPE_INFO,chunkTokens,focusTokens,joinedPassages,proofTokens,expeditionChunks,ghostPlay,gistPoints,isDiscovery,keywordParts,limitMs,phraseRange,proofShown,scoreAnswer,screenMs,shuffledOrder,type Answer,type RaceChunk,type Token} from "@/lib/expedition";
@@ -18,6 +18,9 @@ import {ReadingPanel} from "./reading-panel";
 import {Leaderboard,Podium,cue,reducedMotion,useBeatClock} from "./proof-race";
 import {BURST_POINTS,BURST_SECONDS,LIGHTNING_POINTS,LIGHTNING_SECONDS,arcOf,beatKind,isCheckpoint,multiplierAt,questionAt,streakBonus,versionFor,type Lightning,type Version} from "@/lib/pacing";
 import {RaceMap} from "./world-map";
+import {DragDrop,type DndView} from "./drag-drop";
+import {askedQuestion,bankPick,dndResult,formatOf,formatView,gistAt,withAsked,type Format,type Strength} from "@/lib/formats";
+import {judgeWritten} from "./written-judge";
 import {useSoundPref} from "./game-feel";
 import {focusScreenTop} from "./screen-focus";
 import {CaseNotesView,Refresher,type RefresherView} from "./after-race";
@@ -29,7 +32,7 @@ import {evidenceSentences} from "@/lib/lies";
 
 type Beat="interview"|"read"|"gist"|"question"|"result"|"lightning"|"board"|"burst"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"notes";
 // points include the boss or surprise double; bonus: the streak bonus; version: the question version this student saw.
-export type ChunkRecord={gist:number|null;answer:Answer;correct:boolean;points:number;late:boolean;coins:number;unknown:string[];discovered:boolean;bonus:number;mult:number;version:Version};
+export type ChunkRecord={gist:number|null;answer:Answer;correct:boolean;points:number;late:boolean;coins:number;unknown:string[];discovered:boolean;bonus:number;mult:number;version:Version;bank:number;judged?:{strength:Strength;note:string;next:string}|null};
 const AUTO:Partial<Record<Beat,"result"|"board"|"countdown">>={result:"result",board:"board",countdown:"countdown"};
 
 // ---------- HUD ----------
@@ -119,42 +122,83 @@ export function AnswerBars({options,picked,onPick,disabled,label,seed}:{options:
   <span aria-hidden className={`grid h-8 w-8 shrink-0 place-items-center rounded-row font-display text-[16px] ${picked===i?"bg-on-primary text-highlight":"bg-panel-2 text-muted"}`}>{String.fromCharCode(65+pos)}</span>{o.text}</button>})}</div></fieldset>;
 }
 // The question as players see it (no best answers): built from the world for solo, sent by the server for live phones.
-export type ViewQuestion={type:QuestionType;name:string;steps:1|2;prompt:string;keywords:string[];focus:string|null;choices:string[]|null;choices2:{prompt:string;options:string[]}|null;theories:{id:string;name:string}[]|null;testimony:{speaker:string;text:string}|null;proof:"words"|"lines"|"none";callPassages:{id:string;text:string}[]|null};
-export function viewQuestion(q:ExpQuestion,world:WorldPack,callPassages:{id:string;text:string}[]):ViewQuestion{
- const info=TYPE_INFO[q.type];
- return {type:q.type,name:info.name,steps:info.steps,prompt:q.prompt,keywords:q.keywords,focus:q.focus??null,choices:q.choices?.map(o=>o.text)??null,choices2:q.choices2?{prompt:q.choices2.prompt,options:q.choices2.options.map(o=>o.text)}:null,theories:q.theories?.map(t=>({id:t.id,name:t.name}))??null,
-  testimony:q.testimony?{speaker:world.characters.find(x=>x.id===q.testimony!.speaker)?.name??"A witness",text:q.testimony.text}:null,proof:q.proof?.words?.length?"words":q.proof?.lines?.length?"lines":"none",callPassages:q.type==="make_call"?callPassages:null};
+// format: how it's answered (lib/formats.ts); pick: how many to choose; dnd: the pieces and slots (never where they
+// go); written: a one-sentence answer; hint: shown from the start on the easier version.
+export type ViewQuestion={type:QuestionType;name:string;steps:1|2;prompt:string;keywords:string[];focus:string|null;choices:string[]|null;choices2:{prompt:string;options:string[]}|null;theories:{id:string;name:string}[]|null;testimony:{speaker:string;text:string}|null;proof:"words"|"lines"|"none";callPassages:{id:string;text:string}[]|null;
+ format:Format;pick:number|null;dnd:DndView|null;written:boolean;hint:string|null};
+export function viewQuestion(q:ExpQuestion&{showHint?:boolean},world:WorldPack,callPassages:{id:string;text:string}[]):ViewQuestion{
+ const info=TYPE_INFO[q.type],fv=formatView(q);
+ return {...fv,type:q.type,name:fv.name??info.name,prompt:q.prompt,keywords:q.keywords,focus:q.focus??null,choices:q.choices?.map(o=>o.text)??null,choices2:q.choices2?{prompt:q.choices2.prompt,options:q.choices2.options.map(o=>o.text)}:null,theories:q.theories?.map(t=>({id:t.id,name:t.name}))??null,
+  testimony:q.testimony?{speaker:world.characters.find(x=>x.id===q.testimony!.speaker)?.name??"A witness",text:q.testimony.text}:null,proof:q.proof?.words?.length?"words":q.proof?.lines?.length?"lines":"none",callPassages:q.type==="make_call"?callPassages:null,
+};
 }
 export function KeywordPrompt({prompt,keywords}:{prompt:string;keywords:string[]}){
  return <>{keywordParts(prompt,keywords).map((p,i)=>p.key?<mark key={i} className="rounded-md bg-highlight/25 px-1 text-ink underline decoration-highlight decoration-2 underline-offset-4">{p.text}</mark>:<span key={i}>{p.text}</span>)}</>;
 }
-// One question, one shot: step 1 the answer (or the call), step 2 the proof: tap the sentence that proves it (or the
-// meaning, or two pinned lines for Make the Call). Laid out side by side (app/split-stage.tsx): the passage on the left,
-// the question, choices, testimony and timer on the right; on a phone the question is a panel pinned to the bottom.
-// Used by the solo race and by every phone in a live game. seed: this student's own answer order.
+// Choose two (or more): toggle choices, in this student's own order.
+export function MultiBars({options,picked,onToggle,need,label,seed,disabled}:{options:{text:string}[];picked:number[];onToggle:(i:number)=>void;need:number;label:string;seed?:string;disabled?:boolean}){
+ const order=seed?shuffledOrder(options.length,`${seed}|${label}`):options.map((_,i)=>i);
+ return <fieldset className="mt-3"><legend className="text-[15px] font-bold">Choose {need}. {picked.length} of {need} chosen.</legend><div className="mt-2 grid gap-2.5">{order.map((i,pos)=>{const on=picked.includes(i);return <button key={i} type="button" disabled={disabled||(!on&&picked.length>=need)} aria-pressed={on} onClick={()=>onToggle(i)}
+  className={`flex min-h-[60px] items-center gap-3 rounded-button border-[3px] px-4 py-3 text-left text-[17px] font-bold leading-snug disabled:opacity-60 ${on?"border-primary bg-primary text-on-primary":"border-edge bg-panel text-ink hover:border-primary"}`}>
+  <span aria-hidden className={`grid h-8 w-8 shrink-0 place-items-center rounded-row font-display text-[16px] ${on?"bg-on-primary text-highlight":"bg-panel-2 text-muted"}`}>{on?<Check size={18}/>:String.fromCharCode(65+pos)}</span>{options[i].text}</button>})}</div></fieldset>;
+}
+// One question, one shot, in any format (lib/formats.ts): two-part evidence (Part A the answer, Part B the sentence that
+// proves it), multiple choice, choose two, tap the sentence, a one-sentence written answer (then the sentence that backs
+// it), drag and drop, or Make the Call. Laid out side by side (app/split-stage.tsx): the passage on the left, the
+// question on the right; on a phone the question is a panel pinned to the bottom. Used by the solo race and every
+// phone in a live game. seed: this student's own answer order.
 export function QuestionPanel({vq,passages,chunk,world,tokens,glossary,testifying,draft,setDraft,step,setStep,onLock,headingId="ex-h",seed,timer,banner}:{vq:ViewQuestion;passages:{id:string;text:string}[];chunk:ChunkView;world:WorldPack;tokens:Token[];glossary:WorldPack["glossary"];testifying:boolean;draft:Answer;setDraft:React.Dispatch<React.SetStateAction<Answer>>;step:1|2;setStep:(s:1|2)=>void;onLock:(a:Answer)=>void;headingId?:string;seed?:string;timer?:React.ReactNode;banner?:React.ReactNode}){
- const twoStep=vq.steps===2,needsProofStep=twoStep&&vq.type!=="figure_it_out"&&vq.type!=="make_call";
+ const f=vq.format,twoStep=vq.steps===2;
  const pinned=draft.lines??[];
  const focus=focusTokens(tokens,vq.focus);
- const proofStep=((step===2&&needsProofStep)||vq.type==="find_it"||vq.type==="catch_lie")&&!testifying;
- const callStep=step===2&&vq.type==="make_call";
+ const proofStep=((step===2&&(f==="two_part"||f==="written"))||f==="tap")&&!testifying;
+ const callStep=step===2&&f==="call";
+ const words=(draft.text??"").trim().split(/\s+/).filter(Boolean).length;
  // The passage keeps the word the question is about highlighted (never the proof); in the proof step its sentences are tappable.
  const passage=callStep
   ?<ReadingPanel className="mt-1" glossary={glossary} passages={(vq.callPassages??passages) as SourcePassage[]} kept={pinned} onTap={l=>setDraft(d=>{const ls=d.lines??[];return {...d,lines:ls.includes(l.text)?ls.filter(x=>x!==l.text):ls.length>=2?ls:[...ls,l.text]}})}/>
   :<ChunkText chunk={chunk} world={world} tokens={tokens} focus={focus} pick={proofStep?{selected:draft.lines?.[0]??null,onPick:t=>setDraft(d=>({...d,lines:t?[t]:[]}))}:undefined}/>;
- const head=<>{timer}{banner}<p className="mt-2 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{vq.name}{twoStep?` · Step ${step} of 2`:""}</p>
+ const part=f==="two_part"||f==="written"&&twoStep?(step===1?"Part A":"Part B"):twoStep?`Step ${step} of 2`:"";
+ const head=<>{timer}{banner}<p className="mt-2 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{vq.name}{part?` · ${part}`:""}</p>
   <h1 id={headingId} className="text-[22px] leading-tight outline-none md:text-[24px]"><KeywordPrompt prompt={vq.prompt} keywords={vq.keywords}/></h1></>;
  const body=<>
+  {vq.hint&&step===1&&<p className="mt-2 flex items-start gap-2 rounded-card bg-violet-soft px-3 py-2 text-[15px] font-bold"><Lightbulb size={16} className="mt-0.5 shrink-0 text-gold" aria-hidden/>{vq.hint}</p>}
   {vq.testimony&&<blockquote className={`mt-3 rounded-card bg-violet p-4 text-on-violet shadow-[0_6px_0_var(--color-violet-shadow)] ${reducedMotion()?"":"rise-in"}`}><p className="text-[12px] font-extrabold uppercase tracking-[.08em]">{vq.testimony.speaker} testifies</p><p className="mt-1 text-[17px] font-bold leading-snug">“{vq.testimony.text}”</p>{testifying&&<p role="status" className="mt-2 text-[13px] font-extrabold">Listen to the whole testimony. The timer starts when it ends.</p>}</blockquote>}
-  {step===1&&vq.choices&&<AnswerBars seed={seed} label={vq.prompt} options={vq.choices.map(t=>({text:t}))} picked={draft.choice??null} onPick={i=>{setDraft(d=>({...d,choice:i}));if(twoStep)setStep(2);else onLock({...draft,choice:i})}}/>}
+  {step===1&&vq.choices&&f!=="multi"&&<AnswerBars seed={seed} label={vq.prompt} options={vq.choices.map(t=>({text:t}))} picked={draft.choice??null} onPick={i=>{setDraft(d=>({...d,choice:i}));if(twoStep)setStep(2);else onLock({...draft,choice:i})}}/>}
+  {step===1&&f==="multi"&&vq.choices&&<MultiBars seed={seed} label={vq.prompt} need={vq.pick??2} options={vq.choices.map(t=>({text:t}))} picked={draft.picks??[]} onToggle={i=>setDraft(d=>{const p=d.picks??[];return {...d,picks:p.includes(i)?p.filter(x=>x!==i):[...p,i]}})}/>}
   {step===1&&vq.theories&&<AnswerBars seed={seed} label="Your call" options={vq.theories.map(t=>({text:t.name}))} picked={vq.theories.findIndex(t=>t.id===draft.theory)} onPick={i=>{setDraft(d=>({...d,theory:vq.theories![i].id}));setStep(2)}}/>}
   {step===2&&vq.choices2&&<><p className="mt-3 font-display text-[20px] font-semibold">{vq.choices2.prompt}</p><AnswerBars seed={seed} label={vq.choices2.prompt} options={vq.choices2.options.map(t=>({text:t}))} picked={draft.choice2??null} onPick={i=>onLock({...draft,choice2:i})}/></>}
-  {proofStep&&<p className="mt-3 text-[15px] font-bold text-muted">Tap the sentence in the passage that proves it, then lock in.</p>}
+  {step===1&&f==="written"&&<label className="mt-3 block"><span className="text-[15px] font-bold">Answer in one sentence, in your own words.</span>
+   <textarea value={draft.text??""} onChange={e=>setDraft(d=>({...d,text:e.target.value.replace(/\n/g," ").slice(0,240)}))} rows={3} maxLength={240} className="mt-1 w-full rounded-row border-2 border-edge bg-panel px-3 py-2 text-[17px] leading-snug text-ink"/>
+   <span className="text-[13px] text-muted">{words} words{words<6?" · at least 6":""}</span></label>}
+  {f==="dnd"&&vq.dnd&&<div className="mt-3"><DragDrop view={vq.dnd} placed={draft.placed??{}} onChange={p=>setDraft(d=>({...d,placed:p}))}/></div>}
+  {proofStep&&<p className="mt-3 text-[15px] font-bold text-muted">{f==="written"?"Now tap the sentence in the passage that backs your answer, then lock in.":"Tap the sentence in the passage that proves it, then lock in."}</p>}
   {callStep&&<p className="mt-3 text-[15px] font-bold text-muted">Pin 2 lines from the expedition that back your call ({pinned.length} of 2).</p>}
  </>;
- const action=proofStep?<button type="button" disabled={!draft.lines?.length} onClick={()=>onLock(draft)} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Lock in <ArrowRight size={18} aria-hidden/></button>
-  :callStep?<button type="button" disabled={pinned.length!==2} onClick={()=>onLock(draft)} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Lock in my call <ArrowRight size={18} aria-hidden/></button>:null;
+ const lockBtn=(ok:boolean,label="Lock in")=><button type="button" disabled={!ok} onClick={()=>onLock(draft)} className="case-primary min-h-[56px] w-full justify-center text-[18px]">{label} <ArrowRight size={18} aria-hidden/></button>;
+ const placedCount=Object.values(draft.placed??{}).filter(Boolean).length;
+ const action=proofStep?lockBtn(!!draft.lines?.length)
+  :callStep?lockBtn(pinned.length===2,"Lock in my call")
+  :step===1&&f==="multi"?lockBtn((draft.picks?.length??0)===(vq.pick??2))
+  :step===1&&f==="written"?(twoStep?<button type="button" disabled={words<6} onClick={()=>setStep(2)} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Next: the sentence that backs it <ArrowRight size={18} aria-hidden/></button>:lockBtn(words>=6))
+  :f==="dnd"?lockBtn(placedCount>=Math.min(vq.dnd?.slots.length??1,vq.dnd?.items.length??1)):null;
  return <SplitStage passage={passage} head={head} body={body} action={action} collapse={proofStep||callStep}/>;
+}
+// After an answer in the newer formats: drag and drop (right pieces in teal, wrong ones slide to their place with the
+// sentence that proves it, points per piece), a written answer (the verdict on the rubric, what went well, one next
+// step, and a model answer), or choose two (the right answers).
+export function FormatResult({q,answer,judged,points}:{q:ExpQuestion;answer:Answer;judged:{strength:Strength;note:string;next:string}|null;points:number}){
+ const f=formatOf(q);
+ if(f==="dnd"&&q.dnd){const r=dndResult(q,answer.placed);
+  return <div className="mt-3 flex flex-col gap-2"><p className="font-display text-[20px] font-bold">{r.right.length} of {r.total} pieces in the right place{points>0?` · +${points.toLocaleString()}`:""}</p>
+   <DragDrop view={{kind:q.dnd.kind,slots:q.dnd.slots,items:q.dnd.items.map(i=>({id:i.id,text:i.text}))}} placed={answer.placed??{}} onChange={()=>{}} disabled reveal={{slotOf:Object.fromEntries(q.dnd.items.map(i=>[i.id,i.slot])),lines:Object.fromEntries(q.dnd.items.map(i=>[i.id,i.line]))}}/></div>}
+ if(f==="written"){
+  return <div className="mt-3 flex flex-col gap-2 rounded-card bg-panel p-4">
+   <p className="text-[13px] font-extrabold uppercase tracking-[.08em] text-highlight">Your answer</p><p className="font-serif text-[17px]">"{answer.text}"</p>
+   {judged&&<><p className="font-display text-[20px] font-bold">{judged.strength}{points>0?` · +${points.toLocaleString()}`:""}</p><p className="text-[15px]"><b>What works:</b> {judged.note}</p><p className="text-[15px]"><b>Next step:</b> {judged.next}</p></>}
+   {q.written&&<p className="rounded-row bg-violet-soft px-3 py-2 text-[15px]"><b>A strong answer:</b> {q.written.model}</p>}</div>}
+ if(f==="multi"&&q.choices){return <p className="mt-3 rounded-card bg-panel px-4 py-3 text-[16px]"><b>The answers:</b> {q.choices.filter(c=>c.best).map(c=>c.text).join(" · ")}</p>}
+ return null;
 }
 // The countdown ring to the next chunk.
 export function CountdownRing({ms,total,label}:{ms:number;total:number;label:string}){
@@ -215,7 +259,7 @@ export function DiscoveryBurst({chunks,world,timeSetting,sound,onDone,onFind,squ
 }
 
 // ---------- The solo expedition ----------
-export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="1",highlighter=false,studentKey,onSave,onFinish,onExit}:{world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;timeSetting?:string;highlighter?:boolean;studentKey?:string;onSave?:(a:ExpeditionAttempt)=>void;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void}){
+export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="1",highlighter=false,studentKey,onSave,onFinish,onExit,replay=0,classToken=null}:{world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;timeSetting?:string;highlighter?:boolean;studentKey?:string;onSave?:(a:ExpeditionAttempt)=>void;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void;replay?:number;classToken?:string|null}){
  const [sound,toggleSound]=useSoundPref("effects",preset);
  const chunks=useMemo(()=>expeditionChunks(world,passages,expeditionId),[world,passages,expeditionId]);
  const exp=world.expeditions?.find(e=>e.id===expeditionId);
@@ -236,12 +280,15 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
  // answers in a row, down after two misses in a row.
  const arc=useMemo(()=>exp?arcOf(world,exp):null,[world,exp]);
  const version=versionFor(records.slice(0,k).map(r=>!!r?.correct));
- const asked=c?questionAt(c.chunk.question,version):null,q=asked?.question;
+ // This student's own answer order for every set of choices (stable on reload, different for each student).
+ const seedKey=useMemo(()=>studentKey??soloStudentKey(),[studentKey]);
+ // This student's question: their pick from the chunk's bank (a replay gets another), at their version.
+ const bankAt=(i:number)=>records[i]?.bank??bankPick(chunks[i].chunk,seedKey,replay);
+ const asked=c?{question:askedQuestion(c.chunk,{bank:bankAt(k),version}),version}:null,q=asked?.question;
+ const [judging,setJudging]=useState(false);
  const [lightningPts,setLightningPts]=useState<number[]>([]),[burstPts,setBurstPts]=useState(0);
  const go=useCallback((b:Beat)=>{setBeat(b);setStartedAt(Date.now())},[]);
  useStickyOffsets();
- // This student's own answer order for every set of choices (stable on reload, different for each student).
- const seedKey=useMemo(()=>studentKey??soloStudentKey(),[studentKey]);
  useLayoutEffect(()=>{focusScreenTop()},[beat,k,step]);
  // Timers: Gist 20 seconds; the question by its type (Catch the Lie starts after the testimony).
  const qSeconds=q?limitMs(TYPE_INFO[q.type].seconds,timeSetting)/1000:0,gSeconds=limitMs(GIST_SECONDS,timeSetting)/1000;
@@ -263,12 +310,14 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
  // Gist: a pick (or time) moves on to the question after a beat.
  useEffect(()=>{if(beat!=="gist")return;if(gistLeft===0)toQuestion()},[gistLeft,beat]);// eslint-disable-line react-hooks/exhaustive-deps
  function pickGist(i:number){if(gist!==null)return;setGist(i);cue(sound,gistPoints(c.chunk,i)?"chime":"tick");setTimeout(toQuestion,reducedMotion()?200:900)}
- function lockIn(a:Answer){
-  if(beat!=="question"||record)return;
+ async function lockIn(a:Answer){
+  if(beat!=="question"||record||judging)return;
+  let judged:ChunkRecord["judged"]=null;
+  if(formatOf(q!)==="written"){setJudging(true);judged=await judgeWritten({worldId:world.id,expeditionId,chunk:k,bank:bankAt(k),version,text:a.text??"",line:a.lines?.[0]??null},q!,tokens,classToken);setJudging(false);a={...a,judged:judged.strength}}
   const res=scoreAnswer(q!,a,tokens,Date.now()-startedAt,limitMs(TYPE_INFO[q!.type].seconds,timeSetting));
   const g=ghostPlay(world.id+expeditionId,k,limitMs(TYPE_INFO[q!.type].seconds,timeSetting)),mult=arc?multiplierAt(arc,k):1;
   const next=[...records];next[k]={gist,answer:a,correct:res.correct,points:res.points*mult,late:res.late,coins:found?DISCOVERY_COINS:0,unknown:[...unknown].map(i=>tokens[i]?.text.replace(/[^\p{L}'-]/gu,"")).filter(Boolean),discovered:found,
-   bonus:streakBonus(streak,res.correct?streak+1:0),mult,version:asked!.version};
+   bonus:streakBonus(streak,res.correct?streak+1:0),mult,version:asked!.version,bank:bankAt(k),judged};
   setRecords(next);setGhost(x=>{const n=[...x];n[k]=g.points*mult+g.gist;return n});cue(sound,res.correct?"chime":"reveal");go("result");
  }
  const lightningHere=arc?.lightning.find(l=>l.after===k)?.item??null;
@@ -285,15 +334,16 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
   return()=>clearInterval(t)},[beat,paused,k]);// eslint-disable-line react-hooks/exhaustive-deps
 
  // After the race: the results for Case Notes, and the Refresher (misses only, up to 4).
- const results:ChunkResult[]=records.map((r,i)=>({index:i,answer:r?.answer??null,correct:!!r?.correct,late:!!r?.late,gist:r?.gist??null,typed:null,unknown:r?.unknown??[],version:r?.version??"standard"}));
- const refItems=refresherItems(chunks,results,!!liarResult&&!liarResult.solved);
+ const results:ChunkResult[]=records.map((r,i)=>({index:i,answer:r?.answer??null,correct:!!r?.correct,late:!!r?.late,gist:r?.gist??null,typed:null,unknown:r?.unknown??[],version:r?.version??"standard",bank:r?.bank??0}));
+ const askedChunks=chunks.map((x,i)=>records[i]?withAsked(x,{bank:records[i].bank,version:records[i].version}):x);
+ const refItems=refresherItems(askedChunks,results,!!liarResult&&!liarResult.solved);
  const callAll=joinedPassages(chunks);
  const lie=iv?{name:witnessName(world,iv.witnesses[liar].character),lieText:iv.witnesses[liar].lie.text,lines:iv.witnesses[liar].lie.lines}:null;
- const refViews:RefresherView[]=refItems.map(it=>refresherView(it,chunks,callAll,lie));
+ const refViews:RefresherView[]=refItems.map(it=>refresherView(it,askedChunks,callAll,lie));
  const attemptId=useMemo(()=>{try{return crypto.randomUUID()}catch{return `a${Date.now()}${Math.random().toString(36).slice(2)}`}},[]),startedIso=useMemo(()=>new Date().toISOString(),[]),finishedIso=useRef<string|null>(null);
  function save(complete:boolean){if(!onSave||!iv&&records.length<chunks.length)return;finishedIso.current??=new Date().toISOString();
   const liarAt=refItems.findIndex(x=>x.kind==="liar");
-  onSave({attemptId,worldId:world.id,expeditionId,startedAt:startedIso,finishedAt:finishedIso.current,complete,score,notes:caseNotes(chunks,results,{items:refItems,fixed},notesText),
+  onSave({attemptId,worldId:world.id,expeditionId,startedAt:startedIso,finishedAt:finishedIso.current,complete,score,notes:caseNotes(askedChunks,results,{items:refItems,fixed},notesText),
    interview:iv?interviewNote(world,iv,liar,cards,liarAnswer,liarAt>=0?!!fixed[liarAt]:null):null,award:complete?refresherAward(refItems,fixed):null})}
  const saved=useRef(false);
  useEffect(()=>{if(beat==="finish"&&!saved.current){saved.current=true;save(false)}},[beat]);// eslint-disable-line react-hooks/exhaustive-deps
@@ -318,7 +368,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
   {beat==="read"&&<section aria-labelledby="ex-h"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Read · no timer</p><h1 id="ex-h" className="text-[28px] outline-none">Read the chunk</h1>
    {highlighter&&<button type="button" aria-pressed={marking} onClick={()=>setMarking(m=>!m)} className={`mt-2 inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-[15px] font-bold ${marking?"bg-gold text-on-gold":"bg-panel text-ink"}`}><Highlighter size={16} aria-hidden/>{marking?"Done marking":"Mark words I don't know"}</button>}
    <div className="mt-3"><ChunkText explore chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} highlighter={highlighter} marking={marking} unknown={unknown} onUnknown={i=>setUnknown(s=>{const n=new Set(s);if(n.has(i))n.delete(i);else n.add(i);return n})} onDiscover={()=>{if(!found){setFound(true);cue(sound,"chime",0.3)}}} found={found}/></div>
-   <button type="button" onClick={()=>go("gist")} className="case-primary mt-4 min-h-[56px] w-full justify-center text-[18px]">Ready <ArrowRight size={18} aria-hidden/></button></section>}
+   <button type="button" onClick={()=>gistAt(k)?go("gist"):toQuestion()} className="case-primary mt-4 min-h-[56px] w-full justify-center text-[18px]">Ready <ArrowRight size={18} aria-hidden/></button></section>}
 
   {beat==="gist"&&<SplitStage label="Gist check" passage={<ChunkText chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens}/>}
    head={<><TimerTrack left={gistLeft} seconds={gSeconds}/><p className="mt-3 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Gist check · {GIST_SECONDS} seconds</p><h1 id="ex-h" className="text-[28px] outline-none">Which is the best summary?</h1></>}
@@ -332,6 +382,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
      <div className="moment-pop w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{info.name}{record.mult>1?" · Double points":""}{streak>1?` · Streak x${streak}`:""}</p><h1 id="ex-h" className="mt-1 text-[40px] leading-none outline-none">Proof!<span className="sr-only"> Plus {record.points} points.</span></h1><p className="mt-2 text-[16px] font-bold">{q.why}</p></div>
      {record.bonus>0&&<p role="status" className="moment-pop rounded-full bg-gold px-4 py-1.5 font-display text-[17px] font-bold text-on-gold">Streak bonus! +{record.bonus} for {streak} in a row</p>}</div>
     :<div className="notyet-shake mt-3 rounded-[24px] bg-notyet p-5 text-on-notyet shadow-[0_8px_0_var(--color-notyet-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{info.name}{record.late?" · Time's up":""}</p><h1 id="ex-h" className="mt-1 text-[36px] leading-none outline-none">Not yet.</h1><p className="mt-2 text-[17px] font-bold">You'll get another shot in the Refresher.</p></div>}
+   <FormatResult q={q} answer={record.answer} judged={record.judged??null} points={record.points}/>
    {meRow&&<p className="mt-3 flex justify-center"><RankPill move={meRow.move} rank={meRow.rank} of={board.length} first={meRow.prevRank===null}/></p>}
    {q.type==="make_call"
     ?<><p className="mt-3 text-[13px] font-extrabold uppercase tracking-[.08em] text-highlight">{record.correct?"The proof":"Here's the proof"}</p><ReadingPanel className="mt-1" glossary={world.glossary} passages={callPassages as SourcePassage[]} results={shown.lines.map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/></>
@@ -357,8 +408,8 @@ export function ExpeditionRace({world,passages,expeditionId,preset,timeSetting="
   {beat==="finish"&&<section className="mt-4"><Podium main sound={sound} entries={board.map(r=>({id:r.id,name:r.name,points:r.points}))} title="Final results"/>
    <p className="mt-6 text-center text-[16px] text-muted">Every point came from a line you proved in the story.</p>
    <button type="button" onClick={()=>go("refresher")} className="case-primary mt-5 min-h-[52px] w-full justify-center">{refItems.length?`Refresher: fix ${refItems.length}`:"Refresher"} <ArrowRight size={18} aria-hidden/></button></section>}
-  {beat==="refresher"&&<Refresher seed={seedKey} items={refViews} world={world} check={(i,a)=>{const it=refItems[i];return refresherShown(it,chunks,refresherCorrect(it,chunks[it.index],a,callAll.flatMap(p=>evidenceSentences(p.text)),lie?.lines),lie?.lines)}} onDone={f=>{setFixed(f);go("notes")}}/>}
-  {beat==="notes"&&<CaseNotesView onDone={()=>{save(true);onExit?.()}} interview={iv?interviewNote(world,iv,liar,cards,liarAnswer,refItems.findIndex(x=>x.kind==="liar")>=0?!!fixed[refItems.findIndex(x=>x.kind==="liar")]:null):null} student="You" story={world.title} expedition={exp.title} notes={caseNotes(chunks,results,{items:refItems,fixed},notesText)} award={refresherAward(refItems,fixed)} onNote={(i,t)=>setNotesText(n=>({...n,[i]:t}))}
+  {beat==="refresher"&&<Refresher seed={seedKey} items={refViews} world={world} check={(i,a)=>{const it=refItems[i];return refresherShown(it,askedChunks,refresherCorrect(it,askedChunks[it.index],a,callAll.flatMap(p=>evidenceSentences(p.text)),lie?.lines),lie?.lines)}} onDone={f=>{setFixed(f);go("notes")}}/>}
+  {beat==="notes"&&<CaseNotesView onDone={()=>{save(true);onExit?.()}} interview={iv?interviewNote(world,iv,liar,cards,liarAnswer,refItems.findIndex(x=>x.kind==="liar")>=0?!!fixed[refItems.findIndex(x=>x.kind==="liar")]:null):null} student="You" story={world.title} expedition={exp.title} notes={caseNotes(askedChunks,results,{items:refItems,fixed},notesText)} award={refresherAward(refItems,fixed)} onNote={(i,t)=>setNotesText(n=>({...n,[i]:t}))}
    bonus={<p className="no-print rounded-card bg-violet-soft p-4 text-[16px] font-bold">Bonus Round: in class, your squad compares Case Notes and agrees on the best proof for every question you answered differently.</p>} />}
  </div>;
 }

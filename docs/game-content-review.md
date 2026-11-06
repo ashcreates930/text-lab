@@ -4000,145 +4000,190 @@ Each student picks one card per witness; one witness, picked at random per stude
 
 Screen text: "One witness will lie to you. Listen closely: after the race you'll name the liar and prove it with a line from the story." · "Which witness lied?" · "Tap the line anywhere in the expedition that shows this is false, then lock in." · "Case solved" · "Not this time." · "It's in your Refresher." · Live: "What should we ask [witness]?" · "Locked in" · "Nothing is revealed until everyone has locked in. Watch the board."
 
-##### Whose Eyes?
+Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. The Gist check comes on chunks 1, 4, 7 and 10. Each student gets one question per chunk from its bank (seeded by who they are; a replay gets another), at their version: easier (one wrong choice fewer, the hint shown) or harder (no highlighted key words, the proof step added), derived unless written out.
 
-**Chunk 1** (¶3 sentences 1 to 3; 138 words)
+- Lightning beat after chunk 4 (10 seconds, recalls chunk 2): About how long a walk is it from the river port to the hollow? Answer: "Not far from this village, perhaps about two miles, there is a little valley or rather lap of land among high hills, which is one of the quietest places in the whole world."
+- Lightning beat after chunk 8 (10 seconds, recalls chunk 7): How was the rider wounded long ago? Answer: "It is said by some to be the ghost of a Hessian trooper, whose head had been carried away by a cannon-ball, in some nameless battle during the Revolutionary War, and who is ever and anon seen by the country folk hurrying along in the gloom of night, as if on the wings of the wind."
 
-- Question: How sure is the storyteller about where the town's name came from?
-- Key words highlighted: How sure, storyteller
-- Choices: Very sure: he checked the old town records himself and found proof / Not sure: he passes on a story he heard without promising it's true ✓ / Completely sure, because he was there when it was named
-- Proof words (any one): "I do not vouch for the fact"
-- Refresher hint: Read his own words closely. Does he ever promise the story is true?
-- Why: He says he does not vouch for the fact, so he is repeating a story, not swearing to it.
-- Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
+**Chunk 1** (¶3 sentences 1 to 3; 138 words) · warm-up
+
+- Question (Whose Eyes?, two-part evidence): How sure is the storyteller about where the town's name came from?
+  - Key words highlighted: How sure, storyteller
+  - Choices: Very sure: he checked the old town records himself and found proof / Not sure: he passes on a story he heard without promising it's true ✓ / Completely sure, because he was there when it was named
+  - Hint: Read his own words closely. Does he ever promise the story is true?
+  - Why: He says he does not vouch for the fact, so he is repeating a story, not swearing to it.
+  - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
+- Bank question (Whose Eyes?, two-part evidence): Who first came up with the explanation the narrator passes along?
+  - Key words highlighted: passes along
+  - Choices: The Dutch sailors who crossed the Tappan Zee / The farm wives nearby, or so the story goes ✓ / The narrator himself, on his very first visit
+  - Proof sentence: "This name was given, we are told, in former days, by the good housewives of the adjacent country, from the inveterate propensity of their husbands to linger about the village tavern on market days."
+  - Hint: Look for the words that show he heard this from other people.
+  - Why: "We are told" shows the explanation came from the local housewives, passed along by others.
+  - Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
 - Gist check: The narrator proves the town was named by Dutch sailors who stopped there to trade. / A river town got its name, the narrator says, from husbands who lingered at the tavern. ✓ / A river town is famous for sailors who pray to St. Nicholas.
 - Discovery (vocabulary): "inveterate propensity". Inveterate propensity: a habit so old and strong it can't be broken.
 
-##### Find It
+**Chunk 2** (¶3 sentences 4 to 5; 73 words) · warm-up
 
-**Chunk 2** (¶3 sentences 4 to 5; 73 words)
-
-- Question: About how long a walk is it from the river port to the hollow?
-- Key words highlighted: how long a walk
-- Proof line: "Not far from this village, perhaps about two miles, there is a little valley or rather lap of land among high hills, which is one of the quietest places in the whole world."
-- Refresher hint: Look for a distance, counted in miles.
-- Why: The valley is perhaps about two miles from the village.
-- Standards: ELA.K12.EE.1.1
-- Gist check: A noisy mill town sits about twenty miles from the village. / A very quiet valley sits about two miles from the village. ✓ / A noisy brook floods the valley every spring.
+- Question (Find It, tap the sentence): About how long a walk is it from the river port to the hollow?
+  - Key words highlighted: how long a walk
+  - Proof sentence: "Not far from this village, perhaps about two miles, there is a little valley or rather lap of land among high hills, which is one of the quietest places in the whole world."
+  - Hint: Look for a distance, counted in miles.
+  - Why: The valley is perhaps about two miles from the village.
+  - Standards: ELA.K12.EE.1.1
+- Bank question (Find It, tap the sentence): Which sentence tells you what noises a visitor might hear there?
+  - Key words highlighted: noises
+  - Proof sentence: "A small brook glides through it, with just murmur enough to lull one to repose; and the occasional whistle of a quail or tapping of a woodpecker is almost the only sound that ever breaks in upon the uniform tranquillity."
+  - Hint: Listen for birds.
+  - Why: Only a quail's whistle or a woodpecker's tapping breaks the quiet.
+  - Standards: ELA.K12.EE.1.1
 - Discovery (figurative): "lull one to repose". Lull one to repose: the brook is so soft it could rock you to sleep.
 
-##### Shades of Meaning
+**Chunk 3** (¶4 sentences 1 to 3; 102 words) · surprise double points
 
-**Chunk 3** (¶4 sentences 1 to 3; 102 words) · shared words reviewed
-
-- Question: The narrator calls his younger self a stripling. Why that word instead of plain boy?
-- Key words highlighted: stripling
-- Choices: It makes him sound young and new at hunting ✓ / It shows he was already the most skilled hunter around / It suggests he was frail and often sick as a boy
-- Proof line: "I had wandered into it at noontime, when all nature is peculiarly quiet, and was startled by the roar of my own gun, as it broke the Sabbath stillness around and was prolonged and reverberated by the angry echoes."
-- Refresher hint: How does the boy react to the sound of his own gun?
-- Why: He was startled by the roar of his own gun: a stripling is young and untested.
-- Standards: ELA.7.V.1.3, ELA.7.R.3.1
-- Gist check: The narrator remembers being chased out of the valley by a ghost one night. / The narrator remembers hunting with his father every Sunday in the valley. / The narrator remembers how still the valley was, even to a boy out hunting. ✓
+- Question (Shades of Meaning, two-part evidence): The narrator calls his younger self a stripling. Why that word instead of plain boy?
+  - Key words highlighted: stripling
+  - Choices: It makes him sound young and new at hunting ✓ / It shows he was already the most skilled hunter around / It suggests he was frail and often sick as a boy
+  - Proof sentence: "I had wandered into it at noontime, when all nature is peculiarly quiet, and was startled by the roar of my own gun, as it broke the Sabbath stillness around and was prolonged and reverberated by the angry echoes."
+  - Hint: How does the boy react to the sound of his own gun?
+  - Why: He was startled by the roar of his own gun: a stripling is young and untested.
+  - Standards: ELA.7.V.1.3, ELA.7.R.3.1
+- Bank question (Shades of Meaning, two-part evidence): Why might he call the valley a retreat rather than just a spot?
+  - Key words highlighted: retreat
+  - Choices: It suggests the narrator once lost a fight in the valley / It suggests a quiet hiding place to rest from the world ✓ / It suggests a place where soldiers fall back in battle
+  - Proof sentence: "I had wandered into it at noontime, when all nature is peculiarly quiet, and was startled by the roar of my own gun, as it broke the Sabbath stillness around and was prolonged and reverberated by the angry echoes."
+  - Hint: What is the valley like when he wanders into it?
+  - Why: All nature is peculiarly quiet there: a retreat is a peaceful place to get away from the world.
+  - Standards: ELA.7.V.1.3, ELA.7.R.3.1
 - Discovery (figurative): "angry echoes". Angry echoes: the echoes get a human feeling, as if the quiet woods were annoyed by the noise.
 
-##### Word Detective
+**Chunk 4** (¶5 sentences 1 to 2; 66 words)
 
-**Chunk 4** (¶5 sentences 1 to 2; 66 words) · shared words reviewed
-
-- Question: In this chunk, what does listless mean?
-- Key words highlighted: listless
-- Choices: Lacking energy; slow and sleepy ✓ / Without a list or any plan / Full of nervous, jumpy worry
-- Proof words (any one): "drowsy, dreamy influence", "drowsy", "dreamy"
-- Refresher hint: Find the sentence that feels sleepy.
-- Why: A drowsy, dreamy influence hangs over the land: listless means low on energy.
-- Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
+- Question (Word Detective, two-part evidence): In this chunk, what does listless mean?
+  - Key words highlighted: listless
+  - Choices: Lacking energy; slow and sleepy ✓ / Without a list or any plan / Full of nervous, jumpy worry
+  - Hint: Find the sentence that feels sleepy.
+  - Why: A drowsy, dreamy influence hangs over the land: listless means low on energy.
+  - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
+- Bank question (Word Detective, two-part evidence): Which meaning of drowsy fits this land?
+  - Key words highlighted: drowsy
+  - Choices: Sleepy and slow, as if ready to doze off ✓ / Wet and gloomy, as if always under rain / Loud and lively, as if never at rest
+  - Proof sentence: "From the listless repose of the place, and the peculiar character of its inhabitants, who are descendants from the original Dutch settlers, this sequestered glen has long been known by the name of SLEEPY HOLLOW, and its rustic lads are called the Sleepy Hollow Boys throughout all the neighboring country."
+  - Hint: What is the glen called, and why?
+  - Why: The glen is so restful it is named Sleepy Hollow: drowsy means sleepy.
+  - Standards: ELA.7.V.1.3, ELA.K12.EE.1.1
 - Gist check: The Dutch settlers left the Hollow because it was too quiet. / Boys from the Hollow are known for their hard work. / The valley's sleepy mood gave Sleepy Hollow its name. ✓
 - Discovery (vocabulary): "sequestered glen". Sequestered glen: a hidden, out-of-the-way valley.
 
-##### Figure It Out
+**Chunk 5** (¶5 sentences 3 to 4; 78 words) · checkpoint after this chunk, then the burst
 
-**Chunk 5** (¶5 sentences 3 to 4; 78 words) · shared words reviewed
-
-- Question: Read the words holds a spell over the minds of the good people. What kind of figurative language is this?
-- Key words highlighted: holds a spell over the minds
-- Choices: Hyperbole: a wild exaggeration for a laugh / Metaphor: the valley's mood is called a spell, without like or as ✓ / Simile: the spell is compared to sleep using the word like
-- What does it mean? The people are tired from working too hard / Something about the place shapes what people think and believe ✓ / A real witch is casting nightly spells on the farmers' crops
-- Refresher hint: Does a spell have to be real magic? Think about what keeps their minds dreamy.
-- Why: The spell stands for the dreamy mood that rules how people think.
-- Standards: ELA.7.R.3.1
-- Gist check: A doctor cured the settlers of a strange sleeping sickness. / Henry Hudson drove an old wizard out, and the valley woke up for good. / People blame old magic for the spell that still hangs over the valley. ✓
+- Question (Weigh the Evidence, drag and drop: Fact or witness claim): Sort what the narrator states as certain from what only some people claim.
+  - Slots: The text says it is so / Only some people claim it
+  - Piece: A High German doctor put a spell on the place → Only some people claim it (backed by "Some say that the place was bewitched by a High German doctor, during the early days of th…")
+  - Piece: An old chief held his powwows there long ago → Only some people claim it (backed by "Some say that the place was bewitched by a High German doctor, during the early days of th…")
+  - Piece: A witching power still rules the place → The text says it is so (backed by "Certain it is, the place still continues under the sway of some witching power, that holds…")
+  - Piece: The people walk about in a constant daydream → The text says it is so (backed by "Certain it is, the place still continues under the sway of some witching power, that holds…")
+  - Hint: Watch for the words "some say" and "certain it is."
+  - Why: "Some say" and "others" mark rumors; "certain it is" marks what the narrator states as fact.
+  - Standards: ELA.K12.EE.1.1, ELA.K12.EE.3.1
+- Bank question (Weigh the Evidence, two-part evidence): Which detail does the narrator present as sure, not just gossip?
+  - Choices: An old chief held his meetings in the glen / Some witching power still holds the place ✓ / A German doctor once cast a spell on it
+  - Proof sentence: "Certain it is, the place still continues under the sway of some witching power, that holds a spell over the minds of the good people, causing them to walk in a continual reverie."
+  - Hint: One sentence begins by saying it is certain.
+  - Why: "Certain it is": the witching power is stated as fact, while the doctor and the chief are only what some say.
+  - Standards: ELA.K12.EE.1.1, ELA.K12.EE.3.1
 - Discovery (vocabulary): "continual reverie". Reverie: a daydream. A continual reverie means drifting through life half-dreaming.
-
-##### Read Between the Lines
 
 **Chunk 6** (¶5 sentences 5 to 6; 74 words)
 
-- Question: What can you infer about the people of the Hollow?
-- Key words highlighted: infer
-- Choices: They are quick to accept the uncanny as real ✓ / They are afraid to leave home after dark / They doubt every tale they are told
-- Proof line: "They are given to all kinds of marvellous beliefs, are subject to trances and visions, and frequently see strange sights, and hear music and voices in the air."
-- Proof line: "The whole neighborhood abounds with local tales, haunted spots, and twilight superstitions; stars shoot and meteors glare oftener across the valley than in any other part of the country, and the nightmare, with her whole ninefold, seems to make it the favorite scene of her gambols."
-- Refresher hint: Look at what they see and hear that nobody else does.
-- Why: They hold marvellous beliefs and see strange sights, so they accept the uncanny easily.
-- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: The people of the Hollow accept strange sights, and the valley is full of spooky tales. ✓ / The people of the Hollow laugh at strange sights, and they doubt every spooky tale. / Scientists come to the valley to study stars and meteors.
+- Question (Read Between the Lines, choose two): Which habits show the people here are ready to believe in marvels?
+  - Key words highlighted: believe in marvels
+  - Choices (choose 2): They laugh at every ghost story they hear / They move away whenever meteors appear / They often see strange sights and hear voices ✓ / They tell many tales of haunted spots ✓
+  - Hint: Find two things they do or say, not things they avoid.
+  - Why: They see strange sights, hear voices in the air, and fill the valley with tales of haunted spots.
+  - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Bank question (Read Between the Lines, two-part evidence): What does the restless sky suggest about this region?
+  - Choices: The weather here is the finest in the whole country / Sailors use these stars to find their way home / Even nature seems stranger here than anywhere else ✓
+  - Proof sentence: "The whole neighborhood abounds with local tales, haunted spots, and twilight superstitions; stars shoot and meteors glare oftener across the valley than in any other part of the country, and the nightmare, with her whole ninefold, seems to make it the favorite scene of her gambols."
+  - Hint: Compare this valley's sky with the rest of the country.
+  - Why: Stars shoot and meteors glare more often here than anywhere: even nature seems haunted.
+  - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
 - Discovery (figurative): "with her whole ninefold". The nightmare is pictured as a creature with her nine children, playing over the valley at night.
 
-**Chunk 10** (¶9 sentences 1 to 3; 138 words)
+**Chunk 7** (¶6 sentences 1 to 2; 88 words) · the twist
 
-- Question: What can you infer about how the narrator feels about the busy world beyond the Hollow?
-- Key words highlighted: infer, busy world
-- Choices: He thinks the Hollow should catch up with the rest of New York / He treasures quiet places that stay the same while the rest of the country hurries on ✓ / He is excited by every new improvement and wishes the valley would hurry to catch up
-- Proof line: "I mention this peaceful spot with all possible laud, for it is in such little retired Dutch valleys, found here and there embosomed in the great State of New York, that population, manners, and customs remain fixed, while the great torrent of migration and improvement, which is making such incessant changes in other parts of this restless country, sweeps by them unobserved."
-- Proof line: "They are like those little nooks of still water, which border a rapid stream, where we may see the straw and bubble riding quietly at anchor, or slowly revolving in their mimic harbor, undisturbed by the rush of the passing current."
-- Refresher hint: Look at the words he picks for change and for the valley. Which does he praise?
-- Why: He praises the valley with all possible laud because its customs remain fixed while a restless country sweeps by.
-- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: The narrator says he never wants to see the Hollow again. / The narrator praises the Hollow as a quiet place that never seems to change. ✓ / The narrator warns that the Hollow is changing too fast and losing its old ways.
-- Discovery (figurative): "nooks of still water". Nooks of still water: the valley is a calm pool beside a rushing river of change.
-
-##### Catch the Lie
-
-**Chunk 7** (¶6 sentences 1 to 2; 88 words)
-
-- Question: Brom Bones tells the tale. One thing he says is false. Tap the line that proves it.
-- Key words highlighted: false
-- Testimony (Brom Bones): "Every child in the Hollow knows this one. The Headless Horseman was a Hessian trooper who lost his head to a sword in some battle, and folks see him tearing through the dark at night."
-- Proof line: "It is said by some to be the ghost of a Hessian trooper, whose head had been carried away by a cannon-ball, in some nameless battle during the Revolutionary War, and who is ever and anon seen by the country folk hurrying along in the gloom of night, as if on the wings of the wind."
-- Refresher hint: Brom tells it with flair. Check exactly what took the trooper's head.
-- Why: The story says a cannon-ball carried his head away, not a sword.
-- Standards: ELA.K12.EE.1.1
+- Question (Catch the Lie, tap the sentence): Brom Bones tells the tale. One thing he says is false. Tap the line that proves it.
+  - Key words highlighted: false
+  - Testimony (Brom Bones): "Every child in the Hollow knows this one. The Headless Horseman was a Hessian trooper who lost his head to a sword in some battle, and folks see him tearing through the dark at night."
+  - Proof sentence: "It is said by some to be the ghost of a Hessian trooper, whose head had been carried away by a cannon-ball, in some nameless battle during the Revolutionary War, and who is ever and anon seen by the country folk hurrying along in the gloom of night, as if on the wings of the wind."
+  - Hint: Brom tells it with flair. Check exactly what took the trooper's head.
+  - Why: The story says a cannon-ball carried his head away, not a sword.
+  - Standards: ELA.K12.EE.1.1
+- Bank question (Catch the Lie, tap the sentence): Hans Van Ripper tells it differently. Part of what he says is false. Tap the sentence that shows it.
+  - Testimony (Hans Van Ripper): "The ghost that rules this valley is a lady in white who drifts along without a sound."
+  - Proof sentence: "The dominant spirit, however, that haunts this enchanted region, and seems to be commander-in-chief of all the powers of the air, is the apparition of a figure on horseback, without a head."
+  - Hint: What does the ruling spirit look like?
+  - Why: The ruling spirit is a figure on horseback without a head, not a lady in white.
+  - Standards: ELA.K12.EE.1.1
 - Gist check: The valley's main ghost is a headless horseman, said to be a soldier killed in battle. ✓ / A general of the Revolutionary War still rides through the Hollow. / The valley's main ghost is a farmer who lost his horse in a storm long ago.
 - Discovery (figurative): "on the wings of the wind". As if on the wings of the wind: the rider moves so fast he seems to fly.
 
-##### Character Clue
-
 **Chunk 8** (¶6 sentences 3 to 4; 115 words)
 
-- Question: Which trait fits the headless spirit in this chunk?
-- Key words highlighted: trait
-- Choices: Lost, unable to find his way home / Driven and pressed for time, racing to beat the dawn ✓ / Calm and patient, waiting quietly for travelers to pass
-- Proof words (any one): "in a hurry to get back to the churchyard before daybreak", "rushing speed"
-- Refresher hint: Look at how fast he moves, and why.
-- Why: He passes with rushing speed, in a hurry to get back to the churchyard before daybreak.
-- Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: Historians proved the ghost is a story invented by a farmer to scare thieves. / The ghost rides out each night to look for his head and hurries back before dawn. ✓ / The ghost guards the church so no one can go inside.
+- Question (Story Order, drag and drop: Cause and effect): Match each cause to what it leads the rider to do.
+  - Slots: His body lies buried in the churchyard / He is searching for his lost head / He is running late
+  - Piece: He hurries back before daybreak → His body lies buried in the churchyard (backed by "Indeed, certain of the most authentic historians of those parts, who have been careful in …")
+  - Piece: He rides out to the old battlefield each night → He is searching for his lost head (backed by "Indeed, certain of the most authentic historians of those parts, who have been careful in …")
+  - Piece: He rushes through the Hollow like a midnight blast → He is running late (backed by "Indeed, certain of the most authentic historians of those parts, who have been careful in …")
+  - Hint: Read the long sentence slowly: each reason comes with what it makes him do.
+  - Why: Buried in the churchyard, he must be back by dawn; seeking his head, he rides out each night; running late, he speeds like a blast.
+  - Standards: ELA.7.R.1.1, ELA.K12.EE.3.1
+- Bank question (Story Order, two-part evidence): What makes the phantom race the way he does?
+  - Choices: He is late getting back to his grave by dawn ✓ / He is chasing travelers out of the valley / He is racing another rider to the church
+  - Proof sentence: "Indeed, certain of the most authentic historians of those parts, who have been careful in collecting and collating the floating facts concerning this spectre, allege that the body of the trooper having been buried in the churchyard, the ghost rides forth to the scene of battle in nightly quest of his head, and that the rushing speed with which he sometimes passes along the Hollow, like a midnight blast, is owing to his being belated, and in a hurry to get back to the churchyard before daybreak."
+  - Hint: Look at the end of the long sentence.
+  - Why: He is belated and must get back to the churchyard before daybreak.
+  - Standards: ELA.7.R.1.1, ELA.K12.EE.3.1
 - Discovery (figurative): "like a midnight blast". Like a midnight blast: a simile. The rider rushes past like a sudden gust of night wind.
 
-##### Theme Thread
+**Chunk 9** (¶7 sentences 1 to 1, ¶8 sentences 1 to 2; 115 words) · the boss (double points)
 
-**Chunk 9** (¶7 sentences 1 to 1, ¶8 sentences 1 to 2; 115 words)
-
-- Question: Which idea keeps coming back in the story so far?
-- Key words highlighted: keeps coming back
-- Choices: Hard work always wins out over idle dreaming in the end / Strangers are never welcome in small towns / This valley's dreamy spell takes hold of anyone who stays there ✓
-- Proof line: "However wide awake they may have been before they entered that sleepy region, they are sure, in a little time, to inhale the witching influence of the air, and begin to grow imaginative, to dream dreams, and see apparitions."
-- Proof line: "It is remarkable that the visionary propensity I have mentioned is not confined to the native inhabitants of the valley, but is unconsciously imbibed by every one who resides there for a time."
-- Refresher hint: Even folks who arrive wide awake don't stay that way. Find where it says so.
-- Why: The same dreamy spell shows up again: anyone who stays begins to dream dreams and see apparitions.
-- Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
-- Gist check: Everyone who lives in the Hollow, even newcomers, soon starts to dream and see ghosts. ✓ / Newcomers to the Hollow stay wide awake and laugh at the legend. / Only the old Dutch families dream and see ghosts, while every newcomer stays wide awake and sensible.
+- Question (Theme Thread, one-sentence written answer): In one sentence, explain what the Hollow does to anyone who settles there.
+  - A strong answer: Anyone who stays in the Hollow for a while starts to dream and see ghosts, because the valley's sleepy, witching air gets into them.
+  - Key ideas (one from each group): dream, imagin, vision, ghost, apparition, see things, fanc, superstit, strange, spell, witch, haunt | every, anyone, newcomer, people, those who, outsider, visitor, settle, come, move, live, stay
+  - Proof sentence: "It is remarkable that the visionary propensity I have mentioned is not confined to the native inhabitants of the valley, but is unconsciously imbibed by every one who resides there for a time."
+  - Proof sentence: "However wide awake they may have been before they entered that sleepy region, they are sure, in a little time, to inhale the witching influence of the air, and begin to grow imaginative, to dream dreams, and see apparitions."
+  - Hint: Think about newcomers, not just the people born there.
+  - Why: Even newcomers soon breathe in the valley's witching air and start to dream and see apparitions.
+  - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
+- Bank question (Theme Thread, two-part evidence): Which idea keeps coming back in the story so far?
+  - Key words highlighted: keeps coming back
+  - Choices: Hard work always wins out over idle dreaming in the end / Strangers are never welcome in small towns / This valley's dreamy spell takes hold of anyone who stays there ✓
+  - Proof sentence: "However wide awake they may have been before they entered that sleepy region, they are sure, in a little time, to inhale the witching influence of the air, and begin to grow imaginative, to dream dreams, and see apparitions."
+  - Proof sentence: "It is remarkable that the visionary propensity I have mentioned is not confined to the native inhabitants of the valley, but is unconsciously imbibed by every one who resides there for a time."
+  - Hint: Even folks who arrive wide awake don't stay that way. Find where it says so.
+  - Why: The same dreamy spell shows up again: anyone who stays begins to dream dreams and see apparitions.
+  - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Discovery (figurative): "region of shadows". Region of shadows: a dark, mysterious place where wild stories grow.
+
+**Chunk 10** (¶9 sentences 1 to 3; 138 words)
+
+- Question (Read Between the Lines, two-part evidence): What can you infer about how the narrator feels about the busy world beyond the Hollow?
+  - Key words highlighted: infer, busy world
+  - Choices: He thinks the Hollow should catch up with the rest of New York / He treasures quiet places that stay the same while the rest of the country hurries on ✓ / He is excited by every new improvement and wishes the valley would hurry to catch up
+  - Proof sentence: "I mention this peaceful spot with all possible laud, for it is in such little retired Dutch valleys, found here and there embosomed in the great State of New York, that population, manners, and customs remain fixed, while the great torrent of migration and improvement, which is making such incessant changes in other parts of this restless country, sweeps by them unobserved."
+  - Proof sentence: "They are like those little nooks of still water, which border a rapid stream, where we may see the straw and bubble riding quietly at anchor, or slowly revolving in their mimic harbor, undisturbed by the rush of the passing current."
+  - Hint: Look at the words he picks for change and for the valley. Which does he praise?
+  - Why: He praises the valley with all possible laud because its customs remain fixed while a restless country sweeps by.
+  - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Bank question (Read Between the Lines, two-part evidence): How does the narrator hope the valley will be if he ever returns?
+  - Choices: Grown into a busy, modern market town / Empty, since everyone moved away long ago / Unchanged, as if no time had passed at all ✓
+  - Proof sentence: "Though many years have elapsed since I trod the drowsy shades of Sleepy Hollow, yet I question whether I should not still find the same trees and the same families vegetating in its sheltered bosom."
+  - Hint: Read his last sentence about coming back.
+  - Why: He expects to find the same trees and the same families, as if nothing had changed.
+  - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Gist check: The narrator says he never wants to see the Hollow again. / The narrator praises the Hollow as a quiet place that never seems to change. ✓ / The narrator warns that the Hollow is changing too fast and losing its old ways.
+- Discovery (figurative): "nooks of still water". Nooks of still water: the valley is a calm pool beside a rushing river of change.
 
 #### Expedition: The Schoolmaster (10 chunks)
 
@@ -4175,135 +4220,185 @@ Each student picks one card per witness; one witness, picked at random per stude
 
 Screen text: "One witness will lie to you. Listen closely: after the race you'll name the liar and prove it with a line from the story." · "Which witness lied?" · "Tap the line anywhere in the expedition that shows this is false, then lock in." · "Case solved" · "Not this time." · "It's in your Refresher." · Live: "What should we ask [witness]?" · "Locked in" · "Nothing is revealed until everyone has locked in. Watch the board."
 
-##### Find It
+Rebuilt to the phase 3 rules. Level 1: chunks 1 to 5; level 2: chunks 6 to 10. The Gist check comes on chunks 1, 4, 7 and 10. Each student gets one question per chunk from its bank (seeded by who they are; a replay gets another), at their version: easier (one wrong choice fewer, the hint shown) or harder (no highlighted key words, the proof step added), derived unless written out.
 
-**Chunk 1** (¶10 sentences 1 to 3; 97 words)
+- Lightning beat after chunk 3 (10 seconds, recalls chunk 1): Where was Ichabod born? Answer: "He was a native of Connecticut, a State which supplies the Union with pioneers for the mind as well as for the forest, and sends forth yearly its legions of frontier woodmen and country schoolmasters."
+- Lightning beat after chunk 8 (10 seconds, recalls chunk 7): How did Ichabod get his meals and a bed? Answer: "The revenue arising from his school was small, and would have been scarcely sufficient to furnish him with daily bread, for he was a huge feeder, and, though lank, had the dilating powers of an anaconda; but to help out his maintenance, he was, according to country custom in those parts, boarded and lodged at the houses of the farmers whose children he instructed."
 
-- Question: Where was the new teacher born?
-- Key words highlighted: born
-- Proof line: "He was a native of Connecticut, a State which supplies the Union with pioneers for the mind as well as for the forest, and sends forth yearly its legions of frontier woodmen and country schoolmasters."
-- Refresher hint: Look for the place he comes from.
-- Why: He was a native of Connecticut.
-- Standards: ELA.K12.EE.1.1
+**Chunk 1** (¶10 sentences 1 to 3; 97 words) · warm-up
+
+- Question (Find It, tap the sentence): Where was the new teacher born?
+  - Key words highlighted: born
+  - Proof sentence: "He was a native of Connecticut, a State which supplies the Union with pioneers for the mind as well as for the forest, and sends forth yearly its legions of frontier woodmen and country schoolmasters."
+  - Hint: Look for the place he comes from.
+  - Why: He was a native of Connecticut.
+  - Standards: ELA.K12.EE.1.1
+- Bank question (Find It, tap the sentence): Tap the sentence that explains why his last name suits him.
+  - Key words highlighted: last name
+  - Proof sentence: "The cognomen of Crane was not inapplicable to his person."
+  - Hint: Look for a word that means family name.
+  - Why: "Cognomen" means name: a crane, a tall thin bird, fits the way he looks.
+  - Standards: ELA.K12.EE.1.1
 - Gist check: A Connecticut farmer named Ichabod Crane came to clear the Hollow's forests. / A traveling preacher named Ichabod Crane came to build the Hollow a new church. / A Connecticut schoolmaster named Ichabod Crane came to teach the Hollow's children. ✓
 - Discovery (vocabulary): "worthy wight". Wight: an old word for a person. A worthy wight is a fine fellow, said with a wink.
 
-**Chunk 8** (¶14 sentences 1 to 2; 79 words)
+**Chunk 2** (¶10 sentences 4 to 6; 119 words) · warm-up
 
-- Question: Which line lists the work Ichabod did to earn his keep?
-- Key words highlighted: earn his keep
-- Proof line: "He assisted the farmers occasionally in the lighter labors of their farms, helped to make hay, mended the fences, took the horses to water, drove the cows from pasture, and cut wood for the winter fire."
-- Refresher hint: Look for a list of jobs.
-- Why: He helped make hay, mended the fences, watered the horses, drove the cows and cut wood.
-- Standards: ELA.K12.EE.1.1
-- Gist check: Ichabod hires local boys to do the farm chores in exchange for free lessons. / Ichabod makes himself useful to farm families by helping with the lighter chores. ✓ / Ichabod refuses to help on the farms because he thinks chores are beneath him.
-- Discovery (vocabulary): "mere drones". Drones are male bees that do no work. Some farmers think teachers are just as idle.
-
-##### Figure It Out
-
-**Chunk 2** (¶10 sentences 4 to 6; 119 words) · shared words reviewed
-
-- Question: Read the words looked like a weather-cock. What kind of figurative language is this?
-- Key words highlighted: weather-cock
-- Choices: Personification: it gives a weather vane human feelings / Simile: it compares his head to a weather vane using like ✓ / Metaphor: it says his head is a weather vane, without like
-- What does it mean? He spins around quickly whenever the wind starts to blow hard / His small head sits high on a thin neck, turning this way and that ✓ / He always knows exactly what tomorrow's weather will be
-- Refresher hint: A weather vane sits on top of a pole and swings around. Picture his head and neck.
-- Why: Like a weather-cock on a spindle: a small head perched high on a thin neck.
-- Standards: ELA.7.R.3.1
-- Gist check: The narrator describes Ichabod as handsome, neat and well dressed, like a city gentleman. / The narrator describes Ichabod as tall, skinny and loosely put together, like a scarecrow. ✓ / The narrator describes Ichabod as short, stout and strong, like the village blacksmith.
+- Question (Figure It Out, multiple choice): Read the words looked like a weather-cock. What kind of figurative language is this?
+  - Key words highlighted: weather-cock
+  - Choices: Personification: it gives a weather vane human feelings / Simile: it compares his head to a weather vane using like ✓ / Metaphor: it says his head is a weather vane, without like
+  - What does it mean? He spins around quickly whenever the wind starts to blow hard / His small head sits high on a thin neck, turning this way and that ✓ / He always knows exactly what tomorrow's weather will be
+  - Hint: A weather vane sits on top of a pole and swings around. Picture his head and neck.
+  - Why: Like a weather-cock on a spindle: a small head perched high on a thin neck.
+  - Standards: ELA.7.R.3.1
+- Bank question (Figure It Out, multiple choice): His hands dangled a mile out of his sleeves. Which device is the narrator using?
+  - Key words highlighted: a mile out of his sleeves
+  - Choices: Simile: a comparison using like or as / Personification: giving a thing human feelings / Hyperbole: a huge exaggeration for effect ✓
+  - What does the exaggeration show? He likes to stretch to reach high shelves / His arms are far too long for his clothes ✓ / His coat sleeves were sewn a mile long
+  - Hint: Could anything really hang a mile out of a sleeve?
+  - Why: A mile is an exaggeration: it shows how long and gangly his arms are.
+  - Standards: ELA.7.R.3.1
 - Discovery (figurative): "genius of famine". The genius of famine: Ichabod looks so bony he could be the spirit of hunger itself.
-
-##### Read Between the Lines
 
 **Chunk 3** (¶11 sentences 1 to 2; 86 words)
 
-- Question: What can you infer about where Ichabod holds class?
-- Key words highlighted: infer
-- Choices: It is the grandest and best built hall in the valley / It is brand new, put up by skilled workers from town / It is plain and patched together from whatever was at hand ✓
-- Proof line: "His schoolhouse was a low building of one large room, rudely constructed of logs; the windows partly glazed, and partly patched with leaves of old copybooks."
-- Refresher hint: Look at what fills the window holes.
-- Why: It is rudely built of logs, with windows patched with old copybook pages.
-- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: The schoolhouse has burned down, so the classes now meet in the church. / The schoolhouse is a rough log room that is easy to get into but hard to leave. ✓ / The schoolhouse is a stone hall with strong iron locks on every single door.
+- Question (Weigh the Evidence, drag and drop: Sort the evidence): Sort each detail: does it support or disprove the claim that the schoolhouse is well protected?
+  - Slots: Supports the claim / Disproves the claim
+  - Piece: A twisted branch holds the door shut → Supports the claim (backed by "It was most ingeniously secured at vacant hours, by a withe twisted in the handle of the d…")
+  - Piece: Stakes are set against the window shutters → Supports the claim (backed by "It was most ingeniously secured at vacant hours, by a withe twisted in the handle of the d…")
+  - Piece: A thief could get in with perfect ease → Disproves the claim (backed by "It was most ingeniously secured at vacant hours, by a withe twisted in the handle of the d…")
+  - Piece: Some windows are patched with paper pages → Disproves the claim (backed by "His schoolhouse was a low building of one large room, rudely constructed of logs; the wind…")
+  - Hint: Ask of each detail: would it stop someone from getting in?
+  - Why: The twisted branch and the stakes guard the door and shutters, but a thief could still get in easily and some windows are only paper.
+  - Standards: ELA.K12.EE.1.1, ELA.K12.EE.3.1
+- Bank question (Weigh the Evidence, two-part evidence): Which detail about the building does the narrator only suppose?
+  - Choices: That it was a single room made of logs / That its lock was copied from an eel trap ✓ / That its windows were patched with paper
+  - Proof sentence: "It was most ingeniously secured at vacant hours, by a withe twisted in the handle of the door, and stakes set against the window shutters; so that though a thief might get in with perfect ease, he would find some embarrassment in getting out,--an idea most probably borrowed by the architect, Yost Van Houten, from the mystery of an eelpot."
+  - Hint: One detail comes with "most probably."
+  - Why: The eelpot idea is "most probably" borrowed: a guess, not a fact.
+  - Standards: ELA.K12.EE.1.1, ELA.K12.EE.3.1
 - Discovery (vocabulary): "mystery of an eelpot". An eelpot is a trap eels swim into easily but can't get out of, just like the schoolhouse for a thief.
+
+**Chunk 4** (¶11 sentences 3 to 6; 130 words) · surprise double points
+
+- Question (Character Clue, two-part evidence): Which trait fits Ichabod in the classroom?
+  - Key words highlighted: trait
+  - Choices: Gentle, never raising his voice at any pupil / Lazy, letting the children do as they like / Strict, quick to punish with the birch switch ✓
+  - Hint: Listen for the sounds that break into the lessons.
+  - Why: The appalling sound of the birch and his motto, spare the rod, show he punishes often.
+  - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
+- Bank question (Character Clue, two-part evidence): Judging by what drifts out of the classroom, what kind of teacher is Ichabod?
+  - Choices: Gentle, letting pupils learn at their own pace / Distracted, ignoring the class to read his books / Strict, quick to threaten and to use the switch ✓
+  - Proof sentence: "From hence the low murmur of his pupils’ voices, conning over their lessons, might be heard in a drowsy summer’s day, like the hum of a beehive; interrupted now and then by the authoritative voice of the master, in the tone of menace or command, or, peradventure, by the appalling sound of the birch, as he urged some tardy loiterer along the flowery path of knowledge."
+  - Hint: Listen past the humming lessons.
+  - Why: His voice of menace or command and the sound of the birch show a strict master.
+  - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
+- Gist check: Ichabod's busy schoolhouse is silent because he never lets anyone speak. / Ichabod's pupils run the school by themselves while he naps under the birch tree. / Ichabod's lonely schoolhouse hums with lessons, and he is quick to use the switch. ✓
+- Discovery (figurative): "like the hum of a beehive". A simile: the pupils' murmuring voices sound like busy bees.
+
+**Chunk 5** (¶12 sentences 1 to 3; 149 words) · the twist, checkpoint after this chunk, then the burst
+
+- Question (Catch the Lie, tap the sentence): Brom Bones remembers Ichabod's punishments. Part of what he says is false. Tap the sentence that proves it.
+  - Testimony (Brom Bones): "That schoolmaster went easy on the big, tough boys and saved his birch for the little weak ones."
+  - Proof sentence: "I would not have it imagined, however, that he was one of those cruel potentates of the school who joy in the smart of their subjects; on the contrary, he administered justice with discrimination rather than severity; taking the burden off the backs of the weak, and laying it on those of the strong."
+  - Proof sentence: "Your mere puny stripling, that winced at the least flourish of the rod, was passed by with indulgence; but the claims of justice were satisfied by inflicting a double portion on some little tough wrong-headed, broad-skirted Dutch urchin, who sulked and swelled and grew dogged and sullen beneath the birch."
+  - Hint: Who got the lighter punishments: the weak or the strong?
+  - Why: Ichabod took the burden off the weak and laid it on the strong, the opposite of what Brom says.
+  - Standards: ELA.K12.EE.1.1
+- Bank question (Catch the Lie, tap the sentence): Katrina adds her own memory of the schoolroom. One detail is untrue. Tap the sentence that shows it.
+  - Testimony (Katrina Van Tassel): "He never explained himself. He would punish a boy and say nothing at all about it afterward."
+  - Proof sentence: "All this he called “doing his duty by their parents;” and he never inflicted a chastisement without following it by the assurance, so consolatory to the smarting urchin, that “he would remember it and thank him for it the longest day he had to live.”"
+  - Hint: What did he tell the boys after a punishment?
+  - Why: He always followed a punishment with a promise that the boy would thank him for it one day.
+  - Standards: ELA.K12.EE.1.1
+- Discovery (vocabulary): "cruel potentates". Potentate: a powerful ruler. The narrator jokes that a schoolmaster rules his class like a king.
 
 **Chunk 6** (¶13 sentences 1 to 2; 58 words)
 
-- Question: Why might Ichabod pick certain children to escort after class?
-- Key words highlighted: escort
-- Choices: He hopes for a good meal or a chance to meet pretty sisters ✓ / He wants to keep the youngest pupils safe from ghosts / He is paid a few extra pennies for every child he brings home
-- Proof line: "When school hours were over, he was even the companion and playmate of the larger boys; and on holiday afternoons would convoy some of the smaller ones home, who happened to have pretty sisters, or good housewives for mothers, noted for the comforts of the cupboard."
-- Refresher hint: Look at which families he chooses.
-- Why: He walks home the ones with pretty sisters or mothers noted for the comforts of the cupboard.
-- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
-- Gist check: After school, Ichabod locks himself in the schoolhouse to study his books. / After school, Ichabod works in the fields until dark to earn a second small salary. / After school, Ichabod befriends pupils, especially those with good cooks or pretty sisters. ✓
+- Question (Read Between the Lines, choose two): Which reasons might lie behind his choice of after-school companions?
+  - Key words highlighted: after-school companions
+  - Choices (choose 2): Some of them had pretty older sisters ✓ / Some had mothers known for their cooking ✓ / They lived closest to the schoolhouse / They were the best readers in the class
+  - Hint: Look at whom he walked home, and what their families had.
+  - Why: He walked home children with pretty sisters or mothers famous for the comforts of the cupboard.
+  - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Bank question (Read Between the Lines, two-part evidence): Why would a teacher want to stay friendly with his students here?
+  - Choices: The school paid him extra for every friendship / He had no friends his own age in the valley / It brought him meals and company in their homes ✓
+  - Proof sentence: "Indeed, it behooved him to keep on good terms with his pupils."
+  - Hint: What did those families have that he wanted?
+  - Why: It paid him to keep on good terms with his pupils: their families fed and welcomed him.
+  - Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
 - Discovery (figurative): "comforts of the cupboard". The comforts of the cupboard: a funny way to say good food at home.
 
 **Chunk 7** (¶13 sentences 3 to 4; 92 words)
 
-- Question: Why might Ichabod stay with a different family each week?
-- Key words highlighted: different family
-- Choices: He wants to learn farming from every neighbor / A town law makes teachers move every week / His pay is too small to feed such a big eater ✓
-- Proof line: "The revenue arising from his school was small, and would have been scarcely sufficient to furnish him with daily bread, for he was a huge feeder, and, though lank, had the dilating powers of an anaconda; but to help out his maintenance, he was, according to country custom in those parts, boarded and lodged at the houses of the farmers whose children he instructed."
-- Refresher hint: Look at his pay and at his appetite.
-- Why: His pay was scarcely enough for such a huge feeder, so he was boarded at the farmers' houses.
-- Standards: ELA.K12.EE.3.1, ELA.K12.EE.1.1
+- Question (Weigh the Evidence, drag and drop: Build the case): Build the case that the schoolmaster could not live on his pay alone.
+  - Slots: Claim / Proof sentence / Reason
+  - Piece: His school pay was not enough to live on → Claim
+  - Piece: His school earned little and would barely buy his bread → Proof sentence (backed by "The revenue arising from his school was small, and would have been scarcely sufficient to …")
+  - Piece: So he ate and slept at his pupils' farmhouses, a week at a time → Reason (backed by "With these he lived successively a week at a time, thus going the rounds of the neighborho…")
+  - Piece: The schoolhouse was a single room of logs → belongs nowhere
+  - Hint: A case needs a claim, a sentence that proves it, and a reason that connects them.
+  - Why: Small pay is the claim, the line about his revenue proves it, and boarding with farm families is how he got by; the log schoolhouse has nothing to do with it.
+  - Standards: ELA.K12.EE.1.1, ELA.K12.EE.3.1
+- Bank question (Weigh the Evidence, two-part evidence): Which detail best shows that his teaching could not support him?
+  - Choices: He earned shillings for singing lessons / It would scarcely buy him his daily bread ✓ / He owned more books than he could carry
+  - Proof sentence: "The revenue arising from his school was small, and would have been scarcely sufficient to furnish him with daily bread, for he was a huge feeder, and, though lank, had the dilating powers of an anaconda; but to help out his maintenance, he was, according to country custom in those parts, boarded and lodged at the houses of the farmers whose children he instructed."
+  - Hint: Look at what his school revenue could buy.
+  - Why: His revenue was small, scarcely enough for daily bread.
+  - Standards: ELA.K12.EE.1.1, ELA.K12.EE.3.1
 - Gist check: Ichabod is poorly paid, so he quietly takes food from the farmers' cellars at night. / Ichabod is poorly paid and eats a lot, so he lives a week at a time with each farm family. ✓ / Ichabod is wealthy and eats little, so he buys a fine house beside the church.
 - Discovery (vocabulary): "worldly effects". Worldly effects: everything a person owns. Ichabod's fit in one handkerchief.
 
-##### Character Clue
+**Chunk 8** (¶14 sentences 1 to 2; 79 words)
 
-**Chunk 4** (¶11 sentences 3 to 6; 130 words)
+- Question (Find It, tap the sentence): Which line lists the work Ichabod did to earn his keep?
+  - Key words highlighted: earn his keep
+  - Proof sentence: "He assisted the farmers occasionally in the lighter labors of their farms, helped to make hay, mended the fences, took the horses to water, drove the cows from pasture, and cut wood for the winter fire."
+  - Hint: Look for a list of jobs.
+  - Why: He helped make hay, mended the fences, watered the horses, drove the cows and cut wood.
+  - Standards: ELA.K12.EE.1.1
+- Bank question (Find It, tap the sentence): Which sentence tells why he worked so hard to please the farm families?
+  - Key words highlighted: please
+  - Proof sentence: "That all this might not be too onerous on the purses of his rustic patrons, who are apt to consider the costs of schooling a grievous burden, and schoolmasters as mere drones, he had various ways of rendering himself both useful and agreeable."
+  - Hint: Look for what the farmers thought of the cost of schooling.
+  - Why: The farmers thought schooling a grievous burden, so he made himself useful and agreeable.
+  - Standards: ELA.K12.EE.1.1
+- Discovery (vocabulary): "mere drones". Drones are male bees that do no work. Some farmers think teachers are just as idle.
 
-- Question: Which trait fits Ichabod in the classroom?
-- Key words highlighted: trait
-- Choices: Gentle, never raising his voice at any pupil / Lazy, letting the children do as they like / Strict, quick to punish with the birch switch ✓
-- Proof words (any one): "the appalling sound of the birch", "Spare the rod and spoil the child"
-- Refresher hint: Listen for the sounds that break into the lessons.
-- Why: The appalling sound of the birch and his motto, spare the rod, show he punishes often.
-- Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
-- Gist check: Ichabod's busy schoolhouse is silent because he never lets anyone speak. / Ichabod's pupils run the school by themselves while he naps under the birch tree. / Ichabod's lonely schoolhouse hums with lessons, and he is quick to use the switch. ✓
-- Discovery (figurative): "like the hum of a beehive". A simile: the pupils' murmuring voices sound like busy bees.
+**Chunk 9** (¶14 sentences 3 to 4; 77 words) · the boss (double points)
 
-##### Whose Eyes?
-
-**Chunk 5** (¶12 sentences 1 to 3; 149 words)
-
-- Question: How does the narrator want readers to see Ichabod's punishments?
-- Key words highlighted: narrator
-- Choices: As rare events that almost never really happened / As fair in Ichabod's own eyes, while the narrator teases him ✓ / As cruel acts that the narrator plainly condemns and regrets
-- Proof line: "I would not have it imagined, however, that he was one of those cruel potentates of the school who joy in the smart of their subjects; on the contrary, he administered justice with discrimination rather than severity; taking the burden off the backs of the weak, and laying it on those of the strong."
-- Refresher hint: Notice how the narrator defends him, and how grand the words get.
-- Why: The narrator insists he was no cruel potentate and did justice with discrimination, a playful defense.
-- Standards: ELA.7.R.1.3, ELA.K12.EE.1.1
-- Gist check: The narrator says Ichabod never punished anyone, even the rudest boys in class. / The narrator says the parents scolded Ichabod for punishing their sons far too harshly. / The narrator says Ichabod punished fairly, sparing weak boys and doubling it for tough ones. ✓
-- Discovery (vocabulary): "cruel potentates". Potentate: a powerful ruler. The narrator jokes that a schoolmaster rules his class like a king.
-
-##### Catch the Lie
-
-**Chunk 9** (¶14 sentences 3 to 4; 77 words)
-
-- Question: Hans Van Ripper remembers the schoolmaster. One thing he says is false. Tap the line that proves it.
-- Key words highlighted: false
-- Testimony (Hans Van Ripper): "That schoolmaster was a stern one even in our homes. He had no patience for little ones and would never so much as hold a baby."
-- Proof line: "He found favor in the eyes of the mothers by petting the children, particularly the youngest; and like the lion bold, which whilom so magnanimously the lamb did hold, he would sit with a child on one knee, and rock a cradle with his foot for whole hours together."
-- Refresher hint: Hans sounds sure. Check how Ichabod treated the youngest children.
-- Why: He petted the youngest and would sit with a child on one knee, rocking a cradle for hours.
-- Standards: ELA.K12.EE.1.1
-- Gist check: Away from school, Ichabod avoids the children and spends his time talking with the farmers. / Away from school, Ichabod turns gentle and wins over mothers by caring for their children. ✓ / Away from school, Ichabod stays strict and frightens the youngest children of the house.
+- Question (Character Clue, two-part evidence): Away from the classroom, which side of Ichabod comes out with the families?
+  - Choices: Soft and charming, eager to win the mothers over ✓ / Bossy and loud, just as he is with his class / Shy and nervous, hiding away from the parents
+  - Proof sentence: "He laid aside, too, all the dominant dignity and absolute sway with which he lorded it in his little empire, the school, and became wonderfully gentle and ingratiating."
+  - Proof sentence: "He found favor in the eyes of the mothers by petting the children, particularly the youngest; and like the lion bold, which whilom so magnanimously the lamb did hold, he would sit with a child on one knee, and rock a cradle with his foot for whole hours together."
+  - Hint: Compare the master in school with the man rocking a cradle.
+  - Why: He drops his lordly ways and turns gentle, petting the children and rocking a cradle to win the mothers' favor.
+  - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
+- Bank question (Character Clue, two-part evidence): The narrator compares him to a lion holding a lamb. What does that picture say about him?
+  - Key words highlighted: lion holding a lamb
+  - Choices: He keeps animals on the farms where he stays / A stern man turns tender when he wants favor ✓ / He is fierce and dangerous to small children
+  - Proof sentence: "He laid aside, too, all the dominant dignity and absolute sway with which he lorded it in his little empire, the school, and became wonderfully gentle and ingratiating."
+  - Hint: What did he lay aside outside school?
+  - Why: Like a lion gently holding a lamb, the stern master turns wonderfully gentle and ingratiating.
+  - Standards: ELA.7.R.1.1, ELA.K12.EE.1.1
 - Discovery (figurative): "the lion bold". Like the lion bold: Ichabod, lord of the schoolroom, turns as gentle as a lion holding a lamb.
-
-##### Theme Thread
 
 **Chunk 10** (¶15 sentences 1 to 2; 68 words)
 
-- Question: Which idea about Ichabod keeps showing up?
-- Key words highlighted: keeps showing up
-- Choices: He is shy and hides from attention whenever he can / He cares only about money and never about any praise / He thinks highly of himself and enjoys being admired ✓
-- Proof line: "It was a matter of no little vanity to him on Sundays, to take his station in front of the church gallery, with a band of chosen singers; where, in his own mind, he completely carried away the palm from the parson."
-- Refresher hint: Look at how he feels standing before the singers.
-- Why: It was a matter of no little vanity to him, and in his own mind he outshone the parson.
-- Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
+- Question (Theme Thread, one-sentence written answer): In a single sentence, explain what Ichabod is proudest of.
+  - A strong answer: Ichabod is proudest of his singing, because he believes he outshines even the parson when he leads the choir on Sundays.
+  - Key ideas (one from each group): sing, psalm, choir, voice, music | vain, vanity, proud, pride, show, better, parson, admir, impress, best, beat, outshin
+  - Proof sentence: "It was a matter of no little vanity to him on Sundays, to take his station in front of the church gallery, with a band of chosen singers; where, in his own mind, he completely carried away the palm from the parson."
+  - Hint: Look at how he feels standing in front of the church gallery.
+  - Why: Leading the choir is "a matter of no little vanity": in his own mind he beats even the parson.
+  - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
+- Bank question (Theme Thread, two-part evidence): Which idea about Ichabod keeps showing up?
+  - Key words highlighted: keeps showing up
+  - Choices: He is shy and hides from attention whenever he can / He cares only about money and never about any praise / He thinks highly of himself and enjoys being admired ✓
+  - Proof sentence: "It was a matter of no little vanity to him on Sundays, to take his station in front of the church gallery, with a band of chosen singers; where, in his own mind, he completely carried away the palm from the parson."
+  - Hint: Look at how he feels standing before the singers.
+  - Why: It was a matter of no little vanity to him, and in his own mind he outshone the parson.
+  - Standards: ELA.7.R.1.2, ELA.K12.EE.1.1
 - Gist check: Ichabod also preaches sermons and takes the parson's place on Sundays. / Ichabod also plays the fiddle at every barn dance held in the valley. / Ichabod also teaches singing and proudly leads the church choir on Sundays. ✓
 - Discovery (figurative): "carried away the palm". Carried away the palm: won the prize. Ichabod believes he outshines the parson.
 

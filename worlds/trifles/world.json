@@ -5135,7 +5135,10 @@
   ],
   "front_matter": [],
   "expedition_rules": {
-    "max_sentences": 15
+    "max_sentences": 15,
+    "arc_pending": [
+      "the-wright-kitchen"
+    ]
   },
   "draft_expeditions": [
     {

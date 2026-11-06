@@ -230,3 +230,7 @@ main:has([data-fill-screen]) > footer { display: none; }
 .map-twinkle{animation:map-twinkle 2.4s ease-in-out infinite}
 @keyframes map-twinkle{0%,100%{opacity:.35}50%{opacity:1}}
 @media (prefers-reduced-motion:reduce){.map-fog,.map-pulse,.map-twinkle{animation:none}.map-pulse{opacity:.8}}
+/* Drag and drop (app/drag-drop.tsx): a wrong piece slides to its right place after lock-in. */
+.dnd-slide{animation:dnd-slide .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes dnd-slide{from{transform:translateY(-14px);opacity:.3}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.dnd-slide{animation:none}}

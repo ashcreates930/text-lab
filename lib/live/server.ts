@@ -8,10 +8,13 @@ import type { SourcePassage } from "../source-passages.ts";
 import { liveMissionPieces, liveMissionSetting, missionPick, missionSetting } from "./missions.ts";
 import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, livePicks, myStepRecord, playerPicks, playerState, publicStory, readingAction, squadReading, stepKind, tryState, type LiveStoryRound } from "./story.ts";
 import { screenMessage } from "../safety.ts";
-import { beatMs, burstFound, interviewOf, liveArc, playerVersion, liarAnswers, liveCards, liveRaceBoard, liveRaceChunks, nextBeat, parseExpSettings, playerChunk, playerLiar, playerVote, raceAnswer, raceAnswered, raceDone, raceFinish, raceQuestions, raceReadiness, raceReveal, raceTotals, type LiveRaceRound } from "./race.ts";
+import { beatMs, burstFound, interviewOf, liveArc, playerAsked, playerVersion, liarAnswers, liveCards, liveRaceBoard, liveRaceChunks, nextBeat, parseExpSettings, playerChunk, playerLiar, playerVote, raceAnswer, raceAnswered, raceDone, raceFinish, raceQuestions, raceReadiness, raceReveal, raceTotals, type LiveRaceRound } from "./race.ts";
 import { firstName, interviewAudio, liarBreakdown, liarIndex } from "../interview.ts";
 import { TYPE_INFO, hasExpeditions, joinedPassages, timeScale, type RaceChunk } from "../expedition.ts";
 import { beatKind, isCheckpoint, multiplierAt, questionAt, type Version } from "../pacing.ts";
+import { formatView } from "../formats.ts";
+import { judgeWritten, ruleVerdict } from "../written-judge.ts";
+import { chunkTokens, sentenceProves } from "../expedition.ts";
 import { screenBoardText } from "../safety.ts";
 import { bonusPickAnswer, bonusSquad, bonusSquads, liveAfter, refreshAnswer, type LiveBonusRound } from "./after.ts";
 import { checkWriting, yourTurnChoices, type YourTurnEntry } from "../your-turn.ts";
@@ -181,21 +184,36 @@ function publicRace(st: LiveState, round: LiveRaceRound) {
 }
 const strip = (o: { text: string }[]) => o.map((x) => x.text);
 // A question as the phones and the board see it (never which choice is best).
-function questionView(st: LiveState, round: LiveRaceRound, chunks: RaceChunk[], q: RaceChunk["chunk"]["question"]) {
-  const info = TYPE_INFO[q.type];
+function questionView(st: LiveState, round: LiveRaceRound, chunks: RaceChunk[], q: RaceChunk["chunk"]["question"] & { showHint?: boolean }) {
+  const info = TYPE_INFO[q.type], fv = formatView(q);
   return {
-    type: q.type, name: info.name, steps: info.steps, prompt: q.prompt, keywords: q.keywords, focus: q.focus ?? null, choices: q.choices ? strip(q.choices) : null,
+    ...fv, type: q.type, name: fv.name ?? info.name, prompt: q.prompt, keywords: q.keywords, focus: q.focus ?? null, choices: q.choices ? strip(q.choices) : null,
     choices2: q.choices2 ? { prompt: q.choices2.prompt, options: strip(q.choices2.options) } : null, theories: q.theories?.map((t) => ({ id: t.id, name: t.name })) ?? null,
     testimony: q.testimony ? { speaker: st.world.characters.find((x) => x.id === q.testimony!.speaker)?.name ?? "A witness", text: q.testimony.text } : null,
     proof: (q.proof?.words?.length ? "words" : q.proof?.lines?.length ? "lines" : "none") as "words" | "lines" | "none",
     callPassages: q.type === "make_call" ? joinedPassages(chunks.slice(0, round.step + 1)) : null,
   };
 }
+// A written answer in a live race, judged here on the server (lib/written-judge.ts): the AI judge when the room's
+// judge allowance has calls left, otherwise the rule. Returns the payload to act on, with anything a phone sent in
+// place of a verdict removed.
+export async function judgeLiveWritten(st: LiveState, playerId: string, payload: Record<string, unknown>, allow: () => Promise<boolean>) {
+  const clean = { ...payload }; delete clean.__judged; delete clean.__verdict;
+  const round = currentRound(st);
+  if (round?.type !== "race" || round.beat !== "race") return clean;
+  const chunks = liveRaceChunks(st.world, st.passages ?? [], round), asked = playerAsked(chunks, st.responses, st.session.roundIndex, playerId, round.step);
+  if (!asked?.question.written) return clean;
+  const a = (clean.answer ?? {}) as { text?: unknown; lines?: unknown }, text = typeof a.text === "string" ? a.text : "", line = Array.isArray(a.lines) && typeof a.lines[0] === "string" ? a.lines[0] : null;
+  const evidenceOk = !asked.question.proof?.lines?.length || (!!line && sentenceProves(asked.question, chunkTokens(chunks[round.step].lines), [line]));
+  const v = (await allow()) ? await judgeWritten(st.world, asked.question, text, line, evidenceOk) : ruleVerdict(asked.question, text, evidenceOk);
+  return { ...clean, __judged: v.strength, __verdict: v };
+}
 // This player's version of the race question (adaptive challenge): null when it's the standard one everyone sees.
 function playerQuestion(st: LiveState, round: LiveRaceRound, playerId: string) {
   const chunks = liveRaceChunks(st.world, st.passages ?? [], round), c = chunks[round.step]; if (!c) return { version: "standard" as Version, question: null };
-  const asked = questionAt(c.chunk.question, playerVersion(st.responses, st.session.roundIndex, round.step, playerId));
-  return { version: asked.version, question: asked.version === "standard" ? null : questionView(st, round, chunks, asked.question) };
+  const asked = playerAsked(chunks, st.responses, st.session.roundIndex, playerId, round.step)!;
+  // The board shows the standard main question; a phone with another bank pick or version gets its own.
+  return { version: asked.version, question: asked.version === "standard" && asked.bank === 0 ? null : questionView(st, round, chunks, asked.question) };
 }
 // The Interview for everyone: the witnesses and their cards, the class's votes, what each witness said once they
 // answer; at Name the Liar every line of the expedition; at the verdict the liar, the proof and the class breakdown.
@@ -347,7 +365,10 @@ export function playerView(st: LiveState, playerId: string) {
       // This player's version of the question, the lightning answer once they've answered, and their squad's burst finds.
       const asked = playerQuestion(st, round, me.id), light = liveArc(st.world, round)?.lightning.find((l) => l.after === round.step)?.item;
       const squadIds = round.squadsOn && me.squadId ? st.players.filter((p) => p.squadId === me.squadId).map((p) => p.id) : [me.id];
-      const extra = { version: asked.version, myQuestion: round.beat === "race" || round.beat === "reveal" ? asked.question : null, lightningAnswer: mine.lightning && light ? light.answer : null, burstFound: round.beat === "burst" ? burstFound(st.responses, i, squadIds) : [] };
+      // Once the question has closed: the key to this player's own question (drag and drop, choose two, a written model).
+      const mineAsked = playerAsked(liveRaceChunks(st.world, st.passages ?? [], round), st.responses, i, me.id, round.step)?.question;
+      const revealKey = mineAsked && (round.beat === "reveal" || round.beat === "lightning" || round.beat === "board" || round.beat === "countdown") ? { dnd: mineAsked.dnd ? { slotOf: Object.fromEntries(mineAsked.dnd.items.map((it) => [it.id, it.slot])), lines: Object.fromEntries(mineAsked.dnd.items.map((it) => [it.id, it.line])) } : null, best: mineAsked.format === "multi" ? (mineAsked.choices ?? []).filter((c) => c.best).map((c) => c.text) : null, model: mineAsked.written?.model ?? null } : null;
+      const extra = { revealKey, version: asked.version, myQuestion: round.beat === "race" || round.beat === "reveal" ? asked.question : null, lightningAnswer: mine.lightning && light ? light.answer : null, burstFound: round.beat === "burst" ? burstFound(st.responses, i, squadIds) : [] };
       return { ...extra, mine, total: raceTotals(st.responses, i, st.players, counted).get(me.id) ?? 0, place: meRow ? { rank: meRow.rank, of: board.rows.length, move: meRow.move, gained: meRow.gained, row: meRow } : null, scale: timeScale(setting), extraTime: setting !== "1",
         // The map: this player's stops so far (stars: 3 proved with the Gist right or not asked, 2 proved, 0 not yet), once each is revealed.
         path: Array.from({ length: round.beat === "reveal" || round.beat === "lightning" || round.beat === "board" || round.beat === "burst" || round.beat === "countdown" ? round.step + 1 : round.step }, (_, k) => { const c = playerChunk(st.responses, i, k, me.id); return c.correct ? (c.gistRight !== false ? 3 : 2) : 0; }),

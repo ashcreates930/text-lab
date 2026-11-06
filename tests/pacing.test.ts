@@ -10,6 +10,8 @@ import { chunkTokens, expeditionChunks, proofLineIndexes, type Answer } from "..
 import { DOUBLE, LIGHTNING_POINTS, STREAK_BONUS, arcOf, arcProblems, beatKind, isCheckpoint, levelOf, levelsOf, multiplierAt, questionAt, streakBonus, versionFor } from "../lib/pacing.ts";
 import { caseNotes } from "../lib/case-notes.ts";
 import { expeditionProblems } from "../lib/expedition-check.ts";
+import { rightAnswerFor, wrongAnswerFor } from "./answers.ts";
+import { playerAsked } from "../lib/live/race.ts";
 
 const src = (f: string) => readFileSync(f, "utf8");
 const sh = WorldPackSchema.parse(JSON.parse(src("worlds/sleepy-hollow/world.json")));
@@ -58,25 +60,25 @@ test("adaptive challenge: start standard, up after two first-try answers in a ro
   assert.equal(versionFor([true, true, false, false]), "standard", "back down a step");
   assert.equal(versionFor([true, false, true, false, true]), "standard", "no step without two in a row");
   assert.equal(versionFor([false, false, true, true]), "standard");
-  // The version a student sees; the standard one when the chunk has none.
+  // The version a student sees: written out, or derived (harder: no highlighted key words; tests/formats.test.ts).
   const q = e1.chunks[0].question, harder = { ...q, prompt: "A harder prompt?" };
-  assert.equal(questionAt(q, "harder").version, "standard"); assert.equal(questionAt(q, "harder").question.prompt, q.prompt);
+  assert.equal(questionAt(q, "harder").version, "harder"); assert.deepEqual(questionAt(q, "harder").question.keywords, []);
   assert.equal(questionAt({ ...q, versions: { harder } }, "harder").question.prompt, "A harder prompt?");
   assert.equal(questionAt({ ...q, versions: { harder } }, "harder").version, "harder");
-  // The version is recorded in Case Notes.
+  // The version is recorded in Case Notes, with the question the student was asked.
   const notes = caseNotes(chunks, [{ index: 0, answer: right(0), correct: true, late: false, gist: null, typed: null, unknown: [], version: "harder" }]);
-  assert.equal(notes[0].version, "standard", "expedition 1 has no versions yet, so the student saw the standard one");
-  const withV = structuredClone(chunks); withV[0].chunk.question = { ...q, versions: { harder } };
+  assert.equal(notes[0].version, "harder");
+  const withV = structuredClone(chunks); withV[0].chunk.question = questionAt({ ...q, versions: { harder } }, "harder").question;
   assert.equal(caseNotes(withV, [{ index: 0, answer: right(0), correct: true, late: false, gist: null, typed: null, unknown: [], version: "harder" }])[0].question, "A harder prompt?");
 });
 
 test("validator: the arc on expeditions built to it, lightning answers in the chunk they recall", () => {
   assert.deepEqual(arcProblems(sh), []);
-  assert.deepEqual(sh.expedition_rules?.arc_pending?.length, 13, "expeditions 2 to 14 wait for their rebuild");
+  assert.deepEqual(sh.expedition_rules?.arc_pending?.length, 12, "expeditions 3 to 14 wait for their rebuild");
   const bad = structuredClone(sh); bad.expedition_rules = { ...bad.expedition_rules, arc_pending: [] };
   const p = arcProblems(bad).join(" | ");
   assert.match(p, /the-invitation: the twist is chunk 2, not mid-expedition/); assert.match(p, /a-rival-appears: chunk 1 is between_lines, not a warm-up type/);
-  assert.match(p, /the-schoolmaster: 0 lightning beats/);
+  assert.match(p, /tales-by-the-fire: 0 lightning beats/);
   const early = structuredClone(sh); early.expeditions![0].lightning![1].after = 7;
   assert.match(arcProblems(early).join(" | "), /recalls chunk 7 too soon|follows the twist/);
   const wrong = structuredClone(sh); wrong.expeditions![0].lightning![0].answer = ["Not a sentence of that chunk."];
@@ -103,10 +105,13 @@ test("live: answer, rank pill, no board until the checkpoint; a lightning beat; 
   async function play(k: number, rightOnes: number[]) {
     assert.equal(pub().step, k);
     for (const p of ids) await act(p, "race_ready");
-    await host({ action: "race.next" }); assert.equal(pub().beat, "process");
-    for (const p of ids) await act(p, "race_gist", { choice: best(k) });
-    await host({ action: "race.next" }); assert.equal(pub().beat, "race");
-    for (const [i, p] of ids.entries()) assert.equal(await act(p, "race_tap", { answer: rightOnes.includes(i) ? right(k) : { choice: 0, lines: ["no"] } }), null);
+    // The Gist check about every third chunk (1, 4, 7, 10); otherwise straight to the question.
+    await host({ action: "race.next" }); assert.equal(pub().beat, k % 3 === 0 ? "process" : "race");
+    if (k % 3 === 0) { for (const p of ids) await act(p, "race_gist", { choice: best(k) }); await host({ action: "race.next" }); assert.equal(pub().beat, "race"); }
+    // Each player answers the question the server asked them (their bank pick at their version).
+    for (const [i, p] of ids.entries()) { const asked = playerAsked(chunks, st.responses, st.session.roundIndex, p, k)!.question;
+      const payload = await server.judgeLiveWritten(st, p, { answer: rightOnes.includes(i) ? rightAnswerFor(asked, chunks[k]) : wrongAnswerFor(asked, chunks[k]) }, async () => false);
+      assert.equal(await act(p, "race_tap", payload), null); }
     await host({ action: "race.next" }); assert.equal(pub().beat, "reveal");
   }
   await play(0, [0, 1]);
@@ -152,8 +157,8 @@ test("live: answer, rank pill, no board until the checkpoint; a lightning beat; 
   const { raceTotals } = await import("../lib/live/race.ts");
   const t = raceTotals(st.responses, st.session.roundIndex, st.players, 4), parts = st.responses.filter((r) => r.playerId === ids[0] && r.roundIndex === st.session.roundIndex && ["race_gist", "race_tap", "race_lightning", "race_burst"].includes(r.kind)).reduce((a, r) => a + Number(r.payload.points ?? 0), 0);
   assert.equal(t.get(ids[0]), parts);
-  // Adaptive: Ana answered right twice in a row, so she is on the harder version (the standard one until versions are written).
-  assert.equal(view(ids[0]).version, "standard", "no harder version written yet for chunk 6");
+  // Adaptive: Ana answered right twice in a row, so she is on the harder version.
+  assert.equal(view(ids[0]).version, "harder");
   const { playerVersion } = await import("../lib/live/race.ts");
   assert.equal(playerVersion(st.responses, st.session.roundIndex, 5, ids[0]), "harder"); assert.equal(playerVersion(st.responses, st.session.roundIndex, 5, ids[2]), "easier");
 });

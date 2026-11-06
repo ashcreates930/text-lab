@@ -2748,13 +2748,15 @@ test("proof race live: expedition beats, readiness, gist and question saving, on
   assert.equal(await host({action:"race.next"}),null);assert.equal(pub().beat,"race");assert.equal(pub().beatMs,45000);
   assert.equal(pub().question!.type,"whose_eyes");assert.ok(!JSON.stringify(pub().question).includes("\"best\""));
   const chunks=(await import("../lib/live/race.ts")).liveRaceChunks(st.world,st.passages!,st.session.rounds.at(-1) as never);
-  const tokens=chunkTokens(chunks[0].lines),r=phraseRange(tokens,c0.question.proof!.words![0])!,pl=tokens[r[0]].line,proof=[chunks[0].lines[pl].text],off=[chunks[0].lines.find((_,i)=>i!==pl)!.text];// text evidence is the whole sentence
-  const right=c0.question.choices!.findIndex(o=>o.best);
-  assert.equal(await act(ids[0],"race_tap",{answer:{choice:right,lines:proof}}),null);
+  // Each player answers the question the server asked them (their bank pick at their version: lib/formats.ts).
+  const {playerAsked}=await import("../lib/live/race.ts");const {rightAnswerFor}=await import("./answers.ts");const {proofLineIndexes}=await import("../lib/expedition.ts");
+  const mine=(pid:string)=>playerAsked(chunks,st.responses,st.session.roundIndex,pid,0)!.question;
+  assert.equal(await act(ids[0],"race_tap",{answer:rightAnswerFor(mine(ids[0]),chunks[0])}),null);
   // Ben: the right answer with the wrong proof scores 0. One shot: no second try.
-  assert.equal(await act(ids[1],"race_tap",{answer:{choice:right,lines:off}}),null);
-  assert.match((await act(ids[1],"race_tap",{answer:{choice:right,lines:proof}}))??"",/already answered/);
-  assert.equal(await act(ids[2],"race_tap",{answer:{choice:right,lines:proof}},"2"),null);
+  const benQ=mine(ids[1]),benOk=proofLineIndexes(benQ,chunkTokens(chunks[0].lines)),off=[chunks[0].lines.find((_,i)=>!benOk.includes(i))!.text];
+  assert.equal(await act(ids[1],"race_tap",{answer:{...rightAnswerFor(benQ,chunks[0]),lines:off}}),null);
+  assert.match((await act(ids[1],"race_tap",{answer:rightAnswerFor(benQ,chunks[0])}))??"",/already answered/);
+  assert.equal(await act(ids[2],"race_tap",{answer:rightAnswerFor(mine(ids[2]),chunks[0])},"2"),null);
   assert.equal(server.playerView(st,ids[2]).race!.extraTime,true);assert.equal(server.playerView(st,ids[2]).race!.scale,2);
   const tot=(pid:string)=>server.playerView(st,pid).race!.total;
   // The phone's score holds this chunk's points until the reveal, so it can't give the answer away early.

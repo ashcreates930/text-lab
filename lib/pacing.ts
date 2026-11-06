@@ -55,7 +55,8 @@ export const STREAK_BONUS = 150;
 export const streakBonus = (streakBefore: number, streakAfter: number) => ((streakAfter === 3 || streakAfter === 6) && streakAfter > streakBefore ? STREAK_BONUS : 0);
 
 // ---------- Adaptive challenge ----------
-export type Version = "easier" | "standard" | "harder";
+import { versionOf, type Version } from "./formats.ts";
+export type { Version };
 const LADDER: Version[] = ["easier", "standard", "harder"];
 // The version for the next question, from this student's results so far in order (true: right on the first try).
 // Start standard; two first-try answers in a row step up one; two misses in a row step down one. After a step the
@@ -68,10 +69,9 @@ export function versionFor(results: boolean[]): Version {
   }
   return LADDER[at];
 }
-// The question a student sees at that version (the standard one when the chunk has no such version).
-export function questionAt(q: ExpQuestion & { versions?: Partial<Record<"easier" | "harder", ExpQuestion>> }, v: Version): { question: ExpQuestion; version: Version } {
-  const alt = v === "standard" ? null : q.versions?.[v];
-  return alt ? { question: { ...alt, standards: alt.standards?.length ? alt.standards : q.standards }, version: v } : { question: q, version: "standard" };
+// The question a student sees at that version: written out, or derived (lib/formats.ts).
+export function questionAt(q: ExpQuestion, v: Version): { question: ExpQuestion & { showHint?: boolean }; version: Version } {
+  return { question: versionOf(q, v), version: v };
 }
 
 // ---------- Validation (validate:worlds) ----------
@@ -97,6 +97,6 @@ export function arcProblems(world: WorldPack): string[] {
       if (l.after === a.boss || l.after === a.twist) at(`lightning "${l.item.id}" follows the ${l.after === a.boss ? "boss" : "twist"}; it goes between deeper questions`);
     }
   }
-  for (const id of pending) if (!(world.expeditions ?? []).some((e) => e.id === id)) out.push(`arc: arc_pending lists ${id}, which isn't an expedition`);
+  for (const id of pending) if (![...(world.expeditions ?? []), ...(world.draft_expeditions ?? [])].some((e) => e.id === id)) out.push(`arc: arc_pending lists ${id}, which isn't an expedition`);
   return out;
 }

@@ -7,6 +7,8 @@ import { readFileSync } from "node:fs";
 import { WorldPackSchema } from "../lib/world-schema.ts";
 import { parseSourcePassages } from "../lib/source-passages.ts";
 import { chunkTokens, expeditionChunks, joinedPassages, phraseRange, type Answer } from "../lib/expedition.ts";
+import { rightAnswerFor, wrongAnswerFor } from "./answers.ts";
+import { playerAsked } from "../lib/live/race.ts";
 import { liarIndex, interviewStatements, type LiarAnswer } from "../lib/interview.ts";
 import { BONUS_POINTS, REFRESHER_MAX, VERDICT_INDEX, verdictAnswer, bonusProblems, caseNotes, caseNotesPdf, flaggedQuestions, refresherAward, refresherCorrect, refresherItems, squadCaseFile, squadCaseFilePdf, type ChunkResult } from "../lib/case-notes.ts";
 
@@ -15,16 +17,9 @@ const sh = WorldPackSchema.parse(JSON.parse(src("worlds/sleepy-hollow/world.json
 const shp = parseSourcePassages(src("public/worlds/sleepy-hollow/source.md"));
 const exp = sh.expeditions![0], chunks = expeditionChunks(sh, shp, exp.id);
 const best = (o?: { best?: boolean }[]) => (o ?? []).findIndex((x) => x.best), wrong = (o?: { best?: boolean }[]) => (o ?? []).findIndex((x) => !x.best);
-// A right answer (with its proof) for every chunk.
-function rightAnswer(k: number): Answer {
-  const q = exp.chunks[k].question, tokens = chunkTokens(chunks[k].lines);
-  if (q.type === "make_call") return { theory: q.theories![1].id, lines: q.theories![1].lines.slice(0, 2) };
-  if (q.type === "figure_it_out") return { choice: best(q.choices), choice2: best(q.choices2!.options) };
-  // Text evidence is a whole sentence: a word proof is the sentence that holds the word.
-  if (q.proof?.words?.length) { const r = phraseRange(tokens, q.proof.words[0])!; return { choice: best(q.choices), lines: [chunks[k].lines[tokens[r[0]].line].text] }; }
-  return { ...(q.choices ? { choice: best(q.choices) } : {}), lines: [q.proof!.lines![0]] };
-}
-const result = (k: number, correct: boolean, gistOk = true, extra: Partial<ChunkResult> = {}): ChunkResult => ({ index: k, answer: correct ? rightAnswer(k) : { choice: wrong(exp.chunks[k].question.choices), lines: [chunks[k].lines[0].text] }, correct, late: false, gist: gistOk ? best(exp.chunks[k].gist.options) : wrong(exp.chunks[k].gist.options), typed: null, unknown: [], ...extra });
+// A right answer (with its proof) for every chunk, in any format (tests/answers.ts).
+const rightAnswer = (k: number): Answer => rightAnswerFor(exp.chunks[k].question, chunks[k]);
+const result = (k: number, correct: boolean, gistOk = true, extra: Partial<ChunkResult> = {}): ChunkResult => ({ index: k, answer: correct ? rightAnswer(k) : wrongAnswerFor(exp.chunks[k].question, chunks[k]), correct, late: false, gist: gistOk ? best(exp.chunks[k].gist.options) : wrong(exp.chunks[k].gist.options), typed: null, unknown: [], ...extra });
 
 test("Refresher: only misses, up to 4, race questions before Gist checks", () => {
   const results = chunks.map((c) => result(c.index, ![1, 3, 5, 7, 9].includes(c.index), c.index !== 0));
@@ -42,9 +37,10 @@ test("Refresher: only misses, up to 4, race questions before Gist checks", () =>
 test("Refresher: untimed proof taps are checked; stars and badges, Perfect run when nothing was missed", () => {
   for (let k = 0; k < chunks.length; k++) {
     const q = exp.chunks[k].question, a = rightAnswer(k);
-    const proofOnly = q.type === "figure_it_out" ? { choice2: a.choice2 } : q.type === "make_call" ? { lines: a.lines } : { lines: a.lines };
+    // Drag and drop and choose two are done again; the others need the proof (or Figure It Out's meaning).
+    const proofOnly = a.placed ? { placed: a.placed } : a.picks ? { picks: a.picks } : q.type === "figure_it_out" ? { choice2: a.choice2 } : { lines: a.lines };
     assert.ok(refresherCorrect({ index: k, kind: "question" }, chunks[k], proofOnly), `chunk ${k + 1} ${q.type}: the proof fixes it`);
-    assert.ok(!refresherCorrect({ index: k, kind: "question" }, chunks[k], { lines: ["Not a line"], words: [], choice2: wrong(q.choices2?.options) }), `chunk ${k + 1}: a wrong tap doesn't`);
+    assert.ok(!refresherCorrect({ index: k, kind: "question" }, chunks[k], { lines: ["Not a line"], words: [], choice2: wrong(q.choices2?.options), picks: [], placed: {} }), `chunk ${k + 1}: a wrong tap doesn't`);
   }
   assert.ok(refresherCorrect({ index: 0, kind: "gist" }, chunks[0], { choice: best(exp.chunks[0].gist.options) }));
   assert.deepEqual(refresherAward([], []), { stars: 0, of: 0, badge: "Perfect run" });
@@ -109,7 +105,9 @@ test("live: the Refresher on each phone after the podium, notes saved, then the 
   // Ana answers every question right; Ben answers chunk 2 wrong and leaves the rest blank.
   for (let k = 0; k < 10; k++) {
     while (pub().beat !== "race") await host({ action: "race.next" });
-    assert.equal(await act(ids[0], "race_tap", { answer: rightAnswer(k) }), null);
+    const asked = playerAsked(chunks, st.responses, st.session.roundIndex, ids[0], k)!.question;
+    const payload = await server.judgeLiveWritten(st, ids[0], { answer: rightAnswerFor(asked, chunks[k]) }, async () => false);
+    assert.equal(await act(ids[0], "race_tap", payload), null, `chunk ${k + 1} (${asked.type})`);
     if (k === 1) assert.equal(await act(ids[1], "race_tap", { answer: { choice: 0, lines: [chunks[1].lines[1].text] } }), null);
     while (pub().beat !== "countdown") await host({ action: "race.next" });
     await host({ action: "race.next" });
@@ -132,8 +130,9 @@ test("live: the Refresher on each phone after the podium, notes saved, then the 
   assert.ok(!JSON.stringify(benAfter.refresher).includes("\"best\""), "the phone never gets the answers");
   // Ben fixes chunk 2 in the Refresher (one try), and writes a note.
   assert.equal(benAfter.refresher[1].chunk, 1);
-  const fix0 = exp.chunks[0].question.proof!.words![0], t0 = chunkTokens(chunks[0].lines), r0 = phraseRange(t0, fix0)!;
-  assert.equal(await act(ids[1], "race_refresh", { k: 1, answer: { lines: [chunks[0].lines[t0[r0[0]].line].text] } }), null);
+  // Ben's own question at chunk 1 (his bank pick), fixed with its proof sentence.
+  const benQ = playerAsked(chunks, st.responses, st.session.rounds.findIndex((r) => (r as { type: string }).type === "race"), ids[1], 0)!.question;
+  assert.equal(await act(ids[1], "race_refresh", { k: 1, answer: { lines: rightAnswerFor(benQ, chunks[0]).lines } }), null);
   assert.match((await act(ids[1], "race_refresh", { k: 1, answer: {} })) ?? "", /already tried/);
   assert.equal(await act(ids[1], "race_note", { index: 0, text: "He won't swear the story is true." }), null);
   const ben2 = server.playerView(st, ids[1]).after!;

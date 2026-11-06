@@ -20,6 +20,7 @@ import {BONUS_STEMS,squadCaseFilePdf,type SquadCaseFile} from "@/lib/case-notes"
 import {focusScreenTop} from "../screen-focus";
 import {AnswerBars,ArcBanner,ChunkText,CountdownRing,DiscoveryBurst,KeywordPrompt,QuestionPanel,RaceHud,RankPill,TimerTrack} from "../expedition-race";
 import {SplitStage,useStickyOffsets} from "../split-stage";
+import {DragDrop} from "../drag-drop";
 import {RaceMap} from "../world-map";
 import {InterviewHost,InterviewPlayer,interviewBeat} from "./interview-live";
 
@@ -200,6 +201,12 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
     <div className="moment-pop w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{q?.name}{(mine.tap.mult??1)>1?" · Double points":""}</p><h1 id="rp-h" className="mt-1 text-[40px] leading-none outline-none">Proof!<span className="sr-only"> Plus {mine.tap.points} points.</span></h1><p className="mt-2 text-[16px] font-bold">{round.reveal?.why}</p></div>
     {(mine.tap.bonus??0)>0&&<p role="status" className="moment-pop rounded-full bg-gold px-4 py-1.5 font-display text-[17px] font-bold text-on-gold">Streak bonus! +{mine.tap.bonus}</p>}</div>
    :<div className="notyet-shake rounded-[24px] bg-notyet p-5 text-on-notyet shadow-[0_8px_0_var(--color-notyet-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{q?.name}{mine.tap?.late||!mine.tap?" · Time's up":""}</p><h1 id="rp-h" className="mt-1 text-[36px] leading-none outline-none">Not yet.</h1><p className="mt-2 text-[17px] font-bold">You'll get another shot in the Refresher.</p></div>}
+   {/* The newer formats: drag and drop pieces, a written verdict, the choose-two answers. */}
+   {q?.format==="dnd"&&q.dnd&&race.revealKey?.dnd&&<div className="mt-3"><DragDrop view={q.dnd} placed={mine.tap?.answer.placed??{}} onChange={()=>{}} disabled reveal={race.revealKey.dnd}/></div>}
+   {q?.format==="written"&&<div className="mt-3 flex flex-col gap-2 rounded-card bg-panel p-4">{mine.tap?.answer.text&&<p className="font-serif text-[17px]">"{mine.tap.answer.text}"</p>}
+    {mine.tap?.verdict&&<><p className="font-display text-[20px] font-bold">{mine.tap.verdict.strength}</p><p className="text-[15px]"><b>What works:</b> {mine.tap.verdict.note}</p><p className="text-[15px]"><b>Next step:</b> {mine.tap.verdict.next}</p></>}
+    {race.revealKey?.model&&<p className="rounded-row bg-violet-soft px-3 py-2 text-[15px]"><b>A strong answer:</b> {race.revealKey.model}</p>}</div>}
+   {q?.format==="multi"&&race.revealKey?.best&&<p className="mt-3 rounded-card bg-panel px-4 py-3 text-[16px]"><b>The answers:</b> {race.revealKey.best.join(" · ")}</p>}
    <p className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[13px] font-bold text-muted">{race.place&&<RankPill move={race.place.move} rank={race.place.rank} of={race.place.of} first={(race.place.row as {prevRank?:number|null}|undefined)?.prevRank==null}/>}{round.reveal?.pct??0}% of the class found it.</p>
    <div className="mt-1">{q?.callPassages?<ReadingPanel passages={q.callPassages as SourcePassage[]} results={(round.reveal?.lines??[]).map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/>
     :<ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shown={shownTokens} shownStyle={mine.tap?.correct?"right":"missed"}/>}</div></div>}

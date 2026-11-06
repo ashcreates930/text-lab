@@ -6,6 +6,7 @@
 import type { SourcePassage } from "./source-passages.ts";
 import { evidenceSentences } from "./lies.ts";
 import type { ExpChunk, ExpQuestion, Expedition, QuestionType, WorldPack } from "./world-schema.ts";
+import { dndResult, formatOf, multiRight, writtenProved, writtenShare, type Strength } from "./formats.ts";
 import type { BenchmarkFamily } from "./best-standards.ts";
 
 export const POINTS = { correct: 700, speedMax: 300, gist: 100 } as const;
@@ -23,6 +24,8 @@ export const TYPE_INFO: Record<QuestionType, { name: string; steps: 1 | 2; secon
   find_it: { name: "Find It", steps: 1, seconds: 30, standards: ["K12.EE.1.1"], skill: "Line Finder" },
   catch_lie: { name: "Catch the Lie", steps: 1, seconds: 45, standards: ["K12.EE.1.1"], skill: "Lie Catcher" },
   make_call: { name: "Make the Call", steps: 2, seconds: 90, standards: ["K12.EE.1.1", "K12.EE.3.1"], skill: "Case Closer" },
+  story_structure: { name: "Story Order", steps: 1, seconds: 45, standards: ["R.1.1", "K12.EE.3.1"], skill: "Story Builder" },
+  weigh_evidence: { name: "Weigh the Evidence", steps: 1, seconds: 45, standards: ["K12.EE.1.1", "K12.EE.3.1"], skill: "Evidence Weigher" },
 };
 export const GIST_SECONDS = 20, TYPED_SECONDS = 60;
 // Catch the Lie: the testimony plays for about this long before its timer starts.
@@ -97,7 +100,9 @@ export function sentenceProves(q: ExpQuestion, tokens: Token[], tapped: string[]
 }
 
 // ---------- Answers and scoring ----------
-export type Answer = { choice?: number | null; choice2?: number | null; lines?: string[]; words?: number[]; theory?: string | null };
+// picks: choose two or more; placed: drag and drop (item id to slot id, or null when left out); text: a written
+// response, with judged: its strength on the rubric (set by the server or the judge, never trusted from a phone).
+export type Answer = { choice?: number | null; choice2?: number | null; lines?: string[]; words?: number[]; theory?: string | null; picks?: number[]; placed?: Record<string, string | null>; text?: string; judged?: Strength | null };
 const best = (opts: { best?: boolean }[] | undefined) => (opts ?? []).findIndex((o) => !!o.best);
 export const speedBonus = (elapsedMs: number, limit: number) => (limit > 0 ? Math.round(POINTS.speedMax * Math.max(0, Math.min(1, 1 - elapsedMs / limit))) : 0);
 // Each step's verdict (answer, proof) and the points. Time ran out: 0, whatever was picked.
@@ -107,7 +112,20 @@ export function scoreAnswer(q: ExpQuestion, a: Answer, tokens: Token[], elapsedM
   const proofLinesOk = () => sentenceProves(q, tokens, a.lines);
   const proofOk = proofLinesOk;
   let answer = true, proof = true;
-  switch (q.type) {
+  // The formats with their own rules (lib/formats.ts). Drag and drop scores each piece; a written response by its strength.
+  const f = formatOf(q);
+  if (f === "dnd") {
+    const r = dndResult(q, a.placed), share = r.total ? r.right.length / r.total : 0, correct = !late && r.all;
+    return { correct, answer: r.all, proof: r.all, late, points: late ? 0 : Math.round(POINTS.correct * share) + (correct ? speedBonus(elapsedMs, limit) : 0), pieces: r };
+  }
+  if (f === "written") {
+    const ok = !late && writtenProved(a.judged), share = late ? 0 : writtenShare(a.judged);
+    return { correct: ok, answer: ok, proof: ok, late, points: Math.round(POINTS.correct * share) + (ok ? speedBonus(elapsedMs, limit) : 0) };
+  }
+  if (f === "multi") { answer = multiRight(q, a.picks); proof = answer; }
+  else if (f === "mc" && q.type !== "figure_it_out" && q.type !== "gist") { answer = a.choice === best(q.choices); proof = answer; }
+  else if (f === "two_part" && (q.type === "find_it" || q.type === "catch_lie")) { answer = proofLinesOk(); proof = answer; }
+  else switch (q.type) {
     case "find_it": case "catch_lie": answer = proofLinesOk(); proof = answer; break;
     case "gist": answer = a.choice === best(q.choices); proof = answer; break;
     case "figure_it_out": answer = a.choice === best(q.choices); proof = a.choice2 === best(q.choices2?.options); break;

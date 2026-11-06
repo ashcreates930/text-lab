@@ -8,7 +8,8 @@ import type { LivePlayer, LiveResponse, LiveSquad } from "./engine.ts";
 import { TYPE_INFO, joinedPassages, type Answer, type RaceChunk } from "../expedition.ts";
 import { BONUS_STEMS, VERDICT_INDEX, VERDICT_QUESTION, bonusProblems, caseNotes, flaggedQuestions, refresherAward, refresherCorrect, refresherItems, refresherShown, refresherView, rolesFor, squadCaseFile, verdictAnswer, type BonusPick, type ChunkResult, type MemberResults, type Verdict } from "../case-notes.ts";
 import { interviewNote, liarCheck, witnessName, type LiarAnswer } from "../interview.ts";
-import { interviewOf, liveCards, liveRaceChunks, playerChunk, playerLiar, type LiveRaceRound } from "./race.ts";
+import { interviewOf, liveCards, liveRaceChunks, playerAsked, playerChunk, playerLiar, type LiveRaceRound } from "./race.ts";
+import { withAsked } from "../formats.ts";
 import { evidenceSentences } from "../lies.ts";
 
 export type LiveBonusRound = { type: "bonus"; raceIndex: number; startedAt: string };
@@ -16,8 +17,11 @@ const rows = (responses: LiveResponse[], roundIndex: number, kind: string) => re
 
 // One player's race, as Case Notes results.
 export function liveResults(chunks: RaceChunk[], responses: LiveResponse[], raceIndex: number, playerId: string): ChunkResult[] {
-  return chunks.map((c) => { const m = playerChunk(responses, raceIndex, c.index, playerId); return { index: c.index, answer: m.tap?.answer ?? null, correct: m.correct, late: !!m.tap?.late || !m.tap, gist: m.gist, typed: m.question, unknown: m.unknown }; });
+  return chunks.map((c) => { const m = playerChunk(responses, raceIndex, c.index, playerId), asked = playerAsked(chunks, responses, raceIndex, playerId, c.index);
+    return { index: c.index, answer: m.tap?.answer ?? null, correct: m.correct, late: !!m.tap?.late || !m.tap, gist: m.gist, typed: m.question, unknown: m.unknown, version: m.tap?.version ?? asked?.version, bank: m.tap?.bank ?? asked?.bank }; });
 }
+// The chunks with the questions this player was asked (their bank pick at their version), for Case Notes and the Refresher.
+export const askedChunks = (chunks: RaceChunk[], results: ChunkResult[]) => chunks.map((c, i) => withAsked(c, { bank: results[i]?.bank, version: results[i]?.version }));
 // The phone's after-race state: Refresher items (no answers), what's been tried, Case Notes and the award.
 // The game's verdict context, and this player's Name the Liar answer.
 export function liveVerdict(world: WorldPack, race: LiveRaceRound): Verdict | null {
@@ -25,7 +29,7 @@ export function liveVerdict(world: WorldPack, race: LiveRaceRound): Verdict | nu
 }
 const named = (responses: LiveResponse[], raceIndex: number, playerId: string): LiarAnswer | null => { const l = playerLiar(responses, raceIndex, playerId); return l ? { liar: l.liar, line: l.line } : null; };
 export function liveAfter(world: WorldPack, passages: SourcePassage[], race: LiveRaceRound, responses: LiveResponse[], raceIndex: number, playerId: string) {
-  const chunks = liveRaceChunks(world, passages, race), results = liveResults(chunks, responses, raceIndex, playerId), v = liveVerdict(world, race);
+  const all = liveRaceChunks(world, passages, race), results = liveResults(all, responses, raceIndex, playerId), chunks = askedChunks(all, results), v = liveVerdict(world, race);
   const mine = named(responses, raceIndex, playerId), solved = !!v && !!playerLiar(responses, raceIndex, playerId)?.solved;
   const items = refresherItems(chunks, results, !!v && !solved), callAll = joinedPassages(chunks);
   const lie = v ? { name: witnessName(world, v.interview.witnesses[v.liar].character), lieText: v.interview.witnesses[v.liar].lie.text, lines: v.interview.witnesses[v.liar].lie.lines } : null;
@@ -43,7 +47,7 @@ export function liveAfter(world: WorldPack, passages: SourcePassage[], race: Liv
 }
 // A Refresher answer: one try per item, checked here.
 export function refreshAnswer(world: WorldPack, passages: SourcePassage[], race: LiveRaceRound, responses: LiveResponse[], raceIndex: number, playerId: string, payload: Record<string, unknown>) {
-  const v = liveVerdict(world, race), chunks = liveRaceChunks(world, passages, race), items = refresherItems(chunks, liveResults(chunks, responses, raceIndex, playerId), !!v && !playerLiar(responses, raceIndex, playerId)?.solved);
+  const v = liveVerdict(world, race), all = liveRaceChunks(world, passages, race), results = liveResults(all, responses, raceIndex, playerId), chunks = askedChunks(all, results), items = refresherItems(chunks, results, !!v && !playerLiar(responses, raceIndex, playerId)?.solved);
   const k = Number(payload.k); if (!Number.isInteger(k) || k < 0 || k >= items.length) return "That isn't one of your Refresher questions.";
   if (rows(responses, raceIndex, "race_refresh").some((r) => r.playerId === playerId && Number(r.payload.k) === k)) return "You've already tried this one.";
   const a = (payload.answer ?? {}) as Answer, it = items[k];
@@ -63,7 +67,7 @@ export function bonusSquad(world: WorldPack, passages: SourcePassage[], race: Li
   const chunks = liveRaceChunks(world, passages, race), members = bonusMembers(players, squad.id), v = liveVerdict(world, race);
   const results: MemberResults[] = members.map((m) => ({ id: m.id, name: m.nickname, results: liveResults(chunks, responses, raceIndex, m.id), named: named(responses, raceIndex, m.id) }));
   const flagged = flaggedQuestions(chunks, results, v), picks = bonusPicks(responses, bonusIndex, squad.id);
-  const notesOf = new Map(results.map((m) => [m.id, caseNotes(chunks, m.results)]));
+  const notesOf = new Map(results.map((m) => [m.id, caseNotes(askedChunks(chunks, m.results), m.results)]));
   return {
     squadId: squad.id, name: squad.name, roles: rolesFor(members), members: members.map((m) => ({ id: m.id, nickname: m.nickname })),
     // Name the Liar opens the round: who each member named, and the line they used.

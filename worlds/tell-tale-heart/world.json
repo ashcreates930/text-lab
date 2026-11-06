@@ -3979,7 +3979,10 @@
   ],
   "front_matter": [],
   "expedition_rules": {
-    "max_sentences": 10
+    "max_sentences": 10,
+    "arc_pending": [
+      "the-vulture-eye"
+    ]
   },
   "draft_expeditions": [
     {

@@ -6,6 +6,7 @@ import { readFileSync } from "node:fs";
 import { WorldPackSchema } from "../lib/world-schema.ts";
 import { parseSourcePassages } from "../lib/source-passages.ts";
 import { GIST_SECONDS, POINTS, SCREEN_MS, TYPE_INFO, chunkTokens, expeditionChunks, gistPoints, isDiscovery, keywordParts, limitMs, phraseRange, proofLineIndexes, proofShown, scoreAnswer, screenMs, sentenceProves, shuffledOrder, timeScale } from "../lib/expedition.ts";
+import { bankOf, formatOf } from "../lib/formats.ts";
 import { balanceProblems, expeditionCoverage, expeditionProblems, distractorProblems } from "../lib/expedition-check.ts";
 import { BENCHMARK_FAMILIES, benchmark } from "../lib/best-standards.ts";
 import { contentNotes } from "../lib/content-notes.ts";
@@ -14,7 +15,10 @@ const src = (f: string) => readFileSync(f, "utf8");
 const sh = WorldPackSchema.parse(JSON.parse(src("worlds/sleepy-hollow/world.json")));
 const shp = parseSourcePassages(src("public/worlds/sleepy-hollow/source.md"));
 const exp = sh.expeditions![0], chunks = expeditionChunks(sh, shp, exp.id);
-const byType = (t: string) => { const k = exp.chunks.findIndex((c) => c.question.type === t); return { c: chunks[k], q: exp.chunks[k].question, tokens: chunkTokens(chunks[k].lines) }; };
+// A question of a type (and format) from Expeditions 1 and 2, main or bank (the rebuilt expeditions mix formats).
+const e2 = sh.expeditions![1], chunks2 = expeditionChunks(sh, shp, e2.id);
+const everyQ = [...exp.chunks.flatMap((c, k) => bankOf(c).map((q) => ({ c: chunks[k], q }))), ...e2.chunks.flatMap((c, k) => bankOf(c).map((q) => ({ c: chunks2[k], q })))];
+const byType = (t: string, f?: string) => { const x = everyQ.find((y) => y.q.type === t && (f ? formatOf(y.q) === f : formatOf(y.q) !== "dnd" && formatOf(y.q) !== "multi" && formatOf(y.q) !== "written"))!; return { c: x.c, q: x.q, tokens: chunkTokens(x.c.lines) }; };
 const best = (o?: { best?: boolean }[]) => (o ?? []).findIndex((x) => x.best), wrong = (o?: { best?: boolean }[]) => (o ?? []).findIndex((x) => !x.best);
 // Text evidence is a whole sentence: the accepted sentence, and one that isn't.
 type Q = (typeof exp.chunks)[number]["question"];
@@ -61,8 +65,9 @@ test("every expedition mixes at least 5 question types and one Theme Thread; wit
   const types = exp.chunks.map((c) => c.question.type);
   assert.ok(new Set(types).size >= 5); assert.equal(types.filter((t) => t === "theme_thread").length, 1);
   assert.ok(exp.interview); assert.ok(!types.includes("make_call"));
-  // Expedition 1 uses every chunk type (Gist Check runs on every chunk; its finale is Name the Liar).
-  for (const t of Object.keys(TYPE_INFO)) if (t !== "gist" && t !== "make_call") assert.ok(types.includes(t as never), t);
+  // The story uses every question type (the Gist check sits on chunks of its own; the finale is Name the Liar).
+  const all = sh.expeditions!.flatMap((e) => e.chunks.flatMap((c) => bankOf(c).map((q) => q.type)));
+  for (const t of Object.keys(TYPE_INFO)) if (t !== "gist" && t !== "make_call") assert.ok(all.includes(t as never), t);
   // Without an Interview, Make the Call is still the last chunk, once.
   const noIv = structuredClone(sh); delete noIv.expeditions![0].interview;
   assert.match(expeditionProblems(noIv, shp).join(" | "), /Make the Call is the last chunk, once/);

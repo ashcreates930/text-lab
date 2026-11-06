@@ -36,7 +36,7 @@ export const SPEC: MapSpec = {
   expeditions: {
     "into-the-hollow": { name: "Tarry Town and the glen", finale: "glen", twist: 7, boss: 9, secrets: [4],
       chunks: ["tarry-town", "glen", "glen", "glen", "glen", "glen", "church", "church", "glen", "glen"] },
-    "the-schoolmaster": { name: "The schoolhouse", finale: "schoolhouse", twist: 9, boss: 10, secrets: [3],
+    "the-schoolmaster": { name: "The schoolhouse", finale: "schoolhouse", twist: 5, boss: 9, secrets: [3],
       chunks: ["schoolhouse", "schoolhouse", "schoolhouse", "schoolhouse", "schoolhouse", "schoolhouse", "farmhouses", "farmhouses", "farmhouses", "church"] },
     "tales-by-the-fire": { name: "Fireside tales", finale: "fireside", twist: 10, boss: 8, secrets: [5],
       chunks: ["farmhouses", "farmhouses", "farmhouses", "farmhouses", "fireside", "brook", "brook", "fireside", "fireside", "brook"] },

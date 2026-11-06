@@ -17,18 +17,29 @@ const ytExchange=z.object({say:z.string().min(1),accept:z.array(ytLine),weigh:z.
 // (segments: paragraph and 0-based sentence range, inclusive) with its Gist check, one hidden discovery and one
 // question. Proof lines are copied exactly from the chunk's lines; proof words are exact text inside them. Standards are
 // B.E.S.T. benchmark families verified in lib/best-standards.ts. reviewed: the question's shared words were checked.
-export const QUESTION_TYPES=["word_detective","shades","between_lines","whose_eyes","figure_it_out","character_clue","theme_thread","gist","find_it","catch_lie","make_call"] as const;
+export const QUESTION_TYPES=["word_detective","shades","between_lines","whose_eyes","figure_it_out","character_clue","theme_thread","gist","find_it","catch_lie","make_call","story_structure","weigh_evidence"] as const;
+// How a question is answered (lib/formats.ts): two-part evidence (an answer, then the sentence that proves it), multiple
+// choice, choose two or more, tap the sentence, a one-sentence written response (judged on the rubric), drag and drop,
+// or Make the Call. Without one, the type decides.
+export const QUESTION_FORMATS=["two_part","mc","multi","tap","written","dnd","call"] as const;
+export const DND_KINDS=["order_events","sort_evidence","word_feeling","match_character","cause_effect","fact_or_claim","build_case","story_map"] as const;
 export const BENCHMARK_FAMILY_IDS=["R.1.1","R.1.2","R.1.3","R.3.1","R.3.2","V.1.3","K12.EE.1.1","K12.EE.3.1","K12.EE.4.1"] as const;
 const expChoice=z.object({text:z.string().min(1),best:z.boolean().optional()});
-const expQuestionBase=z.object({type:z.enum(QUESTION_TYPES),prompt:z.string().min(1),keywords:z.array(z.string().min(1)).default([]),focus:z.string().min(1).optional(),
- choices:z.array(expChoice).length(3).optional(),choices2:z.object({prompt:z.string().min(1),options:z.array(expChoice).length(3)}).optional(),
+// dnd: items to place in slots (3 to 5 items; slot null: belongs nowhere and stays out); line: the sentence that backs
+// an item, shown when it slides to its right place. written: the ideas a good answer holds (for the rule check when the
+// judge can't run) and a model answer shown after. pick: how many to choose in a choose-two question.
+const dnd=z.object({kind:z.enum(DND_KINDS),slots:z.array(z.object({id:z.string().min(1),label:z.string().min(1)})).min(2).max(5),items:z.array(z.object({id:z.string().min(1),text:z.string().min(1),slot:z.string().nullable(),line:z.string().min(1).optional()})).min(3).max(5)});
+const expQuestionBase=z.object({type:z.enum(QUESTION_TYPES),format:z.enum(QUESTION_FORMATS).optional(),pick:z.number().int().min(2).max(4).optional(),dnd:dnd.optional(),written:z.object({key_ideas:z.array(z.array(z.string().min(1)).min(1)).min(1),model:z.string().min(1)}).optional(),prompt:z.string().min(1),keywords:z.array(z.string().min(1)).default([]),focus:z.string().min(1).optional(),
+ choices:z.array(expChoice).min(3).max(5).optional(),choices2:z.object({prompt:z.string().min(1),options:z.array(expChoice).length(3)}).optional(),
  proof:z.object({lines:z.array(z.string().min(1)).optional(),words:z.array(z.string().min(1)).optional()}).optional(),
  testimony:z.object({speaker:z.string(),text:z.string().min(1)}).optional(),
  theories:z.array(z.object({id:z.string(),name:z.string().min(1),lines:z.array(z.string().min(1)).min(2)})).length(3).optional(),
  hint:z.string().min(1),why:z.string().min(1),standards:z.array(z.enum(BENCHMARK_FAMILY_IDS)).min(1),reviewed:z.boolean().optional()});
 // Adaptive challenge (lib/pacing.ts): an easier and a harder version of the question, on the same chunk.
 const expQuestion=expQuestionBase.extend({versions:z.object({easier:expQuestionBase.optional(),harder:expQuestionBase.optional()}).optional()});
-const expChunk=z.object({id:z.string(),segments:z.array(z.object({p:z.string().regex(/^p\d{3}$/),from:z.number().int().min(0),to:z.number().int().min(0)})).min(1),
+// bank: other questions for the chunk (same skill, different wording and target); each student gets one of them
+// (lib/formats.ts), so replays and neighbours see different questions.
+const expChunk=z.object({id:z.string(),bank:z.array(expQuestion).max(2).optional(),segments:z.array(z.object({p:z.string().regex(/^p\d{3}$/),from:z.number().int().min(0),to:z.number().int().min(0)})).min(1),
  gist:z.object({options:z.array(expChoice).length(3)}),discovery:z.object({phrase:z.string().min(1),kind:z.enum(["figurative","vocabulary"]),note:z.string().min(1)}),question:expQuestion});
 // The Interview (before the race): three witnesses, each with two question cards, one true and one false statement in
 // character (each with the exact lines in the expedition that confirm or disprove it), an optional gesture, and what

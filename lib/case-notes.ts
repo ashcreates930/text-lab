@@ -4,13 +4,14 @@
 import { jsPDF } from "jspdf";
 import type { ExpQuestion } from "./world-schema.ts";
 import { TYPE_INFO, chunkTokens, norm, proofShown, proofTokens, sentenceProves, type Answer, type RaceChunk } from "./expedition.ts";
-import { questionAt, type Version } from "./pacing.ts";
+import { dndResult, formatOf, gistAt, multiRight } from "./formats.ts";
+import type { Version } from "./formats.ts";
 import { liarCheck, saidLine, witnessName, type InterviewNote, type LiarAnswer } from "./interview.ts";
 import type { Interview, WorldPack } from "./world-schema.ts";
 
 // One chunk's result, from the solo race or from a live game's rows.
 // version: the question version this student saw (adaptive challenge, lib/pacing.ts); standard when absent.
-export type ChunkResult = { index: number; answer: Answer | null; correct: boolean; late: boolean; gist: number | null; typed: string | null; unknown: string[]; version?: Version };
+export type ChunkResult = { index: number; answer: Answer | null; correct: boolean; late: boolean; gist: number | null; typed: string | null; unknown: string[]; version?: Version; bank?: number };
 const bestOf = (o?: { best?: boolean }[]) => (o ?? []).findIndex((x) => !!x.best);
 export const gistRight = (chunk: RaceChunk, gist: number | null) => gist !== null && !!chunk.chunk.gist.options[gist]?.best;
 
@@ -22,24 +23,30 @@ export type RefresherItem = { index: number; kind: "question" | "gist" | "liar" 
 export function refresherItems(chunks: RaceChunk[], results: ChunkResult[], liarMissed = false): RefresherItem[] {
   const liar = liarMissed ? [{ index: -1, kind: "liar" as const }] : [];
   const q = results.filter((r) => !r.correct).map((r) => ({ index: r.index, kind: "question" as const }));
-  const g = results.filter((r) => !gistRight(chunks[r.index], r.gist)).map((r) => ({ index: r.index, kind: "gist" as const }));
+  // Only the chunks that have a Gist check (about every third: lib/formats.ts gistAt).
+  const g = results.filter((r) => gistAt(r.index) && !gistRight(chunks[r.index], r.gist)).map((r) => ({ index: r.index, kind: "gist" as const }));
   return [...liar, ...q, ...g].slice(0, REFRESHER_MAX);
 }
 // A Refresher answer: untimed, with a hint; the student taps the proof. Stars and a badge, never leaderboard points.
-export type RefresherAnswer = { choice?: number | null; choice2?: number | null; lines?: string[]; words?: number[] };
+export type RefresherAnswer = { choice?: number | null; choice2?: number | null; lines?: string[]; words?: number[]; picks?: number[]; placed?: Record<string, string | null> };
 export function refresherCorrect(item: RefresherItem, chunk: RaceChunk | undefined, a: RefresherAnswer, callLines: string[] = [], lieLines: string[] = []) {
   if (item.kind === "liar") return (a.lines ?? []).length === 1 && lieLines.some((l) => norm(l) === norm(a.lines![0]));
   if (!chunk) return false;
   if (item.kind === "gist") return a.choice === bestOf(chunk.chunk.gist.options);
-  const q = chunk.chunk.question;
+  const q = chunk.chunk.question, f = formatOf(q);
+  // Drag and drop and choose two are done again, untimed; only a fully right answer fixes them.
+  if (f === "dnd") return dndResult(q, a.placed).all;
+  if (f === "multi") return multiRight(q, a.picks);
   if (q.type === "figure_it_out") return a.choice2 === bestOf(q.choices2?.options);
   if (q.type === "make_call") { const got = [...new Set((a.lines ?? []).map(norm))]; return got.length === 2 && (q.theories ?? []).some((t) => got.every((g) => t.lines.some((l) => norm(l) === g))) && got.every((g) => callLines.length === 0 || callLines.some((l) => norm(l) === g)); }
   return sentenceProves(q, chunkTokens(chunk.lines), a.lines);
 }
 // What the Refresher asks the student to do for an item.
-export function refresherTask(item: RefresherItem, q: ExpQuestion | undefined): "gist" | "meaning" | "line" | "pin2" {
+export function refresherTask(item: RefresherItem, q: ExpQuestion | undefined): "gist" | "meaning" | "line" | "pin2" | "dnd" | "multi" {
   if (item.kind === "gist") return "gist";
   if (item.kind === "liar" || !q) return "line";
+  if (formatOf(q) === "dnd") return "dnd";
+  if (formatOf(q) === "multi") return "multi";
   if (q.type === "figure_it_out") return "meaning";
   if (q.type === "make_call") return "pin2";
   return "line";
@@ -56,7 +63,7 @@ export function refresherAward(items: RefresherItem[], fixed: boolean[]) {
 export type CaseNote = {
   chunk: number; type: string; question: string; answer: string; proof: string; rightFirstTry: boolean; fixed: boolean | null;
   gistPick: string | null; gistRight: boolean; typedQuestion: string | null; unknownWords: string[]; correctProof: string; standards: string[]; note: string;
-  version?: Version;
+  version?: Version; bank?: number;
 };
 // The student's answer and proof, in words.
 export function answerText(q: ExpQuestion, a: Answer | null, chunk: RaceChunk) {
@@ -66,25 +73,31 @@ export function answerText(q: ExpQuestion, a: Answer | null, chunk: RaceChunk) {
   if (a.choice != null && q.choices?.[a.choice]) parts.push(q.choices[a.choice].text);
   if (a.choice2 != null && q.choices2?.options[a.choice2]) parts.push(q.choices2.options[a.choice2].text);
   if (a.theory) parts.push(q.theories?.find((t) => t.id === a.theory)?.name ?? a.theory);
+  if (a.picks?.length) parts.push(a.picks.map((i) => q.choices?.[i]?.text).filter(Boolean).join(" and "));
+  if (a.text) parts.push(`"${a.text.replace(/\s+/g, " ").trim()}"${a.judged ? ` (${a.judged})` : ""}`);
+  if (q.dnd && a.placed) { const r = dndResult(q, a.placed); parts.push(`${r.right.length} of ${r.total} pieces in place: ${q.dnd.items.map((it) => `${it.text} in ${q.dnd!.slots.find((x) => x.id === a.placed![it.id])?.label ?? "the tray"}`).join("; ")}`); }
   void tokens;
   const proof = (a.lines ?? []).map((l) => `"${l.replace(/\s+/g, " ")}"`).join(" ");
   return { answer: parts.join(" · ") || (proof ? "Tapped a line" : "No answer"), proof };
 }
 export function correctProofText(q: ExpQuestion, chunk: RaceChunk) {
   const tokens = chunkTokens(chunk.lines), s = proofShown(q, tokens);
+  if (q.dnd) return q.dnd.items.map((it) => `${it.text}: ${q.dnd!.slots.find((x) => x.id === it.slot)?.label ?? "belongs nowhere"}`).join("; ");
+  if (formatOf(q) === "multi") return (q.choices ?? []).filter((c) => c.best).map((c) => c.text).join(" and ");
+  if (q.written && !s.lines.length) return q.written.model;
   if (q.type === "figure_it_out") return q.choices2?.options.find((o) => o.best)?.text ?? "";
   return s.lines.map((l) => `"${l.replace(/\s+/g, " ")}"`).join(" ");
 }
 // One entry per chunk, built during play, with blank space for the student's own notes.
 export function caseNotes(chunks: RaceChunk[], results: ChunkResult[], refresher: { items: RefresherItem[]; fixed: boolean[] } = { items: [], fixed: [] }, notes: Record<number, string> = {}): CaseNote[] {
   return chunks.map((c) => {
-    // The question this student was asked: their version of it.
-    const r = results.find((x) => x.index === c.index), { question: q, version } = questionAt(c.chunk.question, r?.version ?? "standard"), t = answerText(q, r?.answer ?? null, c);
+    // chunks carry the question this student was asked (their bank pick at their version: lib/formats.ts withAsked).
+    const r = results.find((x) => x.index === c.index), q = c.chunk.question, version = r?.version, t = answerText(q, r?.answer ?? null, c);
     const k = refresher.items.findIndex((it) => it.index === c.index && it.kind === "question");
     return {
       chunk: c.index + 1, type: TYPE_INFO[q.type].name, question: q.prompt, answer: t.answer, proof: t.proof, rightFirstTry: !!r?.correct,
       fixed: k >= 0 ? !!refresher.fixed[k] : null, gistPick: r?.gist != null ? c.chunk.gist.options[r.gist]?.text ?? null : null, gistRight: gistRight(c, r?.gist ?? null),
-      typedQuestion: r?.typed ?? null, unknownWords: r?.unknown ?? [], correctProof: correctProofText(q, c), standards: q.standards, note: notes[c.index] ?? "", version,
+      typedQuestion: r?.typed ?? null, unknownWords: r?.unknown ?? [], correctProof: correctProofText(q, c), standards: q.standards, note: notes[c.index] ?? "", version, bank: r?.bank,
     };
   });
 }
@@ -189,18 +202,22 @@ export function squadCaseFilePdf(story: string, expedition: string, file: SquadC
 // ---------- Refresher screens ----------
 // One Refresher item as the screen needs it (the answers stay with whoever checks). Name the Liar shows the liar and
 // the lie; the student finds the line anywhere in the expedition.
-export type RefresherViewData = { kind: RefresherItem["kind"]; chunk: number; task: ReturnType<typeof refresherTask>; typeName: string; prompt: string; hint: string; chunkView: { lines: RaceChunk["lines"]; discovery: RaceChunk["chunk"]["discovery"] }; passages: { id: string; text: string }[]; options: string[] | null; callPassages: { id: string; text: string }[] | null };
+export type RefresherViewData = { kind: RefresherItem["kind"]; chunk: number; task: ReturnType<typeof refresherTask>; typeName: string; prompt: string; hint: string; chunkView: { lines: RaceChunk["lines"]; discovery: RaceChunk["chunk"]["discovery"] }; passages: { id: string; text: string }[]; options: string[] | null; callPassages: { id: string; text: string }[] | null;
+  pick?: number | null; dnd?: { kind: NonNullable<ExpQuestion["dnd"]>["kind"]; slots: { id: string; label: string }[]; items: { id: string; text: string }[] } | null };
 export function refresherView(it: RefresherItem, chunks: RaceChunk[], callAll: { id: string; text: string }[], liar?: { name: string; lieText: string } | null): RefresherViewData {
   if (it.kind === "liar") return { kind: "liar", chunk: 0, task: "line", typeName: "Name the Liar", prompt: `${liar?.name ?? "The liar"} said: "${liar?.lieText ?? ""}" Which line proves it false?`,
     hint: "The liar is named. Look back through the whole expedition for the line that says otherwise.", chunkView: { lines: [], discovery: chunks[0].chunk.discovery }, passages: callAll, options: null, callPassages: callAll };
   const c = chunks[it.index], q = c.chunk.question, task = refresherTask(it, q);
   return { kind: it.kind, chunk: it.index + 1, task, typeName: TYPE_INFO[q.type].name, prompt: task === "meaning" ? `${q.choices2!.prompt} ${q.prompt}` : q.prompt,
     hint: it.kind === "gist" ? "Which choice tells the whole chunk, not just one detail?" : q.hint, chunkView: { lines: c.lines, discovery: c.chunk.discovery }, passages: c.passages,
-    options: task === "gist" ? c.chunk.gist.options.map((o) => o.text) : task === "meaning" ? q.choices2!.options.map((o) => o.text) : null, callPassages: task === "pin2" ? callAll : null };
+    options: task === "gist" ? c.chunk.gist.options.map((o) => o.text) : task === "meaning" ? q.choices2!.options.map((o) => o.text) : task === "multi" ? (q.choices ?? []).map((o) => o.text) : null, callPassages: task === "pin2" ? callAll : null,
+    pick: task === "multi" ? q.pick ?? (q.choices ?? []).filter((o) => o.best).length : null, dnd: task === "dnd" && q.dnd ? { kind: q.dnd.kind, slots: q.dnd.slots, items: q.dnd.items.map((i) => ({ id: i.id, text: i.text })) } : null };
 }
 // What lights up once an item is tried: the proof words or lines (for Name the Liar, the line that disproves the lie).
 export function refresherShown(it: RefresherItem, chunks: RaceChunk[], fixed: boolean, lieLines: string[] = []) {
   if (it.kind === "liar") return { fixed, shown: [] as number[], lines: lieLines.slice(0, 1) };
   const c = chunks[it.index], q = c.chunk.question, tokens = chunkTokens(c.lines);
+  // Drag and drop and choose two show the right answer in words.
+  if (it.kind === "question" && (formatOf(q) === "dnd" || formatOf(q) === "multi")) return { fixed, shown: [] as number[], lines: [correctProofText(q, c)] };
   return { fixed, shown: it.kind === "gist" ? [] : proofTokens(q, tokens, c.lines), lines: q.type === "make_call" ? proofShown(q, tokens).lines : [] };
 }

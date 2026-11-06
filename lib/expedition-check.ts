@@ -2,7 +2,8 @@
 import type { SourcePassage } from "./source-passages.ts";
 import { evidenceSentences } from "./lies.ts";
 import { sharedRoots } from "./fair-play.ts";
-import type { Expedition, WorldPack } from "./world-schema.ts";
+import type { Expedition, ExpQuestion, WorldPack } from "./world-schema.ts";
+import { DND_TYPE, bankOf, formatOf } from "./formats.ts";
 import { MIN_TYPES, TYPE_INFO, chunkTokens, expeditionChunks, norm, phraseRange, proofLineIndexes } from "./expedition.ts";
 
 export const CHUNK_WORDS = { min: 50, max: 150, target: [60, 120] as const }, MAX_SENTENCES = 5;
@@ -13,14 +14,41 @@ const words = (s: string) => s.split(/\s+/).filter(Boolean).length;
 
 // Wrong options must be plausible: three different options, each a real phrase (3+ words), and the best one is not
 // given away by being far longer or shorter than the others.
-export function distractorProblems(at: string, options: { text: string; best?: boolean }[]) {
+export function distractorProblems(at: string, options: { text: string; best?: boolean }[], bestCount = 1) {
   const out: string[] = [];
-  if (options.filter((o) => o.best).length !== 1) out.push(`${at}: exactly one best option`);
+  if (options.filter((o) => o.best).length !== bestCount) out.push(`${at}: exactly ${bestCount === 1 ? "one best option" : `${bestCount} best options`}`);
   if (new Set(options.map((o) => norm(o.text))).size !== options.length) out.push(`${at}: options must all be different`);
   if (options.some((o) => words(o.text) < 3)) out.push(`${at}: every option needs at least 3 words`);
-  const lens = options.map((o) => o.text.length), bestLen = options.find((o) => o.best)?.text.length ?? 0, others = lens.filter((_, i) => !options[i].best);
+  const lens = options.map((o) => o.text.length), bestLen = Math.max(0, ...options.filter((o) => o.best).map((o) => o.text.length)), others = lens.filter((_, i) => !options[i].best);
   // The best option is never noticeably longer than the longest wrong one (at most 15%), nor far shorter than the rest.
   if (others.length && (bestLen > Math.max(...others) * 1.15 || bestLen * 1.6 < Math.min(...others))) out.push(`${at}: the best option stands out by its length`);
+  return out;
+}
+
+// Drag and drop: 3 to 5 pieces, every slot real and used, one piece per slot where the kind needs it, and each backing
+// sentence copied exactly from the chunk.
+export function dndProblems(at: string, q: ExpQuestion, lines: string[]) {
+  const out: string[] = [], d = q.dnd; if (!d) return [`${at}: drag and drop needs its pieces and slots`];
+  const slots = new Set(d.slots.map((x) => x.id));
+  if (d.items.length < 3 || d.items.length > 5) out.push(`${at}: drag and drop uses 3 to 5 pieces`);
+  for (const it of d.items) { if (it.slot !== null && !slots.has(it.slot)) out.push(`${at}: piece ${it.id} goes to an unknown slot ${it.slot}`); if (it.line && !lines.some((l) => l === it.line)) out.push(`${at}: piece ${it.id}'s sentence is not copied exactly from this chunk`); }
+  for (const x of d.slots) if (!d.items.some((it) => it.slot === x.id)) out.push(`${at}: slot ${x.id} has no piece`);
+  if (["order_events", "build_case", "story_map", "cause_effect"].includes(d.kind)) for (const x of d.slots) if (d.items.filter((it) => it.slot === x.id).length > 1) out.push(`${at}: slot ${x.id} holds one piece`);
+  if (DND_TYPE[d.kind] !== q.type) out.push(`${at}: ${d.kind} practises ${DND_TYPE[d.kind]}, not ${q.type}`);
+  if (new Set(d.items.map((it) => it.id)).size !== d.items.length) out.push(`${at}: piece ids repeat`);
+  return out;
+}
+// Variety, for expeditions rebuilt to the phase 3 rules: 2 or 3 questions per chunk, the same type never twice in a row,
+// about 2 drag and drops (never back to back), at least 4 formats, and no repeated question frames (the first four words).
+export function variety(at: string, exp: Expedition) {
+  const out: string[] = [], types = exp.chunks.map((c) => c.question.type), formats = exp.chunks.map((c) => formatOf(c.question));
+  exp.chunks.forEach((c, k) => { if (!(c.bank?.length)) out.push(`${at}: chunk ${k + 1} needs 2 or 3 questions (a bank)`); if (k && types[k] === types[k - 1]) out.push(`${at}: chunks ${k} and ${k + 1} are both ${types[k]}`); });
+  const dnd = formats.map((f, k) => (f === "dnd" ? k : -1)).filter((k) => k >= 0);
+  if (dnd.length < 2 || dnd.length > 3) out.push(`${at}: ${dnd.length} drag and drop questions (about 2)`);
+  if (dnd.some((k, i) => i && k - dnd[i - 1] < 2)) out.push(`${at}: drag and drop questions back to back`);
+  if (new Set(formats).size < 4) out.push(`${at}: ${new Set(formats).size} formats (at least 4)`);
+  const frames = exp.chunks.flatMap((c) => bankOf(c).map((q) => q.prompt.toLowerCase().replace(/[^a-z ]/g, "").split(/\s+/).slice(0, 4).join(" ")));
+  const seen = new Set<string>(); for (const fr of frames) { if (seen.has(fr)) out.push(`${at}: the question frame "${fr}" repeats`); seen.add(fr); }
   return out;
 }
 
@@ -52,6 +80,7 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
     const calls = types.filter((t) => t === "make_call").length;
     if (exp.interview ? calls > 0 : calls !== 1 || types.at(-1) !== "make_call") out.push(exp.interview ? `${world.id}/${exp.id}: Name the Liar is the finale; no Make the Call` : `${world.id}/${exp.id}: Make the Call is the last chunk, once`);
     out.push(...interviewProblems(world, exp, allLines, names));
+    if (!(world.expedition_rules?.arc_pending ?? []).includes(exp.id)) out.push(...variety(`${world.id}/${exp.id}`, exp));
     exp.chunks.forEach((c, k) => {
       const at = `${world.id}/${exp.id}/${c.id}`, rc = chunks[k], tokens = chunkTokens(rc.lines), q = c.question;
       for (const sg of c.segments) {
@@ -68,10 +97,17 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
       // Gist check and the discovery.
       out.push(...distractorProblems(`${at} gist`, c.gist.options));
       if (!phraseRange(tokens, c.discovery.phrase)) out.push(`${at}: discovery "${c.discovery.phrase}" is not in the chunk`);
-      // The question: its parts for its type, exact proof, key words from the prompt.
-      if (CHOICE_TYPES.has(q.type)) { if (!q.choices) out.push(`${at}: ${q.type} needs 3 choices`); else out.push(...distractorProblems(`${at} choices`, q.choices)); }
+      const checkQ = (at: string, q: ExpQuestion) => {
+      // The parts each format needs (lib/formats.ts).
+      const f = formatOf(q);
+      if (f === "two_part" || f === "mc" || f === "multi") { if (!q.choices && q.type !== "find_it" && q.type !== "catch_lie") out.push(`${at}: ${q.type} needs choices`); else if (q.choices) out.push(...distractorProblems(`${at} choices`, q.choices, f === "multi" ? q.pick ?? q.choices.filter((c) => c.best).length : 1)); }
+      if (f === "multi" && (!q.choices || q.choices.length < 4 || q.choices.filter((c) => c.best).length < 2)) out.push(`${at}: choose two needs at least 4 choices and 2 or more right ones`);
+      if (f === "multi" && q.pick && q.pick !== q.choices?.filter((c) => c.best).length) out.push(`${at}: pick must equal the number of right choices`);
+      if (f !== "multi" && q.choices && q.choices.length !== 3 && f !== "dnd") out.push(`${at}: ${f} uses 3 choices`);
+      if (f === "dnd") out.push(...dndProblems(at, q, rc.lines.map((l) => l.text)));
+      if (f === "written") { if (!q.written) out.push(`${at}: a written question needs key ideas and a model answer`); if (!(q.type === "theme_thread" || q.type === "between_lines" || q.type === "character_clue" || q.type === "whose_eyes")) out.push(`${at}: written answers are for the deepest questions (theme, inference, character, point of view)`); }
       if (q.type === "figure_it_out") { if (!q.choices2) out.push(`${at}: Figure It Out needs a second step (its meaning)`); else out.push(...distractorProblems(`${at} meaning`, q.choices2.options)); }
-      if (PROOF_TYPES.has(q.type) && !q.proof?.lines?.length && !q.proof?.words?.length) out.push(`${at}: ${q.type} needs proof lines or words`);
+      if ((f === "two_part" || f === "tap") && PROOF_TYPES.has(q.type) && !q.proof?.lines?.length && !q.proof?.words?.length) out.push(`${at}: ${q.type} needs proof lines or words`);
       for (const l of q.proof?.lines ?? []) if (!rc.lines.some((x) => x.text === l)) out.push(`${at}: proof line "${l.replace(/\s+/g, " ").slice(0, 50)}" is not copied exactly from this chunk`);
       for (const w of q.proof?.words ?? []) { const r = phraseRange(tokens, w); if (!r) out.push(`${at}: proof words "${w}" are not in this chunk`); else if (tokens[r[0]].line !== tokens[r[1]].line) out.push(`${at}: proof words "${w}" cross two sentences`); }
       if (q.type === "catch_lie" && (!q.testimony || !speaking.has(q.testimony.speaker))) out.push(`${at}: Catch the Lie needs a testimony from one of the story's speaking characters`);
@@ -83,15 +119,20 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
         const fr = phraseRange(tokens, q.focus);
         if (!fr) out.push(`${at}: focus "${q.focus}" is not in the chunk`);
         else { const sentences = new Set(proofLineIndexes(q, tokens)); if (rc.lines.length > 1 && (sentences.has(tokens[fr[0]].line) || sentences.has(tokens[fr[1]].line))) out.push(`${at}: focus "${q.focus}" sits in a proof sentence; it would point to the answer`); }
-      } else if (FOCUS_TYPES.has(q.type)) out.push(`${at}: ${q.type} is about a word or phrase; name it as focus`);
+      } else if (FOCUS_TYPES.has(q.type) && f !== "dnd") out.push(`${at}: ${q.type} is about a word or phrase; name it as focus`);
       for (const kw of q.keywords) if (!q.prompt.toLowerCase().includes(kw.toLowerCase())) out.push(`${at}: key word "${kw}" is not in the question`);
       if (!q.standards.some((s) => TYPE_INFO[q.type].standards.includes(s))) out.push(`${at}: standards must include one of ${TYPE_INFO[q.type].standards.join(", ")}`);
       if (/,\s+and\s+(what|why|how|where|who|whose|when|which)\b/i.test(q.prompt) || (q.prompt.match(/\?/g) ?? []).length > 1) out.push(`${at}: ask one thing per question`);
       // No question shares a key word with its answer, unless a reviewer checked it.
       const answerLines = [...(q.proof?.lines ?? []), ...(q.proof?.words ?? []).flatMap((w) => rc.lines.filter((l) => norm(l.text).includes(norm(w))).map((l) => l.text))];
       if (!q.reviewed && answerLines.length) { const shared = sharedRoots(q.prompt, answerLines, names); if (shared.length) out.push(`${at}: the question shares key words with its answer (${shared.join(", ")}); paraphrase it or mark it reviewed`); }
-      const texts = [q.prompt, q.hint, q.why, c.discovery.note, ...c.gist.options.map((o) => o.text), ...(q.choices ?? []).map((o) => o.text), ...(q.choices2?.options ?? []).map((o) => o.text), q.testimony?.text ?? "", ...(q.theories ?? []).map((t) => t.name)];
+      const texts = [q.prompt, q.hint, q.why, c.discovery.note, ...(q.dnd?.items.map((i) => i.text) ?? []), ...(q.dnd?.slots.map((x) => x.label) ?? []), q.written?.model ?? "", ...c.gist.options.map((o) => o.text), ...(q.choices ?? []).map((o) => o.text), ...(q.choices2?.options ?? []).map((o) => o.text), q.testimony?.text ?? "", ...(q.theories ?? []).map((t) => t.name)];
       if (texts.some((t) => dash.test(t))) out.push(`${at}: no em dashes`);
+      };
+      // The main question, the chunk's bank (the same skill, another wording), and any written-out versions.
+      checkQ(at, c.question);
+      (c.bank ?? []).forEach((bq, i) => { checkQ(`${at} bank ${i + 1}`, bq); if (bq.type !== c.question.type) out.push(`${at} bank ${i + 1}: the same skill as the chunk's question (${c.question.type})`); });
+      for (const x of [c.question, ...(c.bank ?? [])]) for (const v of ["easier", "harder"] as const) if (x.versions?.[v]) checkQ(`${at} ${v}`, x.versions[v]!);
     });
   }
   return out;

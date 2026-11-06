@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getLiveStore } from "@/lib/live/store";
-import { broadcast, loadState, playerAct, playerFromToken, playerView, type PlayerAction } from "@/lib/live/server";
+import { broadcast, judgeLiveWritten, loadState, playerAct, playerFromToken, playerView, type PlayerAction } from "@/lib/live/server";
 import { consumeDemoAi } from "@/lib/demo-usage";
 import { getClassroomStore } from "@/lib/classroom/store";
 import type { TimeSetting } from "@/lib/story-mode";
@@ -25,7 +25,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (hostTime) timeSetting = hostTime;
   else if ((act.kind === "story" || act.kind === "race_tap") && st.session.classId && me?.studentId) timeSetting = ((await getClassroomStore()?.getStudentTimes(st.session.classId).catch(() => ({}))) as Record<string, TimeSetting> | undefined)?.[me.studentId] ?? "1";
   // Judge calls in live mode are counted per session (one shared cap for the whole room), not per phone.
-  const error = await playerAct(store, st, playerId, { kind: act.kind, payload: act.payload ?? {} }, { judgeAllowed: async () => !(await consumeDemoAi(request, "live_judge", id)), timeSetting });
+  const judgeAllowed = async () => !(await consumeDemoAi(request, "live_judge", id));
+  // A written answer is judged here, on the server; whatever a phone sent as a verdict is dropped.
+  const payload = act.kind === "race_tap" ? await judgeLiveWritten(st, playerId, act.payload ?? {}, judgeAllowed) : act.payload ?? {};
+  const error = await playerAct(store, st, playerId, { kind: act.kind, payload }, { judgeAllowed, timeSetting });
   if (error) return NextResponse.json({ error }, { status: 409 });
   await broadcast(id);
   return NextResponse.json(playerView((await loadState(store, id))!, playerId));
