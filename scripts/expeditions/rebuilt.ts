@@ -10,12 +10,15 @@
 // choose two, build the case (drag and drop), find it, character clue (boss), theme in writing.
 import type { Q } from "../build-expeditions.ts";
 
-type Lightning = { sprint?: string; id?: string; chunk: number; after: number; question?: string; answer?: [string, number][] };
-export type Rebuilt = { chunks: { q?: Q; bank?: (Q | "original")[] }[]; lightning?: Lightning[] };
+type Lightning = { sprint?: string; id?: string; chunk: number; after: number; question?: string; answer?: [string, number][] };export type Rebuilt = { chunks: { q?: Q; bank?: (Q | "original")[] }[]; lightning?: Lightning[] };
 
+// A discussion note shown with every question that brings up Irving's description of the "old Indian chief".
+const POWWOW_NOTE = "Irving wrote this in 1820. He calls a Native American leader a \"wizard\" who held \"powwows,\" words that make Native people seem magical and mysterious instead of real people with their own beliefs and history. Many white writers of his time described Native people this way. Your teacher may talk with your class about it.";
+
+// Lightning beats recall a detail from earlier in the expedition, never the proof of the chunk just before the beat.
 export const REBUILT: Record<string, Rebuilt> = {
   "into-the-hollow": {
-    lightning: [{ sprint: "walk", chunk: 2, after: 4 }, { sprint: "wounded", chunk: 7, after: 8 }],
+    lightning: [{ sprint: "walk", chunk: 2, after: 4 }, { id: "gun-roar", chunk: 3, after: 8, question: "What startled the young hunter in the quiet grove?", answer: [["p004", 1]] }],
     chunks: [
       // 1 · Whose Eyes? (warm-up): the original, and who first gave the explanation.
       { bank: [{ type: "whose_eyes", prompt: "Who first came up with the explanation the narrator passes along?", keywords: ["passes along"],
@@ -27,11 +30,11 @@ export const REBUILT: Record<string, Rebuilt> = {
       // 3 · Shades of Meaning: the original (stripling), and retreat.
       { bank: [{ type: "shades", prompt: "Why might he call the valley a retreat rather than just a spot?", keywords: ["retreat"], focus: "retreat",
         choices: [["It suggests a quiet hiding place to rest from the world", true], ["It suggests a place where soldiers fall back in battle"], ["It suggests the narrator once lost a fight in the valley"]],
-        lines: [["p004", 1]], hint: "What is the valley like when he wanders into it?", why: "All nature is peculiarly quiet there: a retreat is a peaceful place to get away from the world.", standards: ["V.1.3", "R.3.1"] }] },
+        lines: [["p004", 2]], hint: "Read the sentence where he imagines escaping from the world.", why: "He would steal away from the world and its distractions to dream quietly there: a retreat is a peaceful place to get away.", standards: ["V.1.3", "R.3.1"], reviewed: true }] },
       // 4 · Word Detective: the original (listless), and drowsy.
       { bank: [{ type: "word_detective", prompt: "Which meaning of drowsy fits this land?", keywords: ["drowsy"], focus: "drowsy",
         choices: [["Sleepy and slow, as if ready to doze off", true], ["Wet and gloomy, as if always under rain"], ["Loud and lively, as if never at rest"]],
-        lines: [["p005", 0]], hint: "What is the glen called, and why?", why: "The glen is so restful it is named Sleepy Hollow: drowsy means sleepy.", standards: ["V.1.3", "K12.EE.1.1"] }] },
+        lines: [["p005", 1]], hint: "Find the sentence about the mood that hangs over the land.", why: "A drowsy, dreamy influence hangs over the land and fills the air: drowsy means sleepy.", standards: ["V.1.3", "K12.EE.1.1"], reviewed: true }] },
       // 5 · Weigh the Evidence, drag and drop: fact or claim.
       { q: { type: "weigh_evidence", format: "dnd", prompt: "Sort what the narrator states as certain from what only some people claim.",
           dnd: { kind: "fact_or_claim", slots: [{ id: "text", label: "The text says it is so" }, { id: "claim", label: "Only some people claim it" }],
@@ -39,10 +42,10 @@ export const REBUILT: Record<string, Rebuilt> = {
               { id: "chief", text: "An old chief held his powwows there long ago", slot: "claim", line: ["p005", 2] },
               { id: "power", text: "A witching power still rules the place", slot: "text", line: ["p005", 3] },
               { id: "reverie", text: "The people walk about in a constant daydream", slot: "text", line: ["p005", 3] }] },
-          hint: "Watch for the words \"some say\" and \"certain it is.\"", why: "\"Some say\" and \"others\" mark rumors; \"certain it is\" marks what the narrator states as fact.", standards: ["K12.EE.1.1", "K12.EE.3.1"] },
+          hint: "Watch for the words \"some say\" and \"certain it is.\"", why: "\"Some say\" and \"others\" mark rumors; \"certain it is\" marks what the narrator states as fact.", standards: ["K12.EE.1.1", "K12.EE.3.1"], note: POWWOW_NOTE },
         bank: [{ type: "weigh_evidence", prompt: "Which detail does the narrator present as sure, not just gossip?",
           choices: [["Some witching power still holds the place", true], ["A German doctor once cast a spell on it"], ["An old chief held his meetings in the glen"]],
-          lines: [["p005", 3]], hint: "One sentence begins by saying it is certain.", why: "\"Certain it is\": the witching power is stated as fact, while the doctor and the chief are only what some say.", standards: ["K12.EE.1.1", "K12.EE.3.1"] }] },
+          lines: [["p005", 3]], hint: "One sentence begins by saying it is certain.", why: "\"Certain it is\": the witching power is stated as fact, while the doctor and the chief are only what some say.", standards: ["K12.EE.1.1", "K12.EE.3.1"], note: POWWOW_NOTE }] },
       // 6 · Read Between the Lines, choose two.
       { q: { type: "between_lines", format: "multi", pick: 2, prompt: "Which habits show the people here are ready to believe in marvels?", keywords: ["believe in marvels"],
           choices: [["They often see strange sights and hear voices", true], ["They tell many tales of haunted spots", true], ["They laugh at every ghost story they hear"], ["They move away whenever meteors appear"]],
@@ -77,7 +80,7 @@ export const REBUILT: Record<string, Rebuilt> = {
     ],
   },
   "the-schoolmaster": {
-    lightning: [{ sprint: "born", chunk: 1, after: 3 }, { sprint: "meals-bed", chunk: 7, after: 8 }],
+    lightning: [{ sprint: "born", chunk: 1, after: 3 }, { id: "thank-him", chunk: 5, after: 8, question: "What did Ichabod tell a boy after punishing him?", answer: [["p012", 2]] }],
     chunks: [
       // 1 · Find It (warm-up): the original, and his name.
       { bank: [{ type: "find_it", prompt: "Tap the sentence that explains why his last name suits him.", keywords: ["last name"], lines: [["p010", 2]],
@@ -88,20 +91,20 @@ export const REBUILT: Record<string, Rebuilt> = {
         choices2: { prompt: "What does the exaggeration show?", options: [["His arms are far too long for his clothes", true], ["His coat sleeves were sewn a mile long"], ["He likes to stretch to reach high shelves"]] },
         hint: "Could anything really hang a mile out of a sleeve?", why: "A mile is an exaggeration: it shows how long and gangly his arms are.", standards: ["R.3.1"] }] },
       // 3 · Weigh the Evidence, drag and drop: sort the evidence (supports or disproves the claim).
-      { q: { type: "weigh_evidence", format: "dnd", prompt: "Sort each detail: does it support or disprove the claim that the schoolhouse is well protected?",
+      { q: { type: "weigh_evidence", format: "dnd", prompt: "Sort each detail: does it support or disprove the claim that the schoolhouse is hard to break into?",
           dnd: { kind: "sort_evidence", slots: [{ id: "supports", label: "Supports the claim" }, { id: "disproves", label: "Disproves the claim" }],
             items: [{ id: "withe", text: "A twisted branch holds the door shut", slot: "supports", line: ["p011", 1] },
               { id: "stakes", text: "Stakes are set against the window shutters", slot: "supports", line: ["p011", 1] },
               { id: "thief", text: "A thief could get in with perfect ease", slot: "disproves", line: ["p011", 1] },
               { id: "patched", text: "Some windows are patched with paper pages", slot: "disproves", line: ["p011", 0] }] },
-          hint: "Ask of each detail: would it stop someone from getting in?", why: "The twisted branch and the stakes guard the door and shutters, but a thief could still get in easily and some windows are only paper.", standards: ["K12.EE.1.1", "K12.EE.3.1"] },
+          hint: "Ask of each detail: does it make getting in harder, or easier?", why: "The twisted branch and the stakes make the door and shutters harder to open, but a thief could get in with perfect ease, and paper-patched windows would keep no one out.", standards: ["K12.EE.1.1", "K12.EE.3.1"] },
         bank: [{ type: "weigh_evidence", prompt: "Which detail about the building does the narrator only suppose?",
           choices: [["That its lock was copied from an eel trap", true], ["That its windows were patched with paper"], ["That it was a single room made of logs"]],
           lines: [["p011", 1]], hint: "One detail comes with \"most probably.\"", why: "The eelpot idea is \"most probably\" borrowed: a guess, not a fact.", standards: ["K12.EE.1.1", "K12.EE.3.1"] }] },
-      // 4 · Character Clue: the original, and what drifts out of the classroom.
-      { bank: [{ type: "character_clue", prompt: "Judging by what drifts out of the classroom, what kind of teacher is Ichabod?",
-        choices: [["Strict, quick to threaten and to use the switch", true], ["Gentle, letting pupils learn at their own pace"], ["Distracted, ignoring the class to read his books"]],
-        lines: [["p011", 3]], hint: "Listen past the humming lessons.", why: "His voice of menace or command and the sound of the birch show a strict master.", standards: ["R.1.1", "K12.EE.1.1"] }] },
+      // 4 · Character Clue: the original (what he does: strict), and why he thinks strictness is right.
+      { bank: [{ type: "character_clue", prompt: "Ichabod lives by an old saying about punishment. How does he see his own strictness?", keywords: ["old saying"],
+        choices: [["As a duty he owes the children, not as cruelty", true], ["As a secret pleasure he hides from the parents"], ["As a bad habit he means to break soon"]],
+        lines: [["p011", 4]], hint: "Find the old saying, and what kind of man the narrator calls him.", why: "A conscientious man follows his conscience: Ichabod believes the rod is good for children, so punishing feels like his duty.", standards: ["R.1.1", "K12.EE.1.1"] }] },
       // 5 · Catch the Lie (the twist): Brom, and Katrina.
       { q: { type: "catch_lie", prompt: "Brom Bones remembers Ichabod's punishments. Part of what he says is false. Tap the sentence that proves it.",
           testimony: { speaker: "brom-bones", text: "That schoolmaster went easy on the big, tough boys and saved his birch for the little weak ones." },
@@ -116,14 +119,14 @@ export const REBUILT: Record<string, Rebuilt> = {
         bank: [{ type: "between_lines", prompt: "Why would a teacher want to stay friendly with his students here?",
           choices: [["It brought him meals and company in their homes", true], ["The school paid him extra for every friendship"], ["He had no friends his own age in the valley"]],
           lines: [["p013", 1]], hint: "What did those families have that he wanted?", why: "It paid him to keep on good terms with his pupils: their families fed and welcomed him.", standards: ["K12.EE.3.1", "K12.EE.1.1"] }] },
-      // 7 · Weigh the Evidence, drag and drop: build the case (one piece belongs nowhere).
-      { q: { type: "weigh_evidence", format: "dnd", prompt: "Build the case that the schoolmaster could not live on his pay alone.",
+      // 7 · Weigh the Evidence, drag and drop: build the case (the proof is the quotation; one piece belongs nowhere).
+      { q: { type: "weigh_evidence", format: "dnd", prompt: "Build the case that Ichabod depends on the farm families to get by.",
           dnd: { kind: "build_case", slots: [{ id: "claim", label: "Claim" }, { id: "proof", label: "Proof sentence" }, { id: "reason", label: "Reason" }],
-            items: [{ id: "claim", text: "His school pay was not enough to live on", slot: "claim" },
-              { id: "proof", text: "His school earned little and would barely buy his bread", slot: "proof", line: ["p013", 2] },
-              { id: "reason", text: "So he ate and slept at his pupils' farmhouses, a week at a time", slot: "reason", line: ["p013", 3] },
+            items: [{ id: "claim", text: "Ichabod depends on the farm families to get by", slot: "claim" },
+              { id: "proof", text: "\"The revenue arising from his school was small, and would have been scarcely sufficient to furnish him with daily bread\"", slot: "proof", line: ["p013", 2] },
+              { id: "reason", text: "With pay that small, he needs the farmers to give him meals and a bed", slot: "reason", line: ["p013", 2] },
               { id: "logs", text: "The schoolhouse was a single room of logs", slot: null }] },
-          hint: "A case needs a claim, a sentence that proves it, and a reason that connects them.", why: "Small pay is the claim, the line about his revenue proves it, and boarding with farm families is how he got by; the log schoolhouse has nothing to do with it.", standards: ["K12.EE.1.1", "K12.EE.3.1"] },
+          hint: "A case needs a claim, a quotation that proves it, and a reason that connects them.", why: "The claim is that he depends on the farmers; the quotation shows his pay was small; the reason links them, since so little money meant boarding with the families. The log schoolhouse proves nothing about it.", standards: ["K12.EE.1.1", "K12.EE.3.1"] },
         bank: [{ type: "weigh_evidence", prompt: "Which detail best shows that his teaching could not support him?",
           choices: [["It would scarcely buy him his daily bread", true], ["He owned more books than he could carry"], ["He earned shillings for singing lessons"]],
           lines: [["p013", 2]], hint: "Look at what his school revenue could buy.", why: "His revenue was small, scarcely enough for daily bread.", standards: ["K12.EE.1.1", "K12.EE.3.1"] }] },
@@ -134,15 +137,17 @@ export const REBUILT: Record<string, Rebuilt> = {
       { q: { type: "character_clue", prompt: "Away from the classroom, which side of Ichabod comes out with the families?",
           choices: [["Soft and charming, eager to win the mothers over", true], ["Bossy and loud, just as he is with his class"], ["Shy and nervous, hiding away from the parents"]],
           lines: [["p014", 2], ["p014", 3]], hint: "Compare the master in school with the man rocking a cradle.", why: "He drops his lordly ways and turns gentle, petting the children and rocking a cradle to win the mothers' favor.", standards: ["R.1.1", "K12.EE.1.1"] },
-        bank: [{ type: "character_clue", prompt: "The narrator compares him to a lion holding a lamb. What does that picture say about him?", keywords: ["lion holding a lamb"],
+        bank: [{ type: "character_clue", prompt: "The narrator compares Ichabod with a fierce animal gently carrying a young one. What does that picture say about him?", keywords: ["fierce animal"],
           choices: [["A stern man turns tender when he wants favor", true], ["He is fierce and dangerous to small children"], ["He keeps animals on the farms where he stays"]],
-          lines: [["p014", 2]], hint: "What did he lay aside outside school?", why: "Like a lion gently holding a lamb, the stern master turns wonderfully gentle and ingratiating.", standards: ["R.1.1", "K12.EE.1.1"] }] },
-      // 10 · Theme Thread, written; the original as its bank question.
-      { q: { type: "theme_thread", format: "written", prompt: "In a single sentence, explain what Ichabod is proudest of.",
-          written: { key_ideas: [["sing", "psalm", "choir", "voice", "music"], ["vain", "vanity", "proud", "pride", "show", "better", "parson", "admir", "impress", "best", "beat", "outshin"]],
-            model: "Ichabod is proudest of his singing, because he believes he outshines even the parson when he leads the choir on Sundays." },
-          lines: [["p015", 1]], hint: "Look at how he feels standing in front of the church gallery.", why: "Leading the choir is \"a matter of no little vanity\": in his own mind he beats even the parson.", standards: ["R.1.2", "K12.EE.1.1"] },
-        bank: ["original"] },
+          lines: [["p014", 3]], hint: "Find the lion in the sentence about the cradle.", why: "Like a lion gently holding a lamb, the stern master turns wonderfully gentle and ingratiating.", standards: ["R.1.1", "K12.EE.1.1"] }] },
+      // 10 · Theme Thread, written: pride and how people see themselves; a theme question in its bank too.
+      { q: { type: "theme_thread", format: "written", prompt: "In one sentence, explain what Ichabod's pride in leading the choir suggests about how people see themselves.",
+          written: { key_ideas: [["pride", "proud", "vain", "vanity", "conceit", "full of himself", "think highly", "ego", "admir", "show off"], ["see themselves", "see himself", "own mind", "imagin", "believ", "think", "picture", "better than", "greater", "than they", "really", "truly", "others"]],
+            model: "Pride can make people see themselves as greater than they really are, just as Ichabod believes his choir leading outshines even the parson." },
+          lines: [["p015", 1]], hint: "Notice the words \"in his own mind.\"", why: "Leading the choir is \"a matter of no little vanity,\" and only \"in his own mind\" does he beat the parson: pride shapes how he sees himself.", standards: ["R.1.2", "K12.EE.1.1"] },
+        bank: [{ type: "theme_thread", prompt: "What does Ichabod's pride in leading the choir suggest about people in general?", keywords: ["people in general"],
+          choices: [["Pride can make people see themselves as better than they are", true], ["Real talent always earns people the respect it deserves"], ["Music is the best way to bring a whole village together"]],
+          lines: [["p015", 1]], hint: "Whose opinion is it that he beats the parson?", why: "Only \"in his own mind\" does he carry away the palm from the parson: vanity colors how he sees himself.", standards: ["R.1.2", "K12.EE.1.1"] }] },
     ],
   },
 };

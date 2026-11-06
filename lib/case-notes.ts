@@ -202,7 +202,7 @@ export function squadCaseFilePdf(story: string, expedition: string, file: SquadC
 // ---------- Refresher screens ----------
 // One Refresher item as the screen needs it (the answers stay with whoever checks). Name the Liar shows the liar and
 // the lie; the student finds the line anywhere in the expedition.
-export type RefresherViewData = { kind: RefresherItem["kind"]; chunk: number; task: ReturnType<typeof refresherTask>; typeName: string; prompt: string; hint: string; chunkView: { lines: RaceChunk["lines"]; discovery: RaceChunk["chunk"]["discovery"] }; passages: { id: string; text: string }[]; options: string[] | null; callPassages: { id: string; text: string }[] | null;
+export type RefresherViewData = { kind: RefresherItem["kind"]; chunk: number; task: ReturnType<typeof refresherTask>; typeName: string; prompt: string; hint: string; chunkView: { lines: RaceChunk["lines"]; discovery: RaceChunk["chunk"]["discovery"] }; passages: { id: string; text: string }[]; options: string[] | null; callPassages: { id: string; text: string }[] | null; note?: string | null;
   pick?: number | null; dnd?: { kind: NonNullable<ExpQuestion["dnd"]>["kind"]; slots: { id: string; label: string }[]; items: { id: string; text: string }[] } | null };
 export function refresherView(it: RefresherItem, chunks: RaceChunk[], callAll: { id: string; text: string }[], liar?: { name: string; lieText: string } | null): RefresherViewData {
   if (it.kind === "liar") return { kind: "liar", chunk: 0, task: "line", typeName: "Name the Liar", prompt: `${liar?.name ?? "The liar"} said: "${liar?.lieText ?? ""}" Which line proves it false?`,
@@ -211,7 +211,8 @@ export function refresherView(it: RefresherItem, chunks: RaceChunk[], callAll: {
   return { kind: it.kind, chunk: it.index + 1, task, typeName: TYPE_INFO[q.type].name, prompt: task === "meaning" ? `${q.choices2!.prompt} ${q.prompt}` : q.prompt,
     hint: it.kind === "gist" ? "Which choice tells the whole chunk, not just one detail?" : q.hint, chunkView: { lines: c.lines, discovery: c.chunk.discovery }, passages: c.passages,
     options: task === "gist" ? c.chunk.gist.options.map((o) => o.text) : task === "meaning" ? q.choices2!.options.map((o) => o.text) : task === "multi" ? (q.choices ?? []).map((o) => o.text) : null, callPassages: task === "pin2" ? callAll : null,
-    pick: task === "multi" ? q.pick ?? (q.choices ?? []).filter((o) => o.best).length : null, dnd: task === "dnd" && q.dnd ? { kind: q.dnd.kind, slots: q.dnd.slots, items: q.dnd.items.map((i) => ({ id: i.id, text: i.text })) } : null };
+    pick: task === "multi" ? q.pick ?? (q.choices ?? []).filter((o) => o.best).length : null, dnd: task === "dnd" && q.dnd ? { kind: q.dnd.kind, slots: q.dnd.slots, items: q.dnd.items.map((i) => ({ id: i.id, text: i.text })) } : null,
+    note: it.kind === "question" ? q.note ?? null : null };
 }
 // What lights up once an item is tried: the proof words or lines (for Name the Liar, the line that disproves the lie).
 export function refresherShown(it: RefresherItem, chunks: RaceChunk[], fixed: boolean, lieLines: string[] = []) {

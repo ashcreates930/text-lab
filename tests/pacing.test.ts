@@ -39,7 +39,7 @@ test("the arc: warm-ups first, the twist mid-expedition, the boss in level 2 at 
   assert.ok(a.double !== null && a.double >= 2 && a.double <= 4, `the surprise double is in level 1 after the warm-ups (${a.double})`);
   assert.equal(arcOf(sh, e1).double, a.double, "seeded: the same every time");
   assert.equal(a.burstAfter, 4);
-  assert.deepEqual(a.lightning.map((l) => [l.item.id, l.after]), [["walk", 3], ["wounded", 7]]);
+  assert.deepEqual(a.lightning.map((l) => [l.item.id, l.after]), [["walk", 3], ["gun-roar", 7]]);
   // Double points at the boss and the surprise, never more than double.
   assert.equal(multiplierAt(a, a.boss!), DOUBLE); assert.equal(multiplierAt(a, a.double!), DOUBLE); assert.equal(multiplierAt(a, 0), 1);
   assert.equal(beatKind(a, 6), "twist"); assert.equal(beatKind(a, 8), "boss"); assert.equal(beatKind(a, 0), "warmup");

@@ -54,6 +54,8 @@ for (const id of ["sleepy-hollow", "tell-tale-heart", "trifles"]) {
           if (q.choices) out.push(`  - Choices${f === "multi" ? ` (choose ${q.pick ?? 2})` : ""}: ${q.choices.map((o) => `${o.text}${o.best ? " ✓" : ""}`).join(" / ")}`);
           if (q.choices2) out.push(`  - ${q.choices2.prompt} ${q.choices2.options.map((o) => `${o.text}${o.best ? " ✓" : ""}`).join(" / ")}`);
           if (q.dnd) { out.push(`  - Slots: ${q.dnd.slots.map((x) => x.label).join(" / ")}`); for (const it of q.dnd.items) out.push(`  - Piece: ${it.text} → ${q.dnd.slots.find((x) => x.id === it.slot)?.label ?? "belongs nowhere"}${it.line ? ` (backed by "${one(it.line).slice(0, 90)}${one(it.line).length > 90 ? "…" : ""}")` : ""}`); }
+          if (q.note) out.push(`  - Discussion note (shown with the question): ${q.note}`);
+          if (q.proof?.words?.length) out.push(`  - Proof words (any one): ${q.proof.words.map((w) => `"${w}"`).join(", ")}`);
           if (q.written) out.push(`  - A strong answer: ${q.written.model}`, `  - Key ideas (one from each group): ${q.written.key_ideas.map((g) => g.join(", ")).join(" | ")}`);
           for (const l of q.proof?.lines ?? []) out.push(`  - Proof sentence: "${one(l)}"`);
           out.push(`  - Hint: ${q.hint}`, `  - Why: ${q.why}`, `  - Standards: ${q.standards.map((x) => benchmark(x, 7).code).join(", ")}`);

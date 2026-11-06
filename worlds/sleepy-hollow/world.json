@@ -7821,8 +7821,8 @@
               }
             ],
             "proof": {
-              "words": [
-                "I do not vouch for the fact"
+              "lines": [
+                "Be that as it may, I do not vouch for the fact,\nbut merely advert to it, for the sake of being precise and authentic."
               ]
             },
             "hint": "Read his own words closely. Does he ever promise the story is true?",
@@ -8012,15 +8012,16 @@
               ],
               "proof": {
                 "lines": [
-                  "I had wandered into it at noontime, when all nature\nis peculiarly quiet, and was startled by the roar of my own gun, as it\nbroke the Sabbath stillness around and was prolonged and reverberated\nby the angry echoes."
+                  "If ever I should wish for a retreat whither I might\nsteal from the world and its distractions, and dream quietly away the\nremnant of a troubled life, I know of none more promising than this\nlittle valley."
                 ]
               },
-              "hint": "What is the valley like when he wanders into it?",
-              "why": "All nature is peculiarly quiet there: a retreat is a peaceful place to get away from the world.",
+              "hint": "Read the sentence where he imagines escaping from the world.",
+              "why": "He would steal away from the world and its distractions to dream quietly there: a retreat is a peaceful place to get away.",
               "standards": [
                 "V.1.3",
                 "R.3.1"
-              ]
+              ],
+              "reviewed": true
             }
           ]
         },
@@ -8072,10 +8073,8 @@
               }
             ],
             "proof": {
-              "words": [
-                "drowsy, dreamy influence",
-                "drowsy",
-                "dreamy"
+              "lines": [
+                "A drowsy, dreamy influence seems to hang over the\nland, and to pervade the very atmosphere."
               ]
             },
             "hint": "Find the sentence that feels sleepy.",
@@ -8108,15 +8107,16 @@
               ],
               "proof": {
                 "lines": [
-                  "From the listless repose of the place, and the peculiar character of its\ninhabitants, who are descendants from the original Dutch settlers, this\nsequestered glen has long been known by the name of SLEEPY HOLLOW, and\nits rustic lads are called the Sleepy Hollow Boys throughout all the\nneighboring country."
+                  "A drowsy, dreamy influence seems to hang over the\nland, and to pervade the very atmosphere."
                 ]
               },
-              "hint": "What is the glen called, and why?",
-              "why": "The glen is so restful it is named Sleepy Hollow: drowsy means sleepy.",
+              "hint": "Find the sentence about the mood that hangs over the land.",
+              "why": "A drowsy, dreamy influence hangs over the land and fills the air: drowsy means sleepy.",
               "standards": [
                 "V.1.3",
                 "K12.EE.1.1"
-              ]
+              ],
+              "reviewed": true
             }
           ]
         },
@@ -8197,7 +8197,8 @@
             "standards": [
               "K12.EE.1.1",
               "K12.EE.3.1"
-            ]
+            ],
+            "note": "Irving wrote this in 1820. He calls a Native American leader a \"wizard\" who held \"powwows,\" words that make Native people seem magical and mysterious instead of real people with their own beliefs and history. Many white writers of his time described Native people this way. Your teacher may talk with your class about it."
           },
           "bank": [
             {
@@ -8226,7 +8227,8 @@
               "standards": [
                 "K12.EE.1.1",
                 "K12.EE.3.1"
-              ]
+              ],
+              "note": "Irving wrote this in 1820. He calls a Native American leader a \"wizard\" who held \"powwows,\" words that make Native people seem magical and mysterious instead of real people with their own beliefs and history. Many white writers of his time described Native people this way. Your teacher may talk with your class about it."
             }
           ]
         },
@@ -8654,14 +8656,14 @@
             ],
             "choices": [
               {
-                "text": "He thinks the Hollow should catch up with the rest of New York"
-              },
-              {
                 "text": "He treasures quiet places that stay the same while the rest of the country hurries on",
                 "best": true
               },
               {
                 "text": "He is excited by every new improvement and wishes the valley would hurry to catch up"
+              },
+              {
+                "text": "He pities the Hollow for being left behind and forgotten"
               }
             ],
             "proof": {
@@ -8720,12 +8722,12 @@
           ]
         },
         {
-          "id": "wounded",
-          "chunk": 7,
+          "id": "gun-roar",
+          "chunk": 3,
           "after": 8,
-          "question": "How was the rider wounded long ago?",
+          "question": "What startled the young hunter in the quiet grove?",
           "answer": [
-            "It is said by some\nto be the ghost of a Hessian trooper, whose head had been carried away\nby a cannon-ball, in some nameless battle during the Revolutionary War,\nand who is ever and anon seen by the country folk hurrying along in\nthe gloom of night, as if on the wings of the wind."
+            "I had wandered into it at noontime, when all nature\nis peculiarly quiet, and was startled by the roar of my own gun, as it\nbroke the Sabbath stillness around and was prolonged and reverberated\nby the angry echoes."
           ]
         }
       ],
@@ -8896,7 +8898,7 @@
           },
           "question": {
             "type": "figure_it_out",
-            "prompt": "Read the words looked like a weather-cock. What kind of figurative language is this?",
+            "prompt": "Read the words \"looked like a weather-cock.\" What kind of figurative language is this?",
             "keywords": [
               "weather-cock"
             ],
@@ -9048,10 +9050,10 @@
                 }
               ]
             },
-            "prompt": "Sort each detail: does it support or disprove the claim that the schoolhouse is well protected?",
+            "prompt": "Sort each detail: does it support or disprove the claim that the schoolhouse is hard to break into?",
             "keywords": [],
-            "hint": "Ask of each detail: would it stop someone from getting in?",
-            "why": "The twisted branch and the stakes guard the door and shutters, but a thief could still get in easily and some windows are only paper.",
+            "hint": "Ask of each detail: does it make getting in harder, or easier?",
+            "why": "The twisted branch and the stakes make the door and shutters harder to open, but a thief could get in with perfect ease, and paper-patched windows would keep no one out.",
             "standards": [
               "K12.EE.1.1",
               "K12.EE.3.1"
@@ -9135,9 +9137,8 @@
               }
             ],
             "proof": {
-              "words": [
-                "the appalling sound of the birch",
-                "Spare the rod and spoil the child"
+              "lines": [
+                "From hence the low\nmurmur of his pupils’ voices, conning over their lessons, might be heard\nin a drowsy summer’s day, like the hum of a beehive; interrupted now and\nthen by the authoritative voice of the master, in the tone of menace or\ncommand, or, peradventure, by the appalling sound of the birch, as he\nurged some tardy loiterer along the flowery path of knowledge."
               ]
             },
             "hint": "Listen for the sounds that break into the lessons.",
@@ -9150,27 +9151,29 @@
           "bank": [
             {
               "type": "character_clue",
-              "prompt": "Judging by what drifts out of the classroom, what kind of teacher is Ichabod?",
-              "keywords": [],
+              "prompt": "Ichabod lives by an old saying about punishment. How does he see his own strictness?",
+              "keywords": [
+                "old saying"
+              ],
               "choices": [
                 {
-                  "text": "Gentle, letting pupils learn at their own pace"
+                  "text": "As a secret pleasure he hides from the parents"
                 },
                 {
-                  "text": "Distracted, ignoring the class to read his books"
+                  "text": "As a bad habit he means to break soon"
                 },
                 {
-                  "text": "Strict, quick to threaten and to use the switch",
+                  "text": "As a duty he owes the children, not as cruelty",
                   "best": true
                 }
               ],
               "proof": {
                 "lines": [
-                  "From hence the low\nmurmur of his pupils’ voices, conning over their lessons, might be heard\nin a drowsy summer’s day, like the hum of a beehive; interrupted now and\nthen by the authoritative voice of the master, in the tone of menace or\ncommand, or, peradventure, by the appalling sound of the birch, as he\nurged some tardy loiterer along the flowery path of knowledge."
+                  "Truth to\nsay, he was a conscientious man, and ever bore in mind the golden maxim,\n“Spare the rod and spoil the child.”"
                 ]
               },
-              "hint": "Listen past the humming lessons.",
-              "why": "His voice of menace or command and the sound of the birch show a strict master.",
+              "hint": "Find the old saying, and what kind of man the narrator calls him.",
+              "why": "A conscientious man follows his conscience: Ichabod believes the rod is good for children, so punishing feels like his duty.",
               "standards": [
                 "R.1.1",
                 "K12.EE.1.1"
@@ -9388,20 +9391,20 @@
               "items": [
                 {
                   "id": "claim",
-                  "text": "His school pay was not enough to live on",
+                  "text": "Ichabod depends on the farm families to get by",
                   "slot": "claim"
                 },
                 {
                   "id": "proof",
-                  "text": "His school earned little and would barely buy his bread",
+                  "text": "\"The revenue arising from his school was small, and would have been scarcely sufficient to furnish him with daily bread\"",
                   "slot": "proof",
                   "line": "The revenue\narising from his school was small, and would have been scarcely\nsufficient to furnish him with daily bread, for he was a huge feeder,\nand, though lank, had the dilating powers of an anaconda; but to help\nout his maintenance, he was, according to country custom in those\nparts, boarded and lodged at the houses of the farmers whose children\nhe instructed."
                 },
                 {
                   "id": "reason",
-                  "text": "So he ate and slept at his pupils' farmhouses, a week at a time",
+                  "text": "With pay that small, he needs the farmers to give him meals and a bed",
                   "slot": "reason",
-                  "line": "With these he lived successively a week at a time, thus\ngoing the rounds of the neighborhood, with all his worldly effects tied\nup in a cotton handkerchief."
+                  "line": "The revenue\narising from his school was small, and would have been scarcely\nsufficient to furnish him with daily bread, for he was a huge feeder,\nand, though lank, had the dilating powers of an anaconda; but to help\nout his maintenance, he was, according to country custom in those\nparts, boarded and lodged at the houses of the farmers whose children\nhe instructed."
                 },
                 {
                   "id": "logs",
@@ -9410,10 +9413,10 @@
                 }
               ]
             },
-            "prompt": "Build the case that the schoolmaster could not live on his pay alone.",
+            "prompt": "Build the case that Ichabod depends on the farm families to get by.",
             "keywords": [],
-            "hint": "A case needs a claim, a sentence that proves it, and a reason that connects them.",
-            "why": "Small pay is the claim, the line about his revenue proves it, and boarding with farm families is how he got by; the log schoolhouse has nothing to do with it.",
+            "hint": "A case needs a claim, a quotation that proves it, and a reason that connects them.",
+            "why": "The claim is that he depends on the farmers; the quotation shows his pay was small; the reason links them, since so little money meant boarding with the families. The log schoolhouse proves nothing about it.",
             "standards": [
               "K12.EE.1.1",
               "K12.EE.3.1"
@@ -9575,9 +9578,9 @@
           "bank": [
             {
               "type": "character_clue",
-              "prompt": "The narrator compares him to a lion holding a lamb. What does that picture say about him?",
+              "prompt": "The narrator compares Ichabod with a fierce animal gently carrying a young one. What does that picture say about him?",
               "keywords": [
-                "lion holding a lamb"
+                "fierce animal"
               ],
               "choices": [
                 {
@@ -9593,10 +9596,10 @@
               ],
               "proof": {
                 "lines": [
-                  "He laid aside, too, all the\ndominant dignity and absolute sway with which he lorded it in his little\nempire, the school, and became wonderfully gentle and ingratiating."
+                  "He found favor in the eyes of the mothers by petting the children,\nparticularly the youngest; and like the lion bold, which whilom so\nmagnanimously the lamb did hold, he would sit with a child on one knee,\nand rock a cradle with his foot for whole hours together."
                 ]
               },
-              "hint": "What did he lay aside outside school?",
+              "hint": "Find the lion in the sentence about the cradle.",
               "why": "Like a lion gently holding a lamb, the stern master turns wonderfully gentle and ingratiating.",
               "standards": [
                 "R.1.1",
@@ -9639,38 +9642,44 @@
             "written": {
               "key_ideas": [
                 [
-                  "sing",
-                  "psalm",
-                  "choir",
-                  "voice",
-                  "music"
-                ],
-                [
+                  "pride",
+                  "proud",
                   "vain",
                   "vanity",
-                  "proud",
-                  "pride",
-                  "show",
-                  "better",
-                  "parson",
+                  "conceit",
+                  "full of himself",
+                  "think highly",
+                  "ego",
                   "admir",
-                  "impress",
-                  "best",
-                  "beat",
-                  "outshin"
+                  "show off"
+                ],
+                [
+                  "see themselves",
+                  "see himself",
+                  "own mind",
+                  "imagin",
+                  "believ",
+                  "think",
+                  "picture",
+                  "better than",
+                  "greater",
+                  "than they",
+                  "really",
+                  "truly",
+                  "others"
                 ]
               ],
-              "model": "Ichabod is proudest of his singing, because he believes he outshines even the parson when he leads the choir on Sundays."
+              "model": "Pride can make people see themselves as greater than they really are, just as Ichabod believes his choir leading outshines even the parson."
             },
-            "prompt": "In a single sentence, explain what Ichabod is proudest of.",
+            "prompt": "In one sentence, explain what Ichabod's pride in leading the choir suggests about how people see themselves.",
             "keywords": [],
             "proof": {
               "lines": [
                 "It was a matter of no little vanity to him on\nSundays, to take his station in front of the church gallery, with a band\nof chosen singers; where, in his own mind, he completely carried away\nthe palm from the parson."
               ]
             },
-            "hint": "Look at how he feels standing in front of the church gallery.",
-            "why": "Leading the choir is \"a matter of no little vanity\": in his own mind he beats even the parson.",
+            "hint": "Notice the words \"in his own mind.\"",
+            "why": "Leading the choir is \"a matter of no little vanity,\" and only \"in his own mind\" does he beat the parson: pride shapes how he sees himself.",
             "standards": [
               "R.1.2",
               "K12.EE.1.1"
@@ -9679,19 +9688,19 @@
           "bank": [
             {
               "type": "theme_thread",
-              "prompt": "Which idea about Ichabod keeps showing up?",
+              "prompt": "What does Ichabod's pride in leading the choir suggest about people in general?",
               "keywords": [
-                "keeps showing up"
+                "people in general"
               ],
               "choices": [
                 {
-                  "text": "He is shy and hides from attention whenever he can"
+                  "text": "Real talent always earns people the respect it deserves"
                 },
                 {
-                  "text": "He cares only about money and never about any praise"
+                  "text": "Music is the best way to bring a whole village together"
                 },
                 {
-                  "text": "He thinks highly of himself and enjoys being admired",
+                  "text": "Pride can make people see themselves as better than they are",
                   "best": true
                 }
               ],
@@ -9700,8 +9709,8 @@
                   "It was a matter of no little vanity to him on\nSundays, to take his station in front of the church gallery, with a band\nof chosen singers; where, in his own mind, he completely carried away\nthe palm from the parson."
                 ]
               },
-              "hint": "Look at how he feels standing before the singers.",
-              "why": "It was a matter of no little vanity to him, and in his own mind he outshone the parson.",
+              "hint": "Whose opinion is it that he beats the parson?",
+              "why": "Only \"in his own mind\" does he carry away the palm from the parson: vanity colors how he sees himself.",
               "standards": [
                 "R.1.2",
                 "K12.EE.1.1"
@@ -9721,13 +9730,12 @@
           ]
         },
         {
-          "id": "meals-bed",
-          "chunk": 7,
+          "id": "thank-him",
+          "chunk": 5,
           "after": 8,
-          "question": "How did Ichabod get his meals and a bed?",
+          "question": "What did Ichabod tell a boy after punishing him?",
           "answer": [
-            "The revenue\narising from his school was small, and would have been scarcely\nsufficient to furnish him with daily bread, for he was a huge feeder,\nand, though lank, had the dilating powers of an anaconda; but to help\nout his maintenance, he was, according to country custom in those\nparts, boarded and lodged at the houses of the farmers whose children\nhe instructed.",
-            "With these he lived successively a week at a time, thus\ngoing the rounds of the neighborhood, with all his worldly effects tied\nup in a cotton handkerchief."
+            "All this he called “doing\nhis duty by their parents;” and he never inflicted a chastisement\nwithout following it by the assurance, so consolatory to the smarting\nurchin, that “he would remember it and thank him for it the longest day\nhe had to live.”"
           ]
         }
       ],

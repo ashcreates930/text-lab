@@ -36,6 +36,14 @@ export function dndProblems(at: string, q: ExpQuestion, lines: string[]) {
   if (["order_events", "build_case", "story_map", "cause_effect"].includes(d.kind)) for (const x of d.slots) if (d.items.filter((it) => it.slot === x.id).length > 1) out.push(`${at}: slot ${x.id} holds one piece`);
   if (DND_TYPE[d.kind] !== q.type) out.push(`${at}: ${d.kind} practises ${DND_TYPE[d.kind]}, not ${q.type}`);
   if (new Set(d.items.map((it) => it.id)).size !== d.items.length) out.push(`${at}: piece ids repeat`);
+  // Build the case: the proof piece is the story's own words, in quotation marks, from its backing sentence, and the
+  // claim never just repeats the proof.
+  if (d.kind === "build_case") for (const it of d.items.filter((x) => x.slot === "proof")) {
+    const m = /^"([^"]+)"$/.exec(it.text.trim()), flat = (t: string) => t.replace(/\s+/g, " ").trim().toLowerCase();
+    if (!m || !it.line || !flat(it.line).includes(flat(m[1]))) out.push(`${at}: the proof piece must quote its sentence exactly, in quotation marks`);
+    const claim = d.items.find((x) => x.slot === "claim"), words = (t: string) => new Set(flat(t).replace(/[^a-z ]/g, "").split(" ").filter((w) => w.length > 3));
+    if (claim && m) { const a = words(claim.text), b = words(m[1]), shared = [...a].filter((w) => b.has(w)).length; if (a.size && shared / a.size > 0.5) out.push(`${at}: the claim and the proof say the same thing`); }
+  }
   return out;
 }
 // Variety, for expeditions rebuilt to the phase 3 rules: 2 or 3 questions per chunk, the same type never twice in a row,
@@ -47,6 +55,12 @@ export function variety(at: string, exp: Expedition) {
   if (dnd.length < 2 || dnd.length > 3) out.push(`${at}: ${dnd.length} drag and drop questions (about 2)`);
   if (dnd.some((k, i) => i && k - dnd[i - 1] < 2)) out.push(`${at}: drag and drop questions back to back`);
   if (new Set(formats).size < 4) out.push(`${at}: ${new Set(formats).size} formats (at least 4)`);
+  // Every two-part or tap question proves with a whole sentence, and words quoted from the story wear quotation marks.
+  exp.chunks.forEach((c, k) => bankOf(c).forEach((q, i) => {
+    const f = formatOf(q), where = `${at}: chunk ${k + 1} ${i ? "bank question" : "question"}`;
+    if ((f === "two_part" || f === "tap") && q.type !== "make_call" && !q.proof?.lines?.length) out.push(`${where} needs a proof sentence`);
+    if (/\bread the words (?!")/i.test(q.prompt)) out.push(`${where}: put the quoted words in quotation marks`);
+  }));
   const frames = exp.chunks.flatMap((c) => bankOf(c).map((q) => q.prompt.toLowerCase().replace(/[^a-z ]/g, "").split(/\s+/).slice(0, 4).join(" ")));
   const seen = new Set<string>(); for (const fr of frames) { if (seen.has(fr)) out.push(`${at}: the question frame "${fr}" repeats`); seen.add(fr); }
   return out;
@@ -73,6 +87,10 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
       if (!c) { out.push(`${world.id}/${exp.id}: lightning ${l.id} recalls chunk ${l.chunk}, which doesn't exist`); continue; }
       for (const a of l.answer) if (!c.lines.some((x) => key(x.text) === key(a))) out.push(`${world.id}/${exp.id}: lightning ${l.id}: "${a.slice(0, 40)}" isn't a sentence of chunk ${l.chunk}`);
       if (/—/.test(l.question)) out.push(`${world.id}/${exp.id}: lightning ${l.id}: no em dashes`);
+      // It recalls an earlier chunk, never the proof of the chunk just before the beat (that's not recall).
+      if (l.chunk >= l.after) out.push(`${world.id}/${exp.id}: lightning ${l.id} must recall a chunk before chunk ${l.after}`);
+      const before = exp.chunks[l.after - 1], proofs = before ? bankOf(before).flatMap((q) => [...(q.proof?.lines ?? []), ...(q.dnd?.items ?? []).flatMap((it) => (it.line ? [it.line] : []))]).map(key) : [];
+      if (l.answer.some((a) => proofs.includes(key(a)))) out.push(`${world.id}/${exp.id}: lightning ${l.id} recalls the proof of chunk ${l.after}, just before it`);
     }
     if (new Set(types).size < MIN_TYPES) out.push(`${world.id}/${exp.id}: mixes ${new Set(types).size} question types; needs at least ${MIN_TYPES}`);
     if (types.filter((t) => t === "theme_thread").length !== 1) out.push(`${world.id}/${exp.id}: needs exactly one Theme Thread`);
@@ -118,7 +136,7 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
       if (q.focus) {
         const fr = phraseRange(tokens, q.focus);
         if (!fr) out.push(`${at}: focus "${q.focus}" is not in the chunk`);
-        else { const sentences = new Set(proofLineIndexes(q, tokens)); if (rc.lines.length > 1 && (sentences.has(tokens[fr[0]].line) || sentences.has(tokens[fr[1]].line))) out.push(`${at}: focus "${q.focus}" sits in a proof sentence; it would point to the answer`); }
+        else { const sentences = new Set(proofLineIndexes(q, tokens)); if (!q.reviewed && rc.lines.length > 1 && (sentences.has(tokens[fr[0]].line) || sentences.has(tokens[fr[1]].line))) out.push(`${at}: focus "${q.focus}" sits in a proof sentence; it would point to the answer`); }
       } else if (FOCUS_TYPES.has(q.type) && f !== "dnd") out.push(`${at}: ${q.type} is about a word or phrase; name it as focus`);
       for (const kw of q.keywords) if (!q.prompt.toLowerCase().includes(kw.toLowerCase())) out.push(`${at}: key word "${kw}" is not in the question`);
       if (!q.standards.some((s) => TYPE_INFO[q.type].standards.includes(s))) out.push(`${at}: standards must include one of ${TYPE_INFO[q.type].standards.join(", ")}`);

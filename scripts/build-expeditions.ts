@@ -11,7 +11,7 @@ import { REBUILT } from "./expeditions/rebuilt.ts";
 export type Ref = [string, number];
 // format, pick, dnd and written: the phase 3 formats (lib/formats.ts); a drag-and-drop piece's line is the sentence
 // that backs it, as [paragraph, sentence index].
-export type Q = { type: string; format?: string; pick?: number; dnd?: { kind: string; slots: { id: string; label: string }[]; items: { id: string; text: string; slot: string | null; line?: Ref }[] }; written?: { key_ideas: string[][]; model: string }; prompt: string; keywords?: string[]; focus?: string; choices?: [string, boolean?][]; choices2?: { prompt: string; options: [string, boolean?][] }; lines?: Ref[]; words?: string[]; testimony?: { speaker: string; text: string }; theories?: { id: string; name: string; lines: Ref[] }[]; hint: string; why: string; standards: string[]; reviewed?: boolean };
+export type Q = { type: string; format?: string; pick?: number; dnd?: { kind: string; slots: { id: string; label: string }[]; items: { id: string; text: string; slot: string | null; line?: Ref }[] }; written?: { key_ideas: string[][]; model: string }; prompt: string; keywords?: string[]; focus?: string; choices?: [string, boolean?][]; choices2?: { prompt: string; options: [string, boolean?][] }; lines?: Ref[]; words?: string[]; testimony?: { speaker: string; text: string }; theories?: { id: string; name: string; lines: Ref[] }[]; hint: string; why: string; standards: string[]; reviewed?: boolean; note?: string };
 export type C = { seg: [string, number, number][]; gist: [string, boolean?][]; discovery: [string, "figurative" | "vocabulary", string]; q: Q };
 export type S = { text: string; lines: Ref[]; gesture?: "laughing" | "head-shake" };
 export type W = { character: string; cards: [string, string]; truth: S; lie: S; caught: string };
@@ -34,7 +34,7 @@ const SPEC: Record<string, { front_matter: string[]; expeditions: E[]; draft?: b
           discovery: ["inveterate propensity", "vocabulary", "Inveterate propensity: a habit so old and strong it can't be broken."],
           q: { type: "whose_eyes", prompt: "How sure is the storyteller about where the town's name came from?", keywords: ["How sure", "storyteller"],
             choices: [["Not sure: he passes on a story he heard without promising it's true", true], ["Completely sure, because he was there when it was named"], ["Very sure: he checked the old town records himself and found proof"]],
-            words: ["I do not vouch for the fact"], hint: "Read his own words closely. Does he ever promise the story is true?", why: "He says he does not vouch for the fact, so he is repeating a story, not swearing to it.", standards: ["R.1.3", "K12.EE.1.1"] } },
+            lines: [["p003", 2]], hint: "Read his own words closely. Does he ever promise the story is true?", why: "He says he does not vouch for the fact, so he is repeating a story, not swearing to it.", standards: ["R.1.3", "K12.EE.1.1"] } },
         { seg: [["p003", 3, 4]],
           gist: [["A very quiet valley sits about two miles from the village.", true], ["A noisy brook floods the valley every spring."], ["A noisy mill town sits about twenty miles from the village."]],
           discovery: ["lull one to repose", "figurative", "Lull one to repose: the brook is so soft it could rock you to sleep."],
@@ -51,7 +51,7 @@ const SPEC: Record<string, { front_matter: string[]; expeditions: E[]; draft?: b
           discovery: ["sequestered glen", "vocabulary", "Sequestered glen: a hidden, out-of-the-way valley."],
           q: { type: "word_detective", focus: "listless", prompt: "In this chunk, what does listless mean?", keywords: ["listless"],
             choices: [["Lacking energy; slow and sleepy", true], ["Without a list or any plan"], ["Full of nervous, jumpy worry"]],
-            words: ["drowsy, dreamy influence", "drowsy", "dreamy"], hint: "Find the sentence that feels sleepy.", why: "A drowsy, dreamy influence hangs over the land: listless means low on energy.", standards: ["V.1.3", "K12.EE.1.1"], reviewed: true } },
+            lines: [["p005", 1]], hint: "Find the sentence that feels sleepy.", why: "A drowsy, dreamy influence hangs over the land: listless means low on energy.", standards: ["V.1.3", "K12.EE.1.1"], reviewed: true } },
         { seg: [["p005", 2, 3]],
           gist: [["People blame old magic for the spell that still hangs over the valley.", true], ["A doctor cured the settlers of a strange sleeping sickness."], ["Henry Hudson drove an old wizard out, and the valley woke up for good."]],
           discovery: ["continual reverie", "vocabulary", "Reverie: a daydream. A continual reverie means drifting through life half-dreaming."],
@@ -87,7 +87,7 @@ const SPEC: Record<string, { front_matter: string[]; expeditions: E[]; draft?: b
           gist: [["The narrator praises the Hollow as a quiet place that never seems to change.", true], ["The narrator warns that the Hollow is changing too fast and losing its old ways."], ["The narrator says he never wants to see the Hollow again."]],
           discovery: ["nooks of still water", "figurative", "Nooks of still water: the valley is a calm pool beside a rushing river of change."],
           q: { type: "between_lines", prompt: "What can you infer about how the narrator feels about the busy world beyond the Hollow?", keywords: ["infer", "busy world"],
-            choices: [["He treasures quiet places that stay the same while the rest of the country hurries on", true], ["He is excited by every new improvement and wishes the valley would hurry to catch up"], ["He thinks the Hollow should catch up with the rest of New York"]],
+            choices: [["He treasures quiet places that stay the same while the rest of the country hurries on", true], ["He is excited by every new improvement and wishes the valley would hurry to catch up"], ["He pities the Hollow for being left behind and forgotten"]],
             lines: [["p009", 0], ["p009", 1]], hint: "Look at the words he picks for change and for the valley. Which does he praise?", why: "He praises the valley with all possible laud because its customs remain fixed while a restless country sweeps by.", standards: ["K12.EE.3.1", "K12.EE.1.1"] } },
       ],
       // The Interview: each witness's truth is confirmed, and lie disproved, by exact lines in this expedition.
@@ -124,7 +124,7 @@ for (const [worldId, spec] of Object.entries(SPEC)) {
         ...(q.written ? { written: q.written } : {}), prompt: q.prompt, keywords: q.keywords ?? [], ...(q.focus ? { focus: q.focus } : {}), ...(q.choices ? { choices: opts(q.choices) } : {}), ...(q.choices2 ? { choices2: { prompt: q.choices2.prompt, options: opts(q.choices2.options) } } : {}),
         ...(q.lines || q.words ? { proof: { ...(q.lines ? { lines: q.lines.map(line) } : {}), ...(q.words ? { words: q.words } : {}) } } : {}),
         ...(q.testimony ? { testimony: q.testimony } : {}), ...(q.theories ? { theories: q.theories.map((t) => ({ id: t.id, name: t.name, lines: t.lines.map(line) })) } : {}),
-        hint: q.hint, why: q.why, standards: q.standards, ...(q.reviewed ? { reviewed: true } : {}) });
+        hint: q.hint, why: q.why, standards: q.standards, ...(q.reviewed ? { reviewed: true } : {}), ...(q.note ? { note: q.note } : {}) });
   const built = spec.expeditions.map((e) => { const re = REBUILT[e.id]; return { id: e.id, title: e.title, chunks: e.chunks.map((c, k) => {
     const o = re?.chunks[k];
     return { id: `${e.id}-${String(k + 1).padStart(2, "0")}`, segments: c.seg.map(([p, from, to]) => ({ p, from, to })), gist: { options: opts(c.gist) },

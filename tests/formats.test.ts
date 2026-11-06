@@ -124,3 +124,31 @@ test("Expeditions 1 and 2 rebuilt: a bank on every chunk, 4+ formats, 2 drag and
   // The review document lists the rebuilt content.
   assert.match(src("docs/game-content-review.md"), /Bank question/);
 });
+
+test("the review lessons hold: proof sentences, quoted words, quoted build-the-case proofs, real recall in lightning beats, and the discussion note", () => {
+  // Every two-part or tap question proves with a whole sentence; words read from the story wear quotation marks.
+  const noProof = structuredClone(e1); delete noProof.chunks[0].question.proof;
+  assert.match(variety(e1.id, noProof).join(" | "), /chunk 1 question needs a proof sentence/);
+  const unquoted = structuredClone(e2); unquoted.chunks[1].bank![0].prompt = "Read the words looked like a weather-cock. What kind of figurative language is this?";
+  assert.match(variety(e2.id, unquoted).join(" | "), /quotation marks/);
+  // Build the case: the proof piece quotes its sentence exactly; the claim doesn't repeat it.
+  const bc = e2.chunks.flatMap((c) => bankOf(c)).find((q) => q.dnd?.kind === "build_case")!, lines = c2.flatMap((c) => c.lines.map((l) => l.text));
+  assert.deepEqual(dndProblems("bc", bc, lines), []);
+  const para = structuredClone(bc); para.dnd!.items.find((i) => i.slot === "proof")!.text = "His school earned little and would barely buy his bread";
+  assert.match(dndProblems("bc", para, lines).join(" "), /quote its sentence exactly/);
+  const echo = structuredClone(bc); echo.dnd!.items.find((i) => i.slot === "claim")!.text = "The revenue arising from his school was small";
+  assert.match(dndProblems("bc", echo, lines).join(" "), /say the same thing/);
+  // Lightning beats recall an earlier chunk, never the proof of the chunk just before the beat.
+  for (const e of [e1, e2]) for (const l of e.lightning!) {
+    assert.ok(l.chunk < l.after, `${e.id} ${l.id}`);
+    const just = bankOf(e.chunks[l.after - 1]).flatMap((q) => [...(q.proof?.lines ?? []), ...(q.dnd?.items ?? []).flatMap((i) => (i.line ? [i.line] : []))]);
+    assert.ok(!l.answer.some((a) => just.includes(a)), `${e.id} ${l.id}`);
+  }
+  const echoBeat = structuredClone(sh); const ex = echoBeat.expeditions![0]; ex.lightning![1] = { ...ex.lightning![1], chunk: 8, after: 8, answer: [ex.chunks[7].question.dnd!.items[0].line!] };
+  const ep = expeditionProblems(echoBeat, shp).join(" | "); assert.match(ep, /recalls the proof of chunk 8, just before it/); assert.match(ep, /must recall a chunk before chunk 8/);
+  // The discussion note travels with every question that mentions the old chief, and to the view the phones see.
+  const chief = e1.chunks.flatMap((c) => bankOf(c)).filter((q) => JSON.stringify(q).includes("old chief"));
+  assert.ok(chief.length >= 2 && chief.every((q) => /Irving wrote this in 1820/.test(q.note ?? "")));
+  assert.match(src("lib/formats.ts"), /note: q\.note \?\? null/);
+  assert.match(src("app/expedition-race.tsx"), /label="Discussion note"/); assert.match(src("app/live/race-live.tsx"), /label="Discussion note"/); assert.match(src("app/after-race.tsx"), /label="Discussion note"/);
+});

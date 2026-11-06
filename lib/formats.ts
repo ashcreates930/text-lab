@@ -30,11 +30,11 @@ export function formatOf(q: Pick<ExpQuestion, "type" | "format" | "choices2" | "
 // choices, or Make the Call. Everything else is one step.
 export const stepsOf = (f: Format, type: QuestionType, hasProof: boolean): 1 | 2 => (f === "two_part" || f === "call" || (f === "written" && hasProof) || (f === "mc" && type === "figure_it_out") ? 2 : 1);
 // What a phone or the board sees of a question beyond its words: the format, how many to choose, the drag-and-drop
-// pieces and slots (never where they go), and the hint on the easier version.
+// pieces and slots (never where they go), the hint on the easier version, and any discussion note.
 export function formatView(q: ExpQuestion & { showHint?: boolean }) {
   const format = formatOf(q);
   return { format, steps: stepsOf(format, q.type, !!q.proof?.lines?.length), pick: format === "multi" ? q.pick ?? (q.choices?.filter((c) => c.best).length ?? 2) : null,
-    dnd: q.dnd ? { kind: q.dnd.kind, slots: q.dnd.slots, items: q.dnd.items.map((i) => ({ id: i.id, text: i.text })) } : null, written: format === "written", hint: q.showHint ? q.hint : null,
+    dnd: q.dnd ? { kind: q.dnd.kind, slots: q.dnd.slots, items: q.dnd.items.map((i) => ({ id: i.id, text: i.text })) } : null, written: format === "written", hint: q.showHint ? q.hint : null, note: q.note ?? null,
     name: q.dnd ? DND_INFO[q.dnd.kind].name : null };
 }
 // Whether a format ends with tapping the proof sentence.

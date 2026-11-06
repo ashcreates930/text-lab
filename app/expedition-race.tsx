@@ -125,7 +125,7 @@ export function AnswerBars({options,picked,onPick,disabled,label,seed}:{options:
 // format: how it's answered (lib/formats.ts); pick: how many to choose; dnd: the pieces and slots (never where they
 // go); written: a one-sentence answer; hint: shown from the start on the easier version.
 export type ViewQuestion={type:QuestionType;name:string;steps:1|2;prompt:string;keywords:string[];focus:string|null;choices:string[]|null;choices2:{prompt:string;options:string[]}|null;theories:{id:string;name:string}[]|null;testimony:{speaker:string;text:string}|null;proof:"words"|"lines"|"none";callPassages:{id:string;text:string}[]|null;
- format:Format;pick:number|null;dnd:DndView|null;written:boolean;hint:string|null};
+ format:Format;pick:number|null;dnd:DndView|null;written:boolean;hint:string|null;note:string|null};
 export function viewQuestion(q:ExpQuestion&{showHint?:boolean},world:WorldPack,callPassages:{id:string;text:string}[]):ViewQuestion{
  const info=TYPE_INFO[q.type],fv=formatView(q);
  return {...fv,type:q.type,name:fv.name??info.name,prompt:q.prompt,keywords:q.keywords,focus:q.focus??null,choices:q.choices?.map(o=>o.text)??null,choices2:q.choices2?{prompt:q.choices2.prompt,options:q.choices2.options.map(o=>o.text)}:null,theories:q.theories?.map(t=>({id:t.id,name:t.name}))??null,
@@ -162,6 +162,7 @@ export function QuestionPanel({vq,passages,chunk,world,tokens,glossary,testifyin
  const head=<>{timer}{banner}<p className="mt-2 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{vq.name}{part?` · ${part}`:""}</p>
   <h1 id={headingId} className="text-[22px] leading-tight outline-none md:text-[24px]"><KeywordPrompt prompt={vq.prompt} keywords={vq.keywords}/></h1></>;
  const body=<>
+  {vq.note&&<ContentNote label="Discussion note" text={vq.note} className="mt-3"/>}
   {vq.hint&&step===1&&<p className="mt-2 flex items-start gap-2 rounded-card bg-violet-soft px-3 py-2 text-[15px] font-bold"><Lightbulb size={16} className="mt-0.5 shrink-0 text-gold" aria-hidden/>{vq.hint}</p>}
   {vq.testimony&&<blockquote className={`mt-3 rounded-card bg-violet p-4 text-on-violet shadow-[0_6px_0_var(--color-violet-shadow)] ${reducedMotion()?"":"rise-in"}`}><p className="text-[12px] font-extrabold uppercase tracking-[.08em]">{vq.testimony.speaker} testifies</p><p className="mt-1 text-[17px] font-bold leading-snug">“{vq.testimony.text}”</p>{testifying&&<p role="status" className="mt-2 text-[13px] font-extrabold">Listen to the whole testimony. The timer starts when it ends.</p>}</blockquote>}
   {step===1&&vq.choices&&f!=="multi"&&<AnswerBars seed={seed} label={vq.prompt} options={vq.choices.map(t=>({text:t}))} picked={draft.choice??null} onPick={i=>{setDraft(d=>({...d,choice:i}));if(twoStep)setStep(2);else onLock({...draft,choice:i})}}/>}

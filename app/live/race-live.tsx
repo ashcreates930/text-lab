@@ -21,6 +21,7 @@ import {focusScreenTop} from "../screen-focus";
 import {AnswerBars,ArcBanner,ChunkText,CountdownRing,DiscoveryBurst,KeywordPrompt,QuestionPanel,RaceHud,RankPill,TimerTrack} from "../expedition-race";
 import {SplitStage,useStickyOffsets} from "../split-stage";
 import {DragDrop} from "../drag-drop";
+import {ContentNote} from "../content-note";
 import {RaceMap} from "../world-map";
 import {InterviewHost,InterviewPlayer,interviewBeat} from "./interview-live";
 
@@ -104,6 +105,7 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
   {round.beat==="ask"&&<div className="mt-3"><p className="text-[20px] text-muted">{race.answered} of {state.counters.players} asked · you can move on once most have</p>{questions}</div>}
   {round.pinned&&<p className="mt-3 rounded-card bg-highlight px-5 py-3 text-[clamp(18px,1.8vw,26px)] font-bold text-on-primary"><Pin size={20} className="mr-2 inline" aria-hidden/>For discussion: {round.pinned}</p>}
   {round.beat==="race"&&q&&<div className="mt-3"><ArcBanner kind={round.arc} speaker={q.testimony?.speaker}/><p className="mt-2 text-[14px] font-extrabold uppercase tracking-[.08em] text-highlight">{q.name}</p><p className="font-display text-[clamp(26px,2.8vw,44px)] font-bold leading-tight"><KeywordPrompt prompt={q.prompt} keywords={q.keywords}/></p>
+   {q.note&&<ContentNote label="Discussion note" text={q.note} className="mt-3 max-w-4xl"/>}
    {q.testimony&&<blockquote className="mt-3 rounded-card bg-violet p-5 text-on-violet"><p className="text-[14px] font-extrabold uppercase tracking-[.08em]">{q.testimony.speaker} testifies</p><p className="mt-1 text-[clamp(20px,2vw,30px)] font-bold">“{q.testimony.text}”</p></blockquote>}
    {(q.choices??q.theories?.map(t=>t.name))&&<ol className="mt-3 grid gap-2 md:grid-cols-3">{(q.choices??q.theories!.map(t=>t.name)).map((c,i)=><li key={i} className="rounded-card bg-panel px-4 py-3 text-[clamp(16px,1.5vw,22px)] font-bold">{c}</li>)}</ol>}
    <p className="mt-2 text-[20px] text-muted">{race.answered} of {state.counters.players} answered{maxScale>1?" · extra time still running for some":""}</p>

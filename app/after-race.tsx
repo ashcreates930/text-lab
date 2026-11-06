@@ -11,6 +11,7 @@ import {caseNotesPdf,refresherAward,type CaseNote,type RefresherViewData} from "
 import {saidLine,type InterviewNote} from "@/lib/interview";
 import {AnswerBars,ChunkText,MultiBars,type ChunkView} from "./expedition-race";
 import {DragDrop} from "./drag-drop";
+import {ContentNote} from "./content-note";
 import {SplitStage} from "./split-stage";
 import {ReadingPanel} from "./reading-panel";
 import {focusScreenTop} from "./screen-focus";
@@ -37,7 +38,7 @@ export function Refresher({items,world,check,onDone,seed}:{items:RefresherView[]
  const award=refresherAward(items.map(x=>({index:x.chunk-1,kind:x.kind})),items.map((_,i)=>fixed[i]??false));
  const head=<><div className="flex items-center justify-between"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Refresher · {k+1} of {items.length} · no timer</p><p className="flex items-center gap-1 font-display text-[18px] font-bold text-gold" aria-label={`${award.stars} stars`}>{Array.from({length:items.length},(_,i)=><Star key={i} size={18} className={fixed[i]?"fill-gold text-gold":"text-muted"} aria-hidden/>)}</p></div>
   <h1 id="rf-h" className="text-[24px] leading-tight outline-none">{it.kind==="liar"?`${it.typeName}: ${it.prompt}`:it.kind==="gist"?`Chunk ${it.chunk}: which is the best summary?`:`Chunk ${it.chunk} · ${it.typeName}: ${it.prompt}`}</h1></>;
- const hint=<p className="flex items-start gap-2 rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold"><Lightbulb size={18} className="mt-0.5 shrink-0 text-gold" aria-hidden/>{it.hint}</p>;
+ const hint=<>{it.note&&<ContentNote label="Discussion note" text={it.note}/>}<p className="flex items-start gap-2 rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold"><Lightbulb size={18} className="mt-0.5 shrink-0 text-gold" aria-hidden/>{it.hint}</p></>;
  const lockBtn=(ok:boolean)=><button type="button" disabled={!ok} onClick={()=>lock(draft)} className="case-primary w-full justify-center">Lock in <ArrowRight size={18} aria-hidden/></button>;
  // The passage side: the chunk (a sentence to tap for a question's proof), or the whole expedition for Name the Liar
  // and Make the Call. After trying, the proof lights up there.

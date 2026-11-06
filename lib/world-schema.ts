@@ -34,7 +34,9 @@ const expQuestionBase=z.object({type:z.enum(QUESTION_TYPES),format:z.enum(QUESTI
  proof:z.object({lines:z.array(z.string().min(1)).optional(),words:z.array(z.string().min(1)).optional()}).optional(),
  testimony:z.object({speaker:z.string(),text:z.string().min(1)}).optional(),
  theories:z.array(z.object({id:z.string(),name:z.string().min(1),lines:z.array(z.string().min(1)).min(2)})).length(3).optional(),
- hint:z.string().min(1),why:z.string().min(1),standards:z.array(z.enum(BENCHMARK_FAMILY_IDS)).min(1),reviewed:z.boolean().optional()});
+ hint:z.string().min(1),why:z.string().min(1),standards:z.array(z.enum(BENCHMARK_FAMILY_IDS)).min(1),reviewed:z.boolean().optional(),
+ // A discussion note shown with the question (for example, context for a passage written with the prejudices of its time).
+ note:z.string().optional()});
 // Adaptive challenge (lib/pacing.ts): an easier and a harder version of the question, on the same chunk.
 const expQuestion=expQuestionBase.extend({versions:z.object({easier:expQuestionBase.optional(),harder:expQuestionBase.optional()}).optional()});
 // bank: other questions for the chunk (same skill, different wording and target); each student gets one of them
