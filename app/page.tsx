@@ -264,7 +264,7 @@ export default function Home() {
   if (gated) return <main className="min-h-[calc(100vh/var(--page-zoom,1))] bg-panel-2 text-ink"><DisplaySettings/>{access === "locked" && <AccessGate brand={brand} onGranted={() => setAccess("granted")} onPricing={() => setView("pricing")} onWaitlist={() => setView("waitlist")} onJoinClass={() => setView("join")} onApproach={() => setView("approach")} />}</main>;
 
   return <main className="min-h-[calc(100vh/var(--page-zoom,1))] bg-panel-2 text-ink">
-    {view !== "landing" && <header className="sticky top-0 z-30 flex min-h-[58px] flex-wrap items-center justify-between gap-x-2 gap-y-2 border-b border-edge bg-panel-2/95 px-3 py-2 sm:gap-x-3 sm:px-5 md:px-10">
+    {view !== "landing" && <header className="sticky top-0 z-30 flex min-h-[58px] flex-wrap items-center justify-between gap-x-2 gap-y-2 border-b border-edge bg-panel-2 px-3 py-2 sm:gap-x-3 sm:px-5 md:px-10">
       <button onClick={() => setView("landing")} aria-label="TextLab home" className="flex items-center gap-2"><Wordmark className="text-[24px]" byline/></button>
       {null}
       <div className="ml-auto flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">{(["story","level","play","classhome","classlive"] as View[]).includes(view)&&<HeaderLanguage value={demo.homeLanguage??null} onChange={lang=>setDemo(d=>({...d,homeLanguage:lang}))}/>}<DisplaySettings placement="header"/>

@@ -26,7 +26,7 @@ import {DragDrop,type DndView} from "./drag-drop";
 import {askedQuestion,bankPick,dndResult,formatOf,formatView,gistAt,withAsked,type Format,type Strength} from "@/lib/formats";
 import {judgeWritten} from "./written-judge";
 import {useSoundPref} from "./game-feel";
-import {focusScreenTop} from "./screen-focus";
+import {focusHeading,focusScreenTop} from "./screen-focus";
 import {CaseNotesView,Refresher,type RefresherView} from "./after-race";
 import {caseNotes,refresherAward,refresherCorrect,refresherItems,refresherShown,refresherView,type ChunkResult} from "@/lib/case-notes";
 import {interviewNote,interviewStatements,liarCheck,liarIndex,witnessName,type LiarAnswer} from "@/lib/interview";
@@ -306,7 +306,11 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const [lightningPts,setLightningPts]=useState<number[]>([]),[burstPts,setBurstPts]=useState(0);
  const go=useCallback((b:Beat)=>{setBeat(b);setStartedAt(Date.now())},[]);
  useStickyOffsets();
- useLayoutEffect(()=>{focusScreenTop()},[beat,k,step]);
+ // A new beat or chunk is a new screen: the top, focus on its heading. The proof step of the same question is not: the
+ // heading takes focus and the page stays where the student is (no jump during a question).
+ useLayoutEffect(()=>{focusScreenTop()},[beat,k]);
+ const firstStep=useRef(true);
+ useLayoutEffect(()=>{if(firstStep.current){firstStep.current=false;return}if(step>1)focusHeading()},[step]);
  // Timers: Gist 20 seconds; the question by its type (Catch the Lie starts after the testimony).
  const qSeconds=q?limitMs(TYPE_INFO[q.type].seconds,timeSetting)/1000:0,gSeconds=limitMs(GIST_SECONDS,timeSetting)/1000;
  const gistLeft=useBeatClock(startedAt,beat==="gist"?gSeconds:null);

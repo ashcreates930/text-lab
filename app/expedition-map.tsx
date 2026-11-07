@@ -2,14 +2,15 @@
 // The expedition map. A story with a world map (world_map in world.json) shows it: each expedition a region, each
 // chunk a stop where that part of the story happens, the student's token at the next stop, fog over locked regions,
 // stars on proven stops, landmarks and secrets to find on a return visit, with a list view of the same stops. A story
-// without one shows the vertical trail of expeditions. Both keep the rank and skill badges. Rules:
-// lib/expedition-progress.ts and lib/world-map.ts.
-import {useEffect,useLayoutEffect,useMemo,useState} from "react";
-import {ArrowLeft,ArrowRight,Award,CalendarDays,Check,Crown,List,Lock,Map as MapIcon,Medal,Sparkles,Star,TrendingUp,X,Zap} from "lucide-react";
+// without one shows the vertical trail of expeditions. It is the first screen of a story: the hook above the map, the
+// map zoomed to the student's next stop (highlighted), one big "Start Expedition n: name", and "Join a live game" small
+// at the top. Ranks and skill badges sit below the map. Rules: lib/expedition-progress.ts and lib/world-map.ts.
+import {useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
+import {ArrowRight,Award,CalendarDays,Check,Crown,List,Lock,Map as MapIcon,Medal,Search,Sparkles,Star,TrendingUp,Users,X,Zap} from "lucide-react";
 import {evidenceFrom,levelHistory,masteryOf} from "@/lib/mastery";
 import {SkillPage} from "./skill-feedback";
 import type {WorldPack} from "@/lib/world-schema";
-import {expeditionMap,rankFor,RANKS,skillBadges,type ExpeditionAttempt} from "@/lib/expedition-progress";
+import {BADGE_SKILL,expeditionMap,rankFor,RANKS,skillBadges,type ExpeditionAttempt} from "@/lib/expedition-progress";
 import {secretOf,tokenAt,worldMapView,type MapRegionView,type MapStopView} from "@/lib/world-map";
 import {focusScreenTop} from "./screen-focus";
 import {MapList,WorldMap} from "./world-map";
@@ -18,27 +19,37 @@ import {DoNow} from "./practice-round";
 import {DO_NOW} from "@/lib/onboarding";
 
 type Auth={token:string}|null|undefined;
-export function ExpeditionMap({world,attempts,assigned=[],justEarned,onStart,onBack,auth}:{world:WorldPack;attempts:ExpeditionAttempt[];assigned?:{expeditionId:string;due:string|null}[];justEarned?:string|null;onStart:(id:string)=>void;onBack:()=>void;auth?:Auth}){
- const [skillsOpen,setSkillsOpen]=useState(false);
+export function ExpeditionMap({world,attempts,assigned=[],justEarned,onStart,onJoinLive,ready=true,auth}:{world:WorldPack;attempts:ExpeditionAttempt[];assigned?:{expeditionId:string;due:string|null}[];justEarned?:string|null;onStart:(id:string)=>void;onJoinLive?:()=>void;ready?:boolean;auth?:Auth}){
+ const [skillsOpen,setSkillsOpen]=useState(false),[code,setCode]=useState<string|null>(null);
+ const codeRef=useRef<HTMLInputElement>(null);
+ function join(){if(onJoinLive){onJoinLive();return}setCode("");setTimeout(()=>codeRef.current?.focus(),0)}
+ const clean=(code??"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,12);
  useLayoutEffect(()=>{if(!skillsOpen)focusScreenTop()},[skillsOpen]);
  const stops=expeditionMap(world,attempts,assigned),finished=stops.filter(s=>s.state==="proven").length;
  // My skills: the student's private levels (lib/mastery.ts); never shown on the map itself.
  if(skillsOpen)return <SkillPage skills={masteryOf(evidenceFrom(attempts))} history={levelHistory(attempts)} expeditionTitle={id=>world.expeditions?.find(e=>e.id===id)?.title??id} onBack={()=>setSkillsOpen(false)}/>;
- const rank=rankFor(finished,stops.length),badges=skillBadges(attempts);
+ const rank=rankFor(finished,stops.length),badges=skillBadges(attempts),next=stops.find(s=>s.state==="current");
  return <div className="case-ui mx-auto flex max-w-xl flex-col gap-4 px-4 pb-16 pt-4 md:max-w-6xl">
   <DoNow text={DO_NOW.map}/>
-  <div className="flex flex-wrap items-center justify-between gap-2"><button type="button" onClick={onBack} className="case-secondary w-fit !min-h-11"><ArrowLeft size={18} aria-hidden/>Back</button>
+  <div className="flex flex-wrap items-center justify-between gap-2">
+   {code===null?<button type="button" onClick={join} className="case-secondary w-fit !min-h-11"><Users size={18} aria-hidden/>Join a live game</button>
+    :<form onSubmit={e=>{e.preventDefault();if(clean.length>=4)window.location.href=`/live/${clean}`}} className="flex items-center gap-2">
+     <label htmlFor="live-code" className="sr-only">Code on the board</label>
+     <input ref={codeRef} id="live-code" value={code} onChange={e=>setCode(e.target.value)} placeholder="Code on the board" autoComplete="off" autoCapitalize="characters" className="min-h-11 w-[11.5rem] rounded-full border-2 border-edge bg-panel-2 px-4 font-display text-[17px] uppercase tracking-[.08em] placeholder:normal-case placeholder:tracking-normal focus:border-highlight"/>
+     <button type="submit" disabled={clean.length<4} className="case-secondary !min-h-11">Join <ArrowRight size={16} aria-hidden/></button></form>}
    <button type="button" onClick={()=>setSkillsOpen(true)} className="case-secondary w-fit !min-h-11"><TrendingUp size={18} aria-hidden/>My skills</button></div>
   <section aria-labelledby="map-h">
    <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{world.title}</p>
    <h1 id="map-h" className="text-[30px] leading-tight outline-none">{world.world_map?"Story map":"Expedition map"}</h1>
-   <p className="text-[16px] text-muted">{finished} of {stops.length} expedition{stops.length===1?"":"s"} proven. Finish one to open the next.</p>
+   {world.hook&&<p className="mt-1 flex items-start gap-2 text-[16px] leading-snug text-ink"><Search size={18} className="mt-0.5 shrink-0 text-highlight" aria-hidden/>{world.hook}</p>}
   </section>
   {justEarned&&<p role="status" className="moment-pop flex items-center gap-3 rounded-[24px] bg-gold p-4 text-on-gold shadow-[0_8px_0_var(--color-gold-shadow)]"><Medal size={32} aria-hidden/><span><span className="block text-[13px] font-extrabold uppercase tracking-[.08em]">New rank</span><span className="font-display text-[26px] font-bold leading-none">{justEarned}</span></span></p>}
-  <div className="flex flex-wrap gap-2" aria-label="Ranks">{RANKS.map(r=><span key={r} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[14px] font-extrabold ${r===rank?"bg-gold text-on-gold":RANKS.indexOf(r)<(rank?RANKS.indexOf(rank):-1)?"bg-panel text-ink":"bg-panel-2 text-muted"}`}><Medal size={15} aria-hidden/>{r}{r===rank?<span className="sr-only"> (your rank)</span>:null}</span>)}</div>
+  {next&&<button type="button" disabled={!ready} onClick={()=>onStart(next.id)} className="flex min-h-[64px] w-full items-center justify-center gap-2 rounded-[22px] bg-primary px-5 py-3 text-center font-display text-[21px] font-bold leading-tight text-on-primary shadow-[0_7px_0_var(--color-primary-shadow)] transition-transform active:translate-y-1 disabled:opacity-50 motion-reduce:transition-none">Start Expedition {next.number}: {next.title} <ArrowRight size={22} className="shrink-0" aria-hidden/></button>}
   {world.world_map?<StoryMap world={world} attempts={attempts} assigned={assigned} onStart={onStart} auth={auth}/>:<Trail stops={stops} onStart={onStart}/>}
+  <p className="text-[15px] text-muted">{finished} of {stops.length} expedition{stops.length===1?"":"s"} proven. Finish one to open the next.</p>
+  <div className="flex flex-wrap gap-2" aria-label="Ranks">{RANKS.map(r=><span key={r} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[14px] font-extrabold ${r===rank?"bg-gold text-on-gold":RANKS.indexOf(r)<(rank?RANKS.indexOf(rank):-1)?"bg-panel text-ink":"bg-panel-2 text-muted"}`}><Medal size={15} aria-hidden/>{r}{r===rank?<span className="sr-only"> (your rank)</span>:null}</span>)}</div>
   <section aria-labelledby="badges-h" className="rounded-card bg-panel p-4"><h2 id="badges-h" className="flex items-center gap-2 font-display text-[20px] font-bold"><Award size={20} aria-hidden/>Skill badges</h2>
-   <ul className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4">{badges.map(b=><li key={b.skill} className={`rounded-row px-3 py-2 text-[14px] ${b.earned?"bg-gold text-on-gold":"bg-panel-2 text-ink"}`}><span className="block font-extrabold">{b.skill}</span><span className={b.earned?"":"text-muted"}>{b.earned?"Earned":`${Math.min(b.count,b.target)} of ${b.target}`} · {b.type}</span></li>)}</ul></section>
+   <ul className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4">{badges.map(b=><li key={b.skill} className={`rounded-row px-3 py-2 text-[14px] ${b.earned?"bg-gold text-on-gold":"bg-panel-2 text-ink"}`}><span className="block font-extrabold">{b.skill}</span><span className={b.earned?"":"text-muted"}>{BADGE_SKILL[b.type]??b.type} · {b.earned?"Earned":`${Math.min(b.count,b.target)} of ${b.target}`}</span></li>)}</ul></section>
  </div>;
 }
 
@@ -48,7 +59,7 @@ function StoryMap({world,attempts,assigned,onStart,auth}:{world:WorldPack;attemp
  useEffect(()=>{let live=true;loadSecrets(world.id,auth).then(s=>{if(live)setSecrets(s)});return()=>{live=false}},[world.id,auth]);
  const regions=useMemo(()=>worldMapView(world,attempts,assigned,secrets),[world,attempts,assigned,secrets]);
  const token=tokenAt(regions);
- const [focus,setFocus]=useState<string|null>(null),[view,setView]=useState<"map"|"list">("map");
+ const [focus,setFocus]=useState<string|null>(()=>regions.find(r=>r.state==="current")?.expedition??null),[view,setView]=useState<"map"|"list">("map");
  const [open,setOpen]=useState<{r:MapRegionView;s:MapStopView|"finale"}|null>(null);
  const region=regions.find(r=>r.expedition===focus)??null;
  const found=regions.flatMap(r=>r.stops).filter(s=>s.secret==="found").length,hidden=regions.flatMap(r=>r.stops).filter(s=>s.secret==="hidden").length;
@@ -57,7 +68,7 @@ function StoryMap({world,attempts,assigned,onStart,auth}:{world:WorldPack;attemp
  const cur=regions.find(r=>r.state==="current");
  return <section aria-labelledby="sm-h" className="flex flex-col gap-3">
   <h2 id="sm-h" className="sr-only">The map</h2>
-  <p className="text-[17px] font-bold">{cur?<>Tap your next stop to start <span className="text-highlight">Expedition {cur.number}: {cur.title}</span>, or tap any place you have been.</>:"Every expedition is proven. Tap any place to look back or play it again."}</p>
+  <p className="text-[16px] font-bold">{cur?<>Your next stop is pulsing. Drag to look around, or tap any place you have been.</>:"Every expedition is proven. Tap any place to look back or play it again."}</p>
   <div className="flex flex-wrap items-center gap-2">
    <div role="group" aria-label="Show as" className="inline-flex rounded-full bg-panel p-1">
     <button type="button" aria-pressed={view==="map"} onClick={()=>setView("map")} className={`inline-flex min-h-11 items-center gap-1.5 rounded-full px-4 text-[15px] font-bold ${view==="map"?"bg-primary text-on-primary":"text-ink"}`}><MapIcon size={16} aria-hidden/>Map</button>

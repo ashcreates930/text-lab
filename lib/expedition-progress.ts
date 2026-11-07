@@ -64,6 +64,13 @@ export function newRank(finishedBefore: number, stops: number) {
 
 // Skill badges by question type: a badge for 3 proofs of that type on the first try (Gist Getter: 5 best summaries).
 export const SKILL_TARGET = 3, GIST_TARGET = 5;
+// What each badge practises, in plain words, for its subtitle ("Vocabulary in context · 0 of 3").
+export const BADGE_SKILL: Record<string, string> = {
+  "Word Detective": "Vocabulary in context", "Shades of Meaning": "Word choice and tone", "Read Between the Lines": "Making inferences",
+  "Whose Eyes?": "Point of view", "Figure It Out": "Figurative language", "Character Clue": "Character", "Theme Thread": "Theme",
+  "Gist Check": "Summarizing", "Find It": "Citing evidence", "Catch the Lie": "Spotting a false claim", "Make the Call": "Drawing conclusions",
+  "Story Order": "Story structure", "Weigh the Evidence": "Weighing evidence", "Name the Liar": "Proving a claim false",
+};
 export function skillBadges(attempts: ExpeditionAttempt[]) {
   const firsts = firstAttempts(attempts);
   const types = Object.values(TYPE_INFO).filter((t) => t.name !== "Gist Check" && t.name !== "Make the Call");

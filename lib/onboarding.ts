@@ -32,7 +32,7 @@ export const DO_NOW: Record<Screen, string> = {
   refresher: "Try each missed question again with no timer, then tap Next.",
   skills: "Read your skill report, write one sentence, then open your Case Notes.",
   notes: "Read your Case Notes, add your own notes if you like, then tap Done.",
-  map: "Tap your next stop on the map to start the expedition.",
+  map: "Tap the big orange button to start your next expedition, or explore the map first.",
   myskills: "See how each skill is growing, and tap a skill to see its history.",
   practice: "Follow the arrows to try one practice question, with no points and no timer.",
   lobby: "Wait here until your teacher starts the game.",

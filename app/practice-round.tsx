@@ -21,10 +21,11 @@ export function DoNow({text,className=""}:{text:string;className?:string}){
 }
 
 export function PracticeRound({world,passages,onDone}:{world:WorldPack;passages:SourcePassage[];onDone:()=>void}){
- useLayoutEffect(()=>{focusScreenTop()},[]);
  const at=practiceChunk(world);
  const chunk=useMemo(()=>at?expeditionChunks(world,passages,at.expeditionId)[at.index]:null,[world,passages,at?.expeditionId,at?.index]);// eslint-disable-line react-hooks/exhaustive-deps
  const [step,setStep]=useState<"read"|"tap"|"done">("read"),[picked,setPicked]=useState<string|null>(null);
+ // Each part of the practice (read, the question, the result) is its own screen: the top, focus on its heading.
+ useLayoutEffect(()=>{focusScreenTop()},[step]);
  useEffect(()=>{if(!chunk)onDone()},[chunk]);// eslint-disable-line react-hooks/exhaustive-deps
  if(!chunk)return null;
  const q=chunk.chunk.question,tokens=chunkTokens(chunk.lines),right=step==="done"&&sentenceProves(q,tokens,picked?[picked]:[]);

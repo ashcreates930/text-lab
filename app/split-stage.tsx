@@ -5,6 +5,8 @@
 // Phone: the passage fills the screen and the question sits in a panel pinned to the bottom, which the student can
 // expand to answer or shrink to read. The heading and the main action (Lock in) stay visible either way.
 // Offsets: the site header and the race HUD are pinned; their heights are published as --header-h and --hud-h.
+// The phone panel never grows over the header: it is capped at the space below it, and its middle part (the body)
+// scrolls while the heading and the footer (Lock in, the Pieces bar) stay in view.
 import {useEffect,useState} from "react";
 import {ChevronDown,ChevronUp} from "lucide-react";
 
@@ -24,15 +26,15 @@ export function SplitStage({passage,head,body,action,collapse=false,label="Quest
  useEffect(()=>{setOpen(!collapse)},[collapse]);
  return <div className="split-stage md:grid md:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] md:items-start md:gap-5">
   <div className={`split-passage md:sticky md:top-[calc(var(--header-h,0px)+var(--hud-h,0px)+8px)] md:max-h-[calc(100dvh-var(--header-h,0px)-var(--hud-h,0px)-24px)] md:overflow-y-auto md:overscroll-contain md:pb-2 ${open?"pb-[62dvh]":"pb-44"} md:!pb-2`}>{passage}</div>
-  <section aria-label={label} className="split-panel fixed inset-x-0 bottom-0 z-30 rounded-t-[22px] border-t-2 border-edge bg-panel-2 shadow-[0_-10px_30px_rgba(0,0,0,.35)] md:sticky md:inset-auto md:top-[calc(var(--header-h,0px)+var(--hud-h,0px)+8px)] md:z-auto md:max-h-[calc(100dvh-var(--header-h,0px)-var(--hud-h,0px)-24px)] md:overflow-y-auto md:overscroll-contain md:rounded-card md:border-0 md:bg-transparent md:shadow-none">
-   <div className="flex items-start gap-2 px-4 pt-3 md:px-0 md:pt-0">
+  <section aria-label={label} className="split-panel fixed inset-x-0 bottom-0 z-30 max-md:flex max-md:max-h-[calc(100dvh-var(--header-h,64px)-8px)] max-md:flex-col rounded-t-[22px] border-t-2 border-edge bg-panel-2 shadow-[0_-10px_30px_rgba(0,0,0,.35)] md:sticky md:inset-auto md:top-[calc(var(--header-h,0px)+var(--hud-h,0px)+8px)] md:z-auto md:max-h-[calc(100dvh-var(--header-h,0px)-var(--hud-h,0px)-24px)] md:overflow-y-auto md:overscroll-contain md:rounded-card md:border-0 md:bg-transparent md:shadow-none">
+   <div className="flex shrink-0 items-start gap-2 px-4 pt-3 md:px-0 md:pt-0">
     <div className="min-w-0 flex-1">{head}</div>
     <button type="button" onClick={()=>setOpen(o=>!o)} aria-expanded={open} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-panel md:hidden">{open?<ChevronDown size={20} aria-hidden/>:<ChevronUp size={20} aria-hidden/>}<span className="sr-only">{open?"Shrink the question to read":"Expand the question to answer"}</span></button>
    </div>
-   {body&&<div className={`${open?"max-h-[42dvh] overflow-y-auto":"hidden"} px-4 pb-2 md:block md:max-h-none md:overflow-visible md:px-0`}>{body}</div>}
+   {body&&<div className={`${open?"max-h-[42dvh] min-h-0 overflow-y-auto":"hidden"} px-4 pb-2 md:block md:max-h-none md:overflow-visible md:px-0`}>{body}</div>}
    {/* The footer: Lock in, and for drag and drop the Pieces bar above it (app/drag-drop.tsx). On a laptop it sticks to
        the bottom of the question side, so the main action stays in view. */}
-   {action&&<div className="split-foot px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-2 md:sticky md:bottom-0 md:z-10 md:bg-stage md:px-0 md:pb-2"><div data-tray-slot/>{action}</div>}
+   {action&&<div className="split-foot shrink-0 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-2 md:sticky md:bottom-0 md:z-10 md:bg-stage md:px-0 md:pb-2"><div data-tray-slot/>{action}</div>}
    {!action&&<div className="h-3 md:hidden"/>}
   </section>
  </div>;
