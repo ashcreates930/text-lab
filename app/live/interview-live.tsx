@@ -1,6 +1,7 @@
 "use client";
-// The Interview and Name the Liar, live (rules: lib/interview.ts, lib/live/race.ts). The host board: each witness on
-// the stage while the class votes on the question card, then the witness answers in their recorded voice with
+// The Interview and Name the Liar, live (rules: lib/interview.ts, lib/live/race.ts). The host board: all the witnesses
+// in the lineup (app/lineup.tsx), the one being questioned in the spotlight, each asked one checked, while the class
+// votes on the question card, then the witness answers in their recorded voice with
 // captions; at the finale, how many have locked in (nothing else) until the reveal: the liar, their reaction, the proof
 // and the class breakdown. Each phone: vote, read the caption, lock in privately, then its own result.
 import {useEffect,useRef,useState} from "react";
@@ -12,6 +13,7 @@ import type {Said} from "@/lib/interview";
 import {LIAR_POINTS,proofPassages} from "@/lib/interview";
 import {CharacterStage,useVoice} from "../character-stage";
 import {Caption,NameTheLiar} from "../interview";
+import {Lineup} from "../lineup";
 import {ReadingPanel} from "../reading-panel";
 import {TimerTrack} from "../expedition-race";
 
@@ -41,7 +43,8 @@ export function InterviewHost({state,round,world,act,left,totalMs}:{state:HostVi
   {left!==null&&totalMs!==null&&<div className="mt-2"><TimerTrack left={left} seconds={totalMs/1000}/></div>}
   {state.session.paused&&<p role="status" className="mt-2 rounded-card bg-gold px-4 py-2 text-[18px] font-bold text-on-gold">Paused. Everyone stays on this screen.</p>}
   {(round.beat==="vote"||round.beat==="testify")&&w&&<div className="mt-4 grid gap-5 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:items-start">
-   {stage(w.character,440)}
+   <Lineup interactive={false} label={`The witnesses. ${w.name} is being questioned`} index={iv.witness??0} height={400} speaking={!!voice.playing} level={voice.level} gesture={gesture}
+    items={iv.witnesses.map((x,i)=>({id:x.character,name:x.name,portrait:x.portrait??null,model:x.model??null,check:iv.said[i]?"Asked":null}))}/>
    <div className="flex flex-col gap-3"><p className="font-display text-[clamp(26px,2.6vw,40px)] font-bold">{w.name}</p>
     {round.beat==="vote"?<><p className="text-[20px] text-muted">{race.answered} of {players} voted · which question should we ask?</p>
       <ol className="grid gap-3">{w.cards.map((c,i)=>{const n=iv.votes[k]?.[i]??0,total=Math.max(1,(iv.votes[k]?.[0]??0)+(iv.votes[k]?.[1]??0));return <li key={i} className="relative overflow-hidden rounded-card bg-panel px-5 py-4 text-[clamp(18px,1.8vw,28px)] font-bold">

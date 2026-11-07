@@ -20,6 +20,7 @@ import {BONUS_STEMS,squadCaseFilePdf,type SquadCaseFile} from "@/lib/case-notes"
 import {focusScreenTop} from "../screen-focus";
 import {AnswerBars,ArcBanner,ChunkText,CountdownRing,DiscoveryBurst,KeywordPrompt,QuestionPanel,RaceHud,RankPill,TimerTrack} from "../expedition-race";
 import {SplitStage,useStickyOffsets} from "../split-stage";
+import {Lineup} from "../lineup";
 import {DragDrop} from "../drag-drop";
 import {QuestionNote} from "../content-note";
 import {DO_NOW,markHintDone,type Screen} from "@/lib/onboarding";
@@ -147,10 +148,16 @@ export function RaceFinishHost({state,round,act}:{state:HostView;round:RaceRound
 }
 
 // ---------- The phone ----------
+// The investigator pick, in the same character-select lineup as the Interview (app/lineup.tsx): bring a character into
+// the spotlight (tap, swipe or the arrow keys), then "Play as". Portraits only, so the lobby stays light.
 export function AvatarPick({state,act}:{state:PlayerView;act:(k:string,p?:Record<string,unknown>)=>void}){
+ const mine=state.avatars.findIndex(a=>a.id===state.avatar?.id);
+ const [spot,setSpot]=useState(mine>=0?mine:0);
  if(!state.avatars.length)return null;
- return <section className="mt-5" aria-labelledby="av-h"><h2 id="av-h" className="text-[20px] font-bold">Pick your character</h2>
-  <ul className="mt-2 grid grid-cols-3 gap-2">{state.avatars.map(a=>{const on=state.avatar?.id===a.id;return <li key={a.id}><button type="button" aria-pressed={on} onClick={()=>act("avatar",{characterId:a.id})} className={`flex w-full flex-col items-center gap-1 rounded-2xl p-2 ${on?"bg-primary text-on-primary":"bg-panel ring-1 ring-edge"}`}><img src={a.portrait} alt="" className="h-16 w-16 rounded-full object-cover"/><span className="text-[13px] font-bold leading-tight">{a.name}</span></button></li>})}</ul>
+ const a=state.avatars[spot]??state.avatars[0],on=state.avatar?.id===a.id;
+ return <section className="mt-5 flex flex-col gap-2" aria-labelledby="av-h"><h2 id="av-h" className="text-[20px] font-bold">Pick your investigator</h2>
+  <Lineup items={state.avatars.map(x=>({id:x.id,name:x.name,portrait:x.portrait,check:state.avatar?.id===x.id?"Your pick":null}))} index={spot} onIndex={setSpot} label={`Investigators. ${a.name} is in the spotlight`} height={170} threeD={false}/>
+  <button type="button" aria-pressed={on} onClick={()=>act("avatar",{characterId:a.id})} className={`min-h-[52px] w-full rounded-[18px] px-4 text-[17px] font-bold ${on?"bg-primary text-on-primary":"bg-panel text-ink ring-2 ring-edge"}`}>{on?`You're playing as ${a.name}`:`Play as ${a.name}`}</button>
  </section>;
 }
 // While waiting: a Words to Know card from the story, changing every few seconds.

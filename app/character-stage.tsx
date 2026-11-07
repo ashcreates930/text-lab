@@ -2,8 +2,9 @@
 // A witness on the dark stage: the 3D model (three.js, loaded only when this mounts) framed from the knees up in warm
 // lantern light, or the animated portrait when WebGL is missing, memory is low or the model takes over 4 seconds.
 // He has no mouth shapes, so he talks with his body: the talking clip while a line plays, laughing or the head shake
-// where the line calls for it, and the lantern glow follows his voice. Under reduced motion: no camera moves, a
-// minimal idle and a steady glow. Rules: lib/character-motion.ts.
+// where the line calls for it, and the lantern glow follows his voice. A portrait breathes slowly at rest and bobs
+// while talking. Under reduced motion: no camera moves, a minimal idle, a still portrait and a steady glow.
+// Rules: lib/character-motion.ts.
 import {useCallback,useEffect,useRef,useState} from "react";
 import {MODEL_TIMEOUT_MS,chooseStage,glowFor,idleTracks} from "@/lib/character-motion";
 
@@ -103,7 +104,7 @@ export function CharacterStage({model,portrait,name,clip="idle",gesture=null,lev
  return <div className={`relative overflow-hidden rounded-card bg-deep ${className}`} style={{height}} role="img" aria-label={`${name}${clip==="talking"?", talking":clip==="laughing"?", laughing":clip==="head-shake"?", shaking his head":""}`}>
   <div ref={box} className={`absolute inset-0 ${mode==="3d"?"":"invisible"}`}/>
   {mode!=="3d"&&<div className="absolute inset-0 grid place-items-center">
-   <div className={`relative grid place-items-center rounded-full ${clip!=="idle"&&!reduced.current?"portrait-talk":""}`} style={{width:Math.min(220,height*0.62),height:Math.min(220,height*0.62),boxShadow:`0 0 ${30+60*glow}px ${8+22*glow}px rgba(255,138,31,${0.18+0.4*glow})`}}>
+   <div className={`relative grid place-items-center rounded-full ${reduced.current?"":clip!=="idle"?"portrait-talk":"portrait-idle"}`} style={{width:Math.min(220,height*0.62),height:Math.min(220,height*0.62),boxShadow:`0 0 ${30+60*glow}px ${8+22*glow}px rgba(255,138,31,${0.18+0.4*glow})`}}>
     {portrait?<img src={portrait} alt="" className="h-full w-full rounded-full border-4 border-panel object-cover"/>:<span className="grid h-full w-full place-items-center rounded-full bg-reading font-display text-[64px] font-bold text-reading-ink">{name.slice(0,1)}</span>}
    </div>
    {mode==="loading"&&<p className="absolute bottom-3 text-[13px] text-muted">Bringing {name} to the stand…</p>}

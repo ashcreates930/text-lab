@@ -113,6 +113,12 @@ html[data-contrast="high"] .reading-scope{--color-muted:#241B12;--color-faint:#2
 /* A portrait witness talking: a gentle bob while the line plays. */
 @keyframes portrait-talk{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.015)}}
 .portrait-talk{animation:portrait-talk .9s ease-in-out infinite}
+/* The lineup (app/lineup.tsx): portraits breathe slowly at rest (a 2 px rise, a touch of turn); the spotlight fades in. */
+@keyframes portrait-idle{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2px) rotate(-.6deg)}}
+.portrait-idle{animation:portrait-idle 4.5s ease-in-out infinite}
+@keyframes lineup-in{from{opacity:.25;transform:scale(.96)}to{opacity:1;transform:none}}
+.lineup-in{animation:lineup-in .28s ease-out}
+@media (prefers-reduced-motion:reduce){.portrait-idle,.lineup-in{animation:none}}
 @keyframes piece-pop{0%{transform:scale(.9);opacity:0}60%{transform:scale(1.03);opacity:1}100%{transform:scale(1)}}
 .piece-pop{animation:piece-pop .35s ease-out}
 @keyframes case-pop{0%{transform:scale(1)}35%{transform:scale(1.06)}100%{transform:scale(1)}}

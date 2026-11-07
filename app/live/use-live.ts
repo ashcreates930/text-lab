@@ -12,9 +12,14 @@ export function useLive<T>(sessionId:string|null,headers:Record<string,string>|n
  const [live,setLive]=useState(false);
  const key=headers?JSON.stringify(headers):"";
  const busy=useRef(false);
+ // A tap's own answer (setState from an action) is newer than any refresh already on its way: a refresh that started
+ // before it is dropped, so a slow poll can't flip the screen back (a pick briefly showing as undone).
+ const stamp=useRef(0);
+ const setFresh=useCallback((v:T|null|((p:T|null)=>T|null))=>{stamp.current++;setState(v)},[]);
  const refresh=useCallback(async()=>{
   if(!sessionId||!key||busy.current)return;busy.current=true;
-  try{const r=await fetch(`/api/live/sessions/${sessionId}`,{headers:JSON.parse(key),cache:"no-store"});const j=await r.json();if(r.ok){setState(j);setError("")}else setError(j.error??"Something went wrong.")}
+  const at=stamp.current;
+  try{const r=await fetch(`/api/live/sessions/${sessionId}`,{headers:JSON.parse(key),cache:"no-store"});const j=await r.json();if(at!==stamp.current)return;if(r.ok){setState(j);setError("")}else setError(j.error??"Something went wrong.")}
   catch{setError("Reconnecting…")}finally{busy.current=false}
  },[sessionId,key]);
  useEffect(()=>{
@@ -25,7 +30,7 @@ export function useLive<T>(sessionId:string|null,headers:Record<string,string>|n
   return()=>{if(channel)db?.removeChannel(channel)};
  },[sessionId,refresh]);
  useEffect(()=>{const t=window.setInterval(refresh,live?8000:2000);return()=>window.clearInterval(t)},[refresh,live]);
- return {state,setState,error,refresh,live};
+ return {state,setState:setFresh,error,refresh,live};
 }
 
 // The story's world pack and paragraphs, for evidence lines on players' phones.

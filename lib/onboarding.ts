@@ -12,7 +12,7 @@ export type Screen = "home" | "interview" | "read" | "gist" | "question" | "proo
 // What to do now, in one plain sentence, for every screen.
 export const DO_NOW: Record<Screen, string> = {
   home: "Tap Play now to start, or join your class's live game.",
-  interview: "Pick a question for this witness, listen to the answer, then go on to the next witness.",
+  interview: "Bring each witness into the spotlight, pick a question and listen; question all of them before the race.",
   read: "Read the chunk, then tap Ready.",
   gist: "Pick the best summary of what you just read.",
   question: "Pick your answer.",
@@ -26,7 +26,7 @@ export const DO_NOW: Record<Screen, string> = {
   board: "Check the leaderboard while the next chunk gets ready.",
   burst: "Tap the hidden discoveries in the chunks you've read, then tap I'm done.",
   countdown: "Get ready: the next chunk is about to start.",
-  liar: "Choose the witness who lied, then tap the sentence that proves it.",
+  liar: "Bring the witness who lied into the spotlight and name them, then tap the sentence that proves it.",
   verdict: "See who lied and the line that proves it, then tap Final results.",
   finish: "See the final results, then tap Refresher to fix what you missed.",
   refresher: "Try each missed question again with no timer, then tap Next.",
