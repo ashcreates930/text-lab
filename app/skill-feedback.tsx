@@ -22,8 +22,9 @@ export function Dots({filled,of}:{filled:number;of:number}){
 }
 export function SkillTag({s,className=""}:{s:SkillLevel;className?:string}){
  const t=skillTag(s);
- return <p className={`inline-flex flex-wrap items-center gap-2 rounded-full px-3 py-1.5 text-[14px] font-bold ${LEVEL_STYLE[s.level]} ${className}`} aria-label={`Skill: ${t.text}`}>
-  <span>{s.name} · {s.level}</span>{t.dots&&<><Dots filled={t.dots.filled} of={t.dots.of}/><span className="font-semibold">{t.dots.filled} of {t.dots.of} toward {s.toward!.next}</span></>}</p>;
+ // A span, not a p: the tag sits inside paragraphs (the result screens) and buttons (My skills).
+ return <span data-skill-tag className={`inline-flex flex-wrap items-center gap-2 rounded-full px-3 py-1.5 text-[14px] font-bold ${LEVEL_STYLE[s.level]} ${className}`}>
+  <span className="sr-only">Skill: </span><span>{s.name} · {s.level}</span>{t.dots&&<><Dots filled={t.dots.filled} of={t.dots.of}/><span className="sr-only">, </span><span className="font-semibold">{t.dots.filled} of {t.dots.of} toward {s.toward!.next}</span></>}</span>;
 }
 export function LevelUp({s}:{s:SkillLevel}){
  const top=s.level==="Mastered";
