@@ -164,7 +164,7 @@ function publicRace(st: LiveState, round: LiveRaceRound) {
   const pinned = round.pinned ? st.responses.find((r) => r.id === round.pinned && !r.flagged) : undefined;
   const exp = st.world.expeditions?.find((e) => e.id === round.settings.expeditionId);
   return {
-    type: "race" as const, step: round.step, total: chunks.length, beat: round.beat, beatStartedAt: round.beatStartedAt, squadsOn: round.squadsOn, paused: !!round.pausedAt,
+    type: "race" as const, step: round.step, total: chunks.length, beat: round.beat, beatStartedAt: round.beatStartedAt, squadsOn: round.squadsOn, paused: !!round.pausedAt, holdBefore: round.holdBefore ?? null,
     beatMs: beatMs(round, c, "1"), expedition: { id: round.settings.expeditionId, title: exp?.title ?? "" }, gradeBand: round.settings.gradeBand, grade: round.settings.grade ?? 7, highlighter: round.settings.highlighter,
     chunk: { id: c.id, index: c.index, passages: c.passages, lines: c.lines, gist: strip(c.chunk.gist.options), discovery: { phrase: c.chunk.discovery.phrase, note: c.chunk.discovery.note } },
     // The arc's moment at this chunk (the twist, the boss, a surprise double), for the banners; the checkpoint follows level 1.
@@ -422,7 +422,7 @@ export type HostAction =
   | { action: "pause" } | { action: "resume" } | { action: "end" } | { action: "witness.play" } | { action: "player.absent"; playerId: string; absent: boolean } | { action: "yourturn.start" }
   | { action: "override"; key: "sound"; squadId: string; value: boolean } | { action: "override"; key: "objection"; value: boolean }
   | { action: "mission.set"; missionId?: string | null; squadsChoose?: boolean }
-  | { action: "race.next" } | { action: "bonus.start" } | { action: "bonus.end" } | { action: "race.pin"; questionId: string | null } | { action: "player.time"; playerId: string; setting: TimeSetting };
+  | { action: "race.next" } | { action: "race.holdBefore"; step: number | null } | { action: "bonus.start" } | { action: "bonus.end" } | { action: "race.pin"; questionId: string | null } | { action: "player.time"; playerId: string; setting: TimeSetting };
 
 export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): Promise<string | null> {
   const s = st.session, round = currentRound(st);
@@ -493,6 +493,10 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
       if (round?.type !== "race" || s.status !== "round") return "No Proof Race is running.";
       const n = nextBeat(round, liveRaceChunks(st.world, st.passages ?? [], round), liveArc(st.world, round));
       if (n === "end") { await store.updateSession(s.id, { status: "ended", paused: false }); return null; }
+      // The teacher asked to pause before this chunk (a content note is coming): pause here instead of showing it.
+      if (round.holdBefore != null && n.step === round.holdBefore && n.step !== round.step) {
+        await set(store, st, { ...round, holdBefore: null, pausedAt: round.pausedAt ?? new Date().toISOString() }); await store.updateSession(s.id, { paused: true }); return null;
+      }
       // Moving on ends a pause: the new beat's clock starts now, so phones must be able to answer it.
       if (s.paused) await store.updateSession(s.id, { paused: false });
       return set(store, st, { ...round, step: n.step, beat: n.beat, beatStartedAt: new Date().toISOString(), pausedAt: null, pinned: n.step === round.step ? round.pinned ?? null : null });
@@ -514,6 +518,12 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
       if (round?.type !== "bonus" || s.status !== "round") return "No Bonus Round is running.";
       await store.updateSession(s.id, { status: "reveal" });
       return null;
+    }
+    case "race.holdBefore": {
+      if (round?.type !== "race" || s.status !== "round") return "No Proof Race is running.";
+      const step = a.step === null ? null : Number(a.step);
+      if (step !== null && (!Number.isInteger(step) || step <= round.step)) return "Choose a chunk that is still to come.";
+      return set(store, st, { ...round, holdBefore: step });
     }
     case "race.pin": {
       if (round?.type !== "race") return "No Proof Race is running.";

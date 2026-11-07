@@ -234,3 +234,7 @@ main:has([data-fill-screen]) > footer { display: none; }
 .dnd-slide{animation:dnd-slide .55s cubic-bezier(.2,.8,.2,1) both}
 @keyframes dnd-slide{from{transform:translateY(-14px);opacity:.3}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion:reduce){.dnd-slide{animation:none}}
+/* First-time hints (lib/onboarding.ts): the arrow callout bobs gently toward what to tap; still under reduced motion. */
+.coach-bob{animation:coach-bob 1.4s ease-in-out infinite}
+@keyframes coach-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+@media (prefers-reduced-motion:reduce){.coach-bob{animation:none}}

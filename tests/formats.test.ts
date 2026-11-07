@@ -103,7 +103,7 @@ test("versions: easier drops a wrong choice and shows the hint; harder hides the
 
 test("the Gist check comes about every third chunk", () => {
   assert.deepEqual(Array.from({ length: 10 }, (_, k) => k).filter(gistAt), [0, 3, 6, 9]);
-  assert.match(src("app/expedition-race.tsx"), /onClick=\{\(\)=>gistAt\(k\)\?go\("gist"\):toQuestion\(\)\}/);
+  assert.ok(src("app/expedition-race.tsx").includes(`onClick={()=>{markHintDone("read");gistAt(k)?go("gist"):toQuestion()}}`));
   assert.match(src("lib/live/race.ts"), /beat: gistAt\(s\) \? "process" : asksHere\(round, s\) \? "ask" : "race"/);
 });
 

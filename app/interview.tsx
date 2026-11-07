@@ -14,6 +14,8 @@ import {focusScreenTop} from "./screen-focus";
 import {SplitStage} from "./split-stage";
 import {shuffledOrder} from "@/lib/expedition";
 import {HologramView} from "./hologram-view";
+import {DoNow} from "./practice-round";
+import {DO_NOW} from "@/lib/onboarding";
 
 const characterOf=(world:WorldPack,id:string)=>world.characters.find(c=>c.id===id);
 // One witness on the stage, speaking the line that's playing.
@@ -45,6 +47,7 @@ export function InterviewScreen({world,expeditionId,interview,liar,onDone,saved}
  const ch=characterOf(world,w.character);
  if(holo&&ch)return <HologramView character={ch} worldId={world.id} line={st.text} audioSrc={src} sandboxId="interview" title={`The Interview · ${name}`} onClose={()=>{setHolo(false);setTimeout(()=>focusScreenTop(),0)}}/>;
  return <section aria-labelledby="iv-h" className="flex flex-col gap-3">
+  <DoNow text={DO_NOW.interview}/>
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">The Interview · witness {k+1} of {interview.witnesses.length}</p>
   <h1 id="iv-h" className="text-[28px] leading-tight outline-none">{card==null?`Question ${name}`:`${firstName(name)} answers`}</h1>
   <p className="text-[16px] text-muted">One witness will lie to you. Listen closely: after the race you'll name the liar and prove it with a line from the story.</p>

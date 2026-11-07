@@ -5,6 +5,8 @@ import {useLayoutEffect,useRef,useState} from "react";
 import {ArrowRight,Map as MapIcon,Search,Users,Zap} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import {focusScreenTop} from "./screen-focus";
+import {DoNow} from "./practice-round";
+import {DO_NOW} from "@/lib/onboarding";
 
 export function LaunchScreen({world,ready,onStart,onJoinLive,onMap}:{world:WorldPack;ready:boolean;onStart:()=>void;onJoinLive?:()=>void;onMap?:()=>void}){
  const [code,setCode]=useState<string|null>(null);
@@ -13,6 +15,7 @@ export function LaunchScreen({world,ready,onStart,onJoinLive,onMap}:{world:World
  function join(){if(onJoinLive){onJoinLive();return}setCode("");setTimeout(()=>codeRef.current?.focus(),0)}
  const clean=(code??"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,12);
  return <div className="case-ui mx-auto flex max-w-xl flex-col gap-3 px-4 pb-6 pt-4">
+  <DoNow text={DO_NOW.home}/>
   <section aria-labelledby="launch-h" className="rounded-card bg-panel-2 p-4">
    <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{world.title}</p>
    <h1 id="launch-h" className="mt-1 text-[26px] leading-[1.1] outline-none">You're an investigator stepping into the story</h1>

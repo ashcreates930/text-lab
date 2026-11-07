@@ -22,6 +22,7 @@ import {AnswerBars,ArcBanner,ChunkText,CountdownRing,DiscoveryBurst,KeywordPromp
 import {SplitStage,useStickyOffsets} from "../split-stage";
 import {DragDrop} from "../drag-drop";
 import {QuestionNote} from "../content-note";
+import {DO_NOW,markHintDone,type Screen} from "@/lib/onboarding";
 import {contentNotes} from "@/lib/content-notes";
 import {LevelUp,SkillTag} from "../skill-feedback";
 import {RaceMap} from "../world-map";
@@ -101,7 +102,7 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
   <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="race-h" className="text-[clamp(24px,2.4vw,38px)] font-bold">Chunk {round.step+1} of {round.total} · {BEAT_LABEL[round.beat]}</h2>{next}</div>
   <p className="text-[18px] text-muted">{round.expedition.title} · Grade {round.grade??7}</p>
   {timed&&left!==null&&<div className="mt-2"><TimerTrack left={left} seconds={(totalMs??1000)/1000}/></div>}
-  {nextNote&&<aside role="note" aria-label="Teacher heads-up" className="mt-3 rounded-card border-2 border-gold bg-panel-2 px-5 py-3"><p className="text-[14px] font-extrabold uppercase tracking-[.08em] text-gold">Heads-up for you: the next chunk</p><p className="mt-1 text-[clamp(16px,1.4vw,22px)] font-bold text-ink">Chunk {round.step+2} shows a passage with a content note. Students will see: "{nextNote}"</p></aside>}
+  {nextNote&&<NoteHeadsUp note={nextNote} step={round.step} held={round.holdBefore===round.step+1} paused={!!state.session.paused} act={act}/>}
   {state.session.paused&&<p role="status" className="mt-2 rounded-card bg-gold px-4 py-2 text-[18px] font-bold text-on-gold">Paused. Everyone stays on this screen.</p>}
   {round.beat==="read"&&world&&<><p className="mt-2 text-[clamp(18px,1.6vw,26px)] text-muted" aria-live="polite">{race.ready.ready} of {race.ready.total} ready · no timer while reading</p>
    <div className="mt-3"><ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} large/></div></>}
@@ -165,6 +166,10 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  const [draft,setDraft]=useState<Answer>({}),[step,setStep]=useState<1|2>(1),[marking,setMarking]=useState(false),[unknown,setUnknown]=useState<Set<number>>(new Set());
  const key=`${round?.step}:${round?.beat}`;
  useEffect(()=>{setDraft({});setStep(1)},[round?.step]);
+ // "What do I do?" shows this screen's hint again (lib/onboarding.ts) until the screen changes.
+ const [again,setAgain]=useState(false),[gistPick,setGistPick]=useState<number|null>(null);
+ useEffect(()=>{setGistPick(null)},[round?.step]);
+ useEffect(()=>{setAgain(false)},[round?.step,round?.beat,step]);
  const scale=race?.scale??1;
  useStickyOffsets();
  const myMs=round?.beatMs!=null?round.beatMs*scale:null;
@@ -179,7 +184,11 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  // This student's own version of the question (easier or harder), else the standard one.
  const q=race.myQuestion??round.question;
  if(interviewBeat(round.beat)&&round.interview)return <>{(round.beat==="liar"||round.beat==="verdict")&&<RaceHud score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.total} total={round.total} left={null} title={round.expedition.title}/>}<InterviewPlayer state={state} world={world} act={act} left={round.beat==="vote"||round.beat==="liar"?left:null} myMs={myMs}/></>;
- const hud=<RaceHud score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.step+1} total={round.total} left={round.beat==="read"?null:left} title={round.expedition.title}/>;
+ // The one plain sentence for this screen (lib/onboarding.ts), and first-time hints marked done after a right answer.
+ const phoneScreen:Screen=({read:"read",process:"gist",ask:"wait",race:testifying?"wait":q?.format==="dnd"?"dnd":q?.format==="multi"?"multi":q?.format==="written"&&step===1?"written":(step===2||q?.format==="tap")?(q?.clues?"clues":"proof"):"question",
+  reveal:"result",lightning:"lightning",board:"board",burst:"burst",countdown:"countdown",liar:"liar",verdict:"verdict",vote:"interview",testify:"interview"} as Record<string,Screen>)[round.beat]??"wait";
+ if(round.beat==="reveal"&&mine.tap?.correct&&q){markHintDone("lock");markHintDone(q.format==="dnd"?"dnd":q.format==="multi"?"multi":q.format==="written"?"written":q.clues?"clues":"proof")}
+ const hud=<RaceHud doNow={DO_NOW[phoneScreen]} onHelp={()=>setAgain(true)} score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.step+1} total={round.total} left={round.beat==="read"?null:left} title={round.expedition.title}/>;
  // The proof as token positions: its words, or every word of its lines.
  const shownTokens=round.reveal?.words.length?round.reveal.words:proofTokensOf(tokens,round.chunk.lines,round.reveal?.lines??[]);
  return <section className="wide-host mt-3 flex flex-col gap-3" aria-labelledby="rp-h">
@@ -193,7 +202,8 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
     :<button type="button" onClick={async()=>{if(unknown.size)await act("race_unknown",{words:[...unknown].map(i=>tokens[i]?.text)});setMarking(false);act("race_ready")}} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Ready <ArrowRight size={18} aria-hidden/></button>}</>}
   {round.beat==="process"&&<SplitStage label="Gist check" passage={<ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens}/>}
    head={<><TimerTrack left={left} seconds={(myMs??20000)/1000}/><p className="mt-2 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Gist check</p><h1 id="rp-h" className="text-[28px] outline-none">Which is the best summary?</h1></>}
-   body={<><AnswerBars seed={`${state.me.id}|${round.chunk.id}|gist`} label="Which is the best summary?" options={round.chunk.gist.map(t=>({text:t}))} picked={mine.gist} disabled={mine.gist!==null} onPick={i=>act("race_gist",{choice:i})}/>
+   body={<><AnswerBars seed={`${state.me.id}|${round.chunk.id}|gist`} label="Which is the best summary?" options={round.chunk.gist.map(t=>({text:t}))} picked={mine.gist??gistPick} disabled={mine.gist!==null} onPick={setGistPick}/>
+   {mine.gist===null&&<button type="button" disabled={gistPick===null} onClick={()=>gistPick!==null&&act("race_gist",{choice:gistPick})} className="case-primary mt-3 min-h-[56px] w-full justify-center text-[18px]">Lock in <ArrowRight size={18} aria-hidden/></button>}
    {mine.gist!==null&&<p role="status" className="mt-2 text-[16px] font-bold text-muted">Locked in. The question is next.</p>}</>}/>}
   {round.beat==="ask"&&<><TimerTrack left={left} seconds={(myMs??60000)/1000}/><h1 id="rp-h" className="text-[28px] outline-none">Your question</h1><QuestionAsk sent={mine.asked} onSend={async t=>(await act("race_question",{text:t}))??null}/></>}
   {round.beat==="race"&&q&&<>{mine.done&&!testifying&&<TimerTrack left={left} seconds={(myMs??45000)/1000}/>}
@@ -202,7 +212,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
     {found!==round.chunk.id?<><p className="text-[16px] font-bold">Bonus: find this chunk's hidden discovery (a figurative phrase or rich word) for {DISCOVERY_COINS} coins.</p>
       <ChunkText explore chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} onDiscover={()=>{if(found!==round.chunk.id){setFound(round.chunk.id);setCoins(c=>c+DISCOVERY_COINS);cue(sound,"chime",0.3)}}} found={false}/></>
      :<p className="rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold">You found this chunk's discovery: "{round.chunk.discovery.phrase}". {round.chunk.discovery.note}</p>}</>
-    :<QuestionPanel banner={<ArcBanner kind={round.arc} speaker={q.testimony?.speaker}/>} seed={`${state.me.id}|${round.chunk.id}`} timer={!testifying?<TimerTrack left={left} seconds={(myMs??45000)/1000}/>:null} headingId="rp-h" vq={q} passages={round.chunk.passages} chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} glossary={world.glossary} testifying={!!testifying} draft={draft} setDraft={setDraft} step={step} setStep={setStep} onLock={a=>act("race_tap",{answer:a})}/>}</>}
+    :<QuestionPanel help={{again}} banner={<ArcBanner kind={round.arc} speaker={q.testimony?.speaker}/>} seed={`${state.me.id}|${round.chunk.id}`} timer={!testifying?<TimerTrack left={left} seconds={(myMs??45000)/1000}/>:null} headingId="rp-h" vq={q} passages={round.chunk.passages} chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} glossary={world.glossary} testifying={!!testifying} draft={draft} setDraft={setDraft} step={step} setStep={setStep} onLock={a=>act("race_tap",{answer:a})}/>}</>}
   {round.beat==="reveal"&&<div aria-live="assertive">{mine.tap?.correct
    ?<div className="mt-6 flex flex-col items-center gap-3"><p aria-hidden className="float-up font-display text-[56px] font-bold leading-none text-gold">+{mine.tap.points.toLocaleString()}</p>
     <div className="moment-pop w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{q?.name}{(mine.tap.mult??1)>1?" · Double points":""}</p><h1 id="rp-h" className="mt-1 text-[40px] leading-none outline-none">Proof!<span className="sr-only"> Plus {mine.tap.points} points.</span></h1><p className="mt-2 text-[16px] font-bold">{round.reveal?.why}</p></div>
@@ -315,4 +325,25 @@ export function BonusHost({state,world,act}:{state:HostView;world:WorldPack|null
    :<><div className="mt-4"><Leaderboard rows={b.board.map((x,i,all)=>({id:x.name,name:x.name,points:x.points,gained:x.points,rank:all.findIndex(y=>y.points===x.points)+1,prevRank:null,move:0}))} dark title="Squad bonus board"/></div>
     <div className="mt-6 grid gap-4 md:grid-cols-2">{b.squads.map(q=><SquadFileCard key={q.squadId} file={q.file} story={world?.title??""} expedition="Proof Race" dark/>)}</div></>}
  </section>;
+}
+
+// The teacher's heads-up one chunk before a passage with a content note (lib/content-notes.ts). The host board is
+// projected, so it shows only a short line; the note's full wording opens on a teacher-only Preview tap and closes on its
+// own. "Pause before next chunk" stops the game at the countdown, before the passage appears on any screen, so the teacher
+// can talk first; Resume (the existing control) goes on. The hold lives on the server (race.holdBefore), so it works even
+// when the countdown is short or the host tab is in the background. Students still see the full note right before the passage.
+export const PREVIEW_SECONDS=10;
+function NoteHeadsUp({note,step,held,paused,act}:{note:string;step:number;held:boolean;paused:boolean;act:(b:Record<string,unknown>)=>void}){
+ const [preview,setPreview]=useState(false);
+ useEffect(()=>{setPreview(false)},[step]);
+ useEffect(()=>{if(!preview)return;const t=setTimeout(()=>setPreview(false),PREVIEW_SECONDS*1000);return()=>clearTimeout(t)},[preview]);
+ return <aside role="note" aria-label="Teacher heads-up" className="mt-3 rounded-card border-2 border-gold bg-panel-2 px-5 py-3">
+  <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-[clamp(16px,1.4vw,22px)] font-bold text-ink">Heads-up: the next chunk has a content note.</p>
+   <div className="flex flex-wrap gap-2">
+    <button type="button" aria-expanded={preview} onClick={()=>setPreview(p=>!p)} className="case-secondary !min-h-11">{preview?"Hide preview":"Preview"}</button>
+    {held?<button type="button" onClick={()=>act({action:"race.holdBefore",step:null})} className="case-secondary !min-h-11">Will pause before the next chunk · Undo</button>
+     :paused?null:<button type="button" onClick={()=>act({action:"race.holdBefore",step:step+1})} className="case-primary !min-h-11">Pause before next chunk</button>}</div></div>
+  {preview&&<div role="dialog" aria-label="Content note preview (teacher only)" className="mt-3 rounded-row bg-panel px-4 py-3"><p className="text-[13px] font-extrabold uppercase tracking-[.08em] text-muted">Teacher preview · closes in {PREVIEW_SECONDS} seconds</p><p className="mt-1 text-[16px] text-ink">{note}</p>
+   <button type="button" onClick={()=>setPreview(false)} className="case-secondary mt-2 !min-h-11">Close</button></div>}
+ </aside>;
 }

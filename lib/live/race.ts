@@ -27,7 +27,9 @@ import { screenBoardText } from "../safety.ts";
 export type ExpSettings = { expeditionId: string; grade?: Grade; gradeBand: GradeBand; questions: boolean; highlighter: boolean; autoAdvance: boolean };
 export const LIVE_BEATS = ["vote", "testify", "read", "process", "ask", "race", "reveal", "lightning", "board", "burst", "countdown", "liar", "verdict"] as const;
 export type LiveBeat = (typeof LIVE_BEATS)[number];
-export type LiveRaceRound = { type: "race"; settings: ExpSettings; step: number; beat: LiveBeat; beatStartedAt: string; squadsOn: boolean; pinned?: string | null; pausedAt?: string | null; interview?: { liar: number; witnesses: number } | null };
+export type LiveRaceRound = { type: "race"; settings: ExpSettings; step: number; beat: LiveBeat; beatStartedAt: string; squadsOn: boolean; pinned?: string | null; pausedAt?: string | null;
+  // holdBefore: a chunk (step) the teacher asked to pause before, from the content-note heads-up.
+  holdBefore?: number | null; interview?: { liar: number; witnesses: number } | null };
 export const interviewOf = (world: WorldPack, round: Pick<LiveRaceRound, "settings" | "interview">): Interview | null => (round.interview ? world.expeditions?.find((e) => e.id === round.settings.expeditionId)?.interview ?? null : null);
 export const isBeat = (b: unknown): b is LiveBeat => (LIVE_BEATS as readonly string[]).includes(String(b));
 

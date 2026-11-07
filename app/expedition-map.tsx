@@ -14,6 +14,8 @@ import {secretOf,tokenAt,worldMapView,type MapRegionView,type MapStopView} from 
 import {focusScreenTop} from "./screen-focus";
 import {MapList,WorldMap} from "./world-map";
 import {loadSecrets,saveSecret} from "./map-store";
+import {DoNow} from "./practice-round";
+import {DO_NOW} from "@/lib/onboarding";
 
 type Auth={token:string}|null|undefined;
 export function ExpeditionMap({world,attempts,assigned=[],justEarned,onStart,onBack,auth}:{world:WorldPack;attempts:ExpeditionAttempt[];assigned?:{expeditionId:string;due:string|null}[];justEarned?:string|null;onStart:(id:string)=>void;onBack:()=>void;auth?:Auth}){
@@ -24,6 +26,7 @@ export function ExpeditionMap({world,attempts,assigned=[],justEarned,onStart,onB
  if(skillsOpen)return <SkillPage skills={masteryOf(evidenceFrom(attempts))} history={levelHistory(attempts)} expeditionTitle={id=>world.expeditions?.find(e=>e.id===id)?.title??id} onBack={()=>setSkillsOpen(false)}/>;
  const rank=rankFor(finished,stops.length),badges=skillBadges(attempts);
  return <div className="case-ui mx-auto flex max-w-xl flex-col gap-4 px-4 pb-16 pt-4 md:max-w-6xl">
+  <DoNow text={DO_NOW.map}/>
   <div className="flex flex-wrap items-center justify-between gap-2"><button type="button" onClick={onBack} className="case-secondary w-fit !min-h-11"><ArrowLeft size={18} aria-hidden/>Back</button>
    <button type="button" onClick={()=>setSkillsOpen(true)} className="case-secondary w-fit !min-h-11"><TrendingUp size={18} aria-hidden/>My skills</button></div>
   <section aria-labelledby="map-h">

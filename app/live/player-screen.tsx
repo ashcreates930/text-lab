@@ -11,6 +11,10 @@ import {playerKey,postJson,readStored,store,useLive,useScreenTop,useStory} from 
 import {YourTurn} from "../your-turn";
 import {UnlockChallenge} from "../role-intro";
 import {PlayerStory} from "./player-story";
+import {DoNow,PracticeRound} from "../practice-round";
+import type {WorldPack} from "@/lib/world-schema";
+import type {SourcePassage} from "@/lib/source-passages";
+import {DO_NOW,markPracticeDone,practiceDone} from "@/lib/onboarding";
 import {AvatarPick,BonusPlayer,RaceEndedPlayer,RacePlayer,WordsWhileWaiting,isRace} from "./race-live";
 
 type View=ReturnType<typeof playerView>;
@@ -64,7 +68,7 @@ function Play({seat,onLeave}:{seat:Seat;onLeave:()=>void}){
    :s.status==="ended"&&isRace(round)?<RaceEndedPlayer state={state} world={world} act={act}/>
    :round&&(round as {type?:string}).type==="bonus"?<BonusPlayer state={state} world={world} act={act}/>
    :s.status==="ended"?<Ended state={state}/>
-   :s.status==="lobby"||!round?<><Waiting state={state}/><AvatarPick state={state} act={act}/><WordsWhileWaiting world={world}/></>
+   :s.status==="lobby"||!round?<><DoNow text={DO_NOW.lobby}/><Waiting state={state}/><AvatarPick state={state} act={act}/>{world&&passages.length>0&&<LobbyPractice world={world} passages={passages}/>}<WordsWhileWaiting world={world}/></>
    :isRace(round)?<RacePlayer state={state} world={world} act={act}/>
    :s.status==="reveal"?<Revealed state={state}/>
    :<RoundView state={state} act={act} world={world} passages={passages}/>}
@@ -202,4 +206,12 @@ function YourTurnPhone({state,world,passages,seat}:{state:View;world:NonNullable
  if(yt.ask)return <div className="-mx-4">{err&&<p role="alert" className="mx-4 mt-4 rounded-2xl bg-primary-soft p-3 text-[15px] text-highlight">{err}</p>}<UnlockChallenge onDone={async a=>{const r=await postJson(`/api/live/sessions/${seat.sessionId}/act`,{kind:"your_turn_angle",payload:a},{"x-live-player":seat.playerToken});setErr(r.ok?"":r.error??"Try again.")}}/></div>;
  if(yt.done.length&&yt.choices.length)return <section className="mt-5"><p className="text-[13px] font-semibold uppercase tracking-wide text-highlight">Your Turn</p><h1 className="mt-1 text-[26px] font-bold">Saved for your teacher</h1><p className="mt-2 text-[16px]">{yt.done.join(", ")}. Eyes on the board.</p></section>;
  return <div className="-mx-4"><YourTurn world={world} passages={passages} choices={yt.choices} onSave={async e=>{const r=await postJson(`/api/live/sessions/${seat.sessionId}/act`,{kind:"your_turn",payload:e},{"x-live-player":seat.playerToken});return r.ok?null:r.error}}/></div>;
+}
+
+// The practice round while a first-time player waits in the lobby (lib/onboarding.ts): offered once, never required.
+function LobbyPractice({world,passages}:{world:WorldPack;passages:SourcePassage[]}){
+ const [state,setState]=useState<"offer"|"open"|"done">(()=>practiceDone()?"done":"offer");
+ if(state==="done")return null;
+ if(state==="open")return <div className="rounded-card bg-panel-2"><PracticeRound world={world} passages={passages} onDone={()=>{markPracticeDone();setState("done")}}/></div>;
+ return <button type="button" onClick={()=>setState("open")} className="case-secondary min-h-[52px] w-full justify-center">First time? Try a 30-second practice while you wait</button>;
 }

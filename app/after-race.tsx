@@ -16,6 +16,8 @@ import {QuestionNote} from "./content-note";
 import {SplitStage} from "./split-stage";
 import {ReadingPanel} from "./reading-panel";
 import {focusScreenTop} from "./screen-focus";
+import {DoNow} from "./practice-round";
+import {DO_NOW} from "@/lib/onboarding";
 
 // One Refresher item as the screen needs it (the answers stay with whoever checks).
 export type RefresherView=RefresherViewData&{chunkView:ChunkView;result?:RefresherResult|null};
@@ -37,7 +39,7 @@ export function Refresher({items,world,check,onDone,seed}:{items:RefresherView[]
  async function lock(a:Answer){const r=await check(k,a);if(r){setLocal(r);setFixed(f=>{const n=[...f];n[k]=r.fixed;return n})}}
  function next(){if(k+1>=items.length){onDone(fixed);return}setK(k+1);setDraft({});setLocal(null)}
  const award=refresherAward(items.map(x=>({index:x.chunk-1,kind:x.kind})),items.map((_,i)=>fixed[i]??false));
- const head=<><div className="flex items-center justify-between"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Refresher · {k+1} of {items.length} · no timer</p><p className="flex items-center gap-1 font-display text-[18px] font-bold text-gold" aria-label={`${award.stars} stars`}>{Array.from({length:items.length},(_,i)=><Star key={i} size={18} className={fixed[i]?"fill-gold text-gold":"text-muted"} aria-hidden/>)}</p></div>
+ const head=<><DoNow text={DO_NOW.refresher} className="mb-1"/><div className="flex items-center justify-between"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Refresher · {k+1} of {items.length} · no timer</p><p className="flex items-center gap-1 font-display text-[18px] font-bold text-gold" aria-label={`${award.stars} stars`}>{Array.from({length:items.length},(_,i)=><Star key={i} size={18} className={fixed[i]?"fill-gold text-gold":"text-muted"} aria-hidden/>)}</p></div>
   <h1 id="rf-h" className="text-[24px] leading-tight outline-none">{it.kind==="liar"?`${it.typeName}: ${it.prompt}`:it.kind==="gist"?`Chunk ${it.chunk}: which is the best summary?`:`Chunk ${it.chunk} · ${it.typeName}: ${it.prompt}`}</h1></>;
  const hint=<>{it.note&&<QuestionNote text={it.note}/>}<p className="flex items-start gap-2 rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold"><Lightbulb size={18} className="mt-0.5 shrink-0 text-gold" aria-hidden/>{it.hint}</p></>;
  const lockBtn=(ok:boolean)=><button type="button" disabled={!ok} onClick={()=>lock(draft)} className="case-primary w-full justify-center">Lock in <ArrowRight size={18} aria-hidden/></button>;
@@ -77,6 +79,7 @@ export function CaseNotesView({notes,student,story,expedition,award,onNote,bonus
  function download(){caseNotesPdf(student,story,expedition,notes,interview,grade,reflection).save(file)}
  const right=notes.filter(n=>n.rightFirstTry).length;
  return <section aria-labelledby="cn-h" className="case-notes mt-2 flex flex-col gap-3">
+  <DoNow text={DO_NOW.notes} className="no-print"/>
   <div><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{story} · {expedition}</p><h1 id="cn-h" className="text-[30px] outline-none">Case Notes</h1>
    <p className="text-[16px] text-muted">{student} · {right} of {notes.length} proved on the one try{award&&award.of>0?` · ${award.stars} of ${award.of} fixed in the Refresher`:""}</p></div>
   {award?.badge&&<p className="no-print inline-flex w-fit items-center gap-2 rounded-full bg-gold px-4 py-2 font-display text-[18px] font-bold text-on-gold"><Star size={18} className="fill-on-gold" aria-hidden/>Badge: {award.badge}</p>}

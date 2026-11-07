@@ -13,6 +13,8 @@ import {ArrowLeft,ArrowRight,Award,Sparkles,TrendingUp} from "lucide-react";
 import {LEVEL_MEANING,LEVELS,SKILLS,skillTag,type Level,type SkillLevel} from "@/lib/mastery";
 import type {BenchmarkFamily} from "@/lib/best-standards";
 import {focusScreenTop} from "./screen-focus";
+import {DoNow} from "./practice-round";
+import {DO_NOW} from "@/lib/onboarding";
 
 const LEVEL_STYLE:Record<Level,string>={"Not yet":"bg-panel-2 text-ink","Developing":"bg-violet-soft text-ink","Proficient":"bg-line-right text-reading-ink","Mastered":"bg-gold text-on-gold"};
 export function Dots({filled,of}:{filled:number;of:number}){
@@ -36,7 +38,7 @@ export function SkillReport({skills,reflection,onReflect,onDone}:{skills:SkillLe
  useLayoutEffect(()=>{focusScreenTop()},[]);
  const words=reflection.trim().split(/\s+/).filter(Boolean).length;
  return <div className="case-ui mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-16 pt-4">
-  <p className="text-[15px] font-bold text-muted">Read how each skill is going, then write one sentence about it.</p>
+  <DoNow text={DO_NOW.skills}/>
   <h1 id="skills-h" tabIndex={-1} className="text-[30px] leading-tight outline-none">Your skill report</h1>
   <p className="text-[15px] text-muted">Only you and your teacher see this.</p>
   <ul className="grid gap-3">{skills.map(s=><li key={s.family} className="rounded-card bg-panel p-4">
@@ -57,7 +59,7 @@ export function SkillPage({skills,history,expeditionTitle,onBack}:{skills:SkillL
  const [open,setOpen]=useState<string|null>(null);
  return <div className="case-ui mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-16 pt-4">
   <button type="button" onClick={onBack} className="case-secondary w-fit !min-h-11"><ArrowLeft size={18} aria-hidden/>Back to the map</button>
-  <p className="text-[15px] font-bold text-muted">See how each skill is growing. Tap a skill to see its history.</p>
+  <DoNow text={DO_NOW.myskills}/>
   <h1 id="myskills-h" tabIndex={-1} className="text-[30px] leading-tight outline-none">My skills</h1>
   <p className="text-[15px] text-muted">Only you and your teacher see your levels. Levels count first tries only; Refresher fixes are practice.</p>
   {!skills.length&&<p className="rounded-card bg-panel p-4 text-[16px]">Finish an expedition and your skills will appear here.</p>}

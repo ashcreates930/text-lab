@@ -5,7 +5,7 @@
 // streak, coins, sound, chunk count, seconds left) sits on every race screen. Extended time multiplies every timer and
 // every automatic screen. Screen readers hear the result and the new rank before anything moves.
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
-import {ArrowRight,Check,Crown,Flame,Highlighter,Lightbulb,Pause,Play,Sparkles,Star,Timer,Volume2,VolumeX,X,Zap} from "lucide-react";
+import {ArrowRight,Check,Crown,Flame,Highlighter,Lightbulb,Pause,Play,Sparkles,Star,Timer,Volume2,VolumeX,X,Zap,HelpCircle} from "lucide-react";
 import type {ExpQuestion,QuestionType,WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
 import {DISCOVERY_COINS,GIST_SECONDS,TESTIMONY_MS,TYPE_INFO,chunkTokens,focusTokens,joinedPassages,proofTokens,expeditionChunks,ghostPlay,gistPoints,isDiscovery,keywordParts,limitMs,phraseRange,proofShown,scoreAnswer,screenMs,shuffledOrder,type Answer,type RaceChunk,type Token} from "@/lib/expedition";
@@ -15,6 +15,8 @@ import {contentNotes} from "@/lib/content-notes";
 import {Pill} from "./game-ui";
 import {ContentNote,QuestionNote} from "./content-note";
 import {LevelUp,SkillReport,SkillTag} from "./skill-feedback";
+import {Coach,DoNow,PracticeRound} from "./practice-round";
+import {DO_NOW,HINTS,hintsDone,markHintDone,markPracticeDone,practiceDone,type HintId,type Screen} from "@/lib/onboarding";
 import {evidenceFrom,levelOf,levelUps,mainFamily,masteryOf} from "@/lib/mastery";
 import {ReadingPanel} from "./reading-panel";
 import {Leaderboard,Podium,cue,reducedMotion,useBeatClock} from "./proof-race";
@@ -32,13 +34,13 @@ import {InterviewScreen,LiarVerdict,NameTheLiar} from "./interview";
 import type {ExpeditionAttempt} from "@/lib/expedition-progress";
 import {evidenceSentences} from "@/lib/lies";
 
-type Beat="interview"|"read"|"gist"|"question"|"result"|"lightning"|"board"|"burst"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"skills"|"notes";
+type Beat="practice"|"interview"|"read"|"gist"|"question"|"result"|"lightning"|"board"|"burst"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"skills"|"notes";
 // points include the boss or surprise double; bonus: the streak bonus; version: the question version this student saw.
 export type ChunkRecord={gist:number|null;answer:Answer;correct:boolean;points:number;late:boolean;coins:number;unknown:string[];discovered:boolean;bonus:number;mult:number;version:Version;bank:number;judged?:{strength:Strength;note:string;next:string}|null};
 const AUTO:Partial<Record<Beat,"result"|"board"|"countdown">>={result:"result",board:"board",countdown:"countdown"};
 
 // ---------- HUD ----------
-export function RaceHud({score,streak,coins,sound,onSound,chunk,total,left,title}:{score:number;streak:number;coins:number;sound:boolean;onSound:()=>void;chunk:number;total:number;left:number|null;title?:string}){
+export function RaceHud({score,streak,coins,sound,onSound,chunk,total,left,title,doNow,onHelp}:{score:number;streak:number;coins:number;sound:boolean;onSound:()=>void;chunk:number;total:number;left:number|null;title?:string;doNow?:string;onHelp?:()=>void}){
  // Pinned directly below the site header on every race screen (--header-h is set by useStickyOffsets). On a phone it is
  // one row (the chunk count and timer join the pills) so the passage keeps the screen.
  return <div className="hud sticky top-[var(--header-h,0px)] z-20 -mx-4 flex flex-col gap-2 bg-deep px-4 pb-2 pt-1">
@@ -52,6 +54,7 @@ export function RaceHud({score,streak,coins,sound,onSound,chunk,total,left,title
    <button type="button" onClick={onSound} aria-label={sound?"Sound on":"Sound off"} aria-pressed={sound} className="grid h-11 w-11 place-items-center rounded-row bg-panel">{sound?<Volume2 size={20} aria-hidden/>:<VolumeX size={20} aria-hidden/>}</button>
   </div>
   <div className="hidden items-end justify-between gap-2 md:flex"><p className="font-display"><span className="block text-[22px] font-bold leading-none text-ink">Chunk {chunk} of {total}</span>{title&&<span className="text-[14px] font-semibold text-muted">{title}</span>}</p>{left!==null&&<span className="font-display text-[22px] font-bold tabular-nums text-ink" aria-hidden>{Math.ceil(left)}s</span>}</div>
+  {doNow&&<div className="flex items-start justify-between gap-2"><DoNow text={doNow} className="!text-[15px]"/>{onHelp&&<button type="button" onClick={onHelp} className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-full bg-panel px-3 text-[14px] font-bold text-ink"><HelpCircle size={16} aria-hidden/>What do I do?</button>}</div>}
  </div>;
 }
 export function TimerTrack({left,seconds}:{left:number|null;seconds:number}){
@@ -151,7 +154,7 @@ export function MultiBars({options,picked,onToggle,need,label,seed,disabled}:{op
 // it), drag and drop, or Make the Call. Laid out side by side (app/split-stage.tsx): the passage on the left, the
 // question on the right; on a phone the question is a panel pinned to the bottom. Used by the solo race and every
 // phone in a live game. seed: this student's own answer order.
-export function QuestionPanel({vq,passages,chunk,world,tokens,glossary,testifying,draft,setDraft,step,setStep,onLock,headingId="ex-h",seed,timer,banner}:{vq:ViewQuestion;passages:{id:string;text:string}[];chunk:ChunkView;world:WorldPack;tokens:Token[];glossary:WorldPack["glossary"];testifying:boolean;draft:Answer;setDraft:React.Dispatch<React.SetStateAction<Answer>>;step:1|2;setStep:(s:1|2)=>void;onLock:(a:Answer)=>void;headingId?:string;seed?:string;timer?:React.ReactNode;banner?:React.ReactNode}){
+export function QuestionPanel({vq,passages,chunk,world,tokens,glossary,testifying,draft,setDraft,step,setStep,onLock,headingId="ex-h",seed,timer,banner,help}:{help?:{again:boolean};vq:ViewQuestion;passages:{id:string;text:string}[];chunk:ChunkView;world:WorldPack;tokens:Token[];glossary:WorldPack["glossary"];testifying:boolean;draft:Answer;setDraft:React.Dispatch<React.SetStateAction<Answer>>;step:1|2;setStep:(s:1|2)=>void;onLock:(a:Answer)=>void;headingId?:string;seed?:string;timer?:React.ReactNode;banner?:React.ReactNode}){
  const f=vq.format,twoStep=vq.steps===2;
  const pinned=draft.lines??[];
  const focus=focusTokens(tokens,vq.focus);
@@ -170,10 +173,10 @@ export function QuestionPanel({vq,passages,chunk,world,tokens,glossary,testifyin
   {vq.note&&<QuestionNote text={vq.note} className="mt-3"/>}
   {vq.hint&&step===1&&<p className="mt-2 flex items-start gap-2 rounded-card bg-violet-soft px-3 py-2 text-[15px] font-bold"><Lightbulb size={16} className="mt-0.5 shrink-0 text-gold" aria-hidden/>{vq.hint}</p>}
   {vq.testimony&&<blockquote className={`mt-3 rounded-card bg-violet p-4 text-on-violet shadow-[0_6px_0_var(--color-violet-shadow)] ${reducedMotion()?"":"rise-in"}`}><p className="text-[12px] font-extrabold uppercase tracking-[.08em]">{vq.testimony.speaker} testifies</p><p className="mt-1 text-[17px] font-bold leading-snug">“{vq.testimony.text}”</p>{testifying&&<p role="status" className="mt-2 text-[13px] font-extrabold">Listen to the whole testimony. The timer starts when it ends.</p>}</blockquote>}
-  {step===1&&vq.choices&&f!=="multi"&&<AnswerBars seed={seed} label={vq.prompt} options={vq.choices.map(t=>({text:t}))} picked={draft.choice??null} onPick={i=>{setDraft(d=>({...d,choice:i}));if(twoStep)setStep(2);else onLock({...draft,choice:i})}}/>}
+  {step===1&&vq.choices&&f!=="multi"&&<AnswerBars seed={seed} label={vq.prompt} options={vq.choices.map(t=>({text:t}))} picked={draft.choice??null} onPick={i=>{setDraft(d=>({...d,choice:i}));if(twoStep)setStep(2)}}/>}
   {step===1&&f==="multi"&&vq.choices&&<MultiBars seed={seed} label={vq.prompt} need={vq.pick??2} options={vq.choices.map(t=>({text:t}))} picked={draft.picks??[]} onToggle={i=>setDraft(d=>{const p=d.picks??[];return {...d,picks:p.includes(i)?p.filter(x=>x!==i):[...p,i]}})}/>}
   {step===1&&vq.theories&&<AnswerBars seed={seed} label="Your call" options={vq.theories.map(t=>({text:t.name}))} picked={vq.theories.findIndex(t=>t.id===draft.theory)} onPick={i=>{setDraft(d=>({...d,theory:vq.theories![i].id}));setStep(2)}}/>}
-  {step===2&&vq.choices2&&<><p className="mt-3 font-display text-[20px] font-semibold">{vq.choices2.prompt}</p><AnswerBars seed={seed} label={vq.choices2.prompt} options={vq.choices2.options.map(t=>({text:t}))} picked={draft.choice2??null} onPick={i=>onLock({...draft,choice2:i})}/></>}
+  {step===2&&vq.choices2&&<><p className="mt-3 font-display text-[20px] font-semibold">{vq.choices2.prompt}</p><AnswerBars seed={seed} label={vq.choices2.prompt} options={vq.choices2.options.map(t=>({text:t}))} picked={draft.choice2??null} onPick={i=>setDraft(d=>({...d,choice2:i}))}/></>}
   {step===1&&f==="written"&&<label className="mt-3 block"><span className="text-[15px] font-bold">Answer in one sentence, in your own words.</span>
    <textarea value={draft.text??""} onChange={e=>setDraft(d=>({...d,text:e.target.value.replace(/\n/g," ").slice(0,240)}))} rows={3} maxLength={240} className="mt-1 w-full rounded-row border-2 border-edge bg-panel px-3 py-2 text-[17px] leading-snug text-ink"/>
    <span className="text-[13px] text-muted">{words} words{words<6?" · at least 6":""}</span></label>}
@@ -184,11 +187,19 @@ export function QuestionPanel({vq,passages,chunk,world,tokens,glossary,testifyin
  const lockBtn=(ok:boolean,label="Lock in")=><button type="button" disabled={!ok} onClick={()=>onLock(draft)} className="case-primary min-h-[56px] w-full justify-center text-[18px]">{label} <ArrowRight size={18} aria-hidden/></button>;
  const placedCount=Object.values(draft.placed??{}).filter(Boolean).length;
  const action=proofStep?lockBtn(vq.clues?!!draft.words?.length:!!draft.lines?.length)
+  :step===2&&vq.choices2?lockBtn(draft.choice2!=null)
+  :step===1&&vq.choices&&f!=="multi"&&!twoStep?lockBtn(draft.choice!=null)
   :callStep?lockBtn(pinned.length===2,"Lock in my call")
   :step===1&&f==="multi"?lockBtn((draft.picks?.length??0)===(vq.pick??2))
   :step===1&&f==="written"?(twoStep?<button type="button" disabled={words<6} onClick={()=>setStep(2)} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Next: the sentence that backs it <ArrowRight size={18} aria-hidden/></button>:lockBtn(words>=6))
   :f==="dnd"?lockBtn(placedCount>=Math.min(vq.dnd?.slots.length??1,vq.dnd?.items.length??1)):null;
- return <SplitStage passage={passage} head={head} body={body} action={action} collapse={proofStep||callStep}/>;
+ // First-time hints (lib/onboarding.ts): right where the student taps, until they've done it right once; "What do I do?"
+ // (help.again) shows them again.
+ const done=help?hintsDone():new Set<HintId>(),show=(h:HintId)=>!!help&&(help.again||!done.has(h));
+ const passageCoach=proofStep&&show(vq.clues?"clues":"proof")?<Coach text={vq.clues?HINTS.clues:HINTS.proof}/>:null;
+ const actionCoach=proofStep&&(vq.clues?!!draft.words?.length:!!draft.lines?.length)&&show("lock")?<Coach text="Lock it in"/>:null;
+ const bodyCoach=f==="dnd"&&show("dnd")?<Coach text={HINTS.dnd}/>:f==="multi"&&step===1&&show("multi")?<Coach text={HINTS.multi}/>:f==="written"&&step===1&&show("written")?<Coach text={HINTS.written}/>:null;
+ return <SplitStage passage={<>{passageCoach}{passage}</>} head={head} body={<>{bodyCoach&&<div className="mt-3">{bodyCoach}</div>}{body}</>} action={action&&<>{actionCoach}{action}</>} collapse={proofStep||callStep}/>;
 }
 // After an answer in the newer formats: drag and drop (right pieces in teal, wrong ones slide to their place with the
 // sentence that proves it, points per piece), a written answer (the verdict on the rubric, what went well, one next
@@ -271,7 +282,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const exp=world.expeditions?.find(e=>e.id===expeditionId);
  const rivalName=world.computer_players?.rival.name??"The Lantern Ghost";
  const iv=exp?.interview;
- const [k,setK]=useState(0),[beat,setBeat]=useState<Beat>(iv?"interview":"read"),[startedAt,setStartedAt]=useState(Date.now());
+ const [k,setK]=useState(0),[beat,setBeat]=useState<Beat>(()=>!practiceDone()?"practice":iv?"interview":"read"),[startedAt,setStartedAt]=useState(Date.now());
  const [records,setRecords]=useState<ChunkRecord[]>([]),[ghost,setGhost]=useState<number[]>([]);
  const [gist,setGist]=useState<number|null>(null),[step,setStep]=useState<1|2>(1),[draft,setDraft]=useState<Answer>({});
  const [marking,setMarking]=useState(false),[unknown,setUnknown]=useState<Set<number>>(new Set()),[found,setFound]=useState(false);
@@ -314,13 +325,17 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  // Catch the Lie: the testimony plays first (about 3 seconds, or at once with reduced motion), then its 45 seconds start.
  useEffect(()=>{if(!testifying)return;const t=setTimeout(()=>{setTestifying(false);setStartedAt(Date.now())},reducedMotion()?0:TESTIMONY_MS);return()=>clearTimeout(t)},[testifying]);
  // Gist: a pick (or time) moves on to the question after a beat.
- useEffect(()=>{if(beat!=="gist")return;if(gistLeft===0)toQuestion()},[gistLeft,beat]);// eslint-disable-line react-hooks/exhaustive-deps
+ useEffect(()=>{if(beat!=="gist")return;if(gistLeft===0){if(gistPick!==null&&gist===null)pickGist(gistPick);else toQuestion()}},[gistLeft,beat]);// eslint-disable-line react-hooks/exhaustive-deps
+ const [gistPick,setGistPick]=useState<number|null>(null);
+ useEffect(()=>{setGistPick(null)},[k]);
  function pickGist(i:number){if(gist!==null)return;setGist(i);cue(sound,gistPoints(c.chunk,i)?"chime":"tick");setTimeout(toQuestion,reducedMotion()?200:900)}
  async function lockIn(a:Answer){
   if(beat!=="question"||record||judging)return;
   let judged:ChunkRecord["judged"]=null;
   if(formatOf(q!)==="written"){setJudging(true);judged=await judgeWritten({worldId:world.id,expeditionId,chunk:k,bank:bankAt(k),version,text:a.text??"",line:a.lines?.[0]??null},q!,tokens,classToken);setJudging(false);a={...a,judged:judged.strength}}
   const res=scoreAnswer(q!,a,tokens,Date.now()-startedAt,limitMs(TYPE_INFO[q!.type].seconds,timeSetting));
+  // A first-time hint is done once the student has done it right.
+  markHintDone("lock");if(res.correct){const ff=formatOf(q!);markHintDone(ff==="dnd"?"dnd":ff==="multi"?"multi":ff==="written"?"written":q!.clues?.length?"clues":"proof")}
   const g=ghostPlay(world.id+expeditionId,k,limitMs(TYPE_INFO[q!.type].seconds,timeSetting)),mult=arc?multiplierAt(arc,k):1;
   const next=[...records];next[k]={gist,answer:a,correct:res.correct,points:res.points*mult,late:res.late,coins:found?DISCOVERY_COINS:0,unknown:[...unknown].map(i=>tokens[i]?.text.replace(/[^\p{L}'-]/gu,"")).filter(Boolean),discovered:found,
    bonus:streakBonus(streak,res.correct?streak+1:0),mult,version:asked!.version,bank:bankAt(k),judged};
@@ -352,6 +367,9 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   onSave({attemptId,worldId:world.id,expeditionId,startedAt:startedIso,finishedAt:finishedIso.current,complete,score,notes:caseNotes(askedChunks,results,{items:refItems,fixed},notesText),reflection:reflection.trim()||null,
    interview:iv?interviewNote(world,iv,liar,cards,liarAnswer,liarAt>=0?!!fixed[liarAt]:null):null,award:complete?refresherAward(refItems,fixed):null})}
  const saved=useRef(false);
+ // "What do I do?": shows this screen's hint again, until the screen changes.
+ const [again,setAgain]=useState(false);
+ useEffect(()=>{setAgain(false)},[beat,k,step]);
  // Mastery (lib/mastery.ts): this run as an attempt so far, on top of the student's earlier attempts. Only an
  // expedition's first attempt counts, so a replay shows levels but never changes them.
  const [reflection,setReflection]=useState("");
@@ -370,26 +388,32 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const liarPts=beat==="finish"?liarResult?.points??0:0;
  const board:BoardRow[]=raceBoard(new Map([["me",mine(k-1)],["ghost",theirs(k-1)]]),new Map([["me",mine(k)+liarPts],["ghost",theirs(k)]]),names);
  const meRow=board.find(r=>r.id==="me");
- const hud=<RaceHud score={score} streak={streak} coins={coins} sound={sound} onSound={toggleSound} chunk={k+1} total={chunks.length} left={beat==="gist"?gistLeft:beat==="question"&&!testifying?qLeft:null} title={exp.title}/>;
+ // The screen the student is on, for its one-sentence "what to do now" (lib/onboarding.ts).
+ const screenNow:Screen=(()=>{if(beat!=="question")return (beat in DO_NOW?beat:"wait") as Screen;const ff=formatOf(q!);if(testifying)return "wait";
+  if((step===2&&(ff==="two_part"||ff==="written"))||ff==="tap")return q!.clues?.length?"clues":"proof";return ff==="dnd"?"dnd":ff==="multi"?"multi":ff==="written"?"written":"question"})();
+ const hud=<RaceHud doNow={DO_NOW[screenNow]} onHelp={()=>setAgain(true)} score={score} streak={streak} coins={coins} sound={sound} onSound={toggleSound} chunk={k+1} total={chunks.length} left={beat==="gist"?gistLeft:beat==="question"&&!testifying?qLeft:null} title={exp.title}/>;
  const shown=proofShown(q,tokens);
  // The lines a proof step taps: this chunk's, or for Make the Call every chunk of the expedition so far.
  const callPassages=joinedPassages(chunks.slice(0,k+1));
 
  return <div className="race-root case-ui mx-auto flex max-w-6xl flex-col gap-3 px-4 pb-16 pt-3">
-  {beat!=="refresher"&&beat!=="notes"&&beat!=="interview"&&hud}
+  {beat!=="refresher"&&beat!=="notes"&&beat!=="interview"&&beat!=="practice"&&beat!=="skills"&&hud}
+  {beat==="practice"&&<PracticeRound world={world} passages={passages} onDone={()=>{markPracticeDone();go(iv?"interview":"read")}}/>}
   {beat==="interview"&&iv&&<InterviewScreen world={world} expeditionId={expeditionId} interview={iv} liar={liar} onDone={cs=>{setCards(cs);saveCards(world.id,expeditionId,cs);startChunk(0)}}/>}
   {beat==="liar"&&iv&&<NameTheLiar seed={`${seedKey}|${expeditionId}`} world={world} said={interviewStatements(world,iv,liar,cards)} passages={callAll} onLock={a=>{setLiarAnswer(a);const r=liarCheck(iv,liar,a);cue(sound,r.solved?"streak":"reveal");go("verdict")}}/>}
   {beat==="verdict"&&iv&&liarResult&&<LiarVerdict world={world} expeditionId={expeditionId} interview={iv} liar={liar} solved={liarResult.solved} named={liarResult.named} passages={callAll} onNext={()=>{go("finish");onFinish?.(records)}}/>}
   {beat==="read"&&<section aria-labelledby="ex-h"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Read · no timer</p><h1 id="ex-h" className="text-[28px] outline-none">Read the chunk</h1>
    {highlighter&&<button type="button" aria-pressed={marking} onClick={()=>setMarking(m=>!m)} className={`mt-2 inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-[15px] font-bold ${marking?"bg-gold text-on-gold":"bg-panel text-ink"}`}><Highlighter size={16} aria-hidden/>{marking?"Done marking":"Mark words I don't know"}</button>}
+   {(again||!hintsDone().has("read"))&&<div className="mt-3"><Coach text={HINTS.read}/></div>}
    <div className="mt-3"><ChunkText explore chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} highlighter={highlighter} marking={marking} unknown={unknown} onUnknown={i=>setUnknown(s=>{const n=new Set(s);if(n.has(i))n.delete(i);else n.add(i);return n})} onDiscover={()=>{if(!found){setFound(true);cue(sound,"chime",0.3)}}} found={found}/></div>
-   <button type="button" onClick={()=>gistAt(k)?go("gist"):toQuestion()} className="case-primary mt-4 min-h-[56px] w-full justify-center text-[18px]">Ready <ArrowRight size={18} aria-hidden/></button></section>}
+   <button type="button" onClick={()=>{markHintDone("read");gistAt(k)?go("gist"):toQuestion()}} className="case-primary mt-4 min-h-[56px] w-full justify-center text-[18px]">Ready <ArrowRight size={18} aria-hidden/></button></section>}
 
   {beat==="gist"&&<SplitStage label="Gist check" passage={<ChunkText chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens}/>}
    head={<><TimerTrack left={gistLeft} seconds={gSeconds}/><p className="mt-3 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Gist check · {GIST_SECONDS} seconds</p><h1 id="ex-h" className="text-[28px] outline-none">Which is the best summary?</h1></>}
-   body={<AnswerBars seed={`${seedKey}|${c.id}|gist`} label="Which is the best summary?" options={c.chunk.gist.options} picked={gist} onPick={pickGist} disabled={gist!==null}/>}/>}
+   body={<AnswerBars seed={`${seedKey}|${c.id}|gist`} label="Which is the best summary?" options={c.chunk.gist.options} picked={gist??gistPick} onPick={setGistPick} disabled={gist!==null}/>}
+   action={gist===null?<button type="button" disabled={gistPick===null} onClick={()=>gistPick!==null&&pickGist(gistPick)} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Lock in <ArrowRight size={18} aria-hidden/></button>:null}/>}
 
-  {beat==="question"&&<QuestionPanel banner={arc?<ArcBanner kind={beatKind(arc,k)} speaker={q.testimony?world.characters.find(x=>x.id===q.testimony!.speaker)?.name:null}/>:null} seed={`${seedKey}|${c.id}`} timer={<TimerTrack left={testifying?qSeconds:qLeft} seconds={qSeconds}/>} vq={viewQuestion(q,world,callPassages)} passages={c.passages} chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} glossary={world.glossary} testifying={testifying} draft={draft} setDraft={setDraft} step={step} setStep={setStep} onLock={lockIn}/>}
+  {beat==="question"&&<QuestionPanel banner={arc?<ArcBanner kind={beatKind(arc,k)} speaker={q.testimony?world.characters.find(x=>x.id===q.testimony!.speaker)?.name:null}/>:null} seed={`${seedKey}|${c.id}`} timer={<TimerTrack left={testifying?qSeconds:qLeft} seconds={qSeconds}/>} vq={viewQuestion(q,world,callPassages)} passages={c.passages} chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} glossary={world.glossary} testifying={testifying} draft={draft} setDraft={setDraft} step={step} setStep={setStep} onLock={lockIn} help={{again}}/>}
 
   {beat==="result"&&record&&<section aria-labelledby="ex-h" aria-live="assertive">
    {record.correct
