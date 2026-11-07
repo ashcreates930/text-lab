@@ -30,7 +30,9 @@ export function SplitStage({passage,head,body,action,collapse=false,label="Quest
     <button type="button" onClick={()=>setOpen(o=>!o)} aria-expanded={open} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-panel md:hidden">{open?<ChevronDown size={20} aria-hidden/>:<ChevronUp size={20} aria-hidden/>}<span className="sr-only">{open?"Shrink the question to read":"Expand the question to answer"}</span></button>
    </div>
    {body&&<div className={`${open?"max-h-[42dvh] overflow-y-auto":"hidden"} px-4 pb-2 md:block md:max-h-none md:overflow-visible md:px-0`}>{body}</div>}
-   {action&&<div className="px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-2 md:px-0 md:pb-0">{action}</div>}
+   {/* The footer: Lock in, and for drag and drop the Pieces bar above it (app/drag-drop.tsx). On a laptop it sticks to
+       the bottom of the question side, so the main action stays in view. */}
+   {action&&<div className="split-foot px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-2 md:sticky md:bottom-0 md:z-10 md:bg-stage md:px-0 md:pb-2"><div data-tray-slot/>{action}</div>}
    {!action&&<div className="h-3 md:hidden"/>}
   </section>
  </div>;

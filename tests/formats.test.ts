@@ -70,8 +70,8 @@ test("drag and drop: all 8 kinds, 3 to 5 pieces, one piece per slot where the ki
 test("drag and drop on every device: tap to place, drag, the keyboard, every move announced, 44 px targets, the reveal", () => {
   const ui = src("app/drag-drop.tsx");
   assert.match(ui, /onClick=\{\(\)=>pick\(id\)\}/, "tap a piece to pick it up"); assert.match(ui, /onClick=\{e=>held&&place\(held,s\.id,e\.detail===0\)\}/, "then tap its slot");
-  // On a phone the tray is a collapsed "Pieces" bar pinned above Lock in; picking a piece closes it.
-  assert.match(ui, /max-md:sticky max-md:bottom-0/); assert.match(ui, /aria-expanded=\{trayOpen\}/); assert.match(ui, /if\(!placed\[item\]\)setTrayOpen\(false\)/);
+  // On every screen (phones and laptops) the tray is a collapsed "Pieces" bar pinned to the bottom; picking a piece closes it.
+  assert.match(ui, /"sticky bottom-0 z-10 /, "the bar sticks at every width"); assert.doesNotMatch(ui, /max-md:|md:hidden/, "no phone-only tray styles"); assert.ok(ui.includes('trayRef.current?.scrollIntoView({block:"nearest"'), "opening the bar shows all of it"); assert.ok(ui.includes("createPortal(tray,slot)") && src("app/split-stage.tsx").includes("<div data-tray-slot/>{action}"), "in the question layout the bar sits in the footer, right above Lock in"); assert.match(ui, /aria-expanded=\{trayOpen\}/); assert.match(ui, /if\(!placed\[item\]\)setTrayOpen\(false\)/);
   assert.match(ui, /draggable=\{!disabled\}/); assert.match(ui, /onDrop:/, "drag onto a slot");
   assert.match(ui, /role="status" aria-live="polite">\{said\}/, "moves are announced");
   assert.match(ui, /Picked up "\$\{label\(item\)\}"\. Now choose a slot\./); assert.match(ui, /Placed "\$\{label\(item\)\}" in \$\{slotLabel\(slot\)\}\./);
