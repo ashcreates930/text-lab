@@ -3,7 +3,7 @@
 // Race and Join a live game; the home page talks about what students play now.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { LEGACY_MODES } from "../lib/feature-flags.ts";
 
 const src = (f: string) => readFileSync(f, "utf8");
@@ -56,12 +56,16 @@ test("the launch screen: the role card, Start Proof Race and Join a live game, n
   assert.doesNotMatch(s, /\b(Rival|Squad|Solo)\b/);
 });
 
-test("the home page: the sneak peek replaces the painting; the strip lists what students play now", () => {
+test("the home page: one primary button per audience, a strip of the three moments of play, three steps", () => {
   const s = src("app/landing.tsx");
   assert.match(s, /<SneakPeek\/>/);
   assert.doesNotMatch(s, /empty-schoolhouse\.png|Scene solved/);
-  for (const t of ["Proof Race", "Play live with your class", "Catch the lie", "Holograms"]) assert.ok(s.includes(`"${t}"`), t);
-  for (const t of ["Step inside", "Read a chunk", "Race to the proof", "Climb the board", "Refresher", "Bonus round"]) assert.ok(s.includes(`"${t}"`), t);
+  for (const t of ["Catch the lie", "Holograms", "More ways to prove", "Play live with your class"]) assert.ok(!s.includes(t), `no old mode card: ${t}`);
+  assert.match(s, />Play the demo <ArrowRight/); assert.match(s, />I'm a teacher <ArrowRight/); assert.match(s, /Have a class code\? Join here\./);
+  for (const f of ["moment-map", "moment-lineup", "moment-race"]) { assert.ok(s.includes(`/home/${f}.jpg`), f); assert.ok(existsSync(`public/home/${f}.jpg`), `${f}: a real screenshot in public/home`); }
+  for (const t of ["Explore the map", "Question the witnesses", "Prove it with the text"]) assert.ok(s.includes(`"${t}"`), t);
+  assert.ok(!s.includes('"Bonus round"'), "How a case works: three steps only");
+  assert.match(s, /Aligned to Florida B\.E\.S\.T\. ELA/); assert.match(s, /teacher_end_unit/, "the sample class report"); assert.match(s, /onPricing/);
   for (const t of ["Students", "Teachers", "Families", "Schools and districts"]) assert.ok(s.includes(`"${t}"`), t);
   assert.doesNotMatch(s, /Your Turn|mission|Spot the Lie/i);
   // The sneak peek: a loop that stops on the Proof! moment under reduced motion, and is out of the tab order.
