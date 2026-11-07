@@ -85,3 +85,16 @@ test("motion: the 3D witness reacts on entering the spotlight, portraits breathe
   // No world-specific logic: the reaction comes from the character's own model data.
   for (const f of ["app/lineup.tsx", "app/interview.tsx", "app/live/interview-live.tsx"]) assert.ok(!/brom|katrina|hans/i.test(src(f)), f);
 });
+
+test("the Interview speed-up: the caption shows at once, Skip stops the recording and counts the answer as heard", () => {
+  const iv = src("app/interview.tsx");
+  assert.match(iv, /function ask\(i:number\)\{setCards\(c=>\{const x=\[\.\.\.c\];x\[k\]=i;return x\}\);setFocusTo\("asked"\);speak\(\)\}/, "asking sets the card, so the caption renders with the audio");
+  assert.match(iv, /:<><p ref=\{askedRef\}[^\n]*\n\s*<Caption name=\{name\} text=\{st\.text\}\/>/, "the caption is on screen while the line plays");
+  assert.match(iv, /function skip\(\)\{voice\.stop\(\);setGesture\(null\);setHeard\(h=>\{const x=\[\.\.\.h\];x\[k\]=true;return x\}\)\}/);
+  assert.match(iv, /\{speaking\?<button type="button" onClick=\{skip\}/, "Skip shows while the witness speaks");
+  // Lines longer than one sentence keep their recorded audio; they are listed for later, not trimmed.
+  const list = src("docs/interview-lines-to-trim.md");
+  assert.match(list, /^\d+ lines\.$/m);
+  for (const e of sh.expeditions!) for (const w of e.interview?.witnesses ?? []) for (const t of [w.truth.text, w.lie.text, w.caught])
+    if ((t.match(/[.!?]["”]?(?=\s|$)/g) ?? []).length > 1) assert.ok(list.includes(t.replace(/\|/g, "\|")), `listed: ${t.slice(0, 40)}`);
+});

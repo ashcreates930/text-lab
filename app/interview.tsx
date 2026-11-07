@@ -4,7 +4,7 @@
 // cards and the witness answers in their recorded voice, captions always on. After the race the student names the
 // liar and taps the line that disproves the lie; a win needs both, on the first try.
 import {useEffect,useLayoutEffect,useRef,useState} from "react";
-import {ArrowRight,Box,NotebookPen,RotateCcw,Volume2} from "lucide-react";
+import {ArrowRight,Box,NotebookPen,RotateCcw,SkipForward,Volume2} from "lucide-react";
 import type {Interview,WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
 import {LIAR_POINTS,firstName,interviewAudio,proofPassages,saidLine,witnessName,type LiarAnswer,type Said} from "@/lib/interview";
@@ -56,6 +56,8 @@ export function InterviewScreen({world,expeditionId,interview,liar,onDone,saved}
  function ask(i:number){setCards(c=>{const x=[...c];x[k]=i;return x});setFocusTo("asked");speak()}
  function speak(){if(st.gesture)setGesture({clip:st.gesture,key:Date.now()});const at=k;voice.play(src,()=>setHeard(h=>{const x=[...h];x[at]=true;return x}))}
  function start(){voice.stop();setGesture(null);onDone(cards.map(c=>c??0))}
+ // Skip: stop the recording; the caption is already on screen, and the answer counts as heard.
+ function skip(){voice.stop();setGesture(null);setHeard(h=>{const x=[...h];x[k]=true;return x})}
  const notes:Said[]=interview.witnesses.map((x,i)=>({character:x.character,name:witnessName(world,x.character),short:firstName(witnessName(world,x.character)),text:(i===liar?x.lie:x.truth).text,lied:i===liar,gesture:null,card:null})).filter((_,i)=>cards[i]!=null);
  const speaking=voice.playing===src;
  // Hologram mode: the witness four ways for a pyramid on the phone, speaking the same recorded line.
@@ -76,7 +78,9 @@ export function InterviewScreen({world,expeditionId,interview,liar,onDone,saved}
      :<><p ref={askedRef} tabIndex={-1} className="rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold outline-none focus-visible:ring-4 focus-visible:ring-highlight">You asked {firstName(name)}: {w.cards[card]}</p>
       <Caption name={name} text={st.text}/>
       <div className="flex flex-wrap gap-2">
-       <button type="button" onClick={speak} disabled={speaking} className="case-secondary !min-h-11">{speaking?<><Volume2 size={18} aria-hidden/>Speaking…</>:<><RotateCcw size={18} aria-hidden/>Hear it again</>}</button>
+       {speaking?<button type="button" onClick={skip} className="case-secondary !min-h-11"><SkipForward size={18} aria-hidden/>Skip<span className="sr-only"> the recording</span></button>
+        :<button type="button" onClick={speak} className="case-secondary !min-h-11"><RotateCcw size={18} aria-hidden/>Hear it again</button>}
+       {speaking&&<span className="inline-flex min-h-11 items-center gap-1.5 text-[15px] font-bold text-muted" aria-hidden><Volume2 size={18}/>Speaking…</span>}
        <button type="button" onClick={()=>{voice.stop();setHolo(true)}} className="case-secondary !min-h-11"><Box size={18} aria-hidden/>Hologram</button>
       </div></>}
     {next!=null&&<button type="button" onClick={()=>{spotlight(next);setFocusTo("pick")}} disabled={card!=null&&!heard[k]&&speaking} className={`${card==null?"case-secondary":"case-primary"} min-h-[56px] w-full justify-center text-[18px]`}>Next: question {firstName(witnessName(world,interview.witnesses[next].character))} <ArrowRight size={18} aria-hidden/></button>}
