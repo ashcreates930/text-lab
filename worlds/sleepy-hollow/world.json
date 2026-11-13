@@ -23348,6 +23348,12 @@
     ]
   },
   "expedition_rules": {
-    "arc_pending": []
+    "arc_pending": [],
+    "puzzle_exclude": [
+      {
+        "p": "p005",
+        "s": 2
+      }
+    ]
   }
 }

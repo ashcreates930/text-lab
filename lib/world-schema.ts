@@ -66,6 +66,29 @@ const worldMap=z.object({image:z.string().min(1),width:z.number().int().positive
   regions:z.array(z.object({expedition:z.string(),name:z.string().min(1),area:z.string().optional(),label:z.object(mapPoint),
     stops:z.array(z.object({chunk:z.number().int().min(1),place:z.string(),...mapPoint,landmark:z.enum(["twist","boss"]).optional(),secret:z.boolean().optional()})).min(1),
     finale:z.object({place:z.string(),...mapPoint}).optional()}))});
+// Escape rooms (lib/escape-room.ts): every expedition plays as a room, its chunks as locks. rooms: optional extras per
+// expedition (a room without an entry takes its name from its map region). A line is one sentence of a paragraph,
+// counted the way chunk segments count them (lib/lies.ts evidenceSentences). Puzzle locks, each solved only by reading:
+// - code: each dial asks a question about a line; the student taps the word in it that answers, and the dial shows
+//   that word's first letter only after lock-in (students never type letters);
+// - painting: details of a picture, `wrong` of them contradicted by the story; the student marks exactly that many and
+//   taps the line that proves each mistake;
+// - scene: objects in a picture, each matched to the one line that explains it, from a tray with near-miss lines.
+// after: the chunk (1-based) the puzzle follows; it uses only lines from this room's chunks 1 to `after`. Positions are
+// percent of the art. art: the approved illustration (until then the screen draws a labeled sketch).
+const lineRef=z.object({p:z.string().regex(/^p\d{3}$/),s:z.number().int().min(0)});
+const spot={x:z.number().min(0).max(100),y:z.number().min(0).max(100)};
+const puzzleBase={id:z.string().regex(/^[a-z0-9-]+$/),after:z.number().int().min(1),title:z.string().min(1),prompt:z.string().min(1).optional()};
+const puzzleArt={art:z.string().regex(/^\/worlds\/[a-z0-9-]+\/rooms\/[a-z0-9-]+\.(webp|png|jpg)$/).optional(),alt:z.string().min(1)};
+const roomPuzzle=z.discriminatedUnion("type",[
+  z.object({type:z.literal("code"),...puzzleBase,dials:z.array(z.object({question:z.string().min(1),line:lineRef,word:z.string().min(1)})).min(3).max(5)}),
+  z.object({type:z.literal("painting"),...puzzleBase,...puzzleArt,wrong:z.number().int().min(1).max(3),
+    details:z.array(z.object({id:z.string().regex(/^[a-z0-9-]+$/),label:z.string().min(1),...spot,wrong:z.boolean().optional(),lines:z.array(lineRef).min(1)})).min(4).max(6)}),
+  z.object({type:z.literal("scene"),...puzzleBase,...puzzleArt,
+    objects:z.array(z.object({id:z.string().regex(/^[a-z0-9-]+$/),label:z.string().min(1),...spot,line:lineRef})).min(3).max(5),near_misses:z.array(lineRef).min(1).max(3)}),
+]);
+const room=z.object({expedition:z.string(),door:z.string().min(1).optional(),clock_reason:z.string().min(1).optional(),puzzles:z.array(roomPuzzle).optional()});
+export type LineRef=z.infer<typeof lineRef>;export type RoomPuzzle=z.infer<typeof roomPuzzle>;export type RoomData=z.infer<typeof room>;
 export type Expedition=z.infer<typeof expedition>;export type Interview=z.infer<typeof expedition>["interview"]&{};export type Witness=z.infer<typeof witness>;export type ExpChunk=z.infer<typeof expChunk>;export type ExpQuestion=z.infer<typeof expQuestion>;export type QuestionType=(typeof QUESTION_TYPES)[number];
 
 // Proof Race sprints (content only for now): one question answered by one line in a short chunk (paragraphs), with
@@ -144,7 +167,10 @@ export const WorldPackSchema = z.object({
   expeditions:z.array(expedition).optional(),world_map:worldMap.optional(),front_matter:z.array(z.string().regex(/^p\d{3}$/)).optional(),
   // Drafts awaiting the teacher's review: validated like expeditions, never shown to students until moved into
   // expeditions. expedition_rules: a story-level exception to the chunk rules, only with the teacher's approval.
-  draft_expeditions:z.array(expedition).optional(),expedition_rules:z.object({max_sentences:z.number().int().min(5).max(20).optional(),arc_pending:z.array(z.string()).optional()}).optional(),
+  // puzzle_exclude: sentences no escape-room puzzle may use (beyond content-noted paragraphs, which none may use).
+  draft_expeditions:z.array(expedition).optional(),expedition_rules:z.object({max_sentences:z.number().int().min(5).max(20).optional(),arc_pending:z.array(z.string()).optional(),puzzle_exclude:z.array(lineRef).optional()}).optional(),
+  // Escape rooms (see above): optional extras per expedition.
+  rooms:z.array(room).optional(),
   // Demo rival and squad modes: the computer players' names (clearly labeled as computer players on screen).
   computer_players:z.object({rival:z.object({name:z.string().min(1),emblem:z.enum(["lantern","rider"])}),teammates:z.array(z.string().min(1)).min(2).max(3)}).optional(),
   // Students in the story: the part the student plays (see lib/student-role.ts). never: people the student must never be.
