@@ -4,6 +4,7 @@
 // countdown); the teacher can pause any screen or skip ahead. Every phone follows the board's timing with its own extra
 // time and the same screens as the solo race (app/expedition-race.tsx). The lobby shows names and character avatars
 // popping in, with a quiet music loop the host can mute; the game ends on a podium with class stats.
+import {CLOCK_INFO,ROOM_CLOCKS,clockView} from "@/lib/room-clock";
 import {PuzzleLock} from "../puzzle-locks";
 import {refKey} from "@/lib/escape-room";
 import type {LineRef,RoomPuzzle} from "@/lib/world-schema";
@@ -23,7 +24,7 @@ import {Leaderboard,Podium,QuestionAsk,cue,useBeatClock,type PodiumEntry} from "
 import {CaseNotesView,Refresher} from "../after-race";
 import {BONUS_STEMS,squadCaseFilePdf,type SquadCaseFile} from "@/lib/case-notes";
 import {focusScreenTop} from "../screen-focus";
-import {AnswerBars,ArcBanner,ChunkText,CountdownRing,DiscoveryBurst,KeywordPrompt,QuestionPanel,RaceHud,RankPill,TimerTrack} from "../expedition-race";
+import {AnswerBars,ArcBanner,ChunkText,CountdownRing,DiscoveryBurst,KeywordPrompt,QuestionPanel,RaceHud,RankPill,RoomClockPill,TimerTrack} from "../expedition-race";
 import {SplitStage,useStickyOffsets} from "../split-stage";
 import {Lineup} from "../lineup";
 import {DragDrop} from "../drag-drop";
@@ -64,7 +65,7 @@ export function LobbyBoard({state,act}:{state:HostView;act:(b:Record<string,unkn
 // ---------- Starting a Proof Race expedition (host) ----------
 export function RacePick({state,act}:{state:HostView;act:(b:Record<string,unknown>)=>void}){
  const exps=state.expeditions;
- const [o,setO]=useState({expeditionId:exps[0]?.id??"",grade:"7",questions:true,highlighter:false,autoAdvance:true,squads:false,chamber:"0"});
+ const [o,setO]=useState({expeditionId:exps[0]?.id??"",grade:"7",questions:true,highlighter:false,autoAdvance:true,squads:false,chamber:"0",clock:"off"});
  const set=(k:string,v:unknown)=>setO(x=>({...x,[k]:v}));
  const sel="mt-1 w-full rounded-row bg-panel-2 px-3 py-2 text-[16px] text-ink";
  const box=(k:"questions"|"highlighter"|"autoAdvance"|"squads",label:string)=><label className="inline-flex min-h-11 items-center gap-2"><input type="checkbox" checked={o[k]} onChange={e=>set(k,e.target.checked)} className="h-5 w-5"/>{label}</label>;
@@ -73,7 +74,8 @@ export function RacePick({state,act}:{state:HostView;act:(b:Record<string,unknow
   <div className="mt-3 grid gap-3 text-[15px] text-muted md:grid-cols-2">
    <label>Room<select value={o.expeditionId} onChange={e=>set("expeditionId",e.target.value)} className={sel}>{exps.map((e,i)=><option key={e.id} value={e.id}>Room {i+1}: {e.title} · {e.chunks} locks</option>)}</select></label>
    {(()=>{const n=exps.find(e=>e.id===o.expeditionId)?.chunks??10,h=Math.ceil(n/2);return <label>Chamber (one per class period)<select value={o.chamber} onChange={e=>set("chamber",e.target.value)} className={sel}>
-    <option value="0">The whole room: locks 1 to {n}</option><option value="1">Chamber 1: Interview and locks 1 to {h}, to the inner door</option><option value="2">Chamber 2: the statements again, locks {h+1} to {n}, the exit door</option></select></label>})()}
+    <option value="0">The whole room: locks 1 to {n}</option><option value="1">Chamber 1: locks 1 to {h} and the witnesses met there, to the inner door</option><option value="2">Chamber 2: the witnesses again, locks {h+1} to {n}, the exit door</option></select></label>})()}
+   <label>Room clock (pauses while everyone reads; zero ends nothing)<select value={o.clock} onChange={e=>set("clock",e.target.value)} className={sel}>{ROOM_CLOCKS.map(c=><option key={c} value={c}>{CLOCK_INFO[c].name}</option>)}</select></label>
    <label>Grade (picks each standard's code)<select value={o.grade} onChange={e=>set("grade",e.target.value)} className={sel}>{[6,7,8,9,10].map(g=><option key={g} value={String(g)}>Grade {g}</option>)}</select></label>
    <span className="flex flex-col">{box("questions","Your question (every third chunk)")}{box("highlighter","Highlighter: mark words students don't know")}</span>
    <span className="flex flex-col">{box("autoAdvance","Move on when 90% are ready")}{state.squads.some(q=>q.members.length)&&box("squads","Squads pool their points")}</span>
@@ -98,6 +100,7 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
  const everyone=state.counters.players>0&&race.answered>=state.counters.players;
  const due=!state.session.paused&&((round.beat==="read"&&race.ready.advance)||(timed&&left===0)||(waiting&&everyone));
  useEffect(()=>{if(due&&moved.current!==key){moved.current=key;act({action:"race.next"})}},[due,key,act]);
+ const liveClockNow=useLiveClock(round.clock);
  if(interviewBeat(round.beat)&&round.interview)return <InterviewHost state={state} round={round} world={world} act={act} left={timed&&totalMs!==null?left:null} totalMs={totalMs}/>;
  const next=<button type="button" onClick={()=>act({action:"race.next"})} className="host-btn">{round.beat==="countdown"?(round.step+1>=round.total?(round.interview?"Name the Liar":"Final podium"):"Next lock"):"Next"} <ArrowRight size={22} aria-hidden/></button>;
  const tokens=chunkTokens(round.chunk.lines);
@@ -110,6 +113,7 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
   <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="race-h" className="text-[clamp(24px,2.4vw,38px)] font-bold">Lock {round.step+1} of {round.total} · {BEAT_LABEL[round.beat]}</h2>{next}</div>
   <p className="text-[18px] text-muted">{round.expedition.title} · Grade {round.grade??7}</p>
   {timed&&left!==null&&<div className="mt-2"><TimerTrack left={left} seconds={(totalMs??1000)/1000}/></div>}
+  {liveClockNow&&<div className="mt-2 flex"><RoomClockPill clock={liveClockNow}/></div>}
   {nextNote&&<NoteHeadsUp note={nextNote} step={round.step} held={round.holdBefore===round.step+1} paused={!!state.session.paused} act={act}/>}
   {state.session.paused&&<p role="status" className="mt-2 rounded-card bg-gold px-4 py-2 text-[18px] font-bold text-on-gold">Paused. Everyone stays on this screen.</p>}
   {round.beat==="read"&&world&&<><p className="mt-2 text-[clamp(18px,1.6vw,26px)] text-muted" aria-live="polite">{race.ready.ready} of {race.ready.total} ready · no timer while reading</p>
@@ -197,6 +201,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  const [,tick]=useState(0);useEffect(()=>{if(!testifying)return;const t=setTimeout(()=>tick(x=>x+1),TESTIMONY_MS);return()=>clearTimeout(t)},[testifying,key]);
  const mine=race?.mine;
  useEffect(()=>{if(round?.beat==="reveal"&&mine?.tap)cue(sound,mine.tap.correct?"chime":"reveal",0.3)},[round?.beat,round?.step]);// eslint-disable-line react-hooks/exhaustive-deps
+ const phoneClock=useLiveClock(round?.type==="race"?round.clock:null);
  if(!round||!race||!world||!mine)return null;
  const tokens=chunkTokens(round.chunk.lines);
  // This student's own version of the question (easier or harder), else the standard one.
@@ -206,7 +211,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  const phoneScreen:Screen=({read:"read",process:"gist",ask:"wait",race:testifying?"wait":q?.format==="dnd"?"dnd":q?.format==="multi"?"multi":q?.format==="written"&&step===1?"written":(step===2||q?.format==="tap")?(q?.clues?"clues":"proof"):"question",
   reveal:"result",lightning:"lightning",puzzle:"puzzle",board:"board",burst:"burst",countdown:"countdown",liar:"liar",verdict:"verdict",vote:"interview",testify:"interview"} as Record<string,Screen>)[round.beat]??"wait";
  if(round.beat==="reveal"&&mine.tap?.correct&&q){markHintDone("lock");markHintDone(q.format==="dnd"?"dnd":q.format==="multi"?"multi":q.format==="written"?"written":q.clues?"clues":"proof")}
- const hud=<RaceHud doNow={DO_NOW[phoneScreen]} onHelp={()=>setAgain(true)} score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.step+1} total={round.total} left={round.beat==="read"?null:left} title={round.expedition.title}/>;
+ const hud=<RaceHud clock={phoneClock} doNow={DO_NOW[phoneScreen]} onHelp={()=>setAgain(true)} score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.step+1} total={round.total} left={round.beat==="read"?null:left} title={round.expedition.title}/>;
  // The proof as token positions: its words, or every word of its lines.
  // The lines to outline when opening a missed lock: this player's own proof (their question may be a bank variant).
  const flat=(t:string)=>t.replace(/\s+/g," ").trim(),ownProof=((race?.revealKey as {proof?:string[]}|null|undefined)?.proof??[]).map(l=>round?.chunk.lines.findIndex(x=>flat(x.text)===flat(l))??-1).filter(i=>i>=0);
@@ -379,4 +384,12 @@ function LivePuzzle({p,seed,act}:{p:{data:RoomPuzzle;lines:Record<string,string>
  const [done,setDone]=useState(false);
  if(done)return <p role="status" className="mt-6 rounded-card bg-success p-4 text-center font-display text-[22px] font-bold text-on-success">Lock open. Watch the board for the class.</p>;
  return <div className="mt-2"><PuzzleLock puzzle={p.data} lineOf={r=>p.lines[refKey(r)]??null} readLines={p.readLines} seed={seed} submit={a=>{act("race_puzzle",{answer:a})}} onDone={()=>setDone(true)}/></div>;
+}
+// The room clock on the board and phones (lib/room-clock.ts): the server's time used plus the running beat, ticking
+// once a second; null when the clock is off.
+function useLiveClock(c:{budgetMs:number;usedMs:number;runningSince:string|null}|null|undefined){
+ const [now,setNow]=useState(()=>Date.now());
+ useEffect(()=>{if(!c?.runningSince)return;const t=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(t)},[c?.runningSince]);
+ if(!c)return null;
+ return clockView(c.budgetMs,c.usedMs+(c.runningSince?Math.max(0,now-Date.parse(c.runningSince)):0));
 }

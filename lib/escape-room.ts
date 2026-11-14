@@ -154,7 +154,7 @@ export const stopNow = (room: Room, p: RoomProgress, s: { classSession: boolean;
 // What an unfinished room saves so it can be picked up on another day or device (expedition_results.record.resume, or
 // the browser): the progress, the answers so far (the solo room's own records), the cards asked in the Interview, and
 // the extras already scored. Checked on load: anything malformed starts the room afresh rather than half-restored.
-export type RoomResume = { v: 1; progress: RoomProgress; records: unknown[]; ghost: number[]; cards: number[]; lightning: (number | null)[]; burst: number; puzzles?: Record<string, { id: string; type: string; firstTry: boolean[]; points: number }> };
+export type RoomResume = { clock?: number[]; v: 1; progress: RoomProgress; records: unknown[]; ghost: number[]; cards: number[]; lightning: (number | null)[]; burst: number; puzzles?: Record<string, { id: string; type: string; firstTry: boolean[]; points: number }> };
 const ints = (x: unknown, max = 60) => Array.isArray(x) && x.length <= max && x.every((n) => Number.isInteger(n));
 export function parseResume(x: unknown, room: Room): RoomResume | null {
   const o = x as Partial<RoomResume> | null;
@@ -166,7 +166,9 @@ export function parseResume(x: unknown, room: Room): RoomResume | null {
   if (!ints(o.cards, 6) || !Array.isArray(o.ghost) || !Array.isArray(o.lightning) || typeof o.burst !== "number") return null;
   return { v: 1, progress: { opened: [...p.opened].sort((a, b) => a - b), puzzles: p.puzzles.filter((s): s is string => typeof s === "string"), innerDoor: p.innerDoor, exit: p.exit }, records: o.records, ghost: o.ghost.map(Number), cards: o.cards as number[], lightning: o.lightning.map((n) => (n == null ? null : Number(n))), burst: o.burst,
     // Puzzle results: only well-formed entries for puzzles this room has.
-    puzzles: Object.fromEntries(Object.entries(o.puzzles && typeof o.puzzles === "object" ? o.puzzles : {}).filter(([id, r]) => room.puzzles.some((x) => x.id === id) && !!r && Array.isArray(r.firstTry) && typeof r.points === "number")) };
+    puzzles: Object.fromEntries(Object.entries(o.puzzles && typeof o.puzzles === "object" ? o.puzzles : {}).filter(([id, r]) => room.puzzles.some((x) => x.id === id) && !!r && Array.isArray(r.firstTry) && typeof r.points === "number")),
+    // The room clock's time used per chamber (lib/room-clock.ts), when the class has it on.
+    clock: Array.isArray(o.clock) ? o.clock.slice(0, 2).map((n: unknown) => Math.max(0, Math.min(36e5 * 3, Number(n) || 0))) : [0, 0] };
 }
 // The room a student left part-way: their latest unfinished attempt that saved a resume point.
 export function unfinished<A extends { expeditionId: string; finishedAt: string | null; startedAt: string; resume?: unknown }>(attempts: A[], expeditionId: string): A | null {

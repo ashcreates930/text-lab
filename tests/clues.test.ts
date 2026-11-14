@@ -49,14 +49,14 @@ test("live: a phone asks for clues one tier at a time while the lock is open, an
   const rs: never[] = [];
   const ask = (rows: unknown[]) => raceAnswer(round, ch1, rows as never, 0, "p1", "race_clue", {}, Date.now(), "1", null);
   const row = (payload: Record<string, unknown>, kind = "race_clue") => ({ id: Math.random().toString(36), roundIndex: 0, squadId: null, playerId: "p1", role: null, kind, payload, flagged: false, createdAt: "" });
-  const c1 = ask(rs) as { payload: { tier: number } }; assert.equal(c1.payload.tier, 1);
+  const c1 = ask(rs) as unknown as { payload: { tier: number } }; assert.equal(c1.payload.tier, 1);
   const rows = [row(c1.payload), row({ step: 1, tier: 2 }), row({ step: 1, tier: 3 })];
   assert.match(String(ask(rows)), /every clue/);
   assert.equal(playerChunk(rows as never, 0, 1, "p1").clue, 3);
   // The shot after tier 2: the points less 250, the same as solo.
   const q = ch1[1].chunk.question, right = rightAnswerFor(q, ch1[1]);
-  const base = raceAnswer(round, ch1, [] as never, 0, "p1", "race_tap", { answer: right }, Date.now(), "1", null) as { payload: { points: number } };
-  const two = raceAnswer(round, ch1, rows.slice(0, 2) as never, 0, "p1", "race_tap", { answer: right }, Date.now(), "1", null) as { payload: { points: number; clue: number } };
+  const base = raceAnswer(round, ch1, [] as never, 0, "p1", "race_tap", { answer: right }, Date.now(), "1", null) as unknown as { payload: { points: number } };
+  const two = raceAnswer(round, ch1, rows.slice(0, 2) as never, 0, "p1", "race_tap", { answer: right }, Date.now(), "1", null) as unknown as { payload: { points: number; clue: number } };
   assert.equal(two.payload.clue, 2); assert.equal(two.payload.points, Math.max(0, base.payload.points - 250));
   assert.match(String(raceAnswer({ ...round, beat: "reveal" }, ch1, [] as never, 0, "p1", "race_clue", {}, Date.now(), "1", null)), /isn't open/);
   assert.equal(liveClueTier(0, true), 1);

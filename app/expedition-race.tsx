@@ -4,9 +4,10 @@
 // result moment, the leaderboard (with Pause) and a countdown ring to the next chunk, all automatic. The HUD (score,
 // streak, coins, sound, chunk count, seconds left) sits on every race screen. Extended time multiplies every timer and
 // every automatic screen. Screen readers hear the result and the new rank before anything moves.
+import {chamberBudgetMs,clockEnding,clockRuns,clockView,type ClockView,type RoomClock} from "@/lib/room-clock";
 import {CLUE_COST,clueCost,cluesFor,opened,type Clue,type ClueTier} from "@/lib/clues";
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
-import {ArrowRight,Check,Crown,Flame,Highlighter,Lightbulb,Pause,Play,Sparkles,Star,Timer,Volume2,VolumeX,X,Zap,HelpCircle} from "lucide-react";
+import {ArrowRight,Check,Crown,Flame,Highlighter,Lightbulb,Pause,Play,Sparkles,Star,Timer,Volume2,VolumeX,X,Zap,HelpCircle,Hourglass} from "lucide-react";
 import type {ExpQuestion,QuestionType,WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
 import {DISCOVERY_COINS,GIST_SECONDS,TESTIMONY_MS,TYPE_INFO,chunkTokens,focusTokens,joinedPassages,proofTokens,expeditionChunks,ghostPlay,gistPoints,isDiscovery,keywordParts,limitMs,phraseRange,proofShown,scoreAnswer,screenMs,shuffledOrder,type Answer,type RaceChunk,type Token} from "@/lib/expedition";
@@ -46,7 +47,14 @@ const isOpen=(r:ChunkRecord|undefined)=>!!r&&(r.correct||!!r.recovered);
 const AUTO:Partial<Record<Beat,"result"|"board"|"countdown">>={result:"result",board:"board",countdown:"countdown"};
 
 // ---------- HUD ----------
-export function RaceHud({score,streak,coins,sound,onSound,chunk,total,left,title,doNow,onHelp,caseFile}:{score:number;streak:number;coins:number;sound:boolean;onSound:()=>void;chunk:number;total:number;left:number|null;title?:string;doNow?:string;onHelp?:()=>void;caseFile?:React.ReactNode}){
+// The room clock (lib/room-clock.ts): a quiet pill, announced only at 5 minutes, 1 minute and zero (overtime). Zero
+// ends nothing.
+export function RoomClockPill({clock}:{clock:ClockView}){
+ const said={five:"Five minutes left on the room clock.",one:"One minute left on the room clock.",zero:"The room clock is in overtime. Keep going; nothing ends."};
+ return <><span className={`inline-flex min-h-9 items-center gap-1 rounded-full px-2.5 font-display text-[15px] font-bold tabular-nums ${clock.overtime?"bg-notyet text-on-notyet":clock.warn?"bg-gold text-on-gold":"bg-panel text-ink"}`} aria-label={`Room clock ${clock.label}`}><Hourglass size={15} aria-hidden/>{clock.label}</span>
+  <span className="sr-only" aria-live="polite">{clock.warn?said[clock.warn]:""}</span></>;
+}
+export function RaceHud({score,streak,coins,sound,onSound,chunk,total,left,title,doNow,onHelp,caseFile,clock=null}:{clock?:ClockView|null;score:number;streak:number;coins:number;sound:boolean;onSound:()=>void;chunk:number;total:number;left:number|null;title?:string;doNow?:string;onHelp?:()=>void;caseFile?:React.ReactNode}){
  // Pinned directly below the site header on every race screen (--header-h is set by useStickyOffsets). On a phone it is
  // one row (the chunk count and timer join the pills) so the passage keeps the screen.
  return <div className="hud sticky top-[var(--header-h,0px)] z-20 -mx-4 flex flex-col gap-2 bg-deep px-4 pb-2 pt-1">
@@ -54,6 +62,7 @@ export function RaceHud({score,streak,coins,sound,onSound,chunk,total,left,title
    <Pill label={`Score ${score}`} icon={<Star size={16} className="fill-highlight text-highlight" aria-hidden/>}>{score.toLocaleString()}</Pill>
    <Pill label={`Streak ${streak}`} tone={streak>0?"highlight":"muted"} icon={<Flame size={16} className={streak>0?"fill-primary text-primary":"text-muted"} aria-hidden/>}>x{streak}</Pill>
    <Pill label={`${coins} coins`} icon={<span aria-hidden className="grid h-4 w-4 place-items-center rounded-full bg-gold ring-2 ring-inset ring-gold-shadow"/>}>{coins}</Pill>
+   {clock&&<RoomClockPill clock={clock}/>}
    <span className="flex-1"/>
    <span className="font-display text-[16px] font-bold tabular-nums text-ink md:hidden" aria-label={`Lock ${chunk} of ${total}`}>{chunk}/{total}</span>
    {left!==null&&<span className="w-10 text-right font-display text-[18px] font-bold tabular-nums text-ink md:hidden" aria-hidden>{Math.ceil(left)}s</span>}
@@ -301,7 +310,7 @@ export function DiscoveryBurst({chunks,world,timeSetting,sound,onDone,onFind,squ
 }
 
 // ---------- The solo expedition ----------
-export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,history=[],timeSetting="1",highlighter=false,studentKey,onSave,onFinish,onExit,replay=0,classToken=null,resume=null,stopAtInnerDoor=null}:{world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;grade?:number;history?:ExpeditionAttempt[];timeSetting?:string;highlighter?:boolean;studentKey?:string;onSave?:(a:ExpeditionAttempt)=>void;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void;replay?:number;classToken?:string|null;resume?:ExpeditionAttempt|null;stopAtInnerDoor?:boolean|null}){
+export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,history=[],timeSetting="1",highlighter=false,studentKey,onSave,onFinish,onExit,replay=0,classToken=null,resume=null,stopAtInnerDoor=null,roomClock="off"}:{roomClock?:RoomClock;world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;grade?:number;history?:ExpeditionAttempt[];timeSetting?:string;highlighter?:boolean;studentKey?:string;onSave?:(a:ExpeditionAttempt)=>void;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void;replay?:number;classToken?:string|null;resume?:ExpeditionAttempt|null;stopAtInnerDoor?:boolean|null}){
  const [sound,toggleSound]=useSoundPref("effects",preset);
  const chunks=useMemo(()=>expeditionChunks(world,passages,expeditionId),[world,passages,expeditionId]);
  const exp=world.expeditions?.find(e=>e.id===expeditionId);
@@ -348,6 +357,13 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const clueState:ClueState|undefined=q?{list:clueList,tier:clueTier,free:freeHint,onRequest:()=>setClueTier(t=>(Math.min(3,t+1)) as ClueTier)}:undefined;
  const [lightningPts,setLightningPts]=useState<number[]>(()=>(restored?.lightning??[]).map(n=>n??(undefined as unknown as number))),[burstPts,setBurstPts]=useState(()=>restored?.burst??0);
  const go=useCallback((b:Beat)=>{setBeat(b);setStartedAt(Date.now())},[]);
+ // The room clock (lib/room-clock.ts): off unless the class turned it on; per chamber; it runs only while working a lock
+ // or puzzle (never while reading) and zero ends nothing.
+ const chamberAt=(i:number)=>room&&room.chambers.length>1&&i>room.chambers[0].to?1:0,ch=chamberAt(k);
+ const budget=useMemo(()=>{if(!room||roomClock==="off")return 0;const c=room.chambers[ch]??{from:0,to:chunks.length-1};return chamberBudgetMs(c.to-c.from+1,room.puzzles.filter(p=>chamberAt(p.after)===ch).length,roomClock)},[room,roomClock,ch,chunks.length]);// eslint-disable-line react-hooks/exhaustive-deps
+ const [clockUsed,setClockUsed]=useState<number[]>(()=>restored?.clock??[0,0]);
+ useEffect(()=>{if(!budget||!clockRuns(beat))return;const t=setInterval(()=>{if(document.hidden)return;setClockUsed(u=>{const n=[...u];n[ch]=(n[ch]??0)+1000;return n})},1000);return()=>clearInterval(t)},[budget,beat,ch]);
+ const clock=budget?clockView(budget,clockUsed[ch]??0):null;
  useStickyOffsets();
  // A new beat or chunk is a new screen: the top, focus on its heading. The proof step of the same question is not: the
  // heading takes focus and the page stays where the student is (no jump during a question).
@@ -430,7 +446,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  useEffect(()=>{if(!onSave||finishedIso.current||!progress.opened.length)return;
   const kept=records.map((r,i)=>isOpen(r)?r:null);while(kept.length&&!kept.at(-1))kept.pop();
   onSave({attemptId,worldId:world.id,expeditionId,startedAt:startedIso,finishedAt:null,complete:false,score,notes:caseNotes(askedChunks.slice(0,kept.length),results.slice(0,kept.length)),interview:null,award:null,
-   resume:{v:1,progress,records:kept,ghost:ghost.slice(0,kept.length),cards,lightning:lightningPts.slice(0,kept.length).map(n=>n??null),burst:burstPts,puzzles:puzzleRes},puzzles:Object.values(puzzleRes)})},[progressKey]);// eslint-disable-line react-hooks/exhaustive-deps
+   resume:{v:1,clock:clockUsed,progress,records:kept,ghost:ghost.slice(0,kept.length),cards,lightning:lightningPts.slice(0,kept.length).map(n=>n??null),burst:burstPts,puzzles:puzzleRes},puzzles:Object.values(puzzleRes)})},[progressKey]);// eslint-disable-line react-hooks/exhaustive-deps
  const saved=useRef(false);
  // "What do I do?": shows this screen's hint again, until the screen changes.
  const [again,setAgain]=useState(false);
@@ -460,7 +476,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const said=iv&&cards.length?interviewStatements(world,iv,liar,cards).filter((_,i)=>isMet(cards,i)):null;
  const inventory=inventoryOf({said,locks:records.map((r,i)=>({lock:i,question:askedChunks[i].chunk.question,tokens:chunkTokens(chunks[i].lines),opened:isOpen(r),discovery:r?.discovered?chunks[i].chunk.discovery:null}))});
  const nextRoom=room?roomsOf(world)[room.number]??null:null;
- const hud=<RaceHud caseFile={<CaseFileButton items={inventory}/>} doNow={DO_NOW[screenNow]} onHelp={()=>setAgain(true)} score={score} streak={streak} coins={coins} sound={sound} onSound={toggleSound} chunk={k+1} total={chunks.length} left={beat==="gist"?gistLeft:beat==="question"&&!testifying?qLeft:null} title={exp.title}/>;
+ const hud=<RaceHud clock={clock} caseFile={<CaseFileButton items={inventory}/>} doNow={DO_NOW[screenNow]} onHelp={()=>setAgain(true)} score={score} streak={streak} coins={coins} sound={sound} onSound={toggleSound} chunk={k+1} total={chunks.length} left={beat==="gist"?gistLeft:beat==="question"&&!testifying?qLeft:null} title={exp.title}/>;
  const shown=proofShown(q,tokens);
  // The lines a proof step taps: this chunk's, or for Make the Call every chunk of the expedition so far.
  const callPassages=joinedPassages(chunks.slice(0,k+1));
@@ -469,11 +485,11 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   {!["refresher","notes","interview","practice","skills","door","inner","recap","escape"].includes(beat)&&hud}
   {beat==="practice"&&<PracticeRound world={world} passages={passages} onDone={()=>{markPracticeDone();go("door")}}/>}
   {beat==="door"&&room&&<RoomDoor room={room} resumed={!!restored} onOpen={()=>{if(iv&&!inRoom(iv)&&!(restored&&cards.length))go("interview");else startChunk(k)}}/>}
-  {beat==="inner"&&room&&<InnerDoor room={room} stop={stopsAtInnerDoor({classSession:!!classToken,stopAtInnerDoor})&&!restoredInto2} onMap={onExit} onNext={()=>startChunk(k+1)}/>}
+  {beat==="inner"&&room&&<InnerDoor clockNote={budget?clockEnding(budget,clockUsed[0]??0):null} room={room} stop={stopsAtInnerDoor({classSession:!!classToken,stopAtInnerDoor})&&!restoredInto2} onMap={onExit} onNext={()=>startChunk(k+1)}/>}
   {beat==="recap"&&room&&<ChamberRecap room={room} items={inventory} onNext={()=>startChunk(room.chambers[1]?.from??k+1)}/>}
   {beat==="puzzle"&&puzzleId&&(()=>{const pz=world.rooms?.find(r=>r.expedition===expeditionId)?.puzzles?.find(p=>p.id===puzzleId),at=room?.puzzles.find(p=>p.id===puzzleId)?.after??k;
    return pz?<PuzzleLock key={puzzleId} puzzle={pz} lineOf={r=>lineAt(passages,r)} seed={seedKey} readLines={chunks.slice(0,at+1).flatMap(x=>x.lines.map(l=>({p:l.pid,s:l.index})))} onDone={onPuzzleDone}/>:null})()}
-  {beat==="escape"&&room&&<EscapeMoment room={room} next={nextRoom} solved={!!liarResult?.solved} onNext={()=>{go("finish");onFinish?.(records)}}/>}
+  {beat==="escape"&&room&&<EscapeMoment clockNote={budget?clockEnding(budget,clockUsed[ch]??0):null} room={room} next={nextRoom} solved={!!liarResult?.solved} onNext={()=>{go("finish");onFinish?.(records)}}/>}
   {beat==="witness"&&iv&&meeting!=null&&<WitnessVisit key={meeting} world={world} expeditionId={expeditionId} interview={iv} liar={liar} index={meeting} lock={k+1} met={cards.filter((_,i)=>isMet(cards,i)).length+1} onDone={metWitness}/>}
   {beat==="interview"&&iv&&<InterviewScreen world={world} expeditionId={expeditionId} interview={iv} liar={liar} onDone={cs=>{setCards(cs);saveCards(world.id,expeditionId,cs);startChunk(0)}}/>}
   {beat==="liar"&&iv&&<div className="flex justify-center"><ExitBanner/></div>}

@@ -10,7 +10,7 @@ import type { SourcePassage } from "../source-passages.ts";
 import { liveMissionPieces, liveMissionSetting, missionPick, missionSetting } from "./missions.ts";
 import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, livePicks, myStepRecord, playerPicks, playerState, publicStory, readingAction, squadReading, stepKind, tryState, type LiveStoryRound } from "./story.ts";
 import { screenMessage } from "../safety.ts";
-import { liveClueTier, beatMs, burstFound, firstBeat, liveSpan, interviewOf, liveArc, roomMet, witnessOf, playerAsked, playerVersion, liarAnswers, liveCards, liveRaceBoard, liveRaceChunks, nextBeat, parseExpSettings, playerChunk, playerLiar, playerVote, raceAnswer, raceAnswered, raceDone, raceFinish, raceQuestions, raceReadiness, raceReveal, raceTotals, type LiveRaceRound } from "./race.ts";
+import { liveClueTier, beatMs, burstFound, firstBeat, liveSpan, interviewOf, liveArc, roomMet, witnessOf, liveClock, clockAdd, playerAsked, playerVersion, liarAnswers, liveCards, liveRaceBoard, liveRaceChunks, nextBeat, parseExpSettings, playerChunk, playerLiar, playerVote, raceAnswer, raceAnswered, raceDone, raceFinish, raceQuestions, raceReadiness, raceReveal, raceTotals, type LiveRaceRound } from "./race.ts";
 import { firstName, inRoom, interviewAudio, liarBreakdown } from "../interview.ts";
 import { lineAt, liveLiar, recoveryTask, refKey, roomOf } from "../escape-room.ts";
 import type { LineRef, RoomPuzzle } from "../world-schema.ts";
@@ -182,7 +182,7 @@ function publicRace(st: LiveState, round: LiveRaceRound) {
   const exp = st.world.expeditions?.find((e) => e.id === round.settings.expeditionId);
   return {
     type: "race" as const, step: round.step, total: chunks.length, beat: round.beat, beatStartedAt: round.beatStartedAt, squadsOn: round.squadsOn, paused: !!round.pausedAt, holdBefore: round.holdBefore ?? null,
-    beatMs: beatMs(round, c, "1"), expedition: { id: round.settings.expeditionId, title: exp?.title ?? "" }, chamber: round.settings.chamber ?? 0, gradeBand: round.settings.gradeBand, grade: round.settings.grade ?? 7, highlighter: round.settings.highlighter,
+    beatMs: beatMs(round, c, "1"), expedition: { id: round.settings.expeditionId, title: exp?.title ?? "" }, chamber: round.settings.chamber ?? 0, clock: liveClock(round, chunks.length, roomOf(st.world, round.settings.expeditionId)?.puzzles ?? []), gradeBand: round.settings.gradeBand, grade: round.settings.grade ?? 7, highlighter: round.settings.highlighter,
     chunk: { id: c.id, index: c.index, passages: c.passages, lines: c.lines, gist: strip(c.chunk.gist.options), discovery: { phrase: c.chunk.discovery.phrase, note: c.chunk.discovery.note } },
     // The arc's moment at this chunk (the twist, the boss, a surprise double), for the banners; the checkpoint follows level 1.
     arc: arc ? beatKind(arc, round.step) : null, double: arc ? multiplierAt(arc, round.step) > 1 : false, checkpoint: isCheckpoint(round.step, chunks.length),
@@ -530,7 +530,7 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
       }
       // Moving on ends a pause: the new beat's clock starts now, so phones must be able to answer it.
       if (s.paused) await store.updateSession(s.id, { paused: false });
-      return set(store, st, { ...round, step: n.step, beat: n.beat, puzzle: n.puzzle ?? null, witness: n.witness ?? null, beatStartedAt: new Date().toISOString(), pausedAt: null, pinned: n.step === round.step ? round.pinned ?? null : null });
+      return set(store, st, { ...round, step: n.step, beat: n.beat, puzzle: n.puzzle ?? null, witness: n.witness ?? null, clockUsedMs: (round.clockUsedMs ?? 0) + clockAdd(round, Date.now()), beatStartedAt: new Date().toISOString(), pausedAt: null, pinned: n.step === round.step ? round.pinned ?? null : null });
     }
     // The Bonus Round: after a Proof Race; squads are built first if there are none.
     case "bonus.start": {

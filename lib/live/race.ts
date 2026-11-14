@@ -12,6 +12,7 @@
 // seconds), then the witness answers on the board (testify; the host moves on). One witness lies, picked per game. The
 // finale is Name the Liar: every phone locks in the liar and the line privately (liar, 90 seconds), and nothing is
 // shown until the board reveals the liar with the class breakdown (verdict). Rows: interview_vote and liar_lock.
+import { chamberBudgetMs, clockRuns, isRoomClock, type RoomClock } from "../room-clock.ts";
 import { CLUE_COST, clueCost, type ClueTier } from "../clues.ts";
 import type { Interview, RoomPuzzle, WorldPack } from "../world-schema.ts";
 import { chamberSpan, codeResultOf, paintingResult, recoveryOpens, sceneResult, type ChamberPick, type RoomPuzzleAt } from "../escape-room.ts";
@@ -27,7 +28,9 @@ import { screenBoardText } from "../safety.ts";
 
 // grade: the class grade (6 to 10) that picks each benchmark's code; gradeBand follows from it.
 // chamber: the whole room (0) or one chamber (lib/escape-room.ts), so a class can play a room one chamber per period.
-export type ExpSettings = { expeditionId: string; grade?: Grade; gradeBand: GradeBand; questions: boolean; highlighter: boolean; autoAdvance: boolean; chamber?: ChamberPick };
+export type ExpSettings = { expeditionId: string; grade?: Grade; gradeBand: GradeBand; questions: boolean; highlighter: boolean; autoAdvance: boolean; chamber?: ChamberPick;
+  // The room clock (lib/room-clock.ts): off unless the host turns it on.
+  clock?: RoomClock };
 export const LIVE_BEATS = ["vote", "testify", "read", "process", "ask", "race", "reveal", "lightning", "puzzle", "board", "burst", "countdown", "liar", "verdict"] as const;
 // A puzzle lock gets generous time (times each player's extra time); the board moves on early once everyone is done.
 export const PUZZLE_SECONDS = 150;
@@ -39,8 +42,19 @@ export type LiveRaceRound = { type: "race"; settings: ExpSettings; step: number;
   // Interview at the door. witness: who testifies now in a room (the door Interview uses step).
   interview?: { liar: number; witnesses: number; at?: number[] | null } | null; witness?: number | null;
   // The puzzle lock open now (lib/escape-room.ts), during the "puzzle" beat.
-  puzzle?: string | null };
+  puzzle?: string | null;
+  // The room clock's time used so far in this game (ms), added up as each working beat ends.
+  clockUsedMs?: number };
 export const interviewOf = (world: WorldPack, round: Pick<LiveRaceRound, "settings" | "interview">): Interview | null => (round.interview ? world.expeditions?.find((e) => e.id === round.settings.expeditionId)?.interview ?? null : null);
+// The room clock for a live game: its budget for the chamber played, the time used, and since when it is running (null
+// while paused: reading, witnesses, boards, or the teacher's pause). Null when the clock is off.
+export function liveClock(round: LiveRaceRound, chunks: number, puzzles: RoomPuzzleAt[]) {
+  const clock = round.settings.clock ?? "off"; if (clock === "off") return null;
+  const span = liveSpan(round, chunks), inSpan = puzzles.filter((p) => p.after >= span.from && p.after <= span.to).length;
+  return { budgetMs: chamberBudgetMs(span.to - span.from + 1, inSpan, clock), usedMs: round.clockUsedMs ?? 0, runningSince: clockRuns(round.beat) && !round.pausedAt ? round.beatStartedAt : null };
+}
+// The time to add when a beat ends: the beat's length if the clock runs on it and the game wasn't paused.
+export const clockAdd = (round: LiveRaceRound, now: number) => (clockRuns(round.beat) && !round.pausedAt ? Math.max(0, Math.min(now - Date.parse(round.beatStartedAt), 36e5)) : 0);
 export const isBeat = (b: unknown): b is LiveBeat => (LIVE_BEATS as readonly string[]).includes(String(b));
 
 export function parseExpSettings(x: unknown, world: WorldPack, grade = 7): ExpSettings | null {
@@ -49,7 +63,7 @@ export function parseExpSettings(x: unknown, world: WorldPack, grade = 7): ExpSe
   if (!id) return null;
   const g = gradeOf([6, 7, 8, 9, 10].includes(Number(o.grade)) ? o.grade : o.gradeBand === "9-10" ? 9 : grade);
   const ch = Number(o.chamber), chamber: ChamberPick = ch === 1 || ch === 2 ? ch : 0;
-  return { expeditionId: id, grade: g, gradeBand: bandOf(g), questions: o.questions !== false, highlighter: o.highlighter === true, autoAdvance: o.autoAdvance !== false, chamber };
+  return { expeditionId: id, grade: g, gradeBand: bandOf(g), questions: o.questions !== false, highlighter: o.highlighter === true, autoAdvance: o.autoAdvance !== false, chamber, clock: isRoomClock(o.clock) ? o.clock : "off" };
 }
 export const liveArc = (world: WorldPack, round: Pick<LiveRaceRound, "settings">): Arc | null => { const e = world.expeditions?.find((x) => x.id === round.settings.expeditionId); return e ? arcOf(world, e) : null; };
 export const liveRaceChunks = (world: WorldPack, passages: SourcePassage[], round: Pick<LiveRaceRound, "settings">) => expeditionChunks(world, passages, round.settings.expeditionId);

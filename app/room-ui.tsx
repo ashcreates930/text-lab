@@ -104,12 +104,13 @@ function DoorArt({open,size=120}:{open:boolean;size?:number}){
  </svg>;
 }
 // The inner door between the chambers. stop: the class stops here today (progress is saved).
-export function InnerDoor({room,stop,onNext,onMap}:{room:Room;stop:boolean;onNext:()=>void;onMap:()=>void}){
+export function InnerDoor({room,stop,onNext,onMap,clockNote=null}:{room:Room;stop:boolean;onNext:()=>void;onMap:()=>void;clockNote?:string|null}){
  return <section aria-labelledby="ex-h" className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 pt-2 text-center">
   <DoNow text={stop?DO_NOW.stopped:DO_NOW.inner}/>
   <DoorArt open size={110}/>
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Room {room.number} · {room.name}</p>
   <h1 id="ex-h" className="text-[32px] leading-tight outline-none">Chamber 1 escaped</h1>
+  {clockNote&&<p className="text-[16px] font-bold text-muted">{clockNote}</p>}
   <p role="status" className="text-[17px] font-bold">{stop?"The inner door is open, and your room is saved. Next time, you start in Chamber 2 with everything in your Case File.":"The inner door is open. Chamber 2 is ahead."}</p>
   {stop?<button type="button" onClick={onMap} className="case-primary min-h-[56px] w-full justify-center text-[18px]"><MapIcon size={18} aria-hidden/>Back to the map</button>
    :<button type="button" onClick={onNext} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Into Chamber 2 <ArrowRight size={18} aria-hidden/></button>}
@@ -131,12 +132,13 @@ export function ExitBanner(){
  return <p className="inline-flex w-fit items-center gap-2 rounded-full bg-gold px-3 py-1.5 font-display text-[15px] font-bold text-on-gold"><DoorClosed size={18} aria-hidden/>The exit door: name the liar to open it</p>;
 }
 // The escape: the door swings open and the way to the next room is open (the map lifts its fog when the student is back).
-export function EscapeMoment({room,next,solved,onNext}:{room:Room;next:Room|null;solved:boolean;onNext:()=>void}){
+export function EscapeMoment({room,next,solved,onNext,clockNote=null}:{room:Room;next:Room|null;solved:boolean;onNext:()=>void;clockNote?:string|null}){
  return <section aria-labelledby="ex-h" className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 pt-2 text-center">
   <DoNow text={DO_NOW.escape}/>
   <DoorArt open size={140}/>
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Room {room.number} · {room.name}</p>
   <h1 id="ex-h" className="text-[36px] leading-tight outline-none">You escaped!</h1>
+  {clockNote&&<p className="text-[16px] font-bold text-muted">{clockNote}</p>}
   <p role="status" className="text-[18px] font-bold">{solved?"Case solved, and the door is open. ":"The door is open. "}{next?`The way to Room ${next.number}, ${next.name}, is open on the map.`:"That was the last room in this story."}</p>
   <button type="button" onClick={onNext} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Final results <ArrowRight size={18} aria-hidden/></button>
  </section>;

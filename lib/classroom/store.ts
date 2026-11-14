@@ -8,7 +8,9 @@ import type { StudentProgress } from "./progress.ts";
 
 export type ClassRow = { id: string; teacher_id: string; name: string | null; class_code: string; world_id: string; grade: number; status: string; preview_enabled: boolean; created_at: string; roles_enabled?: boolean; angles_enabled?: boolean; leaderboard_mode?: "individual" | "squad" | "off"; story_mode_on?: boolean;
   // The class's look (escape-room phase 3, migration 202611140001): mature (the default) or classic. Absent before the migration.
-  look?: "mature" | "classic" };
+  look?: "mature" | "classic";
+  // The class's room clock (escape-room phase 5, migration 202611150001): off (the default), generous or extra. Absent before the migration.
+  room_clock?: "off" | "generous" | "extra" };
 // Story Mode settings: the class leaderboard (individual unless the teacher picks squads or off) and whether scenes with
 // Story Mode use it (otherwise the Case file clue board). Older rows, before the migration, have neither.
 export const storySettings = (c: Pick<ClassRow, "leaderboard_mode" | "story_mode_on">) => ({ leaderboard: c.leaderboard_mode ?? "individual", storyModeOn: c.story_mode_on !== false });
@@ -35,6 +37,7 @@ export interface ClassroomStore {
   setPreviewEnabled(classId: string, enabled: boolean): Promise<void>;
   setPersonalSettings(classId: string, settings: { rolesOn?: boolean; anglesOn?: boolean }): Promise<void>;
   setLook(classId: string, look: "mature" | "classic"): Promise<void>;
+  setRoomClock(classId: string, clock: "off" | "generous" | "extra"): Promise<void>;
   setStorySettings(classId: string, settings: { leaderboard?: "individual" | "squad" | "off"; storyModeOn?: boolean }): Promise<void>;
   // Extra time per student for Story Mode (1.5x, 2x or untimed). Students without a setting have normal time.
   setStudentTime(studentId: string, setting: TimeSettingValue): Promise<void>;
@@ -97,6 +100,7 @@ function supabaseStore(db: SupabaseClient): ClassroomStore {
     async getClass(teacherId, classId) { return must(await db.from("sessions").select("*").eq("id", classId).eq("teacher_id", teacherId).maybeSingle()) as ClassRow | null; },
     async setPreviewEnabled(classId, enabled) { must(await db.from("sessions").update({ preview_enabled: enabled }).eq("id", classId)); },
     async setLook(classId, look) { must(await db.from("sessions").update({ look }).eq("id", classId)); },
+    async setRoomClock(classId, clock) { must(await db.from("sessions").update({ room_clock: clock }).eq("id", classId)); },
     async setStorySettings(classId, s) { must(await db.from("sessions").update({ ...(s.leaderboard ? { leaderboard_mode: s.leaderboard } : {}), ...(s.storyModeOn !== undefined ? { story_mode_on: s.storyModeOn } : {}) }).eq("id", classId)); },
     async setStudentTime(studentId, setting) { must(await db.from("students").update({ time_setting: setting }).eq("id", studentId)); },
     async setStudentAbsent(studentId, absent, day = absentDay()) {
@@ -155,8 +159,9 @@ function memoryStore(): ClassroomStore {
   return {
     async ensureTeacher(auth) { let t = m.teachers.find((x) => x.auth === auth); if (!t) { t = { id: id(), auth }; m.teachers.push(t); } return { id: t.id }; },
     async listClasses(teacherId) { return m.classes.filter((c) => c.teacher_id === teacherId).reverse(); },
-    async createClass(teacherId, input) { const row: ClassRow = { id: id(), teacher_id: teacherId, name: input.name, class_code: newClassCode(), world_id: input.worldId, grade: input.grade, status: "active", preview_enabled: false, created_at: now(), look: "mature" }; m.classes.push(row); return row; },
+    async createClass(teacherId, input) { const row: ClassRow = { id: id(), teacher_id: teacherId, name: input.name, class_code: newClassCode(), world_id: input.worldId, grade: input.grade, status: "active", preview_enabled: false, created_at: now(), look: "mature", room_clock: "off" }; m.classes.push(row); return row; },
     async setLook(classId, look) { const c = m.classes.find((x) => x.id === classId); if (c) c.look = look; },
+    async setRoomClock(classId, clock) { const c = m.classes.find((x) => x.id === classId); if (c) c.room_clock = clock; },
     async getClass(teacherId, classId) { return m.classes.find((c) => c.id === classId && c.teacher_id === teacherId) ?? null; },
     async setPreviewEnabled(classId, enabled) { const c = m.classes.find((x) => x.id === classId); if (c) c.preview_enabled = enabled; },
     async setStorySettings(classId, s) { const c = m.classes.find((x) => x.id === classId); if (!c) return; if (s.leaderboard) c.leaderboard_mode = s.leaderboard; if (s.storyModeOn !== undefined) c.story_mode_on = s.storyModeOn; },
