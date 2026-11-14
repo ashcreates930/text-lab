@@ -23711,6 +23711,2146 @@
           ]
         }
       ]
+    },
+    {
+      "expedition": "tales-by-the-fire",
+      "door": "Fireside Tales. Ichabod loves a good ghost story, until he has to walk home in the dark. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "churchyard-sunday",
+          "after": 3,
+          "title": "Fix the Painting: Sunday in the churchyard",
+          "prompt": "A painter tried to show Ichabod with the country girls between Sunday services, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "alt": "A painting of a schoolmaster with young women in a country churchyard on a Sunday",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "vines",
+              "label": "Wild grapevines climbing the trees",
+              "x": 20,
+              "y": 30,
+              "lines": [
+                {
+                  "p": "p016",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "stones",
+              "label": "Old gravestones in the grass",
+              "x": 40,
+              "y": 75,
+              "lines": [
+                {
+                  "p": "p016",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "church",
+              "label": "The church where his singing rang out",
+              "x": 75,
+              "y": 30,
+              "lines": [
+                {
+                  "p": "p015",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "frowns",
+              "label": "The girls frowning and turning away from him",
+              "x": 55,
+              "y": 55,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p016",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "jokes",
+              "label": "Ichabod reading aloud from a joke book",
+              "x": 35,
+              "y": 50,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p016",
+                  "s": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "fireside-latch",
+          "after": 5,
+          "title": "The latch on the farmhouse door",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "What sort of talk did neighbors hear from him at every door?",
+              "line": {
+                "p": "p017",
+                "s": 0
+              },
+              "word": "gossip"
+            },
+            {
+              "question": "What dark subject did his favorite author cover, one he trusted completely?",
+              "line": {
+                "p": "p017",
+                "s": 1
+              },
+              "word": "Witchcraft"
+            },
+            {
+              "question": "Which word shows he could be clever in little ways?",
+              "line": {
+                "p": "p018",
+                "s": 0
+              },
+              "word": "shrewdness"
+            },
+            {
+              "question": "What did he lie down on beside the creek once classes ended?",
+              "line": {
+                "p": "p018",
+                "s": 3
+              },
+              "word": "clover"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "winter-walk",
+          "after": 10,
+          "title": "Inspect the Scene: the walk home on a winter night",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "alt": "A snowy country lane at night with a distant farmhouse window and bare trees",
+          "objects": [
+            {
+              "id": "window",
+              "label": "A faraway glowing pane across the snowy meadow",
+              "x": 75,
+              "y": 40,
+              "line": {
+                "p": "p020",
+                "s": 2
+              }
+            },
+            {
+              "id": "bush",
+              "label": "A small bush wrapped in white",
+              "x": 30,
+              "y": 60,
+              "line": {
+                "p": "p020",
+                "s": 3
+              }
+            },
+            {
+              "id": "prints",
+              "label": "Footprints pressed into the icy ground",
+              "x": 50,
+              "y": 85,
+              "line": {
+                "p": "p020",
+                "s": 4
+              }
+            },
+            {
+              "id": "branches",
+              "label": "Bare branches tossed by a gust",
+              "x": 15,
+              "y": 20,
+              "line": {
+                "p": "p020",
+                "s": 5
+              }
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p020",
+              "s": 1
+            },
+            {
+              "p": "p019",
+              "s": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-van-tassel-farm",
+      "door": "The Van Tassel Farm. Ichabod has never seen such plenty, or such a daughter. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "farm-by-river",
+          "after": 5,
+          "title": "Fix the Painting: the Van Tassel farm",
+          "prompt": "A painter tried to show Baltus Van Tassel's farm, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "alt": "A painting of a farmhouse beside a river with a great tree and a stream",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "river",
+              "label": "The farm on the bank of a wide river",
+              "x": 15,
+              "y": 60,
+              "lines": [
+                {
+                  "p": "p023",
+                  "s": 4
+                }
+              ]
+            },
+            {
+              "id": "elm",
+              "label": "A great elm spreading its branches over the house",
+              "x": 60,
+              "y": 20,
+              "lines": [
+                {
+                  "p": "p023",
+                  "s": 5
+                }
+              ]
+            },
+            {
+              "id": "willows",
+              "label": "A brook running among willows",
+              "x": 80,
+              "y": 80,
+              "lines": [
+                {
+                  "p": "p023",
+                  "s": 5
+                }
+              ]
+            },
+            {
+              "id": "columns",
+              "label": "A grand mansion with tall marble columns",
+              "x": 50,
+              "y": 50,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p023",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "hilltop",
+              "label": "The farm perched on a bare, windswept hilltop",
+              "x": 35,
+              "y": 30,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p023",
+                  "s": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "farm-gate",
+          "after": 5,
+          "title": "The farm gate",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "How is Katrina related to old Baltus?",
+              "line": {
+                "p": "p022",
+                "s": 0
+              },
+              "word": "daughter"
+            },
+            {
+              "question": "Which fruit grown by her family does her face resemble?",
+              "line": {
+                "p": "p022",
+                "s": 1
+              },
+              "word": "peaches"
+            },
+            {
+              "question": "What precious metal were her family heirlooms made of?",
+              "line": {
+                "p": "p022",
+                "s": 3
+              },
+              "word": "gold"
+            },
+            {
+              "question": "Which wooden cask was reused to make a basin for the source?",
+              "line": {
+                "p": "p023",
+                "s": 5
+              },
+              "word": "barrel"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "barnyard",
+          "after": 10,
+          "title": "Inspect the Scene: the Van Tassel barnyard",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "alt": "A busy farmyard with a huge barn, a pond, pens and farm birds",
+          "objects": [
+            {
+              "id": "geese",
+              "label": "White birds floating on still water",
+              "x": 20,
+              "y": 70,
+              "line": {
+                "p": "p023",
+                "s": 8
+              }
+            },
+            {
+              "id": "hogs",
+              "label": "Fat hogs lying in a muddy enclosure",
+              "x": 45,
+              "y": 80,
+              "line": {
+                "p": "p023",
+                "s": 7
+              }
+            },
+            {
+              "id": "rooster",
+              "label": "A proud red-combed bird flapping at sunrise",
+              "x": 65,
+              "y": 65,
+              "line": {
+                "p": "p023",
+                "s": 9
+              }
+            },
+            {
+              "id": "swallows",
+              "label": "Small birds darting around the top of a huge building",
+              "x": 70,
+              "y": 20,
+              "line": {
+                "p": "p023",
+                "s": 6
+              }
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p024",
+              "s": 1
+            },
+            {
+              "p": "p024",
+              "s": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "a-rival-appears",
+      "door": "A Rival Appears. Ichabod wants the farm and the daughter, but someone bigger stands in his way. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "van-tassel-hall",
+          "after": 5,
+          "title": "Fix the Painting: the hall of the Van Tassel house",
+          "prompt": "A painter tried to show the hall Ichabod walked into, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "alt": "A painting of a large farmhouse hall with a long dresser, a corner and a doorway",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "pewter",
+              "label": "Rows of shining pewter on a long dresser",
+              "x": 50,
+              "y": 35,
+              "lines": [
+                {
+                  "p": "p026",
+                  "s": 5
+                }
+              ]
+            },
+            {
+              "id": "woolbag",
+              "label": "A huge bag of wool in the corner",
+              "x": 15,
+              "y": 70,
+              "lines": [
+                {
+                  "p": "p026",
+                  "s": 6
+                }
+              ]
+            },
+            {
+              "id": "wheel",
+              "label": "A spinning wheel out on the porch",
+              "x": 85,
+              "y": 55,
+              "lines": [
+                {
+                  "p": "p026",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "barewalls",
+              "label": "Bare walls with nothing hung on them",
+              "x": 30,
+              "y": 25,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p026",
+                  "s": 6
+                }
+              ]
+            },
+            {
+              "id": "bolted",
+              "label": "The parlor door shut tight and bolted",
+              "x": 70,
+              "y": 50,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p026",
+                  "s": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "farmhouse-door",
+          "after": 5,
+          "title": "The farmhouse door",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "What open porch did the overhanging edge create?",
+              "line": {
+                "p": "p026",
+                "s": 1
+              },
+              "word": "piazza"
+            },
+            {
+              "question": "What would the family carry down to the water to catch supper?",
+              "line": {
+                "p": "p026",
+                "s": 2
+              },
+              "word": "nets"
+            },
+            {
+              "question": "What piece of furniture held the shining metal plates?",
+              "line": {
+                "p": "p026",
+                "s": 5
+              },
+              "word": "dresser"
+            },
+            {
+              "question": "What fluffy material sat piled in a sack, waiting to become yarn?",
+              "line": {
+                "p": "p026",
+                "s": 6
+              },
+              "word": "wool"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "brom-arrives",
+          "after": 10,
+          "title": "Inspect the Scene: Brom Bones rides in",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "alt": "A farmhouse gate with a saddled horse, a group of young riders and a hat on a post",
+          "objects": [
+            {
+              "id": "stallion",
+              "label": "A saddled stallion tied at the rail",
+              "x": 30,
+              "y": 60,
+              "line": {
+                "p": "p028",
+                "s": 3
+              }
+            },
+            {
+              "id": "cap",
+              "label": "A cap tilted at an angle on a post",
+              "x": 60,
+              "y": 40,
+              "line": {
+                "p": "p028",
+                "s": 4
+              }
+            },
+            {
+              "id": "riders",
+              "label": "A small band of young men at the gate",
+              "x": 80,
+              "y": 65,
+              "line": {
+                "p": "p028",
+                "s": 6
+              }
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p027",
+              "s": 1
+            },
+            {
+              "p": "p028",
+              "s": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-feud",
+      "door": "The Feud. Brom Bones wants Katrina too, and he is not a man to cross. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "midnight-riders",
+          "after": 2,
+          "title": "Fix the Painting: Brom's crew at midnight",
+          "prompt": "A painter tried to show Brom and his riders passing the farmhouses at midnight, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "alt": "A painting of a band of horsemen on a moonlit country road past farmhouses",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "squad",
+              "label": "A band of hard riders on the road",
+              "x": 50,
+              "y": 60,
+              "lines": [
+                {
+                  "p": "p028",
+                  "s": 7
+                }
+              ]
+            },
+            {
+              "id": "houses",
+              "label": "Farmhouses along the way",
+              "x": 80,
+              "y": 35,
+              "lines": [
+                {
+                  "p": "p028",
+                  "s": 8
+                }
+              ]
+            },
+            {
+              "id": "oldwoman",
+              "label": "An old woman at a window, woken from sleep",
+              "x": 75,
+              "y": 45,
+              "lines": [
+                {
+                  "p": "p028",
+                  "s": 8
+                }
+              ]
+            },
+            {
+              "id": "tricorn",
+              "label": "The leader in a feathered three-cornered hat",
+              "x": 40,
+              "y": 35,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p028",
+                  "s": 7
+                }
+              ]
+            },
+            {
+              "id": "silent",
+              "label": "The riders tiptoeing past without a sound",
+              "x": 25,
+              "y": 70,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p028",
+                  "s": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "feud-gate",
+          "after": 5,
+          "title": "The Van Tassel paling",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "Which word shows Ichabod could not be snapped, no matter the strain?",
+              "line": {
+                "p": "p030",
+                "s": 1
+              },
+              "word": "tough"
+            },
+            {
+              "question": "Which word means he worked his way in slyly, bit by bit?",
+              "line": {
+                "p": "p031",
+                "s": 1
+              },
+              "word": "insinuating"
+            },
+            {
+              "question": "Which animal at the gate warned other young men off?",
+              "line": {
+                "p": "p029",
+                "s": 1
+              },
+              "word": "horse"
+            },
+            {
+              "question": "Which word shows the villagers thought highly of him, not just feared him?",
+              "line": {
+                "p": "p028",
+                "s": 9
+              },
+              "word": "admiration"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "piazza-evening",
+          "after": 10,
+          "title": "Inspect the Scene: an evening at the Van Tassels'",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "alt": "A farmhouse porch at evening, a farmyard, a barn roof and a great tree",
+          "objects": [
+            {
+              "id": "pipe",
+              "label": "A long clay tobacco holder resting on a chair",
+              "x": 70,
+              "y": 60,
+              "line": {
+                "p": "p031",
+                "s": 3
+              }
+            },
+            {
+              "id": "poultry",
+              "label": "A flock of farm birds pecking in the yard",
+              "x": 30,
+              "y": 80,
+              "line": {
+                "p": "p031",
+                "s": 4
+              }
+            },
+            {
+              "id": "vane",
+              "label": "A small carved soldier perched on top of a roof",
+              "x": 20,
+              "y": 15,
+              "line": {
+                "p": "p031",
+                "s": 5
+              }
+            },
+            {
+              "id": "source",
+              "label": "A bubbling source beneath a big tree",
+              "x": 85,
+              "y": 75,
+              "line": {
+                "p": "p031",
+                "s": 6
+              }
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p032",
+              "s": 3
+            },
+            {
+              "p": "p032",
+              "s": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-invitation",
+      "door": "The Invitation. Brom's pranks pile up, and then a messenger brings news of a party. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "pranked-school",
+          "after": 2,
+          "title": "Fix the Painting: the schoolhouse after the pranks",
+          "prompt": "A painter tried to show what Brom's gang did to the schoolhouse, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "alt": "A painting of a log schoolhouse with smoke, a dog and young men outside",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "smoke",
+              "label": "Smoke pouring out of the schoolroom",
+              "x": 50,
+              "y": 25,
+              "lines": [
+                {
+                  "p": "p033",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "mess",
+              "label": "Everything inside turned upside down",
+              "x": 35,
+              "y": 55,
+              "lines": [
+                {
+                  "p": "p033",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "dog",
+              "label": "A dog howling in a silly way",
+              "x": 75,
+              "y": 80,
+              "lines": [
+                {
+                  "p": "p033",
+                  "s": 4
+                }
+              ]
+            },
+            {
+              "id": "knock",
+              "label": "The gang politely knocking at the door",
+              "x": 60,
+              "y": 60,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p033",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "handshake",
+              "label": "Brom offering Ichabod a friendly handshake",
+              "x": 20,
+              "y": 70,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p033",
+                  "s": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "school-door",
+          "after": 5,
+          "title": "The schoolroom door",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "Which word names the person Brom's pranks were aimed at?",
+              "line": {
+                "p": "p033",
+                "s": 1
+              },
+              "word": "rival"
+            },
+            {
+              "question": "What did the gang plug up so the music lesson filled with fumes?",
+              "line": {
+                "p": "p033",
+                "s": 3
+              },
+              "word": "chimney"
+            },
+            {
+              "question": "What sad noise did Brom train his animal to make, to mock Ichabod?",
+              "line": {
+                "p": "p033",
+                "s": 4
+              },
+              "word": "whine"
+            },
+            {
+              "question": "What did Brom make of Ichabod whenever Katrina was watching?",
+              "line": {
+                "p": "p033",
+                "s": 4
+              },
+              "word": "ridicule"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "getting-ready",
+          "after": 10,
+          "title": "Inspect the Scene: getting ready for the party",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "alt": "An empty schoolroom in a mess, with an old horse waiting outside the door",
+          "objects": [
+            {
+              "id": "spills",
+              "label": "Pages and spilled black liquid all over the floor",
+              "x": 30,
+              "y": 80,
+              "line": {
+                "p": "p035",
+                "s": 2
+              }
+            },
+            {
+              "id": "mirror",
+              "label": "A cracked mirror hanging on a nail",
+              "x": 20,
+              "y": 30,
+              "line": {
+                "p": "p036",
+                "s": 0
+              }
+            },
+            {
+              "id": "burrs",
+              "label": "Prickly seed pods stuck in the scruffy hair of an old horse",
+              "x": 75,
+              "y": 50,
+              "line": {
+                "p": "p036",
+                "s": 4
+              }
+            },
+            {
+              "id": "stirrups",
+              "label": "Foot loops hitched up very high on the riding seat",
+              "x": 70,
+              "y": 70,
+              "line": {
+                "p": "p037",
+                "s": 1
+              }
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p036",
+              "s": 5
+            },
+            {
+              "p": "p037",
+              "s": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-ride-to-the-party",
+      "door": "The Ride to the Party. An autumn road, a borrowed horse, and a feast at the end of it. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "autumn-road",
+          "after": 4,
+          "title": "Fix the Painting: the road in autumn",
+          "prompt": "A painter tried to show the country Ichabod rode through, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "alt": "A painting of a country road through autumn woods with birds",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "leaves",
+              "label": "Trees turned orange, purple and red",
+              "x": 25,
+              "y": 30,
+              "lines": [
+                {
+                  "p": "p038",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "ducks",
+              "label": "Lines of wild ducks high overhead",
+              "x": 60,
+              "y": 12,
+              "lines": [
+                {
+                  "p": "p038",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "woodpecker",
+              "label": "A woodpecker with a crimson crest",
+              "x": 80,
+              "y": 45,
+              "lines": [
+                {
+                  "p": "p039",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "storm",
+              "label": "A gray, stormy sky full of rain",
+              "x": 40,
+              "y": 15,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p038",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "emptybush",
+              "label": "Bare bushes with no birds anywhere",
+              "x": 15,
+              "y": 75,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p039",
+                  "s": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "hans-gate",
+          "after": 5,
+          "title": "Hans Van Ripper's gate",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "What sat so low it seemed perched on his face?",
+              "line": {
+                "p": "p037",
+                "s": 2
+              },
+              "word": "hat"
+            },
+            {
+              "question": "Which word names the brightest red among the autumn leaves?",
+              "line": {
+                "p": "p038",
+                "s": 1
+              },
+              "word": "scarlet"
+            },
+            {
+              "question": "Which crop did he spot in every orchard and wagon along the road?",
+              "line": {
+                "p": "p040",
+                "s": 1
+              },
+              "word": "apples"
+            },
+            {
+              "question": "Which bushy-tailed creature was chattering in the woods?",
+              "line": {
+                "p": "p038",
+                "s": 2
+              },
+              "word": "squirrel"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "arriving-party",
+          "after": 10,
+          "title": "Inspect the Scene: arriving at the Van Tassels'",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "alt": "Guests in 1790s country dress arriving at a farmhouse at sunset, with a river and fields",
+          "objects": [
+            {
+              "id": "gourds",
+              "label": "Fat orange gourds resting in the dirt",
+              "x": 15,
+              "y": 85,
+              "line": {
+                "p": "p040",
+                "s": 2
+              }
+            },
+            {
+              "id": "boat",
+              "label": "A small boat with a limp canvas, drifting downstream",
+              "x": 80,
+              "y": 30,
+              "line": {
+                "p": "p041",
+                "s": 6
+              }
+            },
+            {
+              "id": "clasps",
+              "label": "Big shiny metal clasps on clunky footwear",
+              "x": 40,
+              "y": 80,
+              "line": {
+                "p": "p042",
+                "s": 1
+              }
+            },
+            {
+              "id": "braid",
+              "label": "A braid tied with a slippery dark strip",
+              "x": 60,
+              "y": 45,
+              "line": {
+                "p": "p042",
+                "s": 4
+              }
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p041",
+              "s": 2
+            },
+            {
+              "p": "p042",
+              "s": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-feast-and-the-dance",
+      "door": "The Feast and the Dance. The Van Tassels' table is heaped high, and Ichabod is happy. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "tea-table",
+          "after": 4,
+          "title": "Fix the Painting: the Dutch tea table",
+          "prompt": "A painter tried to show the feast in the Van Tassel parlor, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "alt": "A painting of a long farmhouse table heaped with food, guests, and a window onto the yard",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "cakes",
+              "label": "Platters heaped with cakes",
+              "x": 30,
+              "y": 60,
+              "lines": [
+                {
+                  "p": "p044",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "doughnuts",
+              "label": "Doughnuts and twisted crullers",
+              "x": 50,
+              "y": 70,
+              "lines": [
+                {
+                  "p": "p044",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "pies",
+              "label": "Apple, peach and pumpkin pies",
+              "x": 70,
+              "y": 62,
+              "lines": [
+                {
+                  "p": "p044",
+                  "s": 4
+                }
+              ]
+            },
+            {
+              "id": "pony",
+              "label": "Brom outside on a gentle, sleepy pony",
+              "x": 85,
+              "y": 25,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p043",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "refusing",
+              "label": "Ichabod politely refusing a plate",
+              "x": 45,
+              "y": 40,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p044",
+                  "s": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "parlor-door",
+          "after": 5,
+          "title": "The parlor door",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "Which word shows Brom's horse loved making trouble?",
+              "line": {
+                "p": "p043",
+                "s": 0
+              },
+              "word": "mischief"
+            },
+            {
+              "question": "Which twisted fried pastry broke apart at the first bite?",
+              "line": {
+                "p": "p044",
+                "s": 3
+              },
+              "word": "cruller"
+            },
+            {
+              "question": "What lifts some people's mood the way food lifted Ichabod's?",
+              "line": {
+                "p": "p045",
+                "s": 0
+              },
+              "word": "drink"
+            },
+            {
+              "question": "Which building did he dream of leaving behind forever?",
+              "line": {
+                "p": "p045",
+                "s": 2
+              },
+              "word": "schoolhouse"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "porch-after-dance",
+          "after": 10,
+          "title": "Inspect the Scene: the porch after the dance",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "alt": "A farmhouse porch at night with older men, a table of food inside and a horse in the yard",
+          "objects": [
+            {
+              "id": "pipes",
+              "label": "Old men puffing pipes on the porch",
+              "x": 25,
+              "y": 50,
+              "line": {
+                "p": "p049",
+                "s": 0
+              }
+            },
+            {
+              "id": "wildhorse",
+              "label": "A wild-eyed horse stamping at the hitching post",
+              "x": 80,
+              "y": 65,
+              "line": {
+                "p": "p043",
+                "s": 0
+              }
+            },
+            {
+              "id": "spread",
+              "label": "A table still loaded with tarts and cured meat",
+              "x": 55,
+              "y": 45,
+              "line": {
+                "p": "p044",
+                "s": 4
+              }
+            },
+            {
+              "id": "host",
+              "label": "Baltus grinning and clapping a guest on the back",
+              "x": 40,
+              "y": 60,
+              "line": {
+                "p": "p046",
+                "s": 1
+              }
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p046",
+              "s": 0
+            },
+            {
+              "p": "p050",
+              "s": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "ghost-stories",
+      "door": "Ghost Stories. The old men tell war tales, and then the ghosts come out. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "doffue-battle",
+          "after": 2,
+          "title": "Fix the Painting: the war stories",
+          "prompt": "A painter tried to show the old men's war stories, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "alt": "A painting of a Revolutionary War riverbank with a big man at an old cannon and a warship",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "beard",
+              "label": "A big Dutchman with a blue-black beard",
+              "x": 30,
+              "y": 45,
+              "lines": [
+                {
+                  "p": "p051",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "cannon",
+              "label": "An old iron cannon behind a wall of mud",
+              "x": 45,
+              "y": 70,
+              "lines": [
+                {
+                  "p": "p051",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "frigate",
+              "label": "A British warship out on the water",
+              "x": 80,
+              "y": 30,
+              "lines": [
+                {
+                  "p": "p051",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "perfect",
+              "label": "The cannon firing perfectly, shot after shot",
+              "x": 55,
+              "y": 55,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p051",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "shield",
+              "label": "A gentleman blocking a musket ball with a big wooden shield",
+              "x": 15,
+              "y": 65,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p051",
+                  "s": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "storytellers",
+          "after": 5,
+          "title": "The storytellers' circle",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "Which word describes the protected, out-of-the-way spots where old legends flourish?",
+              "line": {
+                "p": "p052",
+                "s": 2
+              },
+              "word": "sheltered"
+            },
+            {
+              "question": "Which word compares the rest of the dead to a short doze?",
+              "line": {
+                "p": "p052",
+                "s": 3
+              },
+              "word": "nap"
+            },
+            {
+              "question": "Which word tells how rarely spooky tales turn up in most towns?",
+              "line": {
+                "p": "p052",
+                "s": 4
+              },
+              "word": "seldom"
+            },
+            {
+              "question": "What kind of enemy vessel did Doffue almost seize?",
+              "line": {
+                "p": "p051",
+                "s": 0
+              },
+              "word": "frigate"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "church-and-bridge",
+          "after": 10,
+          "title": "Inspect the Scene: the church by the bridge",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "alt": "An old white church on a hill above a pond, with a rocky creek and a shadowy bridge",
+          "objects": [
+            {
+              "id": "meetinghouse",
+              "label": "A white meeting house on a rise",
+              "x": 45,
+              "y": 25,
+              "line": {
+                "p": "p054",
+                "s": 1
+              }
+            },
+            {
+              "id": "pond",
+              "label": "A shining pond at the bottom of the rise",
+              "x": 20,
+              "y": 65,
+              "line": {
+                "p": "p054",
+                "s": 2
+              }
+            },
+            {
+              "id": "creek",
+              "label": "A rushing creek tumbling over boulders and dead logs",
+              "x": 70,
+              "y": 75,
+              "line": {
+                "p": "p054",
+                "s": 4
+              }
+            },
+            {
+              "id": "crossing",
+              "label": "A dark plank crossing under heavy branches",
+              "x": 85,
+              "y": 55,
+              "line": {
+                "p": "p054",
+                "s": 5
+              }
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p054",
+              "s": 3
+            },
+            {
+              "p": "p053",
+              "s": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-lonely-road",
+      "door": "The Lonely Road. The party is over, Ichabod is alone, and the road home passes the haunted tree. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "party-ends",
+          "after": 3,
+          "title": "Fix the Painting: the party ends",
+          "prompt": "A painter tried to show the guests leaving the Van Tassels', but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "alt": "A painting of guests leaving a farmhouse at night in wagons and on horseback",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "wagons",
+              "label": "Farmers loading their families into wagons",
+              "x": 25,
+              "y": 60,
+              "lines": [
+                {
+                  "p": "p057",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "pillions",
+              "label": "Girls riding behind young men on horseback",
+              "x": 65,
+              "y": 55,
+              "lines": [
+                {
+                  "p": "p057",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "lingers",
+              "label": "Ichabod staying behind at the door",
+              "x": 85,
+              "y": 40,
+              "lines": [
+                {
+                  "p": "p057",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "sleepover",
+              "label": "The guests settling in to sleep at the farmhouse",
+              "x": 45,
+              "y": 30,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p057",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "silence",
+              "label": "Everyone leaving in complete silence",
+              "x": 50,
+              "y": 75,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p057",
+                  "s": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "stable-door",
+          "after": 5,
+          "title": "The stable door",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "Which word means he shared short passages from a longer work?",
+              "line": {
+                "p": "p056",
+                "s": 1
+              },
+              "word": "extracts"
+            },
+            {
+              "question": "Which word tells the noise the carts made on the way home?",
+              "line": {
+                "p": "p057",
+                "s": 1
+              },
+              "word": "rattling"
+            },
+            {
+              "question": "Which word compares his exit to a chicken thief's?",
+              "line": {
+                "p": "p057",
+                "s": 10
+              },
+              "word": "henroost"
+            },
+            {
+              "question": "Where did he go first to wake the horse?",
+              "line": {
+                "p": "p057",
+                "s": 11
+              },
+              "word": "stable"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "andre-tree",
+          "after": 10,
+          "title": "Inspect the Scene: Major André's tree",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "alt": "A huge twisted tree in the middle of a dark country road above a river at night",
+          "objects": [
+            {
+              "id": "mast",
+              "label": "A boat's upright pole down on the river",
+              "x": 15,
+              "y": 75,
+              "line": {
+                "p": "p058",
+                "s": 2
+              }
+            },
+            {
+              "id": "trunk",
+              "label": "A huge trunk standing in the middle of the lane",
+              "x": 50,
+              "y": 55,
+              "line": {
+                "p": "p059",
+                "s": 4
+              }
+            },
+            {
+              "id": "scar",
+              "label": "A pale scorched scar on the bark",
+              "x": 55,
+              "y": 35,
+              "line": {
+                "p": "p060",
+                "s": 1
+              }
+            },
+            {
+              "id": "limbs",
+              "label": "Two heavy limbs grinding together",
+              "x": 75,
+              "y": 20,
+              "line": {
+                "p": "p060",
+                "s": 2
+              }
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p059",
+              "s": 5
+            },
+            {
+              "p": "p059",
+              "s": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-headless-horseman",
+      "door": "The Headless Horseman. A haunted stream, a silent rider, and a chase in the dark. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "wiley-swamp",
+          "after": 2,
+          "title": "Fix the Painting: the crossing at Wiley's Swamp",
+          "prompt": "A painter tried to show the haunted stream Ichabod had to cross, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "alt": "A painting of a stream crossing a road into a dark wooded swamp at night",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "brook",
+              "label": "A small stream crossing the road",
+              "x": 45,
+              "y": 70,
+              "lines": [
+                {
+                  "p": "p061",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "woods",
+              "label": "Thick dark woods around the swamp",
+              "x": 15,
+              "y": 35,
+              "lines": [
+                {
+                  "p": "p061",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "vines",
+              "label": "Big trees tangled with wild grapevines",
+              "x": 75,
+              "y": 25,
+              "lines": [
+                {
+                  "p": "p061",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "stonebridge",
+              "label": "A sturdy stone bridge with railings",
+              "x": 55,
+              "y": 55,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p061",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "playing",
+              "label": "A schoolboy happily playing there alone after dark",
+              "x": 30,
+              "y": 80,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p061",
+                  "s": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "swamp-crossing",
+          "after": 5,
+          "title": "The crossing",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "What was the crossing at the swamp made from?",
+              "line": {
+                "p": "p061",
+                "s": 1
+              },
+              "word": "logs"
+            },
+            {
+              "question": "Along with a kick, what did Ichabod use to hurry the old horse?",
+              "line": {
+                "p": "p062",
+                "s": 2
+              },
+              "word": "whip"
+            },
+            {
+              "question": "What stood straight up when the schoolmaster saw the shape?",
+              "line": {
+                "p": "p063",
+                "s": 0
+              },
+              "word": "hair"
+            },
+            {
+              "question": "Which word tells that the shape looked twisted and wrong?",
+              "line": {
+                "p": "p062",
+                "s": 4
+              },
+              "word": "misshapen"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "the-chase",
+          "after": 10,
+          "title": "Inspect the Scene: the chase",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "alt": "A night road with a big dark horse and a cloaked rider, sparks on stones, and a pale church on a hill",
+          "objects": [
+            {
+              "id": "stallion",
+              "label": "A big dark stallion",
+              "x": 40,
+              "y": 55,
+              "line": {
+                "p": "p063",
+                "s": 10
+              }
+            },
+            {
+              "id": "cape",
+              "label": "A tall rider wrapped in a long cape",
+              "x": 45,
+              "y": 30,
+              "line": {
+                "p": "p064",
+                "s": 6
+              }
+            },
+            {
+              "id": "sparks",
+              "label": "Bright glints shooting up from hooves on rocky ground",
+              "x": 30,
+              "y": 85,
+              "line": {
+                "p": "p064",
+                "s": 8
+              }
+            },
+            {
+              "id": "church",
+              "label": "A pale meeting house on a grassy rise",
+              "x": 85,
+              "y": 30,
+              "line": {
+                "p": "p065",
+                "s": 1
+              }
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p062",
+              "s": 5
+            },
+            {
+              "p": "p063",
+              "s": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "gone",
+      "door": "Gone. The next morning, the schoolmaster has vanished. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "church-bridge-night",
+          "after": 4,
+          "title": "Fix the Painting: the race to the church bridge",
+          "prompt": "A painter tried to show Ichabod reaching the church bridge, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "alt": "A painting of a rider on an old horse racing toward a bridge and a church at night, chased by a dark horse",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "star",
+              "label": "A star shining in the water of the brook",
+              "x": 30,
+              "y": 75,
+              "lines": [
+                {
+                  "p": "p067",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "walls",
+              "label": "The church walls glimmering beyond the trees",
+              "x": 80,
+              "y": 30,
+              "lines": [
+                {
+                  "p": "p067",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "pursuer",
+              "label": "A black horse right behind him",
+              "x": 15,
+              "y": 50,
+              "lines": [
+                {
+                  "p": "p067",
+                  "s": 5
+                }
+              ]
+            },
+            {
+              "id": "saddle",
+              "label": "Ichabod's saddle still firmly in place",
+              "x": 45,
+              "y": 45,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p066",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "arches",
+              "label": "A bridge of solid stone arches",
+              "x": 60,
+              "y": 65,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p067",
+                  "s": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "bridge-lock",
+          "after": 5,
+          "title": "The church bridge",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "For which day of the week did Hans save that piece of tack?",
+              "line": {
+                "p": "p066",
+                "s": 2
+              },
+              "word": "Sunday"
+            },
+            {
+              "question": "What did Ichabod see glittering in the water that showed him where he was?",
+              "line": {
+                "p": "p067",
+                "s": 1
+              },
+              "word": "star"
+            },
+            {
+              "question": "What was the crossing's floor made of, booming under the hooves?",
+              "line": {
+                "p": "p067",
+                "s": 6
+              },
+              "word": "planks"
+            },
+            {
+              "question": "Which word names the part of Ichabod the flying object struck?",
+              "line": {
+                "p": "p067",
+                "s": 9
+              },
+              "word": "cranium"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "the-search",
+          "after": 10,
+          "title": "Inspect the Scene: the search for Ichabod",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "alt": "Things found after the schoolmaster vanished: a saddle in a muddy road, books, a cap and a broken gourd by a brook",
+          "objects": [
+            {
+              "id": "saddle",
+              "label": "A leather riding seat stamped into the mud",
+              "x": 25,
+              "y": 70,
+              "line": {
+                "p": "p068",
+                "s": 5
+              }
+            },
+            {
+              "id": "mather",
+              "label": "A thick old volume about spells and sorcery",
+              "x": 60,
+              "y": 55,
+              "line": {
+                "p": "p069",
+                "s": 3
+              }
+            },
+            {
+              "id": "hymnal",
+              "label": "A worn hymnal with folded corners",
+              "x": 75,
+              "y": 70,
+              "line": {
+                "p": "p069",
+                "s": 2
+              }
+            },
+            {
+              "id": "cap",
+              "label": "A small woolly cap beside a smashed orange gourd",
+              "x": 85,
+              "y": 35,
+              "line": {
+                "p": "p070",
+                "s": 1
+              }
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p069",
+              "s": 4
+            },
+            {
+              "p": "p068",
+              "s": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-postscript",
+      "door": "The Postscript. Years later, the tale is told again, and someone doubts it. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "hollow-years-later",
+          "after": 3,
+          "title": "Fix the Painting: the Hollow, years later",
+          "prompt": "A painter tried to show the Hollow years after Ichabod vanished, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "alt": "A painting of a country valley on a summer evening with a millpond, a road, a bridge and an old schoolhouse",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "road",
+              "label": "The road now curving along the millpond",
+              "x": 30,
+              "y": 65,
+              "lines": [
+                {
+                  "p": "p072",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "oldbridge",
+              "label": "The old bridge standing unused",
+              "x": 70,
+              "y": 55,
+              "lines": [
+                {
+                  "p": "p072",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "plowboy",
+              "label": "A plowboy strolling home in the evening",
+              "x": 50,
+              "y": 80,
+              "lines": [
+                {
+                  "p": "p072",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "newschool",
+              "label": "A brand-new schoolhouse full of children",
+              "x": 80,
+              "y": 30,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p072",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "scowl",
+              "label": "Brom scowling as neighbors tell the tale",
+              "x": 20,
+              "y": 35,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p071",
+                  "s": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "postscript-lock",
+          "after": 4,
+          "title": "The last door",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "What surprising fact about Ichabod's fate did the traveler report?",
+              "line": {
+                "p": "p071",
+                "s": 0
+              },
+              "word": "alive"
+            },
+            {
+              "question": "Where did Brom lead Katrina soon after Ichabod vanished?",
+              "line": {
+                "p": "p071",
+                "s": 1
+              },
+              "word": "altar"
+            },
+            {
+              "question": "Which word shows the farm women blame ghostly powers?",
+              "line": {
+                "p": "p072",
+                "s": 0
+              },
+              "word": "supernatural"
+            },
+            {
+              "question": "Which word tells that the storyteller looked worn and frayed?",
+              "line": {
+                "p": "p075",
+                "s": 1
+              },
+              "word": "shabby"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "city-meeting",
+          "after": 7,
+          "title": "Inspect the Scene: the meeting in the city",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "alt": "A wood-paneled city meeting room around 1800 with gentlemen at a table",
+          "objects": [
+            {
+              "id": "goblet",
+              "label": "A goblet of red drink halfway to the storyteller's mouth",
+              "x": 30,
+              "y": 50,
+              "line": {
+                "p": "p076",
+                "s": 0
+              }
+            },
+            {
+              "id": "stern",
+              "label": "A stern listener with bushy brows, hands tucked across his chest",
+              "x": 70,
+              "y": 40,
+              "line": {
+                "p": "p075",
+                "s": 3
+              }
+            },
+            {
+              "id": "dozing",
+              "label": "Two officials nodding off in their seats",
+              "x": 50,
+              "y": 70,
+              "line": {
+                "p": "p075",
+                "s": 2
+              }
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p080",
+              "s": 0
+            },
+            {
+              "p": "p075",
+              "s": 1
+            }
+          ]
+        }
+      ]
     }
   ],
   "expedition_rules": {
