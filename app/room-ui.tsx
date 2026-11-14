@@ -76,7 +76,7 @@ export function CaseFileButton({items}:{items:InventoryItem[]}){
  useEffect(()=>{if(open)head.current?.focus();else if(btn.current&&document.activeElement===document.body)btn.current.focus()},[open]);
  useEffect(()=>{if(!open)return;const k=(e:KeyboardEvent)=>{if(e.key==="Escape")setOpen(false)};window.addEventListener("keydown",k);return()=>window.removeEventListener("keydown",k)},[open]);
  return <>
-  <button ref={btn} type="button" onClick={()=>setOpen(true)} aria-haspopup="dialog" className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-panel px-3 text-[14px] font-bold text-ink"><BookOpen size={16} aria-hidden/>Case File<span className="rounded-full bg-deep px-1.5 text-[12px] tabular-nums">{items.length}</span></button>
+  <button ref={btn} type="button" onClick={()=>setOpen(true)} aria-haspopup="dialog" aria-label={`Case File, ${items.length} items`} className="inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-panel px-3 text-[14px] font-bold text-ink"><BookOpen size={16} aria-hidden/><span className="max-sm:sr-only">Case File</span><span className="rounded-full bg-deep px-1.5 text-[12px] tabular-nums">{items.length}</span></button>
   {open&&typeof document!=="undefined"&&createPortal(<div className="fixed inset-0 z-[70] flex justify-end bg-black/50" onClick={e=>{if(e.target===e.currentTarget)setOpen(false)}}>
    <div role="dialog" aria-modal="true" aria-labelledby="cf-h" className="flex h-full w-full max-w-md flex-col gap-3 overflow-y-auto bg-deep p-4 shadow-2xl">
     <div className="flex items-center justify-between gap-2"><h2 id="cf-h" ref={head} tabIndex={-1} className="text-[24px] outline-none">Case File</h2>

@@ -4,6 +4,9 @@
 // countdown); the teacher can pause any screen or skip ahead. Every phone follows the board's timing with its own extra
 // time and the same screens as the solo race (app/expedition-race.tsx). The lobby shows names and character avatars
 // popping in, with a quiet music loop the host can mute; the game ends on a podium with class stats.
+import {PuzzleLock} from "../puzzle-locks";
+import {refKey} from "@/lib/escape-room";
+import type {LineRef,RoomPuzzle} from "@/lib/world-schema";
 import {LockBanner,RecoveryPanel} from "../room-ui";
 import {lockKind} from "@/lib/escape-room";
 import {useEffect,useLayoutEffect,useRef,useState} from "react";
@@ -80,7 +83,7 @@ export function RacePick({state,act}:{state:HostView;act:(b:Record<string,unknow
 }
 
 // ---------- The host board ----------
-const BEAT_LABEL:Record<string,string>={read:"Read",process:"Gist check",ask:"Your question",race:"Question",reveal:"The proof",lightning:"Lightning",board:"Checkpoint",burst:"Squad burst",countdown:"Next chunk"};
+const BEAT_LABEL:Record<string,string>={read:"Read",process:"Gist check",ask:"Your question",race:"Question",reveal:"The proof",lightning:"Lightning",puzzle:"Puzzle lock",board:"Checkpoint",burst:"Squad burst",countdown:"Next chunk"};
 const scaleOf=(setting:string|null|undefined)=>setting==="untimed"?3:Number(setting)>0?Number(setting):1;
 export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound;world:WorldPack|null;act:(b:Record<string,unknown>)=>void}){
  const race=state.race!;
@@ -128,6 +131,10 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
   {round.beat==="lightning"&&round.lightning&&world&&<div className="mt-3"><p className="inline-flex items-center gap-2 text-[16px] font-extrabold uppercase tracking-[.08em] text-highlight"><Zap size={18} aria-hidden/>Lightning · recall chunk {round.lightning.chunk}</p>
    <p className="font-display text-[clamp(26px,2.8vw,44px)] font-bold leading-tight">{round.lightning.question}</p><p className="mt-2 text-[20px] text-muted">{race.answered} of {state.counters.players} answered</p>
    <div className="mt-3"><ChunkText chunk={{lines:round.lightning.lines,discovery:round.lightning.discovery??round.chunk.discovery}} world={world} tokens={chunkTokens(round.lightning.lines)} large/></div></div>}
+  {round.beat==="puzzle"&&round.puzzle&&<div className="mt-3"><p className="text-[18px] font-extrabold uppercase tracking-[.1em] text-highlight">Puzzle lock</p><p className="font-display text-[clamp(26px,2.8vw,44px)] font-bold">{round.puzzle.data.title}</p>
+   {round.puzzle.data.prompt&&<p className="mt-1 text-[20px] text-muted">{round.puzzle.data.prompt}</p>}
+   <p className="mt-3 text-[clamp(24px,2.4vw,36px)] font-bold">{state.race?.answered??0} of {state.counters.players} locked in</p>
+   {"art" in round.puzzle.data&&round.puzzle.data.art&&<img src={round.puzzle.data.art} alt={round.puzzle.data.alt} className="mt-3 max-h-[52vh] rounded-card"/>}</div>}
   {round.beat==="burst"&&<div className="mt-3"><p className="font-display text-[clamp(26px,2.8vw,44px)] font-bold">Squad burst: find the hidden discoveries</p>
    <p className="text-[20px] text-muted">Every phone hunts level 1's chunks for the figurative phrase or rich word hidden in each. A find counts once per squad.</p>
    <p className="mt-3 font-display text-[clamp(30px,3vw,48px)] font-bold text-gold">{race.burst?.total??0} found</p>
@@ -197,7 +204,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  if(interviewBeat(round.beat)&&round.interview)return <>{(round.beat==="liar"||round.beat==="verdict")&&<RaceHud score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.total} total={round.total} left={null} title={round.expedition.title}/>}<InterviewPlayer state={state} world={world} act={act} left={round.beat==="vote"||round.beat==="liar"?left:null} myMs={myMs}/></>;
  // The one plain sentence for this screen (lib/onboarding.ts), and first-time hints marked done after a right answer.
  const phoneScreen:Screen=({read:"read",process:"gist",ask:"wait",race:testifying?"wait":q?.format==="dnd"?"dnd":q?.format==="multi"?"multi":q?.format==="written"&&step===1?"written":(step===2||q?.format==="tap")?(q?.clues?"clues":"proof"):"question",
-  reveal:"result",lightning:"lightning",board:"board",burst:"burst",countdown:"countdown",liar:"liar",verdict:"verdict",vote:"interview",testify:"interview"} as Record<string,Screen>)[round.beat]??"wait";
+  reveal:"result",lightning:"lightning",puzzle:"puzzle",board:"board",burst:"burst",countdown:"countdown",liar:"liar",verdict:"verdict",vote:"interview",testify:"interview"} as Record<string,Screen>)[round.beat]??"wait";
  if(round.beat==="reveal"&&mine.tap?.correct&&q){markHintDone("lock");markHintDone(q.format==="dnd"?"dnd":q.format==="multi"?"multi":q.format==="written"?"written":q.clues?"clues":"proof")}
  const hud=<RaceHud doNow={DO_NOW[phoneScreen]} onHelp={()=>setAgain(true)} score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.step+1} total={round.total} left={round.beat==="read"?null:left} title={round.expedition.title}/>;
  // The proof as token positions: its words, or every word of its lines.
@@ -245,6 +252,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
      answerText={race.revealKey.best?.join(" · ")??race.revealKey.answer} clueWords={race.revealKey.clues??undefined} choices={q.choices} dnd={q.dnd} callPassages={q.callPassages} onOpen={async a=>!(await act("race_recover",{answer:a}))}/>
    :<div className="mt-1">{q?.callPassages?<ReadingPanel passages={q.callPassages as SourcePassage[]} results={(round.reveal?.lines??[]).map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/>
     :<ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shown={shownTokens} shownStyle={mine.tap?.correct?"right":"missed"}/>}</div>}</div>}
+  {round.beat==="puzzle"&&round.puzzle&&<LivePuzzle key={round.puzzle.data.id} p={round.puzzle} seed={state.me.id} act={act}/>}
   {round.beat==="lightning"&&round.lightning&&<LightningLive l={round.lightning} world={world} answered={mine.lightning} answer={race.lightningAnswer} left={left} seconds={(myMs??10000)/1000} onLock={line=>act("race_lightning",{line})}/>}
   {round.beat==="burst"&&round.burst&&<DiscoveryBurst key={round.step} chunks={round.burst.chunks.map(c=>({index:c.index,lines:c.lines,chunk:{discovery:c.discovery}}) as unknown as RaceChunk)} world={world} sound={sound} squad={round.squadsOn&&race.squadId?{name:"Your squad",found:race.burstFound.length}:null} onFind={i=>{act("race_burst",{chunk:i})}}/>}
   {/* A lock missed and not yet opened stays open to the proof until the next chunk starts (the reveal is short). */}
@@ -364,4 +372,11 @@ function NoteHeadsUp({note,step,held,paused,act}:{note:string;step:number;held:b
   {preview&&<div role="dialog" aria-label="Content note preview (teacher only)" className="mt-3 rounded-row bg-panel px-4 py-3"><p className="text-[13px] font-extrabold uppercase tracking-[.08em] text-muted">Teacher preview · closes in {PREVIEW_SECONDS} seconds</p><p className="mt-1 text-[16px] text-ink">{note}</p>
    <button type="button" onClick={()=>setPreview(false)} className="case-secondary mt-2 !min-h-11">Close</button></div>}
  </aside>;
+}
+
+// A puzzle lock on a phone: solved alone, one try scored on the server; then the phone waits for the class.
+function LivePuzzle({p,seed,act}:{p:{data:RoomPuzzle;lines:Record<string,string>;readLines:LineRef[]};seed:string;act:(k:string,pl?:Record<string,unknown>)=>Promise<string|null>|void}){
+ const [done,setDone]=useState(false);
+ if(done)return <p role="status" className="mt-6 rounded-card bg-success p-4 text-center font-display text-[22px] font-bold text-on-success">Lock open. Watch the board for the class.</p>;
+ return <div className="mt-2"><PuzzleLock puzzle={p.data} lineOf={r=>p.lines[refKey(r)]??null} readLines={p.readLines} seed={seed} submit={a=>{act("race_puzzle",{answer:a})}} onDone={()=>setDone(true)}/></div>;
 }

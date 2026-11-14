@@ -23347,6 +23347,372 @@
       }
     ]
   },
+  "rooms": [
+    {
+      "expedition": "into-the-hollow",
+      "door": "The Glen. A spell holds everyone who stays here. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "glen-at-noon",
+          "after": 3,
+          "title": "Fix the Painting: the glen at noon",
+          "prompt": "A painter tried to show the glen from the story, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/glen-at-noon.webp",
+          "alt": "A painting of a valley among hills at noon, with trees, a stream and a road",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "walnut",
+              "label": "Tall walnut trees shade one side",
+              "x": 10,
+              "y": 48,
+              "lines": [
+                {
+                  "p": "p004",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "woodpecker",
+              "label": "A woodpecker on a branch",
+              "x": 25,
+              "y": 17,
+              "lines": [
+                {
+                  "p": "p003",
+                  "s": 4
+                }
+              ]
+            },
+            {
+              "id": "hills",
+              "label": "High hills all around",
+              "x": 55,
+              "y": 20,
+              "lines": [
+                {
+                  "p": "p003",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "waterfall",
+              "label": "A roaring waterfall",
+              "x": 84,
+              "y": 48,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p003",
+                  "s": 4
+                }
+              ]
+            },
+            {
+              "id": "market",
+              "label": "A busy market road through the valley",
+              "x": 50,
+              "y": 74,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p003",
+                  "s": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "glen-gate",
+          "after": 5,
+          "title": "The gate out of the glen",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "Who named the town?",
+              "line": {
+                "p": "p003",
+                "s": 1
+              },
+              "word": "housewives"
+            },
+            {
+              "question": "How many miles away is the valley?",
+              "line": {
+                "p": "p003",
+                "s": 3
+              },
+              "word": "two"
+            },
+            {
+              "question": "What sound startled him?",
+              "line": {
+                "p": "p004",
+                "s": 1
+              },
+              "word": "roar"
+            },
+            {
+              "question": "What does the witching power hold over people's minds?",
+              "line": {
+                "p": "p005",
+                "s": 3
+              },
+              "word": "spell"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "churchyard-at-dusk",
+          "after": 10,
+          "title": "Inspect the Scene: the churchyard at dusk",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/churchyard-at-dusk.webp",
+          "alt": "A churchyard at dusk beside a stream, with an old church and a darkening sky",
+          "objects": [
+            {
+              "id": "shot",
+              "label": "A rusted iron shot half-buried in the grass",
+              "x": 24,
+              "y": 82,
+              "line": {
+                "p": "p006",
+                "s": 1
+              }
+            },
+            {
+              "id": "grave",
+              "label": "A fresh grave beside the steeple",
+              "x": 68,
+              "y": 72,
+              "line": {
+                "p": "p006",
+                "s": 3
+              }
+            },
+            {
+              "id": "streak",
+              "label": "A streak of light across the night sky",
+              "x": 81,
+              "y": 13,
+              "line": {
+                "p": "p005",
+                "s": 5
+              }
+            },
+            {
+              "id": "pool",
+              "label": "A glassy pool beside a fast creek, a twig drifting in it",
+              "x": 16,
+              "y": 68,
+              "line": {
+                "p": "p009",
+                "s": 1
+              }
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p005",
+              "s": 1
+            },
+            {
+              "p": "p006",
+              "s": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-schoolmaster",
+      "door": "The Schoolhouse. A schoolmaster rules this one-room school, but how does he really live? Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "schoolhouse-at-midday",
+          "after": 4,
+          "title": "Fix the Painting: the schoolhouse at midday",
+          "prompt": "A painter tried to show Ichabod's schoolhouse, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/schoolhouse-at-midday.webp",
+          "alt": "A painting of a country schoolhouse at the foot of a wooded hill, with a stream and a tree",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "stone",
+              "label": "A tall stone schoolhouse, two floors high",
+              "x": 38,
+              "y": 45,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p011",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "padlock",
+              "label": "A heavy iron padlock on the door",
+              "x": 57,
+              "y": 69,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p011",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "hill",
+              "label": "A woody hill rising behind it",
+              "x": 25,
+              "y": 16,
+              "lines": [
+                {
+                  "p": "p011",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "brook",
+              "label": "A brook running close by",
+              "x": 8,
+              "y": 83,
+              "lines": [
+                {
+                  "p": "p011",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "birch",
+              "label": "A birch tree at one end",
+              "x": 81,
+              "y": 52,
+              "lines": [
+                {
+                  "p": "p011",
+                  "s": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "schoolhouse-door",
+          "after": 5,
+          "title": "The schoolhouse door",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "Which state did Ichabod come from?",
+              "line": {
+                "p": "p010",
+                "s": 1
+              },
+              "word": "Connecticut"
+            },
+            {
+              "question": "What was the schoolhouse built of?",
+              "line": {
+                "p": "p011",
+                "s": 0
+              },
+              "word": "logs"
+            },
+            {
+              "question": "What might his feet have served as?",
+              "line": {
+                "p": "p010",
+                "s": 3
+              },
+              "word": "shovels"
+            },
+            {
+              "question": "What busy insect home does the classroom sound like from outside?",
+              "line": {
+                "p": "p011",
+                "s": 3
+              },
+              "word": "beehive"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "farmhouse-room",
+          "after": 10,
+          "title": "Inspect the Scene: a farmhouse where Ichabod boards",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/farmhouse-room.webp",
+          "alt": "A farmhouse kitchen with a hearth, a table and a chair",
+          "objects": [
+            {
+              "id": "bundle",
+              "label": "A small bundle knotted in a cloth by the door",
+              "x": 14,
+              "y": 80,
+              "line": {
+                "p": "p013",
+                "s": 3
+              }
+            },
+            {
+              "id": "woodpile",
+              "label": "A stack of freshly split logs by the hearth",
+              "x": 27,
+              "y": 73,
+              "line": {
+                "p": "p014",
+                "s": 1
+              }
+            },
+            {
+              "id": "cradle",
+              "label": "A baby's swinging bed beside a chair",
+              "x": 59,
+              "y": 64,
+              "line": {
+                "p": "p014",
+                "s": 3
+              }
+            },
+            {
+              "id": "hymnbook",
+              "label": "An open hymnbook with music notes on the table",
+              "x": 88,
+              "y": 64,
+              "line": {
+                "p": "p015",
+                "s": 0
+              }
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p013",
+              "s": 2
+            },
+            {
+              "p": "p014",
+              "s": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "expedition_rules": {
     "arc_pending": [],
     "puzzle_exclude": [

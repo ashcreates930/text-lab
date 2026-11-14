@@ -8,7 +8,7 @@ import type { WorldPack } from "./world-schema.ts";
 
 export type Screen = "home" | "interview" | "read" | "gist" | "question" | "proof" | "clues" | "dnd" | "multi" | "written" | "result" | "lightning" | "board" | "burst"
   | "countdown" | "liar" | "verdict" | "finish" | "refresher" | "skills" | "notes" | "map" | "myskills" | "practice" | "lobby" | "wait"
-  | "door" | "recover" | "inner" | "recap" | "escape" | "stopped";
+  | "door" | "recover" | "inner" | "recap" | "escape" | "stopped" | "puzzle";
 
 // What to do now, in one plain sentence, for every screen.
 export const DO_NOW: Record<Screen, string> = {
@@ -39,6 +39,7 @@ export const DO_NOW: Record<Screen, string> = {
   lobby: "Wait here until your teacher starts the game.",
   wait: "Wait for the next part to start.",
   door: "Read where you are, then tap Open the door to begin.",
+  puzzle: "Solve the puzzle with lines from the story, then tap Lock in.",
   recover: "Use the answer shown to open the lock: do what it asks, then tap Open the lock.",
   inner: "You opened the inner door, so tap the button to go on.",
   recap: "Read what is in your Case File so far, then tap Into Chamber 2.",

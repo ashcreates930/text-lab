@@ -43,6 +43,7 @@ function actionLine(r: LiveResponse, world: WorldPack) {
     case "race_tap": { const p = r.payload as { step: number; correct?: boolean; late?: boolean; answerRight?: boolean; proofRight?: boolean; points?: number };
       return `Chunk ${Number(p.step) + 1}: ${p.correct ? `proved it (${Number(p.points ?? 0)} pts)` : p.late ? "time ran out" : p.answerRight && !p.proofRight ? "right answer, proof missed" : "missed"}`; }
     case "race_refresh": return Number(r.payload.index) < 0 ? `Refresher, Name the Liar: ${r.payload.fixed ? "found the line" : "not yet"}` : `Refresher, chunk ${Number(r.payload.index) + 1}: ${r.payload.fixed ? "fixed it" : "not yet"}`;
+    case "race_puzzle": return `Puzzle lock ${text(r, "id")}: ${((r.payload.firstTry as boolean[] | undefined) ?? []).filter(Boolean).length} of ${((r.payload.firstTry as boolean[] | undefined) ?? []).length} right on the first try (${Number(r.payload.points ?? 0)} pts)`;
     case "race_recover": return `Lock ${Number(r.payload.step) + 1}: opened with the shown proof after a miss (0 pts)`;
     case "race_note": return `Case Notes, chunk ${Number(r.payload.index) + 1}: "${text(r, "text")}"`;
     case "bonus_pick": return `Bonus Round, ${Number(r.payload.index) < 0 ? "Name the Liar" : `chunk ${Number(r.payload.index) + 1}`}: defended "${text(r, "stem")} ${text(r, "reason")}"`;

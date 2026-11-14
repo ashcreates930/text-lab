@@ -58,7 +58,7 @@ test("rooms: every expedition is a room of two chambers, its chunks are locks, t
   assert.deepEqual(r.chambers, [{ chamber: 1, from: 0, to: 4 }, { chamber: 2, from: 5, to: 9 }]);
   assert.equal(r.locks.length, 10);
   assert.deepEqual(r.locks.map((l) => l.chamber), [1, 1, 1, 1, 1, 2, 2, 2, 2, 2]);
-  assert.deepEqual(r.innerDoor, { after: 4, puzzle: null }, "no code lock yet: the inner door is the checkpoint");
+  assert.deepEqual(r.innerDoor, { after: 4, puzzle: "glen-gate" }, "the code lock opens the inner door at the checkpoint");
   assert.equal(r.exit, "name_liar");
   // Lock kinds follow the question formats (E1: two-part, tap, drag and drop, choose two, written).
   assert.equal(r.locks[1].kind, "sentence"); assert.equal(r.locks[4].kind, "tray"); assert.equal(r.locks[5].kind, "multi_dial"); assert.equal(r.locks[8].kind, "seal");
@@ -177,7 +177,7 @@ test("Inspect the Scene: each object to its own line; the tray adds near misses 
 
 test("validate:worlds: the plan's E1 puzzles pass, and every puzzle rule catches its fault", () => {
   assert.deepEqual(roomProblems(world, shp), []);
-  assert.deepEqual(roomProblems(sh, shp), [], "the live world has no rooms yet");
+  assert.deepEqual(roomProblems(sh, shp), [], "the Expedition 1 and 2 puzzles in world.json pass");
   const probs = (f: (r: RoomData) => void) => roomProblems(edit(f), shp).join("\n");
   // Code lock.
   assert.match(probs((r) => { (r.puzzles![1] as { dials: { word: string; line: { p: string; s: number } }[] }).dials[2] = { ...(r.puzzles![1] as { dials: { question: string }[] }).dials[2], line: { p: "p004", s: 1 }, word: "my" } as never; }), /appears 2 times|no other word starting/);
@@ -261,4 +261,40 @@ test("live: after a miss a phone opens its lock only with the shown proof, once,
 
 test("the phone's act route accepts opening a lock (the live check found it rejected as an unknown action)", () => {
   assert.match(readFileSync("app/api/live/sessions/[id]/act/route.ts", "utf8"), /"race_recover"/);
+});
+
+// ---------- Phase 2: puzzle locks in the rooms ----------
+import { codeResultOf } from "../lib/escape-room.ts";
+
+test("rooms 1 and 2 carry their three puzzles in order: the painting in chamber 1, the code lock at the inner door, the scene before the exit", () => {
+  for (const [id, names] of [["into-the-hollow", ["door", "L1", "L2", "L3", "glen-at-noon", "L4", "L5", "inner_door", "recap", "L6", "L7", "L8", "L9", "L10", "churchyard-at-dusk", "exit", "escape"]],
+    ["the-schoolmaster", ["door", "L1", "L2", "L3", "L4", "schoolhouse-at-midday", "L5", "inner_door", "recap", "L6", "L7", "L8", "L9", "L10", "farmhouse-room", "exit", "escape"]]] as const) {
+    const r = roomOf(sh, id)!;
+    assert.deepEqual(roomSequence(r).map((b) => (b.kind === "lock" ? `L${b.step + 1}` : b.kind === "puzzle" ? b.id : b.kind)), names);
+    assert.ok(r.innerDoor?.puzzle, `${id}: a code lock opens the inner door`);
+  }
+  // The Schoolmaster's code spells nothing: C-L-S-B.
+  const code = sh.rooms!.find((r) => r.expedition === "the-schoolmaster")!.puzzles!.find((p) => p.type === "code")! as Extract<NonNullable<RoomData["puzzles"]>[number], { type: "code" }>;
+  assert.equal(codeOf(code), "CLSB");
+});
+
+test("live: a puzzle follows its lock's reveal; the code lock follows the checkpoint's burst; resume keeps puzzle results", () => {
+  const r = roomOf(sh, e1.id)!, arc = null;
+  const round = (step: number, beat: LiveRaceRound["beat"], puzzle: string | null = null): LiveRaceRound => ({ type: "race", settings: parseExpSettings({ expeditionId: e1.id }, sh)!, step, beat, puzzle, beatStartedAt: "", squadsOn: false, interview: null });
+  assert.deepEqual(nextBeat(round(2, "reveal"), chunks, arc, r.puzzles), { step: 2, beat: "puzzle", puzzle: "glen-at-noon" });
+  assert.deepEqual(nextBeat(round(2, "puzzle", "glen-at-noon"), chunks, arc, r.puzzles), { step: 2, beat: "countdown" });
+  assert.deepEqual(nextBeat(round(4, "reveal"), chunks, arc, r.puzzles), { step: 4, beat: "board" }, "the code lock waits for the checkpoint");
+  assert.deepEqual(nextBeat(round(4, "board"), chunks, arc, r.puzzles), { step: 4, beat: "puzzle", puzzle: "glen-gate" }, "no burst without an arc: straight to the inner door's lock");
+  assert.deepEqual(nextBeat(round(4, "puzzle", "glen-gate"), chunks, arc, r.puzzles), { step: 4, beat: "countdown" });
+  assert.deepEqual(nextBeat(round(9, "reveal"), chunks, arc, r.puzzles), { step: 9, beat: "puzzle", puzzle: "churchyard-at-dusk" });
+  // The code lock, checked from its lines' text (live phones don't hold the whole story).
+  const code = sh.rooms![0].puzzles!.find((p) => p.type === "code")! as Extract<NonNullable<RoomData["puzzles"]>[number], { type: "code" }>, lines = code.dials.map((d) => lineAt(shp, d.line)!);
+  const taps = code.dials.map((d, k) => lineTokens(lines[k]).findIndex((t) => t.key.replace(/[^a-z]/g, "") === d.word));
+  assert.deepEqual(codeResultOf(code, lines, taps).letters, ["H", "T", "R", "S"]);
+  // Resume keeps the puzzles solved, and drops any that isn't this room's.
+  const saved = { v: 1, progress: { opened: [0, 1, 2], puzzles: ["glen-at-noon"], innerDoor: false, exit: false }, records: [{}, {}, {}], ghost: [], cards: [], lightning: [], burst: 0,
+    puzzles: { "glen-at-noon": { id: "glen-at-noon", type: "painting", firstTry: [true, false], points: 300 }, "not-here": { id: "not-here", type: "code", firstTry: [true], points: 150 } } };
+  const p = parseResume(saved, r)!;
+  assert.deepEqual(Object.keys(p.puzzles ?? {}), ["glen-at-noon"]);
+  assert.deepEqual(resumeAt(r, p.progress), { kind: "lock", step: 3, chamber: 1 }, "past the painting, on to lock 4");
 });

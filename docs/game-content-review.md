@@ -7570,3 +7570,92 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Discovery (figurative): "not getting a bit excited". She stays strangely calm.
 
 <!-- expeditions:end -->
+
+<!-- rooms:start -->
+## Escape rooms: puzzle locks (for review)
+
+Generated from world.json by `scripts/room-review.ts`. Every puzzle is solved only by reading: students tap or match lines from the story, never letters or pictures alone. One try scores; after a miss the right answer is outlined and the student taps it to open the lock (0 points, recorded as a miss). Pictures are original art (gpt-image-2) awaiting your approval.
+
+### The Legend of Sleepy Hollow
+
+#### Room 1: Tarry Town and the glen (Expedition: Into the Hollow)
+
+- The door: "The Glen. A spell holds everyone who stays here. Prove what the story says, and the way out opens."
+
+##### Fix the Painting: the glen at noon (after lock 3)
+
+Prompt: "A painter tried to show the glen from the story, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/glen-at-noon.webp` (A painting of a valley among hills at noon, with trees, a stream and a road). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✓ Tall walnut trees shade one side · ¶4 sentence 1: "I recollect that, when a stripling, my first exploit in squirrel-shooting was in a grove of tall walnut-trees that shades one side of the valley."
+2. ✓ A woodpecker on a branch · ¶3 sentence 5: "A small brook glides through it, with just murmur enough to lull one to repose; and the occasional whistle of a quail or tapping of a woodpecker is almost the only sound that ever breaks in upon the uniform tranquillity."
+3. ✓ High hills all around · ¶3 sentence 4: "Not far from this village, perhaps about two miles, there is a little valley or rather lap of land among high hills, which is one of the quietest places in the whole world."
+4. ✗ A roaring waterfall · ¶3 sentence 5: "A small brook glides through it, with just murmur enough to lull one to repose; and the occasional whistle of a quail or tapping of a woodpecker is almost the only sound that ever breaks in upon the uniform tranquillity."
+5. ✗ A busy market road through the valley · ¶3 sentence 4: "Not far from this village, perhaps about two miles, there is a little valley or rather lap of land among high hills, which is one of the quietest places in the whole world."
+
+##### The gate out of the glen (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: H-T-R-S (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. Who named the town? → **housewives** · ¶3 sentence 2: "This name was given, we are told, in former days, by the good housewives of the adjacent country, from the inveterate propensity of their husbands to linger about the village tavern on market days."
+2. How many miles away is the valley? → **two** · ¶3 sentence 4: "Not far from this village, perhaps about two miles, there is a little valley or rather lap of land among high hills, which is one of the quietest places in the whole world."
+3. What sound startled him? → **roar** · ¶4 sentence 2: "I had wandered into it at noontime, when all nature is peculiarly quiet, and was startled by the roar of my own gun, as it broke the Sabbath stillness around and was prolonged and reverberated by the angry echoes."
+4. What does the witching power hold over people's minds? → **spell** · ¶5 sentence 4: "Certain it is, the place still continues under the sway of some witching power, that holds a spell over the minds of the good people, causing them to walk in a continual reverie."
+
+##### Inspect the Scene: the churchyard at dusk (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/churchyard-at-dusk.webp` (A churchyard at dusk beside a stream, with an old church and a darkening sky). Each object matches one line; the tray adds near misses.
+
+1. A rusted iron shot half-buried in the grass → ¶6 sentence 2: "It is said by some to be the ghost of a Hessian trooper, whose head had been carried away by a cannon-ball, in some nameless battle during the Revolutionary War, and who is ever and anon seen by the country folk hurrying along in the gloom of night, as if on the wings of the wind."
+2. A fresh grave beside the steeple → ¶6 sentence 4: "Indeed, certain of the most authentic historians of those parts, who have been careful in collecting and collating the floating facts concerning this spectre, allege that the body of the trooper having been buried in the churchyard, the ghost rides forth to the scene of battle in nightly quest of his head, and that the rushing speed with which he sometimes passes along the Hollow, like a midnight blast, is owing to his being belated, and in a hurry to get back to the churchyard before daybreak."
+3. A streak of light across the night sky → ¶5 sentence 6: "The whole neighborhood abounds with local tales, haunted spots, and twilight superstitions; stars shoot and meteors glare oftener across the valley than in any other part of the country, and the nightmare, with her whole ninefold, seems to make it the favorite scene of her gambols."
+4. A glassy pool beside a fast creek, a twig drifting in it → ¶9 sentence 2: "They are like those little nooks of still water, which border a rapid stream, where we may see the straw and bubble riding quietly at anchor, or slowly revolving in their mimic harbor, undisturbed by the rush of the passing current."
+- Near miss in the tray: ¶5 sentence 2: "A drowsy, dreamy influence seems to hang over the land, and to pervade the very atmosphere."
+- Near miss in the tray: ¶6 sentence 3: "His haunts are not confined to the valley, but extend at times to the adjacent roads, and especially to the vicinity of a church at no great distance."
+
+#### Room 2: The schoolhouse (Expedition: The Schoolmaster)
+
+- The door: "The Schoolhouse. A schoolmaster rules this one-room school, but how does he really live? Prove what the story says, and the way out opens."
+
+##### Fix the Painting: the schoolhouse at midday (after lock 4)
+
+Prompt: "A painter tried to show Ichabod's schoolhouse, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/schoolhouse-at-midday.webp` (A painting of a country schoolhouse at the foot of a wooded hill, with a stream and a tree). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✗ A tall stone schoolhouse, two floors high · ¶11 sentence 1: "His schoolhouse was a low building of one large room, rudely constructed of logs; the windows partly glazed, and partly patched with leaves of old copybooks."
+2. ✗ A heavy iron padlock on the door · ¶11 sentence 2: "It was most ingeniously secured at vacant hours, by a withe twisted in the handle of the door, and stakes set against the window shutters; so that though a thief might get in with perfect ease, he would find some embarrassment in getting out,--an idea most probably borrowed by the architect, Yost Van Houten, from the mystery of an eelpot."
+3. ✓ A woody hill rising behind it · ¶11 sentence 3: "The schoolhouse stood in a rather lonely but pleasant situation, just at the foot of a woody hill, with a brook running close by, and a formidable birch-tree growing at one end of it."
+4. ✓ A brook running close by · ¶11 sentence 3: "The schoolhouse stood in a rather lonely but pleasant situation, just at the foot of a woody hill, with a brook running close by, and a formidable birch-tree growing at one end of it."
+5. ✓ A birch tree at one end · ¶11 sentence 3: "The schoolhouse stood in a rather lonely but pleasant situation, just at the foot of a woody hill, with a brook running close by, and a formidable birch-tree growing at one end of it."
+
+##### The schoolhouse door (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: C-L-S-B (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. Which state did Ichabod come from? → **Connecticut** · ¶10 sentence 2: "He was a native of Connecticut, a State which supplies the Union with pioneers for the mind as well as for the forest, and sends forth yearly its legions of frontier woodmen and country schoolmasters."
+2. What was the schoolhouse built of? → **logs** · ¶11 sentence 1: "His schoolhouse was a low building of one large room, rudely constructed of logs; the windows partly glazed, and partly patched with leaves of old copybooks."
+3. What might his feet have served as? → **shovels** · ¶10 sentence 4: "He was tall, but exceedingly lank, with narrow shoulders, long arms and legs, hands that dangled a mile out of his sleeves, feet that might have served for shovels, and his whole frame most loosely hung together."
+4. What busy insect home does the classroom sound like from outside? → **beehive** · ¶11 sentence 4: "From hence the low murmur of his pupils’ voices, conning over their lessons, might be heard in a drowsy summer’s day, like the hum of a beehive; interrupted now and then by the authoritative voice of the master, in the tone of menace or command, or, peradventure, by the appalling sound of the birch, as he urged some tardy loiterer along the flowery path of knowledge."
+
+##### Inspect the Scene: a farmhouse where Ichabod boards (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/farmhouse-room.webp` (A farmhouse kitchen with a hearth, a table and a chair). Each object matches one line; the tray adds near misses.
+
+1. A small bundle knotted in a cloth by the door → ¶13 sentence 4: "With these he lived successively a week at a time, thus going the rounds of the neighborhood, with all his worldly effects tied up in a cotton handkerchief."
+2. A stack of freshly split logs by the hearth → ¶14 sentence 2: "He assisted the farmers occasionally in the lighter labors of their farms, helped to make hay, mended the fences, took the horses to water, drove the cows from pasture, and cut wood for the winter fire."
+3. A baby's swinging bed beside a chair → ¶14 sentence 4: "He found favor in the eyes of the mothers by petting the children, particularly the youngest; and like the lion bold, which whilom so magnanimously the lamb did hold, he would sit with a child on one knee, and rock a cradle with his foot for whole hours together."
+4. An open hymnbook with music notes on the table → ¶15 sentence 1: "In addition to his other vocations, he was the singing-master of the neighborhood, and picked up many bright shillings by instructing the young folks in psalmody."
+- Near miss in the tray: ¶13 sentence 3: "The revenue arising from his school was small, and would have been scarcely sufficient to furnish him with daily bread, for he was a huge feeder, and, though lank, had the dilating powers of an anaconda; but to help out his maintenance, he was, according to country custom in those parts, boarded and lodged at the houses of the farmers whose children he instructed."
+- Near miss in the tray: ¶14 sentence 1: "That all this might not be too onerous on the purses of his rustic patrons, who are apt to consider the costs of schooling a grievous burden, and schoolmasters as mere drones, he had various ways of rendering himself both useful and agreeable."
+
+<!-- rooms:end -->

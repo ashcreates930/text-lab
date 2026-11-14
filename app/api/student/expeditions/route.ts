@@ -19,6 +19,8 @@ const Attempt = z.object({
   score: z.number().int().min(0).max(100000), notes: z.array(Note).max(60), interview: Interview.nullable(),
   award: z.object({ stars: z.number().int().min(0).max(20), of: z.number().int().min(0).max(20), badge: text(60).nullable() }).nullable(),
   // An unfinished room's resume point (lib/escape-room.ts parseResume checks it again on load); null once finished.
+  // Puzzle locks: each one's first-try result (lib/escape-room.ts).
+  puzzles: z.array(z.object({ id: text(80), type: z.enum(["code", "painting", "scene"]), firstTry: z.array(z.boolean()).max(8), points: z.number().int().min(0).max(5000) })).max(12).optional(),
   resume: z.unknown().optional().nullable().refine((x) => x == null || JSON.stringify(x).length <= 200000, "Resume point too large"),
 });
 
@@ -42,7 +44,7 @@ export async function POST(request: Request) {
   await ctx.store.upsertExpeditionResult({
     student_id: ctx.student.id, world_id: a.worldId, expedition_id: a.expeditionId, attempt_id: a.attemptId, complete: a.complete, score: a.score,
     first_try: a.notes.filter((n) => n.rightFirstTry).length, total: a.notes.length, solved_case: a.interview ? a.interview.solved : null,
-    record: { score: a.score, notes: a.notes, interview: a.interview, award: a.award, resume: a.finishedAt ? null : a.resume ?? null }, started_at: a.startedAt, finished_at: a.finishedAt,
+    record: { score: a.score, notes: a.notes, interview: a.interview, award: a.award, puzzles: a.puzzles ?? [], resume: a.finishedAt ? null : a.resume ?? null }, started_at: a.startedAt, finished_at: a.finishedAt,
   });
   return NextResponse.json({ ok: true });
 }

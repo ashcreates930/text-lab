@@ -19,6 +19,8 @@ export type ExpeditionAttempt = {
   reflection?: string | null;
   // An unfinished room: where it picks up again (lib/escape-room.ts RoomResume); null once the room is finished.
   resume?: unknown;
+  // Puzzle locks: each one's first-try result (lib/escape-room.ts).
+  puzzles?: { id: string; type: string; firstTry: boolean[]; points: number }[];
 };
 // A saved row (expedition_results) as an attempt.
 export const toAttempt = (r: ExpeditionResultRow): ExpeditionAttempt => ({ ...(r.record as unknown as ExpeditionAttempt), attemptId: r.attempt_id, worldId: r.world_id, expeditionId: r.expedition_id, startedAt: r.started_at, finishedAt: r.finished_at, complete: r.complete });

@@ -12,8 +12,8 @@
 // seconds), then the witness answers on the board (testify; the host moves on). One witness lies, picked per game. The
 // finale is Name the Liar: every phone locks in the liar and the line privately (liar, 90 seconds), and nothing is
 // shown until the board reveals the liar with the class breakdown (verdict). Rows: interview_vote and liar_lock.
-import type { Interview, WorldPack } from "../world-schema.ts";
-import { chamberSpan, recoveryOpens, type ChamberPick } from "../escape-room.ts";
+import type { Interview, RoomPuzzle, WorldPack } from "../world-schema.ts";
+import { chamberSpan, codeResultOf, paintingResult, recoveryOpens, sceneResult, type ChamberPick, type RoomPuzzleAt } from "../escape-room.ts";
 import { LIAR_SECONDS, VOTE_SECONDS, cardWinner, liarCheck, type LiarAnswer } from "../interview.ts";
 import type { SourcePassage } from "../source-passages.ts";
 import type { LivePlayer, LiveResponse, LiveSquad } from "./engine.ts";
@@ -27,11 +27,15 @@ import { screenBoardText } from "../safety.ts";
 // grade: the class grade (6 to 10) that picks each benchmark's code; gradeBand follows from it.
 // chamber: the whole room (0) or one chamber (lib/escape-room.ts), so a class can play a room one chamber per period.
 export type ExpSettings = { expeditionId: string; grade?: Grade; gradeBand: GradeBand; questions: boolean; highlighter: boolean; autoAdvance: boolean; chamber?: ChamberPick };
-export const LIVE_BEATS = ["vote", "testify", "read", "process", "ask", "race", "reveal", "lightning", "board", "burst", "countdown", "liar", "verdict"] as const;
+export const LIVE_BEATS = ["vote", "testify", "read", "process", "ask", "race", "reveal", "lightning", "puzzle", "board", "burst", "countdown", "liar", "verdict"] as const;
+// A puzzle lock gets generous time (times each player's extra time); the board moves on early once everyone is done.
+export const PUZZLE_SECONDS = 150;
 export type LiveBeat = (typeof LIVE_BEATS)[number];
 export type LiveRaceRound = { type: "race"; settings: ExpSettings; step: number; beat: LiveBeat; beatStartedAt: string; squadsOn: boolean; pinned?: string | null; pausedAt?: string | null;
   // holdBefore: a chunk (step) the teacher asked to pause before, from the content-note heads-up.
-  holdBefore?: number | null; interview?: { liar: number; witnesses: number } | null };
+  holdBefore?: number | null; interview?: { liar: number; witnesses: number } | null;
+  // The puzzle lock open now (lib/escape-room.ts), during the "puzzle" beat.
+  puzzle?: string | null };
 export const interviewOf = (world: WorldPack, round: Pick<LiveRaceRound, "settings" | "interview">): Interview | null => (round.interview ? world.expeditions?.find((e) => e.id === round.settings.expeditionId)?.interview ?? null : null);
 export const isBeat = (b: unknown): b is LiveBeat => (LIVE_BEATS as readonly string[]).includes(String(b));
 
@@ -58,8 +62,14 @@ export function firstBeat(settings: ExpSettings, chunks: number, interview: bool
   if (!interview) return { step: chamberSpan(chunks, settings.chamber ?? 0).from, beat: "read" };
   return { step: 0, beat: settings.chamber === 2 ? "testify" : "vote" };
 }
-export function nextBeat(round: LiveRaceRound, chunks: RaceChunk[], arc: Arc | null = null): { step: number; beat: LiveBeat } | "end" {
+export function nextBeat(round: LiveRaceRound, chunks: RaceChunk[], arc: Arc | null = null, puzzles: RoomPuzzleAt[] = []): { step: number; beat: LiveBeat; puzzle?: string | null } | "end" {
   const b = round.beat, s = round.step, span = liveSpan(round, chunks.length), recap = round.settings.chamber === 2;
+  // Puzzle locks: one placed after this chunk comes after its reveal (and lightning beat); the inner door's code lock
+  // after the checkpoint and the burst.
+  const checkpointAt = isCheckpoint(s, chunks.length), placed = puzzles.find((p) => p.after === s && !p.innerDoor), inner = puzzles.find((p) => p.after === s && p.innerDoor);
+  const afterLock = () => (placed ? { step: s, beat: "puzzle" as const, puzzle: placed.id } : { step: s, beat: (checkpointAt ? "board" : "countdown") as LiveBeat });
+  const afterCheckpoint = () => (inner ? { step: s, beat: "puzzle" as const, puzzle: inner.id } : { step: s, beat: "countdown" as const });
+  if (b === "puzzle") return puzzles.find((p) => p.id === round.puzzle)?.innerDoor ? { step: s, beat: "countdown" } : { step: s, beat: checkpointAt ? "board" : "countdown" };
   if (b === "vote") return { step: s, beat: "testify" };
   if (b === "testify") return s + 1 < (round.interview?.witnesses ?? 0) ? { step: s + 1, beat: recap ? "testify" : "vote" } : { step: span.from, beat: "read" };
   if (b === "liar") return { step: s, beat: "verdict" };
@@ -71,10 +81,10 @@ export function nextBeat(round: LiveRaceRound, chunks: RaceChunk[], arc: Arc | n
   if (b === "race") return { step: s, beat: "reveal" };
   // After the reveal: a lightning beat where one is placed, then the checkpoint (board and burst) after level 1.
   const checkpoint = isCheckpoint(s, chunks.length);
-  if (b === "reveal") return arc?.lightning.some((l) => l.after === s) ? { step: s, beat: "lightning" } : { step: s, beat: checkpoint ? "board" : "countdown" };
-  if (b === "lightning") return { step: s, beat: checkpoint ? "board" : "countdown" };
-  if (b === "board") return { step: s, beat: checkpoint && arc?.burstAfter === s ? "burst" : "countdown" };
-  if (b === "burst") return { step: s, beat: "countdown" };
+  if (b === "reveal") return arc?.lightning.some((l) => l.after === s) ? { step: s, beat: "lightning" } : afterLock();
+  if (b === "lightning") return afterLock();
+  if (b === "board") return checkpoint && arc?.burstAfter === s ? { step: s, beat: "burst" } : checkpoint ? afterCheckpoint() : { step: s, beat: "countdown" };
+  if (b === "burst") return afterCheckpoint();
   // Chamber 1 ends at the inner door; the exit door (Name the Liar) closes the room.
   if (s + 1 <= span.to) return { step: s + 1, beat: "read" };
   return round.settings.chamber === 1 ? "end" : round.interview ? { step: s, beat: "liar" } : "end";
@@ -90,6 +100,7 @@ export function beatMs(round: LiveRaceRound, chunk: RaceChunk | undefined, setti
   if (b === "process") return limitMs(GIST_SECONDS, setting);
   if (b === "ask") return limitMs(TYPED_SECONDS, setting);
   if (b === "lightning") return limitMs(LIGHTNING_SECONDS, setting);
+  if (b === "puzzle") return limitMs(PUZZLE_SECONDS, setting);
   if (b === "burst") return limitMs(BURST_SECONDS, setting);
   if (b === "race") return limitMs(TYPE_INFO[chunk.chunk.question.type].seconds, setting) + (chunk.chunk.question.type === "catch_lie" ? TESTIMONY_MS : 0);
   return Math.round(SCREEN_MS[b === "reveal" ? "result" : (b as "board" | "countdown")] * timeScale(setting));
@@ -132,7 +143,8 @@ export function burstFound(responses: LiveResponse[], roundIndex: number, ids: s
 // ---------- Answers ----------
 // What a player sent this beat, checked and scored, or why it can't count. One shot: one answer per question.
 // squadIds: the player's squad (the burst counts a find once per squad), or just the player.
-export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses: LiveResponse[], roundIndex: number, playerId: string, kind: string, payload: Record<string, unknown>, now: number, timeSetting: string, iv: Interview | null = null, arc: Arc | null = null, squadIds: string[] = [playerId]): { payload: Record<string, unknown>; flagged: boolean } | string {
+// puzzle: the puzzle lock open now, with its lines as text (code dials are checked against them).
+export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses: LiveResponse[], roundIndex: number, playerId: string, kind: string, payload: Record<string, unknown>, now: number, timeSetting: string, iv: Interview | null = null, arc: Arc | null = null, squadIds: string[] = [playerId], puzzle: RoomPuzzle | null = null, puzzleLines: string[] = []): { payload: Record<string, unknown>; flagged: boolean } | string {
   const chunk = chunks[round.step], me = playerChunk(responses, roundIndex, round.step, playerId);
   if (!chunk) return "The race is over.";
   const since = Math.max(0, now - Date.parse(round.beatStartedAt));
@@ -197,6 +209,19 @@ export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses:
     if (burstFound(responses, roundIndex, squadIds).includes(c)) return "Your squad already found that one.";
     return { payload: { step: round.step, chunk: c, points: BURST_POINTS }, flagged: false };
   }
+  // A puzzle lock: one try per player, scored here from what they tapped (never from the phone's own verdict).
+  if (kind === "race_puzzle") {
+    const p = puzzle;
+    if (round.beat !== "puzzle" || !p || p.id !== round.puzzle) return "The puzzle isn't open.";
+    if (rows(responses, roundIndex, "race_puzzle", round.step).some((r) => r.playerId === playerId && r.payload.id === p.id)) return "You've already locked in this puzzle.";
+    const a = (payload.answer ?? {}) as Record<string, unknown>, ref = (x: unknown) => { const o = x as { p?: unknown; s?: unknown } | null; return o && typeof o.p === "string" && Number.isInteger(o.s) ? { p: o.p, s: o.s as number } : null; };
+    const refs = (x: unknown) => Object.fromEntries(Object.entries(x && typeof x === "object" ? (x as Record<string, unknown>) : {}).slice(0, 8).map(([k, v]) => [String(k).slice(0, 40), ref(v)]));
+    let firstTry: boolean[], points: number;
+    if (p.type === "code") { const r = codeResultOf(p, puzzleLines, Array.isArray(a.taps) ? a.taps.map((t) => (Number.isInteger(t) ? (t as number) : null)) : []); firstTry = r.right; points = r.points; }
+    else if (p.type === "painting") { const r = paintingResult(p, Array.isArray(a.marks) ? a.marks.map(String).slice(0, 6) : [], refs(a.proofs)); if (typeof r === "string") return r; firstTry = p.details.filter((d) => d.wrong).map((d) => { const k = (a.marks as string[]).indexOf(d.id); return k >= 0 && r.caught[k]; }); points = r.points; }
+    else { const r = sceneResult(p, refs(a.matches)); firstTry = r.right; points = r.points; }
+    return { payload: { step: round.step, id: p.id, type: p.type, firstTry, points }, flagged: false };
+  }
   // After a miss: open the lock with the answer shown. Any time until the next chunk starts; it scores nothing.
   if (kind === "race_recover") {
     if (!["reveal", "lightning", "board", "burst", "countdown"].includes(round.beat)) return "This lock isn't waiting to be opened.";
@@ -242,7 +267,7 @@ export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses:
 // Each player's points through a step (inclusive): Gist check and question points.
 export function raceTotals(responses: LiveResponse[], roundIndex: number, players: LivePlayer[], through: number) {
   const t = new Map(players.map((p) => [p.id, 0]));
-  for (const r of responses) if (r.roundIndex === roundIndex && (r.kind === "race_gist" || r.kind === "race_tap" || r.kind === "race_lightning" || r.kind === "race_burst" || r.kind === "liar_lock") && r.playerId && Number(r.payload.step) <= through) t.set(r.playerId, (t.get(r.playerId) ?? 0) + Number(r.payload.points ?? 0));
+  for (const r of responses) if (r.roundIndex === roundIndex && (r.kind === "race_gist" || r.kind === "race_tap" || r.kind === "race_lightning" || r.kind === "race_burst" || r.kind === "liar_lock" || r.kind === "race_puzzle") && r.playerId && Number(r.payload.step) <= through) t.set(r.playerId, (t.get(r.playerId) ?? 0) + Number(r.payload.points ?? 0));
   return t;
 }
 // The board after a step: players (or squads, by average, when squads are on) with their move since the step before.
@@ -277,6 +302,7 @@ export function raceDone(round: LiveRaceRound, responses: LiveResponse[], roundI
   return players.filter((p) => {
     if (round.beat === "vote") return playerVote(responses, roundIndex, round.step, p.id) !== null;
     if (round.beat === "liar" || round.beat === "verdict") return !!playerLiar(responses, roundIndex, p.id);
+    if (round.beat === "puzzle") return rows(responses, roundIndex, "race_puzzle", round.step).some((r) => r.playerId === p.id && r.payload.id === round.puzzle);
     const c = playerChunk(responses, roundIndex, round.step, p.id); return round.beat === "process" ? c.gist !== null : round.beat === "ask" ? c.asked : round.beat === "lightning" ? !!c.lightning : c.done;
   }).map((p) => p.id);
 }

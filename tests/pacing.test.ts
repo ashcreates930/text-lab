@@ -126,7 +126,14 @@ test("live: answer, rank pill, no board until the checkpoint; a lightning beat; 
   // Ana's third first-try answer in a row: the streak bonus is in her points.
   const tap = view(ids[0]).mine.tap as { bonus?: number; mult?: number; points: number };
   assert.equal(tap.bonus, STREAK_BONUS, "streak bonus at 3");
-  await host({ action: "race.next" }); await host({ action: "race.next" });
+  // The painting puzzle follows chunk 3's reveal: one try per phone, scored on the server from what it tapped.
+  await host({ action: "race.next" }); assert.deepEqual([pub().beat, (pub() as unknown as { puzzle: { data: { id: string } } }).puzzle.data.id], ["puzzle", "glen-at-noon"]);
+  assert.equal(await act(ids[0], "race_puzzle", { answer: { marks: ["waterfall", "market"], proofs: { waterfall: { p: "p003", s: 4 }, market: { p: "p003", s: 3 } } } }), null);
+  assert.match((await act(ids[0], "race_puzzle", { answer: { marks: ["waterfall", "market"], proofs: {} } })) ?? "", /already locked in/);
+  assert.equal(await act(ids[1], "race_puzzle", { answer: { marks: ["waterfall", "hills"], proofs: { waterfall: { p: "p003", s: 4 }, hills: { p: "p003", s: 3 } } } }), null);
+  const pz = (pid: string) => st.responses.find((r) => r.kind === "race_puzzle" && r.playerId === pid)!.payload;
+  assert.deepEqual([pz(ids[0]).firstTry, pz(ids[0]).points], [[true, true], 600]); assert.deepEqual([pz(ids[1]).firstTry, pz(ids[1]).points], [[true, false], 300], "a right detail is not a mistake");
+  await host({ action: "race.next" }); assert.equal(pub().beat, "countdown"); await host({ action: "race.next" });
   // Chunk 4 (step 3): the lightning beat follows its reveal, 10 seconds, answered once, scored on the server.
   await play(3, [0, 1]);
   await host({ action: "race.next" }); assert.deepEqual([pub().beat, pub().beatMs], ["lightning", 10000]);
@@ -150,6 +157,8 @@ test("live: answer, rank pill, no board until the checkpoint; a lightning beat; 
   assert.match((await act(ids[0], "race_burst", { chunk: 7 })) ?? "", /this level/);
   assert.equal(await act(ids[1], "race_burst", { chunk: 2 }), null, "without squads each player counts their own finds");
   assert.deepEqual(view(ids[0]).burstFound, [2]);
+  // The inner door's code lock after the burst, then the countdown.
+  await host({ action: "race.next" }); assert.deepEqual([pub().beat, (pub() as unknown as { puzzle: { data: { id: string } } }).puzzle.data.id], ["puzzle", "glen-gate"]);
   await host({ action: "race.next" }); assert.equal(pub().beat, "countdown");
   // The surprise double: the question's points are doubled on that stop.
   const doubled = server.playerView(st, ids[0]).race!;
@@ -159,7 +168,7 @@ test("live: answer, rank pill, no board until the checkpoint; a lightning beat; 
   assert.equal(dTap.mult, DOUBLE, "double points on the surprise stop");
   // Totals include the lightning beat and the burst.
   const { raceTotals } = await import("../lib/live/race.ts");
-  const t = raceTotals(st.responses, st.session.roundIndex, st.players, 4), parts = st.responses.filter((r) => r.playerId === ids[0] && r.roundIndex === st.session.roundIndex && ["race_gist", "race_tap", "race_lightning", "race_burst"].includes(r.kind)).reduce((a, r) => a + Number(r.payload.points ?? 0), 0);
+  const t = raceTotals(st.responses, st.session.roundIndex, st.players, 4), parts = st.responses.filter((r) => r.playerId === ids[0] && r.roundIndex === st.session.roundIndex && ["race_gist", "race_tap", "race_lightning", "race_burst", "race_puzzle"].includes(r.kind)).reduce((a, r) => a + Number(r.payload.points ?? 0), 0);
   assert.equal(t.get(ids[0]), parts);
   // Adaptive: Ana answered right twice in a row, so she is on the harder version.
   assert.equal(view(ids[0]).version, "harder");
@@ -169,7 +178,7 @@ test("live: answer, rank pill, no board until the checkpoint; a lightning beat; 
 
 test("screens: the solo cadence, banners, the rank pill, lightning, the burst, no dead time on phones", () => {
   const race = src("app/expedition-race.tsx"), live = src("app/live/race-live.tsx");
-  assert.match(race, /function afterExtras\(\)\{go\(isCheckpoint\(k,chunks\.length\)\?"board":"countdown"\)\}/);
+  assert.match(race, /function afterExtras\(\)\{const p=room\?\.puzzles\.find\([^\n]*go\(isCheckpoint\(k,chunks\.length\)\?"board":"countdown"\)\}/);
   assert.match(race, /Checkpoint: Level 1 complete/); assert.match(race, /<RankPill move=\{meRow\.move\}/);
   // After chunk 1 there's no earlier rank: the pill shows the place only ("#1 of 2"), never "Held #1".
   assert.match(race, /if\(first\)return <span[^>]*>#\{rank\} of \{of\}<\/span>/); assert.match(race, /first=\{meRow\.prevRank===null\}/); assert.match(live, /first=\{\(race\.place\.row/);

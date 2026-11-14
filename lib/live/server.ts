@@ -11,7 +11,8 @@ import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, liv
 import { screenMessage } from "../safety.ts";
 import { beatMs, burstFound, firstBeat, liveSpan, interviewOf, liveArc, playerAsked, playerVersion, liarAnswers, liveCards, liveRaceBoard, liveRaceChunks, nextBeat, parseExpSettings, playerChunk, playerLiar, playerVote, raceAnswer, raceAnswered, raceDone, raceFinish, raceQuestions, raceReadiness, raceReveal, raceTotals, type LiveRaceRound } from "./race.ts";
 import { firstName, interviewAudio, liarBreakdown } from "../interview.ts";
-import { liveLiar, recoveryTask } from "../escape-room.ts";
+import { lineAt, liveLiar, recoveryTask, refKey, roomOf } from "../escape-room.ts";
+import type { LineRef, RoomPuzzle } from "../world-schema.ts";
 import { TYPE_INFO, hasExpeditions, joinedPassages, timeScale, type RaceChunk } from "../expedition.ts";
 import { beatKind, isCheckpoint, multiplierAt, questionAt, type Version } from "../pacing.ts";
 import { formatOf, formatView } from "../formats.ts";
@@ -34,6 +35,19 @@ import {
   type LivePlayer, type LiveResponse, type ResponseKind, type Role, type Round, type RoundType,
 } from "./engine.ts";
 import type { LiveStore, StoredSession } from "./store.ts";
+
+// The puzzle lock open in a live race: its data, its lines as text (keyed "p001:3"), the lines read so far (Fix the
+// Painting proves mistakes with them) and the code dials' lines in order.
+function puzzleOf(st: { world: import("../world-schema.ts").WorldPack; passages?: import("../source-passages.ts").SourcePassage[] }, round: LiveRaceRound) {
+  if (round.beat !== "puzzle" || !round.puzzle) return null;
+  const data = st.world.rooms?.find((r) => r.expedition === round.settings.expeditionId)?.puzzles?.find((p) => p.id === round.puzzle) as RoomPuzzle | undefined;
+  if (!data) return null;
+  const passages = st.passages ?? [], chunks = liveRaceChunks(st.world, passages, round);
+  const readLines: LineRef[] = chunks.slice(0, data.after).flatMap((c) => c.lines.map((l) => ({ p: l.pid, s: l.index })));
+  const refs: LineRef[] = [...readLines, ...(data.type === "code" ? data.dials.map((d) => d.line) : data.type === "painting" ? data.details.flatMap((d) => d.lines) : [...data.objects.map((o) => o.line), ...data.near_misses])];
+  const lines = Object.fromEntries(refs.map((r) => [refKey(r), lineAt(passages, r) ?? ""]));
+  return { data, lines, readLines, codeLines: data.type === "code" ? data.dials.map((d) => lineAt(passages, d.line) ?? "") : [] };
+}
 
 // ---------- Tokens ----------
 function secret() {
@@ -172,6 +186,8 @@ function publicRace(st: LiveState, round: LiveRaceRound) {
     // The arc's moment at this chunk (the twist, the boss, a surprise double), for the banners; the checkpoint follows level 1.
     arc: arc ? beatKind(arc, round.step) : null, double: arc ? multiplierAt(arc, round.step) > 1 : false, checkpoint: isCheckpoint(round.step, chunks.length),
     // The lightning beat: the question and the chunk it recalls (the answer only reaches a phone once it has answered).
+    // A puzzle lock: its data and every line it uses, as text (phones don't hold the whole story).
+    puzzle: round.beat === "puzzle" ? (() => { const p = puzzleOf(st, round); return p ? { data: p.data, lines: p.lines, readLines: p.readLines } : null; })() : null,
     lightning: round.beat === "lightning" && light ? { id: light.id, question: light.question, chunk: light.chunk, lines: chunks[light.chunk - 1]?.lines ?? [], discovery: chunks[light.chunk - 1]?.chunk.discovery ?? null } : null,
     // The burst: level 1's chunks, to find their discoveries.
     burst: round.beat === "burst" ? { chunks: chunks.slice(0, round.step + 1).map((x) => ({ index: x.index, lines: x.lines, discovery: x.chunk.discovery })) } : null,
@@ -497,7 +513,7 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
     // Proof Race: the next beat (read, summary or question, race, reveal, board), then the next chunk; the end is the podium.
     case "race.next": {
       if (round?.type !== "race" || s.status !== "round") return "No Proof Race is running.";
-      const n = nextBeat(round, liveRaceChunks(st.world, st.passages ?? [], round), liveArc(st.world, round));
+      const n = nextBeat(round, liveRaceChunks(st.world, st.passages ?? [], round), liveArc(st.world, round), roomOf(st.world, round.settings.expeditionId)?.puzzles ?? []);
       if (n === "end") { await store.updateSession(s.id, { status: "ended", paused: false }); return null; }
       // The teacher asked to pause before this chunk (a content note is coming): pause here instead of showing it.
       if (round.holdBefore != null && n.step === round.holdBefore && n.step !== round.step) {
@@ -505,7 +521,7 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
       }
       // Moving on ends a pause: the new beat's clock starts now, so phones must be able to answer it.
       if (s.paused) await store.updateSession(s.id, { paused: false });
-      return set(store, st, { ...round, step: n.step, beat: n.beat, beatStartedAt: new Date().toISOString(), pausedAt: null, pinned: n.step === round.step ? round.pinned ?? null : null });
+      return set(store, st, { ...round, step: n.step, beat: n.beat, puzzle: n.puzzle ?? null, beatStartedAt: new Date().toISOString(), pausedAt: null, pinned: n.step === round.step ? round.pinned ?? null : null });
     }
     // The Bonus Round: after a Proof Race; squads are built first if there are none.
     case "bonus.start": {
@@ -648,12 +664,12 @@ export async function playerAct(store: LiveStore, st: LiveState, playerId: strin
     return null;
   }
   if (s.status !== "round") return "Wait for the next round.";
-  if (act.kind === "race_ready" || act.kind === "race_gist" || act.kind === "race_question" || act.kind === "race_tap" || act.kind === "race_lightning" || act.kind === "race_burst" || act.kind === "race_unknown" || act.kind === "interview_vote" || act.kind === "liar_lock" || act.kind === "race_recover") {
+  if (act.kind === "race_ready" || act.kind === "race_gist" || act.kind === "race_question" || act.kind === "race_tap" || act.kind === "race_lightning" || act.kind === "race_burst" || act.kind === "race_unknown" || act.kind === "interview_vote" || act.kind === "liar_lock" || act.kind === "race_recover" || act.kind === "race_puzzle") {
     if (round?.type !== "race") return "This isn't a Proof Race.";
     if (s.paused) return "The round is paused.";
     // The burst counts a find once per squad (or per player without squads).
     const meP = st.players.find((p) => p.id === playerId), squadIds = round.squadsOn && meP?.squadId ? st.players.filter((p) => p.squadId === meP.squadId).map((p) => p.id) : [playerId];
-    const r = raceAnswer(round, liveRaceChunks(st.world, st.passages ?? [], round), st.responses, i, playerId, act.kind, act.payload, Date.now(), deps.timeSetting ?? "1", interviewOf(st.world, round), liveArc(st.world, round), squadIds);
+    const r = raceAnswer(round, liveRaceChunks(st.world, st.passages ?? [], round), st.responses, i, playerId, act.kind, act.payload, Date.now(), deps.timeSetting ?? "1", interviewOf(st.world, round), liveArc(st.world, round), squadIds, puzzleOf(st, round)?.data ?? null, puzzleOf(st, round)?.codeLines ?? []);
     if (typeof r === "string") return r;
     await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: act.kind, payload: r.payload, flagged: r.flagged });
     return null;

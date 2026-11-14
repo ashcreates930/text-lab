@@ -154,7 +154,7 @@ export const stopNow = (room: Room, p: RoomProgress, s: { classSession: boolean;
 // What an unfinished room saves so it can be picked up on another day or device (expedition_results.record.resume, or
 // the browser): the progress, the answers so far (the solo room's own records), the cards asked in the Interview, and
 // the extras already scored. Checked on load: anything malformed starts the room afresh rather than half-restored.
-export type RoomResume = { v: 1; progress: RoomProgress; records: unknown[]; ghost: number[]; cards: number[]; lightning: (number | null)[]; burst: number };
+export type RoomResume = { v: 1; progress: RoomProgress; records: unknown[]; ghost: number[]; cards: number[]; lightning: (number | null)[]; burst: number; puzzles?: Record<string, { id: string; type: string; firstTry: boolean[]; points: number }> };
 const ints = (x: unknown, max = 60) => Array.isArray(x) && x.length <= max && x.every((n) => Number.isInteger(n));
 export function parseResume(x: unknown, room: Room): RoomResume | null {
   const o = x as Partial<RoomResume> | null;
@@ -164,7 +164,9 @@ export function parseResume(x: unknown, room: Room): RoomResume | null {
   // Every opened lock has its record, and nothing is recorded past the locks opened.
   if (p.opened.some((s) => !o.records![s]) || o.records.some((r, s) => r && !p.opened.includes(s))) return null;
   if (!ints(o.cards, 6) || !Array.isArray(o.ghost) || !Array.isArray(o.lightning) || typeof o.burst !== "number") return null;
-  return { v: 1, progress: { opened: [...p.opened].sort((a, b) => a - b), puzzles: p.puzzles.filter((s): s is string => typeof s === "string"), innerDoor: p.innerDoor, exit: p.exit }, records: o.records, ghost: o.ghost.map(Number), cards: o.cards as number[], lightning: o.lightning.map((n) => (n == null ? null : Number(n))), burst: o.burst };
+  return { v: 1, progress: { opened: [...p.opened].sort((a, b) => a - b), puzzles: p.puzzles.filter((s): s is string => typeof s === "string"), innerDoor: p.innerDoor, exit: p.exit }, records: o.records, ghost: o.ghost.map(Number), cards: o.cards as number[], lightning: o.lightning.map((n) => (n == null ? null : Number(n))), burst: o.burst,
+    // Puzzle results: only well-formed entries for puzzles this room has.
+    puzzles: Object.fromEntries(Object.entries(o.puzzles && typeof o.puzzles === "object" ? o.puzzles : {}).filter(([id, r]) => room.puzzles.some((x) => x.id === id) && !!r && Array.isArray(r.firstTry) && typeof r.points === "number")) };
 }
 // The room a student left part-way: their latest unfinished attempt that saved a resume point.
 export function unfinished<A extends { expeditionId: string; finishedAt: string | null; startedAt: string; resume?: unknown }>(attempts: A[], expeditionId: string): A | null {
@@ -224,6 +226,10 @@ export function codeResult(p: Extract<RoomPuzzle, { type: "code" }>, passages: S
   return { right, letters: right.map((r, k) => (r ? dialLetter(p.dials[k]) : null)), all: right.every(Boolean), points: right.filter(Boolean).length * PUZZLE_POINTS.dial };
 }
 
+export function codeResultOf(p: Extract<RoomPuzzle, { type: "code" }>, lines: string[], taps: (number | null)[]) {
+  const right = p.dials.map((d, k) => dialRight(d, lines[k] ?? "", taps[k]));
+  return { right, letters: right.map((r, k) => (r ? dialLetter(p.dials[k]) : null)), all: right.every(Boolean), points: right.filter(Boolean).length * PUZZLE_POINTS.dial };
+}
 // Fix the Painting: the student marks exactly `wrong` details, then taps a line for each. A mistake is caught when the
 // detail is wrong and the line is one that disproves it. Marking a different number is not an answer yet.
 export function paintingResult(p: Extract<RoomPuzzle, { type: "painting" }>, marks: string[], proofs: Record<string, LineRef | null | undefined>) {
