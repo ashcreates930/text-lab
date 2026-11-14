@@ -278,3 +278,14 @@ test("live: a puzzle follows its lock's reveal; the code lock follows the checkp
   assert.deepEqual(Object.keys(p.puzzles ?? {}), ["glen-at-noon"]);
   assert.deepEqual(resumeAt(r, p.progress), { kind: "lock", step: 3, chamber: 1 }, "past the painting, on to lock 4");
 });
+
+test("every Sleepy Hollow room has its three puzzle locks: a painting in chamber 1, the code lock at the inner door, a scene before the exit", () => {
+  for (const r of roomsOf(sh)) {
+    const kinds = r.puzzles.map((p) => `${p.type}:${p.chamber}${p.innerDoor ? ":inner" : ""}`);
+    assert.deepEqual(kinds, ["painting:1", "code:1:inner", "scene:2"], `${r.expedition}: ${kinds.join(", ")}`);
+    assert.ok(r.innerDoor?.puzzle, `${r.expedition}: the code lock opens the inner door`);
+  }
+  // Room 13's scene holds the saddle by the bridge and Cotton Mather's book.
+  const search = sh.rooms!.find((x) => x.expedition === "gone")!.puzzles!.find((p) => p.type === "scene") as Extract<NonNullable<RoomData["puzzles"]>[number], { type: "scene" }>;
+  assert.deepEqual(search.objects.map((o) => `${o.line.p}:${o.line.s}`).slice(0, 2), ["p068:5", "p069:3"]);
+});
