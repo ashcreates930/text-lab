@@ -7600,23 +7600,23 @@ Prompt: "Each dial asks about a line in your Case File. Tap the word in the line
 
 Code: H-T-R-S (spells no word in the story). Each dial: the question, the word to tap, and its line.
 
-1. Who named the town? → **housewives** · ¶3 sentence 2: "This name was given, we are told, in former days, by the good housewives of the adjacent country, from the inveterate propensity of their husbands to linger about the village tavern on market days."
-2. How many miles away is the valley? → **two** · ¶3 sentence 4: "Not far from this village, perhaps about two miles, there is a little valley or rather lap of land among high hills, which is one of the quietest places in the whole world."
-3. What sound startled him? → **roar** · ¶4 sentence 2: "I had wandered into it at noontime, when all nature is peculiarly quiet, and was startled by the roar of my own gun, as it broke the Sabbath stillness around and was prolonged and reverberated by the angry echoes."
-4. What does the witching power hold over people's minds? → **spell** · ¶5 sentence 4: "Certain it is, the place still continues under the sway of some witching power, that holds a spell over the minds of the good people, causing them to walk in a continual reverie."
+1. Who was annoyed enough to label the place, according to the tale? → **housewives** · ¶3 sentence 2: "This name was given, we are told, in former days, by the good housewives of the adjacent country, from the inveterate propensity of their husbands to linger about the village tavern on market days."
+2. A traveler sets out from the tavern for the glen. Which number tells how long the trip is? → **two** · ¶3 sentence 4: "Not far from this village, perhaps about two miles, there is a little valley or rather lap of land among high hills, which is one of the quietest places in the whole world."
+3. Which word tells how noisy the shot seemed to the young hunter? → **roar** · ¶4 sentence 2: "I had wandered into it at noontime, when all nature is peculiarly quiet, and was startled by the roar of my own gun, as it broke the Sabbath stillness around and was prolonged and reverberated by the angry echoes."
+4. What has the magic cast on everyone who lives here, so they drift through life half-dreaming? → **spell** · ¶5 sentence 4: "Certain it is, the place still continues under the sway of some witching power, that holds a spell over the minds of the good people, causing them to walk in a continual reverie."
 
 ##### Inspect the Scene: the churchyard at dusk (after lock 10)
 
 Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
 
-Picture: `/worlds/sleepy-hollow/rooms/churchyard-at-dusk.webp` (A churchyard at dusk beside a stream, with an old church and a darkening sky). Each object matches one line; the tray adds near misses.
+Picture: `/worlds/sleepy-hollow/rooms/churchyard-at-dusk.webp` (A churchyard at dusk beside a stream, with an old church and a darkening sky). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
 1. A rusted iron shot half-buried in the grass → ¶6 sentence 2: "It is said by some to be the ghost of a Hessian trooper, whose head had been carried away by a cannon-ball, in some nameless battle during the Revolutionary War, and who is ever and anon seen by the country folk hurrying along in the gloom of night, as if on the wings of the wind."
-2. A fresh grave beside the steeple → ¶6 sentence 4: "Indeed, certain of the most authentic historians of those parts, who have been careful in collecting and collating the floating facts concerning this spectre, allege that the body of the trooper having been buried in the churchyard, the ghost rides forth to the scene of battle in nightly quest of his head, and that the rushing speed with which he sometimes passes along the Hollow, like a midnight blast, is owing to his being belated, and in a hurry to get back to the churchyard before daybreak."
+2. An old sunken grave with a weathered stone → ¶6 sentence 4: "Indeed, certain of the most authentic historians of those parts, who have been careful in collecting and collating the floating facts concerning this spectre, allege that the body of the trooper having been buried in the churchyard, the ghost rides forth to the scene of battle in nightly quest of his head, and that the rushing speed with which he sometimes passes along the Hollow, like a midnight blast, is owing to his being belated, and in a hurry to get back to the churchyard before daybreak."
 3. A streak of light across the night sky → ¶5 sentence 6: "The whole neighborhood abounds with local tales, haunted spots, and twilight superstitions; stars shoot and meteors glare oftener across the valley than in any other part of the country, and the nightmare, with her whole ninefold, seems to make it the favorite scene of her gambols."
-4. A glassy pool beside a fast creek, a twig drifting in it → ¶9 sentence 2: "They are like those little nooks of still water, which border a rapid stream, where we may see the straw and bubble riding quietly at anchor, or slowly revolving in their mimic harbor, undisturbed by the rush of the passing current."
+4. A white meeting house with a steeple on the knoll → ¶6 sentence 3: "His haunts are not confined to the valley, but extend at times to the adjacent roads, and especially to the vicinity of a church at no great distance."
 - Near miss in the tray: ¶5 sentence 2: "A drowsy, dreamy influence seems to hang over the land, and to pervade the very atmosphere."
-- Near miss in the tray: ¶6 sentence 3: "His haunts are not confined to the valley, but extend at times to the adjacent roads, and especially to the vicinity of a church at no great distance."
+- Near miss in the tray: ¶6 sentence 1: "The dominant spirit, however, that haunts this enchanted region, and seems to be commander-in-chief of all the powers of the air, is the apparition of a figure on horseback, without a head."
 
 #### Room 2: The schoolhouse (Expedition: The Schoolmaster)
 
@@ -7640,16 +7640,16 @@ Prompt: "Each dial asks about a line in your Case File. Tap the word in the line
 
 Code: C-L-S-B (spells no word in the story). Each dial: the question, the word to tap, and its line.
 
-1. Which state did Ichabod come from? → **Connecticut** · ¶10 sentence 2: "He was a native of Connecticut, a State which supplies the Union with pioneers for the mind as well as for the forest, and sends forth yearly its legions of frontier woodmen and country schoolmasters."
-2. What was the schoolhouse built of? → **logs** · ¶11 sentence 1: "His schoolhouse was a low building of one large room, rudely constructed of logs; the windows partly glazed, and partly patched with leaves of old copybooks."
-3. What might his feet have served as? → **shovels** · ¶10 sentence 4: "He was tall, but exceedingly lank, with narrow shoulders, long arms and legs, hands that dangled a mile out of his sleeves, feet that might have served for shovels, and his whole frame most loosely hung together."
-4. What busy insect home does the classroom sound like from outside? → **beehive** · ¶11 sentence 4: "From hence the low murmur of his pupils’ voices, conning over their lessons, might be heard in a drowsy summer’s day, like the hum of a beehive; interrupted now and then by the authoritative voice of the master, in the tone of menace or command, or, peradventure, by the appalling sound of the birch, as he urged some tardy loiterer along the flowery path of knowledge."
+1. Which word names the home Ichabod left to come here? → **Connecticut** · ¶10 sentence 2: "He was a native of Connecticut, a State which supplies the Union with pioneers for the mind as well as for the forest, and sends forth yearly its legions of frontier woodmen and country schoolmasters."
+2. If you ran your hand along the outside walls, what would you feel? → **logs** · ¶11 sentence 1: "His schoolhouse was a low building of one large room, rudely constructed of logs; the windows partly glazed, and partly patched with leaves of old copybooks."
+3. Which garden tool is used to joke about how big he is from the ankles down? → **shovels** · ¶10 sentence 4: "He was tall, but exceedingly lank, with narrow shoulders, long arms and legs, hands that dangled a mile out of his sleeves, feet that might have served for shovels, and his whole frame most loosely hung together."
+4. From outside, what busy insect home does the classroom resemble? → **beehive** · ¶11 sentence 4: "From hence the low murmur of his pupils’ voices, conning over their lessons, might be heard in a drowsy summer’s day, like the hum of a beehive; interrupted now and then by the authoritative voice of the master, in the tone of menace or command, or, peradventure, by the appalling sound of the birch, as he urged some tardy loiterer along the flowery path of knowledge."
 
 ##### Inspect the Scene: a farmhouse where Ichabod boards (after lock 10)
 
 Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
 
-Picture: `/worlds/sleepy-hollow/rooms/farmhouse-room.webp` (A farmhouse kitchen with a hearth, a table and a chair). Each object matches one line; the tray adds near misses.
+Picture: `/worlds/sleepy-hollow/rooms/farmhouse-room.webp` (A farmhouse kitchen with a hearth, a table and a chair). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
 1. A small bundle knotted in a cloth by the door → ¶13 sentence 4: "With these he lived successively a week at a time, thus going the rounds of the neighborhood, with all his worldly effects tied up in a cotton handkerchief."
 2. A stack of freshly split logs by the hearth → ¶14 sentence 2: "He assisted the farmers occasionally in the lighter labors of their farms, helped to make hay, mended the fences, took the horses to water, drove the cows from pasture, and cut wood for the winter fire."

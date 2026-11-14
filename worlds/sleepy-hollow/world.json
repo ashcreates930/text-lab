@@ -23434,7 +23434,7 @@
           "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
           "dials": [
             {
-              "question": "Who named the town?",
+              "question": "Who was annoyed enough to label the place, according to the tale?",
               "line": {
                 "p": "p003",
                 "s": 1
@@ -23442,7 +23442,7 @@
               "word": "housewives"
             },
             {
-              "question": "How many miles away is the valley?",
+              "question": "A traveler sets out from the tavern for the glen. Which number tells how long the trip is?",
               "line": {
                 "p": "p003",
                 "s": 3
@@ -23450,7 +23450,7 @@
               "word": "two"
             },
             {
-              "question": "What sound startled him?",
+              "question": "Which word tells how noisy the shot seemed to the young hunter?",
               "line": {
                 "p": "p004",
                 "s": 1
@@ -23458,7 +23458,7 @@
               "word": "roar"
             },
             {
-              "question": "What does the witching power hold over people's minds?",
+              "question": "What has the magic cast on everyone who lives here, so they drift through life half-dreaming?",
               "line": {
                 "p": "p005",
                 "s": 3
@@ -23479,7 +23479,7 @@
             {
               "id": "shot",
               "label": "A rusted iron shot half-buried in the grass",
-              "x": 24,
+              "x": 26,
               "y": 82,
               "line": {
                 "p": "p006",
@@ -23488,9 +23488,9 @@
             },
             {
               "id": "grave",
-              "label": "A fresh grave beside the steeple",
-              "x": 68,
-              "y": 72,
+              "label": "An old sunken grave with a weathered stone",
+              "x": 67,
+              "y": 64,
               "line": {
                 "p": "p006",
                 "s": 3
@@ -23499,21 +23499,21 @@
             {
               "id": "streak",
               "label": "A streak of light across the night sky",
-              "x": 81,
-              "y": 13,
+              "x": 84,
+              "y": 12,
               "line": {
                 "p": "p005",
                 "s": 5
               }
             },
             {
-              "id": "pool",
-              "label": "A glassy pool beside a fast creek, a twig drifting in it",
-              "x": 16,
-              "y": 68,
+              "id": "church",
+              "label": "A white meeting house with a steeple on the knoll",
+              "x": 70,
+              "y": 40,
               "line": {
-                "p": "p009",
-                "s": 1
+                "p": "p006",
+                "s": 2
               }
             }
           ],
@@ -23524,7 +23524,7 @@
             },
             {
               "p": "p006",
-              "s": 2
+              "s": 0
             }
           ]
         }
@@ -23616,7 +23616,7 @@
           "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
           "dials": [
             {
-              "question": "Which state did Ichabod come from?",
+              "question": "Which word names the home Ichabod left to come here?",
               "line": {
                 "p": "p010",
                 "s": 1
@@ -23624,7 +23624,7 @@
               "word": "Connecticut"
             },
             {
-              "question": "What was the schoolhouse built of?",
+              "question": "If you ran your hand along the outside walls, what would you feel?",
               "line": {
                 "p": "p011",
                 "s": 0
@@ -23632,7 +23632,7 @@
               "word": "logs"
             },
             {
-              "question": "What might his feet have served as?",
+              "question": "Which garden tool is used to joke about how big he is from the ankles down?",
               "line": {
                 "p": "p010",
                 "s": 3
@@ -23640,7 +23640,7 @@
               "word": "shovels"
             },
             {
-              "question": "What busy insect home does the classroom sound like from outside?",
+              "question": "From outside, what busy insect home does the classroom resemble?",
               "line": {
                 "p": "p011",
                 "s": 3

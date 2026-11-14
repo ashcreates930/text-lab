@@ -20,31 +20,8 @@ const shp = parseSourcePassages(src("public/worlds/sleepy-hollow/source.md"));
 const e1 = sh.expeditions![0], chunks = expeditionChunks(sh, shp, e1.id), iv = e1.interview!;
 
 // The Expedition 1 puzzles from the approved plan (content for review arrives in phase 2; here they test the rules).
-const E1_ROOM: RoomData = {
-  expedition: e1.id,
-  door: "The Glen. A spell holds everyone who stays here. Prove what the story says, and the way out opens.",
-  puzzles: [
-    { type: "painting", id: "glen-at-noon", after: 3, title: "The glen at noon", alt: "A painting of a quiet valley among hills", wrong: 2, details: [
-      { id: "walnut", label: "Tall walnut trees shade one side", x: 20, y: 40, lines: [{ p: "p004", s: 0 }] },
-      { id: "woodpecker", label: "A woodpecker on a branch", x: 30, y: 30, lines: [{ p: "p003", s: 4 }] },
-      { id: "hills", label: "High hills all around", x: 50, y: 10, lines: [{ p: "p003", s: 3 }] },
-      { id: "waterfall", label: "A roaring waterfall", x: 70, y: 50, wrong: true, lines: [{ p: "p003", s: 4 }] },
-      { id: "market", label: "A busy market road through the valley", x: 60, y: 80, wrong: true, lines: [{ p: "p003", s: 3 }] },
-    ] },
-    { type: "code", id: "glen-gate", after: 5, title: "The gate out of the glen", dials: [
-      { question: "Who named the town?", line: { p: "p003", s: 1 }, word: "housewives" },
-      { question: "How many miles away is the valley?", line: { p: "p003", s: 3 }, word: "two" },
-      { question: "What sound startled him?", line: { p: "p004", s: 1 }, word: "roar" },
-      { question: "What does the witching power hold over people's minds?", line: { p: "p005", s: 3 }, word: "spell" },
-    ] },
-    { type: "scene", id: "churchyard-at-dusk", after: 10, title: "The churchyard at dusk", alt: "A churchyard at dusk beside a stream", objects: [
-      { id: "shot", label: "A rusted iron shot half-buried in the grass", x: 30, y: 80, line: { p: "p006", s: 1 } },
-      { id: "grave", label: "A fresh grave beside the steeple", x: 55, y: 60, line: { p: "p006", s: 3 } },
-      { id: "streak", label: "A streak of light across the night sky", x: 70, y: 10, line: { p: "p005", s: 5 } },
-      { id: "pool", label: "A glassy pool beside a fast creek, a twig drifting in it", x: 15, y: 50, line: { p: "p009", s: 1 } },
-    ], near_misses: [{ p: "p005", s: 1 }, { p: "p006", s: 2 }] },
-  ],
-};
+// Room 1 as revised in review (world.json rooms): the tests check the rules against the real puzzles.
+const E1_ROOM: RoomData = structuredClone(sh.rooms!.find((r) => r.expedition === e1.id)!);
 const withRoom = (room: RoomData, base: WorldPack = sh): WorldPack => ({ ...base, rooms: [room] });
 const world = withRoom(E1_ROOM);
 const puzzle = <T extends "code" | "painting" | "scene">(type: T) => E1_ROOM.puzzles!.find((p) => p.type === type) as Extract<NonNullable<RoomData["puzzles"]>[number], { type: T }>;
@@ -195,6 +172,9 @@ test("validate:worlds: the plan's E1 puzzles pass, and every puzzle rule catches
   assert.match(probs((r) => { (r.puzzles![2] as { objects: { label: string }[] }).objects[0].label = "A rusted cannon-ball in the grass"; }), /shares words with its line/, "the label alone must not give the line away");
   assert.match(probs((r) => { (r.puzzles![2] as { near_misses: { p: string; s: number }[] }).near_misses[0] = { p: "p006", s: 1 }; }), /different sentence/);
   assert.match(probs((r) => { r.door = "The Glen — a spell"; }), /no em dashes/);
+  // Review rules (2026-11-13): a dial question shares no content word with its line; scene objects are literal things.
+  assert.match(probs((r) => { (r.puzzles![1] as { dials: { question: string }[] }).dials[2].question = "What sound startled him?"; }), /dial 3's question shares words with its line/);
+  assert.match(probs((r) => { const sc = r.puzzles![2] as { objects: { label: string; line: { p: string; s: number } }[] }; sc.objects[3] = { ...sc.objects[3], label: "A glassy pool beside a fast creek", line: { p: "p009", s: 1 } }; }), /line is a comparison/, "the nooks of still water are a simile for the villages");
   assert.match(roomProblems({ ...sh, rooms: [{ expedition: "nowhere" }] }, shp).join("\n"), /no expedition/);
 });
 

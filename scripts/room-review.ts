@@ -31,7 +31,7 @@ for (const id of ["sleepy-hollow", "tell-tale-heart", "trifles"]) {
         out.push(`Picture: \`${p.art ?? "sketch until approved"}\` (${p.alt}). ${p.wrong} details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.`, "");
         p.details.forEach((d, k) => out.push(`${k + 1}. ${d.wrong ? "✗" : "✓"} ${d.label} · ${d.lines.map(quote).join(" / ")}`));
       } else {
-        out.push(`Picture: \`${p.art ?? "sketch until approved"}\` (${p.alt}). Each object matches one line; the tray adds near misses.`, "");
+        out.push(`Picture: \`${p.art ?? "sketch until approved"}\` (${p.alt}). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.`, "");
         p.objects.forEach((o, k) => out.push(`${k + 1}. ${o.label} → ${quote(o.line)}`));
         p.near_misses.forEach((r) => out.push(`- Near miss in the tray: ${quote(r)}`));
       }

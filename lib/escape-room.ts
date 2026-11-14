@@ -250,6 +250,9 @@ export function sceneResult(p: Extract<RoomPuzzle, { type: "scene" }>, matches: 
 }
 
 // ---------- Validation (validate:worlds) ----------
+// A sentence whose main statement is a comparison: it opens with "like" or "as if", or says something "is like" or
+// "are like" something else.
+export const isComparison = (line: string) => /^\W*(like|as if|as though)\b/i.test(line) || /^\W*(they|it|he|she|this|these|those|such)\s+(is|are|was|were|seems?|seemed)\s+(like|as if|as though)\b/i.test(line);
 // Rooms name real expeditions, once each. Every puzzle line is a real sentence the student has already read in this
 // room (chunks 1 to `after`), never in a content-noted paragraph or a sentence the story excludes from puzzles.
 // Code lock: the code spells no word in the story, the answer word appears once in its line, and the line holds another
@@ -291,6 +294,10 @@ export function roomProblems(world: WorldPack, passages: SourcePassage[]): strin
           const hits = keys.filter((x) => x === w).length;
           if (hits !== 1) out.push(`${pat}: dial ${k + 1}'s word "${d.word}" appears ${hits} times in its line (exactly once)`);
           if (!keys.some((x) => x !== w && x.charAt(0) === w.charAt(0))) out.push(`${pat}: dial ${k + 1}'s line has no other word starting with "${w.charAt(0)}", so the letter alone could find it`);
+          // The question shares no content word or root with its line (names excepted): a dial needs a step of
+          // reasoning, never word-matching ("Which word tells how noisy the shot seemed?", not "What sound startled him?").
+          const sharedQ = sharedRoots(d.question, [text], names);
+          if (sharedQ.length) out.push(`${pat}: dial ${k + 1}'s question shares words with its line (${sharedQ.join(", ")}); ask it so the student has to reason, not match words`);
         });
       } else if (p.type === "painting") {
         const wrong = p.details.filter((d) => d.wrong).length;
@@ -306,6 +313,10 @@ export function roomProblems(world: WorldPack, passages: SourcePassage[]): strin
           const text = check(o.line, `object ${o.id}`); if (!text) continue;
           const shared = sharedRoots(o.label, [text], names);
           if (shared.length) out.push(`${pat}: object ${o.id}'s label shares words with its line (${shared.join(", ")}); describe what it looks like instead`);
+          // Scene objects must be literal things in the story, never taken from a simile or metaphor. The check below
+          // catches a line that is itself a comparison ("They are like those little nooks..."); a reviewer confirms the
+          // rest (the review doc says so beside every scene).
+          if (isComparison(text)) out.push(`${pat}: object ${o.id}'s line is a comparison, not a real thing in the story; use a literal object`);
         }
         p.near_misses.forEach((l, k) => check(l, `near miss ${k + 1}`));
       }
