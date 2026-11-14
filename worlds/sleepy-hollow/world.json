@@ -25407,7 +25407,7 @@
               "id": "mast",
               "label": "A boat's upright pole down on the river",
               "x": 8,
-              "y": 85,
+              "y": 86,
               "line": {
                 "p": "p058",
                 "s": 2
@@ -25419,8 +25419,8 @@
             {
               "id": "trunk",
               "label": "A huge trunk standing in the middle of the lane",
-              "x": 63,
-              "y": 80,
+              "x": 56,
+              "y": 74,
               "line": {
                 "p": "p059",
                 "s": 4
@@ -25433,7 +25433,7 @@
               "id": "scar",
               "label": "A pale scorched scar on the bark",
               "x": 54,
-              "y": 52,
+              "y": 50,
               "line": {
                 "p": "p060",
                 "s": 1
@@ -25446,7 +25446,7 @@
               "id": "limbs",
               "label": "Two heavy limbs grinding together",
               "x": 73,
-              "y": 20,
+              "y": 18,
               "line": {
                 "p": "p060",
                 "s": 2
