@@ -16,7 +16,7 @@ import { chunkTokens, cluesProve, expeditionChunks, norm, proofShown, sentencePr
 import { dndResult, formatOf, multiRight, writtenProved } from "./formats.ts";
 import { arcOf, beatKind, levelsOf } from "./pacing.ts";
 import { contentNotes } from "./content-notes.ts";
-import { nameWords, sharedRoots } from "./fair-play.ts";
+import { nameWords, sharedRoots, wordRoot } from "./fair-play.ts";
 import { liarIndex } from "./interview.ts";
 
 // ---------- Locks ----------
@@ -252,6 +252,11 @@ export function sceneResult(p: Extract<RoomPuzzle, { type: "scene" }>, matches: 
 // ---------- Validation (validate:worlds) ----------
 // A sentence whose main statement is a comparison: it opens with "like" or "as if", or says something "is like" or
 // "are like" something else.
+// Codes never spell, or contain, anything rude (checked as substrings, so "AASS" fails even though it isn't a word).
+export const RUDE_CODE_PARTS = ["ass", "arse", "fuk", "fuc", "fck", "fk", "sht", "shit", "dik", "dic", "dck", "cok", "cock", "cum", "tit", "fag", "nig", "sex", "poo", "pee", "pis", "wtf", "hel", "dam", "crap", "butt", "slut", "whor", "rape", "kkk", "jiz", "pus", "hoe", "kys", "kil", "std"];
+export const rudeIn = (code: string) => RUDE_CODE_PARTS.find((r) => code.toLowerCase().includes(r)) ?? null;
+// The roots of a line's words, for the one-object-per-line check ("cannon-ball" gives "cannon" and "ball").
+const lineRoots = (line: string) => new Set(line.split(/[^A-Za-z’']+/).filter(Boolean).map(wordRoot).filter(Boolean));
 export const isComparison = (line: string) => /^\W*(like|as if|as though)\b/i.test(line) || /^\W*(they|it|he|she|this|these|those|such)\s+(is|are|was|were|seems?|seemed)\s+(like|as if|as though)\b/i.test(line);
 // Rooms name real expeditions, once each. Every puzzle line is a real sentence the student has already read in this
 // room (chunks 1 to `after`), never in a content-noted paragraph or a sentence the story excludes from puzzles.
@@ -288,6 +293,7 @@ export function roomProblems(world: WorldPack, passages: SourcePassage[]): strin
       if (p.type === "code") {
         const code = codeOf(p).toLowerCase();
         if (vocabulary.has(code)) out.push(`${pat}: the code ${code.toUpperCase()} spells a word`);
+        const rude = rudeIn(code); if (rude) out.push(`${pat}: the code ${code.toUpperCase()} contains a rude string ("${rude}"); change a dial`);
         p.dials.forEach((d, k) => {
           const text = check(d.line, `dial ${k + 1}`); if (!text) return;
           const keys = lineTokens(text).map((t) => bare(t.key)), w = bare(norm(d.word));
@@ -319,6 +325,17 @@ export function roomProblems(world: WorldPack, passages: SourcePassage[]): strin
           if (isComparison(text)) out.push(`${pat}: object ${o.id}'s line is a comparison, not a real thing in the story; use a literal object`);
         }
         p.near_misses.forEach((l, k) => check(l, `near miss ${k + 1}`));
+        // No tray line fits more than one object: each object's subject words are in its own line, and in no other
+        // line in the tray (another object's or a near miss).
+        const tray = [...p.objects.map((o) => ({ ref: o.line, of: o.id })), ...p.near_misses.map((ref, k) => ({ ref, of: `near miss ${k + 1}` }))];
+        for (const o of p.objects) {
+          const own = lineRoots(lineAt(passages, o.line) ?? "");
+          for (const s of o.subject) {
+            const r = wordRoot(s);
+            if (!own.has(r)) out.push(`${pat}: object ${o.id}'s subject "${s}" isn't in its own line`);
+            for (const t of tray) if (t.of !== o.id && lineRoots(lineAt(passages, t.ref) ?? "").has(r)) out.push(`${pat}: ${t.of}'s line also holds "${s}", so it fits object ${o.id} too; every tray line must fit one object only`);
+          }
+        }
       }
     }
   }

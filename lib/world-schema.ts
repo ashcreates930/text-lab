@@ -73,7 +73,8 @@ const worldMap=z.object({image:z.string().min(1),width:z.number().int().positive
 //   that word's first letter only after lock-in (students never type letters);
 // - painting: details of a picture, `wrong` of them contradicted by the story; the student marks exactly that many and
 //   taps the line that proves each mistake;
-// - scene: objects in a picture, each matched to the one line that explains it, from a tray with near-miss lines.
+// - scene: objects in a picture, each matched to the one line that explains it, from a tray with near-miss lines;
+//   subject: the words in the object's own line that identify it (no other line in the tray may hold them).
 // after: the chunk (1-based) the puzzle follows; it uses only lines from this room's chunks 1 to `after`. Positions are
 // percent of the art. art: the approved illustration (until then the screen draws a labeled sketch).
 const lineRef=z.object({p:z.string().regex(/^p\d{3}$/),s:z.number().int().min(0)});
@@ -85,7 +86,7 @@ const roomPuzzle=z.discriminatedUnion("type",[
   z.object({type:z.literal("painting"),...puzzleBase,...puzzleArt,wrong:z.number().int().min(1).max(3),
     details:z.array(z.object({id:z.string().regex(/^[a-z0-9-]+$/),label:z.string().min(1),...spot,wrong:z.boolean().optional(),lines:z.array(lineRef).min(1)})).min(4).max(6)}),
   z.object({type:z.literal("scene"),...puzzleBase,...puzzleArt,
-    objects:z.array(z.object({id:z.string().regex(/^[a-z0-9-]+$/),label:z.string().min(1),...spot,line:lineRef})).min(3).max(5),near_misses:z.array(lineRef).min(1).max(3)}),
+    objects:z.array(z.object({id:z.string().regex(/^[a-z0-9-]+$/),label:z.string().min(1),...spot,line:lineRef,subject:z.array(z.string().min(1)).min(1).max(4)})).min(3).max(5),near_misses:z.array(lineRef).min(1).max(3)}),
 ]);
 const room=z.object({expedition:z.string(),door:z.string().min(1).optional(),clock_reason:z.string().min(1).optional(),puzzles:z.array(roomPuzzle).optional()});
 export type LineRef=z.infer<typeof lineRef>;export type RoomPuzzle=z.infer<typeof roomPuzzle>;export type RoomData=z.infer<typeof room>;

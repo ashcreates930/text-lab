@@ -23484,7 +23484,10 @@
               "line": {
                 "p": "p006",
                 "s": 1
-              }
+              },
+              "subject": [
+                "cannon"
+              ]
             },
             {
               "id": "grave",
@@ -23494,7 +23497,10 @@
               "line": {
                 "p": "p006",
                 "s": 3
-              }
+              },
+              "subject": [
+                "buried"
+              ]
             },
             {
               "id": "streak",
@@ -23504,7 +23510,10 @@
               "line": {
                 "p": "p005",
                 "s": 5
-              }
+              },
+              "subject": [
+                "meteors"
+              ]
             },
             {
               "id": "church",
@@ -23514,7 +23523,10 @@
               "line": {
                 "p": "p006",
                 "s": 2
-              }
+              },
+              "subject": [
+                "church"
+              ]
             }
           ],
           "near_misses": [
@@ -23666,7 +23678,10 @@
               "line": {
                 "p": "p013",
                 "s": 3
-              }
+              },
+              "subject": [
+                "handkerchief"
+              ]
             },
             {
               "id": "woodpile",
@@ -23676,7 +23691,10 @@
               "line": {
                 "p": "p014",
                 "s": 1
-              }
+              },
+              "subject": [
+                "wood"
+              ]
             },
             {
               "id": "cradle",
@@ -23686,7 +23704,10 @@
               "line": {
                 "p": "p014",
                 "s": 3
-              }
+              },
+              "subject": [
+                "cradle"
+              ]
             },
             {
               "id": "hymnbook",
@@ -23696,7 +23717,10 @@
               "line": {
                 "p": "p015",
                 "s": 0
-              }
+              },
+              "subject": [
+                "psalmody"
+              ]
             }
           ],
           "near_misses": [
@@ -23848,7 +23872,10 @@
               "line": {
                 "p": "p020",
                 "s": 2
-              }
+              },
+              "subject": [
+                "window"
+              ]
             },
             {
               "id": "bush",
@@ -23858,7 +23885,10 @@
               "line": {
                 "p": "p020",
                 "s": 3
-              }
+              },
+              "subject": [
+                "shrub"
+              ]
             },
             {
               "id": "prints",
@@ -23868,7 +23898,10 @@
               "line": {
                 "p": "p020",
                 "s": 4
-              }
+              },
+              "subject": [
+                "steps"
+              ]
             },
             {
               "id": "branches",
@@ -23878,7 +23911,10 @@
               "line": {
                 "p": "p020",
                 "s": 5
-              }
+              },
+              "subject": [
+                "blast"
+              ]
             }
           ],
           "near_misses": [
@@ -23988,20 +24024,20 @@
               "word": "daughter"
             },
             {
-              "question": "Which fruit grown by her family does her face resemble?",
+              "question": "Which word shows old Baltus was prospering?",
               "line": {
-                "p": "p022",
+                "p": "p023",
                 "s": 1
               },
-              "word": "peaches"
+              "word": "thriving"
             },
             {
-              "question": "What precious metal were her family heirlooms made of?",
+              "question": "Which river ran beside Baltus's home?",
               "line": {
-                "p": "p022",
-                "s": 3
+                "p": "p023",
+                "s": 4
               },
-              "word": "gold"
+              "word": "Hudson"
             },
             {
               "question": "Which wooden cask was reused to make a basin for the source?",
@@ -24030,7 +24066,10 @@
               "line": {
                 "p": "p023",
                 "s": 8
-              }
+              },
+              "subject": [
+                "geese"
+              ]
             },
             {
               "id": "hogs",
@@ -24040,7 +24079,10 @@
               "line": {
                 "p": "p023",
                 "s": 7
-              }
+              },
+              "subject": [
+                "porkers"
+              ]
             },
             {
               "id": "rooster",
@@ -24050,7 +24092,10 @@
               "line": {
                 "p": "p023",
                 "s": 9
-              }
+              },
+              "subject": [
+                "cock"
+              ]
             },
             {
               "id": "swallows",
@@ -24060,13 +24105,16 @@
               "line": {
                 "p": "p023",
                 "s": 6
-              }
+              },
+              "subject": [
+                "swallows"
+              ]
             }
           ],
           "near_misses": [
             {
-              "p": "p024",
-              "s": 1
+              "p": "p023",
+              "s": 3
             },
             {
               "p": "p024",
@@ -24212,7 +24260,10 @@
               "line": {
                 "p": "p028",
                 "s": 3
-              }
+              },
+              "subject": [
+                "horsemanship"
+              ]
             },
             {
               "id": "cap",
@@ -24222,7 +24273,10 @@
               "line": {
                 "p": "p028",
                 "s": 4
-              }
+              },
+              "subject": [
+                "hat"
+              ]
             },
             {
               "id": "riders",
@@ -24232,7 +24286,10 @@
               "line": {
                 "p": "p028",
                 "s": 6
-              }
+              },
+              "subject": [
+                "companions"
+              ]
             }
           ],
           "near_misses": [
@@ -24376,14 +24433,17 @@
           "alt": "A farmhouse porch at evening, a farmyard, a barn roof and a great tree",
           "objects": [
             {
-              "id": "pipe",
-              "label": "A long clay tobacco holder resting on a chair",
+              "id": "rail",
+              "label": "An empty hitching rail along the fence",
               "x": 70,
               "y": 60,
               "line": {
-                "p": "p031",
-                "s": 3
-              }
+                "p": "p032",
+                "s": 5
+              },
+              "subject": [
+                "palings"
+              ]
             },
             {
               "id": "poultry",
@@ -24393,7 +24453,10 @@
               "line": {
                 "p": "p031",
                 "s": 4
-              }
+              },
+              "subject": [
+                "poultry"
+              ]
             },
             {
               "id": "vane",
@@ -24403,7 +24466,10 @@
               "line": {
                 "p": "p031",
                 "s": 5
-              }
+              },
+              "subject": [
+                "warrior"
+              ]
             },
             {
               "id": "source",
@@ -24413,7 +24479,10 @@
               "line": {
                 "p": "p031",
                 "s": 6
-              }
+              },
+              "subject": [
+                "spring"
+              ]
             }
           ],
           "near_misses": [
@@ -24565,7 +24634,10 @@
               "line": {
                 "p": "p035",
                 "s": 2
-              }
+              },
+              "subject": [
+                "inkstands"
+              ]
             },
             {
               "id": "mirror",
@@ -24575,7 +24647,10 @@
               "line": {
                 "p": "p036",
                 "s": 0
-              }
+              },
+              "subject": [
+                "glass"
+              ]
             },
             {
               "id": "burrs",
@@ -24585,7 +24660,10 @@
               "line": {
                 "p": "p036",
                 "s": 4
-              }
+              },
+              "subject": [
+                "burs"
+              ]
             },
             {
               "id": "stirrups",
@@ -24595,7 +24673,10 @@
               "line": {
                 "p": "p037",
                 "s": 1
-              }
+              },
+              "subject": [
+                "stirrups"
+              ]
             }
           ],
           "near_misses": [
@@ -24747,7 +24828,10 @@
               "line": {
                 "p": "p040",
                 "s": 2
-              }
+              },
+              "subject": [
+                "pumpkins"
+              ]
             },
             {
               "id": "boat",
@@ -24757,7 +24841,10 @@
               "line": {
                 "p": "p041",
                 "s": 6
-              }
+              },
+              "subject": [
+                "sloop"
+              ]
             },
             {
               "id": "clasps",
@@ -24767,7 +24854,10 @@
               "line": {
                 "p": "p042",
                 "s": 1
-              }
+              },
+              "subject": [
+                "buckles"
+              ]
             },
             {
               "id": "braid",
@@ -24777,7 +24867,10 @@
               "line": {
                 "p": "p042",
                 "s": 4
-              }
+              },
+              "subject": [
+                "eel"
+              ]
             }
           ],
           "near_misses": [
@@ -24929,7 +25022,10 @@
               "line": {
                 "p": "p049",
                 "s": 0
-              }
+              },
+              "subject": [
+                "piazza"
+              ]
             },
             {
               "id": "wildhorse",
@@ -24939,7 +25035,10 @@
               "line": {
                 "p": "p043",
                 "s": 0
-              }
+              },
+              "subject": [
+                "steed"
+              ]
             },
             {
               "id": "spread",
@@ -24949,17 +25048,23 @@
               "line": {
                 "p": "p044",
                 "s": 4
-              }
+              },
+              "subject": [
+                "pies"
+              ]
             },
             {
               "id": "host",
-              "label": "Baltus grinning and clapping a guest on the back",
+              "label": "Baltus clapping a guest on the back",
               "x": 38,
               "y": 40,
               "line": {
                 "p": "p046",
                 "s": 1
-              }
+              },
+              "subject": [
+                "slap"
+              ]
             }
           ],
           "near_misses": [
@@ -25111,7 +25216,10 @@
               "line": {
                 "p": "p054",
                 "s": 1
-              }
+              },
+              "subject": [
+                "whitewashed"
+              ]
             },
             {
               "id": "pond",
@@ -25121,7 +25229,10 @@
               "line": {
                 "p": "p054",
                 "s": 2
-              }
+              },
+              "subject": [
+                "water"
+              ]
             },
             {
               "id": "creek",
@@ -25131,7 +25242,10 @@
               "line": {
                 "p": "p054",
                 "s": 4
-              }
+              },
+              "subject": [
+                "rocks"
+              ]
             },
             {
               "id": "crossing",
@@ -25141,7 +25255,10 @@
               "line": {
                 "p": "p054",
                 "s": 5
-              }
+              },
+              "subject": [
+                "bridge"
+              ]
             }
           ],
           "near_misses": [
@@ -25292,7 +25409,10 @@
               "line": {
                 "p": "p058",
                 "s": 2
-              }
+              },
+              "subject": [
+                "mast"
+              ]
             },
             {
               "id": "trunk",
@@ -25302,7 +25422,10 @@
               "line": {
                 "p": "p059",
                 "s": 4
-              }
+              },
+              "subject": [
+                "tulip"
+              ]
             },
             {
               "id": "scar",
@@ -25312,7 +25435,10 @@
               "line": {
                 "p": "p060",
                 "s": 1
-              }
+              },
+              "subject": [
+                "lightning"
+              ]
             },
             {
               "id": "limbs",
@@ -25322,13 +25448,16 @@
               "line": {
                 "p": "p060",
                 "s": 2
-              }
+              },
+              "subject": [
+                "bough"
+              ]
             }
           ],
           "near_misses": [
             {
               "p": "p059",
-              "s": 5
+              "s": 7
             },
             {
               "p": "p059",
@@ -25474,7 +25603,10 @@
               "line": {
                 "p": "p063",
                 "s": 10
-              }
+              },
+              "subject": [
+                "black"
+              ]
             },
             {
               "id": "cape",
@@ -25484,7 +25616,10 @@
               "line": {
                 "p": "p064",
                 "s": 6
-              }
+              },
+              "subject": [
+                "cloak"
+              ]
             },
             {
               "id": "sparks",
@@ -25494,7 +25629,10 @@
               "line": {
                 "p": "p064",
                 "s": 8
-              }
+              },
+              "subject": [
+                "sparks"
+              ]
             },
             {
               "id": "church",
@@ -25504,7 +25642,10 @@
               "line": {
                 "p": "p065",
                 "s": 1
-              }
+              },
+              "subject": [
+                "knoll"
+              ]
             }
           ],
           "near_misses": [
@@ -25606,7 +25747,7 @@
           "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
           "dials": [
             {
-              "question": "For which day of the week did Hans save that piece of tack?",
+              "question": "For which day of the week did Hans save that riding gear?",
               "line": {
                 "p": "p066",
                 "s": 2
@@ -25656,7 +25797,10 @@
               "line": {
                 "p": "p068",
                 "s": 5
-              }
+              },
+              "subject": [
+                "saddle"
+              ]
             },
             {
               "id": "mather",
@@ -25666,7 +25810,10 @@
               "line": {
                 "p": "p069",
                 "s": 3
-              }
+              },
+              "subject": [
+                "witchcraft"
+              ]
             },
             {
               "id": "hymnal",
@@ -25676,27 +25823,20 @@
               "line": {
                 "p": "p069",
                 "s": 2
-              }
-            },
-            {
-              "id": "cap",
-              "label": "A small woolly cap beside a smashed orange gourd",
-              "x": 81,
-              "y": 54,
-              "line": {
-                "p": "p070",
-                "s": 1
-              }
+              },
+              "subject": [
+                "psalm"
+              ]
             }
           ],
           "near_misses": [
             {
-              "p": "p069",
-              "s": 4
+              "p": "p068",
+              "s": 1
             },
             {
-              "p": "p068",
-              "s": 0
+              "p": "p069",
+              "s": 5
             }
           ]
         }
@@ -25796,12 +25936,12 @@
               "word": "alive"
             },
             {
-              "question": "Where did Brom lead Katrina soon after Ichabod vanished?",
+              "question": "What sound did Brom let out at the gourd part of the tale?",
               "line": {
                 "p": "p071",
                 "s": 1
               },
-              "word": "altar"
+              "word": "laugh"
             },
             {
               "question": "Which word shows the farm women blame ghostly powers?",
@@ -25832,13 +25972,16 @@
           "objects": [
             {
               "id": "goblet",
-              "label": "A goblet of red drink halfway to the storyteller's mouth",
+              "label": "A goblet of red drink being sipped",
               "x": 25,
               "y": 38,
               "line": {
                 "p": "p076",
                 "s": 0
-              }
+              },
+              "subject": [
+                "wine"
+              ]
             },
             {
               "id": "stern",
@@ -25848,7 +25991,10 @@
               "line": {
                 "p": "p075",
                 "s": 3
-              }
+              },
+              "subject": [
+                "eyebrows"
+              ]
             },
             {
               "id": "dozing",
@@ -25858,17 +26004,20 @@
               "line": {
                 "p": "p075",
                 "s": 2
-              }
+              },
+              "subject": [
+                "asleep"
+              ]
             }
           ],
           "near_misses": [
             {
-              "p": "p080",
+              "p": "p075",
               "s": 0
             },
             {
-              "p": "p075",
-              "s": 1
+              "p": "p081",
+              "s": 0
             }
           ]
         }

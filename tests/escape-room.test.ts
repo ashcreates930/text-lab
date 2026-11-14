@@ -289,3 +289,18 @@ test("every Sleepy Hollow room has its three puzzle locks: a painting in chamber
   const search = sh.rooms!.find((x) => x.expedition === "gone")!.puzzles!.find((p) => p.type === "scene") as Extract<NonNullable<RoomData["puzzles"]>[number], { type: "scene" }>;
   assert.deepEqual(search.objects.map((o) => `${o.line.p}:${o.line.s}`).slice(0, 2), ["p068:5", "p069:3"]);
 });
+
+test("review rules (2026-11-14): no code holds a rude string; no tray line fits more than one object", async () => {
+  const { rudeIn } = await import("../lib/escape-room.ts");
+  assert.equal(rudeIn("AASS"), "ass", "rude as a substring, not just a whole word"); assert.equal(rudeIn("ALSS"), null); assert.equal(rudeIn("HTRS"), null);
+  // Room 14 as it was (A-A-S-S) fails validation.
+  const old = structuredClone(sh); const lock = old.rooms!.find((r) => r.expedition === "the-postscript")!.puzzles!.find((p) => p.type === "code") as { dials: { question: string; line: { p: string; s: number }; word: string }[] };
+  lock.dials[1] = { question: "Where did Brom lead Katrina soon after Ichabod vanished?", line: { p: "p071", s: 1 }, word: "altar" };
+  assert.match(roomProblems(old, shp).join("\n"), /code AASS contains a rude string/);
+  // The churchyard's iron shot, if "head" were one of its subject words, would also fit the near miss about the
+  // figure "without a head".
+  const probs = (f: (r: RoomData) => void) => roomProblems(edit(f), shp).join("\n");
+  assert.match(probs((r) => { (r.puzzles![2] as { objects: { subject: string[] }[] }).objects[0].subject = ["cannon", "head"]; }), /near miss 2's line also holds "head", so it fits object shot too/);
+  assert.match(probs((r) => { (r.puzzles![2] as { objects: { subject: string[] }[] }).objects[0].subject = ["musket"]; }), /object shot's subject "musket" isn't in its own line/);
+  assert.deepEqual(roomProblems(sh, shp), [], "every room passes as revised");
+});
