@@ -24430,13 +24430,14 @@
           "after": 10,
           "title": "Inspect the Scene: an evening at the Van Tassels'",
           "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/piazza-evening.webp",
           "alt": "A farmhouse porch at evening, a farmyard, a barn roof and a great tree",
           "objects": [
             {
               "id": "rail",
               "label": "An empty hitching rail along the fence",
-              "x": 70,
-              "y": 60,
+              "x": 66,
+              "y": 51,
               "line": {
                 "p": "p032",
                 "s": 5
@@ -24448,8 +24449,8 @@
             {
               "id": "poultry",
               "label": "A flock of farm birds pecking in the yard",
-              "x": 30,
-              "y": 80,
+              "x": 15,
+              "y": 60,
               "line": {
                 "p": "p031",
                 "s": 4
@@ -24461,8 +24462,8 @@
             {
               "id": "vane",
               "label": "A small carved soldier perched on top of a roof",
-              "x": 20,
-              "y": 15,
+              "x": 7,
+              "y": 20,
               "line": {
                 "p": "p031",
                 "s": 5
@@ -24474,8 +24475,8 @@
             {
               "id": "source",
               "label": "A bubbling source beneath a big tree",
-              "x": 85,
-              "y": 75,
+              "x": 78,
+              "y": 85,
               "line": {
                 "p": "p031",
                 "s": 6
@@ -24849,8 +24850,8 @@
             {
               "id": "clasps",
               "label": "Big shiny metal clasps on clunky footwear",
-              "x": 54,
-              "y": 89,
+              "x": 66,
+              "y": 86,
               "line": {
                 "p": "p042",
                 "s": 1
@@ -24863,7 +24864,7 @@
               "id": "braid",
               "label": "A braid tied with a slippery dark strip",
               "x": 51,
-              "y": 34,
+              "y": 48,
               "line": {
                 "p": "p042",
                 "s": 4
@@ -25399,13 +25400,14 @@
           "after": 10,
           "title": "Inspect the Scene: Major André's tree",
           "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/andre-tree.webp",
           "alt": "A huge twisted tree in the middle of a dark country road above a river at night",
           "objects": [
             {
               "id": "mast",
               "label": "A boat's upright pole down on the river",
-              "x": 15,
-              "y": 75,
+              "x": 8,
+              "y": 85,
               "line": {
                 "p": "p058",
                 "s": 2
@@ -25417,8 +25419,8 @@
             {
               "id": "trunk",
               "label": "A huge trunk standing in the middle of the lane",
-              "x": 50,
-              "y": 55,
+              "x": 63,
+              "y": 80,
               "line": {
                 "p": "p059",
                 "s": 4
@@ -25430,8 +25432,8 @@
             {
               "id": "scar",
               "label": "A pale scorched scar on the bark",
-              "x": 55,
-              "y": 35,
+              "x": 54,
+              "y": 52,
               "line": {
                 "p": "p060",
                 "s": 1
@@ -25443,7 +25445,7 @@
             {
               "id": "limbs",
               "label": "Two heavy limbs grinding together",
-              "x": 75,
+              "x": 73,
               "y": 20,
               "line": {
                 "p": "p060",

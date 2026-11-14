@@ -7808,7 +7808,7 @@ Code: T-I-H-A (spells no word in the story). Each dial: the question, the word t
 
 Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
 
-Picture: `sketch until approved` (A farmhouse porch at evening, a farmyard, a barn roof and a great tree). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+Picture: `/worlds/sleepy-hollow/rooms/piazza-evening.webp` (A farmhouse porch at evening, a farmyard, a barn roof and a great tree). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
 1. An empty hitching rail along the fence → ¶32 sentence 6: "Certain it is, this was not the case with the redoubtable Brom Bones; and from the moment Ichabod Crane made his advances, the interests of the former evidently declined: his horse was no longer seen tied to the palings on Sunday nights, and a deadly feud gradually arose between him and the preceptor of Sleepy Hollow."
 2. A flock of farm birds pecking in the yard → ¶31 sentence 5: "His notable little wife, too, had enough to do to attend to her housekeeping and manage her poultry; for, as she sagely observed, ducks and geese are foolish things, and must be looked after, but girls can take care of themselves."
@@ -8008,7 +8008,7 @@ Code: E-R-H-S (spells no word in the story). Each dial: the question, the word t
 
 Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
 
-Picture: `sketch until approved` (A huge twisted tree in the middle of a dark country road above a river at night). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+Picture: `/worlds/sleepy-hollow/rooms/andre-tree.webp` (A huge twisted tree in the middle of a dark country road above a river at night). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
 1. A boat's upright pole down on the river → ¶58 sentence 3: "Far below him the Tappan Zee spread its dusky and indistinct waste of waters, with here and there the tall mast of a sloop, riding quietly at anchor under the land."
 2. A huge trunk standing in the middle of the lane → ¶59 sentence 5: "In the centre of the road stood an enormous tulip-tree, which towered like a giant above all the other trees of the neighborhood, and formed a kind of landmark."
