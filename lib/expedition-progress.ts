@@ -17,6 +17,8 @@ export type ExpeditionAttempt = {
   score: number; notes: CaseNote[]; interview: InterviewNote | null; award: { stars: number; of: number; badge: string | null } | null;
   // The one-sentence reflection after the skill report ("Which skill improved, and how do you know?").
   reflection?: string | null;
+  // An unfinished room: where it picks up again (lib/escape-room.ts RoomResume); null once the room is finished.
+  resume?: unknown;
 };
 // A saved row (expedition_results) as an attempt.
 export const toAttempt = (r: ExpeditionResultRow): ExpeditionAttempt => ({ ...(r.record as unknown as ExpeditionAttempt), attemptId: r.attempt_id, worldId: r.world_id, expeditionId: r.expedition_id, startedAt: r.started_at, finishedAt: r.finished_at, complete: r.complete });

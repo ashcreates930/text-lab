@@ -33,6 +33,7 @@ import {DemoEnding} from "./demo-ending";
 import {ProofRaceSolo} from "./proof-race";
 import {LaunchScreen} from "./launch-screen";
 import {ExpeditionRace} from "./expedition-race";
+import {replaysOf,unfinished} from "@/lib/escape-room";
 import {ExpeditionMap} from "./expedition-map";
 import {loadAttempts,saveAttempt} from "./expedition-store";
 import {expeditionMap,newRank,nextExpedition,type ExpeditionAttempt} from "@/lib/expedition-progress";
@@ -93,6 +94,7 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  // opens at round 3 (Catch the lie) after the role card; otherwise its clue opens.
  useEffect(()=>{if(!startAtLie||!world)return;const i=world.scenes.findIndex(s=>s.lie);if(i>=0){const sc=world.scenes[i];setDemo(d=>({...d,scene:i,...(sc.story_mode?{caseFileView:false}:{})}));if(sc.story_mode&&storyModeOn&&!storyUnavailable)setStoryJump({sceneId:sc.id,round:"lie"});else setOpenClue(sc.lie!.clue_id)}onStarted?.()},[startAtLie,world,setDemo,onStarted,storyModeOn,storyUnavailable]);
  const upgradedFor=useRef("");
+ const resumeAt0=useRef<ExpeditionAttempt|null>(null),[lifting,setLifting]=useState<string|null>(null);
  useEffect(()=>{if(!world||!passages.length||(demo.classAuth&&!demo.classProgressLoaded))return;const key=`${world.id}:${!!demo.classProgressLoaded}`;if(upgradedFor.current===key)return;upgradedFor.current=key;
   setDemo(d=>{const r=upgradeSavedProofs(world,passages,d.artifactAnswers,d.savedTextEvidence);return r.changed?{...d,artifactAnswers:r.answers,savedTextEvidence:r.evidence}:d})},[world,passages,demo.classAuth,demo.classProgressLoaded,setDemo]);
  const reprove=useMemo(()=>world?cluesToReprove(world,passages,demo.artifactAnswers):[],[world,passages,demo.artifactAnswers]);
@@ -108,8 +110,10 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
   const stops=expeditionMap(world,attempts,assigned),next=nextExpedition(stops);
   const proven=(list:ExpeditionAttempt[])=>new Set(list.filter(a=>a.finishedAt).map(a=>a.expeditionId)).size;
   function record(a:ExpeditionAttempt){setAttempts(list=>{const before=proven(list),nextList=[...list.filter(x=>x.attemptId!==a.attemptId),a];if(proven(nextList)>before)setEarned(newRank(before,stops.length));return nextList});saveAttempt(a,demo.classAuth)}
-  if(racing&&passages.length&&(expedition??next))return <ExpeditionRace key={expedition??next!} world={world} passages={passages} expeditionId={(expedition??next)!} preset={demo.preset} grade={classGrade??demo.grade??7} history={attempts} studentKey={demo.classAuth?`class:${demo.classAuth.className??""}:${demo.classAuth.nickname}`:undefined} onSave={record} classToken={demo.classAuth?.token??null} replay={attempts.filter(a=>a.expeditionId===(expedition??next)&&a.notes.length>0).length} onExit={()=>{setRacing(false);setExpedition(null);setMapOpen(true)}}/>;
-  if((world.expeditions?.length??0)>0)return <ExpeditionMap auth={demo.classAuth} world={world} attempts={attempts} assigned={assigned} justEarned={earned} ready={passages.length>0} onJoinLive={onJoinLive} onStart={id=>{setEarned(null);setExpedition(id);setMapOpen(false);setRacing(true)}}/>;
+  // An unfinished room picks up where the student left it (fixed when the room opens, so saving mid-room never restarts it).
+  const resumeFor=resumeAt0.current;
+  if(racing&&passages.length&&(expedition??next))return <ExpeditionRace key={expedition??next!} world={world} passages={passages} expeditionId={(expedition??next)!} preset={demo.preset} grade={classGrade??demo.grade??7} history={attempts} studentKey={demo.classAuth?`class:${demo.classAuth.className??""}:${demo.classAuth.nickname}`:undefined} onSave={record} classToken={demo.classAuth?.token??null} replay={replaysOf(attempts,(expedition??next)!)} resume={resumeFor} onExit={()=>{const cur=(expedition??next)!,exps=world.expeditions??[],i=exps.findIndex(e=>e.id===cur);setLifting(attempts.some(a=>a.expeditionId===cur&&a.finishedAt)?exps[i+1]?.id??null:null);setRacing(false);setExpedition(null);setMapOpen(true)}}/>;
+  if((world.expeditions?.length??0)>0)return <ExpeditionMap lifting={lifting} auth={demo.classAuth} world={world} attempts={attempts} assigned={assigned} justEarned={earned} ready={passages.length>0} onJoinLive={onJoinLive} onStart={id=>{setEarned(null);resumeAt0.current=unfinished(attempts,id);setExpedition(id);setMapOpen(false);setRacing(true)}}/>;
   void mapOpen;
   return <LaunchScreen world={world} ready={passages.length>0&&!!next} onStart={()=>{setExpedition(next);setRacing(true)}} onMap={(world.expeditions?.length??0)>0?()=>setMapOpen(true):undefined} onJoinLive={onJoinLive}/>;
  }

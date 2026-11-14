@@ -195,7 +195,7 @@ function Revealed({state}:{state:View}){
  </section>;
 }
 function Ended({state}:{state:View}){
- return <section className="mt-6"><h1 className="text-[30px] font-bold">Case closed</h1><p className="mt-2 text-[18px]">{state.squad?`${state.squad.name} earned ${state.score} points.`:"Thanks for playing."}</p><p className="mt-1 text-[15px] text-muted">Points came from your squad's evidence and reasoning.</p></section>;
+ return <section className="mt-6"><h1 className="text-[30px] font-bold">{(state.round as {chamber?:number}|null)?.chamber===1?"Chamber 1 escaped":"Case closed"}</h1><p className="mt-2 text-[18px]">{state.squad?`${state.squad.name} earned ${state.score} points.`:"Thanks for playing."}</p><p className="mt-1 text-[15px] text-muted">Points came from your squad's evidence and reasoning.</p></section>;
 }
 
 // Your Turn on a phone, once the teacher starts it: "Unlock your challenge" (two taps, or Skip), then the student's

@@ -13,6 +13,7 @@
 // finale is Name the Liar: every phone locks in the liar and the line privately (liar, 90 seconds), and nothing is
 // shown until the board reveals the liar with the class breakdown (verdict). Rows: interview_vote and liar_lock.
 import type { Interview, WorldPack } from "../world-schema.ts";
+import { chamberSpan, recoveryOpens, type ChamberPick } from "../escape-room.ts";
 import { LIAR_SECONDS, VOTE_SECONDS, cardWinner, liarCheck, type LiarAnswer } from "../interview.ts";
 import type { SourcePassage } from "../source-passages.ts";
 import type { LivePlayer, LiveResponse, LiveSquad } from "./engine.ts";
@@ -24,7 +25,8 @@ import { bandOf, type GradeBand, gradeOf, type Grade } from "../best-standards.t
 import { screenBoardText } from "../safety.ts";
 
 // grade: the class grade (6 to 10) that picks each benchmark's code; gradeBand follows from it.
-export type ExpSettings = { expeditionId: string; grade?: Grade; gradeBand: GradeBand; questions: boolean; highlighter: boolean; autoAdvance: boolean };
+// chamber: the whole room (0) or one chamber (lib/escape-room.ts), so a class can play a room one chamber per period.
+export type ExpSettings = { expeditionId: string; grade?: Grade; gradeBand: GradeBand; questions: boolean; highlighter: boolean; autoAdvance: boolean; chamber?: ChamberPick };
 export const LIVE_BEATS = ["vote", "testify", "read", "process", "ask", "race", "reveal", "lightning", "board", "burst", "countdown", "liar", "verdict"] as const;
 export type LiveBeat = (typeof LIVE_BEATS)[number];
 export type LiveRaceRound = { type: "race"; settings: ExpSettings; step: number; beat: LiveBeat; beatStartedAt: string; squadsOn: boolean; pinned?: string | null; pausedAt?: string | null;
@@ -38,7 +40,8 @@ export function parseExpSettings(x: unknown, world: WorldPack, grade = 7): ExpSe
   const id = typeof o.expeditionId === "string" && world.expeditions?.some((e) => e.id === o.expeditionId) ? o.expeditionId : world.expeditions?.[0]?.id;
   if (!id) return null;
   const g = gradeOf([6, 7, 8, 9, 10].includes(Number(o.grade)) ? o.grade : o.gradeBand === "9-10" ? 9 : grade);
-  return { expeditionId: id, grade: g, gradeBand: bandOf(g), questions: o.questions !== false, highlighter: o.highlighter === true, autoAdvance: o.autoAdvance !== false };
+  const ch = Number(o.chamber), chamber: ChamberPick = ch === 1 || ch === 2 ? ch : 0;
+  return { expeditionId: id, grade: g, gradeBand: bandOf(g), questions: o.questions !== false, highlighter: o.highlighter === true, autoAdvance: o.autoAdvance !== false, chamber };
 }
 export const liveArc = (world: WorldPack, round: Pick<LiveRaceRound, "settings">): Arc | null => { const e = world.expeditions?.find((x) => x.id === round.settings.expeditionId); return e ? arcOf(world, e) : null; };
 export const liveRaceChunks = (world: WorldPack, passages: SourcePassage[], round: Pick<LiveRaceRound, "settings">) => expeditionChunks(world, passages, round.settings.expeditionId);
@@ -47,10 +50,18 @@ const rows = (responses: LiveResponse[], roundIndex: number, kind: string, step?
 export const asksHere = (round: Pick<LiveRaceRound, "settings">, step: number) => round.settings.questions && step % 3 === 2;
 
 // The next beat after this one; after the countdown, the next chunk (or the end).
+// The chunks this game plays: the whole room, or one chamber.
+export const liveSpan = (round: Pick<LiveRaceRound, "settings">, chunks: number) => chamberSpan(chunks, round.settings.chamber ?? 0);
+// The first beat of a game: the Interview's first vote; for chamber 2 (the class already questioned the witnesses), the
+// witnesses' statements again as a recap, with no vote; without an Interview, the first chunk of the span.
+export function firstBeat(settings: ExpSettings, chunks: number, interview: boolean): { step: number; beat: LiveBeat } {
+  if (!interview) return { step: chamberSpan(chunks, settings.chamber ?? 0).from, beat: "read" };
+  return { step: 0, beat: settings.chamber === 2 ? "testify" : "vote" };
+}
 export function nextBeat(round: LiveRaceRound, chunks: RaceChunk[], arc: Arc | null = null): { step: number; beat: LiveBeat } | "end" {
-  const b = round.beat, s = round.step;
+  const b = round.beat, s = round.step, span = liveSpan(round, chunks.length), recap = round.settings.chamber === 2;
   if (b === "vote") return { step: s, beat: "testify" };
-  if (b === "testify") return s + 1 < (round.interview?.witnesses ?? 0) ? { step: s + 1, beat: "vote" } : { step: 0, beat: "read" };
+  if (b === "testify") return s + 1 < (round.interview?.witnesses ?? 0) ? { step: s + 1, beat: recap ? "testify" : "vote" } : { step: span.from, beat: "read" };
   if (b === "liar") return { step: s, beat: "verdict" };
   if (b === "verdict") return "end";
   // The Gist check about every third chunk (lib/formats.ts gistAt); otherwise straight on.
@@ -64,7 +75,9 @@ export function nextBeat(round: LiveRaceRound, chunks: RaceChunk[], arc: Arc | n
   if (b === "lightning") return { step: s, beat: checkpoint ? "board" : "countdown" };
   if (b === "board") return { step: s, beat: checkpoint && arc?.burstAfter === s ? "burst" : "countdown" };
   if (b === "burst") return { step: s, beat: "countdown" };
-  return s + 1 < chunks.length ? { step: s + 1, beat: "read" } : round.interview ? { step: s, beat: "liar" } : "end";
+  // Chamber 1 ends at the inner door; the exit door (Name the Liar) closes the room.
+  if (s + 1 <= span.to) return { step: s + 1, beat: "read" };
+  return round.settings.chamber === 1 ? "end" : round.interview ? { step: s, beat: "liar" } : "end";
 }
 // How long a beat runs for one player (milliseconds), or null for reading (no timer). The question's clock for Catch
 // the Lie starts after the testimony.
@@ -97,6 +110,8 @@ export function playerChunk(responses: LiveResponse[], roundIndex: number, step:
     unknown: mine("race_unknown").flatMap((r) => (r.payload.words as string[] | undefined) ?? []),
     tap: tap ?? null, done: !!tap, correct: !!tap?.correct, points: tap?.points ?? 0,
     lightning: (mine("race_lightning")[0]?.payload as { correct: boolean; points: number } | undefined) ?? null,
+    // The lock opened after a miss with the shown proof (0 points; lib/escape-room.ts).
+    opened: !!tap?.correct || mine("race_recover").length > 0,
   };
 }
 // The question version for a player at a step: from their results on every earlier step (lib/pacing.ts).
@@ -182,6 +197,17 @@ export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses:
     if (burstFound(responses, roundIndex, squadIds).includes(c)) return "Your squad already found that one.";
     return { payload: { step: round.step, chunk: c, points: BURST_POINTS }, flagged: false };
   }
+  // After a miss: open the lock with the answer shown. Any time until the next chunk starts; it scores nothing.
+  if (kind === "race_recover") {
+    if (!["reveal", "lightning", "board", "burst", "countdown"].includes(round.beat)) return "This lock isn't waiting to be opened.";
+    if (me.opened) return "This lock is already open.";
+    const asked = playerAsked(chunks, responses, roundIndex, playerId, round.step)!, a = (payload.answer ?? {}) as Record<string, unknown>;
+    const answer: Answer = { choice: Number.isInteger(a.choice) ? (a.choice as number) : null, lines: Array.isArray(a.lines) ? a.lines.map(String).slice(0, 2) : [],
+      words: Array.isArray(a.words) ? a.words.filter((w) => Number.isInteger(w)).map(Number).slice(0, 60) : [], picks: Array.isArray(a.picks) ? a.picks.filter((p) => Number.isInteger(p)).map(Number).slice(0, 5) : [],
+      placed: a.placed && typeof a.placed === "object" ? Object.fromEntries(Object.entries(a.placed as Record<string, unknown>).slice(0, 8).map(([k, v]) => [String(k).slice(0, 40), typeof v === "string" ? v.slice(0, 40) : null])) : {} };
+    if (!recoveryOpens(asked.question, chunkTokens(chunk.lines), answer)) return "Not that one yet. Use the answer shown.";
+    return { payload: { step: round.step, opened: true, points: 0 }, flagged: false };
+  }
   if (kind === "race_tap") {
     if (round.beat !== "race") return "The question isn't open.";
     if (me.done) return "You've already answered this one.";
@@ -239,9 +265,10 @@ export function chunkStatsOf(chunks: RaceChunk[], responses: LiveResponse[], rou
   const out = chunks.map((c) => { const found = players.filter((p) => playerChunk(responses, roundIndex, c.index, p.id).correct).length; return { index: c.index, question: c.chunk.question.prompt, type: TYPE_INFO[c.chunk.question.type].name, pct: players.length ? Math.round((found / players.length) * 100) : 0 }; });
   return { rows: out, hardest: [...out].sort((a, b) => a.pct - b.pct || a.index - b.index).slice(0, 3) };
 }
-export function raceFinish(chunks: RaceChunk[], responses: LiveResponse[], roundIndex: number, players: LivePlayer[], squads: LiveSquad[], squadsOn: boolean) {
-  const board = liveRaceBoard(responses, roundIndex, players, squads, squadsOn, chunks.length - 1);
-  return { kind: board.kind, podium: podium(board.rows), stats: chunkStatsOf(chunks, responses, roundIndex, players) };
+// span: the chunks this game played (one chamber, or the whole room); the class stats cover only those.
+export function raceFinish(chunks: RaceChunk[], responses: LiveResponse[], roundIndex: number, players: LivePlayer[], squads: LiveSquad[], squadsOn: boolean, span = { from: 0, to: chunks.length - 1 }) {
+  const board = liveRaceBoard(responses, roundIndex, players, squads, squadsOn, span.to);
+  return { kind: board.kind, podium: podium(board.rows), stats: chunkStatsOf(chunks.slice(span.from, span.to + 1), responses, roundIndex, players) };
 }
 export const raceReadiness = (round: LiveRaceRound, responses: LiveResponse[], roundIndex: number, players: LivePlayer[]) =>
   readiness(rows(responses, roundIndex, "race_ready", round.step).map((r) => r.playerId!).filter(Boolean), players.map((p) => p.id), round.settings.autoAdvance);

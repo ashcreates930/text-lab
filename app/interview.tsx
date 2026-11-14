@@ -36,7 +36,7 @@ export function Caption({name,text,live=true}:{name:string;text:string;live?:boo
 // ---------- The Interview ----------
 // One continuous stage with all the witnesses (app/lineup.tsx): the one in the spotlight is questioned; tap, swipe or
 // use the arrow keys to bring in another, in any order. Each asked witness gets the Asked check, and any statement can
-// be replayed with its caption. Every witness must be asked before "Start the race". Moving the spotlight is an action
+// be replayed with its caption. Every witness must be asked before "To the first lock". Moving the spotlight is an action
 // on the same screen, so scroll and focus stay put; only the first view focuses the heading.
 export function InterviewScreen({world,expeditionId,interview,liar,onDone,saved}:{world:WorldPack;expeditionId:string;interview:Interview;liar:number;onDone:(cards:number[])=>void;saved?:number[]}){
  const n=interview.witnesses.length;
@@ -84,7 +84,7 @@ export function InterviewScreen({world,expeditionId,interview,liar,onDone,saved}
        <button type="button" onClick={()=>{voice.stop();setHolo(true)}} className="case-secondary !min-h-11"><Box size={18} aria-hidden/>Hologram</button>
       </div></>}
     {next!=null&&<button type="button" onClick={()=>{spotlight(next);setFocusTo("pick")}} disabled={card!=null&&!heard[k]&&speaking} className={`${card==null?"case-secondary":"case-primary"} min-h-[56px] w-full justify-center text-[18px]`}>Next: question {firstName(witnessName(world,interview.witnesses[next].character))} <ArrowRight size={18} aria-hidden/></button>}
-    {done?<button type="button" onClick={start} disabled={!heard[k]&&speaking} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Start the race <ArrowRight size={18} aria-hidden/></button>
+    {done?<button type="button" onClick={start} disabled={!heard[k]&&speaking} className="case-primary min-h-[56px] w-full justify-center text-[18px]">To the first lock <ArrowRight size={18} aria-hidden/></button>
      :<p className="text-[15px] font-bold text-muted">Question all {n} witnesses to start the race ({n-asked.filter(Boolean).length} to go).</p>}
    </div>
   </div>

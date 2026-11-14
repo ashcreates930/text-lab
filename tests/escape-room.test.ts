@@ -197,3 +197,68 @@ test("validate:worlds: the plan's E1 puzzles pass, and every puzzle rule catches
   assert.match(probs((r) => { r.door = "The Glen — a spell"; }), /no em dashes/);
   assert.match(roomProblems({ ...sh, rooms: [{ expedition: "nowhere" }] }, shp).join("\n"), /no expedition/);
 });
+
+// ---------- Phase 1: the room shell ----------
+import { chamberSpan, inventoryOf, parseResume, replaysOf, unfinished } from "../lib/escape-room.ts";
+import { firstBeat, nextBeat } from "../lib/live/race.ts";
+import type { LiveResponse } from "../lib/live/engine.ts";
+import { interviewStatements } from "../lib/interview.ts";
+
+test("resume: a saved room comes back only when it is whole; unfinished rooms never count as replays", () => {
+  const r = roomOf(sh, e1.id)!, rec = { correct: true }, good = { v: 1, progress: { opened: [0, 1, 2, 3, 4], puzzles: [], innerDoor: true, exit: false }, records: [rec, rec, rec, rec, rec], ghost: [1, 2, 3, 4, 5], cards: [0, 1, 0], lightning: [null, null, null, 300], burst: 400 };
+  assert.deepEqual(parseResume(good, r)?.progress.opened, [0, 1, 2, 3, 4]);
+  assert.equal(parseResume({ ...good, v: 2 }, r), null);
+  assert.equal(parseResume({ ...good, records: [rec, rec] }, r), null, "an opened lock with no record");
+  assert.equal(parseResume({ ...good, progress: { ...good.progress, opened: [0, 1] } }, r), null, "a record past the locks opened");
+  assert.equal(parseResume({ ...good, progress: { ...good.progress, opened: [0, 99] } }, r), null);
+  assert.equal(parseResume("junk", r), null);
+  const a = (id: string, finishedAt: string | null, resume: unknown, startedAt = "2026-11-13T10:00:00Z") => ({ attemptId: id, expeditionId: e1.id, finishedAt, startedAt, resume, notes: [{}] });
+  const list = [a("done", "2026-11-12T10:00:00Z", null, "2026-11-12T09:00:00Z"), a("open", null, good)];
+  assert.equal(unfinished(list, e1.id)?.attemptId, "open");
+  assert.equal(unfinished([list[0]], e1.id), null);
+  assert.equal(replaysOf(list, e1.id), 1, "the room left part-way isn't a replay, so the student keeps the same questions");
+});
+
+test("the Case File: statements, then each open lock's proof (or pieces), never a lock still shut", () => {
+  const said = interviewStatements(sh, iv, 0, [0, 0, 0]), lock = (i: number, opened: boolean) => ({ lock: i, question: e1.chunks[i].question, tokens: chunkTokens(chunks[i].lines), opened });
+  const items = inventoryOf({ said, locks: [lock(0, true), lock(1, false), lock(4, true)] });
+  assert.deepEqual(items.slice(0, 3).map((x) => x.kind), ["statement", "statement", "statement"]);
+  assert.match(items[3].text, /I do not vouch for the fact/);
+  assert.ok(!items.some((x) => x.lock === 1), "a shut lock adds nothing");
+  assert.deepEqual(items.filter((x) => x.lock === 4).map((x) => x.kind), ["piece", "piece", "piece", "piece"], "a sorting tray's pieces, in place");
+});
+
+test("live chambers: chamber 1 ends at the inner door; chamber 2 opens on the statements again and ends at the exit door", () => {
+  assert.deepEqual(chamberSpan(10, 1), { from: 0, to: 4 }); assert.deepEqual(chamberSpan(10, 2), { from: 5, to: 9 }); assert.deepEqual(chamberSpan(7, 2), { from: 4, to: 6 }); assert.deepEqual(chamberSpan(10, 0), { from: 0, to: 9 });
+  const settings = (chamber: 0 | 1 | 2) => parseExpSettings({ expeditionId: e1.id, chamber }, sh)!;
+  assert.equal(parseExpSettings({ expeditionId: e1.id, chamber: "2" }, sh)!.chamber, 2); assert.equal(parseExpSettings({ expeditionId: e1.id }, sh)!.chamber, 0);
+  const round = (chamber: 0 | 1 | 2, step: number, beat: LiveRaceRound["beat"]): LiveRaceRound => ({ type: "race", settings: settings(chamber), step, beat, beatStartedAt: "", squadsOn: false, interview: { liar: 0, witnesses: 3 } });
+  assert.deepEqual(firstBeat(settings(1), 10, true), { step: 0, beat: "vote" });
+  assert.deepEqual(firstBeat(settings(2), 10, true), { step: 0, beat: "testify" }, "chamber 2: the statements again, no vote");
+  assert.deepEqual(firstBeat(settings(2), 10, false), { step: 5, beat: "read" });
+  assert.deepEqual(nextBeat(round(2, 0, "testify"), chunks), { step: 1, beat: "testify" });
+  assert.deepEqual(nextBeat(round(2, 2, "testify"), chunks), { step: 5, beat: "read" }, "then straight to lock 6");
+  assert.deepEqual(nextBeat(round(1, 2, "testify"), chunks), { step: 0, beat: "read" });
+  assert.equal(nextBeat(round(1, 4, "countdown"), chunks), "end", "chamber 1 stops at the inner door");
+  assert.deepEqual(nextBeat(round(2, 9, "countdown"), chunks), { step: 9, beat: "liar" }, "chamber 2 ends at the exit door");
+  assert.deepEqual(nextBeat(round(0, 4, "countdown"), chunks), { step: 5, beat: "read" }, "the whole room runs on");
+});
+
+test("live: after a miss a phone opens its lock only with the shown proof, once, for 0", () => {
+  const q = e1.chunks[1].question, t = chunkTokens(chunks[1].lines), lines = chunks[1].lines.map((l) => l.text), proof = lines[proofLineIndexes(q, t)[0]], other = lines.find((l) => l !== proof)!;
+  // A one-question bank: chunk 2's main question (the bank pick is seeded per player).
+  const world1 = structuredClone(sh); world1.expeditions![0].chunks[1].bank = []; const chunks1 = expeditionChunks(world1, shp, e1.id);
+  const round: LiveRaceRound = { type: "race", settings: parseExpSettings({ expeditionId: e1.id }, world1)!, step: 1, beat: "reveal", beatStartedAt: new Date().toISOString(), squadsOn: false, interview: null };
+  const missed: LiveResponse[] = [{ id: "r1", roundIndex: 0, squadId: null, playerId: "p1", role: null, kind: "race_tap" as const, payload: { step: 1, correct: false, points: 0, answer: { lines: [other] } }, flagged: false, createdAt: "" }];
+  const open = (payload: Record<string, unknown>, rs: LiveResponse[] = missed) => raceAnswer(round, chunks1, rs, 0, "p1", "race_recover", payload, Date.now(), "1", null);
+  assert.match(String(open({ answer: { lines: [other] } })), /Not that one yet/);
+  const ok = open({ answer: { lines: [proof] } }) as { payload: Record<string, unknown> };
+  assert.deepEqual(ok.payload, { step: 1, opened: true, points: 0 });
+  const done: LiveResponse[] = [...missed, { ...missed[0], id: "r2", kind: "race_recover" as const, payload: ok.payload }];
+  assert.match(String(open({ answer: { lines: [proof] } }, done)), /already open/);
+  assert.match(String(raceAnswer({ ...round, beat: "race" }, chunks1, missed, 0, "p1", "race_recover", { answer: { lines: [proof] } }, Date.now(), "1", null)), /isn't waiting/);
+});
+
+test("the phone's act route accepts opening a lock (the live check found it rejected as an unknown action)", () => {
+  assert.match(readFileSync("app/api/live/sessions/[id]/act/route.ts", "utf8"), /"race_recover"/);
+});

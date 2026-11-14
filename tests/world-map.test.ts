@@ -135,7 +135,7 @@ test("crowded markers: the six Van Tassel farm expeditions share one area and me
   const ui = src("app/world-map.tsx");
   assert.match(ui, /const gap=46\*u/); assert.match(ui, /expeditions near \$\{place\}/); assert.match(ui, /role="dialog" aria-modal="false" aria-labelledby="wm-pick-h"/);
   assert.match(ui, /if\(e\.key==="Escape"\)\{e\.preventDefault\(\);closePicker\(\)\}/); assert.match(ui, /\{g\.length\} expeditions<\/text>/);
-  assert.match(ui, /Proven, \$\{r\.stars\} of 3 stars/);
+  assert.match(ui, /Escaped, \$\{r\.stars\} of 3 stars/);
   // An unknown area fails validation.
   const bad = structuredClone(sh); bad.world_map!.regions[0].area = "nowhere"; assert.match(mapProblems(bad).join(" | "), /unknown area nowhere/);
 });

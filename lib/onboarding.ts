@@ -7,12 +7,13 @@
 import type { WorldPack } from "./world-schema.ts";
 
 export type Screen = "home" | "interview" | "read" | "gist" | "question" | "proof" | "clues" | "dnd" | "multi" | "written" | "result" | "lightning" | "board" | "burst"
-  | "countdown" | "liar" | "verdict" | "finish" | "refresher" | "skills" | "notes" | "map" | "myskills" | "practice" | "lobby" | "wait";
+  | "countdown" | "liar" | "verdict" | "finish" | "refresher" | "skills" | "notes" | "map" | "myskills" | "practice" | "lobby" | "wait"
+  | "door" | "recover" | "inner" | "recap" | "escape" | "stopped";
 
 // What to do now, in one plain sentence, for every screen.
 export const DO_NOW: Record<Screen, string> = {
   home: "Tap Play now to start, or join your class's live game.",
-  interview: "Bring each witness into the spotlight, pick a question and listen; question all of them before the race.",
+  interview: "Bring each witness into the spotlight, pick a question and listen to all three before the first lock.",
   read: "Read the chunk, then tap Ready.",
   gist: "Pick the best summary of what you just read.",
   question: "Pick your answer.",
@@ -26,17 +27,23 @@ export const DO_NOW: Record<Screen, string> = {
   board: "Check the leaderboard while the next chunk gets ready.",
   burst: "Tap the hidden discoveries in the chunks you've read, then tap I'm done.",
   countdown: "Get ready: the next chunk is about to start.",
-  liar: "Bring the witness who lied into the spotlight and name them, then tap the sentence that proves it.",
+  liar: "Name the witness who lied to open the exit door, then tap the sentence that proves it.",
   verdict: "See who lied and the line that proves it, then tap Final results.",
   finish: "See the final results, then tap Refresher to fix what you missed.",
   refresher: "Try each missed question again with no timer, then tap Next.",
   skills: "Read your skill report, write one sentence, then open your Case Notes.",
   notes: "Read your Case Notes, add your own notes if you like, then tap Done.",
-  map: "Tap the big orange button to start your next expedition, or explore the map first.",
+  map: "Tap the big orange button to enter your next room, or explore the map first.",
   myskills: "See how each skill is growing, and tap a skill to see its history.",
   practice: "Follow the arrows to try one practice question, with no points and no timer.",
   lobby: "Wait here until your teacher starts the game.",
   wait: "Wait for the next part to start.",
+  door: "Read where you are, then tap Open the door to begin.",
+  recover: "Use the answer shown to open the lock: do what it asks, then tap Open the lock.",
+  inner: "You opened the inner door, so tap the button to go on.",
+  recap: "Read what is in your Case File so far, then tap Into Chamber 2.",
+  escape: "You escaped the room, so tap Final results.",
+  stopped: "Your room is saved, so tap Back to the map and start Chamber 2 next time.",
 };
 
 // First-time hints, shown right where the student taps until they've done it right once.

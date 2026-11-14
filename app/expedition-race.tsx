@@ -33,14 +33,18 @@ import {interviewNote,interviewStatements,liarCheck,liarIndex,witnessName,type L
 import {InterviewScreen,LiarVerdict,NameTheLiar} from "./interview";
 import type {ExpeditionAttempt} from "@/lib/expedition-progress";
 import {evidenceSentences} from "@/lib/lies";
+import {emptyProgress,inventoryOf,lockKind,parseResume,recoveryOpens,recoveryTask,resumeAt,roomOf,roomsOf,stopsAtInnerDoor,type RoomProgress} from "@/lib/escape-room";
+import {CaseFileButton,ChamberRecap,EscapeMoment,ExitBanner,InnerDoor,LockBanner,RecoveryPanel,RoomDoor} from "./room-ui";
 
-type Beat="practice"|"interview"|"read"|"gist"|"question"|"result"|"lightning"|"board"|"burst"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"skills"|"notes";
+type Beat="practice"|"door"|"recover"|"inner"|"recap"|"escape"|"interview"|"read"|"gist"|"question"|"result"|"lightning"|"board"|"burst"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"skills"|"notes";
 // points include the boss or surprise double; bonus: the streak bonus; version: the question version this student saw.
-export type ChunkRecord={gist:number|null;answer:Answer;correct:boolean;points:number;late:boolean;coins:number;unknown:string[];discovered:boolean;bonus:number;mult:number;version:Version;bank:number;judged?:{strength:Strength;note:string;next:string}|null};
+export type ChunkRecord={gist:number|null;answer:Answer;correct:boolean;points:number;late:boolean;coins:number;unknown:string[];discovered:boolean;bonus:number;mult:number;version:Version;bank:number;judged?:{strength:Strength;note:string;next:string}|null;recovered?:boolean};
+// A lock is open once proven on the first try, or after a miss once the student tapped the shown proof (lib/escape-room.ts).
+const isOpen=(r:ChunkRecord|undefined)=>!!r&&(r.correct||!!r.recovered);
 const AUTO:Partial<Record<Beat,"result"|"board"|"countdown">>={result:"result",board:"board",countdown:"countdown"};
 
 // ---------- HUD ----------
-export function RaceHud({score,streak,coins,sound,onSound,chunk,total,left,title,doNow,onHelp}:{score:number;streak:number;coins:number;sound:boolean;onSound:()=>void;chunk:number;total:number;left:number|null;title?:string;doNow?:string;onHelp?:()=>void}){
+export function RaceHud({score,streak,coins,sound,onSound,chunk,total,left,title,doNow,onHelp,caseFile}:{score:number;streak:number;coins:number;sound:boolean;onSound:()=>void;chunk:number;total:number;left:number|null;title?:string;doNow?:string;onHelp?:()=>void;caseFile?:React.ReactNode}){
  // Pinned directly below the site header on every race screen (--header-h is set by useStickyOffsets). On a phone it is
  // one row (the chunk count and timer join the pills) so the passage keeps the screen.
  return <div className="hud sticky top-[var(--header-h,0px)] z-20 -mx-4 flex flex-col gap-2 bg-deep px-4 pb-2 pt-1">
@@ -49,11 +53,12 @@ export function RaceHud({score,streak,coins,sound,onSound,chunk,total,left,title
    <Pill label={`Streak ${streak}`} tone={streak>0?"highlight":"muted"} icon={<Flame size={16} className={streak>0?"fill-primary text-primary":"text-muted"} aria-hidden/>}>x{streak}</Pill>
    <Pill label={`${coins} coins`} icon={<span aria-hidden className="grid h-4 w-4 place-items-center rounded-full bg-gold ring-2 ring-inset ring-gold-shadow"/>}>{coins}</Pill>
    <span className="flex-1"/>
-   <span className="font-display text-[16px] font-bold tabular-nums text-ink md:hidden" aria-label={`Chunk ${chunk} of ${total}`}>{chunk}/{total}</span>
+   <span className="font-display text-[16px] font-bold tabular-nums text-ink md:hidden" aria-label={`Lock ${chunk} of ${total}`}>{chunk}/{total}</span>
    {left!==null&&<span className="w-10 text-right font-display text-[18px] font-bold tabular-nums text-ink md:hidden" aria-hidden>{Math.ceil(left)}s</span>}
+   {caseFile}
    <button type="button" onClick={onSound} aria-label={sound?"Sound on":"Sound off"} aria-pressed={sound} className="grid h-11 w-11 place-items-center rounded-row bg-panel">{sound?<Volume2 size={20} aria-hidden/>:<VolumeX size={20} aria-hidden/>}</button>
   </div>
-  <div className="hidden items-end justify-between gap-2 md:flex"><p className="font-display"><span className="block text-[22px] font-bold leading-none text-ink">Chunk {chunk} of {total}</span>{title&&<span className="text-[14px] font-semibold text-muted">{title}</span>}</p>{left!==null&&<span className="font-display text-[22px] font-bold tabular-nums text-ink" aria-hidden>{Math.ceil(left)}s</span>}</div>
+  <div className="hidden items-end justify-between gap-2 md:flex"><p className="font-display"><span className="block text-[22px] font-bold leading-none text-ink">Lock {chunk} of {total}</span>{title&&<span className="text-[14px] font-semibold text-muted">{title}</span>}</p>{left!==null&&<span className="font-display text-[22px] font-bold tabular-nums text-ink" aria-hidden>{Math.ceil(left)}s</span>}</div>
   {doNow&&<div className="flex items-start justify-between gap-2"><DoNow text={doNow} className="!text-[15px]"/>{onHelp&&<button type="button" onClick={onHelp} className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-full bg-panel px-3 text-[14px] font-bold text-ink"><HelpCircle size={16} aria-hidden/>What do I do?</button>}</div>}
  </div>;
 }
@@ -72,7 +77,7 @@ export type ChunkView={lines:{pid:string;index:number;text:string}[];discovery:{
 // keyboard and screen reader users step through the words and choose one (for a discovery, or to mark a word).
 // pick: text evidence is a whole sentence. Tapping a sentence highlights it like a highlighter stroke; tapping it again
 // clears it. "Look closer" then steps through the sentences instead of the words.
-export function ChunkText({chunk,world,tokens,highlighter,marking,unknown,onUnknown,onDiscover,found,shown=[],shownStyle="right",focus=[],large=false,explore=false,pick,wordPick}:{wordPick?:{selected:number[];onToggle:(i:number)=>void};chunk:ChunkView;world:WorldPack;tokens:Token[];highlighter?:boolean;marking?:boolean;unknown?:Set<number>;onUnknown?:(i:number)=>void;onDiscover?:()=>void;found?:boolean;shown?:number[];shownStyle?:"right"|"missed";focus?:number[];large?:boolean;explore?:boolean;pick?:{selected:string|null;onPick:(text:string|null)=>void}}){
+export function ChunkText({chunk,world,tokens,highlighter,marking,unknown,onUnknown,onDiscover,found,shown=[],shownStyle="right",focus=[],large=false,explore=false,pick,wordPick,outline=[]}:{outline?:number[];wordPick?:{selected:number[];onToggle:(i:number)=>void};chunk:ChunkView;world:WorldPack;tokens:Token[];highlighter?:boolean;marking?:boolean;unknown?:Set<number>;onUnknown?:(i:number)=>void;onDiscover?:()=>void;found?:boolean;shown?:number[];shownStyle?:"right"|"missed";focus?:number[];large?:boolean;explore?:boolean;pick?:{selected:string|null;onPick:(text:string|null)=>void}}){
  const [open,setOpen]=useState<string|null>(null),[closer,setCloser]=useState(false),[cursor,setCursor]=useState(0);
  const tapHint=pick?"Tap the sentence that proves it. Tap it again to clear it.":wordPick?"Tap the clue words that show the meaning. Tap a word again to clear it.":null;
  const vocab=useMemo(()=>{const m=new Map<number,{term:string;def:string}>();for(const g of world.glossary){const r=phraseRange(tokens,g.term);if(r)for(let k=r[0];k<=r[1];k++)m.set(k,{term:g.term,def:g.student_friendly_definition})}return m},[tokens,world.glossary]);
@@ -103,7 +108,7 @@ export function ChunkText({chunk,world,tokens,highlighter,marking,unknown,onUnkn
    // A run of proof words is one highlight: teal when right, a dashed coral frame when missed.
    if(inProof)return <span key={run.tokens[0].i} className={`rounded-md px-0.5 [box-decoration-break:clone] ${shownStyle==="right"?"bg-line-right shadow-[0_0_0_2px_var(--color-line-right-edge)]":"shadow-[0_0_0_2px_var(--color-line-wrong-edge)]"}`}>{words}</span>;
    if(pick){const k=run.tokens[0].line,on=k===pickedLine,isCursor=closer&&cursor===k;return <span key={run.tokens[0].i}>{run.tokens[0].i>0?" ":""}<span role="button" tabIndex={0} aria-pressed={on} aria-label={`Sentence ${k+1}: ${sentenceText(k)}`} onClick={()=>toggle(k)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle(k)}}}
-    className={`cursor-pointer rounded-md px-0.5 [box-decoration-break:clone] outline-none focus-visible:ring-[3px] focus-visible:ring-primary ${on?"bg-line-picked shadow-[0_0_0_2px_var(--color-primary)]":"hover:bg-line-picked/50"} ${isCursor?"ring-[3px] ring-primary":""}`}>{words}</span></span>}
+    className={`cursor-pointer rounded-md px-0.5 [box-decoration-break:clone] outline-none focus-visible:ring-[3px] focus-visible:ring-primary ${on?"bg-line-picked shadow-[0_0_0_2px_var(--color-primary)]":outline.includes(k)?"shadow-[0_0_0_2px_var(--color-line-wrong-edge)] hover:bg-line-picked/50":"hover:bg-line-picked/50"} ${isCursor?"ring-[3px] ring-primary":""}`}>{words}</span></span>}
    return <span key={run.tokens[0].i}>{words}</span>})}</p>
   {closer&&pick&&<div role="group" aria-label="Look closer at the sentences" className="mt-3 rounded-row bg-panel-2 p-3">
    <p className="text-[15px]" aria-live="polite">Sentence {cursor+1} of {chunk.lines.length}: {sentenceText(cursor)}</p>
@@ -276,21 +281,29 @@ export function DiscoveryBurst({chunks,world,timeSetting,sound,onDone,onFind,squ
 }
 
 // ---------- The solo expedition ----------
-export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,history=[],timeSetting="1",highlighter=false,studentKey,onSave,onFinish,onExit,replay=0,classToken=null}:{world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;grade?:number;history?:ExpeditionAttempt[];timeSetting?:string;highlighter?:boolean;studentKey?:string;onSave?:(a:ExpeditionAttempt)=>void;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void;replay?:number;classToken?:string|null}){
+export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,history=[],timeSetting="1",highlighter=false,studentKey,onSave,onFinish,onExit,replay=0,classToken=null,resume=null,stopAtInnerDoor=null}:{world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;grade?:number;history?:ExpeditionAttempt[];timeSetting?:string;highlighter?:boolean;studentKey?:string;onSave?:(a:ExpeditionAttempt)=>void;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void;replay?:number;classToken?:string|null;resume?:ExpeditionAttempt|null;stopAtInnerDoor?:boolean|null}){
  const [sound,toggleSound]=useSoundPref("effects",preset);
  const chunks=useMemo(()=>expeditionChunks(world,passages,expeditionId),[world,passages,expeditionId]);
  const exp=world.expeditions?.find(e=>e.id===expeditionId);
  const rivalName=world.computer_players?.rival.name??"The Lantern Ghost";
  const iv=exp?.interview;
- const [k,setK]=useState(0),[beat,setBeat]=useState<Beat>(()=>!practiceDone()?"practice":iv?"interview":"read"),[startedAt,setStartedAt]=useState(Date.now());
- const [records,setRecords]=useState<ChunkRecord[]>([]),[ghost,setGhost]=useState<number[]>([]);
+ // The room (lib/escape-room.ts): its chambers, locks and doors, and where an unfinished room picks up again.
+ const room=useMemo(()=>roomOf(world,expeditionId),[world,expeditionId]);
+ const restored=useMemo(()=>room&&resume?parseResume(resume.resume,room):null,[room,resume]);
+ const [innerOpen,setInnerOpen]=useState(()=>!!restored?.progress.innerDoor),[exitOpen,setExitOpen]=useState(false);
+ // A student resuming on the recap already stopped at the inner door; once inside chamber 2 they never stop again.
+ const restoredInto2=!!restored?.progress.innerDoor;
+ const resumeBeat=useMemo(()=>room&&restored?resumeAt(room,restored.progress):null,[room,restored]);
+ const [k,setK]=useState(()=>resumeBeat?.kind==="lock"?resumeBeat.step:resumeBeat?.kind==="inner_door"?(room?.innerDoor?.after??0):resumeBeat?.kind==="exit"?chunks.length-1:0);
+ const [beat,setBeat]=useState<Beat>(()=>resumeBeat?(resumeBeat.kind==="recap"?"recap":resumeBeat.kind==="inner_door"?"inner":resumeBeat.kind==="exit"?"liar":"door"):!practiceDone()?"practice":"door"),[startedAt,setStartedAt]=useState(Date.now());
+ const [records,setRecords]=useState<ChunkRecord[]>(()=>(restored?.records as ChunkRecord[]|undefined)??[]),[ghost,setGhost]=useState<number[]>(()=>restored?.ghost??[]);
  const [gist,setGist]=useState<number|null>(null),[step,setStep]=useState<1|2>(1),[draft,setDraft]=useState<Answer>({});
  const [marking,setMarking]=useState(false),[unknown,setUnknown]=useState<Set<number>>(new Set()),[found,setFound]=useState(false);
  const [testifying,setTestifying]=useState(false),[paused,setPaused]=useState(false),[autoLeft,setAutoLeft]=useState(0);
  const [fixed,setFixed]=useState<boolean[]>([]),[notesText,setNotesText]=useState<Record<number,string>>({});
  // The Interview: one liar per student and expedition, the same every time this student plays it (saved with progress).
  const liar=useMemo(()=>liarIndex(studentKey??soloStudentKey(),expeditionId,iv?.witnesses.length??3),[studentKey,expeditionId,iv]);
- const [cards,setCards]=useState<number[]>(()=>loadCards(world.id,expeditionId)),[liarAnswer,setLiarAnswer]=useState<LiarAnswer|null>(null);
+ const [cards,setCards]=useState<number[]>(()=>restored?.cards.length?restored.cards:loadCards(world.id,expeditionId)),[liarAnswer,setLiarAnswer]=useState<LiarAnswer|null>(null);
  const liarResult=iv&&liarAnswer?liarCheck(iv,liar,liarAnswer):null;
  const c=chunks[k];const tokens=useMemo(()=>c?chunkTokens(c.lines):[],[c]);
  // The arc (lib/pacing.ts) and this student's version of the question: standard to start, up after two first-try
@@ -303,7 +316,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const bankAt=(i:number)=>records[i]?.bank??bankPick(chunks[i].chunk,seedKey,replay);
  const asked=c?{question:askedQuestion(c.chunk,{bank:bankAt(k),version}),version}:null,q=asked?.question;
  const [judging,setJudging]=useState(false);
- const [lightningPts,setLightningPts]=useState<number[]>([]),[burstPts,setBurstPts]=useState(0);
+ const [lightningPts,setLightningPts]=useState<number[]>(()=>(restored?.lightning??[]).map(n=>n??(undefined as unknown as number))),[burstPts,setBurstPts]=useState(()=>restored?.burst??0);
  const go=useCallback((b:Beat)=>{setBeat(b);setStartedAt(Date.now())},[]);
  useStickyOffsets();
  // A new beat or chunk is a new screen: the top, focus on its heading. The proof step of the same question is not: the
@@ -343,11 +356,16 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   const g=ghostPlay(world.id+expeditionId,k,limitMs(TYPE_INFO[q!.type].seconds,timeSetting)),mult=arc?multiplierAt(arc,k):1;
   const next=[...records];next[k]={gist,answer:a,correct:res.correct,points:res.points*mult,late:res.late,coins:found?DISCOVERY_COINS:0,unknown:[...unknown].map(i=>tokens[i]?.text.replace(/[^\p{L}'-]/gu,"")).filter(Boolean),discovered:found,
    bonus:streakBonus(streak,res.correct?streak+1:0),mult,version:asked!.version,bank:bankAt(k),judged};
-  setRecords(next);setGhost(x=>{const n=[...x];n[k]=g.points*mult+g.gist;return n});cue(sound,res.correct?"chime":"reveal");go("result");
+  setRecords(next);setGhost(x=>{const n=[...x];n[k]=g.points*mult+g.gist;return n});cue(sound,res.correct?"chime":"reveal");go(res.correct?"result":"recover");
  }
  const lightningHere=arc?.lightning.find(l=>l.after===k)?.item??null;
  function afterResult(){if(lightningHere&&lightningPts[k]===undefined)go("lightning");else afterExtras()}
  function afterExtras(){go(isCheckpoint(k,chunks.length)?"board":"countdown")}
+ // The inner door follows chamber 1 (after the checkpoint and the burst); the exit door follows the last lock.
+ const atInner=room?.innerDoor?.after===k;
+ function afterChamber(){if(atInner){setInnerOpen(true);go("inner")}else go("countdown")}
+ function openRecovered(a:Answer){if(!q)return false;const ok=recoveryOpens(q,tokens,a);if(!ok){cue(sound,"tick");return false}
+  setRecords(rs=>{const n=[...rs];if(n[k])n[k]={...n[k],recovered:true};return n});cue(sound,"chime");afterResult();return true}
  // Time's up: whatever is picked counts, which is a miss.
  useEffect(()=>{if(beat==="question"&&qLeft===0&&!record)lockIn(draft)},[qLeft]);// eslint-disable-line react-hooks/exhaustive-deps
  // The automatic screens: result, then the leaderboard, then the countdown, then the next chunk. Pause holds them.
@@ -355,7 +373,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  useEffect(()=>{const kind=AUTO[beat];if(!kind)return;remaining.current=screenMs(kind,timeSetting);deadline.current=Date.now()+remaining.current;setAutoLeft(remaining.current)},[beat,k,timeSetting]);
  useEffect(()=>{const kind=AUTO[beat];if(!kind||paused)return;deadline.current=Date.now()+remaining.current;
   const t=setInterval(()=>{const left=Math.max(0,deadline.current-Date.now());remaining.current=left;setAutoLeft(left);if(left===0){clearInterval(t);
-   if(beat==="result")afterResult();else if(beat==="board")go(arc?.burstAfter===k?"burst":"countdown");else if(beat==="countdown"){if(k+1>=chunks.length){if(iv)go("liar");else{go("finish");onFinish?.(records)}}else startChunk(k+1)}}},100);
+   if(beat==="result")afterResult();else if(beat==="board"){if(arc?.burstAfter===k)go("burst");else afterChamber()}else if(beat==="countdown"){if(k+1>=chunks.length){if(iv)go("liar");else{setExitOpen(true);go("escape")}}else startChunk(k+1)}}},100);
   return()=>clearInterval(t)},[beat,paused,k]);// eslint-disable-line react-hooks/exhaustive-deps
 
  // After the race: the results for Case Notes, and the Refresher (misses only, up to 4).
@@ -365,11 +383,18 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const callAll=joinedPassages(chunks);
  const lie=iv?{name:witnessName(world,iv.witnesses[liar].character),lieText:iv.witnesses[liar].lie.text,lines:iv.witnesses[liar].lie.lines}:null;
  const refViews:RefresherView[]=refItems.map(it=>refresherView(it,askedChunks,callAll,lie));
- const attemptId=useMemo(()=>{try{return crypto.randomUUID()}catch{return `a${Date.now()}${Math.random().toString(36).slice(2)}`}},[]),startedIso=useMemo(()=>new Date().toISOString(),[]),finishedIso=useRef<string|null>(null);
+ const attemptId=useMemo(()=>{if(restored&&resume)return resume.attemptId;try{return crypto.randomUUID()}catch{return `a${Date.now()}${Math.random().toString(36).slice(2)}`}},[]),startedIso=useMemo(()=>restored&&resume?resume.startedAt:new Date().toISOString(),[]),finishedIso=useRef<string|null>(null);// eslint-disable-line react-hooks/exhaustive-deps
  function save(complete:boolean){if(!onSave||!iv&&records.length<chunks.length)return;finishedIso.current??=new Date().toISOString();
   const liarAt=refItems.findIndex(x=>x.kind==="liar");
   onSave({attemptId,worldId:world.id,expeditionId,startedAt:startedIso,finishedAt:finishedIso.current,complete,score,notes:caseNotes(askedChunks,results,{items:refItems,fixed},notesText),reflection:reflection.trim()||null,
-   interview:iv?interviewNote(world,iv,liar,cards,liarAnswer,liarAt>=0?!!fixed[liarAt]:null):null,award:complete?refresherAward(refItems,fixed):null})}
+   interview:iv?interviewNote(world,iv,liar,cards,liarAnswer,liarAt>=0?!!fixed[liarAt]:null):null,award:complete?refresherAward(refItems,fixed):null,resume:null})}
+ // An unfinished room saves after every lock it opens and at the inner door, so it picks up again on another day or device.
+ const progress:RoomProgress={...emptyProgress(),opened:records.flatMap((r,i)=>isOpen(r)?[i]:[]),innerDoor:innerOpen,exit:exitOpen};
+ const progressKey=`${progress.opened.join(",")}|${innerOpen}`;
+ useEffect(()=>{if(!onSave||finishedIso.current||!progress.opened.length)return;
+  const kept=records.map((r,i)=>isOpen(r)?r:null);while(kept.length&&!kept.at(-1))kept.pop();
+  onSave({attemptId,worldId:world.id,expeditionId,startedAt:startedIso,finishedAt:null,complete:false,score,notes:caseNotes(askedChunks.slice(0,kept.length),results.slice(0,kept.length)),interview:null,award:null,
+   resume:{v:1,progress,records:kept,ghost:ghost.slice(0,kept.length),cards,lightning:lightningPts.slice(0,kept.length).map(n=>n??null),burst:burstPts}})},[progressKey]);// eslint-disable-line react-hooks/exhaustive-deps
  const saved=useRef(false);
  // "What do I do?": shows this screen's hint again, until the screen changes.
  const [again,setAgain]=useState(false);
@@ -378,7 +403,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  // expedition's first attempt counts, so a replay shows levels but never changes them.
  const [reflection,setReflection]=useState("");
  const runSoFar=(n:number):ExpeditionAttempt=>({attemptId,worldId:world.id,expeditionId,startedAt:startedIso,finishedAt:null,complete:false,score:0,notes:caseNotes(askedChunks.slice(0,n),results.slice(0,n)),interview:null,award:null});
- const evidenceAt=(n:number)=>evidenceFrom([...history.filter(a=>a.worldId===world.id),runSoFar(n)]);
+ const evidenceAt=(n:number)=>evidenceFrom([...history.filter(a=>a.worldId===world.id&&a.attemptId!==attemptId),runSoFar(n)]);
  const skillNow=useMemo(()=>{if(beat!=="result"||!records[k])return null;const fam=mainFamily(askedChunks[k].chunk.question.standards);const after=evidenceAt(k+1);
   return {tag:fam?levelOf(fam,after):null,ups:levelUps(evidenceAt(k),after)}},[beat,k,records.length]);// eslint-disable-line react-hooks/exhaustive-deps
  const runFamilies=new Set(askedChunks.flatMap(x=>x.chunk.question.standards));
@@ -395,17 +420,26 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  // The screen the student is on, for its one-sentence "what to do now" (lib/onboarding.ts).
  const screenNow:Screen=(()=>{if(beat!=="question")return (beat in DO_NOW?beat:"wait") as Screen;const ff=formatOf(q!);if(testifying)return "wait";
   if((step===2&&(ff==="two_part"||ff==="written"))||ff==="tap")return q!.clues?.length?"clues":"proof";return ff==="dnd"?"dnd":ff==="multi"?"multi":ff==="written"?"written":"question"})();
- const hud=<RaceHud doNow={DO_NOW[screenNow]} onHelp={()=>setAgain(true)} score={score} streak={streak} coins={coins} sound={sound} onSound={toggleSound} chunk={k+1} total={chunks.length} left={beat==="gist"?gistLeft:beat==="question"&&!testifying?qLeft:null} title={exp.title}/>;
+ // The Case File: the statements once the witnesses have spoken, and every open lock's proof.
+ const said=iv&&cards.length?interviewStatements(world,iv,liar,cards):null;
+ const inventory=inventoryOf({said,locks:records.map((r,i)=>({lock:i,question:askedChunks[i].chunk.question,tokens:chunkTokens(chunks[i].lines),opened:isOpen(r),discovery:r?.discovered?chunks[i].chunk.discovery:null}))});
+ const nextRoom=room?roomsOf(world)[room.number]??null:null;
+ const hud=<RaceHud caseFile={<CaseFileButton items={inventory}/>} doNow={DO_NOW[screenNow]} onHelp={()=>setAgain(true)} score={score} streak={streak} coins={coins} sound={sound} onSound={toggleSound} chunk={k+1} total={chunks.length} left={beat==="gist"?gistLeft:beat==="question"&&!testifying?qLeft:null} title={exp.title}/>;
  const shown=proofShown(q,tokens);
  // The lines a proof step taps: this chunk's, or for Make the Call every chunk of the expedition so far.
  const callPassages=joinedPassages(chunks.slice(0,k+1));
 
  return <div className="race-root case-ui mx-auto flex max-w-6xl flex-col gap-3 px-4 pb-16 pt-3">
-  {beat!=="refresher"&&beat!=="notes"&&beat!=="interview"&&beat!=="practice"&&beat!=="skills"&&hud}
-  {beat==="practice"&&<PracticeRound world={world} passages={passages} onDone={()=>{markPracticeDone();go(iv?"interview":"read")}}/>}
+  {!["refresher","notes","interview","practice","skills","door","inner","recap","escape"].includes(beat)&&hud}
+  {beat==="practice"&&<PracticeRound world={world} passages={passages} onDone={()=>{markPracticeDone();go("door")}}/>}
+  {beat==="door"&&room&&<RoomDoor room={room} resumed={!!restored} onOpen={()=>{if(iv&&!(restored&&cards.length))go("interview");else startChunk(k)}}/>}
+  {beat==="inner"&&room&&<InnerDoor room={room} stop={stopsAtInnerDoor({classSession:!!classToken,stopAtInnerDoor})&&!restoredInto2} onMap={onExit} onNext={()=>startChunk(k+1)}/>}
+  {beat==="recap"&&room&&<ChamberRecap room={room} items={inventory} onNext={()=>startChunk(room.chambers[1]?.from??k+1)}/>}
+  {beat==="escape"&&room&&<EscapeMoment room={room} next={nextRoom} solved={!!liarResult?.solved} onNext={()=>{go("finish");onFinish?.(records)}}/>}
   {beat==="interview"&&iv&&<InterviewScreen world={world} expeditionId={expeditionId} interview={iv} liar={liar} onDone={cs=>{setCards(cs);saveCards(world.id,expeditionId,cs);startChunk(0)}}/>}
+  {beat==="liar"&&iv&&<div className="flex justify-center"><ExitBanner/></div>}
   {beat==="liar"&&iv&&<NameTheLiar seed={`${seedKey}|${expeditionId}`} world={world} said={interviewStatements(world,iv,liar,cards)} passages={callAll} onLock={a=>{setLiarAnswer(a);const r=liarCheck(iv,liar,a);cue(sound,r.solved?"streak":"reveal");go("verdict")}}/>}
-  {beat==="verdict"&&iv&&liarResult&&<LiarVerdict world={world} expeditionId={expeditionId} interview={iv} liar={liar} solved={liarResult.solved} named={liarResult.named} passages={callAll} onNext={()=>{go("finish");onFinish?.(records)}}/>}
+  {beat==="verdict"&&iv&&liarResult&&<LiarVerdict world={world} expeditionId={expeditionId} interview={iv} liar={liar} solved={liarResult.solved} named={liarResult.named} passages={callAll} onNext={()=>{setExitOpen(true);go("escape")}}/>}
   {beat==="read"&&<section aria-labelledby="ex-h"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Read · no timer</p><h1 id="ex-h" className="text-[28px] outline-none">Read the chunk</h1>
    {highlighter&&<button type="button" aria-pressed={marking} onClick={()=>setMarking(m=>!m)} className={`mt-2 inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-[15px] font-bold ${marking?"bg-gold text-on-gold":"bg-panel text-ink"}`}><Highlighter size={16} aria-hidden/>{marking?"Done marking":"Mark words I don't know"}</button>}
    {(again||!hintsDone().has("read"))&&<div className="mt-3"><Coach text={HINTS.read}/></div>}
@@ -417,8 +451,16 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
    body={<AnswerBars seed={`${seedKey}|${c.id}|gist`} label="Which is the best summary?" options={c.chunk.gist.options} picked={gist??gistPick} onPick={setGistPick} disabled={gist!==null}/>}
    action={gist===null?<button type="button" disabled={gistPick===null} onClick={()=>gistPick!==null&&pickGist(gistPick)} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Lock in <ArrowRight size={18} aria-hidden/></button>:null}/>}
 
-  {beat==="question"&&<QuestionPanel banner={arc?<ArcBanner kind={beatKind(arc,k)} speaker={q.testimony?world.characters.find(x=>x.id===q.testimony!.speaker)?.name:null}/>:null} seed={`${seedKey}|${c.id}`} timer={<TimerTrack left={testifying?qSeconds:qLeft} seconds={qSeconds}/>} vq={viewQuestion(q,world,callPassages)} passages={c.passages} chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} glossary={world.glossary} testifying={testifying} draft={draft} setDraft={setDraft} step={step} setStep={setStep} onLock={lockIn} help={{again}}/>}
+  {beat==="question"&&<QuestionPanel banner={<><LockBanner lock={k+1} of={chunks.length} kind={lockKind(q)}/>{arc&&<ArcBanner kind={beatKind(arc,k)} speaker={q.testimony?world.characters.find(x=>x.id===q.testimony!.speaker)?.name:null}/>}</>} seed={`${seedKey}|${c.id}`} timer={<TimerTrack left={testifying?qSeconds:qLeft} seconds={qSeconds}/>} vq={viewQuestion(q,world,callPassages)} passages={c.passages} chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} glossary={world.glossary} testifying={testifying} draft={draft} setDraft={setDraft} step={step} setStep={setStep} onLock={lockIn} help={{again}}/>}
 
+  {beat==="recover"&&record&&<section aria-labelledby="ex-h">
+   <div className="notyet-shake mt-3 rounded-[24px] bg-notyet p-5 text-on-notyet shadow-[0_8px_0_var(--color-notyet-shadow)]" aria-live="assertive"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">Lock {k+1} · {info.name}{record.late?" · Time's up":""}</p><h1 id="ex-h" className="mt-1 text-[36px] leading-none outline-none">Not yet.</h1><p className="mt-2 text-[17px] font-bold">This lock opens only with the proof. Use the answer shown to open it; you'll get another shot for points in the Refresher.</p></div>
+   <FormatResult q={q} answer={record.answer} judged={record.judged??null} points={record.points}/>
+   {skillNow?.tag&&<p className="mt-3 flex justify-center"><SkillTag s={skillNow.tag}/></p>}
+   <RecoveryPanel task={recoveryTask(q)} seed={`${seedKey}|${c.id}|open`} chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} shownLines={[...new Set(proofTokens(q,tokens,c.lines).map(i=>tokens[i].line))]}
+    answerText={formatOf(q)==="multi"?q.choices?.filter(o=>o.best).map(o=>o.text).join(" · "):recoveryTask(q)==="choice"?q.choices?.find(o=>o.best)?.text:null} clueWords={q.clues} choices={q.choices?.map(o=>o.text)??null}
+    dnd={q.dnd?{kind:q.dnd.kind,slots:q.dnd.slots,items:q.dnd.items.map(i=>({id:i.id,text:i.text}))}:null} callPassages={callPassages} onOpen={openRecovered}/>
+  </section>}
   {beat==="result"&&record&&<section aria-labelledby="ex-h" aria-live="assertive">
    {record.correct
     ?<div className="mt-8 flex flex-col items-center gap-3"><p aria-hidden className="float-up font-display text-[56px] font-bold leading-none text-gold">+{record.points.toLocaleString()}</p>
@@ -435,7 +477,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   </section>}
 
   {beat==="lightning"&&lightningHere&&<LightningBeat item={lightningHere} chunk={chunks[lightningHere.chunk-1]} world={world} seed={`${seedKey}|${lightningHere.id}`} timeSetting={timeSetting} sound={sound} onDone={p=>{setLightningPts(x=>{const n=[...x];n[k]=p;return n});afterExtras()}}/>}
-  {beat==="burst"&&<DiscoveryBurst chunks={chunks.slice(0,(arc?.burstAfter??0)+1)} world={world} timeSetting={timeSetting} sound={sound} onDone={p=>{setBurstPts(p);go("countdown")}}/>}
+  {beat==="burst"&&<DiscoveryBurst chunks={chunks.slice(0,(arc?.burstAfter??0)+1)} world={world} timeSetting={timeSetting} sound={sound} onDone={p=>{setBurstPts(p);afterChamber()}}/>}
   {(beat==="board"||beat==="countdown")&&<section aria-labelledby="ex-h">
    <p role="status" className="sr-only">{record?.correct?`Plus ${record.points} points.`:"No points this time."} You're number {meRow?.rank} of 2.</p>
    <div className="flex items-center justify-between gap-3"><h1 id="ex-h" className="text-[28px] outline-none">{beat==="board"?"Checkpoint: Level 1 complete":"Next chunk"}</h1>

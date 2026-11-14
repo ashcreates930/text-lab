@@ -12,7 +12,7 @@
 import type { SourcePassage } from "./source-passages.ts";
 import type { ExpQuestion, LineRef, RoomData, RoomPuzzle, WorldPack } from "./world-schema.ts";
 import { evidenceSentences } from "./lies.ts";
-import { chunkTokens, cluesProve, expeditionChunks, norm, sentenceProves, shuffledOrder, type Answer, type Token } from "./expedition.ts";
+import { chunkTokens, cluesProve, expeditionChunks, norm, proofShown, sentenceProves, shuffledOrder, type Answer, type Token } from "./expedition.ts";
 import { dndResult, formatOf, multiRight, writtenProved } from "./formats.ts";
 import { arcOf, beatKind, levelsOf } from "./pacing.ts";
 import { contentNotes } from "./content-notes.ts";
@@ -136,12 +136,63 @@ export function resumeAt(room: Room, p: RoomProgress): RoomBeat {
   }
   return seq.at(-1)!;
 }
+// The chunks a game plays: the whole room (0), or one chamber (a live game a class plays one chamber per period).
+export type ChamberPick = 0 | 1 | 2;
+export function chamberSpan(chunks: number, chamber: ChamberPick): { from: number; to: number } {
+  const split = Math.ceil(chunks / 2);
+  if (chamber === 1 && chunks > 1) return { from: 0, to: split - 1 };
+  if (chamber === 2 && chunks > 1) return { from: split, to: chunks - 1 };
+  return { from: 0, to: chunks - 1 };
+}
 // "Stop at the inner door": on by default in a class session, so a room fills two periods; off for demo visitors and
 // whenever the teacher turns it off.
 export const stopsAtInnerDoor = (s: { classSession: boolean; stopAtInnerDoor?: boolean | null }) => s.stopAtInnerDoor ?? s.classSession;
 // Whether a student should stop now: just through the inner door, in a session that stops there.
 export const stopNow = (room: Room, p: RoomProgress, s: { classSession: boolean; stopAtInnerDoor?: boolean | null }) =>
   stopsAtInnerDoor(s) && p.innerDoor && resumeAt(room, p).kind === "recap";
+
+// What an unfinished room saves so it can be picked up on another day or device (expedition_results.record.resume, or
+// the browser): the progress, the answers so far (the solo room's own records), the cards asked in the Interview, and
+// the extras already scored. Checked on load: anything malformed starts the room afresh rather than half-restored.
+export type RoomResume = { v: 1; progress: RoomProgress; records: unknown[]; ghost: number[]; cards: number[]; lightning: (number | null)[]; burst: number };
+const ints = (x: unknown, max = 60) => Array.isArray(x) && x.length <= max && x.every((n) => Number.isInteger(n));
+export function parseResume(x: unknown, room: Room): RoomResume | null {
+  const o = x as Partial<RoomResume> | null;
+  if (!o || o.v !== 1 || !o.progress || !Array.isArray(o.records) || o.records.length > room.locks.length) return null;
+  const p = o.progress;
+  if (!ints(p.opened, room.locks.length) || p.opened.some((s) => s < 0 || s >= room.locks.length) || !Array.isArray(p.puzzles) || typeof p.innerDoor !== "boolean" || typeof p.exit !== "boolean") return null;
+  // Every opened lock has its record, and nothing is recorded past the locks opened.
+  if (p.opened.some((s) => !o.records![s]) || o.records.some((r, s) => r && !p.opened.includes(s))) return null;
+  if (!ints(o.cards, 6) || !Array.isArray(o.ghost) || !Array.isArray(o.lightning) || typeof o.burst !== "number") return null;
+  return { v: 1, progress: { opened: [...p.opened].sort((a, b) => a - b), puzzles: p.puzzles.filter((s): s is string => typeof s === "string"), innerDoor: p.innerDoor, exit: p.exit }, records: o.records, ghost: o.ghost.map(Number), cards: o.cards as number[], lightning: o.lightning.map((n) => (n == null ? null : Number(n))), burst: o.burst };
+}
+// The room a student left part-way: their latest unfinished attempt that saved a resume point.
+export function unfinished<A extends { expeditionId: string; finishedAt: string | null; startedAt: string; resume?: unknown }>(attempts: A[], expeditionId: string): A | null {
+  return attempts.filter((a) => a.expeditionId === expeditionId && !a.finishedAt && !!a.resume).sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0] ?? null;
+}
+// Replays (which pick the next question from each chunk's bank) count only rooms played to the end.
+export const replaysOf = (attempts: { expeditionId: string; finishedAt: string | null; notes: unknown[] }[], expeditionId: string) =>
+  attempts.filter((a) => a.expeditionId === expeditionId && a.notes.length > 0 && !!a.finishedAt).length;
+
+// ---------- The inventory (Case File) ----------
+// What the student carries through the room: each witness's statement, then for every opened lock its proof line (or
+// for a drag and drop, its pieces in place), and the discoveries found. Opened after a miss counts too: the line was
+// shown and tapped.
+export type InventoryItem = { kind: "statement" | "proof" | "piece" | "discovery"; lock: number | null; label: string; text: string };
+export function inventoryOf(input: {
+  said?: { short: string; text: string }[] | null;
+  locks: { lock: number; question: ExpQuestion; tokens: Token[]; opened: boolean; discovery?: { phrase: string; note: string } | null }[];
+}): InventoryItem[] {
+  const out: InventoryItem[] = (input.said ?? []).map((s) => ({ kind: "statement", lock: null, label: `${s.short} said`, text: s.text }));
+  for (const l of input.locks) {
+    if (!l.opened) continue;
+    const q = l.question, at = `Lock ${l.lock + 1}`;
+    if (formatOf(q) === "dnd" && q.dnd) for (const it of q.dnd.items) out.push({ kind: "piece", lock: l.lock, label: `${at} · ${q.dnd.slots.find((s) => s.id === it.slot)?.label ?? "Left out"}`, text: it.text });
+    else for (const line of proofShown(q, l.tokens).lines) out.push({ kind: "proof", lock: l.lock, label: `${at} · proof`, text: line.replace(/\s+/g, " ").trim() });
+    if (l.discovery) out.push({ kind: "discovery", lock: l.lock, label: `${at} · discovery`, text: `"${l.discovery.phrase}". ${l.discovery.note}` });
+  }
+  return out;
+}
 
 // ---------- The liar ----------
 // The key the liar is seeded from in a live game: the class when the game belongs to one (so every game the class plays

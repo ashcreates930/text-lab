@@ -7,7 +7,7 @@
 // with the arrow keys when the map has focus), zoom with the buttons or a pinch. Reduced motion: no walking, drifting
 // or pulsing. Rules: lib/world-map.ts. MapList is the same map as a list, for screen readers and keyboards.
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
-import {Crown,Lock,Minus,Plus,Sparkles,Star,Zap,Maximize2,X} from "lucide-react";
+import {Crown,DoorClosed,DoorOpen,Lock,LockOpen,Minus,Plus,Sparkles,Star,Zap,Maximize2,X} from "lucide-react";
 import type {MapRegionView,MapStopView,TokenAt,WorldMapData} from "@/lib/world-map";
 import {pointOf,raceRegions,raceTokenAt,regionFrame,trailOf} from "@/lib/world-map";
 import type {WorldPack} from "@/lib/world-schema";
@@ -15,13 +15,13 @@ import {reducedMotion} from "./proof-race";
 
 export type MapToken={id:string;name:string;portrait?:string|null;at:TokenAt;me?:boolean;glow?:boolean};
 type Box={x:number;y:number;w:number;h:number};
-const STATE_LABEL:Record<MapStopView["state"],string>={locked:"Locked",ahead:"Ahead",next:"Next stop",proven:"Proven"};
+const STATE_LABEL:Record<MapStopView["state"],string>={locked:"Locked",ahead:"Shut",next:"Next lock",proven:"Open"};
 const LANDMARK_LABEL={twist:"Twist: a witness interrupts",boss:"Boss question"} as const;
 
 export function stopLabel(r:Pick<MapRegionView,"number">,s:MapStopView){
- return `Stop ${s.chunk}, ${s.placeName}. ${STATE_LABEL[s.state]}${s.state==="proven"?`, ${s.stars} of 3 stars`:""}${s.landmark?`. ${LANDMARK_LABEL[s.landmark]}`:""}${s.secret==="hidden"?". A discovery is hidden here":s.secret==="found"?". Discovery found":""}`;
+ return `Lock ${s.chunk}, ${s.placeName}. ${STATE_LABEL[s.state]}${s.state==="proven"?`, ${s.stars} of 3 stars`:""}${s.landmark?`. ${LANDMARK_LABEL[s.landmark]}`:""}${s.secret==="hidden"?". A discovery is hidden here":s.secret==="found"?". Discovery found":""}`;
 }
-const regionLabel=(r:MapRegionView)=>`Expedition ${r.number}: ${r.title}, ${r.name}. ${r.state==="locked"?"Locked":r.state==="current"?"Your next expedition":`Proven, ${r.stars} of 3 stars`}${r.assigned?`. Assigned${r.assigned.due?`, due ${r.assigned.due}`:""}`:""}`;
+const regionLabel=(r:MapRegionView)=>`Room ${r.number}: ${r.title}, ${r.name}. ${r.state==="locked"?"Locked":r.state==="current"?"Your next room":`Escaped, ${r.stars} of 3 stars`}${r.assigned?`. Assigned${r.assigned.due?`, due ${r.assigned.due}`:""}`:""}`;
 
 // The frame for a box at the container's shape (grown, never cropped), kept on the map.
 function fit(b:Box,aspect:number,map:{width:number;height:number}):Box{
@@ -31,7 +31,7 @@ function fit(b:Box,aspect:number,map:{width:number;height:number}):Box{
  return {x,y,w,h};
 }
 
-export function WorldMap({map,regions,focus=null,onFocus,tokens=[],travel,onStop,interactive=true,className="",label="Story map",}:{map:WorldMapData;regions:MapRegionView[];focus?:string|null;onFocus?:(id:string|null)=>void;tokens?:MapToken[];travel?:{id:string;from:TokenAt;to:TokenAt}|null;onStop?:(r:MapRegionView,s:MapStopView|"finale")=>void;interactive?:boolean;className?:string;label?:string}){
+export function WorldMap({map,regions,focus=null,onFocus,tokens=[],travel,onStop,interactive=true,className="",label="Story map",lifting=null}:{lifting?:string|null;map:WorldMapData;regions:MapRegionView[];focus?:string|null;onFocus?:(id:string|null)=>void;tokens?:MapToken[];travel?:{id:string;from:TokenAt;to:TokenAt}|null;onStop?:(r:MapRegionView,s:MapStopView|"finale")=>void;interactive?:boolean;className?:string;label?:string}){
  const wrap=useRef<HTMLDivElement>(null),[size,setSize]=useState({w:0,h:0});
  useLayoutEffect(()=>{const el=wrap.current;if(!el)return;const set=()=>setSize({w:el.clientWidth,h:el.clientHeight});set();const ro=new ResizeObserver(set);ro.observe(el);return()=>ro.disconnect()},[]);
  const aspect=size.w&&size.h?size.w/size.h:map.width/map.height;
@@ -123,6 +123,7 @@ export function WorldMap({map,regions,focus=null,onFocus,tokens=[],travel,onStop
    </defs>
    <image href={map.image} x={0} y={0} width={map.width} height={map.height} preserveAspectRatio="none"/>
    {/* Fog over every locked region. */}
+   {(()=>{const l=regions.find(r=>r.expedition===lifting&&r.state!=="locked");return l?<g className="fog-lift" aria-hidden><ellipse cx={l.label.x} cy={l.label.y+20} rx={150} ry={110} fill="url(#wm-fog)"/><ellipse cx={l.label.x+60} cy={l.label.y-10} rx={100} ry={70} fill="url(#wm-fog)"/>{l.stops.map(s=><circle key={s.chunk} cx={s.x} cy={s.y} r={60} fill="url(#wm-fog)"/>)}</g>:null})()}
    {fog.map((r,i)=><g key={r.expedition} className="map-fog" style={{animationDelay:`${-i*1.7}s`}} aria-hidden>
     <ellipse cx={r.label.x} cy={r.label.y+20} rx={130} ry={95} fill="url(#wm-fog)"/><ellipse cx={r.label.x+60} cy={r.label.y-10} rx={90} ry={60} fill="url(#wm-fog)"/></g>)}
    {/* Place names. */}
@@ -168,7 +169,7 @@ export function WorldMap({map,regions,focus=null,onFocus,tokens=[],travel,onStop
     <ol className="mt-2 grid gap-1.5">{list.map((r,i)=><li key={r.expedition}><button ref={i===0?pickerFirst:undefined} type="button" onClick={()=>{setPicker(null);onFocus?.(r.expedition)}}
      className={`flex min-h-11 w-full items-center gap-2 rounded-row px-3 py-2 text-left text-[15px] ${r.state==="current"?"bg-primary text-on-primary":"bg-panel text-ink"}`}>
      <span aria-hidden className={`grid h-8 w-8 shrink-0 place-items-center rounded-full font-display font-bold ${r.state==="current"?"bg-on-primary text-highlight":r.state==="locked"?"bg-deep text-muted":"bg-success text-on-success"}`}>{r.state==="locked"?<Lock size={14}/>:r.number}</span>
-     <span className="min-w-0 flex-1"><span className="block font-bold leading-tight">Expedition {r.number}: {r.title}</span><span className={`block text-[13px] ${r.state==="current"?"":"text-muted"}`}>{r.state==="locked"?"Locked":r.state==="current"?"Your next expedition":`Proven, ${r.stars} of 3 stars`}</span></span>
+     <span className="min-w-0 flex-1"><span className="block font-bold leading-tight">Room {r.number}: {r.title}</span><span className={`block text-[13px] ${r.state==="current"?"":"text-muted"}`}>{r.state==="locked"?"Locked":r.state==="current"?"Your next room":`Escaped, ${r.stars} of 3 stars`}</span></span>
      {r.state==="proven"&&<span aria-hidden className="flex shrink-0">{[0,1,2].map(k=><Star key={k} size={14} className={k<r.stars?"fill-gold text-gold":"text-muted"}/>)}</span>}</button></li>)}</ol>
    </div>})()}
   {interactive&&<div className="absolute right-2 top-2 flex flex-col gap-1.5">
@@ -195,13 +196,16 @@ function RegionLayer({r,u,tap,onStop}:{r:MapRegionView;u:number;tap:(fn:()=>void
      :s.landmark==="twist"?<Zap x={s.x-8*u} y={s.y-8*u} width={16*u} height={16*u} color={st==="proven"?"var(--color-on-success)":"#e6deff"} aria-hidden/>
      :<text x={s.x} y={s.y+5*u} textAnchor="middle" fontSize={14*u} fontWeight={800} fill={st==="proven"?"var(--color-on-success)":st==="next"?"var(--color-on-primary)":"#cfc8f0"} className="font-display">{s.chunk}</text>}
     {st==="proven"&&s.stars>=0&&<g aria-hidden>{[0,1,2].map(i=><path key={i} d={starPath(s.x+(i-1)*10*u,s.y+R+7*u,4.2*u)} fill={i<s.stars?"var(--color-gold)":"#2a2450"} stroke="#fff7e6" strokeWidth={.7*u}/>)}</g>}
+    {st!=="proven"?<g aria-hidden><circle cx={s.x+R*.85} cy={s.y-R*.85} r={7.5*u} fill="#140f33" stroke="#fff7e6" strokeWidth={1.2*u}/><Lock x={s.x+R*.85-4.5*u} y={s.y-R*.85-4.5*u} width={9*u} height={9*u} color={st==="next"?"#ffe6b0":"#cfc8f0"}/></g>
+     :<g aria-hidden><circle cx={s.x+R*.85} cy={s.y-R*.85} r={7.5*u} fill="var(--color-success)" stroke="#fff7e6" strokeWidth={1.2*u}/><LockOpen x={s.x+R*.85-4.5*u} y={s.y-R*.85-4.5*u} width={9*u} height={9*u} color="var(--color-on-success)"/></g>}
     {s.secret==="hidden"&&<g className="map-twinkle" aria-hidden><Sparkles x={s.x+R*0.55} y={s.y-R*1.6} width={15*u} height={15*u} color="#ffe6b0"/></g>}
     {s.secret==="found"&&<path d={starPath(s.x+R,s.y-R,4*u)} fill="#9ee7ff" stroke="#fff" strokeWidth={.7*u} aria-hidden/>}
    </g>})}
-  {r.finale&&<g role="button" tabIndex={0} aria-label={`Name the Liar finale, ${r.finale.placeName}. ${STATE_LABEL[r.finale.state]}${r.finale.solved===true?", case solved":r.finale.solved===false?", not solved yet":""}`} className="map-hit cursor-pointer outline-none" onClick={tap(()=>onStop?.(r,"finale"))} onKeyDown={press("finale")}>
+  {r.finale&&<g role="button" tabIndex={0} aria-label={`Exit door, Name the Liar, ${r.finale.placeName}. ${STATE_LABEL[r.finale.state]}${r.finale.solved===true?", case solved":r.finale.solved===false?", not solved yet":""}`} className="map-hit cursor-pointer outline-none" onClick={tap(()=>onStop?.(r,"finale"))} onKeyDown={press("finale")}>
    <circle cx={r.finale.x} cy={r.finale.y} r={24*u} fill="transparent"/>
    <rect x={r.finale.x-14*u} y={r.finale.y-14*u} width={28*u} height={28*u} rx={5*u} transform={`rotate(45 ${r.finale.x} ${r.finale.y})`} fill={r.finale.solved?"var(--color-gold)":r.finale.state==="proven"?"var(--color-success)":"#3b3463"} stroke="#fff7e6" strokeWidth={2.5*u}/>
-   <text x={r.finale.x} y={r.finale.y+6*u} textAnchor="middle" fontSize={17*u} fontWeight={800} fill={r.finale.solved?"var(--color-on-gold)":"#fff7e6"} className="font-display">?</text>
+   <text x={r.finale.x} y={r.finale.y+6*u} textAnchor="middle" fontSize={17*u} fontWeight={800} fill={r.finale.solved?"var(--color-on-gold)":"#fff7e6"} className="font-display" aria-hidden>?</text>
+   {r.finale.state==="proven"?<DoorOpen x={r.finale.x+10*u} y={r.finale.y-24*u} width={14*u} height={14*u} color="var(--color-gold)" aria-hidden/>:<DoorClosed x={r.finale.x+10*u} y={r.finale.y-24*u} width={14*u} height={14*u} color="#cfc8f0" aria-hidden/>}
   </g>}
  </g>;
 }
@@ -214,7 +218,7 @@ function starPath(cx:number,cy:number,r:number){let d="";for(let i=0;i<10;i++){c
 export function MapList({regions,focus,onFocus,onStop}:{regions:MapRegionView[];focus?:string|null;onFocus?:(id:string)=>void;onStop?:(r:MapRegionView,s:MapStopView|"finale")=>void}){
  return <ol className="flex flex-col gap-2" aria-label="Stops in order">{regions.map(r=><li key={r.expedition} className="rounded-card bg-panel p-3">
   <button type="button" onClick={()=>onFocus?.(r.expedition)} aria-expanded={focus===r.expedition} className="flex w-full items-center justify-between gap-2 text-left">
-   <span><span className="block text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Expedition {r.number} · {r.name}</span><span className="block font-display text-[19px] font-bold">{r.title}</span></span>
+   <span><span className="block text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Room {r.number} · {r.name}</span><span className="block font-display text-[19px] font-bold">{r.title}</span></span>
    <span className="shrink-0 text-[14px] font-bold text-muted">{r.state==="locked"?"Locked":r.state==="current"?"Next":`${r.stars} of 3 stars`}</span></button>
   {focus===r.expedition&&<ol className="mt-2 grid gap-1.5">{r.stops.map(s=><li key={s.chunk}><button type="button" onClick={()=>onStop?.(r,s)} className="flex min-h-11 w-full items-center gap-2 rounded-row bg-panel-2 px-3 py-2 text-left text-[15px]">
    <span aria-hidden className={`grid h-8 w-8 shrink-0 place-items-center rounded-full font-display font-bold ${s.state==="proven"?"bg-success text-on-success":s.state==="next"?"bg-primary text-on-primary":"bg-deep text-muted"}`}>{s.landmark==="boss"?<Crown size={15}/>:s.landmark==="twist"?<Zap size={15}/>:s.chunk}</span>

@@ -244,3 +244,13 @@ main:has([data-fill-screen]) > footer { display: none; }
 .coach-bob{animation:coach-bob 1.4s ease-in-out infinite}
 @keyframes coach-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
 @media (prefers-reduced-motion:reduce){.coach-bob{animation:none}}
+
+/* Escape room (app/room-ui.tsx): the door swings open, the fog lifts. Off under reduced motion. */
+@keyframes door-swing{0%{transform:perspective(700px) rotateY(0)}100%{transform:perspective(700px) rotateY(-72deg)}}
+.door-swing{transform-origin:left center;animation:door-swing 1.1s .25s cubic-bezier(.3,.7,.3,1) both}
+@keyframes door-light{from{opacity:0}to{opacity:1}}
+.door-light{animation:door-light .9s .45s ease-out both}
+@keyframes fog-lift{from{opacity:1}to{opacity:0}}
+.fog-lift{animation:fog-lift 1.6s .3s ease-out both}
+@media (prefers-reduced-motion:reduce){.door-swing,.door-light,.fog-lift{animation:none}.door-swing{transform:perspective(700px) rotateY(-72deg)}.fog-lift{opacity:0}}
+html[data-motion="reduced"] .door-swing{transform:perspective(700px) rotateY(-72deg)}html[data-motion="reduced"] .fog-lift{opacity:0}

@@ -30,7 +30,7 @@ const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|nul
  return <Shell>
   <header className="flex flex-wrap items-center justify-between gap-4">
    <div><p className="text-[16px] font-semibold uppercase tracking-[.14em] text-muted">Live round · {s.title}{s.demo?" · Demo room":""}</p>
-    <h1 className="mt-1 text-[clamp(28px,3vw,48px)] font-bold leading-tight outline-none" tabIndex={-1}>{s.status==="lobby"?"Join the case":s.status==="ended"?"Case closed":round?roundTitle(round.type):"Next round"}</h1></div>
+    <h1 className="mt-1 text-[clamp(28px,3vw,48px)] font-bold leading-tight outline-none" tabIndex={-1}>{s.status==="lobby"?"Join the case":s.status==="ended"?((round as {chamber?:number}|null)?.chamber===1?"Chamber 1 escaped: the inner door is open":"Case closed"):round?roundTitle(round.type):"Next round"}</h1></div>
    <div className="flex flex-wrap items-center gap-2">
     <Counter label="Players" value={state.counters.players}/>
     {/* Proof Race plays without squads unless the teacher turns them on, so the squad counter hides. */}
