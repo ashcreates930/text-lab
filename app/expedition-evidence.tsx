@@ -40,9 +40,9 @@ export function ExpeditionEvidence({data,onAssign,onUnassign,onOverride}:{data:E
      :<><label className="text-[13px] text-muted">Due<input type="date" value={due[x.id]??""} onChange={e=>setDue(d=>({...d,[x.id]:e.target.value}))} className="ml-1 rounded-row bg-panel-2 px-2 py-1 text-[14px] text-ink"/></label>
       <button type="button" disabled={busy===x.id} onClick={async()=>{setBusy(x.id);await onAssign(x.id,due[x.id]||null);setBusy("")}} className="case-primary !min-h-10 !text-[14px]">Assign</button></>}</div>}</div>
    <details className="mt-2"><summary className="cursor-pointer text-[15px] font-semibold text-highlight">Who finished, and each student's notes</summary>
-    <div className="mt-2 overflow-x-auto"><table className="w-full text-left text-[14px] text-ink"><thead><tr className="text-muted"><th className="py-1 pr-3 font-semibold">Student</th><th className="py-1 pr-3 font-semibold">Finished</th><th className="py-1 pr-3 font-semibold">First try</th><th className="py-1 pr-3 font-semibold">Score</th><th className="py-1 font-semibold">Name the Liar</th></tr></thead>
+    <div className="mt-2 overflow-x-auto"><table className="w-full text-left text-[14px] text-ink"><thead><tr className="text-muted"><th className="py-1 pr-3 font-semibold">Student</th><th className="py-1 pr-3 font-semibold">Finished</th><th className="py-1 pr-3 font-semibold">First try</th><th className="py-1 pr-3 font-semibold">Clues</th><th className="py-1 pr-3 font-semibold">Score</th><th className="py-1 font-semibold">Name the Liar</th></tr></thead>
      <tbody>{x.rows.map(r=><tr key={r.id} className="border-t border-edge align-top"><td className="py-1 pr-3 font-semibold">{r.nickname}</td><td className="py-1 pr-3">{r.finished?<><Check size={14} className="mr-1 inline text-success"/>{r.finished.slice(0,10)}</>:<><X size={14} className="mr-1 inline text-muted"/>Not yet</>}</td>
-      <td className="py-1 pr-3 tabular-nums">{r.firstTry===null?"·":`${r.firstTry}/${r.total}`}</td><td className="py-1 pr-3 tabular-nums">{r.score??"·"}</td>
+      <td className="py-1 pr-3 tabular-nums">{r.firstTry===null?"·":`${r.firstTry}/${r.total}`}</td><td className="py-1 pr-3">{cluesText(r.notes)}</td><td className="py-1 pr-3 tabular-nums">{r.score??"·"}</td>
       <td className="py-1">{r.liar?`${r.liar.solved?"Solved":"Not solved"} · named ${r.liar.pick??"no one"}`:"·"}</td></tr>)}</tbody></table></div>
     {x.rows.some(r=>r.notes.some(n=>n.format==="written"))&&<div className="mt-2 rounded-2xl bg-panel-2 p-3"><p className="text-[14px] font-bold text-ink">Written answers (you can change the score)</p>
      <ul className="mt-1 space-y-2 text-[14px] text-ink">{x.rows.flatMap(r=>r.notes.filter(n=>n.format==="written").map(n=><li key={`${r.id}-${n.chunk}`} className="grid gap-1"><span><b>{r.nickname}</b>, chunk {n.chunk}: {n.answer}</span>
@@ -62,3 +62,5 @@ export function ExpeditionEvidence({data,onAssign,onUnassign,onOverride}:{data:E
    </li>)}</ul></div>
  </section>;
 }
+// Request a clue (lib/clues.ts): which locks used one, and how far (tier 2 or 3 means the lock doesn't count toward mastery).
+function cluesText(notes:{chunk:number;clue?:number}[]){const used=notes.filter(n=>(n.clue??0)>0);return used.length?used.map(n=>`Lock ${n.chunk}: tier ${n.clue}`).join(", "):"None"}

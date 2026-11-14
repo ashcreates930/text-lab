@@ -50,11 +50,13 @@ const expChunk=z.object({id:z.string(),bank:z.array(expQuestion).max(2).optional
 // character (each with the exact lines in the expedition that confirm or disprove it), an optional gesture, and what
 // the witness says when caught as the liar. Rules: lib/interview.ts.
 const statement=z.object({text:z.string().min(1),lines:z.array(z.string().min(1)).min(1),gesture:z.enum(["laughing","head-shake"]).optional()});
-const witness=z.object({character:z.string(),cards:z.array(z.string().min(1)).length(2),truth:statement,lie:statement,caught:z.string().min(1)});
+// Escape rooms: at, the lock (1-based) where the witness is met inside the room, just before its reading, with the
+// interview's one question asked of all three.
+const witness=z.object({character:z.string(),cards:z.array(z.string().min(1)).length(2),truth:statement,lie:statement,caught:z.string().min(1),at:z.number().int().min(1).optional()});
 // Lightning beats (lib/pacing.ts): 10-second recall questions, answered by tapping the one sentence (in chunk `chunk`)
 // that answers; asked after chunk `after` (both 1-based), between deeper questions.
 const lightning=z.object({id:z.string(),chunk:z.number().int().min(1),after:z.number().int().min(1),question:z.string().min(1),answer:z.array(z.string().min(1)).min(1)});
-const expedition=z.object({id:z.string(),title:z.string().min(1),chunks:z.array(expChunk).min(1),interview:z.object({witnesses:z.array(witness).length(3)}).optional(),lightning:z.array(lightning).optional()});
+const expedition=z.object({id:z.string(),title:z.string().min(1),chunks:z.array(expChunk).min(1),interview:z.object({question:z.string().min(1).optional(),witnesses:z.array(witness).length(3)}).optional(),lightning:z.array(lightning).optional()});
 // The world map (lib/world-map.ts; built by scripts/build-map.ts from scripts/maps/<world>.ts). A painted base image
 // with no words; places, regions and stops are drawn in code on top, in the image's own pixels. Each expedition is a
 // region; each chunk is a stop where that part of the story happens. landmark: the twist (a witness interrupts) or the

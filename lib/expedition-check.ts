@@ -122,7 +122,7 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
     // The finale: Name the Liar when the expedition has an Interview, otherwise Make the Call (last chunk, once).
     const calls = types.filter((t) => t === "make_call").length;
     if (exp.interview ? calls > 0 : calls !== 1 || types.at(-1) !== "make_call") out.push(exp.interview ? `${world.id}/${exp.id}: Name the Liar is the finale; no Make the Call` : `${world.id}/${exp.id}: Make the Call is the last chunk, once`);
-    out.push(...interviewProblems(world, exp, allLines, names));
+    { const cc = chunks.map((c) => ({ lines: c.lines.map((l) => ({ text: l.text, pid: l.pid })) })); out.push(...interviewProblems(world, exp, allLines, names, cc), ...interviewRoomTextProblems(world, exp, cc)); }
     // A Catch the Lie testimony (main or bank) never shares its disproving line with an interview lie: the same claim twice.
     if (exp.interview) { const lieLines = new Set(exp.interview.witnesses.flatMap((w) => w.lie.lines).map(norm));
       exp.chunks.forEach((c, k) => bankOf(c).forEach((q, i) => { if (q.type === "catch_lie" && (q.proof?.lines ?? []).some((l) => lieLines.has(norm(l)))) out.push(`${world.id}/${exp.id}: chunk ${k + 1} ${i ? "bank question" : "question"}: its testimony is disproved by the same line as an interview lie`); })); }
@@ -189,9 +189,28 @@ export function expeditionProblems(world: WorldPack, passages: SourcePassage[]):
 
 // The Interview: three different speaking witnesses; every statement's lines are exact lines from this expedition;
 // a statement never repeats its own proof line's key words (students must find the line, not match words).
-export function interviewProblems(world: WorldPack, exp: Expedition, allLines: string[], names: Set<string>) {
+type CheckChunk = { lines: { text: string; pid: string }[] };
+export function interviewProblems(world: WorldPack, exp: Expedition, allLines: string[], names: Set<string>, chunks: CheckChunk[] = []) {
   const out: string[] = [], iv = exp.interview; if (!iv) return out;
   const at = `${world.id}/${exp.id} interview`;
+  // Witnesses in the room: one question for all three, and each witness met no later than the first lock whose reading
+  // holds a line that checks them (so the student hears the claim before reading what proves or disproves it).
+  if (iv.question != null || iv.witnesses.some((w) => w.at != null)) {
+    if (!iv.question || iv.witnesses.some((w) => w.at == null)) out.push(`${at}: witnesses in the room need the one question and a lock for every witness`);
+    if (iv.question && /—/.test(iv.question)) out.push(`${at}: no em dashes`);
+    const chunkOf = (l: string) => chunks.findIndex((c) => c.lines.some((x) => norm(x.text) === norm(l))) + 1;
+    for (const w of iv.witnesses) if (w.at != null && chunks.length) {
+      if (w.at > chunks.length) out.push(`${at}: ${w.character} is met at lock ${w.at}, past the last lock`);
+      const first = Math.min(...[...w.truth.lines, ...w.lie.lines].map(chunkOf).filter((n) => n > 0));
+      if (Number.isFinite(first) && w.at > first) out.push(`${at}: ${w.character} is met at lock ${w.at}, after lock ${first} already checks them`);
+    }
+    // A witness who bursts in to testify (a twist, in the main question, a bank question or any version) has already been
+    // met in the room: their meeting comes at or before the first lock where they testify.
+    exp.chunks.forEach((c, k) => { for (const q of bankOf(c).flatMap((x) => [x, ...Object.values(x.versions ?? {})].filter(Boolean) as ExpQuestion[])) {
+      const w = iv.witnesses.find((x) => x.character === q.testimony?.speaker);
+      if (w?.at != null && w.at > k + 1) out.push(`${at}: ${w.character} testifies at lock ${k + 1} but is met at lock ${w.at}; meet them at or before lock ${k + 1}`);
+    } });
+  }
   if (new Set(iv.witnesses.map((w) => w.character)).size !== iv.witnesses.length) out.push(`${at}: three different witnesses`);
   for (const w of iv.witnesses) {
     const c = world.characters.find((x) => x.id === w.character);
@@ -204,6 +223,19 @@ export function interviewProblems(world: WorldPack, exp: Expedition, allLines: s
     }
     if (w.truth.lines.some((l) => w.lie.lines.includes(l)) && w.truth.lines.length === 1 && w.lie.lines.length === 1) out.push(`${at}: ${w.character} truth and lie rest on the same line`);
     if ([w.truth.text, w.lie.text, w.caught, ...w.cards].some((t) => /—/.test(t))) out.push(`${at}: no em dashes`);
+  }
+  return out;
+}
+
+// Witnesses in the room speak in one sentence each (truth, lie and caught line), and no line that checks them comes from
+// a content-noted paragraph.
+export function interviewRoomTextProblems(world: WorldPack, exp: Expedition, chunks: CheckChunk[]) {
+  const out: string[] = [], iv = exp.interview; if (!iv || !iv.question) return out;
+  const at = `${world.id}/${exp.id} interview`, noted = new Set(world.storybook?.ai_exclude ?? []);
+  const sentences = (t: string) => (t.trim().match(/[.!?]+(?=\s|$)/g) ?? []).length;
+  for (const w of iv.witnesses) {
+    for (const [kind, t] of [["truth", w.truth.text], ["lie", w.lie.text], ["caught", w.caught]] as const) if (sentences(t) > 1) out.push(`${at}: ${w.character} ${kind} is more than one sentence`);
+    for (const l of [...w.truth.lines, ...w.lie.lines]) { const hit = chunks.flatMap((c) => c.lines).find((x) => norm(x.text) === norm(l)); if (hit && noted.has(hit.pid)) out.push(`${at}: ${w.character} rests on content-noted ${hit.pid}`); }
   }
   return out;
 }

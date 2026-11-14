@@ -11,6 +11,8 @@ const Note = z.object({
   chunk: z.number().int().min(1).max(200), type: text(60), question: text(600), answer: text(1200), proof: text(4000), rightFirstTry: z.boolean(), fixed: z.boolean().nullable(),
   gistPick: text(600).nullable(), gistRight: z.boolean(), typedQuestion: text(300).nullable(), unknownWords: z.array(text(40)).max(40), correctProof: text(4000), standards: z.array(text(20)).max(6), note: text(2000),
   version: z.enum(["easier", "standard", "harder"]).optional(),
+  // The question format (mastery's two-format rule), the bank pick, and the clue tier asked for (lib/clues.ts).
+  format: text(30).optional(), bank: z.number().int().min(0).max(5).optional(), clue: z.number().int().min(0).max(3).optional(),
 });
 const Said = z.object({ character: text(80), name: text(80), short: text(40), text: text(600), lied: z.boolean(), gesture: z.enum(["laughing", "head-shake"]).nullable(), card: text(300).nullable() });
 const Interview = z.object({ said: z.array(Said).max(6), liar: text(80), lieText: text(600), lieLines: z.array(text(4000)).max(4), pick: text(80).nullable(), line: text(4000).nullable(), named: z.boolean(), solved: z.boolean(), fixed: z.boolean().nullable(), points: z.number().int().min(0).max(10000) });

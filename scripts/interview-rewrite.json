@@ -1,0 +1,354 @@
+{
+  "note": "Proposed Interview for the escape rooms (phase 6), for the teacher's review before new audio is recorded. One question per room, answered by all three witnesses; each witness is met at the lock in 'at' (before its reading), never after the lock that checks them; every line is one sentence; every lie keeps its proof line. 'lines' (p, s) appear only where a statement moves to a new proof line.",
+  "rooms": {
+    "into-the-hollow": {
+      "question": "What should a stranger know about this valley?",
+      "witnesses": {
+        "hans-van-ripper": {
+          "at": 1,
+          "truth": "The farm wives christened the town, on account of their men loitering at the inn whenever they went in to sell their crops.",
+          "lie": "That hollow is a full day's journey from town, and I'll tell you plainly, it's the noisiest spot in all the county.",
+          "caught": "Hmph, I may have stretched it a little."
+        },
+        "brom-bones": {
+          "at": 7,
+          "truth": "He doesn't keep to the Hollow; he roams the highways too, and he likes to prowl near the old meeting house.",
+          "lie": "He's hunting for the horse he lost, and he takes his own sweet time getting home.",
+          "caught": "Ha, you got me; I just like to see folks jump."
+        },
+        "katrina-van-tassel": {
+          "at": 9,
+          "truth": "Folks who arrive clear-headed don't stay that way, and within a season they're spotting ghosts too.",
+          "lie": "Only families born in the Hollow believe those tales, and newcomers just laugh at them.",
+          "caught": "Oh, you caught that; I only wanted to see if you were listening."
+        }
+      }
+    },
+    "the-schoolmaster": {
+      "question": "What should I know about the new schoolmaster?",
+      "witnesses": {
+        "brom-bones": {
+          "at": 2,
+          "truth": "Any robber could slip into that little log school easily, but he'd have a terrible time escaping again.",
+          "lie": "That beanpole is built as solid and stocky as a blacksmith, folks say, with tiny fists to match.",
+          "caught": "Ha, fine, he's a beanpole through and through."
+        },
+        "hans-van-ripper": {
+          "at": 7,
+          "truth": "He moves from one family to the next every seven days, and everything he owns fits in one bundle.",
+          "lie": "He never lifts a finger for us, not one chore, and just sits by the hearth and eats.",
+          "caught": "Hmph, all right, he helped now and then."
+        },
+        "katrina-van-tassel": {
+          "at": 5,
+          "truth": "On the Lord's day he plants himself before the choir loft with his best voices, sure he outshines the minister.",
+          "lie": "He has no ear for music at all and never gives lessons in it, not for any amount of coin.",
+          "caught": "Oh, you checked; he does teach music."
+        }
+      }
+    },
+    "tales-by-the-fire": {
+      "question": "What is the schoolmaster like outside the classroom?",
+      "witnesses": {
+        "katrina-van-tassel": {
+          "at": 2,
+          "truth": "After worship he strolls past the graves with us girls, picking us fruit and reading the stones aloud.",
+          "lie": "The ladies around here think a teacher is nothing special, no finer than any plowboy.",
+          "caught": "Caught me; we do think a teacher is rather grand."
+        },
+        "brom-bones": {
+          "at": 4,
+          "truth": "He keeps an old volume about sorcery in the colonies and trusts every word of it.",
+          "lie": "Bugs don't bother him one bit; a June bug could smack into his face and he'd just laugh.",
+          "caught": "Ha, you're right, a bug nearly finished him off."
+        },
+        "hans-van-ripper": {
+          "at": 7,
+          "truth": "He scares the grandmothers silly, telling them the earth spins about and they spend part of each day upside down.",
+          "lie": "He keeps to himself when the snow comes and won't spend his nights chatting with the grandmothers.",
+          "caught": "Hmph, fine, he was at every fireside in the valley, eating apples."
+        }
+      }
+    },
+    "the-van-tassel-farm": {
+      "question": "What should I know about the Van Tassels and their farm?",
+      "witnesses": {
+        "brom-bones": {
+          "at": 2,
+          "truth": "She has no brothers or sisters, and her pa is about the richest man in these parts.",
+          "lie": "The schoolmaster saw all that livestock and never once thought about supper.",
+          "caught": "Ha, of course he thought about supper; he thinks of nothing else."
+        },
+        "hans-van-ripper": {
+          "at": 4,
+          "truth": "He hardly ever thinks past his own fences, but inside them all is cozy and in good order.",
+          "lie": "His place sits up on a bare, windy hilltop, miles from any water.",
+          "caught": "Hmph, it's in a snug green nook by the water."
+        },
+        "katrina-van-tassel": {
+          "at": 5,
+          "truth": "A huge old tree shades our house, and the clearest drinking source in the county rises right beneath it.",
+          "truthLines": [
+            {
+              "p": "p023",
+              "s": 5
+            }
+          ],
+          "lie": "Father loves showing off his money and fancy things for all the neighbors to admire.",
+          "lieLines": [
+            {
+              "p": "p023",
+              "s": 3
+            }
+          ],
+          "caught": "All right, Father isn't one for show; he just likes a full table.",
+          "why": "Moved off the sentences about Katrina's dress (p022), under the rule against using Irving's descriptions of her figure."
+        }
+      }
+    },
+    "a-rival-appears": {
+      "question": "Who wants Katrina's hand, and what are they like?",
+      "witnesses": {
+        "hans-van-ripper": {
+          "at": 2,
+          "truth": "He dreamed of hauling all their belongings and a brood of little ones off to the frontier.",
+          "lie": "When he stepped through that door he was not impressed one bit.",
+          "caught": "Hmph, the place took his heart in one look."
+        },
+        "katrina-van-tassel": {
+          "at": 4,
+          "truth": "The young fellows who call on me glare at one another, but they all team up the moment a newcomer shows his face.",
+          "lie": "The young men around here are all quiet and small, and not one of them is bold or loud.",
+          "caught": "All right, I know one who is very loud indeed."
+        },
+        "brom-bones": {
+          "at": 8,
+          "truth": "I'm built wide and strong, with a dark mop on my head and a grin that's half joke, half swagger.",
+          "lie": "Nobody around here listens to me in an argument; they settle it without me.",
+          "caught": "Ha, all right, I settle every quarrel around here."
+        }
+      }
+    },
+    "the-feud": {
+      "question": "What's going on between Katrina's suitors?",
+      "witnesses": {
+        "katrina-van-tassel": {
+          "at": 2,
+          "truth": "When a particular steed is tethered at our gate on the Lord's day evening, the other young men just keep walking.",
+          "lie": "Folks around here can't stand Brom, and nobody has a kind word for him.",
+          "caught": "Fine, they rather like him, even the ones he plays tricks on."
+        },
+        "hans-van-ripper": {
+          "at": 6,
+          "truth": "His missus says the birds in the yard need watching, but a young lady can mind herself.",
+          "lie": "Old Baltus rules that girl with an iron hand, and she can't do a thing without his say.",
+          "caught": "Hmph, he's soft as butter with her."
+        },
+        "brom-bones": {
+          "at": 7,
+          "truth": "I'd have gladly met him fist to fist to end it, but the sly fellow wouldn't come near me.",
+          "lie": "I kept calling on her every week of the year, same as always, schoolmaster or no.",
+          "caught": "Ha, all right, I stayed away a while."
+        }
+      }
+    },
+    "the-invitation": {
+      "question": "What's been happening to the schoolmaster lately?",
+      "witnesses": {
+        "brom-bones": {
+          "at": 1,
+          "truth": "We plugged up the flue so his music class had to flee in a cloud of soot.",
+          "lie": "I never pulled a single trick on him; it wasn't my style.",
+          "caught": "Ha, guilty: every trick in the book."
+        },
+        "katrina-van-tassel": {
+          "at": 6,
+          "truth": "I hear he fussed for ages fixing up the one set of clothes he owns, peering into a cracked mirror.",
+          "lie": "He kept the children late that day, finishing every lesson properly.",
+          "caught": "Oh, he let them go early because he couldn't wait."
+        },
+        "hans-van-ripper": {
+          "at": 7,
+          "truth": "He rode off on my old animal to court the girl, dressed up as a hero from a storybook.",
+          "lie": "That beast of mine never had a spark of spirit, not even as a colt.",
+          "caught": "Hmph, he was a firecracker once."
+        }
+      }
+    },
+    "the-ride-to-the-party": {
+      "question": "What did you notice as everyone headed to the party?",
+      "witnesses": {
+        "brom-bones": {
+          "at": 1,
+          "truth": "His little cap perched way down near his beak, and the back of his jacket flapped clear to his mount's rump.",
+          "lie": "Every orchard he rode past had been stripped clean, with nothing left to pick.",
+          "caught": "Ha, the orchards were loaded; I just like a gloomy tale."
+        },
+        "hans-van-ripper": {
+          "at": 9,
+          "truth": "The grandfathers came in home-woven jackets, with great clumsy footwear and big shiny clasps.",
+          "lie": "Hardly a soul turned up, and the house was half empty all night.",
+          "caught": "Hmph, it was packed to the rafters."
+        },
+        "katrina-van-tassel": {
+          "at": 8,
+          "truth": "The boys bind their pigtails with the hide of an eel, swearing it makes them grow thicker.",
+          "lie": "We girls all dressed in the very newest town fashions, head to toe.",
+          "caught": "Well, maybe a ribbon or two was new."
+        }
+      }
+    },
+    "the-feast-and-the-dance": {
+      "question": "What happened at the Van Tassels' feast?",
+      "witnesses": {
+        "brom-bones": {
+          "at": 1,
+          "truth": "I'd never be seen on a tame, gentle mount; give me a wild one any day.",
+          "truthLines": [
+            {
+              "p": "p043",
+              "s": 1
+            }
+          ],
+          "lie": "I came on a gentle old mare that any child could ride.",
+          "caught": "Ha, gentle is the last word for Daredevil; he would throw anyone but me.",
+          "why": "Moved off p048 (content-noted): his truth was proved by the sentence about him brooding in a corner during the dance."
+        },
+        "katrina-van-tassel": {
+          "at": 3,
+          "truth": "We had fried rings of dough, twisted pastries, and every sort of treat you can name.",
+          "lie": "Father was in a sour mood all evening and barely smiled at anyone.",
+          "lieLines": [
+            {
+              "p": "p046",
+              "s": 0
+            }
+          ],
+          "caught": "All right, Father was beaming all night, happy as could be.",
+          "why": "Moved off p048 (content-noted). Her lie then moved off p045 too, because the lock 5 witness twist already uses that line (the same claim twice); it now rests on Baltus's good humor at the feast (p046)."
+        },
+        "hans-van-ripper": {
+          "at": 4,
+          "truth": "Baltus didn't fuss: a firm grip, a clap on the back, a hearty roar, and he told everyone to dig in.",
+          "lie": "The schoolmaster hardly touched a crumb all night.",
+          "caught": "Hmph, he ate enough for three."
+        }
+      }
+    },
+    "ghost-stories": {
+      "question": "What stories did people tell at the party?",
+      "witnesses": {
+        "katrina-van-tassel": {
+          "at": 3,
+          "truth": "Some neighbors from up the valley came, spinning their spooky stories as they always do.",
+          "lie": "Ghost stories never last in a quiet old valley like ours.",
+          "caught": "You're right, they never fade here."
+        },
+        "hans-van-ripper": {
+          "at": 6,
+          "truth": "Brouwer scoffed at spooks till he had to ride double with one, and got pitched into the water.",
+          "lie": "That ghost keeps clear of the old wooden crossing and is only seen up on the mountain.",
+          "caught": "Hmph, that crossing is his favorite spot."
+        },
+        "brom-bones": {
+          "at": 10,
+          "truth": "I dared that rider to a contest for a drink, and my brute left his mount in the dust till he burst into flame and was gone.",
+          "lie": "I'd never joke about that rider, because he frightens me more than anything.",
+          "caught": "Ha, I was never frightened of him; I call him a jockey to his face."
+        }
+      }
+    },
+    "the-lonely-road": {
+      "question": "How did the party end, and what came after?",
+      "witnesses": {
+        "hans-van-ripper": {
+          "at": 1,
+          "truth": "He told them bits from that old Puritan writer and wonders from back where he grew up.",
+          "lie": "It was a pleasant time for a ride, cheerful as could be.",
+          "caught": "Hmph, it was gloomy as a grave that night."
+        },
+        "brom-bones": {
+          "at": 2,
+          "truth": "He stormed off to the barn and woke that poor beast with a smack and a boot.",
+          "lie": "Everyone stayed the night at the Van Tassels', and not a soul left till morning.",
+          "caught": "Ha, they all rattled off home."
+        },
+        "katrina-van-tassel": {
+          "at": 2,
+          "truth": "Folks pass that old tree with a mix of awe and fear, half for the poor soldier and half for the stories.",
+          "lie": "The young people went home quietly that night without a peep.",
+          "caught": "Oh, we were giggling the whole way home."
+        }
+      }
+    },
+    "the-headless-horseman": {
+      "question": "What happened on the road that night?",
+      "witnesses": {
+        "katrina-van-tassel": {
+          "at": 2,
+          "truth": "That's the very place the British officer was taken, by farmers hiding in the leaves.",
+          "lie": "Boys cross that water on their own after sunset without a second thought.",
+          "caught": "No, the boys run past it shaking."
+        },
+        "hans-van-ripper": {
+          "at": 3,
+          "truth": "My old horse bolted sideways into the briars instead of crossing.",
+          "lie": "He trotted straight over the planks without a moment's fuss.",
+          "caught": "Hmph, he fought that schoolmaster every step."
+        },
+        "brom-bones": {
+          "at": 5,
+          "truth": "A huge rider, I hear, on a dark and mighty steed.",
+          "lie": "When the schoolmaster sped up, that other rider fell far behind.",
+          "caught": "Ha, that rider stuck to him like a burr, or so I hear."
+        }
+      }
+    },
+    "gone": {
+      "question": "What became of the schoolmaster?",
+      "witnesses": {
+        "brom-bones": {
+          "at": 6,
+          "truth": "Down by the creek lay the fellow's cap, and next to it a busted gourd.",
+          "lie": "That old nag never made it back and ran off for good.",
+          "caught": "Ha, he was munching grass at the gate by morning."
+        },
+        "hans-van-ripper": {
+          "at": 3,
+          "truth": "I tossed his conjuring volumes and that scribbled poem in the fire, and my young ones are done with lessons.",
+          "lie": "He left a trunk stuffed with fine suits and silver.",
+          "caught": "Hmph, it was two shirts and a half."
+        },
+        "katrina-van-tassel": {
+          "at": 3,
+          "truth": "Since he owed no one and had no wife, people soon stopped thinking about him, and a new teacher took over.",
+          "lie": "At church everyone agreed he had simply run away, and no one blamed any ghost.",
+          "caught": "Oh, they all blamed the Hessian."
+        }
+      }
+    },
+    "the-postscript": {
+      "question": "What happened in the years after he disappeared?",
+      "witnesses": {
+        "katrina-van-tassel": {
+          "at": 1,
+          "truth": "A neighbor back from the city says the schoolmaster lives on and even sits as a judge now.",
+          "lie": "I never married anyone from the valley; I'm still waiting for the right one.",
+          "caught": "Oh, you know very well whom I married."
+        },
+        "brom-bones": {
+          "at": 2,
+          "truth": "Not long after he vanished, I walked Katrina down the aisle as my bride.",
+          "lie": "Folks use that old crossing as easy as you please now.",
+          "caught": "Ha, they even moved the road to stay clear of it."
+        },
+        "hans-van-ripper": {
+          "at": 3,
+          "truth": "The old school went to ruin, and farm lads swear they still hear him humming hymns out there at dusk.",
+          "lie": "The grandmothers laugh at that ghost talk and say he just ran off.",
+          "caught": "Hmph, they swear he was spirited away."
+        }
+      }
+    }
+  }
+}

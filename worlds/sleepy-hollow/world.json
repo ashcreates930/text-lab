@@ -8753,30 +8753,33 @@
         }
       ],
       "interview": {
+        "question": "What should a stranger know about this valley?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 7,
             "cards": [
               "Tell me about the Headless Horseman.",
               "Where would a traveler run into him?"
             ],
             "truth": {
-              "text": "He doesn't keep to the Hollow, not him. He's out on the highways too, and the ground around the old meeting house is where he likes to prowl.",
+              "text": "He doesn't keep to the Hollow; he roams the highways too, and he likes to prowl near the old meeting house.",
               "lines": [
                 "His haunts are not\nconfined to the valley, but extend at times to the adjacent roads, and\nespecially to the vicinity of a church at no great distance."
               ]
             },
             "lie": {
-              "text": "He's out searching for the horse he lost, see, and he's never pressed. He takes his own sweet time getting home, slow as you please.",
+              "text": "He's hunting for the horse he lost, and he takes his own sweet time getting home.",
               "lines": [
                 "Indeed,\ncertain of the most authentic historians of those parts, who have been\ncareful in collecting and collating the floating facts concerning this\nspectre, allege that the body of the trooper having been buried in the\nchurchyard, the ghost rides forth to the scene of battle in nightly\nquest of his head, and that the rushing speed with which he sometimes\npasses along the Hollow, like a midnight blast, is owing to his being\nbelated, and in a hurry to get back to the churchyard before daybreak."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! All right, you got me. I just like to see folks jump."
+            "caught": "Ha, you got me; I just like to see folks jump."
           },
           {
             "character": "hans-van-ripper",
+            "at": 1,
             "cards": [
               "What should a newcomer know about this part of the country?",
               "Tell me about the town and the valley near it."
@@ -8794,28 +8797,29 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. Fine. I may have stretched it a little."
+            "caught": "Hmph, I may have stretched it a little."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 9,
             "cards": [
               "Do the old tales take hold of people here?",
               "Who believes the stories told in this valley?"
             ],
             "truth": {
-              "text": "Folks who come here clear-headed and sensible don't stay that way. Give them a season, and they start spotting ghosts too.",
+              "text": "Folks who arrive clear-headed don't stay that way, and within a season they're spotting ghosts too.",
               "lines": [
                 "However wide awake\nthey may have been before they entered that sleepy region, they are\nsure, in a little time, to inhale the witching influence of the air, and\nbegin to grow imaginative, to dream dreams, and see apparitions."
               ]
             },
             "lie": {
-              "text": "Only the families born in the Hollow believe those tales. Anyone who moves here from outside just laughs at them.",
+              "text": "Only families born in the Hollow believe those tales, and newcomers just laugh at them.",
               "lines": [
                 "It is remarkable that the visionary propensity I have mentioned is not\nconfined to the native inhabitants of the valley, but is unconsciously\nimbibed by every one who resides there for a time.",
                 "However wide awake\nthey may have been before they entered that sleepy region, they are\nsure, in a little time, to inhale the witching influence of the air, and\nbegin to grow imaginative, to dream dreams, and see apparitions."
               ]
             },
-            "caught": "Oh, you caught that? Clever. I only wanted to see if you were listening."
+            "caught": "Oh, you caught that; I only wanted to see if you were listening."
           }
         ]
       }
@@ -9774,30 +9778,33 @@
         }
       ],
       "interview": {
+        "question": "What should I know about the new schoolmaster?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 2,
             "cards": [
               "What do you make of the new schoolmaster?",
               "Tell me about the schoolhouse."
             ],
             "truth": {
-              "text": "That little log school? Any robber could slip inside without trouble, but he'd have a terrible time escaping again.",
+              "text": "Any robber could slip into that little log school easily, but he'd have a terrible time escaping again.",
               "lines": [
                 "It was most ingeniously secured at vacant hours, by a\nwithe twisted in the handle of the door, and stakes set against the\nwindow shutters; so that though a thief might get in with perfect ease,\nhe would find some embarrassment in getting out,--an idea most probably\nborrowed by the architect, Yost Van Houten, from the mystery of an\neelpot."
               ]
             },
             "lie": {
-              "text": "That beanpole? Folks say he's built as solid and stocky as a blacksmith, with tiny fists to match.",
+              "text": "That beanpole is built as solid and stocky as a blacksmith, folks say, with tiny fists to match.",
               "lines": [
                 "He was tall,\nbut exceedingly lank, with narrow shoulders, long arms and legs, hands\nthat dangled a mile out of his sleeves, feet that might have served for\nshovels, and his whole frame most loosely hung together."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! Fine, he's a beanpole through and through. I was just having fun."
+            "caught": "Ha, fine, he's a beanpole through and through."
           },
           {
             "character": "hans-van-ripper",
+            "at": 7,
             "cards": [
               "How does the schoolmaster earn his keep?",
               "What is he like when he stays with a family?"
@@ -9809,16 +9816,17 @@
               ]
             },
             "lie": {
-              "text": "He never lifts a finger for us, not one chore. He just sits by the hearth and eats.",
+              "text": "He never lifts a finger for us, not one chore, and just sits by the hearth and eats.",
               "lines": [
                 "He assisted the farmers\noccasionally in the lighter labors of their farms, helped to make\nhay, mended the fences, took the horses to water, drove the cows from\npasture, and cut wood for the winter fire."
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. All right, he helped now and then. I'll grant him that."
+            "caught": "Hmph, all right, he helped now and then."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 5,
             "cards": [
               "What is he like at church?",
               "Does he teach anything besides lessons?"
@@ -9835,7 +9843,7 @@
                 "In addition to his other vocations, he was the singing-master of the\nneighborhood, and picked up many bright shillings by instructing the\nyoung folks in psalmody."
               ]
             },
-            "caught": "Oh, you checked! He does teach music. I wanted to see who was paying attention."
+            "caught": "Oh, you checked; he does teach music."
           }
         ]
       }
@@ -10820,9 +10828,11 @@
         }
       ],
       "interview": {
+        "question": "What is the schoolmaster like outside the classroom?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 4,
             "cards": [
               "What does the schoolmaster believe in?",
               "What frightens him most?"
@@ -10834,16 +10844,17 @@
               ]
             },
             "lie": {
-              "text": "Bugs don't bother him one bit. A June bug could smack right into his face and he'd just laugh.",
+              "text": "Bugs don't bother him one bit; a June bug could smack into his face and he'd just laugh.",
               "lines": [
                 "The\nfireflies, too, which sparkled most vividly in the darkest places, now\nand then startled him, as one of uncommon brightness would stream across\nhis path; and if, by chance, a huge blockhead of a beetle came winging\nhis blundering flight against him, the poor varlet was ready to give up\nthe ghost, with the idea that he was struck with a witch’s token."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! You're right, a bug nearly finished him off. I wish I'd seen it."
+            "caught": "Ha, you're right, a bug nearly finished him off."
           },
           {
             "character": "hans-van-ripper",
+            "at": 7,
             "cards": [
               "How does he spend his evenings?",
               "What does he talk about with the old folks?"
@@ -10861,10 +10872,11 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. Fine. He was at every fireside in the valley, eating apples."
+            "caught": "Hmph, fine, he was at every fireside in the valley, eating apples."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 2,
             "cards": [
               "What do the young ladies think of him?",
               "How does he act after Sunday worship?"
@@ -10881,7 +10893,7 @@
                 "The schoolmaster is generally a man of some importance in the female\ncircle of a rural neighborhood; being considered a kind of idle,\ngentlemanlike personage, of vastly superior taste and accomplishments to\nthe rough country swains, and, indeed, inferior in learning only to the\nparson."
               ]
             },
-            "caught": "Caught me. We do think a teacher is rather grand. Don't tell him I said so."
+            "caught": "Caught me; we do think a teacher is rather grand."
           }
         ]
       }
@@ -11889,9 +11901,11 @@
         }
       ],
       "interview": {
+        "question": "What should I know about the Van Tassels and their farm?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 2,
             "cards": [
               "What is Katrina's family like?",
               "What does the schoolmaster want?"
@@ -11903,16 +11917,17 @@
               ]
             },
             "lie": {
-              "text": "The schoolmaster saw all that livestock and never once thought about supper. Not him.",
+              "text": "The schoolmaster saw all that livestock and never once thought about supper.",
               "lines": [
                 "The pedagogue’s mouth watered as he looked upon this sumptuous promise\nof luxurious winter fare."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! Of course he thought about supper. He thinks of nothing else."
+            "caught": "Ha, of course he thought about supper; he thinks of nothing else."
           },
           {
             "character": "hans-van-ripper",
+            "at": 4,
             "cards": [
               "What is old Baltus like?",
               "Tell me about the Van Tassel place."
@@ -11930,27 +11945,28 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. It's in a snug green nook by the water. I misspoke."
+            "caught": "Hmph, it's in a snug green nook by the water."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 5,
             "cards": [
               "How do you like to dress?",
               "Where did your family's jewelry come from?"
             ],
             "truth": {
-              "text": "The jewelry I wear crossed the ocean with my family long ago, all the way from Holland.",
+              "text": "A huge old tree shades our house, and the clearest drinking source in the county rises right beneath it.",
               "lines": [
-                "She wore the ornaments of pure yellow gold, which her\ngreat-great-grandmother had brought over from Saardam; the tempting\nstomacher of the olden time, and withal a provokingly short petticoat,\nto display the prettiest foot and ankle in the country round."
+                "A\ngreat elm tree spread its broad branches over it, at the foot of which\nbubbled up a spring of the softest and sweetest water, in a little well\nformed of a barrel; and then stole sparkling away through the grass, to\na neighboring brook, that babbled along among alders and dwarf willows."
               ]
             },
             "lie": {
-              "text": "I only ever wear the newest styles. Nothing from the past for me.",
+              "text": "Father loves showing off his money and fancy things for all the neighbors to admire.",
               "lines": [
-                "She was withal a\nlittle of a coquette, as might be perceived even in her dress, which was\na mixture of ancient and modern fashions, as most suited to set off\nher charms."
+                "He was satisfied with\nhis wealth, but not proud of it; and piqued himself upon the hearty\nabundance, rather than the style in which he lived."
               ]
             },
-            "caught": "You noticed. I do like mixing the past and the present. It suits me."
+            "caught": "All right, Father isn't one for show; he just likes a full table."
           }
         ]
       }
@@ -12908,9 +12924,11 @@
         }
       ],
       "interview": {
+        "question": "Who wants Katrina's hand, and what are they like?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 8,
             "cards": [
               "Who are you, exactly?",
               "What are you good at?"
@@ -12922,16 +12940,17 @@
               ]
             },
             "lie": {
-              "text": "Nobody around here listens to me when there's an argument. They settle it without me.",
+              "text": "Nobody around here listens to me in an argument; they settle it without me.",
               "lines": [
                 "He was foremost at all races and cock fights; and, with the ascendancy\nwhich bodily strength always acquires in rustic life, was the umpire in\nall disputes, setting his hat on one side, and giving his decisions with\nan air and tone that admitted of no gainsay or appeal."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! As if I could stay off a saddle. You got me."
+            "caught": "Ha, all right, I settle every quarrel around here."
           },
           {
             "character": "hans-van-ripper",
+            "at": 2,
             "cards": [
               "What did the schoolmaster think of the Van Tassel house?",
               "Where does the schoolmaster dream of going?"
@@ -12949,10 +12968,11 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. The place took his heart in one look. I was wrong."
+            "caught": "Hmph, the place took his heart in one look."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 4,
             "cards": [
               "What do you think of your admirers?",
               "What are the young men like around you?"
@@ -12964,12 +12984,12 @@
               ]
             },
             "lie": {
-              "text": "The young men around here are all quiet and small. Not one of them is bold or loud.",
+              "text": "The young men around here are all quiet and small, and not one of them is bold or loud.",
               "lines": [
                 "Among these, the most formidable was a burly, roaring, roystering blade,\nof the name of Abraham, or, according to the Dutch abbreviation, Brom\nVan Brunt, the hero of the country round, which rang with his feats of\nstrength and hardihood."
               ]
             },
-            "caught": "All right, I know one who is very loud indeed. You were listening."
+            "caught": "All right, I know one who is very loud indeed."
           }
         ]
       }
@@ -13962,9 +13982,11 @@
         }
       ],
       "interview": {
+        "question": "What's going on between Katrina's suitors?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 7,
             "cards": [
               "What happened between you and the schoolmaster?",
               "Why didn't you just fight him?"
@@ -13982,10 +14004,11 @@
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! All right, I stayed away a while. Don't rub it in."
+            "caught": "Ha, all right, I stayed away a while."
           },
           {
             "character": "hans-van-ripper",
+            "at": 6,
             "cards": [
               "How do the Van Tassels raise their daughter?",
               "What does the mother of the house say?"
@@ -13997,16 +14020,17 @@
               ]
             },
             "lie": {
-              "text": "Old Baltus rules that girl with an iron hand. She can't do a thing without his say.",
+              "text": "Old Baltus rules that girl with an iron hand, and she can't do a thing without his say.",
               "lines": [
                 "Balt Van\nTassel was an easy indulgent soul; he loved his daughter better even\nthan his pipe, and, like a reasonable man and an excellent father, let\nher have her way in everything."
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. He's soft as butter with her. Everyone knows it."
+            "caught": "Hmph, he's soft as butter with her."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 2,
             "cards": [
               "Who comes calling on you?",
               "What do folks think of Brom?"
@@ -14018,12 +14042,12 @@
               ]
             },
             "lie": {
-              "text": "Folks around here can't stand Brom. Nobody has a kind word for him.",
+              "text": "Folks around here can't stand Brom, and nobody has a kind word for him.",
               "lines": [
                 "The neighbors looked upon him with a mixture\nof awe, admiration, and good-will; and, when any madcap prank or rustic\nbrawl occurred in the vicinity, always shook their heads, and warranted\nBrom Bones was at the bottom of it."
               ]
             },
-            "caught": "Fine, they rather like him. Even the ones he plays tricks on."
+            "caught": "Fine, they rather like him, even the ones he plays tricks on."
           }
         ]
       }
@@ -15004,9 +15028,11 @@
         }
       ],
       "interview": {
+        "question": "What's been happening to the schoolmaster lately?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 1,
             "cards": [
               "What did you do to the schoolmaster?",
               "How did you get back at him?"
@@ -15018,16 +15044,17 @@
               ]
             },
             "lie": {
-              "text": "I never pulled a single trick on him. Wasn't my style.",
+              "text": "I never pulled a single trick on him; it wasn't my style.",
               "lines": [
                 "There was\nsomething extremely provoking in this obstinately pacific system; it\nleft Brom no alternative but to draw upon the funds of rustic waggery in\nhis disposition, and to play off boorish practical jokes upon his rival."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! Guilty. Every trick in the book, and I'd do it again."
+            "caught": "Ha, guilty: every trick in the book."
           },
           {
             "character": "hans-van-ripper",
+            "at": 7,
             "cards": [
               "Did you lend the schoolmaster anything?",
               "Tell me about your old mount."
@@ -15045,10 +15072,11 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. He was a firecracker once. Still is, on a bad day."
+            "caught": "Hmph, he was a firecracker once."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 6,
             "cards": [
               "How did the schoolmaster get ready for the party?",
               "What happened at the school that afternoon?"
@@ -15065,7 +15093,7 @@
                 "Books were flung aside without\nbeing put away on the shelves, inkstands were overturned, benches thrown\ndown, and the whole school was turned loose an hour before the usual\ntime, bursting forth like a legion of young imps, yelping and racketing\nabout the green in joy at their early emancipation."
               ]
             },
-            "caught": "Oh, he let them go early. He couldn't wait. I'm flattered, really."
+            "caught": "Oh, he let them go early because he couldn't wait."
           }
         ]
       }
@@ -16064,9 +16092,11 @@
         }
       ],
       "interview": {
+        "question": "What did you notice as everyone headed to the party?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 1,
             "cards": [
               "What did the schoolmaster look like riding out?",
               "What was the weather like that evening?"
@@ -16078,16 +16108,17 @@
               ]
             },
             "lie": {
-              "text": "Every orchard he rode past had been stripped clean. Nothing left to pick.",
+              "text": "Every orchard he rode past had been stripped clean, with nothing left to pick.",
               "lines": [
                 "On all sides he beheld vast store of apples; some hanging in\noppressive opulence on the trees; some gathered into baskets and barrels\nfor the market; others heaped up in rich piles for the cider-press."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! Still as a pond, it was. I just like a stormy tale."
+            "caught": "Ha, the orchards were loaded; I just like a gloomy tale."
           },
           {
             "character": "hans-van-ripper",
+            "at": 9,
             "cards": [
               "What did folks wear to the party?",
               "Who came to the Van Tassel place?"
@@ -16099,22 +16130,23 @@
               ]
             },
             "lie": {
-              "text": "Hardly a soul turned up. The house was half empty all night.",
+              "text": "Hardly a soul turned up, and the house was half empty all night.",
               "lines": [
                 "It was toward evening that Ichabod arrived at the castle of the Heer\nVan Tassel, which he found thronged with the pride and flower of the\nadjacent country."
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. Packed to the rafters. I just don't like crowds."
+            "caught": "Hmph, it was packed to the rafters."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 8,
             "cards": [
               "What did the girls wear?",
               "What did you think of the young men's hair?"
             ],
             "truth": {
-              "text": "The boys bind their pigtails with the hide of an eel. They swear it makes it grow thicker.",
+              "text": "The boys bind their pigtails with the hide of an eel, swearing it makes them grow thicker.",
               "lines": [
                 "The sons, in short square-skirted coats, with rows of\nstupendous brass buttons, and their hair generally queued in the fashion\nof the times, especially if they could procure an eel-skin for the\npurpose, it being esteemed throughout the country as a potent nourisher\nand strengthener of the hair."
               ]
@@ -16125,7 +16157,7 @@
                 "Buxom\nlasses, almost as antiquated as their mothers, excepting where a straw\nhat, a fine ribbon, or perhaps a white frock, gave symptoms of city\ninnovation."
               ]
             },
-            "caught": "Well, maybe a ribbon or two was new. You caught me fibbing."
+            "caught": "Well, maybe a ribbon or two was new."
           }
         ]
       }
@@ -17098,17 +17130,19 @@
         }
       ],
       "interview": {
+        "question": "What happened at the Van Tassels' feast?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 1,
             "cards": [
               "What did you ride to the party?",
               "How did you feel watching the dancing?"
             ],
             "truth": {
-              "text": "I stayed off alone in a nook, stewing while she twirled with that beanpole.",
+              "text": "I'd never be seen on a tame, gentle mount; give me a wild one any day.",
               "lines": [
-                "The\nlady of his heart was his partner in the dance, and smiling graciously\nin reply to all his amorous oglings; while Brom Bones, sorely smitten\nwith love and jealousy, sat brooding by himself in one corner."
+                "He was, in fact, noted for preferring vicious animals, given to all\nkinds of tricks which kept the rider in constant risk of his neck, for\nhe held a tractable, well-broken horse as unworthy of a lad of spirit."
               ]
             },
             "lie": {
@@ -17118,31 +17152,33 @@
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! Gentle? Daredevil would throw anyone but me. You knew that."
+            "caught": "Ha, gentle is the last word for Daredevil; he would throw anyone but me."
           },
           {
             "character": "hans-van-ripper",
+            "at": 4,
             "cards": [
               "What did old Baltus do at the party?",
               "How did the schoolmaster eat?"
             ],
             "truth": {
-              "text": "Baltus didn't fuss. A firm grip, a clap on the back, a hearty roar, and he told everyone to dig in.",
+              "text": "Baltus didn't fuss: a firm grip, a clap on the back, a hearty roar, and he told everyone to dig in.",
               "lines": [
                 "His\nhospitable attentions were brief, but expressive, being confined to a\nshake of the hand, a slap on the shoulder, a loud laugh, and a pressing\ninvitation to “fall to, and help themselves.”"
               ]
             },
             "lie": {
-              "text": "The schoolmaster hardly touched a crumb all night. Barely ate.",
+              "text": "The schoolmaster hardly touched a crumb all night.",
               "lines": [
                 "Happily, Ichabod Crane was not in so great a hurry as his historian, but\ndid ample justice to every dainty."
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. He ate enough for three. I'll not deny it."
+            "caught": "Hmph, he ate enough for three."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 3,
             "cards": [
               "What was on the tea table?",
               "Whose arm were you on that evening?"
@@ -17154,12 +17190,12 @@
               ]
             },
             "lie": {
-              "text": "I spent the whole evening on Brom's arm and barely glanced at the schoolmaster.",
+              "text": "Father was in a sour mood all evening and barely smiled at anyone.",
               "lines": [
-                "The\nlady of his heart was his partner in the dance, and smiling graciously\nin reply to all his amorous oglings; while Brom Bones, sorely smitten\nwith love and jealousy, sat brooding by himself in one corner."
+                "Old Baltus Van Tassel moved about among his guests with a face dilated\nwith content and good humor, round and jolly as the harvest moon."
               ]
             },
-            "caught": "Oh, all right. I was the schoolmaster's partner. Brom sulked all night."
+            "caught": "All right, Father was beaming all night, happy as could be."
           }
         ]
       }
@@ -18166,30 +18202,33 @@
         }
       ],
       "interview": {
+        "question": "What stories did people tell at the party?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 10,
             "cards": [
               "Have you ever met the Headless Horseman?",
               "What happened on your way home one night?"
             ],
             "truth": {
-              "text": "I dared that rider to a contest for a drink, and my brute left his mount in the dust, till he burst into flame and was gone.",
+              "text": "I dared that rider to a contest for a drink, and my brute left his mount in the dust till he burst into flame and was gone.",
               "lines": [
                 "He affirmed that on returning one night from the neighboring village of\nSing Sing, he had been overtaken by this midnight trooper; that he had\noffered to race with him for a bowl of punch, and should have won it\ntoo, for Daredevil beat the goblin horse all hollow, but just as they\ncame to the church bridge, the Hessian bolted, and vanished in a flash\nof fire."
               ]
             },
             "lie": {
-              "text": "I'd never joke about that rider. He frightens me more than anything.",
+              "text": "I'd never joke about that rider, because he frightens me more than anything.",
               "lines": [
                 "This story was immediately matched by a thrice marvellous adventure of\nBrom Bones, who made light of the Galloping Hessian as an arrant jockey."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! Frightened? Me? I call him a jockey to his face. Well, to his neck."
+            "caught": "Ha, I was never frightened of him; I call him a jockey to his face."
           },
           {
             "character": "hans-van-ripper",
+            "at": 6,
             "cards": [
               "What happened to old Brouwer?",
               "Where is the ghost seen most?"
@@ -18201,16 +18240,17 @@
               ]
             },
             "lie": {
-              "text": "That ghost keeps well clear of the old wooden crossing. Folks only see him up on the mountain.",
+              "text": "That ghost keeps clear of the old wooden crossing and is only seen up on the mountain.",
               "lines": [
                 "Such was one of the favorite haunts of\nthe Headless Horseman, and the place where he was most frequently\nencountered."
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. That crossing is his favorite spot. I'd not go near it."
+            "caught": "Hmph, that crossing is his favorite spot."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 3,
             "cards": [
               "Why are there so many ghost stories here?",
               "Who told stories at the party?"
@@ -18222,12 +18262,12 @@
               ]
             },
             "lie": {
-              "text": "Ghost stories never last in a quiet old valley like ours. They fade right away.",
+              "text": "Ghost stories never last in a quiet old valley like ours.",
               "lines": [
                 "Local tales and superstitions thrive best in these sheltered,\nlong-settled retreats; but are trampled under foot by the shifting\nthrong that forms the population of most of our country places."
               ]
             },
-            "caught": "You're right, they never fade here. That's half the fun of living in the valley."
+            "caught": "You're right, they never fade here."
           }
         ]
       }
@@ -19216,9 +19256,11 @@
         }
       ],
       "interview": {
+        "question": "How did the party end, and what came after?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 2,
             "cards": [
               "How did the party end?",
               "Did you see the schoolmaster leave?"
@@ -19230,16 +19272,17 @@
               ]
             },
             "lie": {
-              "text": "Everyone stayed the night at the Van Tassels'. Not a soul headed off till morning.",
+              "text": "Everyone stayed the night at the Van Tassels', and not a soul left till morning.",
               "lines": [
                 "The old farmers gathered together\ntheir families in their wagons, and were heard for some time rattling\nalong the hollow roads, and over the distant hills."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! They all rattled off home. I just wanted to see if you'd notice."
+            "caught": "Ha, they all rattled off home."
           },
           {
             "character": "hans-van-ripper",
+            "at": 1,
             "cards": [
               "What did the schoolmaster tell at the party?",
               "What was the night like when he rode back?"
@@ -19257,10 +19300,11 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. Gloomy as a grave, that night. I'll own it."
+            "caught": "Hmph, it was gloomy as a grave that night."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 2,
             "cards": [
               "How did the young people get home?",
               "What do folks think of the old tulip tree?"
@@ -19277,7 +19321,7 @@
                 "Some of the\ndamsels mounted on pillions behind their favorite swains, and their\nlight-hearted laughter, mingling with the clatter of hoofs, echoed along\nthe silent woodlands, sounding fainter and fainter, until they gradually\ndied away,--and the late scene of noise and frolic was all silent and\ndeserted."
               ]
             },
-            "caught": "Oh, we were giggling the whole way. You can't keep a secret from you."
+            "caught": "Oh, we were giggling the whole way home."
           }
         ]
       }
@@ -20275,9 +20319,11 @@
         }
       ],
       "interview": {
+        "question": "What happened on the road that night?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 5,
             "cards": [
               "What did the stranger on the road look like?",
               "Have you heard what happened that night?"
@@ -20295,10 +20341,11 @@
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! That rider stuck to him like a burr. Or so I hear."
+            "caught": "Ha, that rider stuck to him like a burr, or so I hear."
           },
           {
             "character": "hans-van-ripper",
+            "at": 3,
             "cards": [
               "What happened at the brook crossing?",
               "How did my old horse behave?"
@@ -20316,10 +20363,11 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. He fought that schoolmaster every step. He's like me that way."
+            "caught": "Hmph, he fought that schoolmaster every step."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 2,
             "cards": [
               "Why is that crossing so feared?",
               "What happened there in the war?"
@@ -20336,7 +20384,7 @@
                 "This has ever since been\nconsidered a haunted stream, and fearful are the feelings of the\nschoolboy who has to pass it alone after dark."
               ]
             },
-            "caught": "No, the boys run past it shaking. I was only teasing."
+            "caught": "No, the boys run past it shaking."
           }
         ]
       }
@@ -21284,9 +21332,11 @@
         }
       ],
       "interview": {
+        "question": "What became of the schoolmaster?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 6,
             "cards": [
               "What did the searchers turn up?",
               "Did the schoolmaster's horse come home?"
@@ -21298,16 +21348,17 @@
               ]
             },
             "lie": {
-              "text": "That old nag never made it back. Ran off for good.",
+              "text": "That old nag never made it back and ran off for good.",
               "lines": [
                 "The next morning the old horse was found without his saddle, and with\nthe bridle under his feet, soberly cropping the grass at his master’s\ngate."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! He was munching grass at the gate by morning. Lazy old thing."
+            "caught": "Ha, he was munching grass at the gate by morning."
           },
           {
             "character": "hans-van-ripper",
+            "at": 3,
             "cards": [
               "What did the schoolmaster leave behind?",
               "What did you do with his things?"
@@ -21325,10 +21376,11 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. Two shirts and a half. That's the truth of it."
+            "caught": "Hmph, it was two shirts and a half."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 3,
             "cards": [
               "What did people say at church that Sunday?",
               "Who teaches the children now?"
@@ -21340,12 +21392,12 @@
               ]
             },
             "lie": {
-              "text": "At church everyone agreed he had simply run away. No one blamed any ghost.",
+              "text": "At church everyone agreed he had simply run away, and no one blamed any ghost.",
               "lines": [
                 "The stories of Brouwer, of Bones, and a whole budget of\nothers were called to mind; and when they had diligently considered them\nall, and compared them with the symptoms of the present case, they shook\ntheir heads, and came to the conclusion that Ichabod had been carried\noff by the Galloping Hessian."
               ]
             },
-            "caught": "Oh, they all blamed the Hessian. Every last one of them."
+            "caught": "Oh, they all blamed the Hessian."
           }
         ]
       }
@@ -22056,9 +22108,11 @@
         }
       ],
       "interview": {
+        "question": "What happened in the years after he disappeared?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 2,
             "cards": [
               "What happened after the schoolmaster left?",
               "Is that old crossing still feared?"
@@ -22070,16 +22124,17 @@
               ]
             },
             "lie": {
-              "text": "Folks use that old crossing as easy as you please now. Nobody thinks twice.",
+              "text": "Folks use that old crossing as easy as you please now.",
               "lines": [
                 "The bridge became more than\never an object of superstitious awe; and that may be the reason why the\nroad has been altered of late years, so as to approach the church by\nthe border of the millpond."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! They even moved the road to stay clear of it. Can you blame them?"
+            "caught": "Ha, they even moved the road to stay clear of it."
           },
           {
             "character": "hans-van-ripper",
+            "at": 3,
             "cards": [
               "What do the grandmothers say happened?",
               "What became of the old school?"
@@ -22091,16 +22146,17 @@
               ]
             },
             "lie": {
-              "text": "The grandmothers laugh at that ghost talk. They say he just ran off.",
+              "text": "The grandmothers laugh at that ghost talk and say he just ran off.",
               "lines": [
                 "The old country wives, however, who are the best judges of these\nmatters, maintain to this day that Ichabod was spirited away by\nsupernatural means; and it is a favorite story often told about the\nneighborhood round the winter evening fire."
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. They swear he was spirited away. And who am I to argue?"
+            "caught": "Hmph, they swear he was spirited away."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 1,
             "cards": [
               "Have you heard news of the schoolmaster?",
               "Did you ever marry?"
@@ -22112,12 +22168,12 @@
               ]
             },
             "lie": {
-              "text": "I never married anyone from the valley. I'm still waiting for the right one.",
+              "text": "I never married anyone from the valley; I'm still waiting for the right one.",
               "lines": [
                 "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
               ]
             },
-            "caught": "Oh, you know very well whom I married. I just like to keep people guessing."
+            "caught": "Oh, you know very well whom I married."
           }
         ]
       }

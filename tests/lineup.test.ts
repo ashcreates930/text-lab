@@ -67,7 +67,7 @@ test("Name the Liar on the same lineup: name the suspect, then the sentence; the
 test("live and the lobby: the host board spotlights the witness being questioned; the investigator pick uses the lineup", () => {
   const host = src("app/live/interview-live.tsx");
   assert.match(host, /<Lineup interactive=\{false\}[^>]*index=\{iv\.witness\?\?0\}/, "the host board: the stage with the questioned witness in the spotlight");
-  assert.match(host, /check:iv\.said\[i\]\?"Asked":null/);
+  assert.match(host, /check:iv\.said\[i\]\?\(iv\.inRoom\?"Met":"Asked"\):null/);
   assert.match(host, /onClick=\{\(\)=>act\("interview_vote",\{card:i\}\)\}/, "phones: the cards and the vote");
   const lobby = src("app/live/race-live.tsx");
   // A slow refresh that started before a tap can't overwrite the tap's answer (the pick flipping back to "Play as").

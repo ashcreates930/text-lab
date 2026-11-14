@@ -93,6 +93,46 @@ export function InterviewScreen({world,expeditionId,interview,liar,onDone,saved}
  </section>;
 }
 
+// ---------- A witness in the room ----------
+// Escape rooms: each witness steps in just before the lock whose reading checks them. The student asks the room's one
+// question, the witness answers in their recorded voice (captions always on), and the statement goes into the Case File.
+export function WitnessVisit({world,expeditionId,interview,liar,index,lock,met,onDone}:{world:WorldPack;expeditionId:string;interview:Interview;liar:number;index:number;lock:number;met:number;onDone:()=>void}){
+ const w=interview.witnesses[index],name=witnessName(world,w.character),st=index===liar?w.lie:w.truth,n=interview.witnesses.length;
+ const src=interviewAudio(world.id,expeditionId,w.character,index===liar?"lie":"truth"),voice=useVoice();
+ const [asked,setAsked]=useState(false),[gesture,setGesture]=useState<{clip:"laughing"|"head-shake";key:number}|null>(null),[holo,setHolo]=useState(false);
+ const answerRef=useRef<HTMLDivElement|null>(null);
+ useLayoutEffect(()=>{focusScreenTop()},[]);
+ function speak(){if(st.gesture)setGesture({clip:st.gesture,key:Date.now()});voice.play(src)}
+ // Asking keeps the student on this screen: focus moves to the answer, with no scroll jump.
+ function ask(){setAsked(true);speak();setTimeout(()=>answerRef.current?.focus({preventScroll:true}),0)}
+ function done(){voice.stop();setGesture(null);onDone()}
+ const speaking=voice.playing===src,ch=characterOf(world,w.character);
+ if(holo&&ch)return <HologramView character={ch} worldId={world.id} line={st.text} audioSrc={src} sandboxId="interview" title={`A witness · ${name}`} onClose={()=>{setHolo(false);setTimeout(()=>focusScreenTop(),0)}}/>;
+ return <section aria-labelledby="wv-h" className="flex flex-col gap-3">
+  <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Lock {lock} · Witness {met} of {n}</p>
+  <h1 id="wv-h" className="text-[28px] leading-tight outline-none">{name} steps in</h1>
+  <p className="text-[16px] text-muted">One of the three witnesses in this room is lying. At the exit door you'll name the liar and prove it with a line from the story.</p>
+  <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-start">
+   <WitnessStage world={world} character={w.character} speaking={speaking} level={voice.level} gesture={gesture}/>
+   <div className="flex flex-col gap-3">
+    {!asked?<button type="button" onClick={ask} className="case-answer min-h-[64px] justify-start rounded-[18px] bg-panel px-4 text-left text-[17px] font-bold">Ask {firstName(name)}: {interview.question}</button>
+     :<div ref={answerRef} tabIndex={-1} className="flex flex-col gap-3 outline-none">
+      <p className="rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold">You asked {firstName(name)}: {interview.question}</p>
+      <Caption name={name} text={st.text}/>
+      <div className="flex flex-wrap gap-2">
+       {speaking?<button type="button" onClick={()=>{voice.stop();setGesture(null)}} className="case-secondary !min-h-11"><SkipForward size={18} aria-hidden/>Skip<span className="sr-only"> the recording</span></button>
+        :<button type="button" onClick={speak} className="case-secondary !min-h-11"><RotateCcw size={18} aria-hidden/>Hear it again</button>}
+       {speaking&&<span className="inline-flex min-h-11 items-center gap-1.5 text-[15px] font-bold text-muted" aria-hidden><Volume2 size={18}/>Speaking…</span>}
+       <button type="button" onClick={()=>{voice.stop();setHolo(true)}} className="case-secondary !min-h-11"><Box size={18} aria-hidden/>Hologram</button>
+      </div>
+      <p className="flex items-center gap-2 text-[15px] font-bold text-muted"><NotebookPen size={16} aria-hidden/>Saved to your Case File.</p>
+      <button type="button" onClick={done} className="case-primary min-h-[56px] w-full justify-center text-[18px]">To lock {lock} <ArrowRight size={18} aria-hidden/></button>
+     </div>}
+   </div>
+  </div>
+ </section>;
+}
+
 // ---------- Name the Liar ----------
 // Step 1: who lied? The witnesses stand in the same lineup as the Interview (portraits, so it stays light on a phone):
 // bring a suspect into the spotlight, read what they said, and name them. Step 2: tap the sentence that proves it.

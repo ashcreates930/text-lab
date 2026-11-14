@@ -22,40 +22,44 @@ type PlayerView=ReturnType<typeof playerView>;
 type RaceRound=Extract<NonNullable<HostView["round"]>,{type:"race"}>;
 type IvView=NonNullable<RaceRound["interview"]>;
 export const interviewBeat=(beat:string)=>beat==="vote"||beat==="testify"||beat==="liar"||beat==="verdict";
-const asSaid=(iv:IvView):Said[]=>iv.said.map(s=>({...s,lied:false,gesture:null}));
+const asSaid=(iv:IvView):Said[]=>iv.said.flatMap(s=>s?[{...s,lied:false,gesture:null}]:[]);
+// The heading over a witness: at the door, their place in the Interview; in a room, the lock they step in at, or the
+// chamber 2 recap of a witness met earlier.
+const witnessTitle=(iv:IvView,round:RaceRound)=>{const k=iv.witness??0;if(!iv.inRoom)return `The Interview · witness ${round.step+1} of ${iv.witnesses.length}`;
+ return (iv.at?.[k]??0)<round.step+1?`Recap · what ${iv.witnesses[k]?.name} told you`:`Lock ${round.step+1} · A witness steps in`};
 
 // ---------- The host board ----------
 export function InterviewHost({state,round,world,act,left,totalMs}:{state:HostView;round:RaceRound;world:WorldPack|null;act:(b:Record<string,unknown>)=>void;left:number|null;totalMs:number|null}){
  const iv=round.interview!,race=state.race!,voice=useVoice(),played=useRef("");
  const [gesture,setGesture]=useState<{clip:"laughing"|"head-shake";key:number}|null>(null);
  const k=round.step,w=iv.witnesses[iv.witness??0],players=state.counters.players;
- const key=`${round.step}:${round.beat}`;
+ const key=`${round.step}:${round.beat}:${iv.witness??""}`;
  // The board speaks: the statement while the witness testifies, the caught line at the reveal; then the host moves on.
  function speak(){const v=race.voice;if(!v)return;if(v.gesture)setGesture({clip:v.gesture,key:Date.now()});voice.play(v.src)}
  useEffect(()=>{if(played.current===key)return;played.current=key;voice.stop();setGesture(null);if(round.beat==="testify"||round.beat==="verdict")speak()},[key]);// eslint-disable-line react-hooks/exhaustive-deps
  const stage=(character:string,height:number)=>{const c=iv.witnesses.find(x=>x.character===character);return <CharacterStage model={c?.model??null} portrait={c?.portrait??null} name={c?.name??character} clip={voice.playing?"talking":"idle"} gesture={gesture} level={voice.level} height={height}/>};
  const next=(label:string)=><button type="button" onClick={()=>act({action:"race.next"})} className="host-btn">{label} <ArrowRight size={22} aria-hidden/></button>;
- const title=round.beat==="vote"||round.beat==="testify"?`The Interview · witness ${k+1} of ${iv.witnesses.length}`:round.beat==="liar"?"Name the Liar":"The verdict";
+ const title=round.beat==="vote"||round.beat==="testify"?witnessTitle(iv,round):round.beat==="liar"?"Name the Liar":"The verdict",said=iv.said[iv.witness??0];
  return <section className="mt-4" aria-labelledby="iv-host-h">
   <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="iv-host-h" className="text-[clamp(24px,2.4vw,38px)] font-bold">{title}</h2>
-   {round.beat==="vote"&&next("Ask this question")}{round.beat==="testify"&&next(k+1>=iv.witnesses.length?"Start reading":"Next witness")}{round.beat==="liar"&&next("Reveal the liar")}{round.beat==="verdict"&&next("Final podium")}</div>
+   {round.beat==="vote"&&next("Ask this question")}{round.beat==="testify"&&next(iv.inRoom?"Continue":k+1>=iv.witnesses.length?"Start reading":"Next witness")}{round.beat==="liar"&&next("Reveal the liar")}{round.beat==="verdict"&&next("Final podium")}</div>
   <p className="text-[18px] text-muted">{round.expedition.title} · One witness is lying. Listen closely.</p>
   {left!==null&&totalMs!==null&&<div className="mt-2"><TimerTrack left={left} seconds={totalMs/1000}/></div>}
   {state.session.paused&&<p role="status" className="mt-2 rounded-card bg-gold px-4 py-2 text-[18px] font-bold text-on-gold">Paused. Everyone stays on this screen.</p>}
   {(round.beat==="vote"||round.beat==="testify")&&w&&<div className="mt-4 grid gap-5 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:items-start">
    <Lineup interactive={false} label={`The witnesses. ${w.name} is being questioned`} index={iv.witness??0} height={400} speaking={!!voice.playing} level={voice.level} gesture={gesture}
-    items={iv.witnesses.map((x,i)=>({id:x.character,name:x.name,portrait:x.portrait??null,model:x.model??null,check:iv.said[i]?"Asked":null}))}/>
+    items={iv.witnesses.map((x,i)=>({id:x.character,name:x.name,portrait:x.portrait??null,model:x.model??null,check:iv.said[i]?(iv.inRoom?"Met":"Asked"):null}))}/>
    <div className="flex flex-col gap-3"><p className="font-display text-[clamp(26px,2.6vw,40px)] font-bold">{w.name}</p>
     {round.beat==="vote"?<><p className="text-[20px] text-muted">{race.answered} of {players} voted · which question should we ask?</p>
       <ol className="grid gap-3">{w.cards.map((c,i)=>{const n=iv.votes[k]?.[i]??0,total=Math.max(1,(iv.votes[k]?.[0]??0)+(iv.votes[k]?.[1]??0));return <li key={i} className="relative overflow-hidden rounded-card bg-panel px-5 py-4 text-[clamp(18px,1.8vw,28px)] font-bold">
        <span aria-hidden className="absolute inset-y-0 left-0 bg-highlight/25 transition-[width] duration-500" style={{width:`${(n/total)*100}%`}}/><span className="relative">{c}</span><span className="relative float-right tabular-nums">{n}</span></li>})}</ol></>
-     :<><p className="rounded-card bg-violet-soft px-5 py-3 text-[clamp(18px,1.7vw,26px)] font-bold">The class asked: {iv.said[k]?.card}</p>
-      {iv.said[k]&&<div className="text-[clamp(18px,1.8vw,28px)]"><Caption name={w.name} text={iv.said[k].text}/></div>}
+     :<><p className="rounded-card bg-violet-soft px-5 py-3 text-[clamp(18px,1.7vw,26px)] font-bold">{iv.inRoom?"Everyone asks":"The class asked"}: {said?.card}</p>
+      {said&&<div className="text-[clamp(18px,1.8vw,28px)]"><Caption name={w.name} text={said.text}/></div>}
       <button type="button" onClick={speak} disabled={!!voice.playing} className="host-btn-secondary w-fit"><RotateCcw size={20} aria-hidden/>Play it again</button></>}
    </div></div>}
   {round.beat==="liar"&&<div className="mt-4"><p className="font-display text-[clamp(26px,2.8vw,44px)] font-bold" aria-live="polite"><Lock size={30} className="mr-2 inline" aria-hidden/>{race.answered} of {players} locked in</p>
    <p className="text-[20px] text-muted">Every phone names the liar and taps the line that proves it. Nothing shows until everyone has locked in.</p>
-   <ul className="mt-4 grid gap-3 md:grid-cols-3">{iv.said.map(s=>{const c=iv.witnesses.find(x=>x.character===s.character);return <li key={s.character} className="rounded-card bg-panel p-5">
+   <ul className="mt-4 grid gap-3 md:grid-cols-3">{asSaid(iv).map(s=>{const c=iv.witnesses.find(x=>x.character===s.character);return <li key={s.character} className="rounded-card bg-panel p-5">
     <div className="flex items-center gap-3">{c?.portrait?<img src={c.portrait} alt="" className="h-16 w-16 rounded-full object-cover"/>:null}<p className="font-display text-[24px] font-bold">{s.name}</p></div>
     <p className="mt-2 text-[clamp(16px,1.5vw,22px)]">"{s.text}"</p></li>})}</ul></div>}
   {round.beat==="verdict"&&iv.verdict&&<div className="mt-4 grid gap-5 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:items-start">
@@ -86,14 +90,14 @@ export function InterviewPlayer({state,world,act,left,myMs}:{state:PlayerView;wo
   <div className="grid gap-2.5">{w.cards.map((c,i)=><button key={i} type="button" aria-pressed={me?.voted===i} disabled={me?.voted!=null} onClick={()=>act("interview_vote",{card:i})} className={`min-h-[64px] rounded-[18px] px-4 text-left text-[17px] font-bold ${me?.voted===i?"bg-gold text-on-gold":"bg-panel text-ink"}`}>{c}</button>)}</div>
   {me?.voted!=null&&<p role="status" className="rounded-card bg-success px-4 py-3 text-[17px] font-bold text-on-success"><Check size={18} className="mr-1 inline" aria-hidden/>Voted. Eyes on the board.</p>}
  </section>;
- if(round.beat==="testify"&&w)return <section aria-labelledby="ivp-h" className="mt-3 flex flex-col gap-3">
-  <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">The Interview · witness {k+1} of {iv.witnesses.length}</p>
+ if(round.beat==="testify"&&w){const said=iv.said[iv.witness??0];return <section aria-labelledby="ivp-h" className="mt-3 flex flex-col gap-3">
+  <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{witnessTitle(iv,round)}</p>
   <h1 id="ivp-h" className="text-[28px] leading-tight outline-none">{w.name} answers</h1>
   {w.portrait&&<img src={w.portrait} alt="" className="mx-auto h-28 w-28 rounded-full object-cover"/>}
-  <p className="rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold">The class asked: {iv.said[k]?.card}</p>
-  {iv.said[k]&&<Caption name={w.name} text={iv.said[k].text}/>}
+  <p className="rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold">{iv.inRoom?"Everyone asks":"The class asked"}: {said?.card}</p>
+  {said&&<Caption name={w.name} text={said.text}/>}
   <p className="text-[15px] text-muted">Listen on the board. One of the three witnesses is lying.</p>
- </section>;
+ </section>}
  if(round.beat==="liar")return <div className="wide-host mt-3"><NameTheLiar seed={`${state.me.id}|${round.expedition.id}`} world={world} said={asSaid(iv)} passages={iv.callPassages??[]} locked={!!me?.locked} seconds={myMs?Math.round(myMs/1000):undefined} left={left} onLock={a=>act("liar_lock",{liar:a.liar,line:a.line})}/></div>;
  if(round.beat==="verdict"&&iv.verdict){const r=me?.result,v=iv.verdict;
   return <section aria-labelledby="ivp-h" className="mt-3 flex flex-col gap-3" aria-live="assertive">

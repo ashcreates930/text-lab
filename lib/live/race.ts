@@ -12,6 +12,7 @@
 // seconds), then the witness answers on the board (testify; the host moves on). One witness lies, picked per game. The
 // finale is Name the Liar: every phone locks in the liar and the line privately (liar, 90 seconds), and nothing is
 // shown until the board reveals the liar with the class breakdown (verdict). Rows: interview_vote and liar_lock.
+import { CLUE_COST, clueCost, type ClueTier } from "../clues.ts";
 import type { Interview, RoomPuzzle, WorldPack } from "../world-schema.ts";
 import { chamberSpan, codeResultOf, paintingResult, recoveryOpens, sceneResult, type ChamberPick, type RoomPuzzleAt } from "../escape-room.ts";
 import { LIAR_SECONDS, VOTE_SECONDS, cardWinner, liarCheck, type LiarAnswer } from "../interview.ts";
@@ -33,7 +34,10 @@ export const PUZZLE_SECONDS = 150;
 export type LiveBeat = (typeof LIVE_BEATS)[number];
 export type LiveRaceRound = { type: "race"; settings: ExpSettings; step: number; beat: LiveBeat; beatStartedAt: string; squadsOn: boolean; pinned?: string | null; pausedAt?: string | null;
   // holdBefore: a chunk (step) the teacher asked to pause before, from the content-note heads-up.
-  holdBefore?: number | null; interview?: { liar: number; witnesses: number } | null;
+  holdBefore?: number | null;
+  // interview.at: escape rooms with witnesses in the room, the lock (1-based) where each witness is met; null for the
+  // Interview at the door. witness: who testifies now in a room (the door Interview uses step).
+  interview?: { liar: number; witnesses: number; at?: number[] | null } | null; witness?: number | null;
   // The puzzle lock open now (lib/escape-room.ts), during the "puzzle" beat.
   puzzle?: string | null };
 export const interviewOf = (world: WorldPack, round: Pick<LiveRaceRound, "settings" | "interview">): Interview | null => (round.interview ? world.expeditions?.find((e) => e.id === round.settings.expeditionId)?.interview ?? null : null);
@@ -58,12 +62,33 @@ export const asksHere = (round: Pick<LiveRaceRound, "settings">, step: number) =
 export const liveSpan = (round: Pick<LiveRaceRound, "settings">, chunks: number) => chamberSpan(chunks, round.settings.chamber ?? 0);
 // The first beat of a game: the Interview's first vote; for chamber 2 (the class already questioned the witnesses), the
 // witnesses' statements again as a recap, with no vote; without an Interview, the first chunk of the span.
-export function firstBeat(settings: ExpSettings, chunks: number, interview: boolean): { step: number; beat: LiveBeat } {
-  if (!interview) return { step: chamberSpan(chunks, settings.chamber ?? 0).from, beat: "read" };
+// Who testifies now: in a room, round.witness; at the door, the step.
+export const witnessOf = (round: Pick<LiveRaceRound, "step" | "witness">) => round.witness ?? round.step;
+// Witnesses in the room, before the reading at step s: chamber 2 first replays those met in chamber 1 (no vote, no new
+// claim), then whoever is met at this lock, in lineup order.
+export function roomWitnesses(at: number[] | null | undefined, s: number, span: { from: number }, recap: boolean) {
+  if (!at) return [];
+  const replay = recap && s === span.from ? at.flatMap((a, k) => (a <= span.from ? [k] : [])) : [];
+  return [...replay, ...at.flatMap((a, k) => (a === s + 1 ? [k] : []))];
+}
+// Has witness k been met by now (step s; testifying: who is speaking, else null)? Earlier locks' witnesses, and this
+// lock's once its testimony is over; while one of this lock's witnesses speaks, those before them in lineup order too.
+export function roomMet(at: number[], s: number, testifying: number | null, k: number) {
+  if (at[k] < s + 1) return true; if (at[k] !== s + 1) return false;
+  return testifying == null ? true : at[testifying] === s + 1 && k <= testifying;
+}
+const toRead = (at: number[] | null | undefined, s: number, span: { from: number }, recap: boolean) => {
+  if (!at) return { step: s, beat: "read" as const };
+  const list = roomWitnesses(at, s, span, recap); return list.length ? { step: s, beat: "testify" as const, witness: list[0] } : { step: s, beat: "read" as const, witness: null };
+};
+export function firstBeat(settings: ExpSettings, chunks: number, interview: boolean, at: number[] | null = null): { step: number; beat: LiveBeat; witness?: number | null } {
+  if (!interview || at) { const span = chamberSpan(chunks, settings.chamber ?? 0); return toRead(interview ? at : null, span.from, span, settings.chamber === 2); }
   return { step: 0, beat: settings.chamber === 2 ? "testify" : "vote" };
 }
-export function nextBeat(round: LiveRaceRound, chunks: RaceChunk[], arc: Arc | null = null, puzzles: RoomPuzzleAt[] = []): { step: number; beat: LiveBeat; puzzle?: string | null } | "end" {
-  const b = round.beat, s = round.step, span = liveSpan(round, chunks.length), recap = round.settings.chamber === 2;
+export function nextBeat(round: LiveRaceRound, chunks: RaceChunk[], arc: Arc | null = null, puzzles: RoomPuzzleAt[] = []): { step: number; beat: LiveBeat; puzzle?: string | null; witness?: number | null } | "end" {
+  const b = round.beat, s = round.step, span = liveSpan(round, chunks.length), recap = round.settings.chamber === 2, at = round.interview?.at ?? null;
+  if (b === "testify" && at) { const list = roomWitnesses(at, s, span, recap), n = list[list.indexOf(round.witness ?? -1) + 1];
+    return n != null ? { step: s, beat: "testify", witness: n } : { step: s, beat: "read", witness: null }; }
   // Puzzle locks: one placed after this chunk comes after its reveal (and lightning beat); the inner door's code lock
   // after the checkpoint and the burst.
   const checkpointAt = isCheckpoint(s, chunks.length), placed = puzzles.find((p) => p.after === s && !p.innerDoor), inner = puzzles.find((p) => p.after === s && p.innerDoor);
@@ -86,7 +111,7 @@ export function nextBeat(round: LiveRaceRound, chunks: RaceChunk[], arc: Arc | n
   if (b === "board") return checkpoint && arc?.burstAfter === s ? { step: s, beat: "burst" } : checkpoint ? afterCheckpoint() : { step: s, beat: "countdown" };
   if (b === "burst") return afterCheckpoint();
   // Chamber 1 ends at the inner door; the exit door (Name the Liar) closes the room.
-  if (s + 1 <= span.to) return { step: s + 1, beat: "read" };
+  if (s + 1 <= span.to) return toRead(at, s + 1, span, recap);
   return round.settings.chamber === 1 ? "end" : round.interview ? { step: s, beat: "liar" } : "end";
 }
 // How long a beat runs for one player (milliseconds), or null for reading (no timer). The question's clock for Catch
@@ -108,7 +133,9 @@ export function beatMs(round: LiveRaceRound, chunk: RaceChunk | undefined, setti
 
 // ---------- One player's chunk ----------
 // points include the double (mult) and the streak bonus; version: the question version this player saw.
-export type LiveTap = { step: number; answer: Answer; correct: boolean; answerRight: boolean; proofRight: boolean; late: boolean; points: number; elapsedMs: number; version?: Version; bank?: number; mult?: number; bonus?: number; verdict?: { strength: string; note: string; next: string } };
+// The tier a phone is on: the easier version opens with the hint (tier 1) for free.
+export const liveClueTier = (asked: number, free: boolean) => Math.max(asked, free ? 1 : 0) as ClueTier;
+export type LiveTap = { clue?: ClueTier; step: number; answer: Answer; correct: boolean; answerRight: boolean; proofRight: boolean; late: boolean; points: number; elapsedMs: number; version?: Version; bank?: number; mult?: number; bonus?: number; verdict?: { strength: string; note: string; next: string } };
 export function playerChunk(responses: LiveResponse[], roundIndex: number, step: number, playerId: string) {
   const mine = (kind: string) => rows(responses, roundIndex, kind, step).filter((r) => r.playerId === playerId);
   const tap = mine("race_tap")[0]?.payload as LiveTap | undefined;
@@ -120,6 +147,8 @@ export function playerChunk(responses: LiveResponse[], roundIndex: number, step:
     asked: !!asked, question: asked ? String(asked.payload.text) : null,
     unknown: mine("race_unknown").flatMap((r) => (r.payload.words as string[] | undefined) ?? []),
     tap: tap ?? null, done: !!tap, correct: !!tap?.correct, points: tap?.points ?? 0,
+    // The clue tier this player asked for on this lock (lib/clues.ts).
+    clue: Math.max(0, ...mine("race_clue").map((r) => Number(r.payload.tier) || 0)) as ClueTier,
     lightning: (mine("race_lightning")[0]?.payload as { correct: boolean; points: number } | undefined) ?? null,
     // The lock opened after a miss with the shown proof (0 points; lib/escape-room.ts).
     opened: !!tap?.correct || mine("race_recover").length > 0,
@@ -233,6 +262,14 @@ export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses:
     if (!recoveryOpens(asked.question, chunkTokens(chunk.lines), answer)) return "Not that one yet. Use the answer shown.";
     return { payload: { step: round.step, opened: true, points: 0 }, flagged: false };
   }
+  // Request a clue: the next tier, while the question is open and before the one shot. Points only, never time.
+  if (kind === "race_clue") {
+    if (round.beat !== "race") return "The question isn't open.";
+    if (me.done) return "You've already answered this one.";
+    const asked = playerAsked(chunks, responses, roundIndex, playerId, round.step)!, now = liveClueTier(me.clue, !!(asked.question as { showHint?: boolean }).showHint);
+    if (now >= 3) return "That's every clue for this lock.";
+    return { payload: { step: round.step, tier: now + 1 }, flagged: false };
+  }
   if (kind === "race_tap") {
     if (round.beat !== "race") return "The question isn't open.";
     if (me.done) return "You've already answered this one.";
@@ -257,7 +294,9 @@ export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses:
     const correct = r.correct && !late, mult = arc ? multiplierAt(arc, round.step) : 1;
     let before = 0; for (let k = round.step - 1; k >= 0 && playerChunk(responses, roundIndex, k, playerId).correct; k--) before++;
     const bonus = streakBonus(before, correct ? before + 1 : 0);
-    const tap: LiveTap = { step: round.step, answer, correct, answerRight: r.answer, proofRight: r.proof, late, points: late ? 0 : r.points * mult + bonus, elapsedMs: elapsed, version: asked.version, bank: asked.bank, mult, bonus, ...(payload.__verdict ? { verdict: payload.__verdict as { strength: string; note: string; next: string } } : {}) };
+    // Clues cost points off this lock (the easier version's hint is free).
+    const free = !!(q as { showHint?: boolean }).showHint, tier = liveClueTier(me.clue, free), cost = clueCost(tier) - (free && tier >= 1 ? CLUE_COST[1] : 0);
+    const tap: LiveTap = { step: round.step, answer, correct, answerRight: r.answer, proofRight: r.proof, late, clue: tier, points: late ? 0 : (r.points > 0 ? Math.max(0, r.points * mult - cost) : 0) + bonus, elapsedMs: elapsed, version: asked.version, bank: asked.bank, mult, bonus, ...(payload.__verdict ? { verdict: payload.__verdict as { strength: string; note: string; next: string } } : {}) };
     return { payload: tap as unknown as Record<string, unknown>, flagged: false };
   }
   return "That isn't a Proof Race answer.";

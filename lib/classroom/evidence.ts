@@ -199,9 +199,9 @@ export function evidenceCsv(e: ClassEvidence) {
   }
   // Proof Race expeditions: one row per student per question (first attempt), tagged to B.E.S.T., then Name the Liar.
   if (e.expeditions?.expeditions.some((x) => x.rows.some((r) => r.notes.length))) {
-    lines.push("", ["Expedition", "Student", "Finished", "Chunk", "Question type", "Question", "Answer", "Proof", "Proved first try", "Fixed in Refresher", "Gist", "Words not known", "Case Notes", "Standards"].join(","));
+    lines.push("", ["Expedition", "Student", "Finished", "Chunk", "Question type", "Question", "Answer", "Proof", "Proved first try", "Clue", "Fixed in Refresher", "Gist", "Words not known", "Case Notes", "Standards"].join(","));
     for (const x of e.expeditions.expeditions) for (const r of x.rows) for (const n of r.notes)
-      lines.push([x.title, r.nickname, r.finished ? r.finished.slice(0, 10) : "No", String(n.chunk), n.type, n.question, n.answer, n.proof, n.rightFirstTry ? "Yes" : "No", n.fixed === null ? "" : n.fixed ? "Yes" : "No", n.gistPick ? (n.gistRight ? "Best summary" : "Not the best") : "", n.unknownWords.join(" | "), n.note, n.standards.join(" | ")].map(cell).join(","));
+      lines.push([x.title, r.nickname, r.finished ? r.finished.slice(0, 10) : "No", String(n.chunk), n.type, n.question, n.answer, n.proof, n.rightFirstTry ? "Yes" : "No", n.clue ? `Tier ${n.clue}` : "None", n.fixed === null ? "" : n.fixed ? "Yes" : "No", n.gistPick ? (n.gistRight ? "Best summary" : "Not the best") : "", n.unknownWords.join(" | "), n.note, n.standards.join(" | ")].map(cell).join(","));
     lines.push("", ["Expedition", "Student", "Statements heard", "The liar", "Student named", "Student's proof line", "Case solved"].join(","));
     for (const x of e.expeditions.expeditions) for (const r of x.rows) if (r.liar) lines.push([x.title, r.nickname, r.liar.said.map((s) => `${s.name}${s.lied ? " (the lie)" : ""}: ${s.text}`).join(" | "), r.liar.liar, r.liar.pick ?? "No answer", (r.liar.line ?? "").replace(/\s+/g, " "), r.liar.solved ? "Yes" : "No"].map(cell).join(","));
   }

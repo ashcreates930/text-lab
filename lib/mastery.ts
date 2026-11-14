@@ -9,6 +9,7 @@
 // Only a question's first answer counts (a Refresher fix is "practice +1" and never raises a level), and only each
 // expedition's first attempt with answers (a replay is practice). Levels are private: they appear only to the student and
 // their teacher, never on the leaderboard or the map. "Not yet" is never shown as failure.
+import { cluesAllowMastery, type ClueTier } from "./clues.ts";
 import type { ExpeditionAttempt } from "./expedition-progress.ts";
 import { firstAttempts } from "./expedition-progress.ts";
 import { provedFirstTry } from "./case-notes.ts";
@@ -48,7 +49,7 @@ const isFamily = (s: string): s is BenchmarkFamily => s in SKILLS;
 export function evidenceFrom(attempts: ExpeditionAttempt[]): Evidence[] {
   const out: Evidence[] = [];
   for (const a of firstAttempts(attempts)) for (const n of a.notes) {
-    for (const f of n.standards) if (isFamily(f)) out.push({ family: f, right: provedFirstTry(n), format: n.format ?? "two_part", expedition: a.expeditionId, harder: n.version === "harder", proof: n.correctProof, question: n.question, at: a.startedAt });
+    for (const f of n.standards) if (isFamily(f)) out.push({ family: f, right: provedFirstTry(n) && cluesAllowMastery(n.clue as ClueTier | undefined), format: n.format ?? "two_part", expedition: a.expeditionId, harder: n.version === "harder", proof: n.correctProof, question: n.question, at: a.startedAt });
     if (n.gistPick !== null) out.push({ family: "R.3.2", right: n.gistRight, format: "gist", expedition: a.expeditionId, harder: false, proof: "", question: "Gist check", at: a.startedAt });
   }
   return out;
