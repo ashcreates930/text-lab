@@ -21,7 +21,8 @@ export async function GET(request: Request, { params }: Params) {
 // previewEnabled: the story's content-note preview; rolesOn / anglesOn: students in the story (roles and "What's your angle?").
 // leaderboard / storyModeOn: Story Mode's class leaderboard and whether scenes use it; studentTime: one student's extra time.
 // absent: mark one student absent for today (left out of Story Mode squad averages).
-const Patch = z.object({ previewEnabled: z.boolean().optional(), rolesOn: z.boolean().optional(), anglesOn: z.boolean().optional(), leaderboard: z.enum(["individual", "squad", "off"]).optional(), storyModeOn: z.boolean().optional(), studentTime: z.object({ studentId: z.string().uuid(), setting: z.enum(["1", "1.5", "2", "untimed"]) }).optional(), absent: z.object({ studentId: z.string().uuid(), absent: z.boolean() }).optional() }).refine((x) => Object.values(x).some((v) => v !== undefined));
+// look: the class's look, mature (the default) or classic (escape-room phase 3).
+const Patch = z.object({ look: z.enum(["mature", "classic"]).optional(), previewEnabled: z.boolean().optional(), rolesOn: z.boolean().optional(), anglesOn: z.boolean().optional(), leaderboard: z.enum(["individual", "squad", "off"]).optional(), storyModeOn: z.boolean().optional(), studentTime: z.object({ studentId: z.string().uuid(), setting: z.enum(["1", "1.5", "2", "untimed"]) }).optional(), absent: z.object({ studentId: z.string().uuid(), absent: z.boolean() }).optional() }).refine((x) => Object.values(x).some((v) => v !== undefined));
 export async function PATCH(request: Request, { params }: Params) {
   const ctx = await teacherFromRequest(request);
   if (isFailure(ctx)) return NextResponse.json({ error: ctx.error }, { status: ctx.status });
@@ -29,6 +30,10 @@ export async function PATCH(request: Request, { params }: Params) {
   if (!cls) return NextResponse.json({ error: "Class not found." }, { status: 404 });
   const input = Patch.safeParse(await request.json().catch(() => null));
   if (!input.success) return NextResponse.json({ error: "Invalid change." }, { status: 400 });
+  if (input.data.look !== undefined) {
+    if (cls.look === undefined) return NextResponse.json({ error: "Run the 202611140001 migration to choose the class's look." }, { status: 503 });
+    await ctx.store.setLook(cls.id, input.data.look);
+  }
   if (input.data.previewEnabled !== undefined) await ctx.store.setPreviewEnabled(cls.id, input.data.previewEnabled);
   if (input.data.rolesOn !== undefined || input.data.anglesOn !== undefined) {
     try { await ctx.store.setPersonalSettings(cls.id, { rolesOn: input.data.rolesOn, anglesOn: input.data.anglesOn }); }

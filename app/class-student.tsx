@@ -1,4 +1,5 @@
 "use client";
+import {lookFor,type Look} from "@/lib/design-tokens";
 import {useCallback,useEffect,useState} from "react";
 import {ArrowRight,BookOpen,Check,MessagesSquare,Send} from "lucide-react";
 import {lessonById} from "@/lib/mini-lessons";
@@ -22,7 +23,7 @@ type ClassInfo={nickname:string;className:string|null;worldTitle:string;grade:nu
 // It replaces the old "My class" lobby as a required stop; it shows nothing when there is nothing to act on.
 export function ClassBar({auth,onLive,onLessons,onDismissPhrase}:{auth:ClassAuth;onLive:()=>void;onLessons:()=>void;onDismissPhrase:()=>void}){
  const [info,setInfo]=useState<ClassInfo|null>(null);
- const load=useCallback(async()=>{const r=await studentFetch(auth,"/api/student/class");if(r.ok)setInfo(r.body)},[auth]);
+ const load=useCallback(async()=>{const r=await studentFetch(auth,"/api/student/class");if(r.ok){setInfo(r.body);applyClassLook(r.body)}},[auth]);
  useEffect(()=>{load();const t=window.setInterval(load,8000);return()=>window.clearInterval(t)},[load]);
  const open=info?info.assignments.filter(a=>!a.done).length:0;
  if(!info?.liveActive&&!open&&!auth.resumePhrase)return null;
@@ -36,7 +37,7 @@ export function ClassBar({auth,onLive,onLessons,onDismissPhrase}:{auth:ClassAuth
 // A class student's home: the live discussion when it is running, assigned lessons, and the story.
 export function ClassHome({auth,onStory,onLive}:{auth:ClassAuth;onStory:()=>void;onLive:()=>void}){
  const [info,setInfo]=useState<ClassInfo|null>(null),[error,setError]=useState(""),[lesson,setLesson]=useState("");
- const load=useCallback(async()=>{const r=await studentFetch(auth,"/api/student/class");if(r.ok){setInfo(r.body);setError("")}else setError(r.body.error||"Could not load your class.")},[auth]);
+ const load=useCallback(async()=>{const r=await studentFetch(auth,"/api/student/class");if(r.ok){setInfo(r.body);applyClassLook(r.body);setError("")}else setError(r.body.error||"Could not load your class.")},[auth]);
  useEffect(()=>{load();const t=window.setInterval(load,5000);return()=>window.clearInterval(t)},[load]);
  if(lesson)return <section className="px-5 py-10"><LessonPlayer lessonId={lesson} grade={info?.grade??null} onClose={()=>{setLesson("");window.scrollTo(0,0)}} onFinish={async(id,record)=>{await studentFetch(auth,"/api/student/lessons",{method:"POST",body:JSON.stringify({lessonId:id,firstTryCorrect:record.firstTryCorrect,total:record.total})});load()}}/></section>;
  return <section className="mx-auto max-w-4xl px-5 py-10">
@@ -71,3 +72,6 @@ export function ClassLive({auth,onBack}:{auth:ClassAuth;onBack:()=>void}){
   </div>
  </section>;
 }
+// The class's look (the teacher's choice; mature by default for grades 6 to 12), locked so the device's Look setting
+// doesn't override it, from the moment the student is in the class.
+function applyClassLook(info:{look?:Look|null;grade?:number|null}){try{const root=document.documentElement;root.dataset.look=lookFor({classLook:info?.look??null,grade:info?.grade??null});root.dataset.lookLocked="class"}catch{}}

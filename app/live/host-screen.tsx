@@ -65,7 +65,7 @@ const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|nul
 function Shell({children}:{children:React.ReactNode}){
  return <main className="case-ui case-ui-dark min-h-screen bg-deep px-5 py-6 md:px-10 md:py-8">{children}</main>;
 }
-const roundTitle=(t:string)=>t==="race"?"Proof Race":t==="story"?"Story Mode":t==="lie"?"Spot the Lie":t==="verdict"?"Verdict Vote":"Objection!";
+const roundTitle=(t:string)=>t==="race"?"Escape room":t==="story"?"Story Mode":t==="lie"?"Spot the Lie":t==="verdict"?"Verdict Vote":"Objection!";
 function Counter({label,value}:{label:string;value:number|string}){
  return <div className="rounded-2xl bg-panel px-4 py-2 text-center" aria-live="polite"><p className="text-[28px] font-bold leading-none tabular-nums">{value}</p><p className="mt-1 text-[14px] text-muted">{label}</p></div>;
 }

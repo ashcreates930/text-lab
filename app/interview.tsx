@@ -68,7 +68,7 @@ export function InterviewScreen({world,expeditionId,interview,liar,onDone,saved}
   <DoNow text={DO_NOW.interview}/>
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">The Interview · {asked.filter(Boolean).length} of {n} questioned</p>
   <h1 id="iv-h" className="text-[28px] leading-tight outline-none">The Interview</h1>
-  <p className="text-[16px] text-muted">One witness will lie to you. Question all {n}, in any order. After the race you'll name the liar and prove it with a line from the story.</p>
+  <p className="text-[16px] text-muted">One witness will lie to you. Question all {n}, in any order. At the exit door you'll name the liar and prove it with a line from the story.</p>
   <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-start">
    <Lineup items={items} index={k} onIndex={spotlight} label={`The witnesses. ${name} is in the spotlight`} height={h} speaking={speaking} level={voice.level} gesture={gesture}/>
    <div className="flex flex-col gap-3">
@@ -85,7 +85,7 @@ export function InterviewScreen({world,expeditionId,interview,liar,onDone,saved}
       </div></>}
     {next!=null&&<button type="button" onClick={()=>{spotlight(next);setFocusTo("pick")}} disabled={card!=null&&!heard[k]&&speaking} className={`${card==null?"case-secondary":"case-primary"} min-h-[56px] w-full justify-center text-[18px]`}>Next: question {firstName(witnessName(world,interview.witnesses[next].character))} <ArrowRight size={18} aria-hidden/></button>}
     {done?<button type="button" onClick={start} disabled={!heard[k]&&speaking} className="case-primary min-h-[56px] w-full justify-center text-[18px]">To the first lock <ArrowRight size={18} aria-hidden/></button>
-     :<p className="text-[15px] font-bold text-muted">Question all {n} witnesses to start the race ({n-asked.filter(Boolean).length} to go).</p>}
+     :<p className="text-[15px] font-bold text-muted">Question all {n} witnesses to reach the first lock ({n-asked.filter(Boolean).length} to go).</p>}
    </div>
   </div>
   {notes.length>0&&<aside aria-label="Your notes from the Interview" className="rounded-card bg-panel p-4"><p className="flex items-center gap-2 font-display text-[16px] font-bold"><NotebookPen size={16} aria-hidden/>Case Notes</p>

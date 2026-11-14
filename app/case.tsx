@@ -1,6 +1,7 @@
 "use client";
 // The simplified student flow: land in the scene, open a clue, ask a character, prove it with a line from the story.
 // Adults (teacher or parent) choose the story, grade and language; students never see those settings.
+import {lookFor,type Look} from "@/lib/design-tokens";
 import {useEffect,useMemo,useRef,useState} from "react";
 import {PlayCircle,ArrowLeft,ArrowRight,BookOpen,Check,LayoutGrid,Lock,MessageCircle,Printer,Square,Volume2,VolumeX} from "lucide-react";
 import {WorldPackSchema,type WorldPack} from "@/lib/world-schema";
@@ -77,7 +78,7 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  const [storyUnavailable,setStoryUnavailable]=useState(false),[storyJump,setStoryJump]=useState<{sceneId:string;round:"lie"}|null>(null);
  // The class grade (6 to 10) picks each standard's code in Case Notes; the adult's choice, or 7, otherwise.
  const [classGrade,setClassGrade]=useState<number|null>(null);
- useEffect(()=>{if(!demo.classAuth)return;fetch("/api/student/class",{headers:{"x-class-token":demo.classAuth.token},cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{setPersonal(j?{rolesOn:j.rolesOn!==false,anglesOn:j.anglesOn!==false}:DEFAULT_PERSONAL);setStoryModeOn(j?.storyModeOn!==false);if(typeof j?.grade==="number")setClassGrade(j.grade);if(typeof j?.seat==="number")setDemo(d=>d.classSeat===j.seat?d:{...d,classSeat:j.seat})}).catch(()=>setPersonal(DEFAULT_PERSONAL))},[demo.classAuth]);
+ useEffect(()=>{if(!demo.classAuth)return;fetch("/api/student/class",{headers:{"x-class-token":demo.classAuth.token},cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{setPersonal(j?{rolesOn:j.rolesOn!==false,anglesOn:j.anglesOn!==false}:DEFAULT_PERSONAL);setStoryModeOn(j?.storyModeOn!==false);applyClassLook(j?.look??null,j?.grade??null);if(typeof j?.grade==="number")setClassGrade(j.grade);if(typeof j?.seat==="number")setDemo(d=>d.classSeat===j.seat?d:{...d,classSeat:j.seat})}).catch(()=>setPersonal(DEFAULT_PERSONAL))},[demo.classAuth]);
  const screen=`${openClue}|${openFrame}|${openWriting}|${openLeadsFor}|${demo.mission??""}|${verdictOpen}|${plantClue}|${!!demo.roleIntroSeen}|${storyUnavailable}|${(demo.missionSeen??[]).length}`,shownScreen=useRef(screen);
  useLayoutEffect(()=>{if(shownScreen.current===screen)return;shownScreen.current=screen;focusScreenTop()},[screen]);
  useEffect(()=>{setWorld(null);fetch(`/worlds/${demo.worldId}/world.json`).then(r=>r.json()).then(d=>setWorld(WorldPackSchema.parse(d))).catch(()=>setError("We couldn't open this story. Refresh the page to try again."));fetch(`/worlds/${demo.worldId}/source.md`).then(r=>r.ok?r.text():"").then(t=>setPassages(parseSourcePassages(t))).catch(()=>setPassages([]))},[demo.worldId]);
@@ -304,3 +305,6 @@ export function CaseSummary({world,demo,passages=[],onAnotherStory,personal=DEFA
   <div className="mt-8 flex flex-wrap gap-3 print:hidden"><button onClick={()=>window.print()} className="case-primary"><Printer size={18}/> Print or save as PDF</button><button onClick={onAnotherStory} className="case-secondary">Start another story</button></div>
  </div>;
 }
+// A class student's screens use the class's look (the teacher's choice; mature by default for grades 6 to 12). It is
+// locked, so the device's own Look setting doesn't override it.
+function applyClassLook(look:Look|null,grade:number|null){try{const root=document.documentElement;root.dataset.look=lookFor({classLook:look,grade});root.dataset.lookLocked="class"}catch{}}

@@ -98,3 +98,17 @@ test("the Interview speed-up: the caption shows at once, Skip stops the recordin
   for (const e of sh.expeditions!) for (const w of e.interview?.witnesses ?? []) for (const t of [w.truth.text, w.lie.text, w.caught])
     if ((t.match(/[.!?]["”]?(?=\s|$)/g) ?? []).length > 1) assert.ok(list.includes(t.replace(/\|/g, "\|")), `listed: ${t.slice(0, 40)}`);
 });
+
+test("the carousel turns the way the spotlight moved, wrapping round; a jump or the first view doesn't slide", async () => {
+  const { turnOf } = await import("../lib/lineup.ts");
+  assert.equal(turnOf(null, 0, 3), 0, "first view");
+  assert.equal(turnOf(0, 1, 3), 1, "the one on the right steps in");
+  assert.equal(turnOf(1, 0, 3), -1);
+  assert.equal(turnOf(2, 0, 3), 1, "wraps: from the last to the first is still a step right");
+  assert.equal(turnOf(0, 2, 3), -1);
+  assert.equal(turnOf(0, 2, 5), 0, "a jump of two");
+  assert.equal(turnOf(0, 0, 3), 0); assert.equal(turnOf(0, 1, 1), 0);
+  const ui = readFileSync("app/lineup.tsx", "utf8");
+  assert.match(ui, /setTurn\(reducedMotion\(\)\?0:turnOf/, "nothing slides under reduced motion");
+  assert.match(readFileSync("app/globals.css", "utf8"), /prefers-reduced-motion:reduce\)\{\.carousel-from-right/);
+});

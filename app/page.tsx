@@ -1,5 +1,6 @@
 "use client";
 
+import {lookFor} from "@/lib/design-tokens";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { brand } from "@/config/brand";
@@ -237,6 +238,10 @@ export default function Home() {
   const tutorialReturn = useRef<View>("play");
   function showTutorial(returnTo:View="play"){tutorialReturn.current=returnTo;tutorial.current?.start();setView("tutorial")}
   // Student front door: "Try the demo" and "I'm a student" land on the shelf, keeping any demo already in progress.
+  // A class student sees the class's look everywhere (the teacher's choice; mature by default), locked against the
+  // device's Look setting; leaving the class unlocks it.
+  useEffect(()=>{const root=document.documentElement;const token=demo.classAuth?.token;if(!token){if(root.dataset.lookLocked){delete root.dataset.lookLocked;try{root.dataset.look=(JSON.parse(localStorage.getItem("itt-display-settings")||"{}").look)||"mature"}catch{root.dataset.look="mature"}}return}
+   let live=true;fetch("/api/student/class",{headers:{"x-class-token":token},cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{if(!live||!j)return;root.dataset.look=lookFor({classLook:j.look??null,grade:typeof j.grade==="number"?j.grade:null});root.dataset.lookLocked="class"}).catch(()=>{});return()=>{live=false}},[demo.classAuth?.token]);
   function openShelf(){if(demo.preset==="student_first_visit"&&!demo.classAuth)setView("shelf");else start("student_first_visit")}
   // Try the Demo: one click straight into the Sleepy Hollow scene game (keeps progress if the student was already there).
   // CaseFlow startAtLie: open at the first Spot the Lie testimony (a legacy entry point; the home page no longer sets it).

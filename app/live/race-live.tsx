@@ -99,7 +99,7 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
  const due=!state.session.paused&&((round.beat==="read"&&race.ready.advance)||(timed&&left===0)||(waiting&&everyone));
  useEffect(()=>{if(due&&moved.current!==key){moved.current=key;act({action:"race.next"})}},[due,key,act]);
  if(interviewBeat(round.beat)&&round.interview)return <InterviewHost state={state} round={round} world={world} act={act} left={timed&&totalMs!==null?left:null} totalMs={totalMs}/>;
- const next=<button type="button" onClick={()=>act({action:"race.next"})} className="host-btn">{round.beat==="countdown"?(round.step+1>=round.total?(round.interview?"Name the Liar":"Final podium"):"Next chunk"):"Next"} <ArrowRight size={22} aria-hidden/></button>;
+ const next=<button type="button" onClick={()=>act({action:"race.next"})} className="host-btn">{round.beat==="countdown"?(round.step+1>=round.total?(round.interview?"Name the Liar":"Final podium"):"Next lock"):"Next"} <ArrowRight size={22} aria-hidden/></button>;
  const tokens=chunkTokens(round.chunk.lines);
  const q=round.question;
  // A heads-up for the teacher one chunk before a passage that carries a content note (lib/content-notes.ts).
@@ -107,7 +107,7 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
  const questions=<div className="mt-3"><p className="text-[20px]">Student questions (no names):</p><ul className="mt-2 grid gap-2">{race.questions.slice(0,3).map(x=><li key={x.id} className="flex items-center justify-between gap-3 rounded-card bg-panel px-5 py-3 text-[clamp(18px,1.8vw,26px)]"><span>{x.text}</span><button type="button" onClick={()=>act({action:"race.pin",questionId:race.pinned===x.id?null:x.id})} aria-pressed={race.pinned===x.id} className="host-btn-secondary"><Pin size={18} aria-hidden/>{race.pinned===x.id?"Pinned":"Pin"}</button></li>)}
   {!race.questions.length&&<li className="text-[18px] text-muted">Waiting for questions…</li>}</ul></div>;
  return <section className="mt-4" aria-labelledby="race-h">
-  <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="race-h" className="text-[clamp(24px,2.4vw,38px)] font-bold">Chunk {round.step+1} of {round.total} · {BEAT_LABEL[round.beat]}</h2>{next}</div>
+  <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="race-h" className="text-[clamp(24px,2.4vw,38px)] font-bold">Lock {round.step+1} of {round.total} · {BEAT_LABEL[round.beat]}</h2>{next}</div>
   <p className="text-[18px] text-muted">{round.expedition.title} · Grade {round.grade??7}</p>
   {timed&&left!==null&&<div className="mt-2"><TimerTrack left={left} seconds={(totalMs??1000)/1000}/></div>}
   {nextNote&&<NoteHeadsUp note={nextNote} step={round.step} held={round.holdBefore===round.step+1} paused={!!state.session.paused} act={act}/>}
@@ -142,7 +142,7 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
   {round.beat==="board"&&<p className="mt-3 font-display text-[clamp(24px,2.4vw,36px)] font-bold text-gold">Level 1 complete. Next: the squad burst, then level 2{round.total>1?" and the boss question":""}.</p>}
   {(round.beat==="board"||round.beat==="countdown")&&(round.board||round.beat==="countdown")&&<div className="mt-4 grid gap-6 md:grid-cols-[1fr_auto] md:items-start">{round.beat==="countdown"&&world?.world_map?<RaceMap world={world} expeditionId={round.expedition.id} stars={Array.from({length:round.step+1},()=>-1)} className="h-[min(62vh,640px)] min-h-[320px]" label="The class map: every investigator walks to the next stop"
     tokens={state.lobby.map(p=>({id:p.id,name:p.nickname,portrait:p.avatar?.portrait??null,glow:(race.proved??[]).includes(p.id)}))}/>:round.board?<Leaderboard rows={round.board.top as BoardRow[]} dark title={round.board.kind==="squad"?"Squads":"Top 5"}/>:<span/>}
-   {round.beat==="countdown"&&left!==null&&totalMs!==null&&<CountdownRing ms={left*1000} total={totalMs} label={round.step+1>=round.total?"Final results":`Chunk ${round.step+2} of ${round.total}`}/>}</div>}
+   {round.beat==="countdown"&&left!==null&&totalMs!==null&&<CountdownRing ms={left*1000} total={totalMs} label={round.step+1>=round.total?"Final results":`Lock ${round.step+2} of ${round.total}`}/>}</div>}
  </section>;
 }
 
@@ -259,14 +259,14 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
   {(round.beat==="board"||round.beat==="countdown")&&!mine.tap?.correct&&!mine.opened&&q&&race.revealKey?.task&&<RecoveryPanel task={race.revealKey.task} seed={`${state.me.id}|${round.chunk.id}|open`} chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shownLines={ownProof}
    answerText={race.revealKey.best?.join(" · ")??race.revealKey.answer} clueWords={race.revealKey.clues??undefined} choices={q.choices} dnd={q.dnd} callPassages={q.callPassages} onOpen={async a=>!(await act("race_recover",{answer:a}))}/>}
   {(round.beat==="board"||round.beat==="countdown")&&race.place&&<><p role="status" className="sr-only">{mine.correct?`Plus ${mine.points} points.`:"No points this time."} You're number {race.place.rank} of {race.place.of}.</p>
-   <h1 id="rp-h" className="text-center text-[30px] outline-none">{round.beat==="board"?"Checkpoint: Level 1 complete":"Next chunk"}</h1>
+   <h1 id="rp-h" className="text-center text-[30px] outline-none">{round.beat==="board"?"Checkpoint: Level 1 complete":"Next lock"}</h1>
    {round.beat==="board"&&<div className="grid grid-cols-3 gap-2.5 text-center">
     <div className="rounded-[18px] bg-success p-3 text-on-success shadow-[0_5px_0_var(--color-success-shadow)]"><p className="font-display text-[24px] font-bold tabular-nums">+{race.place.gained.toLocaleString()}</p><p className="text-[13px] font-extrabold">this chunk</p></div>
     <div className="rounded-[18px] bg-gold p-3 text-on-gold shadow-[0_5px_0_var(--color-gold-shadow)]"><p className="font-display text-[24px] font-bold">{race.place.move>0?`Up ${race.place.move}`:race.place.move<0?`Down ${-race.place.move}`:`#${race.place.rank}`}</p><p className="text-[13px] font-extrabold">now #{race.place.rank} of {race.place.of}</p></div>
     <div className="rounded-[18px] bg-panel p-3 text-ink shadow-[0_5px_0_#0B0920]"><p className="font-display text-[24px] font-bold tabular-nums">{round.reveal?.pct??0}%</p><p className="text-[13px] font-extrabold text-muted">found it</p></div>
    </div>}
    {round.beat==="board"&&round.board?<Leaderboard rows={round.board.top as BoardRow[]} meId={round.board.kind==="squad"?race.squadId:state.me.id} own={race.place.row as BoardRow|undefined} title="Top 5"/>
-    :<>{world.world_map&&race.path&&<div className="mt-3"><RaceMap world={world} expeditionId={round.expedition.id} stars={race.path} tokens={[{id:state.me.id,name:state.me.nickname,portrait:(state as {avatar?:{portrait?:string}|null}).avatar?.portrait??null,me:true}]} label="Map: your token walks to the next stop"/></div>}{left!==null&&myMs!==null&&<div className="mt-4"><CountdownRing ms={left*1000} total={myMs} label={round.step+1>=round.total?"Final results":`Chunk ${round.step+2} of ${round.total}`}/></div>}</>}</>}
+    :<>{world.world_map&&race.path&&<div className="mt-3"><RaceMap world={world} expeditionId={round.expedition.id} stars={race.path} tokens={[{id:state.me.id,name:state.me.nickname,portrait:(state as {avatar?:{portrait?:string}|null}).avatar?.portrait??null,me:true}]} label="Map: your token walks to the next stop"/></div>}{left!==null&&myMs!==null&&<div className="mt-4"><CountdownRing ms={left*1000} total={myMs} label={round.step+1>=round.total?"Final results":`Lock ${round.step+2} of ${round.total}`}/></div>}</>}</>}
  </section>;
 }
 // A live lightning beat: tap the sentence that answers; the server checks it, and the answer shows once you've answered.

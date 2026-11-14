@@ -8,7 +8,7 @@
 import {useEffect,useRef,useState} from "react";
 import {Check} from "lucide-react";
 import {CharacterStage,type CharacterModel,type StageClip} from "./character-stage";
-import {lineupKey,lineupWindow,spotlightLabel,swipeStep,wrap} from "@/lib/lineup";
+import {lineupKey,lineupWindow,spotlightLabel,swipeStep,turnOf,wrap} from "@/lib/lineup";
 
 export type LineupItem={id:string;name:string;portrait?:string|null;model?:CharacterModel|null;check?:string|null};
 const reducedMotion=()=>typeof window!=="undefined"&&(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches||document.documentElement.dataset.motion==="reduced");
@@ -17,6 +17,10 @@ export function Lineup({items,index,onIndex,label,height=300,speaking=false,leve
  const n=items.length,i=wrap(index,n),cur=items[i];
  const [said,setSaid]=useState(""),[reaction,setReaction]=useState<{clip:"laughing"|"head-shake";key:number}|null>(null);
  const prev=useRef<string|null>(null),start=useRef<{x:number;y:number}|null>(null),swiped=useRef(0);
+ // The carousel: the lineup turns the way the spotlight moved; the newcomer slides and grows into the middle, the
+ // others slide and shrink to the sides (lib/lineup.ts turnOf). Nothing moves under reduced motion.
+ const lastIndex=useRef<number|null>(null),[turn,setTurn]=useState<-1|0|1>(0);
+ useEffect(()=>{setTurn(reducedMotion()?0:turnOf(lastIndex.current,i,n));lastIndex.current=i},[i,n]);
  // A move announces where the spotlight is; a character with a model reacts on stepping in (not under reduced motion).
  useEffect(()=>{
   if(!cur)return;
@@ -36,10 +40,10 @@ export function Lineup({items,index,onIndex,label,height=300,speaking=false,leve
  const side=(k:number,slot:"left"|"right")=>{const it=items[k],img=<span className="relative block">
    {it.portrait?<img src={it.portrait} alt="" draggable={false} className="portrait-idle aspect-square w-full rounded-full border-2 border-edge object-cover"/>:<span className="grid aspect-square w-full place-items-center rounded-full bg-reading font-display text-[28px] font-bold text-reading-ink">{it.name.slice(0,1)}</span>}
    {it.check&&<span className="absolute -right-1 -top-1 grid h-7 w-7 place-items-center rounded-full bg-success text-on-success"><Check size={16} aria-hidden/></span>}</span>;
-  const cls="lineup-side flex w-[24%] shrink-0 flex-col items-center gap-1 self-center opacity-50 saturate-50 transition-opacity";
+  const cls=`lineup-side flex w-[24%] shrink-0 flex-col items-center gap-1 self-center opacity-50 saturate-50 transition-opacity ${turn>0?"carousel-side-from-right":turn<0?"carousel-side-from-left":""}`;
   return interactive
-   ?<button key={slot} type="button" onClick={()=>{if(Date.now()-swiped.current<400)return;go(k)}} aria-label={`Spotlight ${spotlightLabel(it.name,k,n,it.check===undefined?null:!!it.check)}`} style={{maxWidth:sideMax}} className={`${cls} min-h-11 rounded-card p-1 hover:opacity-80 focus-visible:opacity-100`}>{img}<span className="text-[13px] font-bold leading-tight text-ink">{it.name.split(/\s+/)[0]}</span></button>
-   :<div key={slot} aria-hidden style={{maxWidth:sideMax}} className={cls}>{img}<span className="text-[15px] font-bold leading-tight text-ink">{it.name.split(/\s+/)[0]}</span></div>};
+   ?<button key={`${slot}-${it.id}`} type="button" onClick={()=>{if(Date.now()-swiped.current<400)return;go(k)}} aria-label={`Spotlight ${spotlightLabel(it.name,k,n,it.check===undefined?null:!!it.check)}`} style={{maxWidth:sideMax}} className={`${cls} min-h-11 rounded-card p-1 hover:opacity-80 focus-visible:opacity-100`}>{img}<span className="text-[13px] font-bold leading-tight text-ink">{it.name.split(/\s+/)[0]}</span></button>
+   :<div key={`${slot}-${it.id}`} aria-hidden style={{maxWidth:sideMax}} className={cls}>{img}<span className="text-[15px] font-bold leading-tight text-ink">{it.name.split(/\s+/)[0]}</span></div>};
  const win=lineupWindow(n,i),left=win.find(w=>w.slot==="left"),right=win.find(w=>w.slot==="right");
  const clip:StageClip=speaking?"talking":"idle";
  return <div className="flex flex-col gap-2">
@@ -47,7 +51,7 @@ export function Lineup({items,index,onIndex,label,height=300,speaking=false,leve
    onKeyDown={onKey} onPointerDown={onDown} onPointerUp={onUp} onPointerCancel={()=>{start.current=null}}
    className="flex items-center justify-center gap-2 rounded-card bg-deep p-2 outline-none focus-visible:ring-4 focus-visible:ring-highlight" style={{touchAction:"pan-y"}}>
    {left?side(left.index,"left"):n===2?<span style={{maxWidth:sideMax}} className="w-[24%] shrink-0"/>:null}
-   <div key={cur.id} className="lineup-in min-w-0 flex-1">
+   <div key={cur.id} className={`min-w-0 flex-1 ${turn>0?"carousel-from-right":turn<0?"carousel-from-left":"lineup-in"}`}>
     <CharacterStage model={threeD?cur.model??null:null} portrait={cur.portrait??null} name={cur.name} clip={clip} gesture={gesture??reaction} level={speaking?level:0} height={height}/>
    </div>
    {right?side(right.index,"right"):null}
