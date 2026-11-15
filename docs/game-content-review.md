@@ -7570,3 +7570,569 @@ Screen text: "One witness will lie to you. Listen closely: after the race you'll
 - Discovery (figurative): "not getting a bit excited". She stays strangely calm.
 
 <!-- expeditions:end -->
+
+<!-- rooms:start -->
+## Escape rooms: puzzle locks (for review)
+
+Generated from world.json by `scripts/room-review.ts`. Every puzzle is solved only by reading: students tap or match lines from the story, never letters or pictures alone. One try scores; after a miss the right answer is outlined and the student taps it to open the lock (0 points, recorded as a miss). Pictures are original art (gpt-image-2) awaiting your approval.
+
+### The Legend of Sleepy Hollow
+
+#### Room 1: Tarry Town and the glen (Expedition: Into the Hollow)
+
+- The door: "The Glen. A spell holds everyone who stays here. Prove what the story says, and the way out opens."
+
+##### Fix the Painting: the glen at noon (after lock 3)
+
+Prompt: "A painter tried to show the glen from the story, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/glen-at-noon.webp` (A painting of a valley among hills at noon, with trees, a stream and a road). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✓ Tall walnut trees shade one side · ¶4 sentence 1: "I recollect that, when a stripling, my first exploit in squirrel-shooting was in a grove of tall walnut-trees that shades one side of the valley."
+2. ✓ A woodpecker on a branch · ¶3 sentence 5: "A small brook glides through it, with just murmur enough to lull one to repose; and the occasional whistle of a quail or tapping of a woodpecker is almost the only sound that ever breaks in upon the uniform tranquillity."
+3. ✓ High hills all around · ¶3 sentence 4: "Not far from this village, perhaps about two miles, there is a little valley or rather lap of land among high hills, which is one of the quietest places in the whole world."
+4. ✗ A roaring waterfall · ¶3 sentence 5: "A small brook glides through it, with just murmur enough to lull one to repose; and the occasional whistle of a quail or tapping of a woodpecker is almost the only sound that ever breaks in upon the uniform tranquillity."
+5. ✗ A busy market road through the valley · ¶3 sentence 4: "Not far from this village, perhaps about two miles, there is a little valley or rather lap of land among high hills, which is one of the quietest places in the whole world."
+
+##### The gate out of the glen (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: H-T-R-S (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. Who was annoyed enough to label the place, according to the tale? → **housewives** · ¶3 sentence 2: "This name was given, we are told, in former days, by the good housewives of the adjacent country, from the inveterate propensity of their husbands to linger about the village tavern on market days."
+2. A traveler sets out from the tavern for the glen. Which number tells how long the trip is? → **two** · ¶3 sentence 4: "Not far from this village, perhaps about two miles, there is a little valley or rather lap of land among high hills, which is one of the quietest places in the whole world."
+3. Which word tells how noisy the shot seemed to the young hunter? → **roar** · ¶4 sentence 2: "I had wandered into it at noontime, when all nature is peculiarly quiet, and was startled by the roar of my own gun, as it broke the Sabbath stillness around and was prolonged and reverberated by the angry echoes."
+4. What has the magic cast on everyone who lives here, so they drift through life half-dreaming? → **spell** · ¶5 sentence 4: "Certain it is, the place still continues under the sway of some witching power, that holds a spell over the minds of the good people, causing them to walk in a continual reverie."
+
+##### Inspect the Scene: the churchyard at dusk (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/churchyard-at-dusk.webp` (A churchyard at dusk beside a stream, with an old church and a darkening sky). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+
+1. A rusted iron shot half-buried in the grass → ¶6 sentence 2: "It is said by some to be the ghost of a Hessian trooper, whose head had been carried away by a cannon-ball, in some nameless battle during the Revolutionary War, and who is ever and anon seen by the country folk hurrying along in the gloom of night, as if on the wings of the wind."
+2. An old sunken grave with a weathered stone → ¶6 sentence 4: "Indeed, certain of the most authentic historians of those parts, who have been careful in collecting and collating the floating facts concerning this spectre, allege that the body of the trooper having been buried in the churchyard, the ghost rides forth to the scene of battle in nightly quest of his head, and that the rushing speed with which he sometimes passes along the Hollow, like a midnight blast, is owing to his being belated, and in a hurry to get back to the churchyard before daybreak."
+3. A streak of light across the night sky → ¶5 sentence 6: "The whole neighborhood abounds with local tales, haunted spots, and twilight superstitions; stars shoot and meteors glare oftener across the valley than in any other part of the country, and the nightmare, with her whole ninefold, seems to make it the favorite scene of her gambols."
+4. A white meeting house with a steeple on the knoll → ¶6 sentence 3: "His haunts are not confined to the valley, but extend at times to the adjacent roads, and especially to the vicinity of a church at no great distance."
+- Near miss in the tray: ¶5 sentence 2: "A drowsy, dreamy influence seems to hang over the land, and to pervade the very atmosphere."
+- Near miss in the tray: ¶6 sentence 1: "The dominant spirit, however, that haunts this enchanted region, and seems to be commander-in-chief of all the powers of the air, is the apparition of a figure on horseback, without a head."
+
+#### Room 2: The schoolhouse (Expedition: The Schoolmaster)
+
+- The door: "The Schoolhouse. A schoolmaster rules this one-room school, but how does he really live? Prove what the story says, and the way out opens."
+
+##### Fix the Painting: the schoolhouse at midday (after lock 4)
+
+Prompt: "A painter tried to show Ichabod's schoolhouse, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/schoolhouse-at-midday.webp` (A painting of a country schoolhouse at the foot of a wooded hill, with a stream and a tree). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✗ A tall stone schoolhouse, two floors high · ¶11 sentence 1: "His schoolhouse was a low building of one large room, rudely constructed of logs; the windows partly glazed, and partly patched with leaves of old copybooks."
+2. ✗ A heavy iron padlock on the door · ¶11 sentence 2: "It was most ingeniously secured at vacant hours, by a withe twisted in the handle of the door, and stakes set against the window shutters; so that though a thief might get in with perfect ease, he would find some embarrassment in getting out,--an idea most probably borrowed by the architect, Yost Van Houten, from the mystery of an eelpot."
+3. ✓ A woody hill rising behind it · ¶11 sentence 3: "The schoolhouse stood in a rather lonely but pleasant situation, just at the foot of a woody hill, with a brook running close by, and a formidable birch-tree growing at one end of it."
+4. ✓ A brook running close by · ¶11 sentence 3: "The schoolhouse stood in a rather lonely but pleasant situation, just at the foot of a woody hill, with a brook running close by, and a formidable birch-tree growing at one end of it."
+5. ✓ A birch tree at one end · ¶11 sentence 3: "The schoolhouse stood in a rather lonely but pleasant situation, just at the foot of a woody hill, with a brook running close by, and a formidable birch-tree growing at one end of it."
+
+##### The schoolhouse door (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: C-L-S-B (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. Which word names the home Ichabod left to come here? → **Connecticut** · ¶10 sentence 2: "He was a native of Connecticut, a State which supplies the Union with pioneers for the mind as well as for the forest, and sends forth yearly its legions of frontier woodmen and country schoolmasters."
+2. If you ran your hand along the outside walls, what would you feel? → **logs** · ¶11 sentence 1: "His schoolhouse was a low building of one large room, rudely constructed of logs; the windows partly glazed, and partly patched with leaves of old copybooks."
+3. Which garden tool is used to joke about how big he is from the ankles down? → **shovels** · ¶10 sentence 4: "He was tall, but exceedingly lank, with narrow shoulders, long arms and legs, hands that dangled a mile out of his sleeves, feet that might have served for shovels, and his whole frame most loosely hung together."
+4. From outside, what busy insect home does the classroom resemble? → **beehive** · ¶11 sentence 4: "From hence the low murmur of his pupils’ voices, conning over their lessons, might be heard in a drowsy summer’s day, like the hum of a beehive; interrupted now and then by the authoritative voice of the master, in the tone of menace or command, or, peradventure, by the appalling sound of the birch, as he urged some tardy loiterer along the flowery path of knowledge."
+
+##### Inspect the Scene: a farmhouse where Ichabod boards (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/farmhouse-room.webp` (A farmhouse kitchen with a hearth, a table and a chair). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+
+1. A small bundle knotted in a cloth by the door → ¶13 sentence 4: "With these he lived successively a week at a time, thus going the rounds of the neighborhood, with all his worldly effects tied up in a cotton handkerchief."
+2. A stack of freshly split logs by the hearth → ¶14 sentence 2: "He assisted the farmers occasionally in the lighter labors of their farms, helped to make hay, mended the fences, took the horses to water, drove the cows from pasture, and cut wood for the winter fire."
+3. A baby's swinging bed beside a chair → ¶14 sentence 4: "He found favor in the eyes of the mothers by petting the children, particularly the youngest; and like the lion bold, which whilom so magnanimously the lamb did hold, he would sit with a child on one knee, and rock a cradle with his foot for whole hours together."
+4. An open hymnbook with music notes on the table → ¶15 sentence 1: "In addition to his other vocations, he was the singing-master of the neighborhood, and picked up many bright shillings by instructing the young folks in psalmody."
+- Near miss in the tray: ¶13 sentence 3: "The revenue arising from his school was small, and would have been scarcely sufficient to furnish him with daily bread, for he was a huge feeder, and, though lank, had the dilating powers of an anaconda; but to help out his maintenance, he was, according to country custom in those parts, boarded and lodged at the houses of the farmers whose children he instructed."
+- Near miss in the tray: ¶14 sentence 1: "That all this might not be too onerous on the purses of his rustic patrons, who are apt to consider the costs of schooling a grievous burden, and schoolmasters as mere drones, he had various ways of rendering himself both useful and agreeable."
+
+#### Room 3: Fireside tales (Expedition: Tales by the Fire)
+
+- The door: "Fireside Tales. Ichabod loves a good ghost story, until he has to walk home in the dark. Prove what the story says, and the way out opens."
+
+##### Fix the Painting: Sunday in the churchyard (after lock 3)
+
+Prompt: "A painter tried to show Ichabod with the country girls between Sunday services, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/churchyard-sunday.webp` (A painting of a schoolmaster with young women in a country churchyard on a Sunday). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✓ Wild grapevines climbing the trees · ¶16 sentence 4: "How he would figure among them in the churchyard, between services on Sundays; gathering grapes for them from the wild vines that overran the surrounding trees; reciting for their amusement all the epitaphs on the tombstones; or sauntering, with a whole bevy of them, along the banks of the adjacent millpond; while the more bashful country bumpkins hung sheepishly back, envying his superior elegance and address."
+2. ✓ Old gravestones in the grass · ¶16 sentence 4: "How he would figure among them in the churchyard, between services on Sundays; gathering grapes for them from the wild vines that overran the surrounding trees; reciting for their amusement all the epitaphs on the tombstones; or sauntering, with a whole bevy of them, along the banks of the adjacent millpond; while the more bashful country bumpkins hung sheepishly back, envying his superior elegance and address."
+3. ✓ The church where his singing rang out · ¶15 sentence 3: "Certain it is, his voice resounded far above all the rest of the congregation; and there are peculiar quavers still to be heard in that church, and which may even be heard half a mile off, quite to the opposite side of the millpond, on a still Sunday morning, which are said to be legitimately descended from the nose of Ichabod Crane."
+4. ✗ The girls frowning and turning away from him · ¶16 sentence 3: "Our man of letters, therefore, was peculiarly happy in the smiles of all the country damsels."
+5. ✗ Ichabod reading aloud from a joke book · ¶16 sentence 4: "How he would figure among them in the churchyard, between services on Sundays; gathering grapes for them from the wild vines that overran the surrounding trees; reciting for their amusement all the epitaphs on the tombstones; or sauntering, with a whole bevy of them, along the banks of the adjacent millpond; while the more bashful country bumpkins hung sheepishly back, envying his superior elegance and address."
+
+##### The latch on the farmhouse door (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: G-W-S-C (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. What sort of talk did neighbors hear from him at every door? → **gossip** · ¶17 sentence 1: "From his half-itinerant life, also, he was a kind of travelling gazette, carrying the whole budget of local gossip from house to house, so that his appearance was always greeted with satisfaction."
+2. What dark subject did his favorite author cover, one he trusted completely? → **Witchcraft** · ¶17 sentence 2: "He was, moreover, esteemed by the women as a man of great erudition, for he had read several books quite through, and was a perfect master of Cotton Mather’s “History of New England Witchcraft,” in which, by the way, he most firmly and potently believed."
+3. Which word shows he could be clever in little ways? → **shrewdness** · ¶18 sentence 1: "He was, in fact, an odd mixture of small shrewdness and simple credulity."
+4. What did he lie down on beside the creek once classes ended? → **clover** · ¶18 sentence 4: "It was often his delight, after his school was dismissed in the afternoon, to stretch himself on the rich bed of clover bordering the little brook that whimpered by his schoolhouse, and there con over old Mather’s direful tales, until the gathering dusk of evening made the printed page a mere mist before his eyes."
+
+##### Inspect the Scene: the walk home on a winter night (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/winter-walk.webp` (A snowy country lane at night with a distant farmhouse window and bare trees). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+
+1. A faraway glowing pane across the snowy meadow → ¶20 sentence 3: "With what wistful look did he eye every trembling ray of light streaming across the waste fields from some distant window!"
+2. A small bush wrapped in white → ¶20 sentence 4: "How often was he appalled by some shrub covered with snow, which, like a sheeted spectre, beset his very path!"
+3. Footprints pressed into the icy ground → ¶20 sentence 5: "How often did he shrink with curdling awe at the sound of his own steps on the frosty crust beneath his feet; and dread to look over his shoulder, lest he should behold some uncouth being tramping close behind him!"
+4. Bare branches tossed by a gust → ¶20 sentence 6: "And how often was he thrown into complete dismay by some rushing blast, howling among the trees, in the idea that it was the Galloping Hessian on one of his nightly scourings!"
+- Near miss in the tray: ¶20 sentence 2: "What fearful shapes and shadows beset his path, amidst the dim and ghastly glare of a snowy night!"
+- Near miss in the tray: ¶19 sentence 1: "Another of his sources of fearful pleasure was to pass long winter evenings with the old Dutch wives, as they sat spinning by the fire, with a row of apples roasting and spluttering along the hearth, and listen to their marvellous tales of ghosts and goblins, and haunted fields, and haunted brooks, and haunted bridges, and haunted houses, and particularly of the headless horseman, or Galloping Hessian of the Hollow, as they sometimes called him."
+
+#### Room 4: The Van Tassel farm (Expedition: The Van Tassel Farm)
+
+- The door: "The Van Tassel Farm. Ichabod has never seen such plenty, or such a daughter. Prove what the story says, and the way out opens."
+
+##### Fix the Painting: the Van Tassel farm (after lock 5)
+
+Prompt: "A painter tried to show Baltus Van Tassel's farm, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/farm-by-river.webp` (A painting of a farmhouse beside a river with a great tree and a stream). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✓ The farm on the bank of a wide river · ¶23 sentence 5: "His stronghold was situated on the banks of the Hudson, in one of those green, sheltered, fertile nooks in which the Dutch farmers are so fond of nestling."
+2. ✓ A great elm spreading its branches over the house · ¶23 sentence 6: "A great elm tree spread its broad branches over it, at the foot of which bubbled up a spring of the softest and sweetest water, in a little well formed of a barrel; and then stole sparkling away through the grass, to a neighboring brook, that babbled along among alders and dwarf willows."
+3. ✓ A brook running among willows · ¶23 sentence 6: "A great elm tree spread its broad branches over it, at the foot of which bubbled up a spring of the softest and sweetest water, in a little well formed of a barrel; and then stole sparkling away through the grass, to a neighboring brook, that babbled along among alders and dwarf willows."
+4. ✗ A grand mansion with tall marble columns · ¶23 sentence 4: "He was satisfied with his wealth, but not proud of it; and piqued himself upon the hearty abundance, rather than the style in which he lived."
+5. ✗ The farm perched on a bare, windswept hilltop · ¶23 sentence 5: "His stronghold was situated on the banks of the Hudson, in one of those green, sheltered, fertile nooks in which the Dutch farmers are so fond of nestling."
+
+##### The farm gate (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: D-T-H-B (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. How is Katrina related to old Baltus? → **daughter** · ¶22 sentence 1: "Among the musical disciples who assembled, one evening in each week, to receive his instructions in psalmody, was Katrina Van Tassel, the daughter and only child of a substantial Dutch farmer."
+2. Which word shows old Baltus was prospering? → **thriving** · ¶23 sentence 2: "Old Baltus Van Tassel was a perfect picture of a thriving, contented, liberal-hearted farmer."
+3. Which river ran beside Baltus's home? → **Hudson** · ¶23 sentence 5: "His stronghold was situated on the banks of the Hudson, in one of those green, sheltered, fertile nooks in which the Dutch farmers are so fond of nestling."
+4. Which wooden cask was reused to make a basin for the source? → **barrel** · ¶23 sentence 6: "A great elm tree spread its broad branches over it, at the foot of which bubbled up a spring of the softest and sweetest water, in a little well formed of a barrel; and then stole sparkling away through the grass, to a neighboring brook, that babbled along among alders and dwarf willows."
+
+##### Inspect the Scene: the Van Tassel barnyard (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/barnyard.webp` (A busy farmyard with a huge barn, a pond, pens and farm birds). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+
+1. White birds floating on still water → ¶23 sentence 9: "A stately squadron of snowy geese were riding in an adjoining pond, convoying whole fleets of ducks; regiments of turkeys were gobbling through the farmyard, and Guinea fowls fretting about it, like ill-tempered housewives, with their peevish, discontented cry."
+2. Fat hogs lying in a muddy enclosure → ¶23 sentence 8: "Sleek unwieldy porkers were grunting in the repose and abundance of their pens, from whence sallied forth, now and then, troops of sucking pigs, as if to snuff the air."
+3. A proud red-combed bird flapping at sunrise → ¶23 sentence 10: "Before the barn door strutted the gallant cock, that pattern of a husband, a warrior and a fine gentleman, clapping his burnished wings and crowing in the pride and gladness of his heart,--sometimes tearing up the earth with his feet, and then generously calling his ever-hungry family of wives and children to enjoy the rich morsel which he had discovered."
+4. Small birds darting around the top of a huge building → ¶23 sentence 7: "Hard by the farmhouse was a vast barn, that might have served for a church; every window and crevice of which seemed bursting forth with the treasures of the farm; the flail was busily resounding within it from morning to night; swallows and martins skimmed twittering about the eaves; and rows of pigeons, some with one eye turned up, as if watching the weather, some with their heads under their wings or buried in their bosoms, and others swelling, and cooing, and bowing about their dames, were enjoying the sunshine on the roof."
+- Near miss in the tray: ¶23 sentence 4: "He was satisfied with his wealth, but not proud of it; and piqued himself upon the hearty abundance, rather than the style in which he lived."
+- Near miss in the tray: ¶24 sentence 1: "The pedagogue’s mouth watered as he looked upon this sumptuous promise of luxurious winter fare."
+
+#### Room 5: A rival appears (Expedition: A Rival Appears)
+
+- The door: "A Rival Appears. Ichabod wants the farm and the daughter, but someone bigger stands in his way. Prove what the story says, and the way out opens."
+
+##### Fix the Painting: the hall of the Van Tassel house (after lock 5)
+
+Prompt: "A painter tried to show the hall Ichabod walked into, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/van-tassel-hall.webp` (A painting of a large farmhouse hall with a long dresser, a corner and a doorway). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✓ Rows of shining pewter on a long dresser · ¶26 sentence 6: "Here rows of resplendent pewter, ranged on a long dresser, dazzled his eyes."
+2. ✓ A huge bag of wool in the corner · ¶26 sentence 7: "In one corner stood a huge bag of wool, ready to be spun; in another, a quantity of linsey-woolsey just from the loom; ears of Indian corn, and strings of dried apples and peaches, hung in gay festoons along the walls, mingled with the gaud of red peppers; and a door left ajar gave him a peep into the best parlor, where the claw-footed chairs and dark mahogany tables shone like mirrors; andirons, with their accompanying shovel and tongs, glistened from their covert of asparagus tops; mock-oranges and conch-shells decorated the mantelpiece; strings of various-colored birds eggs were suspended above it; a great ostrich egg was hung from the centre of the room, and a corner cupboard, knowingly left open, displayed immense treasures of old silver and well-mended china."
+3. ✓ A spinning wheel out on the porch · ¶26 sentence 4: "Benches were built along the sides for summer use; and a great spinning-wheel at one end, and a churn at the other, showed the various uses to which this important porch might be devoted."
+4. ✗ Bare walls with nothing hung on them · ¶26 sentence 7: "In one corner stood a huge bag of wool, ready to be spun; in another, a quantity of linsey-woolsey just from the loom; ears of Indian corn, and strings of dried apples and peaches, hung in gay festoons along the walls, mingled with the gaud of red peppers; and a door left ajar gave him a peep into the best parlor, where the claw-footed chairs and dark mahogany tables shone like mirrors; andirons, with their accompanying shovel and tongs, glistened from their covert of asparagus tops; mock-oranges and conch-shells decorated the mantelpiece; strings of various-colored birds eggs were suspended above it; a great ostrich egg was hung from the centre of the room, and a corner cupboard, knowingly left open, displayed immense treasures of old silver and well-mended china."
+5. ✗ The parlor door shut tight and bolted · ¶26 sentence 7: "In one corner stood a huge bag of wool, ready to be spun; in another, a quantity of linsey-woolsey just from the loom; ears of Indian corn, and strings of dried apples and peaches, hung in gay festoons along the walls, mingled with the gaud of red peppers; and a door left ajar gave him a peep into the best parlor, where the claw-footed chairs and dark mahogany tables shone like mirrors; andirons, with their accompanying shovel and tongs, glistened from their covert of asparagus tops; mock-oranges and conch-shells decorated the mantelpiece; strings of various-colored birds eggs were suspended above it; a great ostrich egg was hung from the centre of the room, and a corner cupboard, knowingly left open, displayed immense treasures of old silver and well-mended china."
+
+##### The farmhouse door (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: P-N-D-W (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. What open porch did the overhanging edge create? → **piazza** · ¶26 sentence 2: "It was one of those spacious farmhouses, with high-ridged but lowly sloping roofs, built in the style handed down from the first Dutch settlers; the low projecting eaves forming a piazza along the front, capable of being closed up in bad weather."
+2. What would the family carry down to the water to catch supper? → **nets** · ¶26 sentence 3: "Under this were hung flails, harness, various utensils of husbandry, and nets for fishing in the neighboring river."
+3. What piece of furniture held the shining metal plates? → **dresser** · ¶26 sentence 6: "Here rows of resplendent pewter, ranged on a long dresser, dazzled his eyes."
+4. What fluffy material sat piled in a sack, waiting to become yarn? → **wool** · ¶26 sentence 7: "In one corner stood a huge bag of wool, ready to be spun; in another, a quantity of linsey-woolsey just from the loom; ears of Indian corn, and strings of dried apples and peaches, hung in gay festoons along the walls, mingled with the gaud of red peppers; and a door left ajar gave him a peep into the best parlor, where the claw-footed chairs and dark mahogany tables shone like mirrors; andirons, with their accompanying shovel and tongs, glistened from their covert of asparagus tops; mock-oranges and conch-shells decorated the mantelpiece; strings of various-colored birds eggs were suspended above it; a great ostrich egg was hung from the centre of the room, and a corner cupboard, knowingly left open, displayed immense treasures of old silver and well-mended china."
+
+##### Inspect the Scene: Brom Bones rides in (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/brom-arrives.webp` (A farmhouse gate with a saddled horse, a group of young riders and a hat on a post). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+
+1. A saddled stallion tied at the rail → ¶28 sentence 4: "He was famed for great knowledge and skill in horsemanship, being as dexterous on horseback as a Tartar."
+2. A cap tilted at an angle on a post → ¶28 sentence 5: "He was foremost at all races and cock fights; and, with the ascendancy which bodily strength always acquires in rustic life, was the umpire in all disputes, setting his hat on one side, and giving his decisions with an air and tone that admitted of no gainsay or appeal."
+3. A small band of young men at the gate → ¶28 sentence 7: "He had three or four boon companions, who regarded him as their model, and at the head of whom he scoured the country, attending every scene of feud or merriment for miles round."
+- Near miss in the tray: ¶27 sentence 2: "In this enterprise, however, he had more real difficulties than generally fell to the lot of a knight-errant of yore, who seldom had anything but giants, enchanters, fiery dragons, and such like easily conquered adversaries, to contend with and had to make his way merely through gates of iron and brass, and walls of adamant to the castle keep, where the lady of his heart was confined; all which he achieved as easily as a man would carve his way to the centre of a Christmas pie; and then the lady gave him her hand as a matter of course."
+- Near miss in the tray: ¶28 sentence 2: "He was broad-shouldered and double-jointed, with short curly black hair, and a bluff but not unpleasant countenance, having a mingled air of fun and arrogance."
+
+#### Room 6: The feud (Expedition: The Feud)
+
+- The door: "The Feud. Brom Bones wants Katrina too, and he is not a man to cross. Prove what the story says, and the way out opens."
+
+##### Fix the Painting: Brom's crew at midnight (after lock 2)
+
+Prompt: "A painter tried to show Brom and his riders passing the farmhouses at midnight, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/midnight-riders.webp` (A painting of a band of horsemen on a moonlit country road past farmhouses). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✓ A band of hard riders on the road · ¶28 sentence 8: "In cold weather he was distinguished by a fur cap, surmounted with a flaunting fox’s tail; and when the folks at a country gathering descried this well-known crest at a distance, whisking about among a squad of hard riders, they always stood by for a squall."
+2. ✓ Farmhouses along the way · ¶28 sentence 9: "Sometimes his crew would be heard dashing along past the farmhouses at midnight, with whoop and halloo, like a troop of Don Cossacks; and the old dames, startled out of their sleep, would listen for a moment till the hurry-scurry had clattered by, and then exclaim, “Ay, there goes Brom Bones and his gang!”"
+3. ✓ An old woman at a window, woken from sleep · ¶28 sentence 9: "Sometimes his crew would be heard dashing along past the farmhouses at midnight, with whoop and halloo, like a troop of Don Cossacks; and the old dames, startled out of their sleep, would listen for a moment till the hurry-scurry had clattered by, and then exclaim, “Ay, there goes Brom Bones and his gang!”"
+4. ✗ The leader in a feathered three-cornered hat · ¶28 sentence 8: "In cold weather he was distinguished by a fur cap, surmounted with a flaunting fox’s tail; and when the folks at a country gathering descried this well-known crest at a distance, whisking about among a squad of hard riders, they always stood by for a squall."
+5. ✗ The riders tiptoeing past without a sound · ¶28 sentence 9: "Sometimes his crew would be heard dashing along past the farmhouses at midnight, with whoop and halloo, like a troop of Don Cossacks; and the old dames, startled out of their sleep, would listen for a moment till the hurry-scurry had clattered by, and then exclaim, “Ay, there goes Brom Bones and his gang!”"
+
+##### The Van Tassel paling (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: T-I-H-A (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. Which word shows Ichabod could not be snapped, no matter the strain? → **tough** · ¶30 sentence 2: "He had, however, a happy mixture of pliability and perseverance in his nature; he was in form and spirit like a supple-jack--yielding, but tough; though he bent, he never broke; and though he bowed beneath the slightest pressure, yet, the moment it was away--jerk!--he was as erect, and carried his head as high as ever."
+2. Which word means he worked his way in slyly, bit by bit? → **insinuating** · ¶31 sentence 2: "Ichabod, therefore, made his advances in a quiet and gently insinuating manner."
+3. Which animal at the gate warned other young men off? → **horse** · ¶29 sentence 2: "Certain it is, his advances were signals for rival candidates to retire, who felt no inclination to cross a lion in his amours; insomuch, that when his horse was seen tied to Van Tassel’s paling, on a Sunday night, a sure sign that his master was courting, or, as it is termed, “sparking,” within, all other suitors passed by in despair, and carried the war into other quarters."
+4. Which word shows the villagers thought highly of him, not just feared him? → **admiration** · ¶28 sentence 10: "The neighbors looked upon him with a mixture of awe, admiration, and good-will; and, when any madcap prank or rustic brawl occurred in the vicinity, always shook their heads, and warranted Brom Bones was at the bottom of it."
+
+##### Inspect the Scene: an evening at the Van Tassels' (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/piazza-evening.webp` (A farmhouse porch at evening, a farmyard, a barn roof and a great tree). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+
+1. An empty hitching rail along the fence → ¶32 sentence 6: "Certain it is, this was not the case with the redoubtable Brom Bones; and from the moment Ichabod Crane made his advances, the interests of the former evidently declined: his horse was no longer seen tied to the palings on Sunday nights, and a deadly feud gradually arose between him and the preceptor of Sleepy Hollow."
+2. A flock of farm birds pecking in the yard → ¶31 sentence 5: "His notable little wife, too, had enough to do to attend to her housekeeping and manage her poultry; for, as she sagely observed, ducks and geese are foolish things, and must be looked after, but girls can take care of themselves."
+3. A small carved soldier perched on top of a roof → ¶31 sentence 6: "Thus, while the busy dame bustled about the house, or plied her spinning-wheel at one end of the piazza, honest Balt would sit smoking his evening pipe at the other, watching the achievements of a little wooden warrior, who, armed with a sword in each hand, was most valiantly fighting the wind on the pinnacle of the barn."
+4. A bubbling source beneath a big tree → ¶31 sentence 7: "In the mean time, Ichabod would carry on his suit with the daughter by the side of the spring under the great elm, or sauntering along in the twilight, that hour so favorable to the lover’s eloquence."
+- Near miss in the tray: ¶32 sentence 4: "It is a great triumph of skill to gain the former, but a still greater proof of generalship to maintain possession of the latter, for man must battle for his fortress at every door and window."
+- Near miss in the tray: ¶32 sentence 3: "Some seem to have but one vulnerable point, or door of access; while others have a thousand avenues, and may be captured in a thousand different ways."
+
+#### Room 7: The invitation (Expedition: The Invitation)
+
+- The door: "The Invitation. Brom's pranks pile up, and then a messenger brings news of a party. Prove what the story says, and the way out opens."
+
+##### Fix the Painting: the schoolhouse after the pranks (after lock 2)
+
+Prompt: "A painter tried to show what Brom's gang did to the schoolhouse, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/pranked-school.webp` (A painting of a log schoolhouse with smoke, a dog and young men outside). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✓ Smoke pouring out of the schoolroom · ¶33 sentence 4: "They harried his hitherto peaceful domains; smoked out his singing school by stopping up the chimney; broke into the schoolhouse at night, in spite of its formidable fastenings of withe and window stakes, and turned everything topsy-turvy, so that the poor schoolmaster began to think all the witches in the country held their meetings there."
+2. ✓ Everything inside turned upside down · ¶33 sentence 4: "They harried his hitherto peaceful domains; smoked out his singing school by stopping up the chimney; broke into the schoolhouse at night, in spite of its formidable fastenings of withe and window stakes, and turned everything topsy-turvy, so that the poor schoolmaster began to think all the witches in the country held their meetings there."
+3. ✓ A dog howling in a silly way · ¶33 sentence 5: "But what was still more annoying, Brom took all opportunities of turning him into ridicule in presence of his mistress, and had a scoundrel dog whom he taught to whine in the most ludicrous manner, and introduced as a rival of Ichabod’s, to instruct her in psalmody."
+4. ✗ The gang politely knocking at the door · ¶33 sentence 4: "They harried his hitherto peaceful domains; smoked out his singing school by stopping up the chimney; broke into the schoolhouse at night, in spite of its formidable fastenings of withe and window stakes, and turned everything topsy-turvy, so that the poor schoolmaster began to think all the witches in the country held their meetings there."
+5. ✗ Brom offering Ichabod a friendly handshake · ¶33 sentence 3: "Ichabod became the object of whimsical persecution to Bones and his gang of rough riders."
+
+##### The schoolroom door (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: R-C-W-R (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. Which word names the person Brom's pranks were aimed at? → **rival** · ¶33 sentence 2: "There was something extremely provoking in this obstinately pacific system; it left Brom no alternative but to draw upon the funds of rustic waggery in his disposition, and to play off boorish practical jokes upon his rival."
+2. What did the gang plug up so the music lesson filled with fumes? → **chimney** · ¶33 sentence 4: "They harried his hitherto peaceful domains; smoked out his singing school by stopping up the chimney; broke into the schoolhouse at night, in spite of its formidable fastenings of withe and window stakes, and turned everything topsy-turvy, so that the poor schoolmaster began to think all the witches in the country held their meetings there."
+3. What sad noise did Brom train his animal to make, to mock Ichabod? → **whine** · ¶33 sentence 5: "But what was still more annoying, Brom took all opportunities of turning him into ridicule in presence of his mistress, and had a scoundrel dog whom he taught to whine in the most ludicrous manner, and introduced as a rival of Ichabod’s, to instruct her in psalmody."
+4. What did Brom make of Ichabod whenever Katrina was watching? → **ridicule** · ¶33 sentence 5: "But what was still more annoying, Brom took all opportunities of turning him into ridicule in presence of his mistress, and had a scoundrel dog whom he taught to whine in the most ludicrous manner, and introduced as a rival of Ichabod’s, to instruct her in psalmody."
+
+##### Inspect the Scene: getting ready for the party (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/getting-ready.webp` (An empty schoolroom in a mess, with an old horse waiting outside the door). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+
+1. Pages and spilled black liquid all over the floor → ¶35 sentence 3: "Books were flung aside without being put away on the shelves, inkstands were overturned, benches thrown down, and the whole school was turned loose an hour before the usual time, bursting forth like a legion of young imps, yelping and racketing about the green in joy at their early emancipation."
+2. A cracked mirror hanging on a nail → ¶36 sentence 1: "The gallant Ichabod now spent at least an extra half hour at his toilet, brushing and furbishing up his best, and indeed only suit of rusty black, and arranging his locks by a bit of broken looking-glass that hung up in the schoolhouse."
+3. Prickly seed pods stuck in the scruffy hair of an old horse → ¶36 sentence 5: "He was gaunt and shagged, with a ewe neck, and a head like a hammer; his rusty mane and tail were tangled and knotted with burs; one eye had lost its pupil, and was glaring and spectral, but the other had the gleam of a genuine devil in it."
+4. Foot loops hitched up very high on the riding seat → ¶37 sentence 2: "He rode with short stirrups, which brought his knees nearly up to the pommel of the saddle; his sharp elbows stuck out like grasshoppers’; he carried his whip perpendicularly in his hand, like a sceptre, and as his horse jogged on, the motion of his arms was not unlike the flapping of a pair of wings."
+- Near miss in the tray: ¶36 sentence 6: "Still he must have had fire and mettle in his day, if we may judge from the name he bore of Gunpowder."
+- Near miss in the tray: ¶37 sentence 1: "Ichabod was a suitable figure for such a steed."
+
+#### Room 8: The ride to the party (Expedition: The Ride to the Party)
+
+- The door: "The Ride to the Party. An autumn road, a borrowed horse, and a feast at the end of it. Prove what the story says, and the way out opens."
+
+##### Fix the Painting: the road in autumn (after lock 4)
+
+Prompt: "A painter tried to show the country Ichabod rode through, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/autumn-road.webp` (A painting of a country road through autumn woods with birds). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✓ Trees turned orange, purple and red · ¶38 sentence 2: "The forests had put on their sober brown and yellow, while some trees of the tenderer kind had been nipped by the frosts into brilliant dyes of orange, purple, and scarlet."
+2. ✓ Lines of wild ducks high overhead · ¶38 sentence 3: "Streaming files of wild ducks began to make their appearance high in the air; the bark of the squirrel might be heard from the groves of beech and hickory-nuts, and the pensive whistle of the quail at intervals from the neighboring stubble field."
+3. ✓ A woodpecker with a crimson crest · ¶39 sentence 3: "There was the honest cock robin, the favorite game of stripling sportsmen, with its loud querulous note; and the twittering blackbirds flying in sable clouds; and the golden-winged woodpecker with his crimson crest, his broad black gorget, and splendid plumage; and the cedar bird, with its red-tipt wings and yellow-tipt tail and its little monteiro cap of feathers; and the blue jay, that noisy coxcomb, in his gay light blue coat and white underclothes, screaming and chattering, nodding and bobbing and bowing, and pretending to be on good terms with every songster of the grove."
+4. ✗ A gray, stormy sky full of rain · ¶38 sentence 1: "It was, as I have said, a fine autumnal day; the sky was clear and serene, and nature wore that rich and golden livery which we always associate with the idea of abundance."
+5. ✗ Bare bushes with no birds anywhere · ¶39 sentence 2: "In the fullness of their revelry, they fluttered, chirping and frolicking from bush to bush, and tree to tree, capricious from the very profusion and variety around them."
+
+##### Hans Van Ripper's gate (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: H-S-A-S (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. What sat so low it seemed perched on his face? → **hat** · ¶37 sentence 3: "A small wool hat rested on the top of his nose, for so his scanty strip of forehead might be called, and the skirts of his black coat fluttered out almost to the horses tail."
+2. Which word names the brightest red among the autumn leaves? → **scarlet** · ¶38 sentence 2: "The forests had put on their sober brown and yellow, while some trees of the tenderer kind had been nipped by the frosts into brilliant dyes of orange, purple, and scarlet."
+3. Which crop did he spot in every orchard and wagon along the road? → **apples** · ¶40 sentence 2: "On all sides he beheld vast store of apples; some hanging in oppressive opulence on the trees; some gathered into baskets and barrels for the market; others heaped up in rich piles for the cider-press."
+4. Which bushy-tailed creature was chattering in the woods? → **squirrel** · ¶38 sentence 3: "Streaming files of wild ducks began to make their appearance high in the air; the bark of the squirrel might be heard from the groves of beech and hickory-nuts, and the pensive whistle of the quail at intervals from the neighboring stubble field."
+
+##### Inspect the Scene: arriving at the Van Tassels' (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/arriving-party.webp` (Guests in 1790s country dress arriving at a farmhouse at sunset, with a river and fields). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+
+1. Fat orange gourds resting in the dirt → ¶40 sentence 3: "Farther on he beheld great fields of Indian corn, with its golden ears peeping from their leafy coverts, and holding out the promise of cakes and hasty-pudding; and the yellow pumpkins lying beneath them, turning up their fair round bellies to the sun, and giving ample prospects of the most luxurious of pies; and anon he passed the fragrant buckwheat fields breathing the odor of the beehive, and as he beheld them, soft anticipations stole over his mind of dainty slapjacks, well buttered, and garnished with honey or treacle, by the delicate little dimpled hand of Katrina Van Tassel."
+2. A small boat with a limp canvas, drifting downstream → ¶41 sentence 7: "A sloop was loitering in the distance, dropping slowly down with the tide, her sail hanging uselessly against the mast; and as the reflection of the sky gleamed along the still water, it seemed as if the vessel was suspended in the air."
+3. Big shiny metal clasps on clunky footwear → ¶42 sentence 2: "Old farmers, a spare leathern-faced race, in homespun coats and breeches, blue stockings, huge shoes, and magnificent pewter buckles."
+4. A braid tied with a slippery dark strip → ¶42 sentence 5: "The sons, in short square-skirted coats, with rows of stupendous brass buttons, and their hair generally queued in the fashion of the times, especially if they could procure an eel-skin for the purpose, it being esteemed throughout the country as a potent nourisher and strengthener of the hair."
+- Near miss in the tray: ¶41 sentence 3: "The wide bosom of the Tappan Zee lay motionless and glassy, excepting that here and there a gentle undulation waved and prolonged the blue shadow of the distant mountain."
+- Near miss in the tray: ¶42 sentence 4: "Buxom lasses, almost as antiquated as their mothers, excepting where a straw hat, a fine ribbon, or perhaps a white frock, gave symptoms of city innovation."
+
+#### Room 9: The feast and the dance (Expedition: The Feast and the Dance)
+
+- The door: "The Feast and the Dance. The Van Tassels' table is heaped high, and Ichabod is happy. Prove what the story says, and the way out opens."
+
+##### Fix the Painting: the Dutch tea table (after lock 4)
+
+Prompt: "A painter tried to show the feast in the Van Tassel parlor, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/tea-table.webp` (A painting of a long farmhouse table heaped with food, guests, and a window onto the yard). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✓ Platters heaped with cakes · ¶44 sentence 3: "Such heaped up platters of cakes of various and almost indescribable kinds, known only to experienced Dutch housewives!"
+2. ✓ Doughnuts and twisted crullers · ¶44 sentence 4: "There was the doughty doughnut, the tender oly koek, and the crisp and crumbling cruller; sweet cakes and short cakes, ginger cakes and honey cakes, and the whole family of cakes."
+3. ✓ Apple, peach and pumpkin pies · ¶44 sentence 5: "And then there were apple pies, and peach pies, and pumpkin pies; besides slices of ham and smoked beef; and moreover delectable dishes of preserved plums, and peaches, and pears, and quinces; not to mention broiled shad and roasted chickens; together with bowls of milk and cream, all mingled higgledy-piggledy, pretty much as I have enumerated them, with the motherly teapot sending up its clouds of vapor from the midst--Heaven bless the mark!"
+4. ✗ Brom outside on a gentle, sleepy pony · ¶43 sentence 1: "Brom Bones, however, was the hero of the scene, having come to the gathering on his favorite steed Daredevil, a creature, like himself, full of mettle and mischief, and which no one but himself could manage."
+5. ✗ Ichabod politely refusing a plate · ¶44 sentence 7: "Happily, Ichabod Crane was not in so great a hurry as his historian, but did ample justice to every dainty."
+
+##### The parlor door (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: M-C-D-S (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. Which word shows Brom's horse loved making trouble? → **mischief** · ¶43 sentence 1: "Brom Bones, however, was the hero of the scene, having come to the gathering on his favorite steed Daredevil, a creature, like himself, full of mettle and mischief, and which no one but himself could manage."
+2. Which twisted fried pastry broke apart at the first bite? → **cruller** · ¶44 sentence 4: "There was the doughty doughnut, the tender oly koek, and the crisp and crumbling cruller; sweet cakes and short cakes, ginger cakes and honey cakes, and the whole family of cakes."
+3. What lifts some people's mood the way food lifted Ichabod's? → **drink** · ¶45 sentence 1: "He was a kind and thankful creature, whose heart dilated in proportion as his skin was filled with good cheer, and whose spirits rose with eating, as some men’s do with drink."
+4. Which building did he dream of leaving behind forever? → **schoolhouse** · ¶45 sentence 3: "Then, he thought, how soon he’d turn his back upon the old schoolhouse; snap his fingers in the face of Hans Van Ripper, and every other niggardly patron, and kick any itinerant pedagogue out of doors that should dare to call him comrade!"
+
+##### Inspect the Scene: the porch after the dance (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/porch-after-dance.webp` (A farmhouse porch at night with older men, a table of food inside and a horse in the yard). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+
+1. Old men puffing pipes on the porch → ¶49 sentence 1: "When the dance was at an end, Ichabod was attracted to a knot of the sager folks, who, with Old Van Tassel, sat smoking at one end of the piazza, gossiping over former times, and drawing out long stories about the war."
+2. A wild-eyed horse stamping at the hitching post → ¶43 sentence 1: "Brom Bones, however, was the hero of the scene, having come to the gathering on his favorite steed Daredevil, a creature, like himself, full of mettle and mischief, and which no one but himself could manage."
+3. A table still loaded with tarts and cured meat → ¶44 sentence 5: "And then there were apple pies, and peach pies, and pumpkin pies; besides slices of ham and smoked beef; and moreover delectable dishes of preserved plums, and peaches, and pears, and quinces; not to mention broiled shad and roasted chickens; together with bowls of milk and cream, all mingled higgledy-piggledy, pretty much as I have enumerated them, with the motherly teapot sending up its clouds of vapor from the midst--Heaven bless the mark!"
+4. Baltus clapping a guest on the back → ¶46 sentence 2: "His hospitable attentions were brief, but expressive, being confined to a shake of the hand, a slap on the shoulder, a loud laugh, and a pressing invitation to “fall to, and help themselves.”"
+- Near miss in the tray: ¶46 sentence 1: "Old Baltus Van Tassel moved about among his guests with a face dilated with content and good humor, round and jolly as the harvest moon."
+- Near miss in the tray: ¶50 sentence 2: "The British and American line had run near it during the war; it had, therefore, been the scene of marauding and infested with refugees, cowboys, and all kinds of border chivalry."
+
+#### Room 10: Ghost stories (Expedition: Ghost Stories)
+
+- The door: "Ghost Stories. The old men tell war tales, and then the ghosts come out. Prove what the story says, and the way out opens."
+
+##### Fix the Painting: the war stories (after lock 2)
+
+Prompt: "A painter tried to show the old men's war stories, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/doffue-battle.webp` (A painting of a Revolutionary War riverbank with a big man at an old cannon and a warship). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✓ A big Dutchman with a blue-black beard · ¶51 sentence 1: "There was the story of Doffue Martling, a large blue-bearded Dutchman, who had nearly taken a British frigate with an old iron nine-pounder from a mud breastwork, only that his gun burst at the sixth discharge."
+2. ✓ An old iron cannon behind a wall of mud · ¶51 sentence 1: "There was the story of Doffue Martling, a large blue-bearded Dutchman, who had nearly taken a British frigate with an old iron nine-pounder from a mud breastwork, only that his gun burst at the sixth discharge."
+3. ✓ A British warship out on the water · ¶51 sentence 1: "There was the story of Doffue Martling, a large blue-bearded Dutchman, who had nearly taken a British frigate with an old iron nine-pounder from a mud breastwork, only that his gun burst at the sixth discharge."
+4. ✗ The cannon firing perfectly, shot after shot · ¶51 sentence 1: "There was the story of Doffue Martling, a large blue-bearded Dutchman, who had nearly taken a British frigate with an old iron nine-pounder from a mud breastwork, only that his gun burst at the sixth discharge."
+5. ✗ A gentleman blocking a musket ball with a big wooden shield · ¶51 sentence 2: "And there was an old gentleman who shall be nameless, being too rich a mynheer to be lightly mentioned, who, in the battle of White Plains, being an excellent master of defence, parried a musket-ball with a small sword, insomuch that he absolutely felt it whiz round the blade, and glance off at the hilt; in proof of which he was ready at any time to show the sword, with the hilt a little bent."
+
+##### The storytellers' circle (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: S-N-S-F (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. Which word describes the protected, out-of-the-way spots where old legends flourish? → **sheltered** · ¶52 sentence 3: "Local tales and superstitions thrive best in these sheltered, long-settled retreats; but are trampled under foot by the shifting throng that forms the population of most of our country places."
+2. Which word compares the rest of the dead to a short doze? → **nap** · ¶52 sentence 4: "Besides, there is no encouragement for ghosts in most of our villages, for they have scarcely had time to finish their first nap and turn themselves in their graves, before their surviving friends have travelled away from the neighborhood; so that when they turn out at night to walk their rounds, they have no acquaintance left to call upon."
+3. Which word tells how rarely spooky tales turn up in most towns? → **seldom** · ¶52 sentence 5: "This is perhaps the reason why we so seldom hear of ghosts except in our long-established Dutch communities."
+4. What kind of enemy vessel did Doffue almost seize? → **frigate** · ¶51 sentence 1: "There was the story of Doffue Martling, a large blue-bearded Dutchman, who had nearly taken a British frigate with an old iron nine-pounder from a mud breastwork, only that his gun burst at the sixth discharge."
+
+##### Inspect the Scene: the church by the bridge (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/church-and-bridge.webp` (An old white church on a hill above a pond, with a rocky creek and a shadowy bridge). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+
+1. A white meeting house on a rise → ¶54 sentence 2: "It stands on a knoll, surrounded by locust-trees and lofty elms, from among which its decent, whitewashed walls shine modestly forth, like Christian purity beaming through the shades of retirement."
+2. A shining pond at the bottom of the rise → ¶54 sentence 3: "A gentle slope descends from it to a silver sheet of water, bordered by high trees, between which, peeps may be caught at the blue hills of the Hudson."
+3. A rushing creek tumbling over boulders and dead logs → ¶54 sentence 5: "On one side of the church extends a wide woody dell, along which raves a large brook among broken rocks and trunks of fallen trees."
+4. A dark plank crossing under heavy branches → ¶54 sentence 6: "Over a deep black part of the stream, not far from the church, was formerly thrown a wooden bridge; the road that led to it, and the bridge itself, were thickly shaded by overhanging trees, which cast a gloom about it, even in the daytime; but occasioned a fearful darkness at night."
+- Near miss in the tray: ¶54 sentence 4: "To look upon its grass-grown yard, where the sunbeams seem to sleep so quietly, one would think that there at least the dead might rest in peace."
+- Near miss in the tray: ¶53 sentence 6: "The chief part of the stories, however, turned upon the favorite spectre of Sleepy Hollow, the Headless Horseman, who had been heard several times of late, patrolling the country; and, it was said, tethered his horse nightly among the graves in the churchyard."
+
+#### Room 11: The lonely road (Expedition: The Lonely Road)
+
+- The door: "The Lonely Road. The party is over, Ichabod is alone, and the road home passes the haunted tree. Prove what the story says, and the way out opens."
+
+##### Fix the Painting: the party ends (after lock 3)
+
+Prompt: "A painter tried to show the guests leaving the Van Tassels', but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/party-ends.webp` (A painting of guests leaving a farmhouse at night in wagons and on horseback). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✓ Farmers loading their families into wagons · ¶57 sentence 2: "The old farmers gathered together their families in their wagons, and were heard for some time rattling along the hollow roads, and over the distant hills."
+2. ✓ Girls riding behind young men on horseback · ¶57 sentence 3: "Some of the damsels mounted on pillions behind their favorite swains, and their light-hearted laughter, mingling with the clatter of hoofs, echoed along the silent woodlands, sounding fainter and fainter, until they gradually died away,--and the late scene of noise and frolic was all silent and deserted."
+3. ✓ Ichabod staying behind at the door · ¶57 sentence 4: "Ichabod only lingered behind, according to the custom of country lovers, to have a tête-à-tête with the heiress; fully convinced that he was now on the high road to success."
+4. ✗ The guests settling in to sleep at the farmhouse · ¶57 sentence 2: "The old farmers gathered together their families in their wagons, and were heard for some time rattling along the hollow roads, and over the distant hills."
+5. ✗ Everyone leaving in complete silence · ¶57 sentence 3: "Some of the damsels mounted on pillions behind their favorite swains, and their light-hearted laughter, mingling with the clatter of hoofs, echoed along the silent woodlands, sounding fainter and fainter, until they gradually died away,--and the late scene of noise and frolic was all silent and deserted."
+
+##### The stable door (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: E-R-H-S (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. Which word means he shared short passages from a longer work? → **extracts** · ¶56 sentence 2: "He repaid them in kind with large extracts from his invaluable author, Cotton Mather, and added many marvellous events that had taken place in his native State of Connecticut, and fearful sights which he had seen in his nightly walks about Sleepy Hollow."
+2. Which word tells the noise the carts made on the way home? → **rattling** · ¶57 sentence 2: "The old farmers gathered together their families in their wagons, and were heard for some time rattling along the hollow roads, and over the distant hills."
+3. Which word compares his exit to a chicken thief's? → **henroost** · ¶57 sentence 11: "Let it suffice to say, Ichabod stole forth with the air of one who had been sacking a henroost, rather than a fair lady’s heart."
+4. Where did he go first to wake the horse? → **stable** · ¶57 sentence 12: "Without looking to the right or left to notice the scene of rural wealth, on which he had so often gloated, he went straight to the stable, and with several hearty cuffs and kicks roused his steed most uncourteously from the comfortable quarters in which he was soundly sleeping, dreaming of mountains of corn and oats, and whole valleys of timothy and clover."
+
+##### Inspect the Scene: Major André's tree (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/andre-tree.webp` (A huge twisted tree in the middle of a dark country road above a river at night). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+
+1. A boat's upright pole down on the river → ¶58 sentence 3: "Far below him the Tappan Zee spread its dusky and indistinct waste of waters, with here and there the tall mast of a sloop, riding quietly at anchor under the land."
+2. A huge trunk standing in the middle of the lane → ¶59 sentence 5: "In the centre of the road stood an enormous tulip-tree, which towered like a giant above all the other trees of the neighborhood, and formed a kind of landmark."
+3. A pale scorched scar on the bark → ¶60 sentence 2: "As he approached a little nearer, he thought he saw something white, hanging in the midst of the tree: he paused and ceased whistling but, on looking more narrowly, perceived that it was a place where the tree had been scathed by lightning, and the white wood laid bare."
+4. Two heavy limbs grinding together → ¶60 sentence 3: "Suddenly he heard a groan--his teeth chattered, and his knees smote against the saddle: it was but the rubbing of one huge bough upon another, as they were swayed about by the breeze."
+- Near miss in the tray: ¶59 sentence 8: "The common people regarded it with a mixture of respect and superstition, partly out of sympathy for the fate of its ill-starred namesake, and partly from the tales of strange sights, and doleful lamentations, told concerning it."
+- Near miss in the tray: ¶59 sentence 7: "It was connected with the tragical story of the unfortunate André, who had been taken prisoner hard by; and was universally known by the name of Major André’s tree."
+
+#### Room 12: The Headless Horseman (Expedition: The Headless Horseman)
+
+- The door: "The Headless Horseman. A haunted stream, a silent rider, and a chase in the dark. Prove what the story says, and the way out opens."
+
+##### Fix the Painting: the crossing at Wiley's Swamp (after lock 2)
+
+Prompt: "A painter tried to show the haunted stream Ichabod had to cross, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/wiley-swamp.webp` (A painting of a stream crossing a road into a dark wooded swamp at night). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✓ A small stream crossing the road · ¶61 sentence 1: "About two hundred yards from the tree, a small brook crossed the road, and ran into a marshy and thickly-wooded glen, known by the name of Wiley’s Swamp."
+2. ✓ Thick dark woods around the swamp · ¶61 sentence 1: "About two hundred yards from the tree, a small brook crossed the road, and ran into a marshy and thickly-wooded glen, known by the name of Wiley’s Swamp."
+3. ✓ Big trees tangled with wild grapevines · ¶61 sentence 3: "On that side of the road where the brook entered the wood, a group of oaks and chestnuts, matted thick with wild grape-vines, threw a cavernous gloom over it."
+4. ✗ A sturdy stone bridge with railings · ¶61 sentence 2: "A few rough logs, laid side by side, served for a bridge over this stream."
+5. ✗ A schoolboy happily playing there alone after dark · ¶61 sentence 6: "This has ever since been considered a haunted stream, and fearful are the feelings of the schoolboy who has to pass it alone after dark."
+
+##### The crossing (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: L-W-H-M (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. What was the crossing at the swamp made from? → **logs** · ¶61 sentence 2: "A few rough logs, laid side by side, served for a bridge over this stream."
+2. Along with a kick, what did Ichabod use to hurry the old horse? → **whip** · ¶62 sentence 3: "The schoolmaster now bestowed both whip and heel upon the starveling ribs of old Gunpowder, who dashed forward, snuffling and snorting, but came to a stand just by the bridge, with a suddenness that had nearly sent his rider sprawling over his head."
+3. What stood straight up when the schoolmaster saw the shape? → **hair** · ¶63 sentence 1: "The hair of the affrighted pedagogue rose upon his head with terror."
+4. Which word tells that the shape looked twisted and wrong? → **misshapen** · ¶62 sentence 5: "In the dark shadow of the grove, on the margin of the brook, he beheld something huge, misshapen and towering."
+
+##### Inspect the Scene: the chase (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/the-chase.webp` (A night road with a big dark horse and a cloaked rider, sparks on stones, and a pale church on a hill). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+
+1. A big dark stallion → ¶63 sentence 11: "He appeared to be a horseman of large dimensions, and mounted on a black horse of powerful frame."
+2. A tall rider wrapped in a long cape → ¶64 sentence 7: "On mounting a rising ground, which brought the figure of his fellow-traveller in relief against the sky, gigantic in height, and muffled in a cloak, Ichabod was horror-struck on perceiving that he was headless!--but his horror was still more increased on observing that the head, which should have rested on his shoulders, was carried before him on the pommel of his saddle!"
+3. Bright glints shooting up from hooves on rocky ground → ¶64 sentence 9: "Away, then, they dashed through thick and thin; stones flying and sparks flashing at every bound."
+4. A pale meeting house on a grassy rise → ¶65 sentence 2: "This road leads through a sandy hollow shaded by trees for about a quarter of a mile, where it crosses the bridge famous in goblin story; and just beyond swells the green knoll on which stands the whitewashed church."
+- Near miss in the tray: ¶62 sentence 6: "It stirred not, but seemed gathered up in the gloom, like some gigantic monster ready to spring upon the traveller."
+- Near miss in the tray: ¶63 sentence 3: "To turn and fly was now too late; and besides, what chance was there of escaping ghost or goblin, if such it was, which could ride upon the wings of the wind?"
+
+#### Room 13: Gone (Expedition: Gone)
+
+- The door: "Gone. The next morning, the schoolmaster has vanished. Prove what the story says, and the way out opens."
+
+##### Fix the Painting: the race to the church bridge (after lock 4)
+
+Prompt: "A painter tried to show Ichabod reaching the church bridge, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/church-bridge-night.webp` (A painting of a rider on an old horse racing toward a bridge and a church at night, chased by a dark horse). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✓ A star shining in the water of the brook · ¶67 sentence 2: "The wavering reflection of a silver star in the bosom of the brook told him that he was not mistaken."
+2. ✓ The church walls glimmering beyond the trees · ¶67 sentence 3: "He saw the walls of the church dimly glaring under the trees beyond."
+3. ✓ A black horse right behind him · ¶67 sentence 6: "Just then he heard the black steed panting and blowing close behind him; he even fancied that he felt his hot breath."
+4. ✗ Ichabod's saddle still firmly in place · ¶66 sentence 2: "He seized it by the pommel, and endeavored to hold it firm, but in vain; and had just time to save himself by clasping old Gunpowder round the neck, when the saddle fell to the earth, and he heard it trampled under foot by his pursuer."
+5. ✗ A bridge of solid stone arches · ¶67 sentence 7: "Another convulsive kick in the ribs, and old Gunpowder sprang upon the bridge; he thundered over the resounding planks; he gained the opposite side; and now Ichabod cast a look behind to see if his pursuer should vanish, according to rule, in a flash of fire and brimstone."
+
+##### The church bridge (the inner door, after lock 5 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: S-S-P-C (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. For which day of the week did Hans save that riding gear? → **Sunday** · ¶66 sentence 3: "For a moment the terror of Hans Van Ripper’s wrath passed across his mind,--for it was his Sunday saddle; but this was no time for petty fears; the goblin was hard on his haunches; and (unskilful rider that he was!) he had much ado to maintain his seat; sometimes slipping on one side, sometimes on another, and sometimes jolted on the high ridge of his horse’s backbone, with a violence that he verily feared would cleave him asunder."
+2. What did Ichabod see glittering in the water that showed him where he was? → **star** · ¶67 sentence 2: "The wavering reflection of a silver star in the bosom of the brook told him that he was not mistaken."
+3. What was the crossing's floor made of, booming under the hooves? → **planks** · ¶67 sentence 7: "Another convulsive kick in the ribs, and old Gunpowder sprang upon the bridge; he thundered over the resounding planks; he gained the opposite side; and now Ichabod cast a look behind to see if his pursuer should vanish, according to rule, in a flash of fire and brimstone."
+4. Which word names the part of Ichabod the flying object struck? → **cranium** · ¶67 sentence 10: "It encountered his cranium with a tremendous crash,--he was tumbled headlong into the dust, and Gunpowder, the black steed, and the goblin rider, passed by like a whirlwind."
+
+##### Inspect the Scene: the search for Ichabod (after lock 10)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/the-search.webp` (Things found after the schoolmaster vanished: a saddle in a muddy road, books, a cap and a broken gourd by a brook). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+
+1. A leather riding seat stamped into the mud → ¶68 sentence 6: "In one part of the road leading to the church was found the saddle trampled in the dirt; the tracks of horses’ hoofs deeply dented in the road, and evidently at furious speed, were traced to the bridge, beyond which, on the bank of a broad part of the brook, where the water ran deep and black, was found the hat of the unfortunate Ichabod, and close beside it a shattered pumpkin."
+2. A thick old volume about spells and sorcery → ¶69 sentence 4: "As to the books and furniture of the schoolhouse, they belonged to the community, excepting Cotton Mather’s “History of Witchcraft,” a “New England Almanac,” and a book of dreams and fortune-telling; in which last was a sheet of foolscap much scribbled and blotted in several fruitless attempts to make a copy of verses in honor of the heiress of Van Tassel."
+3. A worn hymnal with folded corners → ¶69 sentence 3: "They consisted of two shirts and a half; two stocks for the neck; a pair or two of worsted stockings; an old pair of corduroy small-clothes; a rusty razor; a book of psalm tunes full of dog’s-ears; and a broken pitch-pipe."
+- Near miss in the tray: ¶68 sentence 2: "Ichabod did not make his appearance at breakfast; dinner-hour came, but no Ichabod."
+- Near miss in the tray: ¶69 sentence 6: "Whatever money the schoolmaster possessed, and he had received his quarter’s pay but a day or two before, he must have had about his person at the time of his disappearance."
+
+#### Room 14: The postscript (Expedition: The Postscript)
+
+- The door: "The Postscript. Years later, the tale is told again, and someone doubts it. Prove what the story says, and the way out opens."
+
+##### Fix the Painting: the Hollow, years later (after lock 3)
+
+Prompt: "A painter tried to show the Hollow years after Ichabod vanished, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+
+Picture: `/worlds/sleepy-hollow/rooms/hollow-years-later.webp` (A painting of a country valley on a summer evening with a millpond, a road, a bridge and an old schoolhouse). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
+
+1. ✓ The road now curving along the millpond · ¶72 sentence 2: "The bridge became more than ever an object of superstitious awe; and that may be the reason why the road has been altered of late years, so as to approach the church by the border of the millpond."
+2. ✓ The old bridge standing unused · ¶72 sentence 2: "The bridge became more than ever an object of superstitious awe; and that may be the reason why the road has been altered of late years, so as to approach the church by the border of the millpond."
+3. ✓ A plowboy strolling home in the evening · ¶72 sentence 3: "The schoolhouse being deserted soon fell to decay, and was reported to be haunted by the ghost of the unfortunate pedagogue and the plowboy, loitering homeward of a still summer evening, has often fancied his voice at a distance, chanting a melancholy psalm tune among the tranquil solitudes of Sleepy Hollow."
+4. ✗ A brand-new schoolhouse full of children · ¶72 sentence 3: "The schoolhouse being deserted soon fell to decay, and was reported to be haunted by the ghost of the unfortunate pedagogue and the plowboy, loitering homeward of a still summer evening, has often fancied his voice at a distance, chanting a melancholy psalm tune among the tranquil solitudes of Sleepy Hollow."
+5. ✗ Brom scowling as neighbors tell the tale · ¶71 sentence 2: "Brom Bones, too, who, shortly after his rival’s disappearance conducted the blooming Katrina in triumph to the altar, was observed to look exceedingly knowing whenever the story of Ichabod was related, and always burst into a hearty laugh at the mention of the pumpkin; which led some to suspect that he knew more about the matter than he chose to tell."
+
+##### The last door (the inner door, after lock 4 and the checkpoint)
+
+Prompt: "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right."
+
+Code: A-L-S-S (spells no word in the story). Each dial: the question, the word to tap, and its line.
+
+1. What surprising fact about Ichabod's fate did the traveler report? → **alive** · ¶71 sentence 1: "It is true, an old farmer, who had been down to New York on a visit several years after, and from whom this account of the ghostly adventure was received, brought home the intelligence that Ichabod Crane was still alive; that he had left the neighborhood partly through fear of the goblin and Hans Van Ripper, and partly in mortification at having been suddenly dismissed by the heiress; that he had changed his quarters to a distant part of the country; had kept school and studied law at the same time; had been admitted to the bar; turned politician; electioneered; written for the newspapers; and finally had been made a justice of the Ten Pound Court."
+2. What sound did Brom let out at the gourd part of the tale? → **laugh** · ¶71 sentence 2: "Brom Bones, too, who, shortly after his rival’s disappearance conducted the blooming Katrina in triumph to the altar, was observed to look exceedingly knowing whenever the story of Ichabod was related, and always burst into a hearty laugh at the mention of the pumpkin; which led some to suspect that he knew more about the matter than he chose to tell."
+3. Which word shows the farm women blame ghostly powers? → **supernatural** · ¶72 sentence 1: "The old country wives, however, who are the best judges of these matters, maintain to this day that Ichabod was spirited away by supernatural means; and it is a favorite story often told about the neighborhood round the winter evening fire."
+4. Which word tells that the storyteller looked worn and frayed? → **shabby** · ¶75 sentence 2: "The narrator was a pleasant, shabby, gentlemanly old fellow, in pepper-and-salt clothes, with a sadly humourous face, and one whom I strongly suspected of being poor--he made such efforts to be entertaining."
+
+##### Inspect the Scene: the meeting in the city (after lock 7)
+
+Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+
+Picture: `/worlds/sleepy-hollow/rooms/city-meeting.webp` (A wood-paneled city meeting room around 1800 with gentlemen at a table). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
+
+1. A goblet of red drink being sipped → ¶76 sentence 1: "The story-teller, who was just putting a glass of wine to his lips, as a refreshment after his toils, paused for a moment, looked at his inquirer with an air of infinite deference, and, lowering the glass slowly to the table, observed that the story was intended most logically to prove--"
+2. A stern listener with bushy brows, hands tucked across his chest → ¶75 sentence 4: "There was, however, one tall, dry-looking old gentleman, with beetling eyebrows, who maintained a grave and rather severe face throughout, now and then folding his arms, inclining his head, and looking down upon the floor, as if turning a doubt over in his mind."
+3. Two officials nodding off in their seats → ¶75 sentence 3: "When his story was concluded, there was much laughter and approbation, particularly from two or three deputy aldermen, who had been asleep the greater part of the time."
+- Near miss in the tray: ¶75 sentence 1: "The preceding tale is given almost in the precise words in which I heard it related at a Corporation meeting at the ancient city of Manhattoes, at which were present many of its sagest and most illustrious burghers."
+- Near miss in the tray: ¶81 sentence 1: "“Faith, sir,” replied the story-teller, “as to that matter, I don’t believe one-half of it myself.”"
+
+<!-- rooms:end -->

@@ -48,7 +48,7 @@ test("teacher screens hide the legacy settings and tabs", () => {
 test("the launch screen: the role card, Start Proof Race and Join a live game, no radio choices", () => {
   const s = src("app/launch-screen.tsx");
   assert.match(s, /You're an investigator stepping into the story/);
-  assert.match(s, /Start Proof Race/);
+  assert.match(s, /Enter the escape rooms/);
   assert.match(s, /Read a chunk\. Race the Lantern Ghost to the line that proves it\./);
   assert.match(s, /Join a live game/);
   assert.doesNotMatch(s, /type="radio"|role="radio"|aria-checked/);
@@ -63,7 +63,7 @@ test("the home page: one primary button per audience, a strip of the three momen
   for (const t of ["Catch the lie", "Holograms", "More ways to prove", "Play live with your class"]) assert.ok(!s.includes(t), `no old mode card: ${t}`);
   assert.match(s, />Play the demo <ArrowRight/); assert.match(s, />I'm a teacher <ArrowRight/); assert.match(s, /Have a class code\? Join here\./);
   for (const f of ["moment-map", "moment-lineup", "moment-race"]) { assert.ok(s.includes(`/home/${f}.jpg`), f); assert.ok(existsSync(`public/home/${f}.jpg`), `${f}: a real screenshot in public/home`); }
-  for (const t of ["Explore the map", "Question the witnesses", "Prove it with the text"]) assert.ok(s.includes(`"${t}"`), t);
+  for (const t of ["Enter a room", "Question the witnesses", "Prove it with the text"]) assert.ok(s.includes(`"${t}"`), t);
   assert.ok(!s.includes('"Bonus round"'), "How a case works: three steps only");
   assert.match(s, /Aligned to Florida B\.E\.S\.T\. ELA/); assert.match(s, /teacher_end_unit/, "the sample class report"); assert.match(s, /onPricing/);
   for (const t of ["Students", "Teachers", "Families", "Schools and districts"]) assert.ok(s.includes(`"${t}"`), t);

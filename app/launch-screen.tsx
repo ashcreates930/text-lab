@@ -1,5 +1,5 @@
 "use client";
-// The launch screen (after the first tap): the role card on top, one big "Start Proof Race" card and a smaller "Join a
+// The launch screen (after the first tap): the role card on top, one big "Enter the escape rooms" card and a smaller "Join a
 // live game" tile beside it. Fits one phone screen without scrolling. Proof Race is the only way students play.
 import {useLayoutEffect,useRef,useState} from "react";
 import {ArrowRight,Map as MapIcon,Search,Users,Zap} from "lucide-react";
@@ -24,8 +24,8 @@ export function LaunchScreen({world,ready,onStart,onJoinLive,onMap}:{world:World
   <div className="grid grid-cols-[1.55fr_1fr] gap-3">
    <button type="button" onClick={onStart} disabled={!ready} className="flex min-h-[200px] flex-col items-start gap-2 rounded-[24px] bg-primary p-4 text-left text-on-primary shadow-[0_8px_0_var(--color-primary-shadow)] transition-transform active:translate-y-1 disabled:opacity-50 motion-reduce:transition-none">
     <span className="flex w-full items-center justify-between"><span className="rounded-full bg-on-primary px-2.5 py-1 text-[11px] font-extrabold tracking-[.06em] text-highlight">PLAY</span><Zap size={36} strokeWidth={2.2} aria-hidden/></span>
-    <span className="mt-1 font-display text-[28px] font-bold leading-none">Start Proof Race</span>
-    <span className="text-[15px] font-bold leading-snug">{!ready?"Proof Race is coming to this story soon.":world.expeditions?.[0]?.interview?"Question the witnesses. Race through the story. Name the liar.":"Read a chunk. Race the Lantern Ghost to the line that proves it."}</span>
+    <span className="mt-1 font-display text-[28px] font-bold leading-none">Enter the escape rooms</span>
+    <span className="text-[15px] font-bold leading-snug">{!ready?"Escape rooms are coming to this story soon.":world.expeditions?.[0]?.interview?"Open every lock with proof. Question the witnesses. Name the liar to escape.":"Read a chunk. Race the Lantern Ghost to the line that proves it."}</span>
     <span className="mt-auto inline-flex items-center gap-1 font-display text-[18px] font-bold">Play now <ArrowRight size={18} aria-hidden/></span>
    </button>
    {code===null
@@ -41,6 +41,6 @@ export function LaunchScreen({world,ready,onStart,onJoinLive,onMap}:{world:World
      <button type="submit" disabled={clean.length<4} className="btn btn-primary mt-auto !min-h-12 !px-3 !text-[16px]">Join <ArrowRight size={16} aria-hidden/></button>
     </form>}
   </div>
-  {onMap&&<button type="button" onClick={onMap} className="case-secondary w-full justify-center"><MapIcon size={18} aria-hidden/>Expedition map and badges</button>}
+  {onMap&&<button type="button" onClick={onMap} className="case-secondary w-full justify-center"><MapIcon size={18} aria-hidden/>Room map and badges</button>}
  </div>;
 }

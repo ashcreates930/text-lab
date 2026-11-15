@@ -1,4 +1,5 @@
 "use client";
+import {CLOCK_INFO,ROOM_CLOCKS,type RoomClock} from "@/lib/room-clock";
 import {LEGACY_MODES} from "@/lib/feature-flags";
 import {useCallback,useEffect,useMemo,useState,useLayoutEffect,useRef} from "react";
 import {focusScreenTop} from "./screen-focus";
@@ -71,7 +72,7 @@ function ClassList({email,classes,onOpen,onCreated,onSignOut}:{email:string;clas
  </div>;
 }
 
-type Detail={studentTimes?:Record<string,string>;absent?:string[];class:{id:string;name:string|null;class_code:string;grade:number;preview_enabled:boolean;roles_enabled?:boolean;angles_enabled?:boolean;leaderboard_mode?:"individual"|"squad"|"off";story_mode_on?:boolean};students:{id:string;nickname:string}[];assignments:{lesson_id:string;due_date:string|null}[];completions:{student_id:string;lesson_id:string;first_try_correct:number;total:number}[];activeAnalysisId:string|null;world:{title:string;teacherPreviewRequired:boolean;scenes:{id:string;clues:number}[];roles:{id:string;name:string}[]}|null};
+type Detail={studentTimes?:Record<string,string>;absent?:string[];class:{id:string;name:string|null;class_code:string;grade:number;preview_enabled:boolean;roles_enabled?:boolean;angles_enabled?:boolean;look?:"mature"|"classic";room_clock?:RoomClock;leaderboard_mode?:"individual"|"squad"|"off";story_mode_on?:boolean};students:{id:string;nickname:string}[];assignments:{lesson_id:string;due_date:string|null}[];completions:{student_id:string;lesson_id:string;first_try_correct:number;total:number}[];activeAnalysisId:string|null;world:{title:string;teacherPreviewRequired:boolean;scenes:{id:string;clues:number}[];roles:{id:string;name:string}[]}|null};
 
 // QR code for the class link, drawn as SVG in the browser. Projected on the board, students scan it to join.
 function JoinQr({url}:{url:string}){
@@ -89,9 +90,11 @@ function ClassDetail({classId,onPresent}:{classId:string;onPresent:()=>void}){
  const c=data.class;
  const joinUrl=typeof window!=="undefined"?`${window.location.origin}/c/${c.class_code}`:"";
  return <div className="mt-6 space-y-5">
-  <div className="panel flex flex-wrap items-center justify-between gap-4 p-6"><div><p className="eyebrow">LIVE ROUND</p><p className="font-display mt-1 text-2xl">{LEGACY_MODES?"Squads on their phones":"Proof Race on their phones"}</p></div><StartLiveRound classId={classId} fetcher={teacherFetch}/></div>
+  <div className="panel flex flex-wrap items-center justify-between gap-4 p-6"><div><p className="eyebrow">LIVE ROUND</p><p className="font-display mt-1 text-2xl">{LEGACY_MODES?"Squads on their phones":"The escape room on their phones"}</p></div><StartLiveRound classId={classId} fetcher={teacherFetch}/></div>
   <div className="panel flex flex-wrap items-center justify-between gap-5 p-6"><div><p className="eyebrow">CLASS</p><h1 className="mt-2 text-4xl">{c.name||"Untitled class"}</h1><p className="mt-1 text-base text-muted">{data.world?.title} · Grade {c.grade} · {data.students.length} students joined</p></div><div className="flex flex-wrap items-center gap-5"><JoinQr url={joinUrl}/><div className="text-right"><p className="text-sm text-muted">Students scan the code or open this link, then type a nickname:</p><p className="mt-1 break-all font-mono text-lg font-bold text-highlight">{joinUrl.replace(/^https?:\/\//,"")}</p><button onClick={()=>{navigator.clipboard?.writeText(joinUrl);setCopied(true);setTimeout(()=>setCopied(false),1500)}} className="mt-2 text-sm text-muted underline underline-offset-4"><Copy size={13} className="mr-1 inline"/>{copied?"Copied":"Copy class link"}</button><p className="mt-2 text-xs text-muted">Without the link: class code <span className="font-mono font-bold tracking-widest">{c.class_code}</span></p></div></div></div>
   {data.world?.teacherPreviewRequired&&<div className="panel flex flex-wrap items-center justify-between gap-3 p-5"><p className="text-base text-ink">This story has content notes, so students cannot join until you enable it after previewing.</p><button onClick={async()=>{await teacherFetch(`/api/teacher/classes/${classId}`,{method:"PATCH",body:JSON.stringify({previewEnabled:!c.preview_enabled})});load()}} className={`${c.preview_enabled?"soft-button":"gold-button"} ${big}`}>{c.preview_enabled?"Enabled · turn off":"I previewed it · enable for students"}</button></div>}
+  {c.look!==undefined&&<LookPanel classId={classId} look={c.look??"mature"} onChange={load}/>}
+  {c.room_clock!==undefined&&<ClockPanel classId={classId} clock={c.room_clock??"off"} onChange={load}/>}
   {LEGACY_MODES&&<StoryPersonalPanel classId={classId} rolesOn={c.roles_enabled!==false} anglesOn={c.angles_enabled!==false} storyModeOn={c.story_mode_on!==false} leaderboard={c.leaderboard_mode??"individual"} onChange={load}/>}
   <ClassWeekBoard fetcher={teacherFetch}/>
   <div role="tablist" aria-label="Class tools" className="flex flex-wrap gap-2 rounded-card bg-panel-2 p-1.5">{([["evidence","Evidence"],...(LEGACY_MODES?[["lies","Lie bank"]] as const:[]),["live","Live class analysis"],["lessons","Assign mini lessons"],["students","Students"]] as const).map(([id,label])=><button key={id} role="tab" aria-selected={tab===id} onClick={()=>setTab(id)} className={`rounded-full font-display font-semibold ${big} ${tab===id?"bg-primary text-on-primary":"text-muted hover:text-ink"}`}>{label}</button>)}</div>
@@ -220,4 +223,20 @@ function StudentTime({classId,studentId,name,value,onChange}:{classId:string;stu
  return <div className="mt-2"><label className="text-sm text-muted" htmlFor={`time-${studentId}`}>Story Mode time</label>
   <select id={`time-${studentId}`} value={value} onChange={e=>set(e.target.value)} aria-label={`Story Mode time for ${name}`} className="ml-2 rounded-full bg-ink/10 px-3 py-1 text-sm"><option value="1">Standard</option><option value="1.5">1.5x</option><option value="2">2x</option><option value="untimed">Untimed</option></select>
   {error&&<p role="alert" className="mt-1 text-sm text-muted">{error}</p>}</div>;
+}
+// The class's look (escape-room phase 3): mature, the default for grades 6 to 12, or classic, the original game look.
+// Shown once the 202611140001 migration has run.
+// The room clock (lib/room-clock.ts): off by default; generous or extra time. It pauses while students read and never
+// ends a room.
+function ClockPanel({classId,clock,onChange}:{classId:string;clock:RoomClock;onChange:()=>void}){
+ const [busy,setBusy]=useState(false),[error,setError]=useState("");
+ async function set(next:RoomClock){if(busy||next===clock)return;setBusy(true);setError("");const r=await teacherFetch(`/api/teacher/classes/${classId}`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({roomClock:next})});setBusy(false);if(!r.ok){setError((r.body as {error?:string})?.error??"Couldn't change the room clock.");return}onChange()}
+ return <div className="panel flex flex-wrap items-center justify-between gap-4 p-5"><div className="max-w-xl"><p className="text-base font-bold text-ink">Room clock</p><p className="text-sm text-muted">{CLOCK_INFO[clock].note} Reaching zero never ends a room.</p>{error&&<p role="alert" className="mt-1 text-sm text-notyet">{error}</p>}</div>
+  <div role="group" aria-label="Room clock" className="flex flex-wrap gap-2">{ROOM_CLOCKS.map(v=><button key={v} type="button" aria-pressed={clock===v} disabled={busy} onClick={()=>set(v)} className={`min-h-11 rounded-button px-4 text-sm font-bold ${clock===v?"bg-primary text-on-primary":"bg-panel-2 text-ink"}`}>{CLOCK_INFO[v].name}</button>)}</div></div>;
+}
+function LookPanel({classId,look,onChange}:{classId:string;look:"mature"|"classic";onChange:()=>void}){
+ const [busy,setBusy]=useState(false),[error,setError]=useState("");
+ async function set(next:"mature"|"classic"){if(busy||next===look)return;setBusy(true);setError("");const r=await teacherFetch(`/api/teacher/classes/${classId}`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({look:next})});setBusy(false);if(!r.ok){setError(r.body?.error??"Could not change the look.");return}onChange()}
+ return <div className="panel flex flex-wrap items-center justify-between gap-4 p-5"><div><p className="text-base font-bold text-ink">Look</p><p className="text-sm text-muted">Mature suits grades 6 to 12; Classic is the original, more playful game look.</p>{error&&<p role="alert" className="mt-1 text-sm text-notyet">{error}</p>}</div>
+  <div role="group" aria-label="Class look" className="flex gap-2">{(["mature","classic"] as const).map(v=><button key={v} type="button" aria-pressed={look===v} disabled={busy} onClick={()=>set(v)} className={`min-h-11 rounded-button px-4 text-sm font-bold ${look===v?"bg-primary text-on-primary":"bg-panel-2 text-ink"}`}>{v==="mature"?"Mature":"Classic"}</button>)}</div></div>;
 }

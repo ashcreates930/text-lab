@@ -4,10 +4,11 @@ import {Type,X} from "lucide-react";
 
 // Per-device display preferences for the whole page (zoom), contrast, and motion. Saved in this browser only.
 // Labelled "Page size" so it is not confused with the reader's reading settings.
-type Settings={size:"standard"|"large"|"xl";contrast:"standard"|"high";motion:"standard"|"reduced"};
+// look: the mature look (default) or the classic one; a class's own setting overrides it (data-look-locked).
+type Settings={size:"standard"|"large"|"xl";contrast:"standard"|"high";motion:"standard"|"reduced";look:"mature"|"classic"};
 const KEY="itt-display-settings";
-const defaults:Settings={size:"standard",contrast:"standard",motion:"standard"};
-function apply(s:Settings){const root=document.documentElement;root.dataset.textSize=s.size;root.dataset.contrast=s.contrast;root.dataset.motion=s.motion}
+const defaults:Settings={size:"standard",contrast:"standard",motion:"standard",look:"mature"};
+function apply(s:Settings){const root=document.documentElement;root.dataset.textSize=s.size;root.dataset.contrast=s.contrast;root.dataset.motion=s.motion;if(!root.dataset.lookLocked)root.dataset.look=s.look}
 
 export function DisplaySettings({placement="floating"}:{placement?:"floating"|"header"}){
  const [open,setOpen]=useState(false),[settings,setSettings]=useState<Settings>(defaults);
@@ -21,6 +22,7 @@ export function DisplaySettings({placement="floating"}:{placement?:"floating"|"h
    <fieldset className="mt-4"><legend className="text-base">Page size</legend><div className="mt-2 flex gap-2">{([["standard","Standard"],["large","Large"],["xl","Largest"]] as const).map(([v,l])=><button key={v} aria-pressed={settings.size===v} onClick={()=>change({size:v})} className={option(settings.size===v)}>{l}</button>)}</div></fieldset>
    <fieldset className="mt-4"><legend className="text-base">Contrast</legend><div className="mt-2 flex gap-2">{([["standard","Standard"],["high","High"]] as const).map(([v,l])=><button key={v} aria-pressed={settings.contrast===v} onClick={()=>change({contrast:v})} className={option(settings.contrast===v)}>{l}</button>)}</div></fieldset>
    <fieldset className="mt-4"><legend className="text-base">Motion</legend><div className="mt-2 flex gap-2">{([["standard","Standard"],["reduced","Less motion"]] as const).map(([v,l])=><button key={v} aria-pressed={settings.motion===v} onClick={()=>change({motion:v})} className={option(settings.motion===v)}>{l}</button>)}</div></fieldset>
+   {typeof document!=="undefined"&&!document.documentElement.dataset.lookLocked&&<fieldset className="mt-4"><legend className="text-base">Look</legend><div className="mt-2 flex gap-2">{([["mature","Mature"],["classic","Classic"]] as const).map(([v,l])=><button key={v} aria-pressed={settings.look===v} onClick={()=>change({look:v})} className={option(settings.look===v)}>{l}</button>)}</div></fieldset>}
    <button onClick={()=>change(defaults)} className="mt-4 text-sm text-muted underline underline-offset-4">Reset to standard</button>
   </div>}
   <button onClick={()=>setOpen(o=>!o)} aria-expanded={open} aria-label="Page size and display settings" className={`flex items-center gap-2 rounded-full border border-edge bg-panel text-ink hover:border-primary ${placement==="floating"?"min-h-12 px-4 py-2 text-sm shadow-lg":"min-h-9 px-3 py-1.5 text-[11px]"}`}><Type size={placement==="floating"?16:13} aria-hidden="true"/> {placement==="floating"?"Page size & display":<span className="hidden sm:inline">Page size</span>}</button>

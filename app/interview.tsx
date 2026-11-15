@@ -36,7 +36,7 @@ export function Caption({name,text,live=true}:{name:string;text:string;live?:boo
 // ---------- The Interview ----------
 // One continuous stage with all the witnesses (app/lineup.tsx): the one in the spotlight is questioned; tap, swipe or
 // use the arrow keys to bring in another, in any order. Each asked witness gets the Asked check, and any statement can
-// be replayed with its caption. Every witness must be asked before "Start the race". Moving the spotlight is an action
+// be replayed with its caption. Every witness must be asked before "To the first lock". Moving the spotlight is an action
 // on the same screen, so scroll and focus stay put; only the first view focuses the heading.
 export function InterviewScreen({world,expeditionId,interview,liar,onDone,saved}:{world:WorldPack;expeditionId:string;interview:Interview;liar:number;onDone:(cards:number[])=>void;saved?:number[]}){
  const n=interview.witnesses.length;
@@ -68,7 +68,7 @@ export function InterviewScreen({world,expeditionId,interview,liar,onDone,saved}
   <DoNow text={DO_NOW.interview}/>
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">The Interview · {asked.filter(Boolean).length} of {n} questioned</p>
   <h1 id="iv-h" className="text-[28px] leading-tight outline-none">The Interview</h1>
-  <p className="text-[16px] text-muted">One witness will lie to you. Question all {n}, in any order. After the race you'll name the liar and prove it with a line from the story.</p>
+  <p className="text-[16px] text-muted">One witness will lie to you. Question all {n}, in any order. At the exit door you'll name the liar and prove it with a line from the story.</p>
   <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-start">
    <Lineup items={items} index={k} onIndex={spotlight} label={`The witnesses. ${name} is in the spotlight`} height={h} speaking={speaking} level={voice.level} gesture={gesture}/>
    <div className="flex flex-col gap-3">
@@ -84,12 +84,52 @@ export function InterviewScreen({world,expeditionId,interview,liar,onDone,saved}
        <button type="button" onClick={()=>{voice.stop();setHolo(true)}} className="case-secondary !min-h-11"><Box size={18} aria-hidden/>Hologram</button>
       </div></>}
     {next!=null&&<button type="button" onClick={()=>{spotlight(next);setFocusTo("pick")}} disabled={card!=null&&!heard[k]&&speaking} className={`${card==null?"case-secondary":"case-primary"} min-h-[56px] w-full justify-center text-[18px]`}>Next: question {firstName(witnessName(world,interview.witnesses[next].character))} <ArrowRight size={18} aria-hidden/></button>}
-    {done?<button type="button" onClick={start} disabled={!heard[k]&&speaking} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Start the race <ArrowRight size={18} aria-hidden/></button>
-     :<p className="text-[15px] font-bold text-muted">Question all {n} witnesses to start the race ({n-asked.filter(Boolean).length} to go).</p>}
+    {done?<button type="button" onClick={start} disabled={!heard[k]&&speaking} className="case-primary min-h-[56px] w-full justify-center text-[18px]">To the first lock <ArrowRight size={18} aria-hidden/></button>
+     :<p className="text-[15px] font-bold text-muted">Question all {n} witnesses to reach the first lock ({n-asked.filter(Boolean).length} to go).</p>}
    </div>
   </div>
   {notes.length>0&&<aside aria-label="Your notes from the Interview" className="rounded-card bg-panel p-4"><p className="flex items-center gap-2 font-display text-[16px] font-bold"><NotebookPen size={16} aria-hidden/>Case Notes</p>
    <ul className="mt-1.5 grid gap-1 text-[15px] leading-snug">{notes.map(n=><li key={n.character}>{saidLine(n)}</li>)}</ul></aside>}
+ </section>;
+}
+
+// ---------- A witness in the room ----------
+// Escape rooms: each witness steps in just before the lock whose reading checks them. The student asks the room's one
+// question, the witness answers in their recorded voice (captions always on), and the statement goes into the Case File.
+export function WitnessVisit({world,expeditionId,interview,liar,index,lock,met,onDone}:{world:WorldPack;expeditionId:string;interview:Interview;liar:number;index:number;lock:number;met:number;onDone:()=>void}){
+ const w=interview.witnesses[index],name=witnessName(world,w.character),st=index===liar?w.lie:w.truth,n=interview.witnesses.length;
+ const src=interviewAudio(world.id,expeditionId,w.character,index===liar?"lie":"truth"),voice=useVoice();
+ const [asked,setAsked]=useState(false),[gesture,setGesture]=useState<{clip:"laughing"|"head-shake";key:number}|null>(null),[holo,setHolo]=useState(false);
+ const answerRef=useRef<HTMLDivElement|null>(null);
+ useLayoutEffect(()=>{focusScreenTop()},[]);
+ function speak(){if(st.gesture)setGesture({clip:st.gesture,key:Date.now()});voice.play(src)}
+ // Asking keeps the student on this screen: focus moves to the answer, with no scroll jump.
+ function ask(){setAsked(true);speak();setTimeout(()=>answerRef.current?.focus({preventScroll:true}),0)}
+ function done(){voice.stop();setGesture(null);onDone()}
+ const speaking=voice.playing===src,ch=characterOf(world,w.character);
+ if(holo&&ch)return <HologramView character={ch} worldId={world.id} line={st.text} audioSrc={src} sandboxId="interview" title={`A witness · ${name}`} onClose={()=>{setHolo(false);setTimeout(()=>focusScreenTop(),0)}}/>;
+ return <section aria-labelledby="wv-h" className="flex flex-col gap-3">
+  <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Lock {lock} · Witness {met} of {n}</p>
+  <h1 id="wv-h" className="text-[28px] leading-tight outline-none">{name} steps in</h1>
+  <p className="text-[16px] text-muted">One of the three witnesses in this room is lying. At the exit door you'll name the liar and prove it with a line from the story.</p>
+  <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-start">
+   <WitnessStage world={world} character={w.character} speaking={speaking} level={voice.level} gesture={gesture}/>
+   <div className="flex flex-col gap-3">
+    {!asked?<button type="button" onClick={ask} className="case-answer min-h-[64px] justify-start rounded-[18px] bg-panel px-4 text-left text-[17px] font-bold">Ask {firstName(name)}: {interview.question}</button>
+     :<div ref={answerRef} tabIndex={-1} className="flex flex-col gap-3 outline-none">
+      <p className="rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold">You asked {firstName(name)}: {interview.question}</p>
+      <Caption name={name} text={st.text}/>
+      <div className="flex flex-wrap gap-2">
+       {speaking?<button type="button" onClick={()=>{voice.stop();setGesture(null)}} className="case-secondary !min-h-11"><SkipForward size={18} aria-hidden/>Skip<span className="sr-only"> the recording</span></button>
+        :<button type="button" onClick={speak} className="case-secondary !min-h-11"><RotateCcw size={18} aria-hidden/>Hear it again</button>}
+       {speaking&&<span className="inline-flex min-h-11 items-center gap-1.5 text-[15px] font-bold text-muted" aria-hidden><Volume2 size={18}/>Speaking…</span>}
+       <button type="button" onClick={()=>{voice.stop();setHolo(true)}} className="case-secondary !min-h-11"><Box size={18} aria-hidden/>Hologram</button>
+      </div>
+      <p className="flex items-center gap-2 text-[15px] font-bold text-muted"><NotebookPen size={16} aria-hidden/>Saved to your Case File.</p>
+      <button type="button" onClick={done} className="case-primary min-h-[56px] w-full justify-center text-[18px]">To lock {lock} <ArrowRight size={18} aria-hidden/></button>
+     </div>}
+   </div>
+  </div>
  </section>;
 }
 
@@ -115,7 +155,7 @@ export function NameTheLiar({world,said,passages,onLock,seconds,left,locked=fals
       cardExtra={<p className="basis-full font-serif text-[16px] leading-snug text-ink">"{s.text}"</p>}/>
     </div>})()
   :<div className="mt-2 flex flex-col gap-2"><Caption live={false} name={`${picked?.name} said`} text={picked?.text??""}/>
-    <p className="text-[15px] font-bold text-muted">Tap the sentence anywhere in the expedition that shows this is false, then lock in.</p></div>;
+    <p className="text-[15px] font-bold text-muted">Tap the sentence anywhere in the room that shows this is false, then lock in.</p></div>;
  // Naming sits in the footer with Next, so on a phone it is in view without scrolling the panel.
  const sp=order[spot]??order[0];
  const action=step===1

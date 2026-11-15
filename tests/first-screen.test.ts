@@ -11,7 +11,7 @@ const src = (f: string) => readFileSync(f, "utf8");
 test("the Story map is the first screen: the hook above it, zoomed to the next stop, one big Start button, Join small at the top", () => {
   const c = src("app/case.tsx"), m = src("app/expedition-map.tsx");
   assert.match(c, /if\(\(world\.expeditions\?\.length\?\?0\)>0\)return <ExpeditionMap/, "a story with expeditions opens on the map");
-  assert.match(m, /Start Expedition \{next\.number\}: \{next\.title\}/);
+  assert.match(m, /Enter Room \{next\.number\}: \{next\.title\}/);
   assert.match(m, />Join a live game<\/button>/);
   assert.match(m, /\{world\.hook&&<p/, "the story hook sits above the map");
   assert.match(m, /useState<string\|null>\(\(\)=>regions\.find\(r=>r\.state==="current"\)\?\.expedition\?\?null\)/, "opens zoomed in on the next stop's region");

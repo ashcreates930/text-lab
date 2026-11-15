@@ -70,3 +70,30 @@ test("the design's fixed pairs: text on each fill, story text on the reading car
   for (const [t, b] of fixed) assert.ok(contrast(COLORS[t], COLORS[b]) >= 4.5, `${t} on ${b}: ${contrast(COLORS[t], COLORS[b]).toFixed(2)}`);
   assert.ok(contrast(COLORS.faint, COLORS.stage) >= 3, "faint is for large text only");
 });
+
+// ---------- The mature look (escape-room phase 3) ----------
+import { MATURE_SCOPE, lookFor } from "../lib/design-tokens.ts";
+test("the mature look: every pair the app uses meets contrast, its fixed pairs too, and globals.css declares it", () => {
+  assert.deepEqual([...new Set(fails(pairs(), scheme(MATURE_SCOPE)))], []);
+  const m = scheme(MATURE_SCOPE);
+  for (const [t, b] of [["on-primary", "primary"], ["on-success", "success"], ["on-notyet", "notyet"], ["on-gold", "gold"], ["on-violet", "violet"]] as [ColorToken, ColorToken][]) assert.ok(contrast(m(t), m(b)) >= 4.5, `mature ${t} on ${b}`);
+  assert.ok(contrast(m("faint"), m("stage")) >= 3, "mature faint is for large text only");
+  const block = css.match(/html\[data-look="mature"\]\{([^}]*)\}/)![1];
+  for (const [name, hex] of Object.entries(MATURE_SCOPE)) assert.match(block, new RegExp(`--color-${name}:${hex}`, "i"), `mature --color-${name}`);
+  assert.match(readFileSync("app/layout.tsx", "utf8"), /<html lang="en" data-look="mature"/, "mature from the first paint");
+});
+test("which look a screen uses: the class's choice, then the device's, then mature for grades 6 to 12", () => {
+  assert.equal(lookFor({}), "mature"); assert.equal(lookFor({ grade: 7 }), "mature"); assert.equal(lookFor({ grade: 12 }), "mature");
+  assert.equal(lookFor({ deviceLook: "classic", grade: 8 }), "classic");
+  assert.equal(lookFor({ classLook: "mature", deviceLook: "classic" }), "mature", "the teacher's choice wins");
+  assert.equal(lookFor({ classLook: "classic" }), "classic");
+});
+test("the class's look: the teacher sets it (after the migration), students get it locked, demo devices choose their own", () => {
+  const route = readFileSync("app/api/teacher/classes/[id]/route.ts", "utf8"), student = readFileSync("app/api/student/class/route.ts", "utf8");
+  assert.match(route, /look: z\.enum\(\["mature", "classic"\]\)/); assert.match(route, /Run the 202611140001 migration/);
+  assert.match(student, /look: cls\.look \?\? null/);
+  assert.match(readFileSync("supabase/migrations/202611140001_class_look.sql", "utf8"), /add column if not exists look text not null default 'mature'/);
+  assert.match(readFileSync("app/page.tsx", "utf8"), /root\.dataset\.lookLocked="class"/, "class students: the class's look, locked");
+  assert.match(readFileSync("app/display-settings.tsx", "utf8"), /if\(!root\.dataset\.lookLocked\)root\.dataset\.look=s\.look/, "a device's Look never overrides a class's");
+  assert.match(readFileSync("app/classroom.tsx", "utf8"), /c\.look!==undefined&&<LookPanel/, "the teacher's switch shows once the column exists");
+});

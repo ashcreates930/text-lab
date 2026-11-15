@@ -139,7 +139,7 @@ test("timers: no reading timer, Gist 20, one-step 30, two-step 45, Theme Thread 
 test("Gist screen: heading Gist check, question Which is the best summary, and the HUD on every race screen", () => {
   const ui = src("app/expedition-race.tsx");
   assert.ok(ui.includes("Gist check · {GIST_SECONDS} seconds")); assert.ok(ui.includes(">Which is the best summary?<"));
-  for (const piece of ["Score ", "Streak ", " coins", "Sound on", "Chunk {chunk} of {total}"]) assert.ok(ui.includes(piece), piece);
+  for (const piece of ["Score ", "Streak ", " coins", "Sound on", "Lock {chunk} of {total}"]) assert.ok(ui.includes(piece), piece);
 });
 
 test("words: a word question's proof is the sentence with the clue, the hidden discovery, and question key words (highlighted in the question, never the passage)", () => {

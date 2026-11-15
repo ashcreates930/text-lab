@@ -16,6 +16,16 @@ export function lineupWindow(n: number, i: number): { index: number; slot: Slot 
   return [{ index: wrap(c - 1, n), slot: "left" }, { index: c, slot: "center" }, { index: wrap(c + 1, n), slot: "right" }];
 }
 
+// The carousel (escape-room phase 3): which way the lineup turned to bring the new character into the spotlight. 1:
+// the one from the right stepped in (everyone slides left); -1: the one from the left; 0: a jump, or the first view.
+export function turnOf(prev: number | null, next: number, n: number): -1 | 0 | 1 {
+  if (prev === null || n < 2 || prev === next) return 0;
+  const d = wrap(next - prev, n);
+  if (d === 1) return 1;
+  if (d === n - 1) return -1;
+  return 0;
+}
+
 // Keyboard: left and right (or up and down) move the spotlight, Home and End jump to the ends. Anything else: null.
 export function lineupKey(key: string, i: number, n: number): number | null {
   if (n <= 0) return null;

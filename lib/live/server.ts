@@ -1,5 +1,8 @@
 // Server side of live class mode: tokens, loading a session, the host's and players' views, and every action. All
 // writes come through here, so role gating, moderation and the judge cap are enforced in one place.
+import { recorderOf, rolesFor as escapeRoles, sharedLockOpen } from "./squad-escape.ts";
+import { cluesFor } from "../clues.ts";
+import { chunkTokens as tokensOf, proofShown } from "../expedition.ts";
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import type { WorldPack } from "../world-schema.ts";
 import { readPassages, readWorld } from "../classroom/worlds.ts";
@@ -8,8 +11,10 @@ import type { SourcePassage } from "../source-passages.ts";
 import { liveMissionPieces, liveMissionSetting, missionPick, missionSetting } from "./missions.ts";
 import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, livePicks, myStepRecord, playerPicks, playerState, publicStory, readingAction, squadReading, stepKind, tryState, type LiveStoryRound } from "./story.ts";
 import { screenMessage } from "../safety.ts";
-import { beatMs, burstFound, interviewOf, liveArc, playerAsked, playerVersion, liarAnswers, liveCards, liveRaceBoard, liveRaceChunks, nextBeat, parseExpSettings, playerChunk, playerLiar, playerVote, raceAnswer, raceAnswered, raceDone, raceFinish, raceQuestions, raceReadiness, raceReveal, raceTotals, type LiveRaceRound } from "./race.ts";
-import { firstName, interviewAudio, liarBreakdown, liarIndex } from "../interview.ts";
+import { liveClueTier, beatMs, burstFound, firstBeat, liveSpan, interviewOf, liveArc, roomMet, witnessOf, liveClock, clockAdd, squadLockOf, playerAsked, playerVersion, liarAnswers, liveCards, liveRaceBoard, liveRaceChunks, nextBeat, parseExpSettings, playerChunk, playerLiar, playerVote, raceAnswer, raceAnswered, raceDone, raceFinish, raceQuestions, raceReadiness, raceReveal, raceTotals, type LiveRaceRound } from "./race.ts";
+import { firstName, inRoom, interviewAudio, liarBreakdown } from "../interview.ts";
+import { lineAt, liveLiar, recoveryTask, refKey, roomOf } from "../escape-room.ts";
+import type { LineRef, RoomPuzzle } from "../world-schema.ts";
 import { TYPE_INFO, hasExpeditions, joinedPassages, timeScale, type RaceChunk } from "../expedition.ts";
 import { beatKind, isCheckpoint, multiplierAt, questionAt, type Version } from "../pacing.ts";
 import { formatOf, formatView } from "../formats.ts";
@@ -32,6 +37,19 @@ import {
   type LivePlayer, type LiveResponse, type ResponseKind, type Role, type Round, type RoundType,
 } from "./engine.ts";
 import type { LiveStore, StoredSession } from "./store.ts";
+
+// The puzzle lock open in a live race: its data, its lines as text (keyed "p001:3"), the lines read so far (Fix the
+// Painting proves mistakes with them) and the code dials' lines in order.
+function puzzleOf(st: { world: import("../world-schema.ts").WorldPack; passages?: import("../source-passages.ts").SourcePassage[] }, round: LiveRaceRound) {
+  if (round.beat !== "puzzle" || !round.puzzle) return null;
+  const data = st.world.rooms?.find((r) => r.expedition === round.settings.expeditionId)?.puzzles?.find((p) => p.id === round.puzzle) as RoomPuzzle | undefined;
+  if (!data) return null;
+  const passages = st.passages ?? [], chunks = liveRaceChunks(st.world, passages, round);
+  const readLines: LineRef[] = chunks.slice(0, data.after).flatMap((c) => c.lines.map((l) => ({ p: l.pid, s: l.index })));
+  const refs: LineRef[] = [...readLines, ...(data.type === "code" ? data.dials.map((d) => d.line) : data.type === "painting" ? data.details.flatMap((d) => d.lines) : [...data.objects.map((o) => o.line), ...data.near_misses])];
+  const lines = Object.fromEntries(refs.map((r) => [refKey(r), lineAt(passages, r) ?? ""]));
+  return { data, lines, readLines, codeLines: data.type === "code" ? data.dials.map((d) => lineAt(passages, d.line) ?? "") : [] };
+}
 
 // ---------- Tokens ----------
 function secret() {
@@ -165,11 +183,13 @@ function publicRace(st: LiveState, round: LiveRaceRound) {
   const exp = st.world.expeditions?.find((e) => e.id === round.settings.expeditionId);
   return {
     type: "race" as const, step: round.step, total: chunks.length, beat: round.beat, beatStartedAt: round.beatStartedAt, squadsOn: round.squadsOn, paused: !!round.pausedAt, holdBefore: round.holdBefore ?? null,
-    beatMs: beatMs(round, c, "1"), expedition: { id: round.settings.expeditionId, title: exp?.title ?? "" }, gradeBand: round.settings.gradeBand, grade: round.settings.grade ?? 7, highlighter: round.settings.highlighter,
+    beatMs: beatMs(round, c, "1"), expedition: { id: round.settings.expeditionId, title: exp?.title ?? "" }, chamber: round.settings.chamber ?? 0, squadRoles: round.squadsOn ? st.squads.map((q) => { const ids = st.players.filter((p) => p.squadId === q.id).map((p) => p.id), roles = escapeRoles(ids, roomOf(st.world, round.settings.expeditionId)?.number ?? 1); return { name: q.name, members: ids.map((id) => ({ nickname: st.players.find((p) => p.id === id)?.nickname ?? "", roles: roles[id] ?? [] })) }; }).filter((q) => q.members.length > 1) : null, clock: liveClock(round, chunks.length, roomOf(st.world, round.settings.expeditionId)?.puzzles ?? []), gradeBand: round.settings.gradeBand, grade: round.settings.grade ?? 7, highlighter: round.settings.highlighter,
     chunk: { id: c.id, index: c.index, passages: c.passages, lines: c.lines, gist: strip(c.chunk.gist.options), discovery: { phrase: c.chunk.discovery.phrase, note: c.chunk.discovery.note } },
     // The arc's moment at this chunk (the twist, the boss, a surprise double), for the banners; the checkpoint follows level 1.
     arc: arc ? beatKind(arc, round.step) : null, double: arc ? multiplierAt(arc, round.step) > 1 : false, checkpoint: isCheckpoint(round.step, chunks.length),
     // The lightning beat: the question and the chunk it recalls (the answer only reaches a phone once it has answered).
+    // A puzzle lock: its data and every line it uses, as text (phones don't hold the whole story).
+    puzzle: round.beat === "puzzle" ? (() => { const p = puzzleOf(st, round); return p ? { data: p.data, lines: p.lines, readLines: p.readLines } : null; })() : null,
     lightning: round.beat === "lightning" && light ? { id: light.id, question: light.question, chunk: light.chunk, lines: chunks[light.chunk - 1]?.lines ?? [], discovery: chunks[light.chunk - 1]?.chunk.discovery ?? null } : null,
     // The burst: level 1's chunks, to find their discoveries.
     burst: round.beat === "burst" ? { chunks: chunks.slice(0, round.step + 1).map((x) => ({ index: x.index, lines: x.lines, discovery: x.chunk.discovery })) } : null,
@@ -178,7 +198,7 @@ function publicRace(st: LiveState, round: LiveRaceRound) {
     reveal: after ? raceReveal(c, st.responses, i, st.players) : null,
     // The full leaderboard only at the checkpoint and at the end.
     board: round.beat === "board" || st.session.status === "ended" ? (() => { const b = liveRaceBoard(st.responses, i, st.players, st.squads, round.squadsOn, round.step); return { kind: b.kind, top: b.rows.slice(0, 5) }; })() : null,
-    finish: st.session.status === "ended" ? (() => { const f = raceFinish(chunks, st.responses, i, st.players, st.squads, round.squadsOn); return { ...f, podium: f.podium.map((r) => ({ ...r, portrait: f.kind === "player" ? avatarOf(st, r.id)?.portrait ?? null : null })) }; })() : null,
+    finish: st.session.status === "ended" ? (() => { const f = raceFinish(chunks, st.responses, i, st.players, st.squads, round.squadsOn, liveSpan(round, chunks.length)); return { ...f, podium: f.podium.map((r) => ({ ...r, portrait: f.kind === "player" ? avatarOf(st, r.id)?.portrait ?? null : null })) }; })() : null,
     pinned: pinned ? String(pinned.payload.text) : null,
     interview: publicInterview(st, round, chunks),
   };
@@ -222,22 +242,50 @@ function publicInterview(st: LiveState, round: LiveRaceRound, chunks: ReturnType
   const iv = interviewOf(st.world, round), i = st.session.roundIndex; if (!iv || !round.interview) return null;
   const inIv = round.beat === "vote" || round.beat === "testify", liar = round.interview.liar;
   const cv = liveCards(st.responses, i, iv.witnesses.length), upto = inIv ? (round.beat === "testify" ? round.step : round.step - 1) : iv.witnesses.length - 1;
+  // In a room: met once their lock comes up (the one testifying now included); at the door, in order up to this one.
+  const at = round.interview.at, now = round.beat === "testify" ? witnessOf(round) : -1;
+  const met = (k: number) => (at ? roomMet(at, round.step, round.beat === "testify" ? now : null, k) : k <= upto);
   const who = (id: string) => st.world.characters.find((c) => c.id === id);
   const verdict = round.beat === "verdict" ? (() => { const w = iv.witnesses[liar]; return { liar: w.character, name: who(w.character)?.name ?? w.character, lieText: w.lie.text, lieLines: w.lie.lines, caught: w.caught, breakdown: liarBreakdown(iv, liar, liarAnswers(st.responses, i, st.players)) }; })() : null;
   return {
-    witness: inIv ? round.step : null,
+    witness: inIv ? witnessOf(round) : null, question: iv.question ?? null, inRoom: !!at, at: at ?? null,
     witnesses: iv.witnesses.map((w) => { const c = who(w.character); return { character: w.character, name: c?.name ?? w.character, portrait: c?.portrait ?? null, model: c?.model ?? null, cards: w.cards }; }),
     votes: cv.votes, cards: cv.cards,
-    said: iv.witnesses.slice(0, upto + 1).map((w, k) => { const name = who(w.character)?.name ?? w.character; return { character: w.character, name, short: firstName(name), card: w.cards[cv.cards[k]], text: (k === liar ? w.lie : w.truth).text }; }),
+    said: iv.witnesses.map((w, k) => { if (!met(k)) return null; const name = who(w.character)?.name ?? w.character; return { character: w.character, name, short: firstName(name), card: at ? iv.question ?? "" : w.cards[cv.cards[k]], text: (k === liar ? w.lie : w.truth).text }; }),
     callPassages: round.beat === "liar" || round.beat === "verdict" ? joinedPassages(chunks) : null,
     verdict,
+  };
+}
+// Squad escapes (lib/live/squad-escape.ts): this phone's squad, everyone's roles this room, the squad's commits on the
+// open lock (shown once this player has committed, never before), the shared lock-in, and the squad Case File.
+function squadEscapeView(st: LiveState, round: LiveRaceRound, meId: string, squadIds: string[], i: number) {
+  if (!round.squadsOn || squadIds.length < 2) return null;
+  const roomNo = roomOf(st.world, round.settings.expeditionId)?.number ?? 1, roles = escapeRoles(squadIds, roomNo), name = (id: string) => st.players.find((p) => p.id === id)?.nickname ?? "A squadmate";
+  const chunks = liveRaceChunks(st.world, st.passages ?? [], round), mine = playerChunk(st.responses, i, round.step, meId);
+  const summary = (id: string) => { const c = playerChunk(st.responses, i, round.step, id); if (!c.tap) return null; const q = playerAsked(chunks, st.responses, i, id, round.step)?.question, a = c.tap.answer;
+    const pick = a.choice != null ? q?.choices?.[a.choice]?.text : a.picks?.length ? a.picks.map((k) => q?.choices?.[k]?.text).filter(Boolean).join(" + ") : a.text ?? null;
+    return { pick: pick ?? null, line: (a.lines ?? [])[0]?.replace(/\s+/g, " ") ?? null }; };
+  const lock = round.beat !== "vote" && round.beat !== "testify" ? squadLockOf(st.responses, i, round.step, squadIds) : null;
+  const shown = round.beat === "reveal" || round.beat === "lightning" || round.beat === "puzzle" || round.beat === "board" || round.beat === "burst" || round.beat === "countdown";
+  const committed = new Set(squadIds.filter((m) => playerChunk(st.responses, i, round.step, m).done));
+  // The squad Case File: the witnesses met so far, then every lock opened with a shared answer that proved it.
+  const iv = interviewOf(st.world, round), at = round.interview?.at;
+  const statements = iv && round.interview ? iv.witnesses.flatMap((w, k) => (at ? roomMet(at, round.step, round.beat === "testify" ? witnessOf(round) : null, k) : true) ? [{ kind: "statement" as const, lock: null, label: `${firstName(st.world.characters.find((c) => c.id === w.character)?.name ?? w.character)} said`, text: (k === round.interview!.liar ? w.lie : w.truth).text }] : []) : [];
+  const upto = shown || round.beat === "liar" || round.beat === "verdict" ? round.step : round.step - 1, opened: { kind: "proof"; lock: number; label: string; text: string }[] = [];
+  for (let k = 0; k <= upto; k++) { const l = squadLockOf(st.responses, i, k, squadIds); if (l?.correct && l.lines.length) opened.push({ kind: "proof", lock: k, label: `Lock ${k + 1}`, text: l.lines.join(" ").replace(/\s+/g, " ") }); }
+  return {
+    room: roomNo, myRoles: roles[meId] ?? [],
+    members: squadIds.map((id) => ({ id, nickname: name(id), me: id === meId, roles: roles[id] ?? [], committed: committed.has(id), commit: round.beat === "race" && mine.done ? summary(id) : null })),
+    recorder: recorderOf(squadIds, roomNo) === meId, open: round.beat === "race" && !lock && sharedLockOpen(squadIds, committed),
+    lock: lock ? { from: name(lock.from), correct: shown ? lock.correct : null, points: shown ? lock.points : null } : null,
+    caseFile: [...statements, ...opened],
   };
 }
 // The host board plays each witness's recorded line: the statement while they testify, the caught line at the verdict.
 function raceVoice(st: LiveState, round: LiveRaceRound) {
   const iv = interviewOf(st.world, round); if (!iv || !round.interview) return null;
   const liar = round.interview.liar;
-  if (round.beat === "testify") { const w = iv.witnesses[round.step]; if (!w) return null; const st2 = round.step === liar ? w.lie : w.truth; return { src: interviewAudio(st.world.id, round.settings.expeditionId, w.character, round.step === liar ? "lie" : "truth"), character: w.character, gesture: st2.gesture ?? null }; }
+  if (round.beat === "testify") { const k = witnessOf(round), w = iv.witnesses[k]; if (!w) return null; const st2 = k === liar ? w.lie : w.truth; return { src: interviewAudio(st.world.id, round.settings.expeditionId, w.character, k === liar ? "lie" : "truth"), character: w.character, gesture: st2.gesture ?? null }; }
   if (round.beat === "verdict") { const w = iv.witnesses[liar]; return { src: interviewAudio(st.world.id, round.settings.expeditionId, w.character, "caught"), character: w.character, gesture: w.lie.gesture ?? "head-shake" }; }
   return null;
 }
@@ -369,7 +417,9 @@ export function playerView(st: LiveState, playerId: string) {
       // Once the question has closed: the key to this player's own question (drag and drop, choose two, a written model).
       const mainAsked = playerAsked(liveRaceChunks(st.world, st.passages ?? [], round), st.responses, i, me.id, round.step)?.question ?? null;
       const mineAsked = playerAsked(liveRaceChunks(st.world, st.passages ?? [], round), st.responses, i, me.id, round.step)?.question;
-      const revealKey = mineAsked && (round.beat === "reveal" || round.beat === "lightning" || round.beat === "board" || round.beat === "countdown") ? { dnd: mineAsked.dnd ? { slotOf: Object.fromEntries(mineAsked.dnd.items.map((it) => [it.id, it.slot])), lines: Object.fromEntries(mineAsked.dnd.items.map((it) => [it.id, it.line])) } : null, best: mineAsked.format === "multi" ? (mineAsked.choices ?? []).filter((c) => c.best).map((c) => c.text) : null, model: mineAsked.written?.model ?? null } : null;
+      const revealKey = mineAsked && (round.beat === "reveal" || round.beat === "lightning" || round.beat === "board" || round.beat === "countdown") ? { dnd: mineAsked.dnd ? { slotOf: Object.fromEntries(mineAsked.dnd.items.map((it) => [it.id, it.slot])), lines: Object.fromEntries(mineAsked.dnd.items.map((it) => [it.id, it.line])) } : null, best: mineAsked.format === "multi" ? (mineAsked.choices ?? []).filter((c) => c.best).map((c) => c.text) : null, model: mineAsked.written?.model ?? null,
+        // Opening the lock after a miss: what to do, the answer for a plain choice, and the clue words.
+        task: recoveryTask(mineAsked), proof: proofShown(mineAsked, tokensOf(liveRaceChunks(st.world, st.passages ?? [], round)[round.step]?.lines ?? [])).lines, answer: recoveryTask(mineAsked) === "choice" ? mineAsked.choices?.find((c) => c.best)?.text ?? null : null, clues: mineAsked.clues ?? null } : null;
       // Mastery on this phone (lib/mastery.ts), from this player's first tries in this game: the skill tag after each reveal,
       // and any level-up it brought. Private to this phone.
       const revealed = round.beat === "reveal" || round.beat === "lightning" || round.beat === "board" || round.beat === "countdown";
@@ -382,7 +432,12 @@ export function playerView(st: LiveState, playerId: string) {
         const fam = mainAsked ? mainFamily(mainAsked.standards) : null, after = ev(round.step + 1);
         return { tag: fam ? levelOf(fam, after) : null, ups: levelUps(ev(round.step), after) };
       })() : null;
-      const extra = { skill, revealKey, version: asked.version, myQuestion: round.beat === "race" || round.beat === "reveal" ? asked.question : null, lightningAnswer: mine.lightning && light ? light.answer : null, burstFound: round.beat === "burst" ? burstFound(st.responses, i, squadIds) : [] };
+      // Request a clue: the clues opened so far, and the next tier's name and cost (its text stays on the server until asked for).
+      const myClues = round.beat === "race" && !mine.done ? (() => { const rc = liveRaceChunks(st.world, st.passages ?? [], round), real = playerAsked(rc, st.responses, i, me.id, round.step); if (!real) return null;
+        const free = !!(real.question as { showHint?: boolean }).showHint, tier = liveClueTier(mine.clue, free), c = rc[round.step];
+        return { tier, free, list: cluesFor(real.question, chunkTokens(c.lines), round.step).map((x) => (x.tier <= tier ? x : { ...x, text: "", lines: [], strike: [] })) }; })() : null;
+      const myEscape = squadEscapeView(st, round, me.id, squadIds, i);
+      const extra = { myEscape, myClues, skill, revealKey, version: asked.version, myQuestion: ["race", "reveal", "lightning", "board", "countdown"].includes(round.beat) ? asked.question : null, lightningAnswer: mine.lightning && light ? light.answer : null, burstFound: round.beat === "burst" ? burstFound(st.responses, i, squadIds) : [] };
       return { ...extra, mine, total: raceTotals(st.responses, i, st.players, counted).get(me.id) ?? 0, place: meRow ? { rank: meRow.rank, of: board.rows.length, move: meRow.move, gained: meRow.gained, row: meRow } : null, scale: timeScale(setting), extraTime: setting !== "1",
         // The map: this player's stops so far (stars: 3 proved with the Gist right or not asked, 2 proved, 0 not yet), once each is revealed.
         path: Array.from({ length: round.beat === "reveal" || round.beat === "lightning" || round.beat === "board" || round.beat === "burst" || round.beat === "countdown" ? round.step + 1 : round.step }, (_, k) => { const c = playerChunk(st.responses, i, k, me.id); return c.correct ? (c.gistRight !== false ? 3 : 2) : 0; }),
@@ -447,8 +502,11 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
         const settings = parseExpSettings((a as { settings?: unknown }).settings, st.world);
         if (!settings) return "This story has no expeditions yet.";
         const iv = st.world.expeditions?.find((e) => e.id === settings.expeditionId)?.interview;
-        const interview = iv ? { liar: liarIndex(s.id, settings.expeditionId, iv.witnesses.length), witnesses: iv.witnesses.length } : null;
-        const race: LiveRaceRound = { type: "race", settings, step: 0, beat: interview ? "vote" : "read", beatStartedAt: new Date().toISOString(), squadsOn: a.squads === true && st.squads.length > 0, pinned: null, interview };
+        // A class's games seed the liar by class and room, so a room played one chamber per period keeps its liar.
+        const at = inRoom(iv) ? iv!.witnesses.map((w) => w.at!) : null;
+        const interview = iv ? { liar: liveLiar(s.classId, s.id, settings.expeditionId, iv.witnesses.length), witnesses: iv.witnesses.length, at } : null;
+        const n = st.world.expeditions?.find((e) => e.id === settings.expeditionId)?.chunks.length ?? 1, first = firstBeat(settings, n, !!interview, at);
+        const race: LiveRaceRound = { type: "race", settings, step: first.step, beat: first.beat, witness: first.witness ?? null, beatStartedAt: new Date().toISOString(), squadsOn: a.squads === true && st.squads.length > 0, pinned: null, interview };
         await store.updateSession(s.id, { rounds: [...s.rounds, race], roundIndex: s.rounds.length, status: "round", paused: false, roundStartedAt: new Date().toISOString() });
         return null;
       }
@@ -491,7 +549,7 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
     // Proof Race: the next beat (read, summary or question, race, reveal, board), then the next chunk; the end is the podium.
     case "race.next": {
       if (round?.type !== "race" || s.status !== "round") return "No Proof Race is running.";
-      const n = nextBeat(round, liveRaceChunks(st.world, st.passages ?? [], round), liveArc(st.world, round));
+      const n = nextBeat(round, liveRaceChunks(st.world, st.passages ?? [], round), liveArc(st.world, round), roomOf(st.world, round.settings.expeditionId)?.puzzles ?? []);
       if (n === "end") { await store.updateSession(s.id, { status: "ended", paused: false }); return null; }
       // The teacher asked to pause before this chunk (a content note is coming): pause here instead of showing it.
       if (round.holdBefore != null && n.step === round.holdBefore && n.step !== round.step) {
@@ -499,7 +557,7 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
       }
       // Moving on ends a pause: the new beat's clock starts now, so phones must be able to answer it.
       if (s.paused) await store.updateSession(s.id, { paused: false });
-      return set(store, st, { ...round, step: n.step, beat: n.beat, beatStartedAt: new Date().toISOString(), pausedAt: null, pinned: n.step === round.step ? round.pinned ?? null : null });
+      return set(store, st, { ...round, step: n.step, beat: n.beat, puzzle: n.puzzle ?? null, witness: n.witness ?? null, clockUsedMs: (round.clockUsedMs ?? 0) + clockAdd(round, Date.now()), beatStartedAt: new Date().toISOString(), pausedAt: null, pinned: n.step === round.step ? round.pinned ?? null : null });
     }
     // The Bonus Round: after a Proof Race; squads are built first if there are none.
     case "bonus.start": {
@@ -642,12 +700,12 @@ export async function playerAct(store: LiveStore, st: LiveState, playerId: strin
     return null;
   }
   if (s.status !== "round") return "Wait for the next round.";
-  if (act.kind === "race_ready" || act.kind === "race_gist" || act.kind === "race_question" || act.kind === "race_tap" || act.kind === "race_lightning" || act.kind === "race_burst" || act.kind === "race_unknown" || act.kind === "interview_vote" || act.kind === "liar_lock") {
+  if (act.kind === "race_ready" || act.kind === "race_clue" || act.kind === "squad_lock" || act.kind === "race_gist" || act.kind === "race_question" || act.kind === "race_tap" || act.kind === "race_lightning" || act.kind === "race_burst" || act.kind === "race_unknown" || act.kind === "interview_vote" || act.kind === "liar_lock" || act.kind === "race_recover" || act.kind === "race_puzzle") {
     if (round?.type !== "race") return "This isn't a Proof Race.";
     if (s.paused) return "The round is paused.";
     // The burst counts a find once per squad (or per player without squads).
     const meP = st.players.find((p) => p.id === playerId), squadIds = round.squadsOn && meP?.squadId ? st.players.filter((p) => p.squadId === meP.squadId).map((p) => p.id) : [playerId];
-    const r = raceAnswer(round, liveRaceChunks(st.world, st.passages ?? [], round), st.responses, i, playerId, act.kind, act.payload, Date.now(), deps.timeSetting ?? "1", interviewOf(st.world, round), liveArc(st.world, round), squadIds);
+    const r = raceAnswer(round, liveRaceChunks(st.world, st.passages ?? [], round), st.responses, i, playerId, act.kind, act.payload, Date.now(), deps.timeSetting ?? "1", interviewOf(st.world, round), liveArc(st.world, round), squadIds, puzzleOf(st, round)?.data ?? null, puzzleOf(st, round)?.codeLines ?? [], roomOf(st.world, round.settings.expeditionId)?.number ?? 1);
     if (typeof r === "string") return r;
     await store.addResponse(s.id, { roundIndex: i, squadId: me.squadId, playerId, role: null, kind: act.kind, payload: r.payload, flagged: r.flagged });
     return null;

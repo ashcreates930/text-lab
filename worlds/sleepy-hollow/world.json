@@ -8753,30 +8753,33 @@
         }
       ],
       "interview": {
+        "question": "What should a stranger know about this valley?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 7,
             "cards": [
               "Tell me about the Headless Horseman.",
               "Where would a traveler run into him?"
             ],
             "truth": {
-              "text": "He doesn't keep to the Hollow, not him. He's out on the highways too, and the ground around the old meeting house is where he likes to prowl.",
+              "text": "He doesn't keep to the Hollow; he roams the highways too, and he likes to prowl near the old meeting house.",
               "lines": [
                 "His haunts are not\nconfined to the valley, but extend at times to the adjacent roads, and\nespecially to the vicinity of a church at no great distance."
               ]
             },
             "lie": {
-              "text": "He's out searching for the horse he lost, see, and he's never pressed. He takes his own sweet time getting home, slow as you please.",
+              "text": "He's hunting for the horse he lost, and he takes his own sweet time getting home.",
               "lines": [
                 "Indeed,\ncertain of the most authentic historians of those parts, who have been\ncareful in collecting and collating the floating facts concerning this\nspectre, allege that the body of the trooper having been buried in the\nchurchyard, the ghost rides forth to the scene of battle in nightly\nquest of his head, and that the rushing speed with which he sometimes\npasses along the Hollow, like a midnight blast, is owing to his being\nbelated, and in a hurry to get back to the churchyard before daybreak."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! All right, you got me. I just like to see folks jump."
+            "caught": "Ha, you got me; I just like to see folks jump."
           },
           {
             "character": "hans-van-ripper",
+            "at": 1,
             "cards": [
               "What should a newcomer know about this part of the country?",
               "Tell me about the town and the valley near it."
@@ -8794,28 +8797,29 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. Fine. I may have stretched it a little."
+            "caught": "Hmph, I may have stretched it a little."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 9,
             "cards": [
               "Do the old tales take hold of people here?",
               "Who believes the stories told in this valley?"
             ],
             "truth": {
-              "text": "Folks who come here clear-headed and sensible don't stay that way. Give them a season, and they start spotting ghosts too.",
+              "text": "Folks who arrive clear-headed don't stay that way, and within a season they're spotting ghosts too.",
               "lines": [
                 "However wide awake\nthey may have been before they entered that sleepy region, they are\nsure, in a little time, to inhale the witching influence of the air, and\nbegin to grow imaginative, to dream dreams, and see apparitions."
               ]
             },
             "lie": {
-              "text": "Only the families born in the Hollow believe those tales. Anyone who moves here from outside just laughs at them.",
+              "text": "Only families born in the Hollow believe those tales, and newcomers just laugh at them.",
               "lines": [
                 "It is remarkable that the visionary propensity I have mentioned is not\nconfined to the native inhabitants of the valley, but is unconsciously\nimbibed by every one who resides there for a time.",
                 "However wide awake\nthey may have been before they entered that sleepy region, they are\nsure, in a little time, to inhale the witching influence of the air, and\nbegin to grow imaginative, to dream dreams, and see apparitions."
               ]
             },
-            "caught": "Oh, you caught that? Clever. I only wanted to see if you were listening."
+            "caught": "Oh, you caught that; I only wanted to see if you were listening."
           }
         ]
       }
@@ -9774,30 +9778,33 @@
         }
       ],
       "interview": {
+        "question": "What should I know about the new schoolmaster?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 2,
             "cards": [
               "What do you make of the new schoolmaster?",
               "Tell me about the schoolhouse."
             ],
             "truth": {
-              "text": "That little log school? Any robber could slip inside without trouble, but he'd have a terrible time escaping again.",
+              "text": "Any robber could slip into that little log school easily, but he'd have a terrible time escaping again.",
               "lines": [
                 "It was most ingeniously secured at vacant hours, by a\nwithe twisted in the handle of the door, and stakes set against the\nwindow shutters; so that though a thief might get in with perfect ease,\nhe would find some embarrassment in getting out,--an idea most probably\nborrowed by the architect, Yost Van Houten, from the mystery of an\neelpot."
               ]
             },
             "lie": {
-              "text": "That beanpole? Folks say he's built as solid and stocky as a blacksmith, with tiny fists to match.",
+              "text": "That beanpole is built as solid and stocky as a blacksmith, folks say, with tiny fists to match.",
               "lines": [
                 "He was tall,\nbut exceedingly lank, with narrow shoulders, long arms and legs, hands\nthat dangled a mile out of his sleeves, feet that might have served for\nshovels, and his whole frame most loosely hung together."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! Fine, he's a beanpole through and through. I was just having fun."
+            "caught": "Ha, fine, he's a beanpole through and through."
           },
           {
             "character": "hans-van-ripper",
+            "at": 7,
             "cards": [
               "How does the schoolmaster earn his keep?",
               "What is he like when he stays with a family?"
@@ -9809,16 +9816,17 @@
               ]
             },
             "lie": {
-              "text": "He never lifts a finger for us, not one chore. He just sits by the hearth and eats.",
+              "text": "He never lifts a finger for us, not one chore, and just sits by the hearth and eats.",
               "lines": [
                 "He assisted the farmers\noccasionally in the lighter labors of their farms, helped to make\nhay, mended the fences, took the horses to water, drove the cows from\npasture, and cut wood for the winter fire."
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. All right, he helped now and then. I'll grant him that."
+            "caught": "Hmph, all right, he helped now and then."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 5,
             "cards": [
               "What is he like at church?",
               "Does he teach anything besides lessons?"
@@ -9835,7 +9843,7 @@
                 "In addition to his other vocations, he was the singing-master of the\nneighborhood, and picked up many bright shillings by instructing the\nyoung folks in psalmody."
               ]
             },
-            "caught": "Oh, you checked! He does teach music. I wanted to see who was paying attention."
+            "caught": "Oh, you checked; he does teach music."
           }
         ]
       }
@@ -10820,9 +10828,11 @@
         }
       ],
       "interview": {
+        "question": "What is the schoolmaster like outside the classroom?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 4,
             "cards": [
               "What does the schoolmaster believe in?",
               "What frightens him most?"
@@ -10834,16 +10844,17 @@
               ]
             },
             "lie": {
-              "text": "Bugs don't bother him one bit. A June bug could smack right into his face and he'd just laugh.",
+              "text": "Bugs don't bother him one bit; a June bug could smack into his face and he'd just laugh.",
               "lines": [
                 "The\nfireflies, too, which sparkled most vividly in the darkest places, now\nand then startled him, as one of uncommon brightness would stream across\nhis path; and if, by chance, a huge blockhead of a beetle came winging\nhis blundering flight against him, the poor varlet was ready to give up\nthe ghost, with the idea that he was struck with a witch’s token."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! You're right, a bug nearly finished him off. I wish I'd seen it."
+            "caught": "Ha, you're right, a bug nearly finished him off."
           },
           {
             "character": "hans-van-ripper",
+            "at": 7,
             "cards": [
               "How does he spend his evenings?",
               "What does he talk about with the old folks?"
@@ -10861,10 +10872,11 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. Fine. He was at every fireside in the valley, eating apples."
+            "caught": "Hmph, fine, he was at every fireside in the valley, eating apples."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 2,
             "cards": [
               "What do the young ladies think of him?",
               "How does he act after Sunday worship?"
@@ -10881,7 +10893,7 @@
                 "The schoolmaster is generally a man of some importance in the female\ncircle of a rural neighborhood; being considered a kind of idle,\ngentlemanlike personage, of vastly superior taste and accomplishments to\nthe rough country swains, and, indeed, inferior in learning only to the\nparson."
               ]
             },
-            "caught": "Caught me. We do think a teacher is rather grand. Don't tell him I said so."
+            "caught": "Caught me; we do think a teacher is rather grand."
           }
         ]
       }
@@ -11889,9 +11901,11 @@
         }
       ],
       "interview": {
+        "question": "What should I know about the Van Tassels and their farm?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 2,
             "cards": [
               "What is Katrina's family like?",
               "What does the schoolmaster want?"
@@ -11903,16 +11917,17 @@
               ]
             },
             "lie": {
-              "text": "The schoolmaster saw all that livestock and never once thought about supper. Not him.",
+              "text": "The schoolmaster saw all that livestock and never once thought about supper.",
               "lines": [
                 "The pedagogue’s mouth watered as he looked upon this sumptuous promise\nof luxurious winter fare."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! Of course he thought about supper. He thinks of nothing else."
+            "caught": "Ha, of course he thought about supper; he thinks of nothing else."
           },
           {
             "character": "hans-van-ripper",
+            "at": 4,
             "cards": [
               "What is old Baltus like?",
               "Tell me about the Van Tassel place."
@@ -11930,27 +11945,28 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. It's in a snug green nook by the water. I misspoke."
+            "caught": "Hmph, it's in a snug green nook by the water."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 5,
             "cards": [
               "How do you like to dress?",
               "Where did your family's jewelry come from?"
             ],
             "truth": {
-              "text": "The jewelry I wear crossed the ocean with my family long ago, all the way from Holland.",
+              "text": "A huge old tree shades our house, and the clearest drinking source in the county rises right beneath it.",
               "lines": [
-                "She wore the ornaments of pure yellow gold, which her\ngreat-great-grandmother had brought over from Saardam; the tempting\nstomacher of the olden time, and withal a provokingly short petticoat,\nto display the prettiest foot and ankle in the country round."
+                "A\ngreat elm tree spread its broad branches over it, at the foot of which\nbubbled up a spring of the softest and sweetest water, in a little well\nformed of a barrel; and then stole sparkling away through the grass, to\na neighboring brook, that babbled along among alders and dwarf willows."
               ]
             },
             "lie": {
-              "text": "I only ever wear the newest styles. Nothing from the past for me.",
+              "text": "Father loves showing off his money and fancy things for all the neighbors to admire.",
               "lines": [
-                "She was withal a\nlittle of a coquette, as might be perceived even in her dress, which was\na mixture of ancient and modern fashions, as most suited to set off\nher charms."
+                "He was satisfied with\nhis wealth, but not proud of it; and piqued himself upon the hearty\nabundance, rather than the style in which he lived."
               ]
             },
-            "caught": "You noticed. I do like mixing the past and the present. It suits me."
+            "caught": "All right, Father isn't one for show; he just likes a full table."
           }
         ]
       }
@@ -12908,9 +12924,11 @@
         }
       ],
       "interview": {
+        "question": "Who wants Katrina's hand, and what are they like?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 8,
             "cards": [
               "Who are you, exactly?",
               "What are you good at?"
@@ -12922,16 +12940,17 @@
               ]
             },
             "lie": {
-              "text": "Nobody around here listens to me when there's an argument. They settle it without me.",
+              "text": "Nobody around here listens to me in an argument; they settle it without me.",
               "lines": [
                 "He was foremost at all races and cock fights; and, with the ascendancy\nwhich bodily strength always acquires in rustic life, was the umpire in\nall disputes, setting his hat on one side, and giving his decisions with\nan air and tone that admitted of no gainsay or appeal."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! As if I could stay off a saddle. You got me."
+            "caught": "Ha, all right, I settle every quarrel around here."
           },
           {
             "character": "hans-van-ripper",
+            "at": 2,
             "cards": [
               "What did the schoolmaster think of the Van Tassel house?",
               "Where does the schoolmaster dream of going?"
@@ -12949,10 +12968,11 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. The place took his heart in one look. I was wrong."
+            "caught": "Hmph, the place took his heart in one look."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 4,
             "cards": [
               "What do you think of your admirers?",
               "What are the young men like around you?"
@@ -12964,12 +12984,12 @@
               ]
             },
             "lie": {
-              "text": "The young men around here are all quiet and small. Not one of them is bold or loud.",
+              "text": "The young men around here are all quiet and small, and not one of them is bold or loud.",
               "lines": [
                 "Among these, the most formidable was a burly, roaring, roystering blade,\nof the name of Abraham, or, according to the Dutch abbreviation, Brom\nVan Brunt, the hero of the country round, which rang with his feats of\nstrength and hardihood."
               ]
             },
-            "caught": "All right, I know one who is very loud indeed. You were listening."
+            "caught": "All right, I know one who is very loud indeed."
           }
         ]
       }
@@ -13962,9 +13982,11 @@
         }
       ],
       "interview": {
+        "question": "What's going on between Katrina's suitors?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 7,
             "cards": [
               "What happened between you and the schoolmaster?",
               "Why didn't you just fight him?"
@@ -13982,10 +14004,11 @@
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! All right, I stayed away a while. Don't rub it in."
+            "caught": "Ha, all right, I stayed away a while."
           },
           {
             "character": "hans-van-ripper",
+            "at": 6,
             "cards": [
               "How do the Van Tassels raise their daughter?",
               "What does the mother of the house say?"
@@ -13997,16 +14020,17 @@
               ]
             },
             "lie": {
-              "text": "Old Baltus rules that girl with an iron hand. She can't do a thing without his say.",
+              "text": "Old Baltus rules that girl with an iron hand, and she can't do a thing without his say.",
               "lines": [
                 "Balt Van\nTassel was an easy indulgent soul; he loved his daughter better even\nthan his pipe, and, like a reasonable man and an excellent father, let\nher have her way in everything."
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. He's soft as butter with her. Everyone knows it."
+            "caught": "Hmph, he's soft as butter with her."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 2,
             "cards": [
               "Who comes calling on you?",
               "What do folks think of Brom?"
@@ -14018,12 +14042,12 @@
               ]
             },
             "lie": {
-              "text": "Folks around here can't stand Brom. Nobody has a kind word for him.",
+              "text": "Folks around here can't stand Brom, and nobody has a kind word for him.",
               "lines": [
                 "The neighbors looked upon him with a mixture\nof awe, admiration, and good-will; and, when any madcap prank or rustic\nbrawl occurred in the vicinity, always shook their heads, and warranted\nBrom Bones was at the bottom of it."
               ]
             },
-            "caught": "Fine, they rather like him. Even the ones he plays tricks on."
+            "caught": "Fine, they rather like him, even the ones he plays tricks on."
           }
         ]
       }
@@ -15004,9 +15028,11 @@
         }
       ],
       "interview": {
+        "question": "What's been happening to the schoolmaster lately?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 1,
             "cards": [
               "What did you do to the schoolmaster?",
               "How did you get back at him?"
@@ -15018,16 +15044,17 @@
               ]
             },
             "lie": {
-              "text": "I never pulled a single trick on him. Wasn't my style.",
+              "text": "I never pulled a single trick on him; it wasn't my style.",
               "lines": [
                 "There was\nsomething extremely provoking in this obstinately pacific system; it\nleft Brom no alternative but to draw upon the funds of rustic waggery in\nhis disposition, and to play off boorish practical jokes upon his rival."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! Guilty. Every trick in the book, and I'd do it again."
+            "caught": "Ha, guilty: every trick in the book."
           },
           {
             "character": "hans-van-ripper",
+            "at": 7,
             "cards": [
               "Did you lend the schoolmaster anything?",
               "Tell me about your old mount."
@@ -15045,10 +15072,11 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. He was a firecracker once. Still is, on a bad day."
+            "caught": "Hmph, he was a firecracker once."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 6,
             "cards": [
               "How did the schoolmaster get ready for the party?",
               "What happened at the school that afternoon?"
@@ -15065,7 +15093,7 @@
                 "Books were flung aside without\nbeing put away on the shelves, inkstands were overturned, benches thrown\ndown, and the whole school was turned loose an hour before the usual\ntime, bursting forth like a legion of young imps, yelping and racketing\nabout the green in joy at their early emancipation."
               ]
             },
-            "caught": "Oh, he let them go early. He couldn't wait. I'm flattered, really."
+            "caught": "Oh, he let them go early because he couldn't wait."
           }
         ]
       }
@@ -16064,9 +16092,11 @@
         }
       ],
       "interview": {
+        "question": "What did you notice as everyone headed to the party?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 1,
             "cards": [
               "What did the schoolmaster look like riding out?",
               "What was the weather like that evening?"
@@ -16078,16 +16108,17 @@
               ]
             },
             "lie": {
-              "text": "Every orchard he rode past had been stripped clean. Nothing left to pick.",
+              "text": "Every orchard he rode past had been stripped clean, with nothing left to pick.",
               "lines": [
                 "On all sides he beheld vast store of apples; some hanging in\noppressive opulence on the trees; some gathered into baskets and barrels\nfor the market; others heaped up in rich piles for the cider-press."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! Still as a pond, it was. I just like a stormy tale."
+            "caught": "Ha, the orchards were loaded; I just like a gloomy tale."
           },
           {
             "character": "hans-van-ripper",
+            "at": 9,
             "cards": [
               "What did folks wear to the party?",
               "Who came to the Van Tassel place?"
@@ -16099,22 +16130,23 @@
               ]
             },
             "lie": {
-              "text": "Hardly a soul turned up. The house was half empty all night.",
+              "text": "Hardly a soul turned up, and the house was half empty all night.",
               "lines": [
                 "It was toward evening that Ichabod arrived at the castle of the Heer\nVan Tassel, which he found thronged with the pride and flower of the\nadjacent country."
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. Packed to the rafters. I just don't like crowds."
+            "caught": "Hmph, it was packed to the rafters."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 8,
             "cards": [
               "What did the girls wear?",
               "What did you think of the young men's hair?"
             ],
             "truth": {
-              "text": "The boys bind their pigtails with the hide of an eel. They swear it makes it grow thicker.",
+              "text": "The boys bind their pigtails with the hide of an eel, swearing it makes them grow thicker.",
               "lines": [
                 "The sons, in short square-skirted coats, with rows of\nstupendous brass buttons, and their hair generally queued in the fashion\nof the times, especially if they could procure an eel-skin for the\npurpose, it being esteemed throughout the country as a potent nourisher\nand strengthener of the hair."
               ]
@@ -16125,7 +16157,7 @@
                 "Buxom\nlasses, almost as antiquated as their mothers, excepting where a straw\nhat, a fine ribbon, or perhaps a white frock, gave symptoms of city\ninnovation."
               ]
             },
-            "caught": "Well, maybe a ribbon or two was new. You caught me fibbing."
+            "caught": "Well, maybe a ribbon or two was new."
           }
         ]
       }
@@ -17098,17 +17130,19 @@
         }
       ],
       "interview": {
+        "question": "What happened at the Van Tassels' feast?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 1,
             "cards": [
               "What did you ride to the party?",
               "How did you feel watching the dancing?"
             ],
             "truth": {
-              "text": "I stayed off alone in a nook, stewing while she twirled with that beanpole.",
+              "text": "I'd never be seen on a tame, gentle mount; give me a wild one any day.",
               "lines": [
-                "The\nlady of his heart was his partner in the dance, and smiling graciously\nin reply to all his amorous oglings; while Brom Bones, sorely smitten\nwith love and jealousy, sat brooding by himself in one corner."
+                "He was, in fact, noted for preferring vicious animals, given to all\nkinds of tricks which kept the rider in constant risk of his neck, for\nhe held a tractable, well-broken horse as unworthy of a lad of spirit."
               ]
             },
             "lie": {
@@ -17118,31 +17152,33 @@
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! Gentle? Daredevil would throw anyone but me. You knew that."
+            "caught": "Ha, gentle is the last word for Daredevil; he would throw anyone but me."
           },
           {
             "character": "hans-van-ripper",
+            "at": 4,
             "cards": [
               "What did old Baltus do at the party?",
               "How did the schoolmaster eat?"
             ],
             "truth": {
-              "text": "Baltus didn't fuss. A firm grip, a clap on the back, a hearty roar, and he told everyone to dig in.",
+              "text": "Baltus didn't fuss: a firm grip, a clap on the back, a hearty roar, and he told everyone to dig in.",
               "lines": [
                 "His\nhospitable attentions were brief, but expressive, being confined to a\nshake of the hand, a slap on the shoulder, a loud laugh, and a pressing\ninvitation to “fall to, and help themselves.”"
               ]
             },
             "lie": {
-              "text": "The schoolmaster hardly touched a crumb all night. Barely ate.",
+              "text": "The schoolmaster hardly touched a crumb all night.",
               "lines": [
                 "Happily, Ichabod Crane was not in so great a hurry as his historian, but\ndid ample justice to every dainty."
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. He ate enough for three. I'll not deny it."
+            "caught": "Hmph, he ate enough for three."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 3,
             "cards": [
               "What was on the tea table?",
               "Whose arm were you on that evening?"
@@ -17154,12 +17190,12 @@
               ]
             },
             "lie": {
-              "text": "I spent the whole evening on Brom's arm and barely glanced at the schoolmaster.",
+              "text": "Father was in a sour mood all evening and barely smiled at anyone.",
               "lines": [
-                "The\nlady of his heart was his partner in the dance, and smiling graciously\nin reply to all his amorous oglings; while Brom Bones, sorely smitten\nwith love and jealousy, sat brooding by himself in one corner."
+                "Old Baltus Van Tassel moved about among his guests with a face dilated\nwith content and good humor, round and jolly as the harvest moon."
               ]
             },
-            "caught": "Oh, all right. I was the schoolmaster's partner. Brom sulked all night."
+            "caught": "All right, Father was beaming all night, happy as could be."
           }
         ]
       }
@@ -18166,30 +18202,33 @@
         }
       ],
       "interview": {
+        "question": "What stories did people tell at the party?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 10,
             "cards": [
               "Have you ever met the Headless Horseman?",
               "What happened on your way home one night?"
             ],
             "truth": {
-              "text": "I dared that rider to a contest for a drink, and my brute left his mount in the dust, till he burst into flame and was gone.",
+              "text": "I dared that rider to a contest for a drink, and my brute left his mount in the dust till he burst into flame and was gone.",
               "lines": [
                 "He affirmed that on returning one night from the neighboring village of\nSing Sing, he had been overtaken by this midnight trooper; that he had\noffered to race with him for a bowl of punch, and should have won it\ntoo, for Daredevil beat the goblin horse all hollow, but just as they\ncame to the church bridge, the Hessian bolted, and vanished in a flash\nof fire."
               ]
             },
             "lie": {
-              "text": "I'd never joke about that rider. He frightens me more than anything.",
+              "text": "I'd never joke about that rider, because he frightens me more than anything.",
               "lines": [
                 "This story was immediately matched by a thrice marvellous adventure of\nBrom Bones, who made light of the Galloping Hessian as an arrant jockey."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! Frightened? Me? I call him a jockey to his face. Well, to his neck."
+            "caught": "Ha, I was never frightened of him; I call him a jockey to his face."
           },
           {
             "character": "hans-van-ripper",
+            "at": 6,
             "cards": [
               "What happened to old Brouwer?",
               "Where is the ghost seen most?"
@@ -18201,16 +18240,17 @@
               ]
             },
             "lie": {
-              "text": "That ghost keeps well clear of the old wooden crossing. Folks only see him up on the mountain.",
+              "text": "That ghost keeps clear of the old wooden crossing and is only seen up on the mountain.",
               "lines": [
                 "Such was one of the favorite haunts of\nthe Headless Horseman, and the place where he was most frequently\nencountered."
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. That crossing is his favorite spot. I'd not go near it."
+            "caught": "Hmph, that crossing is his favorite spot."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 3,
             "cards": [
               "Why are there so many ghost stories here?",
               "Who told stories at the party?"
@@ -18222,12 +18262,12 @@
               ]
             },
             "lie": {
-              "text": "Ghost stories never last in a quiet old valley like ours. They fade right away.",
+              "text": "Ghost stories never last in a quiet old valley like ours.",
               "lines": [
                 "Local tales and superstitions thrive best in these sheltered,\nlong-settled retreats; but are trampled under foot by the shifting\nthrong that forms the population of most of our country places."
               ]
             },
-            "caught": "You're right, they never fade here. That's half the fun of living in the valley."
+            "caught": "You're right, they never fade here."
           }
         ]
       }
@@ -19216,9 +19256,11 @@
         }
       ],
       "interview": {
+        "question": "How did the party end, and what came after?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 2,
             "cards": [
               "How did the party end?",
               "Did you see the schoolmaster leave?"
@@ -19230,16 +19272,17 @@
               ]
             },
             "lie": {
-              "text": "Everyone stayed the night at the Van Tassels'. Not a soul headed off till morning.",
+              "text": "Everyone stayed the night at the Van Tassels', and not a soul left till morning.",
               "lines": [
                 "The old farmers gathered together\ntheir families in their wagons, and were heard for some time rattling\nalong the hollow roads, and over the distant hills."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! They all rattled off home. I just wanted to see if you'd notice."
+            "caught": "Ha, they all rattled off home."
           },
           {
             "character": "hans-van-ripper",
+            "at": 1,
             "cards": [
               "What did the schoolmaster tell at the party?",
               "What was the night like when he rode back?"
@@ -19257,10 +19300,11 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. Gloomy as a grave, that night. I'll own it."
+            "caught": "Hmph, it was gloomy as a grave that night."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 2,
             "cards": [
               "How did the young people get home?",
               "What do folks think of the old tulip tree?"
@@ -19277,7 +19321,7 @@
                 "Some of the\ndamsels mounted on pillions behind their favorite swains, and their\nlight-hearted laughter, mingling with the clatter of hoofs, echoed along\nthe silent woodlands, sounding fainter and fainter, until they gradually\ndied away,--and the late scene of noise and frolic was all silent and\ndeserted."
               ]
             },
-            "caught": "Oh, we were giggling the whole way. You can't keep a secret from you."
+            "caught": "Oh, we were giggling the whole way home."
           }
         ]
       }
@@ -20275,9 +20319,11 @@
         }
       ],
       "interview": {
+        "question": "What happened on the road that night?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 5,
             "cards": [
               "What did the stranger on the road look like?",
               "Have you heard what happened that night?"
@@ -20295,10 +20341,11 @@
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! That rider stuck to him like a burr. Or so I hear."
+            "caught": "Ha, that rider stuck to him like a burr, or so I hear."
           },
           {
             "character": "hans-van-ripper",
+            "at": 3,
             "cards": [
               "What happened at the brook crossing?",
               "How did my old horse behave?"
@@ -20316,10 +20363,11 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. He fought that schoolmaster every step. He's like me that way."
+            "caught": "Hmph, he fought that schoolmaster every step."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 2,
             "cards": [
               "Why is that crossing so feared?",
               "What happened there in the war?"
@@ -20336,7 +20384,7 @@
                 "This has ever since been\nconsidered a haunted stream, and fearful are the feelings of the\nschoolboy who has to pass it alone after dark."
               ]
             },
-            "caught": "No, the boys run past it shaking. I was only teasing."
+            "caught": "No, the boys run past it shaking."
           }
         ]
       }
@@ -21284,9 +21332,11 @@
         }
       ],
       "interview": {
+        "question": "What became of the schoolmaster?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 6,
             "cards": [
               "What did the searchers turn up?",
               "Did the schoolmaster's horse come home?"
@@ -21298,16 +21348,17 @@
               ]
             },
             "lie": {
-              "text": "That old nag never made it back. Ran off for good.",
+              "text": "That old nag never made it back and ran off for good.",
               "lines": [
                 "The next morning the old horse was found without his saddle, and with\nthe bridle under his feet, soberly cropping the grass at his master’s\ngate."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! He was munching grass at the gate by morning. Lazy old thing."
+            "caught": "Ha, he was munching grass at the gate by morning."
           },
           {
             "character": "hans-van-ripper",
+            "at": 3,
             "cards": [
               "What did the schoolmaster leave behind?",
               "What did you do with his things?"
@@ -21325,10 +21376,11 @@
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. Two shirts and a half. That's the truth of it."
+            "caught": "Hmph, it was two shirts and a half."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 3,
             "cards": [
               "What did people say at church that Sunday?",
               "Who teaches the children now?"
@@ -21340,12 +21392,12 @@
               ]
             },
             "lie": {
-              "text": "At church everyone agreed he had simply run away. No one blamed any ghost.",
+              "text": "At church everyone agreed he had simply run away, and no one blamed any ghost.",
               "lines": [
                 "The stories of Brouwer, of Bones, and a whole budget of\nothers were called to mind; and when they had diligently considered them\nall, and compared them with the symptoms of the present case, they shook\ntheir heads, and came to the conclusion that Ichabod had been carried\noff by the Galloping Hessian."
               ]
             },
-            "caught": "Oh, they all blamed the Hessian. Every last one of them."
+            "caught": "Oh, they all blamed the Hessian."
           }
         ]
       }
@@ -22056,9 +22108,11 @@
         }
       ],
       "interview": {
+        "question": "What happened in the years after he disappeared?",
         "witnesses": [
           {
             "character": "brom-bones",
+            "at": 2,
             "cards": [
               "What happened after the schoolmaster left?",
               "Is that old crossing still feared?"
@@ -22070,16 +22124,17 @@
               ]
             },
             "lie": {
-              "text": "Folks use that old crossing as easy as you please now. Nobody thinks twice.",
+              "text": "Folks use that old crossing as easy as you please now.",
               "lines": [
                 "The bridge became more than\never an object of superstitious awe; and that may be the reason why the\nroad has been altered of late years, so as to approach the church by\nthe border of the millpond."
               ],
               "gesture": "laughing"
             },
-            "caught": "Ha! They even moved the road to stay clear of it. Can you blame them?"
+            "caught": "Ha, they even moved the road to stay clear of it."
           },
           {
             "character": "hans-van-ripper",
+            "at": 3,
             "cards": [
               "What do the grandmothers say happened?",
               "What became of the old school?"
@@ -22091,16 +22146,17 @@
               ]
             },
             "lie": {
-              "text": "The grandmothers laugh at that ghost talk. They say he just ran off.",
+              "text": "The grandmothers laugh at that ghost talk and say he just ran off.",
               "lines": [
                 "The old country wives, however, who are the best judges of these\nmatters, maintain to this day that Ichabod was spirited away by\nsupernatural means; and it is a favorite story often told about the\nneighborhood round the winter evening fire."
               ],
               "gesture": "head-shake"
             },
-            "caught": "Hmph. They swear he was spirited away. And who am I to argue?"
+            "caught": "Hmph, they swear he was spirited away."
           },
           {
             "character": "katrina-van-tassel",
+            "at": 1,
             "cards": [
               "Have you heard news of the schoolmaster?",
               "Did you ever marry?"
@@ -22112,12 +22168,12 @@
               ]
             },
             "lie": {
-              "text": "I never married anyone from the valley. I'm still waiting for the right one.",
+              "text": "I never married anyone from the valley; I'm still waiting for the right one.",
               "lines": [
                 "Brom Bones, too, who, shortly after his rival’s\ndisappearance conducted the blooming Katrina in triumph to the altar,\nwas observed to look exceedingly knowing whenever the story of Ichabod\nwas related, and always burst into a hearty laugh at the mention of the\npumpkin; which led some to suspect that he knew more about the matter\nthan he chose to tell."
               ]
             },
-            "caught": "Oh, you know very well whom I married. I just like to keep people guessing."
+            "caught": "Oh, you know very well whom I married."
           }
         ]
       }
@@ -23347,7 +23403,2692 @@
       }
     ]
   },
+  "rooms": [
+    {
+      "expedition": "into-the-hollow",
+      "door": "The Glen. A spell holds everyone who stays here. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "glen-at-noon",
+          "after": 3,
+          "title": "Fix the Painting: the glen at noon",
+          "prompt": "A painter tried to show the glen from the story, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/glen-at-noon.webp",
+          "alt": "A painting of a valley among hills at noon, with trees, a stream and a road",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "walnut",
+              "label": "Tall walnut trees shade one side",
+              "x": 10,
+              "y": 48,
+              "lines": [
+                {
+                  "p": "p004",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "woodpecker",
+              "label": "A woodpecker on a branch",
+              "x": 25,
+              "y": 17,
+              "lines": [
+                {
+                  "p": "p003",
+                  "s": 4
+                }
+              ]
+            },
+            {
+              "id": "hills",
+              "label": "High hills all around",
+              "x": 55,
+              "y": 20,
+              "lines": [
+                {
+                  "p": "p003",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "waterfall",
+              "label": "A roaring waterfall",
+              "x": 84,
+              "y": 48,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p003",
+                  "s": 4
+                }
+              ]
+            },
+            {
+              "id": "market",
+              "label": "A busy market road through the valley",
+              "x": 50,
+              "y": 74,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p003",
+                  "s": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "glen-gate",
+          "after": 5,
+          "title": "The gate out of the glen",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "Who was annoyed enough to label the place, according to the tale?",
+              "line": {
+                "p": "p003",
+                "s": 1
+              },
+              "word": "housewives"
+            },
+            {
+              "question": "A traveler sets out from the tavern for the glen. Which number tells how long the trip is?",
+              "line": {
+                "p": "p003",
+                "s": 3
+              },
+              "word": "two"
+            },
+            {
+              "question": "Which word tells how noisy the shot seemed to the young hunter?",
+              "line": {
+                "p": "p004",
+                "s": 1
+              },
+              "word": "roar"
+            },
+            {
+              "question": "What has the magic cast on everyone who lives here, so they drift through life half-dreaming?",
+              "line": {
+                "p": "p005",
+                "s": 3
+              },
+              "word": "spell"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "churchyard-at-dusk",
+          "after": 10,
+          "title": "Inspect the Scene: the churchyard at dusk",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/churchyard-at-dusk.webp",
+          "alt": "A churchyard at dusk beside a stream, with an old church and a darkening sky",
+          "objects": [
+            {
+              "id": "shot",
+              "label": "A rusted iron shot half-buried in the grass",
+              "x": 26,
+              "y": 82,
+              "line": {
+                "p": "p006",
+                "s": 1
+              },
+              "subject": [
+                "cannon"
+              ]
+            },
+            {
+              "id": "grave",
+              "label": "An old sunken grave with a weathered stone",
+              "x": 67,
+              "y": 64,
+              "line": {
+                "p": "p006",
+                "s": 3
+              },
+              "subject": [
+                "buried"
+              ]
+            },
+            {
+              "id": "streak",
+              "label": "A streak of light across the night sky",
+              "x": 84,
+              "y": 12,
+              "line": {
+                "p": "p005",
+                "s": 5
+              },
+              "subject": [
+                "meteors"
+              ]
+            },
+            {
+              "id": "church",
+              "label": "A white meeting house with a steeple on the knoll",
+              "x": 70,
+              "y": 40,
+              "line": {
+                "p": "p006",
+                "s": 2
+              },
+              "subject": [
+                "church"
+              ]
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p005",
+              "s": 1
+            },
+            {
+              "p": "p006",
+              "s": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-schoolmaster",
+      "door": "The Schoolhouse. A schoolmaster rules this one-room school, but how does he really live? Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "schoolhouse-at-midday",
+          "after": 4,
+          "title": "Fix the Painting: the schoolhouse at midday",
+          "prompt": "A painter tried to show Ichabod's schoolhouse, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/schoolhouse-at-midday.webp",
+          "alt": "A painting of a country schoolhouse at the foot of a wooded hill, with a stream and a tree",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "stone",
+              "label": "A tall stone schoolhouse, two floors high",
+              "x": 38,
+              "y": 45,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p011",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "padlock",
+              "label": "A heavy iron padlock on the door",
+              "x": 57,
+              "y": 69,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p011",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "hill",
+              "label": "A woody hill rising behind it",
+              "x": 25,
+              "y": 16,
+              "lines": [
+                {
+                  "p": "p011",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "brook",
+              "label": "A brook running close by",
+              "x": 8,
+              "y": 83,
+              "lines": [
+                {
+                  "p": "p011",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "birch",
+              "label": "A birch tree at one end",
+              "x": 81,
+              "y": 52,
+              "lines": [
+                {
+                  "p": "p011",
+                  "s": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "schoolhouse-door",
+          "after": 5,
+          "title": "The schoolhouse door",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "Which word names the home Ichabod left to come here?",
+              "line": {
+                "p": "p010",
+                "s": 1
+              },
+              "word": "Connecticut"
+            },
+            {
+              "question": "If you ran your hand along the outside walls, what would you feel?",
+              "line": {
+                "p": "p011",
+                "s": 0
+              },
+              "word": "logs"
+            },
+            {
+              "question": "Which garden tool is used to joke about how big he is from the ankles down?",
+              "line": {
+                "p": "p010",
+                "s": 3
+              },
+              "word": "shovels"
+            },
+            {
+              "question": "From outside, what busy insect home does the classroom resemble?",
+              "line": {
+                "p": "p011",
+                "s": 3
+              },
+              "word": "beehive"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "farmhouse-room",
+          "after": 10,
+          "title": "Inspect the Scene: a farmhouse where Ichabod boards",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/farmhouse-room.webp",
+          "alt": "A farmhouse kitchen with a hearth, a table and a chair",
+          "objects": [
+            {
+              "id": "bundle",
+              "label": "A small bundle knotted in a cloth by the door",
+              "x": 14,
+              "y": 80,
+              "line": {
+                "p": "p013",
+                "s": 3
+              },
+              "subject": [
+                "handkerchief"
+              ]
+            },
+            {
+              "id": "woodpile",
+              "label": "A stack of freshly split logs by the hearth",
+              "x": 27,
+              "y": 73,
+              "line": {
+                "p": "p014",
+                "s": 1
+              },
+              "subject": [
+                "wood"
+              ]
+            },
+            {
+              "id": "cradle",
+              "label": "A baby's swinging bed beside a chair",
+              "x": 59,
+              "y": 64,
+              "line": {
+                "p": "p014",
+                "s": 3
+              },
+              "subject": [
+                "cradle"
+              ]
+            },
+            {
+              "id": "hymnbook",
+              "label": "An open hymnbook with music notes on the table",
+              "x": 88,
+              "y": 64,
+              "line": {
+                "p": "p015",
+                "s": 0
+              },
+              "subject": [
+                "psalmody"
+              ]
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p013",
+              "s": 2
+            },
+            {
+              "p": "p014",
+              "s": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "tales-by-the-fire",
+      "door": "Fireside Tales. Ichabod loves a good ghost story, until he has to walk home in the dark. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "churchyard-sunday",
+          "after": 3,
+          "title": "Fix the Painting: Sunday in the churchyard",
+          "prompt": "A painter tried to show Ichabod with the country girls between Sunday services, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/churchyard-sunday.webp",
+          "alt": "A painting of a schoolmaster with young women in a country churchyard on a Sunday",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "vines",
+              "label": "Wild grapevines climbing the trees",
+              "x": 6,
+              "y": 22,
+              "lines": [
+                {
+                  "p": "p016",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "stones",
+              "label": "Old gravestones in the grass",
+              "x": 68,
+              "y": 82,
+              "lines": [
+                {
+                  "p": "p016",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "church",
+              "label": "The church where his singing rang out",
+              "x": 82,
+              "y": 22,
+              "lines": [
+                {
+                  "p": "p015",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "frowns",
+              "label": "The girls frowning and turning away from him",
+              "x": 55,
+              "y": 45,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p016",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "jokes",
+              "label": "Ichabod reading aloud from a joke book",
+              "x": 33,
+              "y": 40,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p016",
+                  "s": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "fireside-latch",
+          "after": 5,
+          "title": "The latch on the farmhouse door",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "What sort of talk did neighbors hear from him at every door?",
+              "line": {
+                "p": "p017",
+                "s": 0
+              },
+              "word": "gossip"
+            },
+            {
+              "question": "What dark subject did his favorite author cover, one he trusted completely?",
+              "line": {
+                "p": "p017",
+                "s": 1
+              },
+              "word": "Witchcraft"
+            },
+            {
+              "question": "Which word shows he could be clever in little ways?",
+              "line": {
+                "p": "p018",
+                "s": 0
+              },
+              "word": "shrewdness"
+            },
+            {
+              "question": "What did he lie down on beside the creek once classes ended?",
+              "line": {
+                "p": "p018",
+                "s": 3
+              },
+              "word": "clover"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "winter-walk",
+          "after": 10,
+          "title": "Inspect the Scene: the walk home on a winter night",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/winter-walk.webp",
+          "alt": "A snowy country lane at night with a distant farmhouse window and bare trees",
+          "objects": [
+            {
+              "id": "window",
+              "label": "A faraway glowing pane across the snowy meadow",
+              "x": 81,
+              "y": 56,
+              "line": {
+                "p": "p020",
+                "s": 2
+              },
+              "subject": [
+                "window"
+              ]
+            },
+            {
+              "id": "bush",
+              "label": "A small bush wrapped in white",
+              "x": 21,
+              "y": 68,
+              "line": {
+                "p": "p020",
+                "s": 3
+              },
+              "subject": [
+                "shrub"
+              ]
+            },
+            {
+              "id": "prints",
+              "label": "Footprints pressed into the icy ground",
+              "x": 49,
+              "y": 86,
+              "line": {
+                "p": "p020",
+                "s": 4
+              },
+              "subject": [
+                "steps"
+              ]
+            },
+            {
+              "id": "branches",
+              "label": "Bare branches tossed by a gust",
+              "x": 25,
+              "y": 22,
+              "line": {
+                "p": "p020",
+                "s": 5
+              },
+              "subject": [
+                "blast"
+              ]
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p020",
+              "s": 1
+            },
+            {
+              "p": "p019",
+              "s": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-van-tassel-farm",
+      "door": "The Van Tassel Farm. Ichabod has never seen such plenty, or such a daughter. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "farm-by-river",
+          "after": 5,
+          "title": "Fix the Painting: the Van Tassel farm",
+          "prompt": "A painter tried to show Baltus Van Tassel's farm, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/farm-by-river.webp",
+          "alt": "A painting of a farmhouse beside a river with a great tree and a stream",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "river",
+              "label": "The farm on the bank of a wide river",
+              "x": 10,
+              "y": 62,
+              "lines": [
+                {
+                  "p": "p023",
+                  "s": 4
+                }
+              ]
+            },
+            {
+              "id": "elm",
+              "label": "A great elm spreading its branches over the house",
+              "x": 45,
+              "y": 14,
+              "lines": [
+                {
+                  "p": "p023",
+                  "s": 5
+                }
+              ]
+            },
+            {
+              "id": "willows",
+              "label": "A brook running among willows",
+              "x": 72,
+              "y": 88,
+              "lines": [
+                {
+                  "p": "p023",
+                  "s": 5
+                }
+              ]
+            },
+            {
+              "id": "columns",
+              "label": "A grand mansion with tall marble columns",
+              "x": 57,
+              "y": 38,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p023",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "hilltop",
+              "label": "The farm perched on a bare, windswept hilltop",
+              "x": 40,
+              "y": 64,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p023",
+                  "s": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "farm-gate",
+          "after": 5,
+          "title": "The farm gate",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "How is Katrina related to old Baltus?",
+              "line": {
+                "p": "p022",
+                "s": 0
+              },
+              "word": "daughter"
+            },
+            {
+              "question": "Which word shows old Baltus was prospering?",
+              "line": {
+                "p": "p023",
+                "s": 1
+              },
+              "word": "thriving"
+            },
+            {
+              "question": "Which river ran beside Baltus's home?",
+              "line": {
+                "p": "p023",
+                "s": 4
+              },
+              "word": "Hudson"
+            },
+            {
+              "question": "Which wooden cask was reused to make a basin for the source?",
+              "line": {
+                "p": "p023",
+                "s": 5
+              },
+              "word": "barrel"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "barnyard",
+          "after": 10,
+          "title": "Inspect the Scene: the Van Tassel barnyard",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/barnyard.webp",
+          "alt": "A busy farmyard with a huge barn, a pond, pens and farm birds",
+          "objects": [
+            {
+              "id": "geese",
+              "label": "White birds floating on still water",
+              "x": 15,
+              "y": 74,
+              "line": {
+                "p": "p023",
+                "s": 8
+              },
+              "subject": [
+                "geese"
+              ]
+            },
+            {
+              "id": "hogs",
+              "label": "Fat hogs lying in a muddy enclosure",
+              "x": 60,
+              "y": 84,
+              "line": {
+                "p": "p023",
+                "s": 7
+              },
+              "subject": [
+                "porkers"
+              ]
+            },
+            {
+              "id": "rooster",
+              "label": "A proud red-combed bird flapping at sunrise",
+              "x": 82,
+              "y": 58,
+              "line": {
+                "p": "p023",
+                "s": 9
+              },
+              "subject": [
+                "cock"
+              ]
+            },
+            {
+              "id": "swallows",
+              "label": "Small birds darting around the top of a huge building",
+              "x": 72,
+              "y": 18,
+              "line": {
+                "p": "p023",
+                "s": 6
+              },
+              "subject": [
+                "swallows"
+              ]
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p023",
+              "s": 3
+            },
+            {
+              "p": "p024",
+              "s": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "a-rival-appears",
+      "door": "A Rival Appears. Ichabod wants the farm and the daughter, but someone bigger stands in his way. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "van-tassel-hall",
+          "after": 5,
+          "title": "Fix the Painting: the hall of the Van Tassel house",
+          "prompt": "A painter tried to show the hall Ichabod walked into, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/van-tassel-hall.webp",
+          "alt": "A painting of a large farmhouse hall with a long dresser, a corner and a doorway",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "pewter",
+              "label": "Rows of shining pewter on a long dresser",
+              "x": 42,
+              "y": 30,
+              "lines": [
+                {
+                  "p": "p026",
+                  "s": 5
+                }
+              ]
+            },
+            {
+              "id": "woolbag",
+              "label": "A huge bag of wool in the corner",
+              "x": 12,
+              "y": 70,
+              "lines": [
+                {
+                  "p": "p026",
+                  "s": 6
+                }
+              ]
+            },
+            {
+              "id": "wheel",
+              "label": "A spinning wheel out on the porch",
+              "x": 89,
+              "y": 54,
+              "lines": [
+                {
+                  "p": "p026",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "barewalls",
+              "label": "Bare walls with nothing hung on them",
+              "x": 13,
+              "y": 30,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p026",
+                  "s": 6
+                }
+              ]
+            },
+            {
+              "id": "bolted",
+              "label": "The parlor door shut tight and bolted",
+              "x": 65,
+              "y": 47,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p026",
+                  "s": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "farmhouse-door",
+          "after": 5,
+          "title": "The farmhouse door",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "What open porch did the overhanging edge create?",
+              "line": {
+                "p": "p026",
+                "s": 1
+              },
+              "word": "piazza"
+            },
+            {
+              "question": "What would the family carry down to the water to catch supper?",
+              "line": {
+                "p": "p026",
+                "s": 2
+              },
+              "word": "nets"
+            },
+            {
+              "question": "What piece of furniture held the shining metal plates?",
+              "line": {
+                "p": "p026",
+                "s": 5
+              },
+              "word": "dresser"
+            },
+            {
+              "question": "What fluffy material sat piled in a sack, waiting to become yarn?",
+              "line": {
+                "p": "p026",
+                "s": 6
+              },
+              "word": "wool"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "brom-arrives",
+          "after": 10,
+          "title": "Inspect the Scene: Brom Bones rides in",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/brom-arrives.webp",
+          "alt": "A farmhouse gate with a saddled horse, a group of young riders and a hat on a post",
+          "objects": [
+            {
+              "id": "stallion",
+              "label": "A saddled stallion tied at the rail",
+              "x": 25,
+              "y": 42,
+              "line": {
+                "p": "p028",
+                "s": 3
+              },
+              "subject": [
+                "horsemanship"
+              ]
+            },
+            {
+              "id": "cap",
+              "label": "A cap tilted at an angle on a post",
+              "x": 45,
+              "y": 45,
+              "line": {
+                "p": "p028",
+                "s": 4
+              },
+              "subject": [
+                "hat"
+              ]
+            },
+            {
+              "id": "riders",
+              "label": "A small band of young men at the gate",
+              "x": 77,
+              "y": 50,
+              "line": {
+                "p": "p028",
+                "s": 6
+              },
+              "subject": [
+                "companions"
+              ]
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p027",
+              "s": 1
+            },
+            {
+              "p": "p028",
+              "s": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-feud",
+      "door": "The Feud. Brom Bones wants Katrina too, and he is not a man to cross. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "midnight-riders",
+          "after": 2,
+          "title": "Fix the Painting: Brom's crew at midnight",
+          "prompt": "A painter tried to show Brom and his riders passing the farmhouses at midnight, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/midnight-riders.webp",
+          "alt": "A painting of a band of horsemen on a moonlit country road past farmhouses",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "squad",
+              "label": "A band of hard riders on the road",
+              "x": 57,
+              "y": 50,
+              "lines": [
+                {
+                  "p": "p028",
+                  "s": 7
+                }
+              ]
+            },
+            {
+              "id": "houses",
+              "label": "Farmhouses along the way",
+              "x": 68,
+              "y": 27,
+              "lines": [
+                {
+                  "p": "p028",
+                  "s": 8
+                }
+              ]
+            },
+            {
+              "id": "oldwoman",
+              "label": "An old woman at a window, woken from sleep",
+              "x": 90,
+              "y": 22,
+              "lines": [
+                {
+                  "p": "p028",
+                  "s": 8
+                }
+              ]
+            },
+            {
+              "id": "tricorn",
+              "label": "The leader in a feathered three-cornered hat",
+              "x": 39,
+              "y": 24,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p028",
+                  "s": 7
+                }
+              ]
+            },
+            {
+              "id": "silent",
+              "label": "The riders tiptoeing past without a sound",
+              "x": 14,
+              "y": 52,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p028",
+                  "s": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "feud-gate",
+          "after": 5,
+          "title": "The Van Tassel paling",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "Which word shows Ichabod could not be snapped, no matter the strain?",
+              "line": {
+                "p": "p030",
+                "s": 1
+              },
+              "word": "tough"
+            },
+            {
+              "question": "Which word means he worked his way in slyly, bit by bit?",
+              "line": {
+                "p": "p031",
+                "s": 1
+              },
+              "word": "insinuating"
+            },
+            {
+              "question": "Which animal at the gate warned other young men off?",
+              "line": {
+                "p": "p029",
+                "s": 1
+              },
+              "word": "horse"
+            },
+            {
+              "question": "Which word shows the villagers thought highly of him, not just feared him?",
+              "line": {
+                "p": "p028",
+                "s": 9
+              },
+              "word": "admiration"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "piazza-evening",
+          "after": 10,
+          "title": "Inspect the Scene: an evening at the Van Tassels'",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/piazza-evening.webp",
+          "alt": "A farmhouse porch at evening, a farmyard, a barn roof and a great tree",
+          "objects": [
+            {
+              "id": "rail",
+              "label": "An empty hitching rail along the fence",
+              "x": 66,
+              "y": 51,
+              "line": {
+                "p": "p032",
+                "s": 5
+              },
+              "subject": [
+                "palings"
+              ]
+            },
+            {
+              "id": "poultry",
+              "label": "A flock of farm birds pecking in the yard",
+              "x": 15,
+              "y": 60,
+              "line": {
+                "p": "p031",
+                "s": 4
+              },
+              "subject": [
+                "poultry"
+              ]
+            },
+            {
+              "id": "vane",
+              "label": "A small carved soldier perched on top of a roof",
+              "x": 7,
+              "y": 20,
+              "line": {
+                "p": "p031",
+                "s": 5
+              },
+              "subject": [
+                "warrior"
+              ]
+            },
+            {
+              "id": "source",
+              "label": "A bubbling source beneath a big tree",
+              "x": 78,
+              "y": 85,
+              "line": {
+                "p": "p031",
+                "s": 6
+              },
+              "subject": [
+                "spring"
+              ]
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p032",
+              "s": 3
+            },
+            {
+              "p": "p032",
+              "s": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-invitation",
+      "door": "The Invitation. Brom's pranks pile up, and then a messenger brings news of a party. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "pranked-school",
+          "after": 2,
+          "title": "Fix the Painting: the schoolhouse after the pranks",
+          "prompt": "A painter tried to show what Brom's gang did to the schoolhouse, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/pranked-school.webp",
+          "alt": "A painting of a log schoolhouse with smoke, a dog and young men outside",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "smoke",
+              "label": "Smoke pouring out of the schoolroom",
+              "x": 60,
+              "y": 15,
+              "lines": [
+                {
+                  "p": "p033",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "mess",
+              "label": "Everything inside turned upside down",
+              "x": 48,
+              "y": 58,
+              "lines": [
+                {
+                  "p": "p033",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "dog",
+              "label": "A dog howling in a silly way",
+              "x": 90,
+              "y": 78,
+              "lines": [
+                {
+                  "p": "p033",
+                  "s": 4
+                }
+              ]
+            },
+            {
+              "id": "knock",
+              "label": "The gang politely knocking at the door",
+              "x": 68,
+              "y": 46,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p033",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "handshake",
+              "label": "Brom offering Ichabod a friendly handshake",
+              "x": 20,
+              "y": 62,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p033",
+                  "s": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "school-door",
+          "after": 5,
+          "title": "The schoolroom door",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "Which word names the person Brom's pranks were aimed at?",
+              "line": {
+                "p": "p033",
+                "s": 1
+              },
+              "word": "rival"
+            },
+            {
+              "question": "What did the gang plug up so the music lesson filled with fumes?",
+              "line": {
+                "p": "p033",
+                "s": 3
+              },
+              "word": "chimney"
+            },
+            {
+              "question": "What sad noise did Brom train his animal to make, to mock Ichabod?",
+              "line": {
+                "p": "p033",
+                "s": 4
+              },
+              "word": "whine"
+            },
+            {
+              "question": "What did Brom make of Ichabod whenever Katrina was watching?",
+              "line": {
+                "p": "p033",
+                "s": 4
+              },
+              "word": "ridicule"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "getting-ready",
+          "after": 10,
+          "title": "Inspect the Scene: getting ready for the party",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/getting-ready.webp",
+          "alt": "An empty schoolroom in a mess, with an old horse waiting outside the door",
+          "objects": [
+            {
+              "id": "spills",
+              "label": "Pages and spilled black liquid all over the floor",
+              "x": 31,
+              "y": 85,
+              "line": {
+                "p": "p035",
+                "s": 2
+              },
+              "subject": [
+                "inkstands"
+              ]
+            },
+            {
+              "id": "mirror",
+              "label": "A cracked mirror hanging on a nail",
+              "x": 21,
+              "y": 18,
+              "line": {
+                "p": "p036",
+                "s": 0
+              },
+              "subject": [
+                "glass"
+              ]
+            },
+            {
+              "id": "burrs",
+              "label": "Prickly seed pods stuck in the scruffy hair of an old horse",
+              "x": 68,
+              "y": 32,
+              "line": {
+                "p": "p036",
+                "s": 4
+              },
+              "subject": [
+                "burs"
+              ]
+            },
+            {
+              "id": "stirrups",
+              "label": "Foot loops hitched up very high on the riding seat",
+              "x": 82,
+              "y": 86,
+              "line": {
+                "p": "p037",
+                "s": 1
+              },
+              "subject": [
+                "stirrups"
+              ]
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p036",
+              "s": 5
+            },
+            {
+              "p": "p037",
+              "s": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-ride-to-the-party",
+      "door": "The Ride to the Party. An autumn road, a borrowed horse, and a feast at the end of it. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "autumn-road",
+          "after": 4,
+          "title": "Fix the Painting: the road in autumn",
+          "prompt": "A painter tried to show the country Ichabod rode through, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/autumn-road.webp",
+          "alt": "A painting of a country road through autumn woods with birds",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "leaves",
+              "label": "Trees turned orange, purple and red",
+              "x": 20,
+              "y": 25,
+              "lines": [
+                {
+                  "p": "p038",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "ducks",
+              "label": "Lines of wild ducks high overhead",
+              "x": 52,
+              "y": 18,
+              "lines": [
+                {
+                  "p": "p038",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "woodpecker",
+              "label": "A woodpecker with a crimson crest",
+              "x": 78,
+              "y": 37,
+              "lines": [
+                {
+                  "p": "p039",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "storm",
+              "label": "A gray, stormy sky full of rain",
+              "x": 66,
+              "y": 34,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p038",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "emptybush",
+              "label": "Bare bushes with no birds anywhere",
+              "x": 12,
+              "y": 68,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p039",
+                  "s": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "hans-gate",
+          "after": 5,
+          "title": "Hans Van Ripper's gate",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "What sat so low it seemed perched on his face?",
+              "line": {
+                "p": "p037",
+                "s": 2
+              },
+              "word": "hat"
+            },
+            {
+              "question": "Which word names the brightest red among the autumn leaves?",
+              "line": {
+                "p": "p038",
+                "s": 1
+              },
+              "word": "scarlet"
+            },
+            {
+              "question": "Which crop did he spot in every orchard and wagon along the road?",
+              "line": {
+                "p": "p040",
+                "s": 1
+              },
+              "word": "apples"
+            },
+            {
+              "question": "Which bushy-tailed creature was chattering in the woods?",
+              "line": {
+                "p": "p038",
+                "s": 2
+              },
+              "word": "squirrel"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "arriving-party",
+          "after": 10,
+          "title": "Inspect the Scene: arriving at the Van Tassels'",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/arriving-party.webp",
+          "alt": "Guests in 1790s country dress arriving at a farmhouse at sunset, with a river and fields",
+          "objects": [
+            {
+              "id": "gourds",
+              "label": "Fat orange gourds resting in the dirt",
+              "x": 15,
+              "y": 85,
+              "line": {
+                "p": "p040",
+                "s": 2
+              },
+              "subject": [
+                "pumpkins"
+              ]
+            },
+            {
+              "id": "boat",
+              "label": "A small boat with a limp canvas, drifting downstream",
+              "x": 85,
+              "y": 47,
+              "line": {
+                "p": "p041",
+                "s": 6
+              },
+              "subject": [
+                "sloop"
+              ]
+            },
+            {
+              "id": "clasps",
+              "label": "Big shiny metal clasps on clunky footwear",
+              "x": 66,
+              "y": 86,
+              "line": {
+                "p": "p042",
+                "s": 1
+              },
+              "subject": [
+                "buckles"
+              ]
+            },
+            {
+              "id": "braid",
+              "label": "A braid tied with a slippery dark strip",
+              "x": 51,
+              "y": 48,
+              "line": {
+                "p": "p042",
+                "s": 4
+              },
+              "subject": [
+                "eel"
+              ]
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p041",
+              "s": 2
+            },
+            {
+              "p": "p042",
+              "s": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-feast-and-the-dance",
+      "door": "The Feast and the Dance. The Van Tassels' table is heaped high, and Ichabod is happy. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "tea-table",
+          "after": 4,
+          "title": "Fix the Painting: the Dutch tea table",
+          "prompt": "A painter tried to show the feast in the Van Tassel parlor, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/tea-table.webp",
+          "alt": "A painting of a long farmhouse table heaped with food, guests, and a window onto the yard",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "cakes",
+              "label": "Platters heaped with cakes",
+              "x": 20,
+              "y": 72,
+              "lines": [
+                {
+                  "p": "p044",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "doughnuts",
+              "label": "Doughnuts and twisted crullers",
+              "x": 49,
+              "y": 72,
+              "lines": [
+                {
+                  "p": "p044",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "pies",
+              "label": "Apple, peach and pumpkin pies",
+              "x": 80,
+              "y": 76,
+              "lines": [
+                {
+                  "p": "p044",
+                  "s": 4
+                }
+              ]
+            },
+            {
+              "id": "pony",
+              "label": "Brom outside on a gentle, sleepy pony",
+              "x": 85,
+              "y": 30,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p043",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "refusing",
+              "label": "Ichabod politely refusing a plate",
+              "x": 45,
+              "y": 38,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p044",
+                  "s": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "parlor-door",
+          "after": 5,
+          "title": "The parlor door",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "Which word shows Brom's horse loved making trouble?",
+              "line": {
+                "p": "p043",
+                "s": 0
+              },
+              "word": "mischief"
+            },
+            {
+              "question": "Which twisted fried pastry broke apart at the first bite?",
+              "line": {
+                "p": "p044",
+                "s": 3
+              },
+              "word": "cruller"
+            },
+            {
+              "question": "What lifts some people's mood the way food lifted Ichabod's?",
+              "line": {
+                "p": "p045",
+                "s": 0
+              },
+              "word": "drink"
+            },
+            {
+              "question": "Which building did he dream of leaving behind forever?",
+              "line": {
+                "p": "p045",
+                "s": 2
+              },
+              "word": "schoolhouse"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "porch-after-dance",
+          "after": 10,
+          "title": "Inspect the Scene: the porch after the dance",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/porch-after-dance.webp",
+          "alt": "A farmhouse porch at night with older men, a table of food inside and a horse in the yard",
+          "objects": [
+            {
+              "id": "pipes",
+              "label": "Old men puffing pipes on the porch",
+              "x": 14,
+              "y": 38,
+              "line": {
+                "p": "p049",
+                "s": 0
+              },
+              "subject": [
+                "piazza"
+              ]
+            },
+            {
+              "id": "wildhorse",
+              "label": "A wild-eyed horse stamping at the hitching post",
+              "x": 80,
+              "y": 52,
+              "line": {
+                "p": "p043",
+                "s": 0
+              },
+              "subject": [
+                "steed"
+              ]
+            },
+            {
+              "id": "spread",
+              "label": "A table still loaded with tarts and cured meat",
+              "x": 60,
+              "y": 48,
+              "line": {
+                "p": "p044",
+                "s": 4
+              },
+              "subject": [
+                "pies"
+              ]
+            },
+            {
+              "id": "host",
+              "label": "Baltus clapping a guest on the back",
+              "x": 38,
+              "y": 40,
+              "line": {
+                "p": "p046",
+                "s": 1
+              },
+              "subject": [
+                "slap"
+              ]
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p046",
+              "s": 0
+            },
+            {
+              "p": "p050",
+              "s": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "ghost-stories",
+      "door": "Ghost Stories. The old men tell war tales, and then the ghosts come out. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "doffue-battle",
+          "after": 2,
+          "title": "Fix the Painting: the war stories",
+          "prompt": "A painter tried to show the old men's war stories, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/doffue-battle.webp",
+          "alt": "A painting of a Revolutionary War riverbank with a big man at an old cannon and a warship",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "beard",
+              "label": "A big Dutchman with a blue-black beard",
+              "x": 25,
+              "y": 20,
+              "lines": [
+                {
+                  "p": "p051",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "cannon",
+              "label": "An old iron cannon behind a wall of mud",
+              "x": 56,
+              "y": 58,
+              "lines": [
+                {
+                  "p": "p051",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "frigate",
+              "label": "A British warship out on the water",
+              "x": 84,
+              "y": 25,
+              "lines": [
+                {
+                  "p": "p051",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "perfect",
+              "label": "The cannon firing perfectly, shot after shot",
+              "x": 70,
+              "y": 49,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p051",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "shield",
+              "label": "A gentleman blocking a musket ball with a big wooden shield",
+              "x": 31,
+              "y": 72,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p051",
+                  "s": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "storytellers",
+          "after": 5,
+          "title": "The storytellers' circle",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "Which word describes the protected, out-of-the-way spots where old legends flourish?",
+              "line": {
+                "p": "p052",
+                "s": 2
+              },
+              "word": "sheltered"
+            },
+            {
+              "question": "Which word compares the rest of the dead to a short doze?",
+              "line": {
+                "p": "p052",
+                "s": 3
+              },
+              "word": "nap"
+            },
+            {
+              "question": "Which word tells how rarely spooky tales turn up in most towns?",
+              "line": {
+                "p": "p052",
+                "s": 4
+              },
+              "word": "seldom"
+            },
+            {
+              "question": "What kind of enemy vessel did Doffue almost seize?",
+              "line": {
+                "p": "p051",
+                "s": 0
+              },
+              "word": "frigate"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "church-and-bridge",
+          "after": 10,
+          "title": "Inspect the Scene: the church by the bridge",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/church-and-bridge.webp",
+          "alt": "An old white church on a hill above a pond, with a rocky creek and a shadowy bridge",
+          "objects": [
+            {
+              "id": "meetinghouse",
+              "label": "A white meeting house on a rise",
+              "x": 50,
+              "y": 28,
+              "line": {
+                "p": "p054",
+                "s": 1
+              },
+              "subject": [
+                "whitewashed"
+              ]
+            },
+            {
+              "id": "pond",
+              "label": "A shining pond at the bottom of the rise",
+              "x": 13,
+              "y": 62,
+              "line": {
+                "p": "p054",
+                "s": 2
+              },
+              "subject": [
+                "water"
+              ]
+            },
+            {
+              "id": "creek",
+              "label": "A rushing creek tumbling over boulders and dead logs",
+              "x": 73,
+              "y": 74,
+              "line": {
+                "p": "p054",
+                "s": 4
+              },
+              "subject": [
+                "rocks"
+              ]
+            },
+            {
+              "id": "crossing",
+              "label": "A dark plank crossing under heavy branches",
+              "x": 87,
+              "y": 48,
+              "line": {
+                "p": "p054",
+                "s": 5
+              },
+              "subject": [
+                "bridge"
+              ]
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p054",
+              "s": 3
+            },
+            {
+              "p": "p053",
+              "s": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-lonely-road",
+      "door": "The Lonely Road. The party is over, Ichabod is alone, and the road home passes the haunted tree. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "party-ends",
+          "after": 3,
+          "title": "Fix the Painting: the party ends",
+          "prompt": "A painter tried to show the guests leaving the Van Tassels', but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/party-ends.webp",
+          "alt": "A painting of guests leaving a farmhouse at night in wagons and on horseback",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "wagons",
+              "label": "Farmers loading their families into wagons",
+              "x": 12,
+              "y": 50,
+              "lines": [
+                {
+                  "p": "p057",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "pillions",
+              "label": "Girls riding behind young men on horseback",
+              "x": 69,
+              "y": 50,
+              "lines": [
+                {
+                  "p": "p057",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "lingers",
+              "label": "Ichabod staying behind at the door",
+              "x": 90,
+              "y": 30,
+              "lines": [
+                {
+                  "p": "p057",
+                  "s": 3
+                }
+              ]
+            },
+            {
+              "id": "sleepover",
+              "label": "The guests settling in to sleep at the farmhouse",
+              "x": 68,
+              "y": 20,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p057",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "silence",
+              "label": "Everyone leaving in complete silence",
+              "x": 58,
+              "y": 42,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p057",
+                  "s": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "stable-door",
+          "after": 5,
+          "title": "The stable door",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "Which word means he shared short passages from a longer work?",
+              "line": {
+                "p": "p056",
+                "s": 1
+              },
+              "word": "extracts"
+            },
+            {
+              "question": "Which word tells the noise the carts made on the way home?",
+              "line": {
+                "p": "p057",
+                "s": 1
+              },
+              "word": "rattling"
+            },
+            {
+              "question": "Which word compares his exit to a chicken thief's?",
+              "line": {
+                "p": "p057",
+                "s": 10
+              },
+              "word": "henroost"
+            },
+            {
+              "question": "Where did he go first to wake the horse?",
+              "line": {
+                "p": "p057",
+                "s": 11
+              },
+              "word": "stable"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "andre-tree",
+          "after": 10,
+          "title": "Inspect the Scene: Major André's tree",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/andre-tree.webp",
+          "alt": "A huge twisted tree in the middle of a dark country road above a river at night",
+          "objects": [
+            {
+              "id": "mast",
+              "label": "A boat's upright pole down on the river",
+              "x": 8,
+              "y": 86,
+              "line": {
+                "p": "p058",
+                "s": 2
+              },
+              "subject": [
+                "mast"
+              ]
+            },
+            {
+              "id": "trunk",
+              "label": "A huge trunk standing in the middle of the lane",
+              "x": 56,
+              "y": 74,
+              "line": {
+                "p": "p059",
+                "s": 4
+              },
+              "subject": [
+                "tulip"
+              ]
+            },
+            {
+              "id": "scar",
+              "label": "A pale scorched scar on the bark",
+              "x": 54,
+              "y": 50,
+              "line": {
+                "p": "p060",
+                "s": 1
+              },
+              "subject": [
+                "lightning"
+              ]
+            },
+            {
+              "id": "limbs",
+              "label": "Two heavy limbs grinding together",
+              "x": 73,
+              "y": 18,
+              "line": {
+                "p": "p060",
+                "s": 2
+              },
+              "subject": [
+                "bough"
+              ]
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p059",
+              "s": 7
+            },
+            {
+              "p": "p059",
+              "s": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-headless-horseman",
+      "door": "The Headless Horseman. A haunted stream, a silent rider, and a chase in the dark. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "wiley-swamp",
+          "after": 2,
+          "title": "Fix the Painting: the crossing at Wiley's Swamp",
+          "prompt": "A painter tried to show the haunted stream Ichabod had to cross, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/wiley-swamp.webp",
+          "alt": "A painting of a stream crossing a road into a dark wooded swamp at night",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "brook",
+              "label": "A small stream crossing the road",
+              "x": 32,
+              "y": 82,
+              "lines": [
+                {
+                  "p": "p061",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "woods",
+              "label": "Thick dark woods around the swamp",
+              "x": 12,
+              "y": 30,
+              "lines": [
+                {
+                  "p": "p061",
+                  "s": 0
+                }
+              ]
+            },
+            {
+              "id": "vines",
+              "label": "Big trees tangled with wild grapevines",
+              "x": 75,
+              "y": 25,
+              "lines": [
+                {
+                  "p": "p061",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "stonebridge",
+              "label": "A sturdy stone bridge with railings",
+              "x": 50,
+              "y": 50,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p061",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "playing",
+              "label": "A schoolboy happily playing there alone after dark",
+              "x": 16,
+              "y": 53,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p061",
+                  "s": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "swamp-crossing",
+          "after": 5,
+          "title": "The crossing",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "What was the crossing at the swamp made from?",
+              "line": {
+                "p": "p061",
+                "s": 1
+              },
+              "word": "logs"
+            },
+            {
+              "question": "Along with a kick, what did Ichabod use to hurry the old horse?",
+              "line": {
+                "p": "p062",
+                "s": 2
+              },
+              "word": "whip"
+            },
+            {
+              "question": "What stood straight up when the schoolmaster saw the shape?",
+              "line": {
+                "p": "p063",
+                "s": 0
+              },
+              "word": "hair"
+            },
+            {
+              "question": "Which word tells that the shape looked twisted and wrong?",
+              "line": {
+                "p": "p062",
+                "s": 4
+              },
+              "word": "misshapen"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "the-chase",
+          "after": 10,
+          "title": "Inspect the Scene: the chase",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/the-chase.webp",
+          "alt": "A night road with a big dark horse and a cloaked rider, sparks on stones, and a pale church on a hill",
+          "objects": [
+            {
+              "id": "stallion",
+              "label": "A big dark stallion",
+              "x": 22,
+              "y": 38,
+              "line": {
+                "p": "p063",
+                "s": 10
+              },
+              "subject": [
+                "black"
+              ]
+            },
+            {
+              "id": "cape",
+              "label": "A tall rider wrapped in a long cape",
+              "x": 42,
+              "y": 18,
+              "line": {
+                "p": "p064",
+                "s": 6
+              },
+              "subject": [
+                "cloak"
+              ]
+            },
+            {
+              "id": "sparks",
+              "label": "Bright glints shooting up from hooves on rocky ground",
+              "x": 22,
+              "y": 86,
+              "line": {
+                "p": "p064",
+                "s": 8
+              },
+              "subject": [
+                "sparks"
+              ]
+            },
+            {
+              "id": "church",
+              "label": "A pale meeting house on a grassy rise",
+              "x": 79,
+              "y": 20,
+              "line": {
+                "p": "p065",
+                "s": 1
+              },
+              "subject": [
+                "knoll"
+              ]
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p062",
+              "s": 5
+            },
+            {
+              "p": "p063",
+              "s": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "gone",
+      "door": "Gone. The next morning, the schoolmaster has vanished. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "church-bridge-night",
+          "after": 4,
+          "title": "Fix the Painting: the race to the church bridge",
+          "prompt": "A painter tried to show Ichabod reaching the church bridge, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/church-bridge-night.webp",
+          "alt": "A painting of a rider on an old horse racing toward a bridge and a church at night, chased by a dark horse",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "star",
+              "label": "A star shining in the water of the brook",
+              "x": 67,
+              "y": 89,
+              "lines": [
+                {
+                  "p": "p067",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "walls",
+              "label": "The church walls glimmering beyond the trees",
+              "x": 82,
+              "y": 25,
+              "lines": [
+                {
+                  "p": "p067",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "pursuer",
+              "label": "A black horse right behind him",
+              "x": 25,
+              "y": 38,
+              "lines": [
+                {
+                  "p": "p067",
+                  "s": 5
+                }
+              ]
+            },
+            {
+              "id": "saddle",
+              "label": "Ichabod's saddle still firmly in place",
+              "x": 49,
+              "y": 48,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p066",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "arches",
+              "label": "A bridge of solid stone arches",
+              "x": 82,
+              "y": 63,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p067",
+                  "s": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "bridge-lock",
+          "after": 5,
+          "title": "The church bridge",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "For which day of the week did Hans save that riding gear?",
+              "line": {
+                "p": "p066",
+                "s": 2
+              },
+              "word": "Sunday"
+            },
+            {
+              "question": "What did Ichabod see glittering in the water that showed him where he was?",
+              "line": {
+                "p": "p067",
+                "s": 1
+              },
+              "word": "star"
+            },
+            {
+              "question": "What was the crossing's floor made of, booming under the hooves?",
+              "line": {
+                "p": "p067",
+                "s": 6
+              },
+              "word": "planks"
+            },
+            {
+              "question": "Which word names the part of Ichabod the flying object struck?",
+              "line": {
+                "p": "p067",
+                "s": 9
+              },
+              "word": "cranium"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "the-search",
+          "after": 10,
+          "title": "Inspect the Scene: the search for Ichabod",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/the-search.webp",
+          "alt": "Things found after the schoolmaster vanished: a saddle in a muddy road, books, a cap and a broken gourd by a brook",
+          "objects": [
+            {
+              "id": "saddle",
+              "label": "A leather riding seat stamped into the mud",
+              "x": 20,
+              "y": 52,
+              "line": {
+                "p": "p068",
+                "s": 5
+              },
+              "subject": [
+                "saddle"
+              ]
+            },
+            {
+              "id": "mather",
+              "label": "A thick old volume about spells and sorcery",
+              "x": 54,
+              "y": 57,
+              "line": {
+                "p": "p069",
+                "s": 3
+              },
+              "subject": [
+                "witchcraft"
+              ]
+            },
+            {
+              "id": "hymnal",
+              "label": "A worn hymnal with folded corners",
+              "x": 84,
+              "y": 82,
+              "line": {
+                "p": "p069",
+                "s": 2
+              },
+              "subject": [
+                "psalm"
+              ]
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p068",
+              "s": 1
+            },
+            {
+              "p": "p069",
+              "s": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "expedition": "the-postscript",
+      "door": "The Postscript. Years later, the tale is told again, and someone doubts it. Prove what the story says, and the way out opens.",
+      "puzzles": [
+        {
+          "type": "painting",
+          "id": "hollow-years-later",
+          "after": 3,
+          "title": "Fix the Painting: the Hollow, years later",
+          "prompt": "A painter tried to show the Hollow years after Ichabod vanished, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line.",
+          "art": "/worlds/sleepy-hollow/rooms/hollow-years-later.webp",
+          "alt": "A painting of a country valley on a summer evening with a millpond, a road, a bridge and an old schoolhouse",
+          "wrong": 2,
+          "details": [
+            {
+              "id": "road",
+              "label": "The road now curving along the millpond",
+              "x": 34,
+              "y": 74,
+              "lines": [
+                {
+                  "p": "p072",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "oldbridge",
+              "label": "The old bridge standing unused",
+              "x": 78,
+              "y": 60,
+              "lines": [
+                {
+                  "p": "p072",
+                  "s": 1
+                }
+              ]
+            },
+            {
+              "id": "plowboy",
+              "label": "A plowboy strolling home in the evening",
+              "x": 48,
+              "y": 60,
+              "lines": [
+                {
+                  "p": "p072",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "newschool",
+              "label": "A brand-new schoolhouse full of children",
+              "x": 82,
+              "y": 25,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p072",
+                  "s": 2
+                }
+              ]
+            },
+            {
+              "id": "scowl",
+              "label": "Brom scowling as neighbors tell the tale",
+              "x": 14,
+              "y": 35,
+              "wrong": true,
+              "lines": [
+                {
+                  "p": "p071",
+                  "s": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "id": "postscript-lock",
+          "after": 4,
+          "title": "The last door",
+          "prompt": "Each dial asks about a line in your Case File. Tap the word in the line that answers it; the dial shows its letter once it's right.",
+          "dials": [
+            {
+              "question": "What surprising fact about Ichabod's fate did the traveler report?",
+              "line": {
+                "p": "p071",
+                "s": 0
+              },
+              "word": "alive"
+            },
+            {
+              "question": "What sound did Brom let out at the gourd part of the tale?",
+              "line": {
+                "p": "p071",
+                "s": 1
+              },
+              "word": "laugh"
+            },
+            {
+              "question": "Which word shows the farm women blame ghostly powers?",
+              "line": {
+                "p": "p072",
+                "s": 0
+              },
+              "word": "supernatural"
+            },
+            {
+              "question": "Which word tells that the storyteller looked worn and frayed?",
+              "line": {
+                "p": "p075",
+                "s": 1
+              },
+              "word": "shabby"
+            }
+          ]
+        },
+        {
+          "type": "scene",
+          "id": "city-meeting",
+          "after": 7,
+          "title": "Inspect the Scene: the meeting in the city",
+          "prompt": "Everything here is in the story. Open each object and match it to the line that explains it.",
+          "art": "/worlds/sleepy-hollow/rooms/city-meeting.webp",
+          "alt": "A wood-paneled city meeting room around 1800 with gentlemen at a table",
+          "objects": [
+            {
+              "id": "goblet",
+              "label": "A goblet of red drink being sipped",
+              "x": 25,
+              "y": 38,
+              "line": {
+                "p": "p076",
+                "s": 0
+              },
+              "subject": [
+                "wine"
+              ]
+            },
+            {
+              "id": "stern",
+              "label": "A stern listener with bushy brows, hands tucked across his chest",
+              "x": 82,
+              "y": 40,
+              "line": {
+                "p": "p075",
+                "s": 3
+              },
+              "subject": [
+                "eyebrows"
+              ]
+            },
+            {
+              "id": "dozing",
+              "label": "Two officials nodding off in their seats",
+              "x": 53,
+              "y": 55,
+              "line": {
+                "p": "p075",
+                "s": 2
+              },
+              "subject": [
+                "asleep"
+              ]
+            }
+          ],
+          "near_misses": [
+            {
+              "p": "p075",
+              "s": 0
+            },
+            {
+              "p": "p081",
+              "s": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "expedition_rules": {
-    "arc_pending": []
+    "arc_pending": [],
+    "puzzle_exclude": [
+      {
+        "p": "p005",
+        "s": 2
+      }
+    ]
   }
 }

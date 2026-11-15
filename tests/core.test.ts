@@ -1,4 +1,5 @@
 import test from "node:test";
+import {doorMode} from "./door-interview.ts";
 import assert from "node:assert/strict";
 import {readFile} from "node:fs/promises";
 import {WorldPackSchema} from "../lib/world-schema.ts";
@@ -2719,9 +2720,9 @@ test("proof race live: expedition beats, readiness, gist and question saving, on
   const store=memoryLiveStore({sessions:[],squads:[],players:[],responses:[]});
   const s=await store.createSession({code:"RACE01",teacherId:null,classId:null,demo:true,worldId:"sleepy-hollow",status:"lobby",paused:false,roundIndex:-1,rounds:[],roundStartedAt:null,hostHash:"x",expiresAt:new Date(Date.now()+36e5).toISOString()});
   const ids:string[]=[];for(const n of ["Ana Ruiz","Ben Cole","Cy Park"]){const r=await server.join(store,s,{nickname:n,studentId:null});ids.push(r.player!.id)}
-  let st=(await server.loadState(store,s.id))!;
-  const act=async(pid:string,kind:string,payload:Record<string,unknown>={},timeSetting="1")=>{st=(await server.loadState(store,s.id))!;const e=await server.playerAct(store,st,pid,{kind:kind as never,payload},{judgeAllowed:async()=>false,timeSetting:timeSetting as never});st=(await server.loadState(store,s.id))!;return e};
-  const host=async(a:Record<string,unknown>)=>{st=(await server.loadState(store,s.id))!;const e=await server.hostAct(store,st,a as never);st=(await server.loadState(store,s.id))!;return e};
+  let st=doorMode((await server.loadState(store,s.id))!);
+  const act=async(pid:string,kind:string,payload:Record<string,unknown>={},timeSetting="1")=>{st=doorMode((await server.loadState(store,s.id))!);const e=await server.playerAct(store,st,pid,{kind:kind as never,payload},{judgeAllowed:async()=>false,timeSetting:timeSetting as never});st=doorMode((await server.loadState(store,s.id))!);return e};
+  const host=async(a:Record<string,unknown>)=>{st=doorMode((await server.loadState(store,s.id))!);const e=await server.hostAct(store,st,a as never);st=doorMode((await server.loadState(store,s.id))!);return e};
   type Pub={beat:string;step:number;total:number;beatMs:number|null;question:{type:string;choices:string[]|null}|null;reveal:{pct:number;lines:string[];words:number[]}|null;board:{top:{name:string;rank:number}[]}|null;pinned:string|null;finish:{podium:{name:string}[];stats:{rows:unknown[];hardest:unknown[]}}|null};
   const pub=()=>server.hostView(st).round as unknown as Pub;
   // Lobby: an avatar from the story's characters, before any round.

@@ -18,12 +18,24 @@ export const liarIndex = (key: string, expeditionId: string, n = 3) => hashSeed(
 export const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? name;
 export const witnessName = (world: WorldPack, id: string) => world.characters.find((c) => c.id === id)?.name ?? id;
 
+// Witnesses in the room (escape rooms): with one question for all three and a lock for each witness, the student meets
+// each witness inside the room, just before that lock's reading, instead of all three at the door. cards[k] >= 0 means
+// witness k has been met (or questioned at the door); -1 or missing means not yet.
+export const inRoom = (iv: Interview | null | undefined) => !!iv?.question && iv.witnesses.every((w) => w.at != null);
+export const isMet = (cards: (number | null | undefined)[], k: number) => (cards[k] ?? -1) >= 0;
+// The witnesses met just before this lock's reading (1-based), in lineup order.
+export const dueAt = (iv: Interview | null | undefined, lock: number) => (inRoom(iv) ? iv!.witnesses.flatMap((w, k) => (w.at === lock ? [k] : [])) : []);
+// The witnesses met before a lock (1-based): those whose lock comes earlier. Chamber 2's recap replays them.
+export const metBefore = (iv: Interview | null | undefined, lock: number) => (inRoom(iv) ? iv!.witnesses.flatMap((w, k) => (w.at! < lock ? [k] : [])) : []);
+// The cards once witness k is met: one shared question, so the card is always 0.
+export const meet = (cards: number[], k: number, n: number) => Array.from({ length: n }, (_, i) => (i === k ? 0 : cards[i] ?? -1));
+
 // What each witness said: the lie for the liar, the truth for the others, with the card the student asked.
 export type Said = { character: string; name: string; short: string; text: string; lied: boolean; gesture: "laughing" | "head-shake" | null; card: string | null };
 export function interviewStatements(world: WorldPack, iv: Interview, liar: number, cards: (number | null | undefined)[] = []): Said[] {
   return iv.witnesses.map((w, k) => {
     const st = k === liar ? w.lie : w.truth, name = witnessName(world, w.character);
-    return { character: w.character, name, short: firstName(name), text: st.text, lied: k === liar, gesture: st.gesture ?? null, card: cards[k] != null ? w.cards[cards[k]!] ?? null : null };
+    return { character: w.character, name, short: firstName(name), text: st.text, lied: k === liar, gesture: st.gesture ?? null, card: isMet(cards, k) ? iv.question ?? w.cards[cards[k]!] ?? null : null };
   });
 }
 // Case Notes: each statement as "Brom said: ...".

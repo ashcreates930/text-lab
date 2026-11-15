@@ -6,7 +6,11 @@ import { getServiceSupabase } from "../supabase.ts";
 import type { LivePlan, LiveState } from "./plan.ts";
 import type { StudentProgress } from "./progress.ts";
 
-export type ClassRow = { id: string; teacher_id: string; name: string | null; class_code: string; world_id: string; grade: number; status: string; preview_enabled: boolean; created_at: string; roles_enabled?: boolean; angles_enabled?: boolean; leaderboard_mode?: "individual" | "squad" | "off"; story_mode_on?: boolean };
+export type ClassRow = { id: string; teacher_id: string; name: string | null; class_code: string; world_id: string; grade: number; status: string; preview_enabled: boolean; created_at: string; roles_enabled?: boolean; angles_enabled?: boolean; leaderboard_mode?: "individual" | "squad" | "off"; story_mode_on?: boolean;
+  // The class's look (escape-room phase 3, migration 202611140001): mature (the default) or classic. Absent before the migration.
+  look?: "mature" | "classic";
+  // The class's room clock (escape-room phase 5, migration 202611150001): off (the default), generous or extra. Absent before the migration.
+  room_clock?: "off" | "generous" | "extra" };
 // Story Mode settings: the class leaderboard (individual unless the teacher picks squads or off) and whether scenes with
 // Story Mode use it (otherwise the Case file clue board). Older rows, before the migration, have neither.
 export const storySettings = (c: Pick<ClassRow, "leaderboard_mode" | "story_mode_on">) => ({ leaderboard: c.leaderboard_mode ?? "individual", storyModeOn: c.story_mode_on !== false });
@@ -32,6 +36,8 @@ export interface ClassroomStore {
   getClass(teacherId: string, classId: string): Promise<ClassRow | null>;
   setPreviewEnabled(classId: string, enabled: boolean): Promise<void>;
   setPersonalSettings(classId: string, settings: { rolesOn?: boolean; anglesOn?: boolean }): Promise<void>;
+  setLook(classId: string, look: "mature" | "classic"): Promise<void>;
+  setRoomClock(classId: string, clock: "off" | "generous" | "extra"): Promise<void>;
   setStorySettings(classId: string, settings: { leaderboard?: "individual" | "squad" | "off"; storyModeOn?: boolean }): Promise<void>;
   // Extra time per student for Story Mode (1.5x, 2x or untimed). Students without a setting have normal time.
   setStudentTime(studentId: string, setting: TimeSettingValue): Promise<void>;
@@ -56,6 +62,9 @@ export interface ClassroomStore {
   listCompletions(studentIds: string[]): Promise<CompletionRow[]>;
   upsertCompletion(row: CompletionRow): Promise<void>;
   listExpeditionResults(studentIds: string[]): Promise<ExpeditionResultRow[]>;
+  // The investigator (escape-room phase 8, migration 202611150002): throws until the table exists.
+  getInvestigator(studentId: string): Promise<{ avatar: unknown; gear: unknown } | null>;
+  setInvestigator(studentId: string, patch: { avatar?: unknown; gear?: string[] }): Promise<void>;
   upsertExpeditionResult(row: ExpeditionResultRow): Promise<void>;
   listExpeditionAssignments(classId: string): Promise<ExpeditionAssignmentRow[]>;
   getMapProgress(studentId: string, worldId: string): Promise<MapProgressRow | null>;
@@ -93,6 +102,8 @@ function supabaseStore(db: SupabaseClient): ClassroomStore {
     },
     async getClass(teacherId, classId) { return must(await db.from("sessions").select("*").eq("id", classId).eq("teacher_id", teacherId).maybeSingle()) as ClassRow | null; },
     async setPreviewEnabled(classId, enabled) { must(await db.from("sessions").update({ preview_enabled: enabled }).eq("id", classId)); },
+    async setLook(classId, look) { must(await db.from("sessions").update({ look }).eq("id", classId)); },
+    async setRoomClock(classId, clock) { must(await db.from("sessions").update({ room_clock: clock }).eq("id", classId)); },
     async setStorySettings(classId, s) { must(await db.from("sessions").update({ ...(s.leaderboard ? { leaderboard_mode: s.leaderboard } : {}), ...(s.storyModeOn !== undefined ? { story_mode_on: s.storyModeOn } : {}) }).eq("id", classId)); },
     async setStudentTime(studentId, setting) { must(await db.from("students").update({ time_setting: setting }).eq("id", studentId)); },
     async setStudentAbsent(studentId, absent, day = absentDay()) {
@@ -124,6 +135,8 @@ function supabaseStore(db: SupabaseClient): ClassroomStore {
     async deleteAssignment(classId, lessonId) { must(await db.from("lesson_assignments").delete().eq("session_id", classId).eq("lesson_id", lessonId)); },
     async listCompletions(studentIds) { if (!studentIds.length) return []; return must(await db.from("lesson_completions").select("student_id,lesson_id,first_try_correct,total,finished_at").in("student_id", studentIds)) as CompletionRow[]; },
     async upsertCompletion(row) { must(await db.from("lesson_completions").upsert(row, { onConflict: "student_id,lesson_id" })); },
+    async getInvestigator(studentId) { return must(await db.from("investigator_profiles").select("avatar,gear").eq("student_id", studentId).maybeSingle()) as { avatar: unknown; gear: unknown } | null; },
+    async setInvestigator(studentId, patch) { must(await db.from("investigator_profiles").upsert({ student_id: studentId, ...patch, updated_at: new Date().toISOString() }, { onConflict: "student_id" })); },
     async listExpeditionResults(studentIds) { if (!studentIds.length) return []; return must(await db.from("expedition_results").select("student_id,world_id,expedition_id,attempt_id,complete,score,first_try,total,solved_case,record,started_at,finished_at,updated_at").in("student_id", studentIds).order("started_at")) as ExpeditionResultRow[]; },
     async upsertExpeditionResult(row) { must(await db.from("expedition_results").upsert({ ...row, updated_at: new Date().toISOString() }, { onConflict: "student_id,expedition_id,attempt_id" })); },
     async getMapProgress(studentId, worldId) { const rows = must(await db.from("map_progress").select("student_id,world_id,secrets").eq("student_id", studentId).eq("world_id", worldId).limit(1)) as MapProgressRow[]; return rows[0] ?? null; },
@@ -142,7 +155,7 @@ function supabaseStore(db: SupabaseClient): ClassroomStore {
   };
 }
 
-type Memory = { teachers: { id: string; auth: string }[]; classes: ClassRow[]; students: (StudentRow & { hash: string })[]; progress?: Record<string, StudentProgress>; assignments: AssignmentRow[]; completions: CompletionRow[]; analyses: AnalysisRow[]; responses: ResponseRow[]; expeditionResults?: ExpeditionResultRow[]; expeditionAssignments?: ExpeditionAssignmentRow[] ; mapProgress?: MapProgressRow[] };
+type Memory = { investigators?: Record<string, { avatar: unknown; gear: unknown }>; teachers: { id: string; auth: string }[]; classes: ClassRow[]; students: (StudentRow & { hash: string })[]; progress?: Record<string, StudentProgress>; assignments: AssignmentRow[]; completions: CompletionRow[]; analyses: AnalysisRow[]; responses: ResponseRow[]; expeditionResults?: ExpeditionResultRow[]; expeditionAssignments?: ExpeditionAssignmentRow[] ; mapProgress?: MapProgressRow[] };
 const g = globalThis as unknown as { __ittMemory?: Memory; __ittAbsences?: { studentId: string; day: string }[] };
 function memoryStore(): ClassroomStore {
   const m = (g.__ittMemory ??= { teachers: [], classes: [], students: [], assignments: [], completions: [], analyses: [], responses: [] });
@@ -151,7 +164,9 @@ function memoryStore(): ClassroomStore {
   return {
     async ensureTeacher(auth) { let t = m.teachers.find((x) => x.auth === auth); if (!t) { t = { id: id(), auth }; m.teachers.push(t); } return { id: t.id }; },
     async listClasses(teacherId) { return m.classes.filter((c) => c.teacher_id === teacherId).reverse(); },
-    async createClass(teacherId, input) { const row: ClassRow = { id: id(), teacher_id: teacherId, name: input.name, class_code: newClassCode(), world_id: input.worldId, grade: input.grade, status: "active", preview_enabled: false, created_at: now() }; m.classes.push(row); return row; },
+    async createClass(teacherId, input) { const row: ClassRow = { id: id(), teacher_id: teacherId, name: input.name, class_code: newClassCode(), world_id: input.worldId, grade: input.grade, status: "active", preview_enabled: false, created_at: now(), look: "mature", room_clock: "off" }; m.classes.push(row); return row; },
+    async setLook(classId, look) { const c = m.classes.find((x) => x.id === classId); if (c) c.look = look; },
+    async setRoomClock(classId, clock) { const c = m.classes.find((x) => x.id === classId); if (c) c.room_clock = clock; },
     async getClass(teacherId, classId) { return m.classes.find((c) => c.id === classId && c.teacher_id === teacherId) ?? null; },
     async setPreviewEnabled(classId, enabled) { const c = m.classes.find((x) => x.id === classId); if (c) c.preview_enabled = enabled; },
     async setStorySettings(classId, s) { const c = m.classes.find((x) => x.id === classId); if (!c) return; if (s.leaderboard) c.leaderboard_mode = s.leaderboard; if (s.storyModeOn !== undefined) c.story_mode_on = s.storyModeOn; },
@@ -174,6 +189,8 @@ function memoryStore(): ClassroomStore {
     async listCompletions(studentIds) { return m.completions.filter((c) => studentIds.includes(c.student_id)); },
     async upsertCompletion(row) { m.completions = m.completions.filter((c) => !(c.student_id === row.student_id && c.lesson_id === row.lesson_id)); m.completions.push(row); },
     async listExpeditionResults(studentIds) { return (m.expeditionResults ?? []).filter((r) => studentIds.includes(r.student_id)); },
+    async getInvestigator(studentId) { return (m.investigators ??= {})[studentId] ?? null; },
+    async setInvestigator(studentId, patch) { const all = (m.investigators ??= {}); all[studentId] = { ...(all[studentId] ?? { avatar: null, gear: [] }), ...patch }; },
     async upsertExpeditionResult(row) { const list = (m.expeditionResults ??= []); const k = list.findIndex((r) => r.student_id === row.student_id && r.expedition_id === row.expedition_id && r.attempt_id === row.attempt_id); const next = { ...row, updated_at: now() }; if (k >= 0) list[k] = next; else list.push(next); },
     async getMapProgress(studentId, worldId) { return (m.mapProgress ?? []).find((r) => r.student_id === studentId && r.world_id === worldId) ?? null; },
     async upsertMapProgress(row) { const list = (m.mapProgress ??= []); const k = list.findIndex((r) => r.student_id === row.student_id && r.world_id === row.world_id); if (k >= 0) list[k] = row; else list.push(row); },

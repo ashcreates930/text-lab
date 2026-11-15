@@ -67,7 +67,7 @@ test("Name the Liar on the same lineup: name the suspect, then the sentence; the
 test("live and the lobby: the host board spotlights the witness being questioned; the investigator pick uses the lineup", () => {
   const host = src("app/live/interview-live.tsx");
   assert.match(host, /<Lineup interactive=\{false\}[^>]*index=\{iv\.witness\?\?0\}/, "the host board: the stage with the questioned witness in the spotlight");
-  assert.match(host, /check:iv\.said\[i\]\?"Asked":null/);
+  assert.match(host, /check:iv\.said\[i\]\?\(iv\.inRoom\?"Met":"Asked"\):null/);
   assert.match(host, /onClick=\{\(\)=>act\("interview_vote",\{card:i\}\)\}/, "phones: the cards and the vote");
   const lobby = src("app/live/race-live.tsx");
   // A slow refresh that started before a tap can't overwrite the tap's answer (the pick flipping back to "Play as").
@@ -97,4 +97,18 @@ test("the Interview speed-up: the caption shows at once, Skip stops the recordin
   assert.match(list, /^\d+ lines\.$/m);
   for (const e of sh.expeditions!) for (const w of e.interview?.witnesses ?? []) for (const t of [w.truth.text, w.lie.text, w.caught])
     if ((t.match(/[.!?]["”]?(?=\s|$)/g) ?? []).length > 1) assert.ok(list.includes(t.replace(/\|/g, "\|")), `listed: ${t.slice(0, 40)}`);
+});
+
+test("the carousel turns the way the spotlight moved, wrapping round; a jump or the first view doesn't slide", async () => {
+  const { turnOf } = await import("../lib/lineup.ts");
+  assert.equal(turnOf(null, 0, 3), 0, "first view");
+  assert.equal(turnOf(0, 1, 3), 1, "the one on the right steps in");
+  assert.equal(turnOf(1, 0, 3), -1);
+  assert.equal(turnOf(2, 0, 3), 1, "wraps: from the last to the first is still a step right");
+  assert.equal(turnOf(0, 2, 3), -1);
+  assert.equal(turnOf(0, 2, 5), 0, "a jump of two");
+  assert.equal(turnOf(0, 0, 3), 0); assert.equal(turnOf(0, 1, 1), 0);
+  const ui = readFileSync("app/lineup.tsx", "utf8");
+  assert.match(ui, /setTurn\(reducedMotion\(\)\?0:turnOf/, "nothing slides under reduced motion");
+  assert.match(readFileSync("app/globals.css", "utf8"), /prefers-reduced-motion:reduce\)\{\.carousel-from-right/);
 });

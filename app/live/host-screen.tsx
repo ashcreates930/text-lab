@@ -30,7 +30,7 @@ const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|nul
  return <Shell>
   <header className="flex flex-wrap items-center justify-between gap-4">
    <div><p className="text-[16px] font-semibold uppercase tracking-[.14em] text-muted">Live round · {s.title}{s.demo?" · Demo room":""}</p>
-    <h1 className="mt-1 text-[clamp(28px,3vw,48px)] font-bold leading-tight outline-none" tabIndex={-1}>{s.status==="lobby"?"Join the case":s.status==="ended"?"Case closed":round?roundTitle(round.type):"Next round"}</h1></div>
+    <h1 className="mt-1 text-[clamp(28px,3vw,48px)] font-bold leading-tight outline-none" tabIndex={-1}>{s.status==="lobby"?"Join the case":s.status==="ended"?((round as {chamber?:number}|null)?.chamber===1?"Chamber 1 escaped: the inner door is open":"Case closed"):round?roundTitle(round.type):"Next round"}</h1></div>
    <div className="flex flex-wrap items-center gap-2">
     <Counter label="Players" value={state.counters.players}/>
     {/* Proof Race plays without squads unless the teacher turns them on, so the squad counter hides. */}
@@ -65,7 +65,7 @@ const screenKey=(v:{session:{status:string;roundIndex:number};round:unknown}|nul
 function Shell({children}:{children:React.ReactNode}){
  return <main className="case-ui case-ui-dark min-h-screen bg-deep px-5 py-6 md:px-10 md:py-8">{children}</main>;
 }
-const roundTitle=(t:string)=>t==="race"?"Proof Race":t==="story"?"Story Mode":t==="lie"?"Spot the Lie":t==="verdict"?"Verdict Vote":"Objection!";
+const roundTitle=(t:string)=>t==="race"?"Escape room":t==="story"?"Story Mode":t==="lie"?"Spot the Lie":t==="verdict"?"Verdict Vote":"Objection!";
 function Counter({label,value}:{label:string;value:number|string}){
  return <div className="rounded-2xl bg-panel px-4 py-2 text-center" aria-live="polite"><p className="text-[28px] font-bold leading-none tabular-nums">{value}</p><p className="mt-1 text-[14px] text-muted">{label}</p></div>;
 }

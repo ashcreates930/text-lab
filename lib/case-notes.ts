@@ -12,7 +12,9 @@ import type { Interview, WorldPack } from "./world-schema.ts";
 
 // One chunk's result, from the solo race or from a live game's rows.
 // version: the question version this student saw (adaptive challenge, lib/pacing.ts); standard when absent.
-export type ChunkResult = { index: number; answer: Answer | null; correct: boolean; late: boolean; gist: number | null; typed: string | null; unknown: string[]; version?: Version; bank?: number };
+export type ChunkResult = { index: number; answer: Answer | null; correct: boolean; late: boolean; gist: number | null; typed: string | null; unknown: string[]; version?: Version; bank?: number;
+  // The clue tier asked for on this lock (lib/clues.ts), 0 for none.
+  clue?: number };
 const bestOf = (o?: { best?: boolean }[]) => (o ?? []).findIndex((x) => !!x.best);
 export const gistRight = (chunk: RaceChunk, gist: number | null) => gist !== null && !!chunk.chunk.gist.options[gist]?.best;
 
@@ -70,6 +72,8 @@ export type CaseNote = {
   chunk: number; type: string; question: string; answer: string; proof: string; rightFirstTry: boolean; fixed: boolean | null;
   gistPick: string | null; gistRight: boolean; typedQuestion: string | null; unknownWords: string[]; correctProof: string; standards: string[]; note: string;
   version?: Version; bank?: number;
+  // The clue tier asked for (lib/clues.ts): 0 or missing for none. Mastery counts a proof with tier 2 or 3 as not yet.
+  clue?: number;
   // The question's format (lib/formats.ts), for the mastery rule of two formats.
   format?: string;
   // A teacher's override of a written answer's score (app/api/teacher/classes/[id]/written-override).
@@ -111,7 +115,7 @@ export function caseNotes(chunks: RaceChunk[], results: ChunkResult[], refresher
     return {
       chunk: c.index + 1, type: TYPE_INFO[q.type].name, question: q.prompt, answer: t.answer, proof: t.proof, rightFirstTry: !!r?.correct,
       fixed: k >= 0 ? !!refresher.fixed[k] : null, gistPick: r?.gist != null ? c.chunk.gist.options[r.gist]?.text ?? null : null, gistRight: gistRight(c, r?.gist ?? null),
-      typedQuestion: r?.typed ?? null, unknownWords: r?.unknown ?? [], correctProof: correctProofText(q, c), standards: q.standards, note: notes[c.index] ?? "", version, bank: r?.bank, format: formatOf(q),
+      typedQuestion: r?.typed ?? null, unknownWords: r?.unknown ?? [], correctProof: correctProofText(q, c), standards: q.standards, note: notes[c.index] ?? "", version, bank: r?.bank, format: formatOf(q), clue: r?.clue ?? 0,
     };
   });
 }
@@ -193,7 +197,7 @@ export function caseNotesPdf(student: string, story: string, expedition: string,
     w.space(10);
   }
   for (const n of notes) {
-    w.text(`Chunk ${n.chunk} · ${n.type} · ${n.rightFirstTry ? "Proved on the one try" : n.fixed ? "Fixed in the Refresher" : n.fixed === false ? "Not fixed yet" : "Missed"}`, 12, true);
+    w.text(`Chunk ${n.chunk} · ${n.type} · ${n.rightFirstTry ? "Proved on the one try" : n.fixed ? "Fixed in the Refresher" : n.fixed === false ? "Not fixed yet" : "Missed"}${n.clue ? ` · Clue ${n.clue} of 3` : ""}`, 12, true);
     w.text(`Question: ${n.question}`); w.text(`My answer: ${n.answer}${n.proof ? ` · My proof: ${n.proof}` : ""}`);
     w.text(`The proof: ${n.correctProof}`);
     if (n.gistPick) w.text(`Gist pick: ${n.gistPick} (${n.gistRight ? "best summary" : "not the best"})`);

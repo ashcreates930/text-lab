@@ -26,6 +26,20 @@ export const PRINT_SCOPE: Partial<Record<ColorToken, string>> = {
   ink: "#111111", muted: "#333333", faint: "#333333", highlight: "#7A3600",
 };
 
+// The mature look (escape-room phase 3), the default for grades 6 to 12: the same roles in quieter colors, less
+// rounding and serif headings. "Classic" is the original look, a teacher's choice per class (or a device's in the demo).
+// The reading card keeps its light tokens in both looks.
+export const MATURE_SCOPE: Partial<Record<ColorToken, string>> = {stage: "#12151E", deep: "#0B0D14", panel: "#232836", "panel-2": "#1A1E29", edge: "#3A4152", ink: "#FFFFFF", muted: "#C8CDD9", faint: "#8E96AA", primary: "#E8853A", "on-primary": "#1A0F00", "primary-shadow": "#8C4A14", highlight: "#F2AE6B", "primary-soft": "#352A26", success: "#47CFB2", "on-success": "#062B24", "success-shadow": "#1E8A75", "success-soft": "#163634", notyet: "#F2879A", "on-notyet": "#3A0614", "notyet-shadow": "#A8475B", "notyet-soft": "#3A2130", gold: "#E8C15A", "on-gold": "#2B1F00", "gold-shadow": "#9C7A1E", "gold-soft": "#352F1C", violet: "#9A93E0", "on-violet": "#120A3A", "violet-shadow": "#5A53A8", "violet-soft": "#2A2C47"};
+export const MATURE_RADII = { row: 8, button: 10, card: 12 } as const;
+export type Look = "mature" | "classic";
+// The look a screen uses: a class's setting wins (teachers choose for their class), then this device's choice, then
+// mature for grades 6 to 12 (every class here), classic below that.
+export function lookFor(o: { classLook?: Look | null; deviceLook?: Look | null; grade?: number | null }): Look {
+  if (o.classLook) return o.classLook;
+  if (o.deviceLook) return o.deviceLook;
+  return o.grade != null && o.grade < 6 ? "classic" : "mature";
+}
+
 export const FONTS = { display: "Fredoka", ui: "Nunito", story: "Literata" } as const;
 export const RADII = { row: 12, button: 16, card: 22, pill: 999 } as const;
 

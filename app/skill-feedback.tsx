@@ -63,7 +63,7 @@ export function SkillPage({skills,history,expeditionTitle,onBack}:{skills:SkillL
   <DoNow text={DO_NOW.myskills}/>
   <h1 id="myskills-h" tabIndex={-1} className="text-[30px] leading-tight outline-none">My skills</h1>
   <p className="text-[15px] text-muted">Only you and your teacher see your levels. Levels count first tries only; Refresher fixes are practice.</p>
-  {!skills.length&&<p className="rounded-card bg-panel p-4 text-[16px]">Finish an expedition and your skills will appear here.</p>}
+  {!skills.length&&<p className="rounded-card bg-panel p-4 text-[16px]">Escape a room and your skills will appear here.</p>}
   <ul className="grid gap-3">{skills.map(s=><li key={s.family} className="rounded-card bg-panel p-4">
    <button type="button" aria-expanded={open===s.family} onClick={()=>setOpen(o=>o===s.family?null:s.family)} className="flex min-h-11 w-full flex-wrap items-center justify-between gap-2 text-left">
     <span className="font-display text-[20px] font-bold">{s.name}{s.level==="Mastered"&&<Sparkles size={18} className="ml-1 inline text-gold" aria-label="badge earned"/>}</span><SkillTag s={s}/></button>

@@ -1,6 +1,7 @@
 // Expedition phase 5: the Interview and Name the Liar, and the 3D witness stage. Liar randomization (exactly one liar,
 // stable per student, varied across students), the win rule, Case Notes and the Refresher, the content checks, live
 // voting, the private lock-in and the reveal, the fallback choice, and Brom's model (no finger tracks).
+import { doorMode } from "./door-interview.ts";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
@@ -71,7 +72,7 @@ test("Case Notes: each statement as \"Brom said: ...\", the verdict, and the PDF
   const liar = 2, w = iv.witnesses[liar];
   const note = interviewNote(sh, iv, liar, [0, 1, 0], { liar: iv.witnesses[0].character, line: w.lie.lines[0] });
   assert.deepEqual(note.said.map(saidLine), [`Brom said: "${iv.witnesses[0].truth.text}"`, `Hans said: "${iv.witnesses[1].truth.text}"`, `Katrina said: "${w.lie.text}"`]);
-  assert.equal(note.said[1].card, iv.witnesses[1].cards[1]);
+  assert.equal(note.said[1].card, iv.question ?? iv.witnesses[1].cards[1]);
   assert.equal(note.solved, false); assert.equal(note.pick, "Brom Bones"); assert.equal(note.liar, "Katrina Van Tassel");
   const pdf = Buffer.from(caseNotesPdf("Ana", sh.title, exp.title, [], note).output("arraybuffer")).toString("latin1");
   assert.match(pdf, /The Interview/); assert.match(pdf, /Brom said:/); assert.match(pdf, /Name the Liar/);
@@ -92,9 +93,9 @@ test("live: the class votes on each card, witnesses answer on the board, every p
   const store = memoryLiveStore({ sessions: [], squads: [], players: [], responses: [] });
   const s = await store.createSession({ code: "LIAR01", teacherId: null, classId: null, demo: true, worldId: "sleepy-hollow", status: "lobby", paused: false, roundIndex: -1, rounds: [], roundStartedAt: null, hostHash: "x", expiresAt: new Date(Date.now() + 36e5).toISOString() });
   const ids: string[] = []; for (const n of ["Ana Ruiz", "Ben Cole", "Cy Park"]) { const r = await server.join(store, s, { nickname: n, studentId: null }); ids.push(r.player!.id); }
-  let st = (await server.loadState(store, s.id))!;
-  const act = async (pid: string, kind: string, payload: Record<string, unknown> = {}) => { st = (await server.loadState(store, s.id))!; const e = await server.playerAct(store, st, pid, { kind: kind as never, payload }, { judgeAllowed: async () => false, timeSetting: "1" as never }); st = (await server.loadState(store, s.id))!; return e; };
-  const host = async (a: Record<string, unknown>) => { st = (await server.loadState(store, s.id))!; const e = await server.hostAct(store, st, a as never); st = (await server.loadState(store, s.id))!; return e; };
+  let st = doorMode((await server.loadState(store, s.id))!);
+  const act = async (pid: string, kind: string, payload: Record<string, unknown> = {}) => { st = doorMode((await server.loadState(store, s.id))!); const e = await server.playerAct(store, st, pid, { kind: kind as never, payload }, { judgeAllowed: async () => false, timeSetting: "1" as never }); st = doorMode((await server.loadState(store, s.id))!); return e; };
+  const host = async (a: Record<string, unknown>) => { st = doorMode((await server.loadState(store, s.id))!); const e = await server.hostAct(store, st, a as never); st = doorMode((await server.loadState(store, s.id))!); return e; };
   type Iv = { witness: number | null; votes: number[][]; cards: number[]; said: { character: string; text: string; card: string }[]; callPassages: unknown[] | null; verdict: { liar: string; breakdown: { named: { count: number }[]; solved: number; total: number } } | null };
   const pub = () => server.hostView(st).round as unknown as { beat: string; step: number; beatMs: number | null; interview: Iv };
   assert.equal(await host({ action: "round.start", type: "race", settings: { expeditionId: exp.id } }), null);
@@ -103,7 +104,7 @@ test("live: the class votes on each card, witnesses answer on the board, every p
   assert.equal(liar, liarIndex(s.id, exp.id), "one liar per game, saved with the round");
   for (let k = 0; k < 3; k++) {
     assert.deepEqual([pub().beat, pub().step, pub().interview.witness, pub().beatMs], ["vote", k, k, 20000]);
-    assert.equal(pub().interview.said.length, k, "nothing said yet by this witness");
+    assert.equal(pub().interview.said.filter(Boolean).length, k, "nothing said yet by this witness");
     assert.equal(await act(ids[0], "interview_vote", { card: 1 }), null); assert.equal(await act(ids[1], "interview_vote", { card: 1 }), null); assert.equal(await act(ids[2], "interview_vote", { card: 0 }), null);
     assert.match((await act(ids[0], "interview_vote", { card: 0 })) ?? "", /already voted/);
     assert.deepEqual(pub().interview.votes[k], [1, 2]); assert.equal(server.hostView(st).race!.answered, 3);
