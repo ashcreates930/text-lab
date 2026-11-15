@@ -40,7 +40,11 @@ export function Classroom({onBack}:{onBack:()=>void}){
  // (focusScreenTop waits for the heading when the class is still loading).
  const shownScreen=useRef("");
  useLayoutEffect(()=>{const screen=`${openClass}|${presenting}`;if(shownScreen.current===screen)return;const first=shownScreen.current==="";shownScreen.current=screen;if(!first)focusScreenTop()},[openClass,presenting]);
- const load=useCallback(async()=>{const r=await teacherFetch("/api/teacher/classes");if(r.status===401||r.status===403){setState("signin");setMessage(r.status===403?r.body.error:"");return}if(!r.ok){setState("unavailable");setMessage(r.body.error||"Classes are not available right now.");return}setEmail(r.body.email);setClasses(r.body.classes);setState("ready")},[]);
+ const load=useCallback(async()=>{
+  // Signed out (Supabase is set up, no session, no dev teacher): show sign-in without asking for classes, so the console
+  // stays clean (the request would only answer 401).
+  const sb=getBrowserSupabase();if(sb){const session=(await sb.auth.getSession()).data.session;let dev="";try{dev=sessionStorage.getItem(DEV_KEY)??"";if(!dev)dev=new URLSearchParams(window.location.search).get("devTeacher")??""}catch{}if(!session&&!dev){setState("signin");setMessage("");return}}
+  const r=await teacherFetch("/api/teacher/classes");if(r.status===401||r.status===403){setState("signin");setMessage(r.status===403?r.body.error:"");return}if(!r.ok){setState("unavailable");setMessage(r.body.error||"Classes are not available right now.");return}setEmail(r.body.email);setClasses(r.body.classes);setState("ready")},[]);
  useEffect(()=>{try{const dev=new URLSearchParams(window.location.search).get("devTeacher");if(dev)sessionStorage.setItem(DEV_KEY,dev)}catch{}load()},[load]);
  async function signOut(){await getBrowserSupabase()?.auth.signOut();try{sessionStorage.removeItem(DEV_KEY)}catch{}setState("signin");setClasses([])}
  if(presenting&&openClass)return <LivePresenter classId={openClass} onExit={()=>setPresenting("")}/>;
