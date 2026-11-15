@@ -273,3 +273,12 @@ html[data-look="mature"][data-contrast="high"]{--color-muted:#FFFFFF;--color-fai
 .carousel-side-from-right{animation:carousel-side-from-right .42s cubic-bezier(.2,.8,.2,1) both}
 .carousel-side-from-left{animation:carousel-side-from-left .42s cubic-bezier(.2,.8,.2,1) both}
 @media (prefers-reduced-motion:reduce){.carousel-from-right,.carousel-from-left,.carousel-side-from-right,.carousel-side-from-left{animation:none}}
+/* The home page's escape moment (app/escape-peek.tsx): a tap ring on the proof line, then the door leaf swings open. */
+@keyframes peek-tap{0%{transform:scale(.4);opacity:0}40%{opacity:1}100%{transform:scale(1.6);opacity:0}}
+@keyframes peek-leaf{from{transform:rotateY(0)}to{transform:rotateY(-78deg)}}
+.escape-peek .peek-tap{animation:peek-tap 1s ease-out infinite}
+.escape-peek .peek-leaf{animation:peek-leaf 1.1s .25s cubic-bezier(.3,.7,.3,1) forwards}
+@media (prefers-reduced-motion:reduce){.escape-peek .peek-tap,.escape-peek .peek-leaf{animation:none}}
+/* The home page (app/landing.tsx): the mature look with flat buttons (no chunky 3D shadow). */
+.home-page .case-primary,.home-page .case-secondary{box-shadow:none}
+.home-page .case-primary:hover{filter:brightness(1.06)}

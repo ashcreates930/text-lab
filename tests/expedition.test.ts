@@ -58,23 +58,27 @@ test("the launch screen: the role card, Start Proof Race and Join a live game, n
 
 test("the home page: one primary button per audience, a strip of the three moments of play, three steps", () => {
   const s = src("app/landing.tsx");
-  assert.match(s, /<SneakPeek\/>/);
+  // The hero (home refresh, 2026-11-15): the poster, whole, with the escape moment beside it; the mature look always.
+  assert.match(s, /<EscapePeek /); assert.match(s, /\/home\/poster-escape-640\.webp/); assert.ok(existsSync("public/home/poster-escape.jpg"));
+  assert.match(s, /root\.dataset\.look = "mature"/);
+  assert.match(s, />For English classrooms</); assert.match(s, /A reading escape room for grades 6 to 12\. Every lock opens with a line from the text\./);
+  assert.match(s, /Each chamber takes about 20 minutes, on any device\. No account needed\./); assert.match(s, /Sleepy Hollow is open now\. Two more stories are on the way\./);
+  assert.doesNotMatch(s, /Try a case|Play the demo|bg-violet/);
+  assert.doesNotMatch(src("app/escape-peek.tsx"), /\p{Extended_Pictographic}/u, "line icons, no emoji");
   assert.doesNotMatch(s, /empty-schoolhouse\.png|Scene solved/);
   for (const t of ["Catch the lie", "Holograms", "More ways to prove", "Play live with your class"]) assert.ok(!s.includes(t), `no old mode card: ${t}`);
-  assert.match(s, />Play the demo <ArrowRight/); assert.match(s, />I'm a teacher <ArrowRight/); assert.match(s, /Have a class code\? Join here\./);
-  for (const f of ["moment-map", "moment-lineup", "moment-race"]) { assert.ok(s.includes(`/home/${f}.jpg`), f); assert.ok(existsSync(`public/home/${f}.jpg`), `${f}: a real screenshot in public/home`); }
-  for (const t of ["Enter a room", "Question the witnesses", "Prove it with the text"]) assert.ok(s.includes(`"${t}"`), t);
+  assert.match(s, />Try a room <ArrowRight/); assert.match(s, />Teacher sign in <ArrowRight/); assert.match(s, /Have a class code\? Join here\./);
+  for (const f of ["moment-map", "moment-puzzle", "moment-exit"]) { assert.ok(s.includes(`/home/${f}.jpg`), f); assert.ok(existsSync(`public/home/${f}.jpg`), `${f}: a real screenshot in public/home`); }
+  for (const t of ["Enter a room on the map", "Open each lock with a line from the text", "Name the liar to escape"]) assert.ok(s.includes(`"${t}"`), t);
   assert.ok(!s.includes('"Bonus round"'), "How a case works: three steps only");
   assert.match(s, /Aligned to Florida B\.E\.S\.T\. ELA/); assert.match(s, /teacher_end_unit/, "the sample class report"); assert.match(s, /onPricing/);
   for (const t of ["Students", "Teachers", "Families", "Schools and districts"]) assert.ok(s.includes(`"${t}"`), t);
   assert.doesNotMatch(s, /Your Turn|mission|Spot the Lie/i);
-  // The sneak peek: a loop that stops on the Proof! moment under reduced motion, and is out of the tab order.
-  const p = src("app/sneak-peek.tsx");
-  assert.match(p, /if\(reduced\)\{setBeat\(2\);return\}/);
-  assert.match(p, /aria-hidden inert/);
-  assert.match(p, /from "\.\/game-ui"/);
+  // The escape moment: a loop that holds one still frame under reduced motion; one description, the rest hidden.
+  const p = src("app/escape-peek.tsx");
+  assert.match(p, /prefers-reduced-motion: reduce/); assert.match(p, /if\(mq\.matches\)setPhase\(1\)/); assert.match(p, /<div aria-hidden/);
 });
 
 test("no em dashes in the new student-facing files", () => {
-  for (const f of ["app/launch-screen.tsx", "app/landing.tsx", "app/sneak-peek.tsx"]) assert.doesNotMatch(src(f), /—/, f);
+  for (const f of ["app/launch-screen.tsx", "app/landing.tsx", "app/escape-peek.tsx"]) assert.doesNotMatch(src(f), /—/, f);
 });
