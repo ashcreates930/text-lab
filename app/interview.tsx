@@ -3,6 +3,8 @@
 // dark stage (3D when the story has a model for them, otherwise their portrait), the student picks one of two question
 // cards and the witness answers in their recorded voice, captions always on. After the race the student names the
 // liar and taps the line that disproves the lie; a win needs both, on the first try.
+import {HINTS,WITNESS_SAVED} from "@/lib/onboarding";
+import {Coach} from "./practice-round";
 import {useEffect,useLayoutEffect,useRef,useState} from "react";
 import {ArrowRight,Box,NotebookPen,RotateCcw,SkipForward,Volume2} from "lucide-react";
 import type {Interview,WorldPack} from "@/lib/world-schema";
@@ -96,41 +98,54 @@ export function InterviewScreen({world,expeditionId,interview,liar,onDone,saved}
 // ---------- A witness in the room ----------
 // Escape rooms: each witness steps in just before the lock whose reading checks them. The student asks the room's one
 // question, the witness answers in their recorded voice (captions always on), and the statement goes into the Case File.
-export function WitnessVisit({world,expeditionId,interview,liar,index,lock,met,onDone}:{world:WorldPack;expeditionId:string;interview:Interview;liar:number;index:number;lock:number;met:number;onDone:()=>void}){
+// Student testing (2026-11-15): the question is one obvious orange button ("Tap to ask"), the instructions are one line in
+// the top bar, a first-time hint points at the button, and once the answer has played the screen says where it went
+// (the Case File) and offers one clear way on ("Continue to lock n").
+export function WitnessVisit({world,expeditionId,interview,liar,index,lock,met,onDone,hint=false,onAsked}:{world:WorldPack;expeditionId:string;interview:Interview;liar:number;index:number;lock:number;met:number;onDone:()=>void;hint?:boolean;onAsked?:()=>void}){
  const w=interview.witnesses[index],name=witnessName(world,w.character),st=index===liar?w.lie:w.truth,n=interview.witnesses.length;
  const src=interviewAudio(world.id,expeditionId,w.character,index===liar?"lie":"truth"),voice=useVoice();
- const [asked,setAsked]=useState(false),[gesture,setGesture]=useState<{clip:"laughing"|"head-shake";key:number}|null>(null),[holo,setHolo]=useState(false);
+ const [asked,setAsked]=useState(false),[heard,setHeard]=useState(false),[gesture,setGesture]=useState<{clip:"laughing"|"head-shake";key:number}|null>(null),[holo,setHolo]=useState(false);
  const answerRef=useRef<HTMLDivElement|null>(null);
  useLayoutEffect(()=>{focusScreenTop()},[]);
- function speak(){if(st.gesture)setGesture({clip:st.gesture,key:Date.now()});voice.play(src)}
+ function speak(){if(st.gesture)setGesture({clip:st.gesture,key:Date.now()});voice.play(src,()=>setHeard(true))}
  // Asking keeps the student on this screen: focus moves to the answer, with no scroll jump.
- function ask(){setAsked(true);speak();setTimeout(()=>answerRef.current?.focus({preventScroll:true}),0)}
+ function ask(){setAsked(true);onAsked?.();speak();setTimeout(()=>answerRef.current?.focus({preventScroll:true}),0)}
+ // If the recording can't play (no sound on this device), the caption is the answer: move on after a moment.
+ useEffect(()=>{if(!asked||heard)return;const t=setTimeout(()=>{if(voice.playing!==src)setHeard(true)},1500);return()=>clearTimeout(t)},[asked,heard,voice.playing,src]);
  function done(){voice.stop();setGesture(null);onDone()}
  const speaking=voice.playing===src,ch=characterOf(world,w.character);
  if(holo&&ch)return <HologramView character={ch} worldId={world.id} line={st.text} audioSrc={src} sandboxId="interview" title={`A witness · ${name}`} onClose={()=>{setHolo(false);setTimeout(()=>focusScreenTop(),0)}}/>;
  return <section aria-labelledby="wv-h" className="flex flex-col gap-3">
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Lock {lock} · Witness {met} of {n}</p>
   <h1 id="wv-h" className="text-[28px] leading-tight outline-none">{name} steps in</h1>
-  <p className="text-[16px] text-muted">One of the three witnesses in this room is lying. At the exit door you'll name the liar and prove it with a line from the story.</p>
   <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-start">
    <WitnessStage world={world} character={w.character} speaking={speaking} level={voice.level} gesture={gesture}/>
    <div className="flex flex-col gap-3">
-    {!asked?<button type="button" onClick={ask} className="case-answer min-h-[64px] justify-start rounded-[18px] bg-panel px-4 text-left text-[17px] font-bold">Ask {firstName(name)}: {interview.question}</button>
+    {!asked?<div>{hint&&<Coach text={HINTS.witness}/>}<AskButton question={interview.question??""} onAsk={ask}/></div>
      :<div ref={answerRef} tabIndex={-1} className="flex flex-col gap-3 outline-none">
       <p className="rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold">You asked {firstName(name)}: {interview.question}</p>
       <Caption name={name} text={st.text}/>
       <div className="flex flex-wrap gap-2">
-       {speaking?<button type="button" onClick={()=>{voice.stop();setGesture(null)}} className="case-secondary !min-h-11"><SkipForward size={18} aria-hidden/>Skip<span className="sr-only"> the recording</span></button>
+       {speaking?<button type="button" onClick={()=>{voice.stop();setGesture(null);setHeard(true)}} className="case-secondary !min-h-11"><SkipForward size={18} aria-hidden/>Skip<span className="sr-only"> the recording</span></button>
         :<button type="button" onClick={speak} className="case-secondary !min-h-11"><RotateCcw size={18} aria-hidden/>Hear it again</button>}
        {speaking&&<span className="inline-flex min-h-11 items-center gap-1.5 text-[15px] font-bold text-muted" aria-hidden><Volume2 size={18}/>Speaking…</span>}
        <button type="button" onClick={()=>{voice.stop();setHolo(true)}} className="case-secondary !min-h-11"><Box size={18} aria-hidden/>Hologram</button>
       </div>
-      <p className="flex items-center gap-2 text-[15px] font-bold text-muted"><NotebookPen size={16} aria-hidden/>Saved to your Case File.</p>
-      <button type="button" onClick={done} className="case-primary min-h-[56px] w-full justify-center text-[18px]">To lock {lock} <ArrowRight size={18} aria-hidden/></button>
+      {heard&&<><p role="status" className="flex items-start gap-2 rounded-card bg-panel px-4 py-3 text-[16px] font-bold text-ink"><NotebookPen size={18} className="mt-0.5 shrink-0 text-highlight" aria-hidden/>{WITNESS_SAVED}</p>
+      <button type="button" onClick={done} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Continue to lock {lock} <ArrowRight size={18} aria-hidden/></button></>}
      </div>}
    </div>
   </div>
  </section>;
+}
+
+// The witness question as one obvious button: full width, orange, the question, then "Tap to ask" with an arrow. Shared by
+// the solo screen, the live phones and the practice round.
+export function AskButton({question,onAsk,disabled}:{question:string;onAsk:()=>void;disabled?:boolean}){
+ return <button type="button" onClick={onAsk} disabled={disabled} className="case-primary min-h-[76px] w-full flex-col !items-stretch !justify-center gap-1 !px-5 !py-4 text-left">
+  <span className="text-[17px] font-bold leading-snug">{question}</span>
+  <span className="inline-flex items-center gap-1.5 text-[15px] font-extrabold">Tap to ask <ArrowRight size={18} aria-hidden/></span>
+ </button>;
 }
 
 // ---------- Name the Liar ----------
@@ -182,7 +197,7 @@ export function LiarVerdict({world,expeditionId,interview,liar,solved,named,pass
   {solved
    ?<div className="flex flex-col items-center gap-3"><p aria-hidden className="float-up font-display text-[56px] font-bold leading-none text-gold">+{LIAR_POINTS.toLocaleString()}</p>
     <div className="moment-pop w-full rounded-[24px] bg-gold p-5 text-on-gold shadow-[0_8px_0_var(--color-gold-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">Name the Liar</p><h1 id="lv-h" className="mt-1 text-[40px] leading-none outline-none">Case solved<span className="sr-only">. Plus {LIAR_POINTS} points.</span></h1><p className="mt-2 text-[17px] font-bold">{name} lied, and you proved it.</p></div></div>
-   :<div className="rounded-[24px] bg-notyet p-5 text-on-notyet shadow-[0_8px_0_var(--color-notyet-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">Name the Liar</p><h1 id="lv-h" className="mt-1 text-[36px] leading-none outline-none">Not this time.</h1>
+   :<div className="notyet-panel"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">Name the Liar</p><h1 id="lv-h" className="mt-1 text-[36px] leading-none outline-none">Not this time.</h1>
     <p className="mt-2 text-[17px] font-bold">{named?`You named ${name}, but that line doesn't prove it.`:`The liar was ${name}.`} It's in your Refresher.</p></div>}
   <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-start">
    <WitnessStage world={world} character={w.character} speaking={speaking} level={voice.level} gesture={gesture} height={280}/>

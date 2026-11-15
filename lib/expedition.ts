@@ -13,21 +13,21 @@ export const POINTS = { correct: 700, speedMax: 300, gist: 100 } as const;
 export const DISCOVERY_COINS = 3;
 // Question types: their name on screen, steps, timer (seconds) and the benchmarks they practice.
 export const TYPE_INFO: Record<QuestionType, { name: string; steps: 1 | 2; seconds: number; standards: BenchmarkFamily[]; skill: string }> = {
-  word_detective: { name: "Word Detective", steps: 2, seconds: 45, standards: ["V.1.3", "K12.EE.1.1"], skill: "Word Detective" },
-  shades: { name: "Shades of Meaning", steps: 2, seconds: 45, standards: ["V.1.3", "R.3.1"], skill: "Shades of Meaning" },
-  between_lines: { name: "Read Between the Lines", steps: 2, seconds: 45, standards: ["K12.EE.3.1", "K12.EE.1.1"], skill: "Inference Investigator" },
-  whose_eyes: { name: "Whose Eyes?", steps: 2, seconds: 45, standards: ["R.1.3", "K12.EE.1.1"], skill: "POV Tracker" },
-  figure_it_out: { name: "Figure It Out", steps: 2, seconds: 45, standards: ["R.3.1"], skill: "Figurative Language Finder" },
-  character_clue: { name: "Character Clue", steps: 2, seconds: 45, standards: ["R.1.1", "K12.EE.1.1"], skill: "Character Clue" },
-  theme_thread: { name: "Theme Thread", steps: 2, seconds: 90, standards: ["R.1.2", "K12.EE.1.1"], skill: "Theme Thread" },
-  gist: { name: "Gist Check", steps: 1, seconds: 20, standards: ["R.3.2"], skill: "Gist Getter" },
-  find_it: { name: "Find It", steps: 1, seconds: 30, standards: ["K12.EE.1.1"], skill: "Line Finder" },
-  catch_lie: { name: "Catch the Lie", steps: 1, seconds: 45, standards: ["K12.EE.1.1"], skill: "Lie Catcher" },
-  make_call: { name: "Make the Call", steps: 2, seconds: 90, standards: ["K12.EE.1.1", "K12.EE.3.1"], skill: "Case Closer" },
-  story_structure: { name: "Story Order", steps: 1, seconds: 45, standards: ["R.1.1", "K12.EE.3.1"], skill: "Story Builder" },
-  weigh_evidence: { name: "Weigh the Evidence", steps: 1, seconds: 45, standards: ["K12.EE.1.1", "K12.EE.3.1"], skill: "Evidence Weigher" },
+  word_detective: { name: "Word Detective", steps: 2, seconds: 70, standards: ["V.1.3", "K12.EE.1.1"], skill: "Word Detective" },
+  shades: { name: "Shades of Meaning", steps: 2, seconds: 70, standards: ["V.1.3", "R.3.1"], skill: "Shades of Meaning" },
+  between_lines: { name: "Read Between the Lines", steps: 2, seconds: 70, standards: ["K12.EE.3.1", "K12.EE.1.1"], skill: "Inference Investigator" },
+  whose_eyes: { name: "Whose Eyes?", steps: 2, seconds: 70, standards: ["R.1.3", "K12.EE.1.1"], skill: "POV Tracker" },
+  figure_it_out: { name: "Figure It Out", steps: 2, seconds: 70, standards: ["R.3.1"], skill: "Figurative Language Finder" },
+  character_clue: { name: "Character Clue", steps: 2, seconds: 70, standards: ["R.1.1", "K12.EE.1.1"], skill: "Character Clue" },
+  theme_thread: { name: "Theme Thread", steps: 2, seconds: 135, standards: ["R.1.2", "K12.EE.1.1"], skill: "Theme Thread" },
+  gist: { name: "Gist Check", steps: 1, seconds: 30, standards: ["R.3.2"], skill: "Gist Getter" },
+  find_it: { name: "Find It", steps: 1, seconds: 45, standards: ["K12.EE.1.1"], skill: "Line Finder" },
+  catch_lie: { name: "Catch the Lie", steps: 1, seconds: 70, standards: ["K12.EE.1.1"], skill: "Lie Catcher" },
+  make_call: { name: "Make the Call", steps: 2, seconds: 135, standards: ["K12.EE.1.1", "K12.EE.3.1"], skill: "Case Closer" },
+  story_structure: { name: "Story Order", steps: 1, seconds: 70, standards: ["R.1.1", "K12.EE.3.1"], skill: "Story Builder" },
+  weigh_evidence: { name: "Weigh the Evidence", steps: 1, seconds: 70, standards: ["K12.EE.1.1", "K12.EE.3.1"], skill: "Evidence Weigher" },
 };
-export const GIST_SECONDS = 20, TYPED_SECONDS = 60;
+export const GIST_SECONDS = 30, TYPED_SECONDS = 60;
 // Catch the Lie: the testimony plays for about this long before its timer starts.
 export const TESTIMONY_MS = 3200;
 // After an answer: the result moment, then the leaderboard, then a countdown to the next chunk (milliseconds).
@@ -38,6 +38,13 @@ export const timeScale = (setting: string | null | undefined) => (setting === "u
 export const limitMs = (seconds: number, setting?: string | null) => Math.round(seconds * 1000 * timeScale(setting));
 export const screenMs = (screen: keyof typeof SCREEN_MS, setting?: string | null) => Math.round(SCREEN_MS[screen] * timeScale(setting));
 export const questionSeconds = (q: Pick<ExpQuestion, "type">) => TYPE_INFO[q.type].seconds;
+// The class's question time (a teacher setting; migration 202611150003): "more" gives every question half as long again.
+// A student's own time setting still multiplies it ("untimed" stays untimed).
+export type QuestionTime = "standard" | "more";
+export const isQuestionTime = (x: unknown): x is QuestionTime => x === "standard" || x === "more";
+export const QUESTION_TIME_FACTOR: Record<QuestionTime, number> = { standard: 1, more: 1.5 };
+export const questionSetting = (setting: string | null | undefined, time: QuestionTime | null | undefined) =>
+  setting === "untimed" ? "untimed" : String(timeScale(setting) * QUESTION_TIME_FACTOR[time ?? "standard"]);
 
 // ---------- Chunks ----------
 export type ChunkLine = { pid: string; index: number; text: string };

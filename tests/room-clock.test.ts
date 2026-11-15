@@ -56,7 +56,7 @@ test("wiring: the migration, the teacher's class setting, the student's class in
   assert.match(readFileSync("app/api/teacher/classes/[id]/route.ts", "utf8"), /roomClock: z\.enum\(\["off", "generous", "extra"\]\)/);
   assert.match(readFileSync("app/api/student/class/route.ts", "utf8"), /roomClock: cls\.room_clock \?\? "off"/);
   assert.match(readFileSync("app/classroom.tsx", "utf8"), /function ClockPanel/);
-  const race = readFileSync("app/expedition-race.tsx", "utf8"); assert.match(race, /<RaceHud clock=\{clock\}/); assert.match(race, /clockRuns\(beat\)/);
+  const race = readFileSync("app/expedition-race.tsx", "utf8"); assert.match(race, /<RaceHud [^>]*clock=\{clock\}/); assert.match(race, /clockRuns\(beat\)/);
   assert.match(readFileSync("app/case.tsx", "utf8"), /roomClock=\{demo\.classAuth\?roomClock:"off"\}/);
   assert.match(readFileSync("app/live/race-live.tsx", "utf8"), /Room clock \(pauses while everyone reads; zero ends nothing\)/);
 });

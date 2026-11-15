@@ -4,8 +4,14 @@
 // votes on the question card, then the witness answers in their recorded voice with
 // captions; at the finale, how many have locked in (nothing else) until the reveal: the liar, their reaction, the proof
 // and the class breakdown. Each phone: vote, read the caption, lock in privately, then its own result.
+import {HINTS,hintsDone,markHintDone} from "@/lib/onboarding";
+import {Coach} from "../practice-round";
+import {firstName} from "@/lib/interview";
+import {WITNESS_SAVED,witnessDoNow} from "@/lib/onboarding";
+import {DoNow} from "../practice-round";
+import {AskButton} from "../interview";
 import {useEffect,useRef,useState} from "react";
-import {ArrowRight,Check,Lock,RotateCcw} from "lucide-react";
+import {ArrowRight,Check,Lock,NotebookPen,RotateCcw} from "lucide-react";
 import type {hostView,playerView} from "@/lib/live/server";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
@@ -82,6 +88,8 @@ export function InterviewHost({state,round,world,act,left,totalMs}:{state:HostVi
 export function InterviewPlayer({state,world,act,left,myMs}:{state:PlayerView;world:WorldPack;act:(k:string,p?:Record<string,unknown>)=>Promise<string|null>|void;left:number|null;myMs:number|null}){
  const round=state.round as RaceRound,iv=round.interview!,me=state.race?.interview;
  const k=round.step,w=iv.witnesses[iv.witness??0];
+ // In a room, each phone taps "Tap to ask" to see the answer (the board plays it aloud); a new witness starts unasked.
+ const askKey=`${round.step}:${iv.witness??""}`,[askedKey,setAskedKey]=useState(""),asked=!iv.inRoom||askedKey===askKey;
  if(round.beat==="vote"&&w)return <section aria-labelledby="ivp-h" className="mt-3 flex flex-col gap-3">
   {left!==null&&myMs!==null&&<TimerTrack left={left} seconds={myMs/1000}/>}
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">The Interview · witness {k+1} of {iv.witnesses.length}</p>
@@ -91,19 +99,23 @@ export function InterviewPlayer({state,world,act,left,myMs}:{state:PlayerView;wo
   {me?.voted!=null&&<p role="status" className="rounded-card bg-success px-4 py-3 text-[17px] font-bold text-on-success"><Check size={18} className="mr-1 inline" aria-hidden/>Voted. Eyes on the board.</p>}
  </section>;
  if(round.beat==="testify"&&w){const said=iv.said[iv.witness??0];return <section aria-labelledby="ivp-h" className="mt-3 flex flex-col gap-3">
+  {iv.inRoom&&<DoNow text={witnessDoNow(firstName(w.name))}/>}
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{witnessTitle(iv,round)}</p>
-  <h1 id="ivp-h" className="text-[28px] leading-tight outline-none">{w.name} answers</h1>
+  <h1 id="ivp-h" className="text-[28px] leading-tight outline-none">{iv.inRoom?`${w.name} steps in`:`${w.name} answers`}</h1>
   {w.portrait&&<img src={w.portrait} alt="" className="mx-auto h-28 w-28 rounded-full object-cover"/>}
-  <p className="rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold">{iv.inRoom?"Everyone asks":"The class asked"}: {said?.card}</p>
-  {said&&<Caption name={w.name} text={said.text}/>}
-  <p className="text-[15px] text-muted">Listen on the board. One of the three witnesses is lying.</p>
+  {!asked?<div>{!hintsDone().has("witness")&&<Coach text={HINTS.witness}/>}<AskButton question={said?.card??iv.question??""} onAsk={()=>{markHintDone("witness");setAskedKey(askKey)}}/></div>
+   :<><p className="rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold">{iv.inRoom?"You asked":"The class asked"}: {said?.card}</p>
+    {said&&<Caption name={w.name} text={said.text}/>}
+    {iv.inRoom?<p role="status" className="flex items-start gap-2 rounded-card bg-panel px-4 py-3 text-[16px] font-bold text-ink"><NotebookPen size={18} className="mt-0.5 shrink-0 text-highlight" aria-hidden/>{WITNESS_SAVED}</p>
+     :<p className="text-[15px] text-muted">Listen on the board. One of the three witnesses is lying.</p>}
+    {iv.inRoom&&<p className="text-[14px] font-bold text-muted">Your teacher moves the class on to lock {round.step+1}.</p>}</>}
  </section>}
  if(round.beat==="liar")return <div className="wide-host mt-3"><NameTheLiar seed={`${state.me.id}|${round.expedition.id}`} world={world} said={asSaid(iv)} passages={iv.callPassages??[]} locked={!!me?.locked} seconds={myMs?Math.round(myMs/1000):undefined} left={left} onLock={a=>act("liar_lock",{liar:a.liar,line:a.line})}/></div>;
  if(round.beat==="verdict"&&iv.verdict){const r=me?.result,v=iv.verdict;
   return <section aria-labelledby="ivp-h" className="mt-3 flex flex-col gap-3" aria-live="assertive">
    {r?.solved?<div className="flex flex-col items-center gap-3"><p aria-hidden className="float-up font-display text-[56px] font-bold leading-none text-gold">+{LIAR_POINTS.toLocaleString()}</p>
      <div className="moment-pop w-full rounded-[24px] bg-gold p-5 text-on-gold shadow-[0_8px_0_var(--color-gold-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">Name the Liar</p><h1 id="ivp-h" className="mt-1 text-[40px] leading-none outline-none">Case solved<span className="sr-only">. Plus {LIAR_POINTS} points.</span></h1><p className="mt-2 text-[17px] font-bold">{v.name} lied, and you proved it.</p></div></div>
-    :<div className="rounded-[24px] bg-notyet p-5 text-on-notyet shadow-[0_8px_0_var(--color-notyet-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">Name the Liar</p><h1 id="ivp-h" className="mt-1 text-[36px] leading-none outline-none">Not this time.</h1>
+    :<div className="notyet-panel"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">Name the Liar</p><h1 id="ivp-h" className="mt-1 text-[36px] leading-none outline-none">Not this time.</h1>
      <p className="mt-2 text-[17px] font-bold">{r?.named?`You named ${v.name}, but that line doesn't prove it.`:`The liar was ${v.name}.`} It's in your Refresher.</p></div>}
    <Caption live={false} name={`${v.name} said`} text={v.lieText}/>
    <p className="text-[13px] font-extrabold uppercase tracking-[.08em] text-highlight">{r?.solved?"The proof":"Here's the proof"}</p>

@@ -76,7 +76,7 @@ function ClassList({email,classes,onOpen,onCreated,onSignOut}:{email:string;clas
  </div>;
 }
 
-type Detail={studentTimes?:Record<string,string>;absent?:string[];class:{id:string;name:string|null;class_code:string;grade:number;preview_enabled:boolean;roles_enabled?:boolean;angles_enabled?:boolean;look?:"mature"|"classic";room_clock?:RoomClock;leaderboard_mode?:"individual"|"squad"|"off";story_mode_on?:boolean};students:{id:string;nickname:string}[];assignments:{lesson_id:string;due_date:string|null}[];completions:{student_id:string;lesson_id:string;first_try_correct:number;total:number}[];activeAnalysisId:string|null;world:{title:string;teacherPreviewRequired:boolean;scenes:{id:string;clues:number}[];roles:{id:string;name:string}[]}|null};
+type Detail={studentTimes?:Record<string,string>;absent?:string[];class:{id:string;name:string|null;class_code:string;grade:number;preview_enabled:boolean;roles_enabled?:boolean;angles_enabled?:boolean;look?:"mature"|"classic";room_clock?:RoomClock;question_time?:"standard"|"more";leaderboard_mode?:"individual"|"squad"|"off";story_mode_on?:boolean};students:{id:string;nickname:string}[];assignments:{lesson_id:string;due_date:string|null}[];completions:{student_id:string;lesson_id:string;first_try_correct:number;total:number}[];activeAnalysisId:string|null;world:{title:string;teacherPreviewRequired:boolean;scenes:{id:string;clues:number}[];roles:{id:string;name:string}[]}|null};
 
 // QR code for the class link, drawn as SVG in the browser. Projected on the board, students scan it to join.
 function JoinQr({url}:{url:string}){
@@ -99,6 +99,7 @@ function ClassDetail({classId,onPresent}:{classId:string;onPresent:()=>void}){
   {data.world?.teacherPreviewRequired&&<div className="panel flex flex-wrap items-center justify-between gap-3 p-5"><p className="text-base text-ink">This story has content notes, so students cannot join until you enable it after previewing.</p><button onClick={async()=>{await teacherFetch(`/api/teacher/classes/${classId}`,{method:"PATCH",body:JSON.stringify({previewEnabled:!c.preview_enabled})});load()}} className={`${c.preview_enabled?"soft-button":"gold-button"} ${big}`}>{c.preview_enabled?"Enabled · turn off":"I previewed it · enable for students"}</button></div>}
   {c.look!==undefined&&<LookPanel classId={classId} look={c.look??"mature"} onChange={load}/>}
   {c.room_clock!==undefined&&<ClockPanel classId={classId} clock={c.room_clock??"off"} onChange={load}/>}
+  {c.question_time!==undefined&&<QuestionTimePanel classId={classId} time={c.question_time??"standard"} onChange={load}/>}
   {LEGACY_MODES&&<StoryPersonalPanel classId={classId} rolesOn={c.roles_enabled!==false} anglesOn={c.angles_enabled!==false} storyModeOn={c.story_mode_on!==false} leaderboard={c.leaderboard_mode??"individual"} onChange={load}/>}
   <ClassWeekBoard fetcher={teacherFetch}/>
   <div role="tablist" aria-label="Class tools" className="flex flex-wrap gap-2 rounded-card bg-panel-2 p-1.5">{([["evidence","Evidence"],...(LEGACY_MODES?[["lies","Lie bank"]] as const:[]),["live","Live class analysis"],["lessons","Assign mini lessons"],["students","Students"]] as const).map(([id,label])=><button key={id} role="tab" aria-selected={tab===id} onClick={()=>setTab(id)} className={`rounded-full font-display font-semibold ${big} ${tab===id?"bg-primary text-on-primary":"text-muted hover:text-ink"}`}>{label}</button>)}</div>
@@ -232,6 +233,14 @@ function StudentTime({classId,studentId,name,value,onChange}:{classId:string;stu
 // Shown once the 202611140001 migration has run.
 // The room clock (lib/room-clock.ts): off by default; generous or extra time. It pauses while students read and never
 // ends a room.
+// Question time (lib/expedition.ts questionSetting): Standard, or More time (every question half as long again). A
+// student's own time setting still multiplies it.
+function QuestionTimePanel({classId,time,onChange}:{classId:string;time:"standard"|"more";onChange:()=>void}){
+ const [busy,setBusy]=useState(false),[error,setError]=useState("");
+ async function set(next:"standard"|"more"){if(busy||next===time)return;setBusy(true);setError("");const r=await teacherFetch(`/api/teacher/classes/${classId}`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({questionTime:next})});setBusy(false);if(!r.ok){setError((r.body as {error?:string})?.error??"Couldn't change question time.");return}onChange()}
+ return <div className="panel flex flex-wrap items-center justify-between gap-4 p-5"><div className="max-w-xl"><p className="text-base font-bold text-ink">Question time</p><p className="text-sm text-muted">{time==="more"?"Every question gets half as long again.":"The standard time for each question."} A student's own extra time still adds to it.</p>{error&&<p role="alert" className="mt-1 text-sm text-notyet">{error}</p>}</div>
+  <div role="group" aria-label="Question time" className="flex flex-wrap gap-2">{([["standard","Standard"],["more","More time"]] as const).map(([v,l])=><button key={v} type="button" aria-pressed={time===v} disabled={busy} onClick={()=>set(v)} className={`min-h-11 rounded-button px-4 text-sm font-bold ${time===v?"bg-primary text-on-primary":"bg-panel-2 text-ink"}`}>{l}</button>)}</div></div>;
+}
 function ClockPanel({classId,clock,onChange}:{classId:string;clock:RoomClock;onChange:()=>void}){
  const [busy,setBusy]=useState(false),[error,setError]=useState("");
  async function set(next:RoomClock){if(busy||next===clock)return;setBusy(true);setError("");const r=await teacherFetch(`/api/teacher/classes/${classId}`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({roomClock:next})});setBusy(false);if(!r.ok){setError((r.body as {error?:string})?.error??"Couldn't change the room clock.");return}onChange()}

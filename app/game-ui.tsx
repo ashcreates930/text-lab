@@ -76,7 +76,7 @@ export function ProofMoment({points,eyebrow,quote,note,children,headingRef}:{poi
  </div>;
 }
 export function NotYetMoment({eyebrow,hint,note,children,headingRef}:{eyebrow?:string;hint:React.ReactNode;note?:string;children?:React.ReactNode;headingRef?:React.Ref<HTMLHeadingElement>}){
- return <section aria-labelledby="notyet-moment-h" className="rise-in rounded-[24px] bg-notyet p-5 text-on-notyet shadow-[0_8px_0_var(--color-notyet-shadow)]">
+ return <section aria-labelledby="notyet-moment-h" className="rise-in notyet-panel">
   {eyebrow&&<p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{eyebrow}</p>}
   <h2 id="notyet-moment-h" ref={headingRef} tabIndex={-1} className="mt-1 text-[36px] leading-none outline-none">Not yet</h2>
   <div className="mt-3 text-[17px] font-bold leading-[1.4]">{hint}</div>

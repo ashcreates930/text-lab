@@ -12,6 +12,7 @@
 // seconds), then the witness answers on the board (testify; the host moves on). One witness lies, picked per game. The
 // finale is Name the Liar: every phone locks in the liar and the line privately (liar, 90 seconds), and nothing is
 // shown until the board reveals the liar with the class breakdown (verdict). Rows: interview_vote and liar_lock.
+import { questionSetting, type QuestionTime } from "../expedition.ts";
 import { SQUAD_LOCK_POINTS, recorderOf, sharedLockOpen, type SquadLock } from "./squad-escape.ts";
 import { chamberBudgetMs, clockRuns, isRoomClock, type RoomClock } from "../room-clock.ts";
 import { CLUE_COST, clueCost, type ClueTier } from "../clues.ts";
@@ -31,7 +32,9 @@ import { screenBoardText } from "../safety.ts";
 // chamber: the whole room (0) or one chamber (lib/escape-room.ts), so a class can play a room one chamber per period.
 export type ExpSettings = { expeditionId: string; grade?: Grade; gradeBand: GradeBand; questions: boolean; highlighter: boolean; autoAdvance: boolean; chamber?: ChamberPick;
   // The room clock (lib/room-clock.ts): off unless the host turns it on.
-  clock?: RoomClock };
+  clock?: RoomClock;
+  // The class's question time (set from the class when the game starts; standard otherwise).
+  questionTime?: QuestionTime };
 export const LIVE_BEATS = ["vote", "testify", "read", "process", "ask", "race", "reveal", "lightning", "puzzle", "board", "burst", "countdown", "liar", "verdict"] as const;
 // A puzzle lock gets generous time (times each player's extra time); the board moves on early once everyone is done.
 export const PUZZLE_SECONDS = 150;
@@ -142,7 +145,7 @@ export function beatMs(round: LiveRaceRound, chunk: RaceChunk | undefined, setti
   if (b === "lightning") return limitMs(LIGHTNING_SECONDS, setting);
   if (b === "puzzle") return limitMs(PUZZLE_SECONDS, setting);
   if (b === "burst") return limitMs(BURST_SECONDS, setting);
-  if (b === "race") return limitMs(TYPE_INFO[chunk.chunk.question.type].seconds, setting) + (chunk.chunk.question.type === "catch_lie" ? TESTIMONY_MS : 0);
+  if (b === "race") return limitMs(TYPE_INFO[chunk.chunk.question.type].seconds, questionSetting(setting, round.settings.questionTime)) + (chunk.chunk.question.type === "catch_lie" ? TESTIMONY_MS : 0);
   return Math.round(SCREEN_MS[b === "reveal" ? "result" : (b as "board" | "countdown")] * timeScale(setting));
 }
 
@@ -303,7 +306,7 @@ export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses:
     if (round.beat !== "race") return "The question isn't open.";
     if (me.done) return "You've already answered this one.";
     // This player's version of the question (lib/pacing.ts).
-    const asked = playerAsked(chunks, responses, roundIndex, playerId, round.step)!, q = asked.question, limit = limitMs(TYPE_INFO[q.type].seconds, timeSetting);
+    const asked = playerAsked(chunks, responses, roundIndex, playerId, round.step)!, q = asked.question, limit = limitMs(TYPE_INFO[q.type].seconds, questionSetting(timeSetting, round.settings.questionTime));
     const elapsed = Math.max(0, since - (q.type === "catch_lie" ? TESTIMONY_MS : 0));
     const a = (payload.answer ?? {}) as Record<string, unknown>;
     const answer: Answer = {
