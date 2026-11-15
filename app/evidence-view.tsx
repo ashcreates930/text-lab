@@ -33,19 +33,20 @@ export function EvidenceView({evidence,sample=false,className,onAssign,onUnassig
    <div>
     {sample&&<p className="mb-2 inline-flex rounded-full bg-primary-soft px-3 py-1 text-[13px] font-bold uppercase tracking-wide text-highlight">Sample class data</p>}
     <h2 id="evidence-h" className="text-[28px] font-bold leading-tight text-ink">Evidence</h2>
-    <p className="mt-1 max-w-2xl text-[16px] leading-7 text-muted">Which clues each student proved in <i>{evidence.story.title}</i>, the line from the story they chose, and their explanation in their own words.</p>
+    <h3 className="mt-3 text-[20px] font-bold leading-tight text-ink">Story mode: proofs each student found</h3>
+    <p className="mt-1 max-w-2xl text-[16px] leading-7 text-muted">What each student proved in Story mode in <i>{evidence.story.title}</i>, the line from the story they chose, and their explanation in their own words. Escape rooms are further down.</p>
    </div>
    <button type="button" onClick={exportCsv} disabled={!students.length} className="case-secondary !min-h-12 disabled:opacity-40"><Download size={18}/> Export to spreadsheet</button>
   </div>
 
   <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
    <Stat label="Students joined" value={String(summary.joined)}/>
-   <Stat label="Average clues proven" value={`${summary.averageProven}`} note={`out of ${summary.totalClues}`}/>
+   <Stat label="Average proofs found" value={`${summary.averageProven}`} note={`out of ${summary.totalClues}`}/>
    <Stat label="Proved a character wrong" value={String(summary.provedWrongStudents)} note={summary.provedWrongStudents===1?"student":"students"} icon={<ShieldCheck size={20} className="text-highlight"/>}/>
    <Stat label="Need help" value={String(summary.needsHelp)} note={summary.needsHelp===1?"student":"students"} icon={summary.needsHelp?<AlertTriangle size={20} className="text-notyet"/>:undefined}/>
   </dl>
 
-  {!summary.anyProven?<div className="rounded-3xl bg-panel p-8 text-center"><p className="text-[19px] font-semibold text-ink">No one has proven a clue yet. Share your class link to get started.</p>{summary.needsHelp>0&&<p className="mt-2 text-[16px] text-muted">{summary.needsHelp} {summary.needsHelp===1?"student has":"students have"} started reading.</p>}</div>
+  {!summary.anyProven?<div className="rounded-3xl bg-panel p-8 text-center"><p className="text-[19px] font-semibold text-ink">No one has found a proof in Story mode yet. Share your class link to get started.</p>{summary.needsHelp>0&&<p className="mt-2 text-[16px] text-muted">{summary.needsHelp} {summary.needsHelp===1?"student has":"students have"} started reading.</p>}</div>
   :<>
    <ul aria-label="Key" className="flex flex-wrap gap-x-6 gap-y-2 text-[15px] text-muted">
     <li className="flex items-center gap-2"><span className="grid h-6 w-6 place-items-center rounded-md bg-primary text-on-primary"><Check size={14}/></span>Proved with a line from the story</li>
@@ -56,7 +57,7 @@ export function EvidenceView({evidence,sample=false,className,onAssign,onUnassig
    {/* The grid scrolls sideways on small screens; student names stay pinned on the left. */}
    <div className="relative overflow-x-auto rounded-3xl bg-panel">
     <table className="w-max min-w-full border-separate border-spacing-0 text-left">
-     <caption className="sr-only">Clues each student proved, grouped by scene. Select a square to see the student's line and explanation.</caption>
+     <caption className="sr-only">Story mode: proofs each student found, grouped by scene. Select a square to see the student's line and explanation.</caption>
      <thead>
       <tr>
        <th rowSpan={2} scope="col" className="sticky left-0 z-20 min-w-[170px] border-b border-edge bg-panel px-4 py-3 align-bottom text-[14px] font-bold text-ink">Student</th>
