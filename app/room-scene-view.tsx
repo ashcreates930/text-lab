@@ -7,7 +7,8 @@
 // bonus item (once its lock is open) asks one small reading task before it pays coins. Actions on this screen keep
 // scroll and focus where they are; the panel that opens takes focus without moving the page.
 import {useEffect,useLayoutEffect,useRef,useState} from "react";
-import {Check,DoorClosed,Lock,Search,Sparkles,X} from "lucide-react";
+import {Check,Search,Sparkles,X} from "lucide-react";
+import {DoorGlyph,Padlock} from "./lock-art";
 import type {Scene,SceneBonus,SceneNext} from "@/lib/room-scene";
 import {bonusRight} from "@/lib/room-scene";
 import {lineTokens} from "@/lib/escape-room";
@@ -21,11 +22,12 @@ export type SceneViewProps={scene:Scene;title:string;next:SceneNext;opened:(lock
  onItem:(lock0:number)=>void;onWitness:(character:string)=>void;onPuzzle:(id:string)=>void;onDoor:()=>void;onBonus:(id:string)=>void};
 type Panel={kind:"opened";lock:number;label:string}|{kind:"later";label:string}|{kind:"bonus";b:SceneBonus}|{kind:"door"}|null;
 
-function Marker({x,y,state,label,onTap,dashed}:{x:number;y:number;state:"next"|"open"|"none";label:string;onTap:()=>void;dashed?:boolean}){
+function Marker({x,y,state,label,onTap,dashed,lock}:{x:number;y:number;state:"next"|"open"|"none";label:string;onTap:()=>void;dashed?:boolean;lock?:"closed"|"open"}){
  return <button type="button" onClick={onTap} aria-label={label} className="scene-spot absolute grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full outline-none focus-visible:ring-4 focus-visible:ring-highlight" style={{left:`${x}%`,top:`${y}%`}} data-state={state}>
   {state==="next"&&<span aria-hidden className="scene-glow absolute inset-[-14px] rounded-full"/>}
   {state==="next"&&<span aria-hidden className={`absolute inset-1 rounded-full border-[3px] ${dashed?"border-dashed":""} border-gold`}/>}
-  {state==="open"&&<span aria-hidden className="absolute right-0 top-0 grid h-5 w-5 place-items-center rounded-full border-2 border-gold bg-deep text-gold"><Check size={12} strokeWidth={3}/></span>}
+  {lock?<span aria-hidden className={`absolute right-0 top-0 grid h-6 w-6 place-items-center rounded-full border-2 bg-deep ${lock==="open"?"border-success text-success":"border-gold text-gold"}`}><Padlock open={lock==="open"} quiet size={13} strokeWidth={2.25}/></span>
+   :state==="open"&&<span aria-hidden className="absolute right-0 top-0 grid h-5 w-5 place-items-center rounded-full border-2 border-gold bg-deep text-gold"><Check size={12} strokeWidth={3}/></span>}
  </button>;
 }
 
@@ -50,10 +52,10 @@ export function SceneView(p:SceneViewProps){
   <div ref={scroller} className="overflow-x-auto rounded-card border border-edge">
    <div className="relative w-[780px] max-w-none md:w-full">
     <img src={scene.art} alt={scene.alt} className="block w-full select-none" draggable={false}/>
-    {scene.items.map(i=>{const st=itemState(i.lock-1);return <Marker key={i.id} x={i.x} y={i.y} state={st==="later"?"none":st} label={`${i.label}${st==="open"?", opened":st==="next"?", tap to open its lock":", opens later"}`} onTap={()=>tapItem(i.lock-1,i.label)}/>})}
+    {scene.items.map(i=>{const st=itemState(i.lock-1);return <Marker key={i.id} x={i.x} y={i.y} state={st==="later"?"none":st} lock={st==="open"?"open":"closed"} label={`${i.label}${st==="open"?", opened":st==="next"?", tap to open its lock":", locked, opens later"}`} onTap={()=>tapItem(i.lock-1,i.label)}/>})}
     {scene.witnesses.map(w=>{const st=p.witnessState(w.character);return st==="away"?null:<Marker key={w.character} x={w.x} y={w.y} state={st==="due"?"next":"none"} label={`${p.witnessName(w.character)}${st==="due"?", tap to ask your question":", already met"}`} onTap={()=>st==="due"?p.onWitness(w.character):setPanel({kind:"later",label:`${p.witnessName(w.character)} has answered; it's in your Case File.`})}/>})}
-    {scene.puzzles.map(z=>{const st=p.puzzleState(z.id);return <Marker key={z.id} x={z.x} y={z.y} state={st==="later"?"none":st} label={`Puzzle lock${st==="open"?", solved":st==="next"?", tap to open it":", opens later"}`} onTap={()=>st==="next"?p.onPuzzle(z.id):setPanel({kind:"later",label:"This puzzle lock"})}/>})}
-    <Marker x={scene.door.x} y={scene.door.y} state={p.doorState==="next"?"next":"none"} label={`${scene.door.label}${p.doorState==="next"?", tap to open":", locked"}`} onTap={tapDoor}/>
+    {scene.puzzles.map(z=>{const st=p.puzzleState(z.id);return <Marker key={z.id} x={z.x} y={z.y} state={st==="later"?"none":st} lock={st==="open"?"open":"closed"} label={`Puzzle lock${st==="open"?", solved":st==="next"?", tap to open it":", opens later"}`} onTap={()=>st==="next"?p.onPuzzle(z.id):setPanel({kind:"later",label:"This puzzle lock"})}/>})}
+    <Marker x={scene.door.x} y={scene.door.y} state={p.doorState==="next"?"next":"none"} lock={p.doorState==="next"?"open":"closed"} label={`${scene.door.label}${p.doorState==="next"?", unlocked, tap to open":", locked"}`} onTap={tapDoor}/>
     {scene.bonus.map(b=><Marker key={b.id} x={b.x} y={b.y} state={p.bonusFound.includes(b.id)?"open":"none"} dashed label={p.bonusAvailable(b)?`Look closer: ${b.label}${p.bonusFound.includes(b.id)?", found":""}`:"Something to look at later"} onTap={()=>tapBonus(b)}/>)}
    </div>
   </div>
@@ -62,7 +64,7 @@ export function SceneView(p:SceneViewProps){
    {panel.kind==="opened"&&<><p className="pr-10 font-display text-[18px] font-semibold">{panel.label}</p><p className="mt-1 text-[14px] font-bold text-muted">Opened. Its proof is in your Case File:</p>
     <p className="mt-2 rounded-row bg-reading px-3 py-2 font-serif text-[16px] leading-snug text-reading-ink">{p.proofOf(panel.lock)??"Opened with the shown proof."}</p></>}
    {panel.kind==="later"&&<p className="pr-10 text-[16px] font-bold">{panel.label.endsWith(".")?panel.label:`${panel.label} opens later. Find the glowing spot first; the story goes in order.`}</p>}
-   {panel.kind==="door"&&<p className="flex items-center gap-2 pr-10 text-[16px] font-bold"><DoorClosed size={18} aria-hidden className="text-highlight"/>{scene.door.label} opens once every lock in this chamber is open.</p>}
+   {panel.kind==="door"&&<p className="flex items-center gap-2 pr-10 text-[16px] font-bold"><DoorGlyph size={18} className="text-highlight"/>{scene.door.label} opens once every lock in this chamber is open.</p>}
    {panel.kind==="bonus"&&<><p className="flex items-center gap-2 pr-10 font-display text-[18px] font-semibold"><Search size={18} aria-hidden className="text-highlight"/>Look closer: {panel.b.label}</p>
     {found?<p role="status" className="mt-2 flex items-center gap-2 text-[16px] font-bold text-success"><Sparkles size={18} aria-hidden/>Found it. The coins are yours.</p>
      :<><p className="mt-1 text-[15px] font-bold">{panel.b.question} Tap the word in the line that answers.</p>
@@ -72,10 +74,10 @@ export function SceneView(p:SceneViewProps){
   </div>}
   <nav aria-label="Everything in this chamber" className="rounded-card bg-panel p-3">
    <ul className="grid gap-1.5 sm:grid-cols-2">
-    {scene.items.map(i=>{const st=itemState(i.lock-1);return <li key={i.id}><button type="button" onClick={()=>tapItem(i.lock-1,i.label)} className={`flex min-h-11 w-full items-center gap-2 rounded-row px-3 text-left text-[15px] font-bold ${st==="next"?"bg-primary text-on-primary":"bg-panel-2 text-ink"}`}>{st==="open"?<Check size={16} aria-hidden/>:st==="later"?<Lock size={16} aria-hidden className="text-muted"/>:<span aria-hidden className="h-3 w-3 rounded-full border-2 border-current"/>}Lock {i.lock} · {i.label}<span className="sr-only">{st==="open"?", opened":st==="next"?", next":", opens later"}</span></button></li>})}
+    {scene.items.map(i=>{const st=itemState(i.lock-1);return <li key={i.id}><button type="button" onClick={()=>tapItem(i.lock-1,i.label)} className={`flex min-h-11 w-full items-center gap-2 rounded-row px-3 text-left text-[15px] font-bold ${st==="next"?"bg-primary text-on-primary":"bg-panel-2 text-ink"}`}><Padlock open={st==="open"} quiet size={16} className={st==="later"?"text-muted":st==="open"?"text-success":""}/>Lock {i.lock} · {i.label}<span className="sr-only">{st==="open"?", opened":st==="next"?", next":", opens later"}</span></button></li>})}
     {scene.witnesses.filter(w=>p.witnessState(w.character)==="due").map(w=><li key={w.character}><button type="button" onClick={()=>p.onWitness(w.character)} className="flex min-h-11 w-full items-center gap-2 rounded-row bg-primary px-3 text-left text-[15px] font-bold text-on-primary">Ask {p.witnessName(w.character)}</button></li>)}
     {scene.puzzles.filter(z=>p.puzzleState(z.id)==="next").map(z=><li key={z.id}><button type="button" onClick={()=>p.onPuzzle(z.id)} className="flex min-h-11 w-full items-center gap-2 rounded-row bg-primary px-3 text-left text-[15px] font-bold text-on-primary">Open the puzzle lock</button></li>)}
-    <li><button type="button" onClick={tapDoor} className={`flex min-h-11 w-full items-center gap-2 rounded-row px-3 text-left text-[15px] font-bold ${p.doorState==="next"?"bg-primary text-on-primary":"bg-panel-2 text-ink"}`}><DoorClosed size={16} aria-hidden/>{scene.door.label}<span className="sr-only">{p.doorState==="next"?", open it":", locked"}</span></button></li>
+    <li><button type="button" onClick={tapDoor} className={`flex min-h-11 w-full items-center gap-2 rounded-row px-3 text-left text-[15px] font-bold ${p.doorState==="next"?"bg-primary text-on-primary":"bg-panel-2 text-ink"}`}><DoorGlyph open={p.doorState==="next"} size={16}/>{scene.door.label}<span className="sr-only">{p.doorState==="next"?", open it":", locked"}</span></button></li>
     {scene.bonus.filter(b=>p.bonusAvailable(b)).map(b=><li key={b.id}><button type="button" onClick={()=>tapBonus(b)} className="flex min-h-11 w-full items-center gap-2 rounded-row bg-panel-2 px-3 text-left text-[15px] font-bold text-ink"><Search size={16} aria-hidden className="text-highlight"/>Look closer: {b.label}{p.bonusFound.includes(b.id)?" (found)":""}</button></li>)}
    </ul>
   </nav>

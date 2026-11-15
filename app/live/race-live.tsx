@@ -4,6 +4,7 @@
 // countdown); the teacher can pause any screen or skip ahead. Every phone follows the board's timing with its own extra
 // time and the same screens as the solo race (app/expedition-race.tsx). The lobby shows names and character avatars
 // popping in, with a quiet music loop the host can mute; the game ends on a podium with class stats.
+import {Held,LockMoment} from "../lock-art";
 import type {InventoryItem} from "@/lib/escape-room";
 import {SQUAD_ROLE_INFO,type SquadRole} from "@/lib/live/squad-escape";
 import {CLOCK_INFO,ROOM_CLOCKS,clockView} from "@/lib/room-clock";
@@ -133,7 +134,8 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
    {(q.choices??q.theories?.map(t=>t.name))&&<ol className="mt-3 grid gap-2 md:grid-cols-3">{(q.choices??q.theories!.map(t=>t.name)).map((c,i)=><li key={i} className="rounded-card bg-panel px-4 py-3 text-[clamp(16px,1.5vw,22px)] font-bold">{c}</li>)}</ol>}
    <p className="mt-2 text-[20px] text-muted">{race.answered} of {state.counters.players} answered{maxScale>1?" · extra time still running for some":""}</p>
    {world&&<div className="mt-3"><ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} focus={focusTokens(tokens,q.focus)} large/></div>}</div>}
-  {round.beat==="reveal"&&round.reveal&&world&&<div className="mt-3"><p className="text-[clamp(26px,2.8vw,42px)] font-bold">{round.reveal.pct}% found the proof</p><p className="text-[20px] text-muted">{round.reveal.why}</p>
+  {round.beat==="reveal"&&round.reveal&&world&&<div className="mt-3"><div className="flex items-center gap-5"><LockMoment key={round.step} kind="proved" words="The proof opens the class's lock." className="!items-start !text-left"/>
+   <p className="text-[clamp(26px,2.8vw,42px)] font-bold">{round.reveal.pct}% found the proof</p></div><p className="mt-2 text-[20px] text-muted">{round.reveal.why}</p>
    <div className="mt-3">{q?.callPassages?<ReadingPanel passages={q.callPassages as SourcePassage[]} results={round.reveal.lines.map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/>
     :<ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shown={round.reveal.words.length?round.reveal.words:proofTokensOf(tokens,round.chunk.lines,round.reveal.lines)} large/>}</div>
    {q?.type&&round.step%3===2&&race.questions.length>0&&questions}</div>}
@@ -205,7 +207,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  const testifying=round?.beat==="race"&&round.question?.type==="catch_lie"&&Date.now()-Date.parse(round.beatStartedAt)<TESTIMONY_MS;
  const [,tick]=useState(0);useEffect(()=>{if(!testifying)return;const t=setTimeout(()=>tick(x=>x+1),TESTIMONY_MS);return()=>clearTimeout(t)},[testifying,key]);
  const mine=race?.mine;
- useEffect(()=>{if(round?.beat==="reveal"&&mine?.tap)cue(sound,mine.tap.correct?"chime":"reveal",0.3)},[round?.beat,round?.step]);// eslint-disable-line react-hooks/exhaustive-deps
+ useEffect(()=>{if(round?.beat==="reveal"&&mine?.tap&&!mine.tap.correct)cue(sound,"reveal",0.3)},[round?.beat,round?.step]);// eslint-disable-line react-hooks/exhaustive-deps
  const phoneClock=useLiveClock(round?.type==="race"?round.clock:null);
  if(!round||!race||!world||!mine)return null;
  const tokens=chunkTokens(round.chunk.lines);
@@ -246,9 +248,11 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
      :<p className="rounded-card bg-violet-soft px-4 py-3 text-[16px] font-bold">You found this chunk's discovery: "{round.chunk.discovery.phrase}". {round.chunk.discovery.note}</p>}</>
     :<QuestionPanel help={{again}} banner={<><LockBanner lock={round.step+1} of={round.total} kind={lockKind({type:q.type,format:q.format,clues:q.clues?["clue"]:undefined})}/><ArcBanner kind={round.arc} speaker={q.testimony?.speaker}/></>} seed={`${state.me.id}|${round.chunk.id}`} timer={!testifying?<TimerTrack left={left} seconds={(myMs??45000)/1000}/>:null} headingId="rp-h" vq={q} passages={round.chunk.passages} chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} glossary={world.glossary} testifying={!!testifying} draft={draft} setDraft={setDraft} step={step} setStep={setStep} onLock={a=>act("race_tap",{answer:a})} clue={race.myClues?{...race.myClues,onRequest:()=>{void act("race_clue")}}:undefined}/>}</>}
   {round.beat==="reveal"&&<div aria-live="assertive">{mine.tap?.correct
-   ?<div className="mt-6 flex flex-col items-center gap-3"><p aria-hidden className="float-up font-display text-[56px] font-bold leading-none text-gold">+{mine.tap.points.toLocaleString()}</p>
-    <div className="moment-pop w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{q?.name}{(mine.tap.mult??1)>1?" · Double points":""}</p><h1 id="rp-h" className="mt-1 text-[40px] leading-none outline-none">Proof!<span className="sr-only"> Plus {mine.tap.points} points.</span></h1><p className="mt-2 text-[16px] font-bold">{round.reveal?.why}</p></div>
-    {(mine.tap.bonus??0)>0&&<p role="status" className="moment-pop rounded-full bg-gold px-4 py-1.5 font-display text-[17px] font-bold text-on-gold">Streak bonus! +{mine.tap.bonus}</p>}</div>
+   ?<div className="mt-6 flex flex-col items-center gap-3"><LockMoment key={round.step} kind="proved" sound={sound} headingId="rp-h"/>
+    <Held key={"pts"+round.step}><div className="flex flex-col items-center gap-3"><p aria-hidden className="mt-1 font-display text-[44px] font-bold leading-none text-gold">+{mine.tap.points.toLocaleString()}</p>
+    <div className="w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{q?.name}{(mine.tap.mult??1)>1?" · Double points":""}</p><p className="mt-1 font-display text-[24px] font-bold leading-tight">Plus {mine.tap.points.toLocaleString()} points</p><p className="mt-2 text-[16px] font-bold">{round.reveal?.why}</p></div>
+    {(mine.tap.bonus??0)>0&&<p role="status" className="moment-pop rounded-full bg-gold px-4 py-1.5 font-display text-[17px] font-bold text-on-gold">Streak bonus! +{mine.tap.bonus}</p>}</div></Held></div>
+   :mine.opened?<div className="mt-6"><LockMoment kind="quiet" headingId="rp-h"/></div>
    :<div className="notyet-shake notyet-panel"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{q?.name}{mine.tap?.late||!mine.tap?" · Time's up":""}</p><h1 id="rp-h" className="mt-1 text-[36px] leading-none outline-none">Not yet.</h1><p className="mt-2 text-[17px] font-bold">{mine.opened?"Lock opened with the proof. You'll get another shot for points in the Refresher.":"This lock opens only with the proof: use the answer shown to open it."}</p></div>}
    {/* Mastery, private to this phone: the skill tag, and a level-up moment (lib/mastery.ts). */}
    {race.skill?.tag&&<p className="mt-3 flex justify-center"><SkillTag s={race.skill.tag}/></p>}
@@ -264,12 +268,14 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
      answerText={race.revealKey.best?.join(" · ")??race.revealKey.answer} clueWords={race.revealKey.clues??undefined} choices={q.choices} dnd={q.dnd} callPassages={q.callPassages} onOpen={async a=>!(await act("race_recover",{answer:a}))}/>
    :<div className="mt-1">{q?.callPassages?<ReadingPanel passages={q.callPassages as SourcePassage[]} results={(round.reveal?.lines??[]).map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/>
     :<ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shown={shownTokens} shownStyle={mine.tap?.correct?"right":"missed"}/>}</div>}</div>}
-  {round.beat==="puzzle"&&round.puzzle&&<LivePuzzle key={round.puzzle.data.id} p={round.puzzle} seed={state.me.id} act={act}/>}
+  {round.beat==="puzzle"&&round.puzzle&&<LivePuzzle key={round.puzzle.data.id} p={round.puzzle} seed={state.me.id} sound={sound} act={act}/>}
   {round.beat==="lightning"&&round.lightning&&<LightningLive l={round.lightning} world={world} answered={mine.lightning} answer={race.lightningAnswer} left={left} seconds={(myMs??10000)/1000} onLock={line=>act("race_lightning",{line})}/>}
   {round.beat==="burst"&&round.burst&&<DiscoveryBurst key={round.step} chunks={round.burst.chunks.map(c=>({index:c.index,lines:c.lines,chunk:{discovery:c.discovery}}) as unknown as RaceChunk)} world={world} sound={sound} squad={round.squadsOn&&race.squadId?{name:"Your squad",found:race.burstFound.length}:null} onFind={i=>{act("race_burst",{chunk:i})}}/>}
   {/* A lock missed and not yet opened stays open to the proof until the next chunk starts (the reveal is short). */}
   {(round.beat==="board"||round.beat==="countdown")&&!mine.tap?.correct&&!mine.opened&&q&&race.revealKey?.task&&<RecoveryPanel task={race.revealKey.task} seed={`${state.me.id}|${round.chunk.id}|open`} chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shownLines={ownProof}
    answerText={race.revealKey.best?.join(" · ")??race.revealKey.answer} clueWords={race.revealKey.clues??undefined} choices={q.choices} dnd={q.dnd} callPassages={q.callPassages} onOpen={async a=>!(await act("race_recover",{answer:a}))}/>}
+  {/* Opened with the proof after the reveal (on the leaderboard or countdown): the same quiet opening. */}
+  {(round.beat==="board"||round.beat==="countdown")&&!mine.tap?.correct&&mine.opened&&q&&<LockMoment kind="quiet" size="md" className="mb-3"/>}
   {(round.beat==="board"||round.beat==="countdown")&&race.place&&<><p role="status" className="sr-only">{mine.correct?`Plus ${mine.points} points.`:"No points this time."} You're number {race.place.rank} of {race.place.of}.</p>
    <h1 id="rp-h" className="text-center text-[30px] outline-none">{round.beat==="board"?"Checkpoint: Level 1 complete":"Next lock"}</h1>
    {round.beat==="board"&&<div className="grid grid-cols-3 gap-2.5 text-center">
@@ -387,10 +393,10 @@ function NoteHeadsUp({note,step,held,paused,act}:{note:string;step:number;held:b
 }
 
 // A puzzle lock on a phone: solved alone, one try scored on the server; then the phone waits for the class.
-function LivePuzzle({p,seed,act}:{p:{data:RoomPuzzle;lines:Record<string,string>;readLines:LineRef[]};seed:string;act:(k:string,pl?:Record<string,unknown>)=>Promise<string|null>|void}){
+function LivePuzzle({p,seed,act,sound}:{p:{data:RoomPuzzle;lines:Record<string,string>;readLines:LineRef[]};seed:string;sound:boolean;act:(k:string,pl?:Record<string,unknown>)=>Promise<string|null>|void}){
  const [done,setDone]=useState(false);
  if(done)return <p role="status" className="mt-6 rounded-card bg-success p-4 text-center font-display text-[22px] font-bold text-on-success">Lock open. Watch the board for the class.</p>;
- return <div className="mt-2"><PuzzleLock puzzle={p.data} lineOf={r=>p.lines[refKey(r)]??null} readLines={p.readLines} seed={seed} submit={a=>{act("race_puzzle",{answer:a})}} onDone={()=>setDone(true)}/></div>;
+ return <div className="mt-2"><PuzzleLock puzzle={p.data} lineOf={r=>p.lines[refKey(r)]??null} readLines={p.readLines} seed={seed} sound={sound} submit={a=>{act("race_puzzle",{answer:a})}} onDone={()=>setDone(true)}/></div>;
 }
 // The room clock on the board and phones (lib/room-clock.ts): the server's time used plus the running beat, ticking
 // once a second; null when the clock is off.

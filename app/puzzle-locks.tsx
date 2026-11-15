@@ -7,7 +7,8 @@
 // Shared by the solo room and the live phones. Every hotspot is a real button, and the same items are listed below
 // the picture, so the puzzle works by keyboard and screen reader and at phone width.
 import {useMemo,useState} from "react";
-import {ArrowRight,KeyRound,LockOpen,Search} from "lucide-react";
+import {ArrowRight,KeyRound,Search} from "lucide-react";
+import {Held,LockBadge,LockMoment,PROVED_WORDS} from "./lock-art";
 import type {LineRef,RoomPuzzle} from "@/lib/world-schema";
 import {PUZZLE_POINTS,dialLetter,dialRight,lineTokens,refKey,sceneTray} from "@/lib/escape-room";
 
@@ -17,16 +18,20 @@ const flat=(t:string)=>t.replace(/\s+/g," ").trim();
 const KIND:Record<RoomPuzzle["type"],string>={code:"Code lock",painting:"Fix the Painting",scene:"Inspect the Scene"};
 
 // lineOf: a story sentence by paragraph and sentence (solo: from the source; live: the lines the server sent).
-export function PuzzleLock({puzzle,lineOf,readLines,seed,onDone,submit}:{puzzle:RoomPuzzle;lineOf:(r:LineRef)=>string|null;readLines:LineRef[];seed:string;onDone:(o:PuzzleOutcome)=>void;
+export function PuzzleLock({puzzle,lineOf,readLines,seed,onDone,submit,sound=false}:{puzzle:RoomPuzzle;lineOf:(r:LineRef)=>string|null;readLines:LineRef[];seed:string;onDone:(o:PuzzleOutcome)=>void;sound?:boolean;
  // Live: the phone sends its first try to the server (which scores it); solo scores here.
  submit?:(answer:Record<string,unknown>)=>void}){
+ // The large padlock at the top stays closed until the last part is checked (open: every part right on the first try).
+ const [opened,setOpened]=useState<null|boolean>(null);
+ const ends={sound,onOpened:(all:boolean)=>setOpened(all)};
  return <section aria-labelledby="pz-h" className="mx-auto flex w-full max-w-3xl flex-col gap-3">
-  <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-gold px-3 py-1 text-[13px] font-extrabold text-on-gold"><KeyRound size={14} aria-hidden/>Puzzle lock · {KIND[puzzle.type]}</p>
+  <div className="flex items-center gap-3"><LockBadge state={opened===null?"closed":opened?"proved":"quiet"}/>
+   <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-gold px-3 py-1 text-[13px] font-extrabold text-on-gold"><KeyRound size={14} aria-hidden/>Puzzle lock · {KIND[puzzle.type]}</p></div>
   <h1 id="pz-h" tabIndex={-1} className="text-[26px] leading-tight outline-none md:text-[30px]">{puzzle.title}</h1>
   {puzzle.prompt&&<p className="text-[17px] font-bold leading-snug">{puzzle.prompt}</p>}
-  {puzzle.type==="code"&&<CodeLock p={puzzle} lineOf={lineOf} onDone={onDone} submit={submit}/>}
-  {puzzle.type==="painting"&&<PaintingLock p={puzzle} lineOf={lineOf} readLines={readLines} onDone={onDone} submit={submit}/>}
-  {puzzle.type==="scene"&&<SceneLock p={puzzle} lineOf={lineOf} seed={seed} onDone={onDone} submit={submit}/>}
+  {puzzle.type==="code"&&<CodeLock p={puzzle} lineOf={lineOf} onDone={onDone} submit={submit} {...ends}/>}
+  {puzzle.type==="painting"&&<PaintingLock p={puzzle} lineOf={lineOf} readLines={readLines} onDone={onDone} submit={submit} {...ends}/>}
+  {puzzle.type==="scene"&&<SceneLock p={puzzle} lineOf={lineOf} seed={seed} onDone={onDone} submit={submit} {...ends}/>}
  </section>;
 }
 
@@ -47,9 +52,11 @@ function Picture({art,alt,spots,active,onSpot,tone}:{art?:string;alt:string;spot
 function LineButton({text,on,outline,onClick,disabled}:{text:string;on:boolean;outline?:boolean;onClick:()=>void;disabled?:boolean}){
  return <button type="button" disabled={disabled} aria-pressed={on} onClick={onClick} className={`reading-scope w-full rounded-row px-3 py-2 text-left font-serif text-[16px] leading-snug text-reading-ink disabled:opacity-70 ${on?"bg-line-picked shadow-[0_0_0_3px_var(--color-primary)]":outline?"bg-reading shadow-[0_0_0_3px_var(--color-line-wrong-edge)]":"bg-reading"}`}>{flat(text)}</button>;
 }
-const Opened=({points,of,onDone}:{points:number;of:string;onDone:()=>void})=><div role="status" className="moment-pop flex flex-col gap-3 rounded-card bg-success p-4 text-on-success">
- <p className="flex items-center gap-2 font-display text-[22px] font-bold"><LockOpen size={22} aria-hidden/>The lock is open{points>0?` · +${points.toLocaleString()}`:""}</p><p className="text-[15px] font-bold">{of}</p>
- <button type="button" onClick={onDone} className="case-primary min-h-[52px] w-full justify-center">Go on <ArrowRight size={18} aria-hidden/></button></div>;
+type Ends={sound?:boolean;onOpened?:(all:boolean)=>void};
+const Opened=({all,points,of,onDone,sound}:{all:boolean;points:number;of:string;onDone:()=>void;sound?:boolean})=><div className="flex flex-col gap-3 rounded-card bg-panel p-4">
+ <LockMoment kind={all?"proved":"quiet"} sound={sound} size="md" words={all?PROVED_WORDS:"The lock opens. The right answers are set."}/>
+ <Held skip={!all}><div className="flex flex-col gap-3"><p className="text-center text-[15px] font-bold">{points>0?`+${points.toLocaleString()} · `:""}{of}</p>
+ <button type="button" onClick={onDone} className="case-primary min-h-[52px] w-full justify-center">Go on <ArrowRight size={18} aria-hidden/></button></div></Held></div>;
 
 // ---------- One problem at a time ----------
 // Every puzzle lock asks one thing at a time (teacher, 2026-11-15): one dial, one mistake, one object. Each part is
@@ -59,7 +66,7 @@ const Progress=({at,of,label}:{at:number;of:number;label:string})=><p className=
 const Missed=({text}:{text:string})=><p role="status" className="rounded-row bg-notyet-soft px-3 py-2 text-[15px] font-bold">{text}</p>;
 
 // ---------- Code lock ----------
-function CodeLock({p,lineOf,onDone,submit}:{p:Code;lineOf:(r:LineRef)=>string|null;onDone:(o:PuzzleOutcome)=>void;submit?:(a:Record<string,unknown>)=>void}){
+function CodeLock({p,lineOf,onDone,submit,sound,onOpened}:{p:Code;lineOf:(r:LineRef)=>string|null;onDone:(o:PuzzleOutcome)=>void;submit?:(a:Record<string,unknown>)=>void}&Ends){
  const lines=p.dials.map(d=>lineOf(d.line)??"");
  // taps: each dial's first try; first: whether it was right; at: the dial being worked; fixedAt: a missed dial set with the outlined word.
  const [taps,setTaps]=useState<(number|null)[]>(()=>p.dials.map(()=>null)),[first,setFirst]=useState<(boolean|null)[]>(()=>p.dials.map(()=>null));
@@ -67,7 +74,7 @@ function CodeLock({p,lineOf,onDone,submit}:{p:Code;lineOf:(r:LineRef)=>string|nu
  const d=p.dials[at],toks=d?lineTokens(lines[at]):[],answer=d?toks.findIndex(t=>dialRight(d,lines[at],t.i)):-1,checked=first[at]!==null&&first[at]!==undefined,missed=checked&&first[at]===false&&!fixed;
  const done=at>=p.dials.length,right=first.filter(Boolean).length,points=right*PUZZLE_POINTS.dial;
  function check(){if(pick===null)return;const ok=dialRight(d,lines[at],pick);setTaps(x=>{const n=[...x];n[at]=pick;return n});setFirst(x=>{const n=[...x];n[at]=ok;return n})}
- function next(){const n=at+1;setAt(n);setPick(null);setFixed(false);if(n>=p.dials.length)submit?.({taps:taps})}
+ function next(){const n=at+1;setAt(n);setPick(null);setFixed(false);if(n>=p.dials.length){submit?.({taps:taps});onOpened?.(first.every(Boolean))}}
  const set=(k:number)=>first[k]!==null&&(k<at||first[k]||(k===at&&fixed));
  return <div className="flex flex-col gap-3">
   <div className="flex justify-center gap-2" aria-label="The code">{p.dials.map((x,k)=><span key={k} className={`grid h-14 w-12 place-items-center rounded-row border-[3px] font-display text-[28px] font-bold ${set(k)?"border-gold bg-gold text-on-gold":k===at&&!done?"border-primary bg-panel text-muted":"border-edge bg-panel text-muted"}`}>{set(k)?dialLetter(x):"?"}</span>)}</div>
@@ -80,14 +87,14 @@ function CodeLock({p,lineOf,onDone,submit}:{p:Code;lineOf:(r:LineRef)=>string|nu
    {!checked?<button type="button" disabled={pick===null} onClick={check} className="case-primary mt-3 min-h-[56px] w-full justify-center text-[18px]">Check this dial <ArrowRight size={18} aria-hidden/></button>
     :!missed&&<button type="button" onClick={next} className="case-primary mt-3 min-h-[56px] w-full justify-center text-[18px]">{at+1<p.dials.length?"Next dial":"Open the lock"} <ArrowRight size={18} aria-hidden/></button>}
   </fieldset>}
-  {done&&<Opened points={points} of={`${right} of ${p.dials.length} dials right on the first try.`} onDone={()=>onDone({id:p.id,type:"code",firstTry:first.map(Boolean),points})}/>}
+  {done&&<Opened all={right===p.dials.length} sound={sound} points={points} of={`${right} of ${p.dials.length} dials right on the first try.`} onDone={()=>onDone({id:p.id,type:"code",firstTry:first.map(Boolean),points})}/>}
  </div>;
 }
 
 // ---------- Fix the Painting ----------
 // One mistake at a time: tap one thing the painter got wrong, then the line that proves it, and check. After a miss, a
 // mistake still to be found is shown with its proof outlined; the student taps the line to go on.
-function PaintingLock({p,lineOf,readLines,onDone,submit}:{p:Painting;lineOf:(r:LineRef)=>string|null;readLines:LineRef[];onDone:(o:PuzzleOutcome)=>void;submit?:(a:Record<string,unknown>)=>void}){
+function PaintingLock({p,lineOf,readLines,onDone,submit,sound,onOpened}:{p:Painting;lineOf:(r:LineRef)=>string|null;readLines:LineRef[];onDone:(o:PuzzleOutcome)=>void;submit?:(a:Record<string,unknown>)=>void}&Ends){
  const lines=readLines.map(r=>({r,text:lineOf(r)??""})).filter(l=>l.text),wrongs=p.details.filter(d=>d.wrong);
  // marks/proofs: each mistake's first try (in order); found: wrong details caught or revealed; at: the mistake being worked.
  const [marks,setMarks]=useState<string[]>([]),[proofs,setProofs]=useState<Record<string,LineRef|null>>({}),[found,setFound]=useState<string[]>([]);
@@ -98,7 +105,7 @@ function PaintingLock({p,lineOf,readLines,onDone,submit}:{p:Painting;lineOf:(r:L
   // A miss shows a mistake still to find: the one they marked if it was wrong, otherwise the first one not found yet.
   const reveal=ok?null:(d.wrong&&!found.includes(d.id)?d.id:wrongs.find(w=>!found.includes(w.id))?.id??null);
   setFound(f=>[...f,ok?mark:reveal].filter((x):x is string=>!!x));setResult({ok,reveal})}
- function next(){const n=at+1;setAt(n);setMark(null);setLine(null);setResult(null);setFixed(false);if(n>=p.wrong)submit?.({marks,proofs})}
+ function next(){const n=at+1;setAt(n);setMark(null);setLine(null);setResult(null);setFixed(false);if(n>=p.wrong){submit?.({marks,proofs});onOpened?.(firstTry.every(Boolean))}}
  const revealed=result?.reveal?p.details.find(x=>x.id===result.reveal):null;
  const active=(id:string)=>found.includes(id)&&!(result&&!result.ok&&!fixed&&id===result.reveal)?"right":result&&!result.ok&&id===result.reveal?"missed":id===mark?"on":"off";
  const firstTry=wrongs.map(w=>{const i=marks.indexOf(w.id);return i>=0&&p.details.find(x=>x.id===w.id)!.lines.some(l=>proofs[w.id]&&refKey(l)===refKey(proofs[w.id]!))});
@@ -118,20 +125,20 @@ function PaintingLock({p,lineOf,readLines,onDone,submit}:{p:Painting;lineOf:(r:L
    {result&&!result.ok&&!fixed&&revealed&&<><Missed text={`Not yet. One mistake is “${revealed.label}”: tap the outlined line that proves it.`}/>
     {lines.filter(l=>revealed.lines.some(x=>refKey(x)===refKey(l.r))).map(l=><LineButton key={refKey(l.r)} text={l.text} on={false} outline onClick={()=>setFixed(true)}/>)}</>}
   </div>}
-  {done&&<Opened points={points} of={`${firstTry.filter(Boolean).length} of ${p.wrong} mistakes caught and proven on the first try.`} onDone={()=>onDone({id:p.id,type:"painting",firstTry,points})}/>}
+  {done&&<Opened all={firstTry.every(Boolean)} sound={sound} points={points} of={`${firstTry.filter(Boolean).length} of ${p.wrong} mistakes caught and proven on the first try.`} onDone={()=>onDone({id:p.id,type:"painting",firstTry,points})}/>}
  </div>;
 }
 
 // ---------- Inspect the Scene ----------
 // One object at a time, in order: the object glows in the picture, the student picks its line from the tray and checks.
-function SceneLock({p,lineOf,seed,onDone,submit}:{p:Scene;lineOf:(r:LineRef)=>string|null;seed:string;onDone:(o:PuzzleOutcome)=>void;submit?:(a:Record<string,unknown>)=>void}){
+function SceneLock({p,lineOf,seed,onDone,submit,sound,onOpened}:{p:Scene;lineOf:(r:LineRef)=>string|null;seed:string;onDone:(o:PuzzleOutcome)=>void;submit?:(a:Record<string,unknown>)=>void}&Ends){
  const tray=useMemo(()=>sceneTray(p,seed),[p,seed]);
  const [at,setAt]=useState(0),[pick,setPick]=useState<LineRef|null>(null),[matches,setMatches]=useState<Record<string,LineRef|null>>({}),[first,setFirst]=useState<boolean[]>([]),[fixed,setFixed]=useState(false);
  const obj=p.objects[at],done=at>=p.objects.length,checked=first[at]!==undefined,missed=checked&&!first[at]&&!fixed;
  // Lines already explained (matched right, or set after a miss) leave the tray.
  const settled=p.objects.slice(0,at).map(o=>refKey(o.line));
  function check(){if(!pick||!obj)return;setMatches(m=>({...m,[obj.id]:pick}));setFirst(f=>{const n=[...f];n[at]=refKey(pick)===refKey(obj.line);return n})}
- function next(){const n=at+1;setAt(n);setPick(null);setFixed(false);if(n>=p.objects.length)submit?.({matches})}
+ function next(){const n=at+1;setAt(n);setPick(null);setFixed(false);if(n>=p.objects.length){submit?.({matches});onOpened?.(p.objects.every((_,i)=>!!first[i]))}}
  const right=first.filter(Boolean).length,points=right*PUZZLE_POINTS.object;
  const active=(id:string)=>{const i=p.objects.findIndex(o=>o.id===id);return i<at?"right":i===at&&!done?(missed?"missed":"on"):"off"};
  return <div className="flex flex-col gap-3">
@@ -144,6 +151,6 @@ function SceneLock({p,lineOf,seed,onDone,submit}:{p:Scene;lineOf:(r:LineRef)=>st
    {checked&&!missed&&<><p role="status" className="font-display text-[17px] font-bold">{first[at]?"Right: that line explains it.":"That one's set."}</p><LineButton text={lineOf(obj.line)??""} on={false} onClick={()=>{}} disabled/>
     <button type="button" onClick={next} className="case-primary min-h-[52px] w-full justify-center">{at+1<p.objects.length?"Next object":"Open the lock"} <ArrowRight size={18} aria-hidden/></button></>}
   </div>}
-  {done&&<Opened points={points} of={`${right} of ${p.objects.length} objects matched on the first try.`} onDone={()=>onDone({id:p.id,type:"scene",firstTry:p.objects.map((_,i)=>!!first[i]),points})}/>}
+  {done&&<Opened all={right===p.objects.length} sound={sound} points={points} of={`${right} of ${p.objects.length} objects matched on the first try.`} onDone={()=>onDone({id:p.id,type:"scene",firstTry:p.objects.map((_,i)=>!!first[i]),points})}/>}
  </div>;
 }

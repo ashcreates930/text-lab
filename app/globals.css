@@ -291,3 +291,16 @@ html[data-look="mature"] .notyet-panel.notyet-shake{animation:none}
 @keyframes scene-glow{0%,100%{opacity:.55;transform:scale(.92)}50%{opacity:.9;transform:scale(1.05)}}
 .scene-glow{background:radial-gradient(circle,rgba(255,213,138,.42) 0%,rgba(255,194,102,.16) 55%,rgba(255,194,102,0) 75%);animation:scene-glow 2.4s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){.scene-glow{animation:none;opacity:.8}}
+
+/* The padlock and door (app/lock-art.tsx): the shackle springs open on a first-try proof; a quiet opening and reduced
+   motion swap straight to open. The door leaf swings after its padlock opens. */
+.padlock .padlock-shackle{transform-box:view-box;transform-origin:7px 11px;transition:transform .55s cubic-bezier(.3,1.9,.45,1)}
+.padlock[data-open="true"] .padlock-shackle{transform:translateY(-2px) rotate(-18deg)}
+.padlock-quiet .padlock-shackle{transition:none}
+@keyframes lock-pop{0%{transform:scale(1)}45%{transform:scale(1.12)}100%{transform:scale(1)}}
+.lock-badge{transition:border-color .3s,color .3s}
+.lock-badge.lock-proved{animation:lock-pop .6s .12s ease-out both}
+.door-leaf{transition:transform 1.1s cubic-bezier(.3,.7,.3,1)}
+.door-leaf.door-leaf-open{transform:rotateY(-78deg)}
+@media (prefers-reduced-motion:reduce){.padlock .padlock-shackle,.lock-badge,.door-leaf{transition:none}.lock-badge.lock-proved{animation:none}}
+html[data-motion="reduced"] :is(.padlock .padlock-shackle,.lock-badge,.door-leaf){transition:none}html[data-motion="reduced"] .lock-badge.lock-proved{animation:none}
