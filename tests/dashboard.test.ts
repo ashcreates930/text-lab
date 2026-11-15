@@ -33,5 +33,8 @@ test("escape-room wording: the home page, the map, the dashboard and the CSV", (
   assert.match(dash, />Escape rooms<\/h3>/); assert.doesNotMatch(dash, /Proof Race expeditions|Solo expeditions/);
   for (const t of ["Locks opened", "Puzzles solved on the first try", "Liars caught", "Which chamber each student reached", "Chamber reached"]) assert.ok(dash.includes(t), t);
   assert.match(readFileSync("app/expedition-map.tsx", "utf8"), /"Escape rooms":"Room map"/);
+  assert.match(readFileSync("app/sneak-peek.tsx", "utf8"), /Escape room · Lock 6 of 10/);
+  // A room card shrinks on a phone so its table scrolls inside it (the browser check found the page 522 px wide at 390).
+  assert.match(dash, /<li key={x.id} className="min-w-0 rounded-3xl bg-panel p-5">/);
   assert.match(readFileSync("lib/classroom/evidence.ts", "utf8"), /"Room", "Student", "Chamber reached", "Locks opened", "Puzzles solved first try", "Liar caught"/);
 });

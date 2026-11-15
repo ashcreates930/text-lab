@@ -7,14 +7,16 @@ import type { ExpeditionAttempt } from "./expedition-progress.ts";
 import { provedFirstTry } from "./case-notes.ts";
 import { cluesAllowMastery, type ClueTier } from "./clues.ts";
 
-// The art waits for the teacher's approval (scripts/investigator-art.mjs). Until then the screens use plain icons.
+// The art waits for the teacher's approval (scripts/investigator-art.mjs); until then the screens use plain icons. The
+// gear art was approved 2026-11-15; the revised avatars are awaiting approval.
 export const INVESTIGATOR_ART_APPROVED = false;
+export const GEAR_ART_APPROVED = true;
 
 export const AVATARS = [
   { id: "investigator-1", alt: "An investigator with short curly hair and a mustard-yellow scarf" },
   { id: "investigator-2", alt: "An investigator with freckles, red hair and a green scarf" },
   { id: "investigator-3", alt: "An investigator with a long black braid and a red scarf" },
-  { id: "investigator-4", alt: "An investigator with round glasses and a navy scarf" },
+  { id: "investigator-4", alt: "An investigator with rectangular glasses, a camel coat and a grey scarf" },
   { id: "investigator-5", alt: "An investigator in a grey cap with a rust-orange scarf" },
   { id: "investigator-6", alt: "An investigator in a knitted hat with a plum scarf" },
 ] as const;
@@ -32,7 +34,7 @@ export const GEAR: { id: GearId; name: string; earn: string; need: (p: Proofs) =
   { id: "compass", name: "Pocket compass", earn: "Prove 15 locks with a line on the first try.", need: (p) => ({ have: p.locks, need: 15 }) },
   { id: "ledger", name: "Casebook", earn: "Prove 40 locks with a line on the first try.", need: (p) => ({ have: p.locks, need: 40 }) },
 ];
-export const gearSrc = (id: GearId) => (INVESTIGATOR_ART_APPROVED ? `/investigator/gear/${id}.png` : null);
+export const gearSrc = (id: GearId) => (GEAR_ART_APPROVED ? `/investigator/gear/${id}.png` : null);
 
 // What a student has proved, across every attempt: each lock, puzzle and liar counts once (a replay that proves a lock
 // already proved adds nothing), and only proofs with no clue past tier 1.

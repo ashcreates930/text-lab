@@ -22,8 +22,8 @@ test("gear comes from proof only: each lock once, never with a tier 2 or 3 clue,
 
 test("avatars: six original investigators; only a known one is saved; the art waits for approval", () => {
   assert.equal(AVATARS.length, 6); assert.deepEqual(parseAvatar({ id: "investigator-3" }), { id: "investigator-3" }); assert.equal(parseAvatar({ id: "someone" }), null);
-  assert.equal(INVESTIGATOR_ART_APPROVED, false, "the teacher approves the art before it shows");
-  assert.equal(avatarSrc("investigator-1"), null); assert.equal(gearSrc("lantern"), null);
+  assert.equal(INVESTIGATOR_ART_APPROVED, false, "the revised avatars wait for approval");
+  assert.equal(avatarSrc("investigator-1"), null); assert.equal(gearSrc("lantern"), "/investigator/gear/lantern.png", "gear art approved 2026-11-15");
   for (const a of AVATARS) assert.ok(existsSync(`public/investigator/avatars/${a.id}.webp`), a.id);
   for (const g of ["lantern", "quill", "magnifier", "key", "compass", "ledger"]) assert.ok(existsSync(`public/investigator/gear/${g}.png`), g);
 });

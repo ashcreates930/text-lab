@@ -11,15 +11,15 @@ const req = createRequire(root + "/package.json");
 const OpenAI = req("openai").default, sharp = req("sharp"); sharp.cache(false);
 const key = (fs.readFileSync(root + "/.env.local", "utf8").match(/^OPENAI_API_KEY=(.*)$/m) || [])[1]?.trim().replace(/^"|"$/g, "");
 const client = new OpenAI({ apiKey: key });
-const PORTRAIT = "An original hand-painted portrait in a painterly storybook style: textured brushwork, warm candlelit browns and teal, soft dark background with a gentle glow behind the head, head and shoulders, looking at the viewer with a friendly, curious expression. A young investigator of about thirteen, age-appropriate and fully clothed for a middle school app: a long wool coat with a turned-up collar, a knitted scarf, a leather satchel strap across the chest. Timeless clothing that fits any old story, nothing modern, no logos. No text, no frame. Not a real person.";
+const PORTRAIT = "An original hand-painted portrait in a painterly storybook style: textured brushwork, warm candlelit browns and teal, soft dark background with a gentle glow behind the head, head and shoulders, looking at the viewer with a friendly, curious expression. A young investigator (the age given below), fully clothed and right for a school app used in grades 6 to 12: a long wool coat with a turned-up collar, a knitted scarf, a leather satchel strap across the chest. Timeless clothing that fits any old story, nothing modern, no logos. No text, no frame. Not a real person.";
 const OBJECT = "An original hand-painted object in a painterly storybook style: textured brushwork, warm brass, leather and wood tones, soft rim light, the single object centered with a little space around it, on a fully transparent background, no shadow box, no text.";
 const AVATARS = {
-  "investigator-1": "A girl with dark brown skin and short natural curly hair, a mustard-yellow scarf.",
-  "investigator-2": "A boy with light skin, freckles and messy red hair, a deep green scarf.",
-  "investigator-3": "A girl with light brown skin and long black hair in a braid over one shoulder, a deep red scarf.",
-  "investigator-4": "A boy with East Asian features and straight black hair, round wire glasses, a navy blue scarf.",
-  "investigator-5": "A boy with dark brown skin and close-cropped hair, a grey wool cap, a rust-orange scarf.",
-  "investigator-6": "A girl with olive skin and wavy brown hair under a soft knitted hat, a plum-purple scarf.",
+  "investigator-1": "An older teenage girl of about sixteen, clearly a high schooler with a mature, confident face: dark brown skin and short natural curly hair, a mustard-yellow scarf.",
+  "investigator-2": "A boy of about twelve, a middle schooler: light skin, freckles and messy red hair, a deep green scarf.",
+  "investigator-3": "A young woman of about seventeen, clearly a high school senior with a mature face: light brown skin and long black hair in a braid over one shoulder, a deep red scarf.",
+  "investigator-4": "A teenage boy of about sixteen, clearly a high schooler: East Asian features, short black hair neatly swept back with a side part, thick dark rectangular glasses, a camel-brown wool coat instead of a dark one, a slate-grey scarf. Not resembling any famous film or book character.",
+  "investigator-5": "A teenage boy of about fifteen, clearly a high schooler, tall with a calm, thoughtful face: dark brown skin and close-cropped hair, a grey wool cap, a rust-orange scarf.",
+  "investigator-6": "A girl of about thirteen, a middle schooler: olive skin and wavy brown hair under a soft knitted hat, a plum-purple scarf.",
 };
 const GEAR = {
   lantern: "A small brass hand lantern with glass panes and a warm glowing candle inside.",
