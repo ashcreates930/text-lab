@@ -1,14 +1,15 @@
 "use client";
 // The puzzle locks (rules: lib/escape-room.ts), each solved only by reading: the code lock (tap the word in a line
-// that answers each dial; its letter shows only once it's right), Fix the Painting (mark the painter's mistakes, then
-// prove each with a line) and Inspect the Scene (match each object to the line that explains it). One try scores;
-// after a miss the right answer is outlined and the student taps it to open the lock (0 points, recorded as a miss).
+// that answers each dial; its letter shows only once it's right), Fix the Painting (find one of the painter's mistakes
+// and prove it with a line) and Inspect the Scene (match one object to the line that explains it), one problem at a
+// time. One try scores; after a miss the right answer is outlined and the student taps it to go on (0 points,
+// recorded as a miss).
 // Shared by the solo room and the live phones. Every hotspot is a real button, and the same items are listed below
 // the picture, so the puzzle works by keyboard and screen reader and at phone width.
 import {useMemo,useState} from "react";
-import {ArrowRight,Check,KeyRound,LockOpen,Search} from "lucide-react";
+import {ArrowRight,KeyRound,LockOpen,Search} from "lucide-react";
 import type {LineRef,RoomPuzzle} from "@/lib/world-schema";
-import {codeResultOf,dialLetter,dialRight,lineTokens,paintingResult,refKey,sceneResult,sceneTray} from "@/lib/escape-room";
+import {PUZZLE_POINTS,dialLetter,dialRight,lineTokens,refKey,sceneTray} from "@/lib/escape-room";
 
 export type PuzzleOutcome={id:string;type:RoomPuzzle["type"];firstTry:boolean[];points:number};
 type Code=Extract<RoomPuzzle,{type:"code"}>;type Painting=Extract<RoomPuzzle,{type:"painting"}>;type Scene=Extract<RoomPuzzle,{type:"scene"}>;
@@ -50,79 +51,99 @@ const Opened=({points,of,onDone}:{points:number;of:string;onDone:()=>void})=><di
  <p className="flex items-center gap-2 font-display text-[22px] font-bold"><LockOpen size={22} aria-hidden/>The lock is open{points>0?` · +${points.toLocaleString()}`:""}</p><p className="text-[15px] font-bold">{of}</p>
  <button type="button" onClick={onDone} className="case-primary min-h-[52px] w-full justify-center">Go on <ArrowRight size={18} aria-hidden/></button></div>;
 
+// ---------- One problem at a time ----------
+// Every puzzle lock asks one thing at a time (teacher, 2026-11-15): one dial, one mistake, one object. Each part is
+// checked on its own before the next appears. Only its first try counts; after a miss the right answer is outlined and
+// the student taps it to go on (0 points for that part). The whole first-try answer goes to the server once, at the end.
+const Progress=({at,of,label}:{at:number;of:number;label:string})=><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{label} {Math.min(at+1,of)} of {of}</p>;
+const Missed=({text}:{text:string})=><p role="status" className="rounded-row bg-notyet-soft px-3 py-2 text-[15px] font-bold">{text}</p>;
+
 // ---------- Code lock ----------
 function CodeLock({p,lineOf,onDone,submit}:{p:Code;lineOf:(r:LineRef)=>string|null;onDone:(o:PuzzleOutcome)=>void;submit?:(a:Record<string,unknown>)=>void}){
  const lines=p.dials.map(d=>lineOf(d.line)??"");
- const [taps,setTaps]=useState<(number|null)[]>(()=>p.dials.map(()=>null)),[first,setFirst]=useState<boolean[]|null>(null),[fixed,setFixed]=useState<boolean[]>(()=>p.dials.map(()=>false));
- const ready=taps.every(t=>t!==null);
- function lock(){const r=codeResultOf(p,lines,taps);setFirst(r.right);setFixed(r.right);submit?.({taps})}
- const open=!!first&&fixed.every(Boolean),points=first?first.filter(Boolean).length*150:0;
+ // taps: each dial's first try; first: whether it was right; at: the dial being worked; fixedAt: a missed dial set with the outlined word.
+ const [taps,setTaps]=useState<(number|null)[]>(()=>p.dials.map(()=>null)),[first,setFirst]=useState<(boolean|null)[]>(()=>p.dials.map(()=>null));
+ const [at,setAt]=useState(0),[pick,setPick]=useState<number|null>(null),[fixed,setFixed]=useState(false);
+ const d=p.dials[at],toks=d?lineTokens(lines[at]):[],answer=d?toks.findIndex(t=>dialRight(d,lines[at],t.i)):-1,checked=first[at]!==null&&first[at]!==undefined,missed=checked&&first[at]===false&&!fixed;
+ const done=at>=p.dials.length,right=first.filter(Boolean).length,points=right*PUZZLE_POINTS.dial;
+ function check(){if(pick===null)return;const ok=dialRight(d,lines[at],pick);setTaps(x=>{const n=[...x];n[at]=pick;return n});setFirst(x=>{const n=[...x];n[at]=ok;return n})}
+ function next(){const n=at+1;setAt(n);setPick(null);setFixed(false);if(n>=p.dials.length)submit?.({taps:taps})}
+ const set=(k:number)=>first[k]!==null&&(k<at||first[k]||(k===at&&fixed));
  return <div className="flex flex-col gap-3">
-  <div className="flex justify-center gap-2" aria-label="The code">{p.dials.map((d,k)=><span key={k} className={`grid h-14 w-12 place-items-center rounded-row border-[3px] font-display text-[28px] font-bold ${fixed[k]?"border-gold bg-gold text-on-gold":"border-edge bg-panel text-muted"}`}>{fixed[k]?dialLetter(d):"?"}</span>)}</div>
-  {p.dials.map((d,k)=>{const toks=lineTokens(lines[k]),answer=toks.findIndex(t=>dialRight(d,lines[k],t.i)),done=fixed[k],missed=!!first&&!first[k];
-   return <fieldset key={k} className="rounded-card bg-panel p-3"><legend className="px-1 font-display text-[18px] font-bold">Dial {k+1}: {d.question}</legend>
-    {missed&&!done&&<p className="mb-2 text-[14px] font-bold text-muted">Not yet. The word that answers is outlined: tap it to set this dial.</p>}
-    <p className="reading-scope rounded-row bg-reading p-3 font-serif text-[17px] leading-[1.9] text-reading-ink">{toks.map(t=>{const on=taps[k]===t.i,out=missed&&!done&&t.i===answer;
-     return <span key={t.i}>{t.i>0?" ":""}<button type="button" disabled={done||(!!first&&!missed)} aria-pressed={on} onClick={()=>{if(!first){setTaps(x=>{const n=[...x];n[k]=t.i;return n})}else if(missed&&t.i===answer)setFixed(f=>{const n=[...f];n[k]=true;return n})}}
-      className={`rounded px-0.5 ${done&&t.i===answer?"bg-line-right shadow-[0_0_0_2px_var(--color-line-right-edge)]":on&&!first?"bg-line-picked shadow-[0_0_0_2px_var(--color-primary)]":out?"shadow-[0_0_0_2px_var(--color-line-wrong-edge)]":"hover:bg-line-picked/50"}`}>{t.text}</button></span>})}</p></fieldset>})}
-  {!first?<button type="button" disabled={!ready} onClick={lock} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Lock in the code <ArrowRight size={18} aria-hidden/></button>
-   :open?<Opened points={points} of={`${first.filter(Boolean).length} of ${p.dials.length} dials right on the first try.`} onDone={()=>onDone({id:p.id,type:"code",firstTry:first,points})}/>
-   :<p role="status" className="rounded-row bg-notyet-soft px-3 py-2 text-[15px] font-bold">{first.filter(Boolean).length} of {p.dials.length} dials right. Tap the outlined words to set the rest.</p>}
+  <div className="flex justify-center gap-2" aria-label="The code">{p.dials.map((x,k)=><span key={k} className={`grid h-14 w-12 place-items-center rounded-row border-[3px] font-display text-[28px] font-bold ${set(k)?"border-gold bg-gold text-on-gold":k===at&&!done?"border-primary bg-panel text-muted":"border-edge bg-panel text-muted"}`}>{set(k)?dialLetter(x):"?"}</span>)}</div>
+  {!done&&d&&<fieldset key={at} className="rounded-card bg-panel p-3"><Progress at={at} of={p.dials.length} label="Dial"/><legend className="sr-only">Dial {at+1} of {p.dials.length}</legend>
+   <p className="mt-1 font-display text-[19px] font-bold">{d.question}</p>
+   <p className="mt-1 text-[14px] font-bold text-muted">{missed?"Not yet. The word that answers is outlined: tap it to set this dial.":checked?"Right. The dial is set.":"Tap the word in this line that answers, then check it."}</p>
+   <p className="reading-scope mt-2 rounded-row bg-reading p-3 font-serif text-[17px] leading-[1.9] text-reading-ink">{toks.map(t=>{const on=!checked&&pick===t.i,out=missed&&t.i===answer,good=checked&&!missed&&t.i===answer;
+    return <span key={t.i}>{t.i>0?" ":""}<button type="button" disabled={checked&&!missed} aria-pressed={on} onClick={()=>{if(!checked)setPick(t.i);else if(missed&&t.i===answer)setFixed(true)}}
+     className={`rounded px-0.5 ${good?"bg-line-right shadow-[0_0_0_2px_var(--color-line-right-edge)]":on?"bg-line-picked shadow-[0_0_0_2px_var(--color-primary)]":out?"shadow-[0_0_0_2px_var(--color-line-wrong-edge)]":"hover:bg-line-picked/50"}`}>{t.text}</button></span>})}</p>
+   {!checked?<button type="button" disabled={pick===null} onClick={check} className="case-primary mt-3 min-h-[56px] w-full justify-center text-[18px]">Check this dial <ArrowRight size={18} aria-hidden/></button>
+    :!missed&&<button type="button" onClick={next} className="case-primary mt-3 min-h-[56px] w-full justify-center text-[18px]">{at+1<p.dials.length?"Next dial":"Open the lock"} <ArrowRight size={18} aria-hidden/></button>}
+  </fieldset>}
+  {done&&<Opened points={points} of={`${right} of ${p.dials.length} dials right on the first try.`} onDone={()=>onDone({id:p.id,type:"code",firstTry:first.map(Boolean),points})}/>}
  </div>;
 }
 
 // ---------- Fix the Painting ----------
+// One mistake at a time: tap one thing the painter got wrong, then the line that proves it, and check. After a miss, a
+// mistake still to be found is shown with its proof outlined; the student taps the line to go on.
 function PaintingLock({p,lineOf,readLines,onDone,submit}:{p:Painting;lineOf:(r:LineRef)=>string|null;readLines:LineRef[];onDone:(o:PuzzleOutcome)=>void;submit?:(a:Record<string,unknown>)=>void}){
- const [marks,setMarks]=useState<string[]>([]),[step,setStep]=useState<"mark"|"prove"|"done">("mark"),[proofs,setProofs]=useState<Record<string,LineRef|null>>({}),[at,setAt]=useState(0);
- const [result,setResult]=useState<{caught:boolean[];points:number}|null>(null),[fixed,setFixed]=useState<Record<string,boolean>>({});
- const lines=readLines.map(r=>({r,text:lineOf(r)??""})).filter(l=>l.text);
- const wrongs=p.details.filter(d=>d.wrong);
- function lock(){const r=paintingResult(p,marks,proofs);if(typeof r==="string")return;setResult(r);submit?.({marks,proofs});setStep("done")}
- const active=(id:string)=>step==="done"?(p.details.find(d=>d.id===id)?.wrong?(marks.includes(id)&&result?.caught[marks.indexOf(id)]?"right":"missed"):"off"):marks.includes(id)?"on":"off";
- // After the try: every mistake not caught is shown with its line outlined; the student taps it to open the lock.
- const missed=step==="done"&&result?wrongs.filter(d=>!(marks.includes(d.id)&&result.caught[marks.indexOf(d.id)])):[];
- const open=step==="done"&&missed.every(d=>fixed[d.id]);
- const firstTry=wrongs.map(d=>marks.includes(d.id)&&!!result?.caught[marks.indexOf(d.id)]);
- const cur=marks[at];
+ const lines=readLines.map(r=>({r,text:lineOf(r)??""})).filter(l=>l.text),wrongs=p.details.filter(d=>d.wrong);
+ // marks/proofs: each mistake's first try (in order); found: wrong details caught or revealed; at: the mistake being worked.
+ const [marks,setMarks]=useState<string[]>([]),[proofs,setProofs]=useState<Record<string,LineRef|null>>({}),[found,setFound]=useState<string[]>([]);
+ const [at,setAt]=useState(0),[mark,setMark]=useState<string|null>(null),[line,setLine]=useState<LineRef|null>(null),[result,setResult]=useState<null|{ok:boolean;reveal:string|null}>(null),[fixed,setFixed]=useState(false);
+ const done=at>=p.wrong,cur=p.details.find(x=>x.id===mark);
+ function check(){if(!mark||!line)return;const d=p.details.find(x=>x.id===mark)!,ok=!!d.wrong&&d.lines.some(l=>refKey(l)===refKey(line));
+  setMarks(m=>[...m,mark]);setProofs(x=>({...x,[mark]:line}));
+  // A miss shows a mistake still to find: the one they marked if it was wrong, otherwise the first one not found yet.
+  const reveal=ok?null:(d.wrong&&!found.includes(d.id)?d.id:wrongs.find(w=>!found.includes(w.id))?.id??null);
+  setFound(f=>[...f,ok?mark:reveal].filter((x):x is string=>!!x));setResult({ok,reveal})}
+ function next(){const n=at+1;setAt(n);setMark(null);setLine(null);setResult(null);setFixed(false);if(n>=p.wrong)submit?.({marks,proofs})}
+ const revealed=result?.reveal?p.details.find(x=>x.id===result.reveal):null;
+ const active=(id:string)=>found.includes(id)&&!(result&&!result.ok&&!fixed&&id===result.reveal)?"right":result&&!result.ok&&id===result.reveal?"missed":id===mark?"on":"off";
+ const firstTry=wrongs.map(w=>{const i=marks.indexOf(w.id);return i>=0&&p.details.find(x=>x.id===w.id)!.lines.some(l=>proofs[w.id]&&refKey(l)===refKey(proofs[w.id]!))});
+ const points=firstTry.filter(Boolean).length*PUZZLE_POINTS.mistake;
+ const choosable=(id:string)=>!result&&!found.includes(id);
  return <div className="flex flex-col gap-3">
-  <Picture art={p.art} alt={p.alt} tone="painting" spots={p.details} active={active} onSpot={id=>{if(step!=="mark")return;setMarks(m=>m.includes(id)?m.filter(x=>x!==id):m.length>=p.wrong?m:[...m,id])}}/>
-  <ol className="grid gap-2 sm:grid-cols-2">{p.details.map((d,i)=>{const st=active(d.id);return <li key={d.id}><button type="button" disabled={step!=="mark"} aria-pressed={marks.includes(d.id)} onClick={()=>setMarks(m=>m.includes(d.id)?m.filter(x=>x!==d.id):m.length>=p.wrong?m:[...m,d.id])}
-   className={`flex min-h-11 w-full items-center gap-2 rounded-row px-3 py-2 text-left text-[15px] font-bold ${st==="on"?"bg-primary text-on-primary":st==="right"?"bg-success text-on-success":st==="missed"?"bg-notyet text-on-notyet":"bg-panel text-ink"}`}><span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-deep font-display text-ink">{i+1}</span>{d.label}</button></li>})}</ol>
-  {step==="mark"&&<><p className="text-[15px] font-bold text-muted">{marks.length} of {p.wrong} marked.</p><button type="button" disabled={marks.length!==p.wrong} onClick={()=>{setAt(0);setStep("prove")}} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Next: prove each mistake <ArrowRight size={18} aria-hidden/></button></>}
-  {step==="prove"&&cur&&<div className="flex flex-col gap-2 rounded-card bg-panel p-3"><p className="font-display text-[18px] font-bold">Mistake {at+1} of {p.wrong}: “{p.details.find(d=>d.id===cur)?.label}”. Tap the line that proves the painter wrong.</p>
-   {lines.map(l=><LineButton key={refKey(l.r)} text={l.text} on={!!proofs[cur]&&refKey(proofs[cur]!)===refKey(l.r)} onClick={()=>setProofs(x=>({...x,[cur]:l.r}))}/>)}
-   <div className="flex gap-2">{at>0&&<button type="button" onClick={()=>setAt(at-1)} className="case-secondary">Back</button>}
-    {at+1<marks.length?<button type="button" disabled={!proofs[cur]} onClick={()=>setAt(at+1)} className="case-primary flex-1 justify-center">Next mistake <ArrowRight size={18} aria-hidden/></button>
-     :<button type="button" disabled={!marks.every(m=>proofs[m])} onClick={lock} className="case-primary flex-1 justify-center">Lock in <ArrowRight size={18} aria-hidden/></button>}</div></div>}
-  {step==="done"&&!open&&<div className="flex flex-col gap-2 rounded-card border-2 border-dashed border-line-wrong-edge bg-panel p-3"><p className="font-display text-[18px] font-bold">Not yet. {missed.length===1?"This is the mistake":"These are the mistakes"} the painter made: tap the outlined line to open the lock.</p>
-   {missed.filter(d=>!fixed[d.id]).map(d=>{const ok=d.lines.map(refKey);return <div key={d.id} className="flex flex-col gap-1.5"><p className="text-[15px] font-bold">“{d.label}”</p>
-    {lines.filter(l=>ok.includes(refKey(l.r))).map(l=><LineButton key={refKey(l.r)} text={l.text} on={false} outline onClick={()=>setFixed(f=>({...f,[d.id]:true}))}/>)}</div>})}</div>}
-  {open&&<Opened points={result?.points??0} of={`${firstTry.filter(Boolean).length} of ${p.wrong} mistakes caught and proven on the first try.`} onDone={()=>onDone({id:p.id,type:"painting",firstTry,points:result?.points??0})}/>}
+  <Picture art={p.art} alt={p.alt} tone="painting" spots={p.details} active={active} onSpot={id=>{if(choosable(id)){setMark(id);setLine(null)}}}/>
+  {!done&&<div className="flex flex-col gap-2 rounded-card bg-panel p-3"><Progress at={at} of={p.wrong} label="Mistake"/>
+   {!mark&&!result&&<><p className="font-display text-[18px] font-bold">Tap one thing the painter got wrong.</p>
+    <ol className="grid gap-2 sm:grid-cols-2">{p.details.map((x,i)=><li key={x.id}><button type="button" disabled={!choosable(x.id)} onClick={()=>{setMark(x.id);setLine(null)}} className={`flex min-h-11 w-full items-center gap-2 rounded-row px-3 py-2 text-left text-[15px] font-bold disabled:opacity-60 ${found.includes(x.id)?"bg-success text-on-success":"bg-panel-2 text-ink"}`}><span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-deep font-display text-ink">{i+1}</span>{x.label}{found.includes(x.id)?" (found)":""}</button></li>)}</ol></>}
+   {mark&&!result&&cur&&<><p className="font-display text-[18px] font-bold">“{cur.label}”. Now tap the line that proves the painter wrong.</p>
+    {lines.map(l=><LineButton key={refKey(l.r)} text={l.text} on={!!line&&refKey(line)===refKey(l.r)} onClick={()=>setLine(l.r)}/>)}
+    <div className="flex gap-2"><button type="button" onClick={()=>{setMark(null);setLine(null)}} className="case-secondary">Pick another</button>
+     <button type="button" disabled={!line} onClick={check} className="case-primary flex-1 justify-center">Check this mistake <ArrowRight size={18} aria-hidden/></button></div></>}
+   {result&&(result.ok||fixed)&&<><p role="status" className="font-display text-[18px] font-bold">{result.ok?"Right: that's a mistake, and the line proves it.":"That one's set."}</p>
+    <button type="button" onClick={next} className="case-primary min-h-[52px] w-full justify-center">{at+1<p.wrong?"Next mistake":"Open the lock"} <ArrowRight size={18} aria-hidden/></button></>}
+   {result&&!result.ok&&!fixed&&revealed&&<><Missed text={`Not yet. One mistake is “${revealed.label}”: tap the outlined line that proves it.`}/>
+    {lines.filter(l=>revealed.lines.some(x=>refKey(x)===refKey(l.r))).map(l=><LineButton key={refKey(l.r)} text={l.text} on={false} outline onClick={()=>setFixed(true)}/>)}</>}
+  </div>}
+  {done&&<Opened points={points} of={`${firstTry.filter(Boolean).length} of ${p.wrong} mistakes caught and proven on the first try.`} onDone={()=>onDone({id:p.id,type:"painting",firstTry,points})}/>}
  </div>;
 }
 
 // ---------- Inspect the Scene ----------
+// One object at a time, in order: the object glows in the picture, the student picks its line from the tray and checks.
 function SceneLock({p,lineOf,seed,onDone,submit}:{p:Scene;lineOf:(r:LineRef)=>string|null;seed:string;onDone:(o:PuzzleOutcome)=>void;submit?:(a:Record<string,unknown>)=>void}){
  const tray=useMemo(()=>sceneTray(p,seed),[p,seed]);
- const [sel,setSel]=useState<string>(p.objects[0].id),[matches,setMatches]=useState<Record<string,LineRef|null>>({});
- const [result,setResult]=useState<boolean[]|null>(null),[fixed,setFixed]=useState<Record<string,boolean>>({});
- const used=(r:LineRef,except:string)=>Object.entries(matches).some(([o,m])=>o!==except&&m&&refKey(m)===refKey(r));
- function lock(){const r=sceneResult(p,matches);setResult(r.right);submit?.({matches})}
- const k=p.objects.findIndex(o=>o.id===sel),obj=p.objects[k];
- const done=(id:string)=>!!result&&(result[p.objects.findIndex(o=>o.id===id)]||!!fixed[id]);
- const open=!!result&&p.objects.every(o=>done(o.id)),points=result?result.filter(Boolean).length*150:0;
- const active=(id:string)=>result?(result[p.objects.findIndex(o=>o.id===id)]?"right":fixed[id]?"right":"missed"):id===sel?"on":"off";
+ const [at,setAt]=useState(0),[pick,setPick]=useState<LineRef|null>(null),[matches,setMatches]=useState<Record<string,LineRef|null>>({}),[first,setFirst]=useState<boolean[]>([]),[fixed,setFixed]=useState(false);
+ const obj=p.objects[at],done=at>=p.objects.length,checked=first[at]!==undefined,missed=checked&&!first[at]&&!fixed;
+ // Lines already explained (matched right, or set after a miss) leave the tray.
+ const settled=p.objects.slice(0,at).map(o=>refKey(o.line));
+ function check(){if(!pick||!obj)return;setMatches(m=>({...m,[obj.id]:pick}));setFirst(f=>{const n=[...f];n[at]=refKey(pick)===refKey(obj.line);return n})}
+ function next(){const n=at+1;setAt(n);setPick(null);setFixed(false);if(n>=p.objects.length)submit?.({matches})}
+ const right=first.filter(Boolean).length,points=right*PUZZLE_POINTS.object;
+ const active=(id:string)=>{const i=p.objects.findIndex(o=>o.id===id);return i<at?"right":i===at&&!done?(missed?"missed":"on"):"off"};
  return <div className="flex flex-col gap-3">
-  <Picture art={p.art} alt={p.alt} tone="scene" spots={p.objects} active={active} onSpot={setSel}/>
-  <div className="flex flex-wrap gap-2" role="group" aria-label="Objects in the scene">{p.objects.map((o,i)=><button key={o.id} type="button" aria-pressed={o.id===sel} onClick={()=>setSel(o.id)} className={`inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-[14px] font-bold ${o.id===sel?"bg-primary text-on-primary":"bg-panel text-ink"}`}>{i+1}{matches[o.id]?<Check size={14} aria-hidden/>:null}<span className="sr-only">: {o.label}{matches[o.id]?", matched":""}</span></button>)}</div>
-  {obj&&<div className="flex flex-col gap-2 rounded-card bg-panel p-3">
-   <p className="flex items-center gap-2 font-display text-[18px] font-bold"><Search size={18} className="text-highlight" aria-hidden/>{k+1}. {obj.label}: why is this here?</p>
-   {!result&&tray.map(r=><LineButton key={refKey(r)} text={lineOf(r)??""} disabled={used(r,obj.id)} on={!!matches[obj.id]&&refKey(matches[obj.id]!)===refKey(r)} onClick={()=>setMatches(m=>({...m,[obj.id]:r}))}/>)}
-   {result&&!done(obj.id)&&<><p className="text-[14px] font-bold text-muted">Not yet. The line that explains it is outlined: tap it.</p><LineButton text={lineOf(obj.line)??""} on={false} outline onClick={()=>setFixed(f=>({...f,[obj.id]:true}))}/></>}
-   {result&&done(obj.id)&&<LineButton text={lineOf(obj.line)??""} on={false} onClick={()=>{}} disabled/>}
+  <Picture art={p.art} alt={p.alt} tone="scene" spots={p.objects} active={active} onSpot={()=>{}}/>
+  {!done&&obj&&<div key={at} className="flex flex-col gap-2 rounded-card bg-panel p-3"><Progress at={at} of={p.objects.length} label="Object"/>
+   <p className="flex items-center gap-2 font-display text-[18px] font-bold"><Search size={18} className="text-highlight" aria-hidden/>{obj.label}: why is this here?</p>
+   {!checked&&<>{tray.filter(r=>!settled.includes(refKey(r))).map(r=><LineButton key={refKey(r)} text={lineOf(r)??""} on={!!pick&&refKey(pick)===refKey(r)} onClick={()=>setPick(r)}/>)}
+    <button type="button" disabled={!pick} onClick={check} className="case-primary min-h-[52px] w-full justify-center">Check this object <ArrowRight size={18} aria-hidden/></button></>}
+   {missed&&<><Missed text="Not yet. The line that explains it is outlined: tap it."/><LineButton text={lineOf(obj.line)??""} on={false} outline onClick={()=>setFixed(true)}/></>}
+   {checked&&!missed&&<><p role="status" className="font-display text-[17px] font-bold">{first[at]?"Right: that line explains it.":"That one's set."}</p><LineButton text={lineOf(obj.line)??""} on={false} onClick={()=>{}} disabled/>
+    <button type="button" onClick={next} className="case-primary min-h-[52px] w-full justify-center">{at+1<p.objects.length?"Next object":"Open the lock"} <ArrowRight size={18} aria-hidden/></button></>}
   </div>}
-  {!result&&<button type="button" disabled={!p.objects.every(o=>matches[o.id])} onClick={lock} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Lock in <ArrowRight size={18} aria-hidden/></button>}
-  {result&&!open&&<p role="status" className="rounded-row bg-notyet-soft px-3 py-2 text-[15px] font-bold">{result.filter(Boolean).length} of {p.objects.length} matched. Open each object marked in coral and tap its outlined line.</p>}
-  {open&&<Opened points={points} of={`${result!.filter(Boolean).length} of ${p.objects.length} objects matched on the first try.`} onDone={()=>onDone({id:p.id,type:"scene",firstTry:result!,points})}/>}
+  {done&&<Opened points={points} of={`${right} of ${p.objects.length} objects matched on the first try.`} onDone={()=>onDone({id:p.id,type:"scene",firstTry:p.objects.map((_,i)=>!!first[i]),points})}/>}
  </div>;
 }

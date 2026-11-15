@@ -41,7 +41,7 @@ export const DO_NOW: Record<Screen, string> = {
   lobby: "Wait here until your teacher starts the game.",
   wait: "Wait for the next part to start.",
   door: "Read where you are, then tap Open the door to begin.",
-  puzzle: "Solve the puzzle with lines from the story, then tap Lock in.",
+  puzzle: "Solve the puzzle one step at a time, with lines from the story.",
   recover: "Use the answer shown to open the lock: do what it asks, then tap Open the lock.",
   inner: "You opened the inner door, so tap the button to go on.",
   recap: "Read what is in your Case File so far, then tap Into Chamber 2.",

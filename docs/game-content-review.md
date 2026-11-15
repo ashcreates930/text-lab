@@ -7584,7 +7584,7 @@ Generated from world.json by `scripts/room-review.ts`. Every puzzle is solved on
 
 ##### Fix the Painting: the glen at noon (after lock 3)
 
-Prompt: "A painter tried to show the glen from the story, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+Prompt: "A painter tried to show the glen from the story, but got 2 things wrong. Find the mistakes one at a time, and prove each one with a line."
 
 Picture: `/worlds/sleepy-hollow/rooms/glen-at-noon.webp` (A painting of a valley among hills at noon, with trees, a stream and a road). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
 
@@ -7607,7 +7607,7 @@ Code: H-T-R-S (spells no word in the story). Each dial: the question, the word t
 
 ##### Inspect the Scene: the churchyard at dusk (after lock 10)
 
-Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+Prompt: "Everything here is in the story. Match each object, one at a time, to the line that explains it."
 
 Picture: `/worlds/sleepy-hollow/rooms/churchyard-at-dusk.webp` (A churchyard at dusk beside a stream, with an old church and a darkening sky). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
@@ -7624,7 +7624,7 @@ Picture: `/worlds/sleepy-hollow/rooms/churchyard-at-dusk.webp` (A churchyard at 
 
 ##### Fix the Painting: the schoolhouse at midday (after lock 4)
 
-Prompt: "A painter tried to show Ichabod's schoolhouse, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+Prompt: "A painter tried to show Ichabod's schoolhouse, but got 2 things wrong. Find the mistakes one at a time, and prove each one with a line."
 
 Picture: `/worlds/sleepy-hollow/rooms/schoolhouse-at-midday.webp` (A painting of a country schoolhouse at the foot of a wooded hill, with a stream and a tree). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
 
@@ -7647,7 +7647,7 @@ Code: C-L-S-B (spells no word in the story). Each dial: the question, the word t
 
 ##### Inspect the Scene: a farmhouse where Ichabod boards (after lock 10)
 
-Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+Prompt: "Everything here is in the story. Match each object, one at a time, to the line that explains it."
 
 Picture: `/worlds/sleepy-hollow/rooms/farmhouse-room.webp` (A farmhouse kitchen with a hearth, a table and a chair). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
@@ -7664,7 +7664,7 @@ Picture: `/worlds/sleepy-hollow/rooms/farmhouse-room.webp` (A farmhouse kitchen 
 
 ##### Fix the Painting: Sunday in the churchyard (after lock 3)
 
-Prompt: "A painter tried to show Ichabod with the country girls between Sunday services, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+Prompt: "A painter tried to show Ichabod with the country girls between Sunday services, but got 2 things wrong. Find the mistakes one at a time, and prove each one with a line."
 
 Picture: `/worlds/sleepy-hollow/rooms/churchyard-sunday.webp` (A painting of a schoolmaster with young women in a country churchyard on a Sunday). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
 
@@ -7687,7 +7687,7 @@ Code: G-W-S-C (spells no word in the story). Each dial: the question, the word t
 
 ##### Inspect the Scene: the walk home on a winter night (after lock 10)
 
-Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+Prompt: "Everything here is in the story. Match each object, one at a time, to the line that explains it."
 
 Picture: `/worlds/sleepy-hollow/rooms/winter-walk.webp` (A snowy country lane at night with a distant farmhouse window and bare trees). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
@@ -7704,7 +7704,7 @@ Picture: `/worlds/sleepy-hollow/rooms/winter-walk.webp` (A snowy country lane at
 
 ##### Fix the Painting: the Van Tassel farm (after lock 5)
 
-Prompt: "A painter tried to show Baltus Van Tassel's farm, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+Prompt: "A painter tried to show Baltus Van Tassel's farm, but got 2 things wrong. Find the mistakes one at a time, and prove each one with a line."
 
 Picture: `/worlds/sleepy-hollow/rooms/farm-by-river.webp` (A painting of a farmhouse beside a river with a great tree and a stream). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
 
@@ -7727,7 +7727,7 @@ Code: D-T-H-B (spells no word in the story). Each dial: the question, the word t
 
 ##### Inspect the Scene: the Van Tassel barnyard (after lock 10)
 
-Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+Prompt: "Everything here is in the story. Match each object, one at a time, to the line that explains it."
 
 Picture: `/worlds/sleepy-hollow/rooms/barnyard.webp` (A busy farmyard with a huge barn, a pond, pens and farm birds). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
@@ -7744,7 +7744,7 @@ Picture: `/worlds/sleepy-hollow/rooms/barnyard.webp` (A busy farmyard with a hug
 
 ##### Fix the Painting: the hall of the Van Tassel house (after lock 5)
 
-Prompt: "A painter tried to show the hall Ichabod walked into, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+Prompt: "A painter tried to show the hall Ichabod walked into, but got 2 things wrong. Find the mistakes one at a time, and prove each one with a line."
 
 Picture: `/worlds/sleepy-hollow/rooms/van-tassel-hall.webp` (A painting of a large farmhouse hall with a long dresser, a corner and a doorway). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
 
@@ -7767,7 +7767,7 @@ Code: P-N-D-W (spells no word in the story). Each dial: the question, the word t
 
 ##### Inspect the Scene: Brom Bones rides in (after lock 10)
 
-Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+Prompt: "Everything here is in the story. Match each object, one at a time, to the line that explains it."
 
 Picture: `/worlds/sleepy-hollow/rooms/brom-arrives.webp` (A farmhouse gate with a saddled horse, a group of young riders and a hat on a post). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
@@ -7783,7 +7783,7 @@ Picture: `/worlds/sleepy-hollow/rooms/brom-arrives.webp` (A farmhouse gate with 
 
 ##### Fix the Painting: Brom's crew at midnight (after lock 2)
 
-Prompt: "A painter tried to show Brom and his riders passing the farmhouses at midnight, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+Prompt: "A painter tried to show Brom and his riders passing the farmhouses at midnight, but got 2 things wrong. Find the mistakes one at a time, and prove each one with a line."
 
 Picture: `/worlds/sleepy-hollow/rooms/midnight-riders.webp` (A painting of a band of horsemen on a moonlit country road past farmhouses). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
 
@@ -7806,7 +7806,7 @@ Code: T-I-H-A (spells no word in the story). Each dial: the question, the word t
 
 ##### Inspect the Scene: an evening at the Van Tassels' (after lock 10)
 
-Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+Prompt: "Everything here is in the story. Match each object, one at a time, to the line that explains it."
 
 Picture: `/worlds/sleepy-hollow/rooms/piazza-evening.webp` (A farmhouse porch at evening, a farmyard, a barn roof and a great tree). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
@@ -7823,7 +7823,7 @@ Picture: `/worlds/sleepy-hollow/rooms/piazza-evening.webp` (A farmhouse porch at
 
 ##### Fix the Painting: the schoolhouse after the pranks (after lock 2)
 
-Prompt: "A painter tried to show what Brom's gang did to the schoolhouse, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+Prompt: "A painter tried to show what Brom's gang did to the schoolhouse, but got 2 things wrong. Find the mistakes one at a time, and prove each one with a line."
 
 Picture: `/worlds/sleepy-hollow/rooms/pranked-school.webp` (A painting of a log schoolhouse with smoke, a dog and young men outside). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
 
@@ -7846,7 +7846,7 @@ Code: R-C-W-R (spells no word in the story). Each dial: the question, the word t
 
 ##### Inspect the Scene: getting ready for the party (after lock 10)
 
-Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+Prompt: "Everything here is in the story. Match each object, one at a time, to the line that explains it."
 
 Picture: `/worlds/sleepy-hollow/rooms/getting-ready.webp` (An empty schoolroom in a mess, with an old horse waiting outside the door). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
@@ -7863,7 +7863,7 @@ Picture: `/worlds/sleepy-hollow/rooms/getting-ready.webp` (An empty schoolroom i
 
 ##### Fix the Painting: the road in autumn (after lock 4)
 
-Prompt: "A painter tried to show the country Ichabod rode through, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+Prompt: "A painter tried to show the country Ichabod rode through, but got 2 things wrong. Find the mistakes one at a time, and prove each one with a line."
 
 Picture: `/worlds/sleepy-hollow/rooms/autumn-road.webp` (A painting of a country road through autumn woods with birds). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
 
@@ -7886,7 +7886,7 @@ Code: H-S-A-S (spells no word in the story). Each dial: the question, the word t
 
 ##### Inspect the Scene: arriving at the Van Tassels' (after lock 10)
 
-Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+Prompt: "Everything here is in the story. Match each object, one at a time, to the line that explains it."
 
 Picture: `/worlds/sleepy-hollow/rooms/arriving-party.webp` (Guests in 1790s country dress arriving at a farmhouse at sunset, with a river and fields). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
@@ -7903,7 +7903,7 @@ Picture: `/worlds/sleepy-hollow/rooms/arriving-party.webp` (Guests in 1790s coun
 
 ##### Fix the Painting: the Dutch tea table (after lock 4)
 
-Prompt: "A painter tried to show the feast in the Van Tassel parlor, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+Prompt: "A painter tried to show the feast in the Van Tassel parlor, but got 2 things wrong. Find the mistakes one at a time, and prove each one with a line."
 
 Picture: `/worlds/sleepy-hollow/rooms/tea-table.webp` (A painting of a long farmhouse table heaped with food, guests, and a window onto the yard). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
 
@@ -7926,7 +7926,7 @@ Code: M-C-D-S (spells no word in the story). Each dial: the question, the word t
 
 ##### Inspect the Scene: the porch after the dance (after lock 10)
 
-Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+Prompt: "Everything here is in the story. Match each object, one at a time, to the line that explains it."
 
 Picture: `/worlds/sleepy-hollow/rooms/porch-after-dance.webp` (A farmhouse porch at night with older men, a table of food inside and a horse in the yard). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
@@ -7943,7 +7943,7 @@ Picture: `/worlds/sleepy-hollow/rooms/porch-after-dance.webp` (A farmhouse porch
 
 ##### Fix the Painting: the war stories (after lock 2)
 
-Prompt: "A painter tried to show the old men's war stories, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+Prompt: "A painter tried to show the old men's war stories, but got 2 things wrong. Find the mistakes one at a time, and prove each one with a line."
 
 Picture: `/worlds/sleepy-hollow/rooms/doffue-battle.webp` (A painting of a Revolutionary War riverbank with a big man at an old cannon and a warship). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
 
@@ -7966,7 +7966,7 @@ Code: S-N-S-F (spells no word in the story). Each dial: the question, the word t
 
 ##### Inspect the Scene: the church by the bridge (after lock 10)
 
-Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+Prompt: "Everything here is in the story. Match each object, one at a time, to the line that explains it."
 
 Picture: `/worlds/sleepy-hollow/rooms/church-and-bridge.webp` (An old white church on a hill above a pond, with a rocky creek and a shadowy bridge). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
@@ -7983,7 +7983,7 @@ Picture: `/worlds/sleepy-hollow/rooms/church-and-bridge.webp` (An old white chur
 
 ##### Fix the Painting: the party ends (after lock 3)
 
-Prompt: "A painter tried to show the guests leaving the Van Tassels', but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+Prompt: "A painter tried to show the guests leaving the Van Tassels', but got 2 things wrong. Find the mistakes one at a time, and prove each one with a line."
 
 Picture: `/worlds/sleepy-hollow/rooms/party-ends.webp` (A painting of guests leaving a farmhouse at night in wagons and on horseback). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
 
@@ -8006,7 +8006,7 @@ Code: E-R-H-S (spells no word in the story). Each dial: the question, the word t
 
 ##### Inspect the Scene: Major André's tree (after lock 10)
 
-Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+Prompt: "Everything here is in the story. Match each object, one at a time, to the line that explains it."
 
 Picture: `/worlds/sleepy-hollow/rooms/andre-tree.webp` (A huge twisted tree in the middle of a dark country road above a river at night). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
@@ -8023,7 +8023,7 @@ Picture: `/worlds/sleepy-hollow/rooms/andre-tree.webp` (A huge twisted tree in t
 
 ##### Fix the Painting: the crossing at Wiley's Swamp (after lock 2)
 
-Prompt: "A painter tried to show the haunted stream Ichabod had to cross, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+Prompt: "A painter tried to show the haunted stream Ichabod had to cross, but got 2 things wrong. Find the mistakes one at a time, and prove each one with a line."
 
 Picture: `/worlds/sleepy-hollow/rooms/wiley-swamp.webp` (A painting of a stream crossing a road into a dark wooded swamp at night). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
 
@@ -8046,7 +8046,7 @@ Code: L-W-H-M (spells no word in the story). Each dial: the question, the word t
 
 ##### Inspect the Scene: the chase (after lock 10)
 
-Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+Prompt: "Everything here is in the story. Match each object, one at a time, to the line that explains it."
 
 Picture: `/worlds/sleepy-hollow/rooms/the-chase.webp` (A night road with a big dark horse and a cloaked rider, sparks on stones, and a pale church on a hill). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
@@ -8063,7 +8063,7 @@ Picture: `/worlds/sleepy-hollow/rooms/the-chase.webp` (A night road with a big d
 
 ##### Fix the Painting: the race to the church bridge (after lock 4)
 
-Prompt: "A painter tried to show Ichabod reaching the church bridge, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+Prompt: "A painter tried to show Ichabod reaching the church bridge, but got 2 things wrong. Find the mistakes one at a time, and prove each one with a line."
 
 Picture: `/worlds/sleepy-hollow/rooms/church-bridge-night.webp` (A painting of a rider on an old horse racing toward a bridge and a church at night, chased by a dark horse). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
 
@@ -8086,7 +8086,7 @@ Code: S-S-P-C (spells no word in the story). Each dial: the question, the word t
 
 ##### Inspect the Scene: the search for Ichabod (after lock 10)
 
-Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+Prompt: "Everything here is in the story. Match each object, one at a time, to the line that explains it."
 
 Picture: `/worlds/sleepy-hollow/rooms/the-search.webp` (Things found after the schoolmaster vanished: a saddle in a muddy road, books, a cap and a broken gourd by a brook). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
@@ -8102,7 +8102,7 @@ Picture: `/worlds/sleepy-hollow/rooms/the-search.webp` (Things found after the s
 
 ##### Fix the Painting: the Hollow, years later (after lock 3)
 
-Prompt: "A painter tried to show the Hollow years after Ichabod vanished, but got 2 things wrong. Mark the 2 mistakes, then prove each one with a line."
+Prompt: "A painter tried to show the Hollow years after Ichabod vanished, but got 2 things wrong. Find the mistakes one at a time, and prove each one with a line."
 
 Picture: `/worlds/sleepy-hollow/rooms/hollow-years-later.webp` (A painting of a country valley on a summer evening with a millpond, a road, a bridge and an old schoolhouse). 2 details are wrong (✗); each is disproved by its line. The right ones (✓) are confirmed by theirs.
 
@@ -8125,7 +8125,7 @@ Code: A-L-S-S (spells no word in the story). Each dial: the question, the word t
 
 ##### Inspect the Scene: the meeting in the city (after lock 7)
 
-Prompt: "Everything here is in the story. Open each object and match it to the line that explains it."
+Prompt: "Everything here is in the story. Match each object, one at a time, to the line that explains it."
 
 Picture: `/worlds/sleepy-hollow/rooms/city-meeting.webp` (A wood-paneled city meeting room around 1800 with gentlemen at a table). Each object matches one line; the tray adds near misses. Every object is a literal thing in the story, never taken from a simile or metaphor.
 
