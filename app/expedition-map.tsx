@@ -5,6 +5,7 @@
 // without one shows the vertical trail of expeditions. It is the first screen of a story: the hook above the map, the
 // map zoomed to the student's next stop (highlighted), one big "Start Expedition n: name", and "Join a live game" small
 // at the top. Ranks and skill badges sit below the map. Rules: lib/expedition-progress.ts and lib/world-map.ts.
+import {InvestigatorCard} from "./investigator";
 import {useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
 import {ArrowRight,Award,CalendarDays,Check,Crown,List,Lock,Map as MapIcon,Medal,Search,Sparkles,Star,TrendingUp,Users,X,Zap} from "lucide-react";
 import {evidenceFrom,levelHistory,masteryOf} from "@/lib/mastery";
@@ -51,6 +52,7 @@ export function ExpeditionMap({world,attempts,assigned=[],justEarned,onStart,onJ
   {world.world_map?<StoryMap world={world} attempts={attempts} assigned={assigned} onStart={onStart} auth={auth} lifting={lifting}/>:<Trail stops={stops} onStart={onStart}/>}
   <p className="text-[15px] text-muted">{finished} of {stops.length} room{stops.length===1?"":"s"} escaped. Escape one to open the next.</p>
   <div className="flex flex-wrap gap-2" aria-label="Ranks">{RANKS.map(r=><span key={r} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[14px] font-extrabold ${r===rank?"bg-gold text-on-gold":RANKS.indexOf(r)<(rank?RANKS.indexOf(rank):-1)?"bg-panel text-ink":"bg-panel-2 text-muted"}`}><Medal size={15} aria-hidden/>{r}{r===rank?<span className="sr-only"> (your rank)</span>:null}</span>)}</div>
+  <InvestigatorCard attempts={attempts} auth={auth}/>
   <section aria-labelledby="badges-h" className="rounded-card bg-panel p-4"><h2 id="badges-h" className="flex items-center gap-2 font-display text-[20px] font-bold"><Award size={20} aria-hidden/>Skill badges</h2>
    <ul className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4">{badges.map(b=><li key={b.skill} className={`rounded-row px-3 py-2 text-[14px] ${b.earned?"bg-gold text-on-gold":"bg-panel-2 text-ink"}`}><span className="block font-extrabold">{b.skill}</span><span className={b.earned?"":"text-muted"}>{BADGE_SKILL[b.type]??b.type} · {b.earned?"Earned":`${Math.min(b.count,b.target)} of ${b.target}`}</span></li>)}</ul></section>
  </div>;
