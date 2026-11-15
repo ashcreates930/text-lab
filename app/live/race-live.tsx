@@ -222,7 +222,10 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  // The proof as token positions: its words, or every word of its lines.
  // The lines to outline when opening a missed lock: this player's own proof (their question may be a bank variant).
  const flat=(t:string)=>t.replace(/\s+/g," ").trim(),ownProof=((race?.revealKey as {proof?:string[]}|null|undefined)?.proof??[]).map(l=>round?.chunk.lines.findIndex(x=>flat(x.text)===flat(l))??-1).filter(i=>i>=0);
- const shownTokens=round.reveal?.words.length?round.reveal.words:proofTokensOf(tokens,round.chunk.lines,round.reveal?.lines??[]);
+ // The reveal on this phone shows the proof and explanation for this student's own version of the question (a bank
+ // pick or an adaptive version can differ from the board's), not the class's main question.
+ const myLines=race.revealKey?.proof?.length?race.revealKey.proof:round.reveal?.lines??[],myWhy=race.revealKey?.why??round.reveal?.why??null;
+ const shownTokens=race.revealKey?.proof?.length?proofTokensOf(tokens,round.chunk.lines,myLines):round.reveal?.words.length?round.reveal.words:proofTokensOf(tokens,round.chunk.lines,round.reveal?.lines??[]);
  return <section className="wide-host mt-3 flex flex-col gap-3" aria-labelledby="rp-h">
   {hud}
   {race.myEscape&&<SquadRoleBar esc={race.myEscape}/>}
@@ -250,7 +253,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
   {round.beat==="reveal"&&<div aria-live="assertive">{mine.tap?.correct
    ?<div className="mt-6 flex flex-col items-center gap-3"><LockMoment key={round.step} kind="proved" sound={sound} headingId="rp-h"/>
     <Held key={"pts"+round.step}><div className="flex flex-col items-center gap-3"><p aria-hidden className="mt-1 font-display text-[44px] font-bold leading-none text-gold">+{mine.tap.points.toLocaleString()}</p>
-    <div className="w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{q?.name}{(mine.tap.mult??1)>1?" · Double points":""}</p><p className="mt-1 font-display text-[24px] font-bold leading-tight">Plus {mine.tap.points.toLocaleString()} points</p><p className="mt-2 text-[16px] font-bold">{round.reveal?.why}</p></div>
+    <div className="w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{q?.name}{(mine.tap.mult??1)>1?" · Double points":""}</p><p className="mt-1 font-display text-[24px] font-bold leading-tight">Plus {mine.tap.points.toLocaleString()} points</p><p className="mt-2 text-[16px] font-bold">{myWhy}</p></div>
     {(mine.tap.bonus??0)>0&&<p role="status" className="moment-pop rounded-full bg-gold px-4 py-1.5 font-display text-[17px] font-bold text-on-gold">Streak bonus! +{mine.tap.bonus}</p>}</div></Held></div>
    :mine.opened?<div className="mt-6"><LockMoment kind="quiet" headingId="rp-h"/></div>
    :<div className="notyet-shake notyet-panel"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{q?.name}{mine.tap?.late||!mine.tap?" · Time's up":""}</p><h1 id="rp-h" className="mt-1 text-[36px] leading-none outline-none">Not yet.</h1><p className="mt-2 text-[17px] font-bold">{mine.opened?"Lock opened with the proof. You'll get another shot for points in the Refresher.":"This lock opens only with the proof: use the answer shown to open it."}</p></div>}
@@ -266,7 +269,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
    <p className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[13px] font-bold text-muted">{race.place&&<RankPill move={race.place.move} rank={race.place.rank} of={race.place.of} first={(race.place.row as {prevRank?:number|null}|undefined)?.prevRank==null}/>}{round.reveal?.pct??0}% of the class found it.</p>
    {!mine.tap?.correct&&!mine.opened&&q&&race.revealKey?.task?<RecoveryPanel task={race.revealKey.task} seed={`${state.me.id}|${round.chunk.id}|open`} chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shownLines={ownProof}
      answerText={race.revealKey.best?.join(" · ")??race.revealKey.answer} clueWords={race.revealKey.clues??undefined} choices={q.choices} dnd={q.dnd} callPassages={q.callPassages} onOpen={async a=>!(await act("race_recover",{answer:a}))}/>
-   :<div className="mt-1">{q?.callPassages?<ReadingPanel passages={q.callPassages as SourcePassage[]} results={(round.reveal?.lines??[]).map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/>
+   :<div className="mt-1">{q?.callPassages?<ReadingPanel passages={q.callPassages as SourcePassage[]} results={myLines.map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/>
     :<ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shown={shownTokens} shownStyle={mine.tap?.correct?"right":"missed"}/>}</div>}</div>}
   {round.beat==="puzzle"&&round.puzzle&&<LivePuzzle key={round.puzzle.data.id} p={round.puzzle} seed={state.me.id} sound={sound} act={act}/>}
   {round.beat==="lightning"&&round.lightning&&<LightningLive l={round.lightning} world={world} answered={mine.lightning} answer={race.lightningAnswer} left={left} seconds={(myMs??10000)/1000} onLock={line=>act("race_lightning",{line})}/>}
