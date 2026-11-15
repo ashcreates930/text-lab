@@ -287,3 +287,7 @@ html[data-look="mature"][data-contrast="high"]{--color-muted:#FFFFFF;--color-fai
 .notyet-panel{border-radius:24px;background:var(--color-notyet);color:var(--color-on-notyet);padding:1.25rem;box-shadow:0 8px 0 var(--color-notyet-shadow)}
 html[data-look="mature"] .notyet-panel{border-radius:12px;background:var(--color-panel);color:var(--color-ink);border:2px solid var(--color-notyet);border-left-width:8px;box-shadow:none}
 html[data-look="mature"] .notyet-panel.notyet-shake{animation:none}
+/* Explorable scenes (app/room-scene-view.tsx): a soft lantern glow behind the brass ring on the next thing to tap. */
+@keyframes scene-glow{0%,100%{opacity:.55;transform:scale(.92)}50%{opacity:.9;transform:scale(1.05)}}
+.scene-glow{background:radial-gradient(circle,rgba(255,213,138,.42) 0%,rgba(255,194,102,.16) 55%,rgba(255,194,102,0) 75%);animation:scene-glow 2.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.scene-glow{animation:none;opacity:.8}}

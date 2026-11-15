@@ -4,6 +4,8 @@
 // result moment, the leaderboard (with Pause) and a countdown ring to the next chunk, all automatic. The HUD (score,
 // streak, coins, sound, chunk count, seconds left) sits on every race screen. Extended time multiplies every timer and
 // every automatic screen. Screen readers hear the result and the new rank before anything moves.
+import {BONUS_COINS,bonusOpen,chamberOfLock,sceneOf,type SceneNext} from "@/lib/room-scene";
+import {SceneView} from "./room-scene-view";
 import {questionSetting,type QuestionTime} from "@/lib/expedition";
 import {chamberBudgetMs,clockEnding,clockRuns,clockView,type ClockView,type RoomClock} from "@/lib/room-clock";
 import {CLUE_COST,clueCost,cluesFor,opened,type Clue,type ClueTier} from "@/lib/clues";
@@ -40,7 +42,7 @@ import {lineAt,emptyProgress,inventoryOf,lockKind,parseResume,recoveryOpens,reco
 import {CaseFileButton,ChamberRecap,EscapeMoment,ExitBanner,InnerDoor,LockBanner,RecoveryPanel,RoomDoor} from "./room-ui";
 import {PuzzleLock,type PuzzleOutcome} from "./puzzle-locks";
 
-type Beat="practice"|"witness"|"puzzle"|"door"|"recover"|"inner"|"recap"|"escape"|"interview"|"read"|"gist"|"question"|"result"|"lightning"|"board"|"burst"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"skills"|"notes";
+type Beat="practice"|"scene"|"witness"|"puzzle"|"door"|"recover"|"inner"|"recap"|"escape"|"interview"|"read"|"gist"|"question"|"result"|"lightning"|"board"|"burst"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"skills"|"notes";
 // points include the boss or surprise double; bonus: the streak bonus; version: the question version this student saw.
 export type ChunkRecord={gist:number|null;answer:Answer;correct:boolean;points:number;late:boolean;coins:number;unknown:string[];discovered:boolean;bonus:number;mult:number;version:Version;bank:number;judged?:{strength:Strength;note:string;next:string}|null;recovered?:boolean;clue?:ClueTier};
 // A lock is open once proven on the first try, or after a miss once the student tapped the shown proof (lib/escape-room.ts).
@@ -361,6 +363,10 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const clueState:ClueState|undefined=q?{list:clueList,tier:clueTier,free:freeHint,onRequest:()=>setClueTier(t=>(Math.min(3,t+1)) as ClueTier)}:undefined;
  const [lightningPts,setLightningPts]=useState<number[]>(()=>(restored?.lightning??[]).map(n=>n??(undefined as unknown as number))),[burstPts,setBurstPts]=useState(()=>restored?.burst??0);
  const go=useCallback((b:Beat)=>{setBeat(b);setStartedAt(Date.now())},[]);
+ // In a scene, after the last lock the student returns to the scene to tap the exit door (once).
+ const exitAtDoor=useRef(false);
+ // Scene bonus items found (each after its reading task), kept with resume.
+ const [bonusFound,setBonusFound]=useState<string[]>(()=>restored?.bonus??[]);
  // The room clock (lib/room-clock.ts): off unless the class turned it on; per chamber; it runs only while working a lock
  // or puzzle (never while reading) and zero ends nothing.
  const chamberAt=(i:number)=>room&&room.chambers.length>1&&i>room.chambers[0].to?1:0,ch=chamberAt(k);
@@ -386,14 +392,18 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  // and the burst once the checkpoint is behind.
  const mine=(upto:number)=>records.slice(0,upto+1).reduce((a,r,i)=>a+(r?.points??0)+(r?.bonus??0)+(r&&r.gist!==null?gistPoints(chunks[i].chunk,r.gist):0)+(lightningPts[i]??0),0)+(arc?.burstAfter!=null&&upto>=arc.burstAfter?burstPts:0);
  const score=mine(records.length-1)+(liarResult?.points??0)+Object.values(puzzleRes).reduce((a,p)=>a+p.points,0);
- const coins=records.reduce((a,r)=>a+(r?.coins??0),0)+(found&&!record?DISCOVERY_COINS:0);
+ const coins=records.reduce((a,r)=>a+(r?.coins??0),0)+(found&&!record?DISCOVERY_COINS:0)+bonusFound.length*BONUS_COINS;
  const streak=(()=>{let s=0;for(let i=records.length-1;i>=0;i--){if(records[i]?.correct)s++;else break}return s})();
 
+ // Explorable scenes (lib/room-scene.ts): where a chamber has a painted scene, the student goes back to it after each
+ // lock and taps what glows next (a witness, the next item, a puzzle lock, the door), instead of moving on by itself.
+ const sceneFor=(i:number)=>room?sceneOf(world,expeditionId,chamberOfLock(room,Math.min(i,chunks.length-1))):null;
+ function toLock(n:number){if(sceneFor(n)){setK(n);setMeeting(null);go("scene")}else startChunk(n)}
  function startChunk(n:number){setK(n);setGist(null);setStep(1);setDraft({});setMarking(false);setUnknown(new Set());setFound(false);setPaused(false);
   // Witnesses in the room: anyone met at this lock steps in before its reading.
   const due=dueAt(iv,n+1).filter(i=>!isMet(cards,i));if(due.length){setMeeting(due[0]);go("witness")}else go("read")}
  function metWitness(){if(meeting==null||!iv)return;const cs=meet(cards,meeting,iv.witnesses.length);setCards(cs);
-  const due=dueAt(iv,k+1).filter(i=>!isMet(cs,i));if(due.length){setMeeting(due[0]);go("witness")}else{setMeeting(null);go("read")}}
+  const due=dueAt(iv,k+1).filter(i=>!isMet(cs,i));if(due.length&&!sceneFor(k)){setMeeting(due[0]);go("witness")}else{setMeeting(null);go(sceneFor(k)?"scene":"read")}}
  function toQuestion(){setStep(1);setDraft({});const isLie=c?.chunk.question.type==="catch_lie";setTestifying(isLie);go("question")}
  // Catch the Lie: the testimony plays first (about 3 seconds, or at once with reduced motion), then its 45 seconds start.
  useEffect(()=>{if(!testifying)return;const t=setTimeout(()=>{setTestifying(false);setStartedAt(Date.now())},reducedMotion()?0:TESTIMONY_MS);return()=>clearTimeout(t)},[testifying]);
@@ -417,11 +427,11 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const lightningHere=arc?.lightning.find(l=>l.after===k)?.item??null;
  function afterResult(){if(lightningHere&&lightningPts[k]===undefined)go("lightning");else afterExtras()}
  // A puzzle placed after this lock comes first (the inner door's code lock waits for the checkpoint).
- function afterExtras(){const p=room?.puzzles.find(x=>x.after===k&&!x.innerDoor&&!puzzleRes[x.id]);if(p){setPuzzleId(p.id);go("puzzle");return}go(isCheckpoint(k,chunks.length)?"board":"countdown")}
+ function afterExtras(){const p=room?.puzzles.find(x=>x.after===k&&!x.innerDoor&&!puzzleRes[x.id]);if(p){setPuzzleId(p.id);go(sceneFor(k)?"scene":"puzzle");return}go(isCheckpoint(k,chunks.length)?"board":"countdown")}
  function onPuzzleDone(o:PuzzleOutcome){setPuzzleRes(r=>({...r,[o.id]:o}));cue(sound,"streak");if(room?.puzzles.find(x=>x.id===o.id)?.innerDoor){setInnerOpen(true);go("inner")}else go(isCheckpoint(k,chunks.length)?"board":"countdown")}
  // The inner door follows chamber 1 (after the checkpoint and the burst); the exit door follows the last lock.
  const atInner=room?.innerDoor?.after===k;
- function afterChamber(){if(atInner){const ip=room?.innerDoor?.puzzle;if(ip&&!puzzleRes[ip]){setPuzzleId(ip);go("puzzle");return}setInnerOpen(true);go("inner")}else go("countdown")}
+ function afterChamber(){if(atInner){const ip=room?.innerDoor?.puzzle;if(ip&&!puzzleRes[ip]){setPuzzleId(ip);go(sceneFor(k)?"scene":"puzzle");return}setInnerOpen(true);go("inner")}else go("countdown")}
  function openRecovered(a:Answer){if(!q)return false;const ok=recoveryOpens(q,tokens,a);if(!ok){cue(sound,"tick");return false}
   setRecords(rs=>{const n=[...rs];if(n[k])n[k]={...n[k],recovered:true};return n});cue(sound,"chime");afterResult();return true}
  // Time's up: whatever is picked counts, which is a miss.
@@ -431,7 +441,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  useEffect(()=>{const kind=AUTO[beat];if(!kind)return;remaining.current=screenMs(kind,timeSetting);deadline.current=Date.now()+remaining.current;setAutoLeft(remaining.current)},[beat,k,timeSetting]);
  useEffect(()=>{const kind=AUTO[beat];if(!kind||paused)return;deadline.current=Date.now()+remaining.current;
   const t=setInterval(()=>{const left=Math.max(0,deadline.current-Date.now());remaining.current=left;setAutoLeft(left);if(left===0){clearInterval(t);
-   if(beat==="result")afterResult();else if(beat==="board"){if(arc?.burstAfter===k)go("burst");else afterChamber()}else if(beat==="countdown"){if(k+1>=chunks.length){if(iv)go("liar");else{setExitOpen(true);go("escape")}}else startChunk(k+1)}}},100);
+   if(beat==="result")afterResult();else if(beat==="board"){if(arc?.burstAfter===k)go("burst");else afterChamber()}else if(beat==="countdown"){if(k+1>=chunks.length){if(sceneFor(k)&&!exitAtDoor.current){exitAtDoor.current=true;go("scene")}else if(iv)go("liar");else{setExitOpen(true);go("escape")}}else toLock(k+1)}}},100);
   return()=>clearInterval(t)},[beat,paused,k]);// eslint-disable-line react-hooks/exhaustive-deps
 
  // After the race: the results for Case Notes, and the Refresher (misses only, up to 4).
@@ -452,7 +462,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  useEffect(()=>{if(!onSave||finishedIso.current||!progress.opened.length)return;
   const kept=records.map((r,i)=>isOpen(r)?r:null);while(kept.length&&!kept.at(-1))kept.pop();
   onSave({attemptId,worldId:world.id,expeditionId,startedAt:startedIso,finishedAt:null,complete:false,score,notes:caseNotes(askedChunks.slice(0,kept.length),results.slice(0,kept.length)),interview:null,award:null,
-   resume:{v:1,clock:clockUsed,progress,records:kept,ghost:ghost.slice(0,kept.length),cards,lightning:lightningPts.slice(0,kept.length).map(n=>n??null),burst:burstPts,puzzles:puzzleRes},puzzles:Object.values(puzzleRes)})},[progressKey]);// eslint-disable-line react-hooks/exhaustive-deps
+   resume:{v:1,bonus:bonusFound,clock:clockUsed,progress,records:kept,ghost:ghost.slice(0,kept.length),cards,lightning:lightningPts.slice(0,kept.length).map(n=>n??null),burst:burstPts,puzzles:puzzleRes},puzzles:Object.values(puzzleRes)})},[progressKey]);// eslint-disable-line react-hooks/exhaustive-deps
  const saved=useRef(false);
  // "What do I do?": shows this screen's hint again, until the screen changes.
  const [again,setAgain]=useState(false);
@@ -490,12 +500,26 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  return <div className="race-root case-ui mx-auto flex max-w-6xl flex-col gap-3 px-4 pb-16 pt-3">
   {!["refresher","notes","interview","practice","skills","door","inner","recap","escape"].includes(beat)&&hud}
   {beat==="practice"&&<PracticeRound world={world} passages={passages} onDone={()=>{markPracticeDone();go("door")}}/>}
-  {beat==="door"&&room&&<RoomDoor room={room} resumed={!!restored} onOpen={()=>{if(iv&&!inRoom(iv)&&!(restored&&cards.length))go("interview");else startChunk(k)}}/>}
-  {beat==="inner"&&room&&<InnerDoor clockNote={budget?clockEnding(budget,clockUsed[0]??0):null} room={room} stop={stopsAtInnerDoor({classSession:!!classToken,stopAtInnerDoor})&&!restoredInto2} onMap={onExit} onNext={()=>startChunk(k+1)}/>}
-  {beat==="recap"&&room&&<ChamberRecap room={room} items={inventory} onNext={()=>startChunk(room.chambers[1]?.from??k+1)}/>}
+  {beat==="door"&&room&&<RoomDoor room={room} resumed={!!restored} onOpen={()=>{if(iv&&!inRoom(iv)&&!(restored&&cards.length))go("interview");else toLock(k)}}/>}
+  {beat==="inner"&&room&&<InnerDoor clockNote={budget?clockEnding(budget,clockUsed[0]??0):null} room={room} stop={stopsAtInnerDoor({classSession:!!classToken,stopAtInnerDoor})&&!restoredInto2} onMap={onExit} onNext={()=>toLock(k+1)}/>}
+  {beat==="recap"&&room&&<ChamberRecap room={room} items={inventory} onNext={()=>toLock(room.chambers[1]?.from??k+1)}/>}
   {beat==="puzzle"&&puzzleId&&(()=>{const pz=world.rooms?.find(r=>r.expedition===expeditionId)?.puzzles?.find(p=>p.id===puzzleId),at=room?.puzzles.find(p=>p.id===puzzleId)?.after??k;
    return pz?<PuzzleLock key={puzzleId} puzzle={pz} lineOf={r=>lineAt(passages,r)} seed={seedKey} readLines={chunks.slice(0,at+1).flatMap(x=>x.lines.map(l=>({p:l.pid,s:l.index})))} onDone={onPuzzleDone}/>:null})()}
   {beat==="escape"&&room&&<EscapeMoment clockNote={budget?clockEnding(budget,clockUsed[ch]??0):null} room={room} next={nextRoom} solved={!!liarResult?.solved} onNext={()=>{go("finish");onFinish?.(records)}}/>}
+  {beat==="scene"&&room&&sceneFor(k)&&(()=>{const sc=sceneFor(k)!,chamber=chamberOfLock(room,k),opened=(i:number)=>isOpen(records[i]);
+   // What glows next: a puzzle lock waiting after its lock; the door (the inner door's code lock, or the exit once the last
+   // lock is answered); a witness due at the next lock; otherwise the next lock's item.
+   const pend=puzzleId&&!puzzleRes[puzzleId]?room.puzzles.find(x=>x.id===puzzleId)??null:null,lastDone=k>=chunks.length-1&&!!records[k];
+   const due=iv?dueAt(iv,k+1).filter(i=>!isMet(cards,i)):[];
+   const next:SceneNext=pend?(pend.innerDoor?{kind:"door"}:{kind:"puzzle",id:pend.id}):lastDone?{kind:"door"}:due.length?{kind:"witness",index:due[0],lock:k}:{kind:"item",lock:k};
+   const wState=(c:string)=>{const i=iv?.witnesses.findIndex(w=>w.character===c)??-1;if(i<0)return "away" as const;if(isMet(cards,i))return "met" as const;return next?.kind==="witness"&&next.index===i?"due" as const:"away" as const};
+   const proofOf=(i:number)=>inventory.find(x=>x.lock===i)?.text??null;
+   return <SceneView scene={sc} title={`Room ${room.number} · Chamber ${chamber}: ${room.name}`} next={next} opened={opened}
+    witnessName={c=>witnessName(world,c)} witnessState={wState} puzzleState={id=>puzzleRes[id]?"open":next?.kind==="puzzle"&&next.id===id?"next":"later"} doorState={next?.kind==="door"?"next":"later"}
+    bonusAvailable={b=>bonusOpen(world,passages,expeditionId,b,opened)} bonusFound={bonusFound} lineOf={r=>lineAt(passages,r)} proofOf={proofOf}
+    onItem={i=>startChunk(i)} onWitness={c=>{const i=iv!.witnesses.findIndex(w=>w.character===c);setMeeting(i);go("witness")}} onPuzzle={()=>go("puzzle")}
+    onDoor={()=>{if(pend)go("puzzle");else if(iv)go("liar");else{setExitOpen(true);go("escape")}}}
+    onBonus={id=>{setBonusFound(f=>f.includes(id)?f:[...f,id]);cue(sound,"chime")}}/>})()}
   {beat==="witness"&&iv&&meeting!=null&&<WitnessVisit hint={!hintsDone().has("witness")} onAsked={()=>markHintDone("witness")} key={meeting} world={world} expeditionId={expeditionId} interview={iv} liar={liar} index={meeting} lock={k+1} met={cards.filter((_,i)=>isMet(cards,i)).length+1} onDone={metWitness}/>}
   {beat==="interview"&&iv&&<InterviewScreen world={world} expeditionId={expeditionId} interview={iv} liar={liar} onDone={cs=>{setCards(cs);saveCards(world.id,expeditionId,cs);startChunk(0)}}/>}
   {beat==="liar"&&iv&&<div className="flex justify-center"><ExitBanner/></div>}

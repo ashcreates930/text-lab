@@ -6,13 +6,14 @@
 //   button that replays the hint for that screen (HINTS; done hints are remembered on the device).
 import type { WorldPack } from "./world-schema.ts";
 
-export type Screen = "home" | "witness" | "interview" | "read" | "gist" | "question" | "proof" | "clues" | "dnd" | "multi" | "written" | "result" | "lightning" | "board" | "burst"
+export type Screen = "home" | "scene" | "witness" | "interview" | "read" | "gist" | "question" | "proof" | "clues" | "dnd" | "multi" | "written" | "result" | "lightning" | "board" | "burst"
   | "countdown" | "liar" | "verdict" | "finish" | "refresher" | "skills" | "notes" | "map" | "myskills" | "practice" | "lobby" | "wait"
   | "door" | "recover" | "inner" | "recap" | "escape" | "stopped" | "puzzle";
 
 // What to do now, in one plain sentence, for every screen.
 export const DO_NOW: Record<Screen, string> = {
   home: "Tap Play now to start, or join your class's live game.",
+  scene: "Look around, then tap what glows to open the next lock.",
   witness: "Ask the witness your question. One of the three witnesses is lying.",
   interview: "Bring each witness into the spotlight, pick a question and listen to all three before the first lock.",
   read: "Read the chunk, then tap Ready.",
