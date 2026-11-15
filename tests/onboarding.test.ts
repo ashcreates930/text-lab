@@ -31,7 +31,8 @@ test("the practice round: shown once, the first time a student plays, on an easy
 test("one plain sentence at the top of every screen saying exactly what to do now", () => {
   for (const [k, t] of Object.entries(DO_NOW)) {
     assert.ok(t.length > 10 && t.length < 110, k);
-    assert.equal((t.match(/[.!?](\s|$)/g) ?? []).length, 1, `${k}: one sentence`);
+    // The witness line is the teacher's own wording from student testing (2026-11-15): two short sentences in one line.
+    assert.equal((t.match(/[.!?](\s|$)/g) ?? []).length, k === "witness" ? 2 : 1, `${k}: one sentence`);
     assert.doesNotMatch(t, /—/, `${k}: no em dashes`);
   }
   // The race's top bar and the phone's carry it for every race screen; the other screens show it first.

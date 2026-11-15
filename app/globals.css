@@ -282,3 +282,8 @@ html[data-look="mature"][data-contrast="high"]{--color-muted:#FFFFFF;--color-fai
 /* The home page (app/landing.tsx): the mature look with flat buttons (no chunky 3D shadow). */
 .home-page .case-primary,.home-page .case-secondary{box-shadow:none}
 .home-page .case-primary:hover{filter:brightness(1.06)}
+/* The "Not yet" panel after a miss. Classic: the bright coral card. Mature: a calm panel with a coral edge, so a miss
+   reads as "keep going", not a punishment; the "Not yet" words always say it too (never colour alone). */
+.notyet-panel{border-radius:24px;background:var(--color-notyet);color:var(--color-on-notyet);padding:1.25rem;box-shadow:0 8px 0 var(--color-notyet-shadow)}
+html[data-look="mature"] .notyet-panel{border-radius:12px;background:var(--color-panel);color:var(--color-ink);border:2px solid var(--color-notyet);border-left-width:8px;box-shadow:none}
+html[data-look="mature"] .notyet-panel.notyet-shake{animation:none}

@@ -23,7 +23,8 @@ export async function GET(request: Request, { params }: Params) {
 // absent: mark one student absent for today (left out of Story Mode squad averages).
 // look: the class's look, mature (the default) or classic (escape-room phase 3).
 // roomClock: the class's room clock, off (the default), generous or extra (escape-room phase 5).
-const Patch = z.object({ roomClock: z.enum(["off", "generous", "extra"]).optional(), look: z.enum(["mature", "classic"]).optional(), previewEnabled: z.boolean().optional(), rolesOn: z.boolean().optional(), anglesOn: z.boolean().optional(), leaderboard: z.enum(["individual", "squad", "off"]).optional(), storyModeOn: z.boolean().optional(), studentTime: z.object({ studentId: z.string().uuid(), setting: z.enum(["1", "1.5", "2", "untimed"]) }).optional(), absent: z.object({ studentId: z.string().uuid(), absent: z.boolean() }).optional() }).refine((x) => Object.values(x).some((v) => v !== undefined));
+// questionTime: standard (the default) or more (student testing, 2026-11-15).
+const Patch = z.object({ questionTime: z.enum(["standard", "more"]).optional(), roomClock: z.enum(["off", "generous", "extra"]).optional(), look: z.enum(["mature", "classic"]).optional(), previewEnabled: z.boolean().optional(), rolesOn: z.boolean().optional(), anglesOn: z.boolean().optional(), leaderboard: z.enum(["individual", "squad", "off"]).optional(), storyModeOn: z.boolean().optional(), studentTime: z.object({ studentId: z.string().uuid(), setting: z.enum(["1", "1.5", "2", "untimed"]) }).optional(), absent: z.object({ studentId: z.string().uuid(), absent: z.boolean() }).optional() }).refine((x) => Object.values(x).some((v) => v !== undefined));
 export async function PATCH(request: Request, { params }: Params) {
   const ctx = await teacherFromRequest(request);
   if (isFailure(ctx)) return NextResponse.json({ error: ctx.error }, { status: ctx.status });
@@ -34,6 +35,10 @@ export async function PATCH(request: Request, { params }: Params) {
   if (input.data.look !== undefined) {
     if (cls.look === undefined) return NextResponse.json({ error: "Run the 202611140001 migration to choose the class's look." }, { status: 503 });
     await ctx.store.setLook(cls.id, input.data.look);
+  }
+  if (input.data.questionTime !== undefined) {
+    if (cls.question_time === undefined) return NextResponse.json({ error: "Run the 202611150003 migration to set question time." }, { status: 503 });
+    await ctx.store.setQuestionTime(cls.id, input.data.questionTime);
   }
   if (input.data.roomClock !== undefined) {
     if (cls.room_clock === undefined) return NextResponse.json({ error: "Run the 202611150001 migration to set the room clock." }, { status: 503 });

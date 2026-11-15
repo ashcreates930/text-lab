@@ -13,7 +13,7 @@ export type Screen = "home" | "witness" | "interview" | "read" | "gist" | "quest
 // What to do now, in one plain sentence, for every screen.
 export const DO_NOW: Record<Screen, string> = {
   home: "Tap Play now to start, or join your class's live game.",
-  witness: "A witness steps in: ask, listen and keep the answer in mind, because one of the three is lying.",
+  witness: "Ask the witness your question. One of the three witnesses is lying.",
   interview: "Bring each witness into the spotlight, pick a question and listen to all three before the first lock.",
   read: "Read the chunk, then tap Ready.",
   gist: "Pick the best summary of what you just read.",
@@ -23,7 +23,7 @@ export const DO_NOW: Record<Screen, string> = {
   dnd: "Tap a piece, then the place it belongs, and tap Lock in once every place is filled.",
   multi: "Pick the number of answers it asks for, then tap Lock in.",
   written: "Write one sentence in your own words, then tap the button below.",
-  result: "See how you did, then wait for the next chunk.",
+  result: "See how you did and check the proof, then tap Next.",
   lightning: "Tap the sentence that answers it before time runs out.",
   board: "Check the leaderboard while the next chunk gets ready.",
   burst: "Tap the hidden discoveries in the chunks you've read, then tap I'm done.",
@@ -49,7 +49,7 @@ export const DO_NOW: Record<Screen, string> = {
 };
 
 // First-time hints, shown right where the student taps until they've done it right once.
-export type HintId = "read" | "proof" | "lock" | "clues" | "dnd" | "multi" | "written" | "gist";
+export type HintId = "read" | "proof" | "lock" | "clues" | "dnd" | "multi" | "written" | "gist" | "witness";
 export const HINTS: Record<HintId, string> = {
   read: "Read this first. Take your time: the timer starts when you tap Ready.",
   proof: "Tap the sentence that proves your answer. It lights up when you pick it.",
@@ -59,7 +59,11 @@ export const HINTS: Record<HintId, string> = {
   multi: "This one needs more than one answer. Tap each one you choose.",
   written: "Write your own sentence. Then you'll tap the sentence from the story that backs it up.",
   gist: "Which choice tells the whole chunk, not just one detail?",
+  witness: "Tap to ask the witness the room's question.",
 };
+// The top line on a witness screen, with the witness's name (student testing, 2026-11-15: one line, not three).
+export const witnessDoNow = (first: string) => `Ask ${first} your question. One of the three witnesses is lying.`;
+export const WITNESS_SAVED = "Saved to your Case File. You'll check it against the story.";
 // The hint that belongs to a screen (for the "What do I do?" button).
 export const HINT_FOR: Partial<Record<Screen, HintId>> = { read: "read", proof: "proof", clues: "clues", dnd: "dnd", multi: "multi", written: "written", gist: "gist", question: "proof" };
 

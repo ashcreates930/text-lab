@@ -4,6 +4,7 @@
 // result moment, the leaderboard (with Pause) and a countdown ring to the next chunk, all automatic. The HUD (score,
 // streak, coins, sound, chunk count, seconds left) sits on every race screen. Extended time multiplies every timer and
 // every automatic screen. Screen readers hear the result and the new rank before anything moves.
+import {questionSetting,type QuestionTime} from "@/lib/expedition";
 import {chamberBudgetMs,clockEnding,clockRuns,clockView,type ClockView,type RoomClock} from "@/lib/room-clock";
 import {CLUE_COST,clueCost,cluesFor,opened,type Clue,type ClueTier} from "@/lib/clues";
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
@@ -18,7 +19,7 @@ import {Pill} from "./game-ui";
 import {ContentNote,QuestionNote} from "./content-note";
 import {LevelUp,SkillReport,SkillTag} from "./skill-feedback";
 import {Coach,DoNow,PracticeRound} from "./practice-round";
-import {DO_NOW,HINTS,hintsDone,markHintDone,markPracticeDone,practiceDone,type HintId,type Screen} from "@/lib/onboarding";
+import {DO_NOW,HINTS,hintsDone,markHintDone,markPracticeDone,practiceDone,witnessDoNow,type HintId,type Screen} from "@/lib/onboarding";
 import {evidenceFrom,levelOf,levelUps,mainFamily,masteryOf} from "@/lib/mastery";
 import {ReadingPanel} from "./reading-panel";
 import {Leaderboard,Podium,cue,reducedMotion,useBeatClock} from "./proof-race";
@@ -31,7 +32,7 @@ import {useSoundPref} from "./game-feel";
 import {focusHeading,focusScreenTop} from "./screen-focus";
 import {CaseNotesView,Refresher,type RefresherView} from "./after-race";
 import {caseNotes,refresherAward,refresherCorrect,refresherItems,refresherShown,refresherView,type ChunkResult} from "@/lib/case-notes";
-import {dueAt,inRoom,interviewNote,interviewStatements,isMet,liarCheck,liarIndex,meet,witnessName,type LiarAnswer} from "@/lib/interview";
+import {firstName,dueAt,inRoom,interviewNote,interviewStatements,isMet,liarCheck,liarIndex,meet,witnessName,type LiarAnswer} from "@/lib/interview";
 import {InterviewScreen,LiarVerdict,NameTheLiar,WitnessVisit} from "./interview";
 import type {ExpeditionAttempt} from "@/lib/expedition-progress";
 import {evidenceSentences} from "@/lib/lies";
@@ -44,7 +45,9 @@ type Beat="practice"|"witness"|"puzzle"|"door"|"recover"|"inner"|"recap"|"escape
 export type ChunkRecord={gist:number|null;answer:Answer;correct:boolean;points:number;late:boolean;coins:number;unknown:string[];discovered:boolean;bonus:number;mult:number;version:Version;bank:number;judged?:{strength:Strength;note:string;next:string}|null;recovered?:boolean;clue?:ClueTier};
 // A lock is open once proven on the first try, or after a miss once the student tapped the shown proof (lib/escape-room.ts).
 const isOpen=(r:ChunkRecord|undefined)=>!!r&&(r.correct||!!r.recovered);
-const AUTO:Partial<Record<Beat,"result"|"board"|"countdown">>={result:"result",board:"board",countdown:"countdown"};
+// The result after an answer waits for Next (student testing, 2026-11-15: the 3-second hold felt rushed); the board and
+// countdown still move on by themselves. Live games keep the board's timing.
+const AUTO:Partial<Record<Beat,"result"|"board"|"countdown">>={board:"board",countdown:"countdown"};
 
 // ---------- HUD ----------
 // The room clock (lib/room-clock.ts): a quiet pill, announced only at 5 minutes, 1 minute and zero (overtime). Zero
@@ -54,7 +57,8 @@ export function RoomClockPill({clock}:{clock:ClockView}){
  return <><span className={`inline-flex min-h-9 items-center gap-1 rounded-full px-2.5 font-display text-[15px] font-bold tabular-nums ${clock.overtime?"bg-notyet text-on-notyet":clock.warn?"bg-gold text-on-gold":"bg-panel text-ink"}`} aria-label={`Room clock ${clock.label}`}><Hourglass size={15} aria-hidden/>{clock.label}</span>
   <span className="sr-only" aria-live="polite">{clock.warn?said[clock.warn]:""}</span></>;
 }
-export function RaceHud({score,streak,coins,sound,onSound,chunk,total,left,title,doNow,onHelp,caseFile,clock=null}:{clock?:ClockView|null;score:number;streak:number;coins:number;sound:boolean;onSound:()=>void;chunk:number;total:number;left:number|null;title?:string;doNow?:string;onHelp?:()=>void;caseFile?:React.ReactNode}){
+export function RaceHud({score,streak,coins,sound,onSound,chunk,total,left,title,doNow:doNowBase,onHelp,caseFile,clock=null,doNowOverride=null}:{doNowOverride?:string|null;clock?:ClockView|null;score:number;streak:number;coins:number;sound:boolean;onSound:()=>void;chunk:number;total:number;left:number|null;title?:string;doNow?:string;onHelp?:()=>void;caseFile?:React.ReactNode}){
+ const doNow=doNowOverride??doNowBase;
  // Pinned directly below the site header on every race screen (--header-h is set by useStickyOffsets). On a phone it is
  // one row (the chunk count and timer join the pills) so the passage keeps the screen.
  return <div className="hud sticky top-[var(--header-h,0px)] z-20 -mx-4 flex flex-col gap-2 bg-deep px-4 pb-2 pt-1">
@@ -310,7 +314,7 @@ export function DiscoveryBurst({chunks,world,timeSetting,sound,onDone,onFind,squ
 }
 
 // ---------- The solo expedition ----------
-export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,history=[],timeSetting="1",highlighter=false,studentKey,onSave,onFinish,onExit,replay=0,classToken=null,resume=null,stopAtInnerDoor=null,roomClock="off"}:{roomClock?:RoomClock;world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;grade?:number;history?:ExpeditionAttempt[];timeSetting?:string;highlighter?:boolean;studentKey?:string;onSave?:(a:ExpeditionAttempt)=>void;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void;replay?:number;classToken?:string|null;resume?:ExpeditionAttempt|null;stopAtInnerDoor?:boolean|null}){
+export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,history=[],timeSetting="1",highlighter=false,studentKey,onSave,onFinish,onExit,replay=0,classToken=null,resume=null,stopAtInnerDoor=null,roomClock="off",questionTime="standard"}:{questionTime?:QuestionTime;roomClock?:RoomClock;world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;grade?:number;history?:ExpeditionAttempt[];timeSetting?:string;highlighter?:boolean;studentKey?:string;onSave?:(a:ExpeditionAttempt)=>void;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void;replay?:number;classToken?:string|null;resume?:ExpeditionAttempt|null;stopAtInnerDoor?:boolean|null}){
  const [sound,toggleSound]=useSoundPref("effects",preset);
  const chunks=useMemo(()=>expeditionChunks(world,passages,expeditionId),[world,passages,expeditionId]);
  const exp=world.expeditions?.find(e=>e.id===expeditionId);
@@ -371,7 +375,9 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const firstStep=useRef(true);
  useLayoutEffect(()=>{if(firstStep.current){firstStep.current=false;return}if(step>1)focusHeading()},[step]);
  // Timers: Gist 20 seconds; the question by its type (Catch the Lie starts after the testimony).
- const qSeconds=q?limitMs(TYPE_INFO[q.type].seconds,timeSetting)/1000:0,gSeconds=limitMs(GIST_SECONDS,timeSetting)/1000;
+ // Question time: the class's setting times the student's own (lib/expedition.ts questionSetting).
+ const qSetting=questionSetting(timeSetting,questionTime);
+ const qSeconds=q?limitMs(TYPE_INFO[q.type].seconds,qSetting)/1000:0,gSeconds=limitMs(GIST_SECONDS,timeSetting)/1000;
  const gistLeft=useBeatClock(startedAt,beat==="gist"?gSeconds:null);
  const qLeft=useBeatClock(startedAt,beat==="question"&&!testifying?qSeconds:null);
  const record=records[k];
@@ -400,10 +406,10 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   if(beat!=="question"||record||judging)return;
   let judged:ChunkRecord["judged"]=null;
   if(formatOf(q!)==="written"){setJudging(true);judged=await judgeWritten({worldId:world.id,expeditionId,chunk:k,bank:bankAt(k),version,text:a.text??"",line:a.lines?.[0]??null},q!,tokens,classToken);setJudging(false);a={...a,judged:judged.strength}}
-  const res=scoreAnswer(q!,a,tokens,Date.now()-startedAt,limitMs(TYPE_INFO[q!.type].seconds,timeSetting));
+  const res=scoreAnswer(q!,a,tokens,Date.now()-startedAt,limitMs(TYPE_INFO[q!.type].seconds,qSetting));
   // A first-time hint is done once the student has done it right.
   markHintDone("lock");if(res.correct){const ff=formatOf(q!);markHintDone(ff==="dnd"?"dnd":ff==="multi"?"multi":ff==="written"?"written":q!.clues?.length?"clues":"proof")}
-  const g=ghostPlay(world.id+expeditionId,k,limitMs(TYPE_INFO[q!.type].seconds,timeSetting)),mult=arc?multiplierAt(arc,k):1;
+  const g=ghostPlay(world.id+expeditionId,k,limitMs(TYPE_INFO[q!.type].seconds,qSetting)),mult=arc?multiplierAt(arc,k):1;
   const next=[...records];next[k]={gist,answer:a,correct:res.correct,points:res.points>0?Math.max(0,res.points*mult-(clueCost(clueTier)-(freeHint&&clueTier>=1?CLUE_COST[1]:0))):0,clue:clueTier,late:res.late,coins:found?DISCOVERY_COINS:0,unknown:[...unknown].map(i=>tokens[i]?.text.replace(/[^\p{L}'-]/gu,"")).filter(Boolean),discovered:found,
    bonus:streakBonus(streak,res.correct?streak+1:0),mult,version:asked!.version,bank:bankAt(k),judged};
   setRecords(next);setGhost(x=>{const n=[...x];n[k]=g.points*mult+g.gist;return n});cue(sound,res.correct?"chime":"reveal");go(res.correct?"result":"recover");
@@ -476,7 +482,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const said=iv&&cards.length?interviewStatements(world,iv,liar,cards).filter((_,i)=>isMet(cards,i)):null;
  const inventory=inventoryOf({said,locks:records.map((r,i)=>({lock:i,question:askedChunks[i].chunk.question,tokens:chunkTokens(chunks[i].lines),opened:isOpen(r),discovery:r?.discovered?chunks[i].chunk.discovery:null}))});
  const nextRoom=room?roomsOf(world)[room.number]??null:null;
- const hud=<RaceHud clock={clock} caseFile={<CaseFileButton items={inventory}/>} doNow={DO_NOW[screenNow]} onHelp={()=>setAgain(true)} score={score} streak={streak} coins={coins} sound={sound} onSound={toggleSound} chunk={k+1} total={chunks.length} left={beat==="gist"?gistLeft:beat==="question"&&!testifying?qLeft:null} title={exp.title}/>;
+ const hud=<RaceHud doNowOverride={beat==="witness"&&iv&&meeting!=null?witnessDoNow(firstName(witnessName(world,iv.witnesses[meeting].character))):null} clock={clock} caseFile={<CaseFileButton items={inventory}/>} doNow={DO_NOW[screenNow]} onHelp={()=>setAgain(true)} score={score} streak={streak} coins={coins} sound={sound} onSound={toggleSound} chunk={k+1} total={chunks.length} left={beat==="gist"?gistLeft:beat==="question"&&!testifying?qLeft:null} title={exp.title}/>;
  const shown=proofShown(q,tokens);
  // The lines a proof step taps: this chunk's, or for Make the Call every chunk of the expedition so far.
  const callPassages=joinedPassages(chunks.slice(0,k+1));
@@ -490,7 +496,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   {beat==="puzzle"&&puzzleId&&(()=>{const pz=world.rooms?.find(r=>r.expedition===expeditionId)?.puzzles?.find(p=>p.id===puzzleId),at=room?.puzzles.find(p=>p.id===puzzleId)?.after??k;
    return pz?<PuzzleLock key={puzzleId} puzzle={pz} lineOf={r=>lineAt(passages,r)} seed={seedKey} readLines={chunks.slice(0,at+1).flatMap(x=>x.lines.map(l=>({p:l.pid,s:l.index})))} onDone={onPuzzleDone}/>:null})()}
   {beat==="escape"&&room&&<EscapeMoment clockNote={budget?clockEnding(budget,clockUsed[ch]??0):null} room={room} next={nextRoom} solved={!!liarResult?.solved} onNext={()=>{go("finish");onFinish?.(records)}}/>}
-  {beat==="witness"&&iv&&meeting!=null&&<WitnessVisit key={meeting} world={world} expeditionId={expeditionId} interview={iv} liar={liar} index={meeting} lock={k+1} met={cards.filter((_,i)=>isMet(cards,i)).length+1} onDone={metWitness}/>}
+  {beat==="witness"&&iv&&meeting!=null&&<WitnessVisit hint={!hintsDone().has("witness")} onAsked={()=>markHintDone("witness")} key={meeting} world={world} expeditionId={expeditionId} interview={iv} liar={liar} index={meeting} lock={k+1} met={cards.filter((_,i)=>isMet(cards,i)).length+1} onDone={metWitness}/>}
   {beat==="interview"&&iv&&<InterviewScreen world={world} expeditionId={expeditionId} interview={iv} liar={liar} onDone={cs=>{setCards(cs);saveCards(world.id,expeditionId,cs);startChunk(0)}}/>}
   {beat==="liar"&&iv&&<div className="flex justify-center"><ExitBanner/></div>}
   {beat==="liar"&&iv&&<NameTheLiar seed={`${seedKey}|${expeditionId}`} world={world} said={interviewStatements(world,iv,liar,cards)} passages={callAll} onLock={a=>{setLiarAnswer(a);const r=liarCheck(iv,liar,a);cue(sound,r.solved?"streak":"reveal");go("verdict")}}/>}
@@ -509,7 +515,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   {beat==="question"&&<QuestionPanel banner={<><LockBanner lock={k+1} of={chunks.length} kind={lockKind(q)}/>{arc&&<ArcBanner kind={beatKind(arc,k)} speaker={q.testimony?world.characters.find(x=>x.id===q.testimony!.speaker)?.name:null}/>}</>} seed={`${seedKey}|${c.id}`} timer={<TimerTrack left={testifying?qSeconds:qLeft} seconds={qSeconds}/>} vq={viewQuestion(q,world,callPassages)} passages={c.passages} chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} glossary={world.glossary} testifying={testifying} draft={draft} setDraft={setDraft} step={step} setStep={setStep} onLock={lockIn} help={{again}} clue={clueState}/>}
 
   {beat==="recover"&&record&&<section aria-labelledby="ex-h">
-   <div className="notyet-shake mt-3 rounded-[24px] bg-notyet p-5 text-on-notyet shadow-[0_8px_0_var(--color-notyet-shadow)]" aria-live="assertive"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">Lock {k+1} · {info.name}{record.late?" · Time's up":""}</p><h1 id="ex-h" className="mt-1 text-[36px] leading-none outline-none">Not yet.</h1><p className="mt-2 text-[17px] font-bold">This lock opens only with the proof. Use the answer shown to open it; you'll get another shot for points in the Refresher.</p></div>
+   <div className="notyet-shake mt-3 notyet-panel" aria-live="assertive"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">Lock {k+1} · {info.name}{record.late?" · Time's up":""}</p><h1 id="ex-h" className="mt-1 text-[36px] leading-none outline-none">Not yet.</h1><p className="mt-2 text-[17px] font-bold">This lock opens only with the proof. Use the answer shown to open it; you'll get another shot for points in the Refresher.</p></div>
    <FormatResult q={q} answer={record.answer} judged={record.judged??null} points={record.points}/>
    {skillNow?.tag&&<p className="mt-3 flex justify-center"><SkillTag s={skillNow.tag}/></p>}
    <RecoveryPanel task={recoveryTask(q)} seed={`${seedKey}|${c.id}|open`} chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} shownLines={[...new Set(proofTokens(q,tokens,c.lines).map(i=>tokens[i].line))]}
@@ -521,7 +527,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
     ?<div className="mt-8 flex flex-col items-center gap-3"><p aria-hidden className="float-up font-display text-[56px] font-bold leading-none text-gold">+{record.points.toLocaleString()}</p>
      <div className="moment-pop w-full rounded-[24px] bg-success p-5 text-on-success shadow-[0_8px_0_var(--color-success-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{info.name}{record.mult>1?" · Double points":""}{streak>1?` · Streak x${streak}`:""}</p><h1 id="ex-h" className="mt-1 text-[40px] leading-none outline-none">Proof!<span className="sr-only"> Plus {record.points} points.</span></h1><p className="mt-2 text-[16px] font-bold">{q.why}</p></div>
      {record.bonus>0&&<p role="status" className="moment-pop rounded-full bg-gold px-4 py-1.5 font-display text-[17px] font-bold text-on-gold">Streak bonus! +{record.bonus} for {streak} in a row</p>}</div>
-    :<div className="notyet-shake mt-3 rounded-[24px] bg-notyet p-5 text-on-notyet shadow-[0_8px_0_var(--color-notyet-shadow)]"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{info.name}{record.late?" · Time's up":""}</p><h1 id="ex-h" className="mt-1 text-[36px] leading-none outline-none">Not yet.</h1><p className="mt-2 text-[17px] font-bold">You'll get another shot in the Refresher.</p></div>}
+    :<div className="notyet-shake mt-3 notyet-panel"><p className="text-[13px] font-extrabold uppercase tracking-[.08em]">{info.name}{record.late?" · Time's up":""}</p><h1 id="ex-h" className="mt-1 text-[36px] leading-none outline-none">Not yet.</h1><p className="mt-2 text-[17px] font-bold">You'll get another shot in the Refresher.</p></div>}
    <FormatResult q={q} answer={record.answer} judged={record.judged??null} points={record.points}/>
    {skillNow?.tag&&<p className="mt-3 flex justify-center"><SkillTag s={skillNow.tag}/></p>}
    {skillNow?.ups.map(s=><div key={s.family} className="mt-3"><LevelUp s={s}/></div>)}
@@ -529,6 +535,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
    {q.type==="make_call"
     ?<><p className="mt-3 text-[13px] font-extrabold uppercase tracking-[.08em] text-highlight">{record.correct?"The proof":"Here's the proof"}</p><ReadingPanel className="mt-1" glossary={world.glossary} passages={callPassages as SourcePassage[]} results={shown.lines.map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/></>
     :<div className="mt-3"><ChunkText chunk={{lines:c.lines,discovery:c.chunk.discovery}} world={world} tokens={tokens} shown={proofTokens(q,tokens,c.lines)} shownStyle={record.correct?"right":"missed"}/></div>}
+   <button type="button" onClick={afterResult} className="case-primary mt-4 min-h-[56px] w-full justify-center text-[18px]">Next <ArrowRight size={18} aria-hidden/></button>
   </section>}
 
   {beat==="lightning"&&lightningHere&&<LightningBeat item={lightningHere} chunk={chunks[lightningHere.chunk-1]} world={world} seed={`${seedKey}|${lightningHere.id}`} timeSetting={timeSetting} sound={sound} onDone={p=>{setLightningPts(x=>{const n=[...x];n[k]=p;return n});afterExtras()}}/>}

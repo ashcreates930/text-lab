@@ -122,11 +122,12 @@ test("one shot: no near-miss retry, and a late answer scores 0 even when right",
   assert.equal(late.points, 0); assert.ok(late.late);
 });
 
-test("timers: no reading timer, Gist 20, one-step 30, two-step 45, Theme Thread and Make the Call 90; extended time multiplies all", () => {
-  assert.equal(GIST_SECONDS, 20);
-  assert.equal(TYPE_INFO.find_it.seconds, 30); assert.equal(TYPE_INFO.catch_lie.seconds, 45);
-  for (const t of ["word_detective", "shades", "between_lines", "whose_eyes", "figure_it_out", "character_clue"] as const) assert.equal(TYPE_INFO[t].seconds, 45, t);
-  assert.equal(TYPE_INFO.theme_thread.seconds, 90); assert.equal(TYPE_INFO.make_call.seconds, 90);
+// Student testing (2026-11-15): every question timer about 50% longer (Gist 30, Find It 45, two-step 70, the long ones 135).
+test("timers: no reading timer, Gist 30, one-step 45, two-step 70, Theme Thread and Make the Call 135; extended time multiplies all", () => {
+  assert.equal(GIST_SECONDS, 30);
+  assert.equal(TYPE_INFO.find_it.seconds, 45); assert.equal(TYPE_INFO.catch_lie.seconds, 70);
+  for (const t of ["word_detective", "shades", "between_lines", "whose_eyes", "figure_it_out", "character_clue"] as const) assert.equal(TYPE_INFO[t].seconds, 70, t);
+  assert.equal(TYPE_INFO.theme_thread.seconds, 135); assert.equal(TYPE_INFO.make_call.seconds, 135);
   assert.equal(limitMs(45, "1.5"), 67500); assert.equal(limitMs(20, "2"), 40000); assert.equal(limitMs(30, "untimed"), 90000); assert.equal(timeScale(null), 1);
   // The automatic screens: about 3 seconds of result and 5 of leaderboard; longer with extended time.
   assert.deepEqual([SCREEN_MS.result, SCREEN_MS.board], [3000, 5000]); assert.equal(screenMs("board", "2"), 10000);

@@ -2740,13 +2740,13 @@ test("proof race live: expedition beats, readiness, gist and question saving, on
   assert.match((await act(ids[0],"race_tap",{answer:{lines:["x"]}}))??"",/isn't open/);
   assert.deepEqual(server.hostView(st).race!.ready,{ready:1,total:3,advance:false});
   // Gist check (20 seconds).
-  assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["process",20000]);
+  assert.equal(await host({action:"race.next"}),null);assert.deepEqual([pub().beat,pub().beatMs],["process",30000]);
   const exp=st.world.expeditions![0],c0=exp.chunks[0],best=c0.gist.options.findIndex(o=>o.best);
   assert.equal(await act(ids[0],"race_gist",{choice:best}),null);
   assert.equal(await act(ids[1],"race_gist",{choice:(best+1)%3}),null);
   assert.match((await act(ids[1],"race_gist",{choice:best}))??"",/already/);
   // The question (Whose Eyes?, 45 seconds): the phones get the choices but never which one is best.
-  assert.equal(await host({action:"race.next"}),null);assert.equal(pub().beat,"race");assert.equal(pub().beatMs,45000);
+  assert.equal(await host({action:"race.next"}),null);assert.equal(pub().beat,"race");assert.equal(pub().beatMs,70000);
   assert.equal(pub().question!.type,"whose_eyes");assert.ok(!JSON.stringify(pub().question).includes("\"best\""));
   const chunks=(await import("../lib/live/race.ts")).liveRaceChunks(st.world,st.passages!,st.session.rounds.at(-1) as never);
   // Each player answers the question the server asked them (their bank pick at their version: lib/formats.ts).

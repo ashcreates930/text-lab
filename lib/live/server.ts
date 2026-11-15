@@ -501,6 +501,8 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
       if (a.type === "race") {
         const settings = parseExpSettings((a as { settings?: unknown }).settings, st.world);
         if (!settings) return "This story has no expeditions yet.";
+        // A class's game uses the class's question time (student testing, 2026-11-15).
+        if (s.classId) { const cls = await getClassroomStore()?.getClassById(s.classId).catch(() => null); if (cls?.question_time === "more") settings.questionTime = "more"; }
         const iv = st.world.expeditions?.find((e) => e.id === settings.expeditionId)?.interview;
         // A class's games seed the liar by class and room, so a room played one chamber per period keeps its liar.
         const at = inRoom(iv) ? iv!.witnesses.map((w) => w.at!) : null;
