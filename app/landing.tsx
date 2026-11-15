@@ -45,7 +45,7 @@ export function Landing({ brand, onStart, onPreset, onJoin, onWaitlist, onPricin
       {/* The poster, whole (it carries its own title and gear), with the escape moment on a phone beside it: side by side on a
           phone, overlapping the poster's lower edge (never its title) on a laptop. */}
       <div className="flex items-end justify-center gap-0">
-        <img src="/home/poster-escape-640.webp" alt="Poster: Escape the story. Every lock opens with a line from the text. Three young investigators study an open book by a moonlit country road, with a church and an old wooden bridge behind them." width={640} height={1147} className="w-[164px] rounded-card border border-edge shadow-[0_14px_36px_rgba(0,0,0,.45)] sm:w-[230px] md:w-[290px]"/>
+        <img src="/home/poster-step-into-640.webp" alt="Poster: Step into the story. Every lock opens with a line from the text. Three young investigators study an open book by a moonlit country road, with a church and an old wooden bridge behind them." width={640} height={1147} className="w-[164px] rounded-card border border-edge shadow-[0_14px_36px_rgba(0,0,0,.45)] sm:w-[230px] md:w-[290px]"/>
         <EscapePeek className="ml-3 md:-ml-8 md:mb-10"/>
       </div>
     </section>

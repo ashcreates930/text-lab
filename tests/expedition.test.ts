@@ -59,7 +59,8 @@ test("the launch screen: the role card, Start Proof Race and Join a live game, n
 test("the home page: one primary button per audience, a strip of the three moments of play, three steps", () => {
   const s = src("app/landing.tsx");
   // The hero (home refresh, 2026-11-15): the poster, whole, with the escape moment beside it; the mature look always.
-  assert.match(s, /<EscapePeek /); assert.match(s, /\/home\/poster-escape-640\.webp/); assert.ok(existsSync("public/home/poster-escape.jpg"));
+  assert.match(s, /<EscapePeek /); assert.match(s, /\/home\/poster-step-into-640\.webp/); assert.ok(existsSync("public/home/poster-step-into.jpg")); assert.ok(existsSync("public/home/poster-step-into-640.webp"));
+  assert.match(s, /alt="Poster: Step into the story\./);
   assert.match(s, /root\.dataset\.look = "mature"/);
   assert.match(s, />For English classrooms</); assert.match(s, /A reading escape room for grades 6 to 12\. Every lock opens with a line from the text\./);
   assert.match(s, /Each chamber takes about 20 minutes, on any device\. No account needed\./); assert.match(s, /Sleepy Hollow is open now\. Two more stories are on the way\./);
