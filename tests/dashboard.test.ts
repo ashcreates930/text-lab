@@ -38,3 +38,9 @@ test("escape-room wording: the home page, the map, the dashboard and the CSV", (
   assert.match(dash, /<li key={x.id} className="min-w-0 rounded-3xl bg-panel p-5">/);
   assert.match(readFileSync("lib/classroom/evidence.ts", "utf8"), /"Room", "Student", "Chamber reached", "Locks opened", "Puzzles solved first try", "Liar caught"/);
 });
+
+test("the teacher sign-in screen doesn't ask for classes while signed out (a clean console, no 401)", () => {
+  const s = readFileSync("app/classroom.tsx", "utf8");
+  assert.match(s, /if\(!session&&!dev\)\{setState\("signin"\);setMessage\(""\);return\}/);
+  assert.ok(s.indexOf("if(!session&&!dev)") < s.indexOf('const r=await teacherFetch("/api/teacher/classes")'));
+});
