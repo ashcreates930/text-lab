@@ -5,7 +5,8 @@
 // moment is a still card under reduced motion.
 import {useEffect,useRef,useState} from "react";
 import {createPortal} from "react-dom";
-import {ArrowRight,BookOpen,DoorClosed,DoorOpen,KeyRound,Lock,LockOpen,Map as MapIcon,X} from "lucide-react";
+import {ArrowRight,BookOpen,KeyRound,Map as MapIcon,X} from "lucide-react";
+import {DoorGlyph,DoorScene,LockBadge,Padlock} from "./lock-art";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
 import type {Answer,Token} from "@/lib/expedition";
@@ -15,11 +16,11 @@ import {DragDrop,type DndView} from "./drag-drop";
 import {ReadingPanel} from "./reading-panel";
 import {DoNow} from "./practice-round";
 import {DO_NOW} from "@/lib/onboarding";
-import {reducedMotion} from "./proof-race";
 
-// ---------- Above every question: which lock this is ----------
+// ---------- Above every question: a large closed padlock, and which lock this is ----------
 export function LockBanner({lock,of,kind}:{lock:number;of:number;kind:LockKind}){
- return <p className="mt-2 inline-flex w-fit items-center gap-1.5 rounded-full bg-panel px-3 py-1 text-[13px] font-extrabold text-ink"><Lock size={14} className="text-highlight" aria-hidden/>Lock {lock} of {of} · {LOCK_INFO[kind].name}</p>;
+ return <div className="mt-2 flex items-center gap-3"><LockBadge state="closed"/>
+  <p className="inline-flex w-fit items-center rounded-full bg-panel px-3 py-1 text-[13px] font-extrabold text-ink">Lock {lock} of {of} · {LOCK_INFO[kind].name}<span className="sr-only">, locked</span></p></div>;
 }
 
 // ---------- The door: where the student is, and what opens the way out ----------
@@ -28,13 +29,13 @@ export function RoomDoor({room,onOpen,resumed=false}:{room:Room;onOpen:()=>void;
  return <section aria-labelledby="ex-h" className="mx-auto flex w-full max-w-xl flex-col gap-4 pt-2">
   <DoNow text={DO_NOW.door}/>
   <div className="rounded-[24px] bg-panel p-5 shadow-[0_8px_0_#0B0920]">
-   <div className="flex items-center gap-3"><span aria-hidden className="grid h-14 w-14 shrink-0 place-items-center rounded-[16px] bg-deep text-highlight"><DoorClosed size={30}/></span>
+   <div className="flex items-center gap-3"><span aria-hidden className="grid h-14 w-14 shrink-0 place-items-center rounded-[16px] bg-deep text-highlight"><DoorGlyph size={30}/></span>
     <div><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Room {room.number}</p><h1 id="ex-h" className="text-[28px] leading-tight outline-none">{room.name}</h1></div></div>
    <p className="mt-3 text-[17px] font-bold leading-snug">{room.door??"Every lock in this room opens only with proof from the story. Read closely, prove each answer, and find the way out."}</p>
    <ul className="mt-3 flex flex-col gap-1.5 text-[15px]">
     {c1&&<li className="flex items-center gap-2"><KeyRound size={16} className="shrink-0 text-gold" aria-hidden/>Chamber 1: locks {c1.from+1} to {c1.to+1}, then the inner door.</li>}
     {c2&&<li className="flex items-center gap-2"><KeyRound size={16} className="shrink-0 text-gold" aria-hidden/>Chamber 2: locks {c2.from+1} to {c2.to+1}.</li>}
-    {room.exit==="name_liar"&&<li className="flex items-center gap-2"><DoorOpen size={16} className="shrink-0 text-gold" aria-hidden/>The exit door: name the witness who lied, and prove it.</li>}
+    {room.exit==="name_liar"&&<li className="flex items-center gap-2"><DoorGlyph size={16} className="shrink-0 text-gold"/>The exit door: name the witness who lied, and prove it.</li>}
    </ul>
   </div>
   <button type="button" onClick={onOpen} className="case-primary min-h-[56px] w-full justify-center text-[18px]">{resumed?"Back into the room":"Open the door"} <ArrowRight size={18} aria-hidden/></button>
@@ -64,7 +65,7 @@ export function RecoveryPanel({task,chunk,world,tokens,shownLines,answerText,clu
   {task==="choice"&&choices&&<AnswerBars seed={seed} label="Open the lock" options={choices.map(t=>({text:t}))} picked={draft.choice??null} onPick={i=>setDraft({choice:i})}/>}
   {task==="pinboard"&&callPassages&&<ReadingPanel glossary={world.glossary} passages={callPassages as SourcePassage[]} kept={draft.lines??[]} onTap={l=>setDraft(d=>{const ls=d.lines??[];return {lines:ls.includes(l.text)?ls.filter(x=>x!==l.text):ls.length>=2?ls:[...ls,l.text]}})}/>}
   {wrong&&<p role="status" className="rounded-row bg-notyet-soft px-3 py-2 text-[15px] font-bold text-ink">Not that one yet. Use the answer shown.</p>}
-  <button type="button" disabled={!ready||busy} onClick={open} className="case-primary min-h-[56px] w-full justify-center text-[18px]"><LockOpen size={18} aria-hidden/>Open the lock</button>
+  <button type="button" disabled={!ready||busy} onClick={open} className="case-primary min-h-[56px] w-full justify-center text-[18px]"><Padlock open quiet size={18}/>Open the lock</button>
  </div>;
 }
 
@@ -93,21 +94,12 @@ export function CaseFileList({items}:{items:InventoryItem[]}){
 }
 
 // ---------- The doors ----------
-function DoorArt({open,size=120}:{open:boolean;size?:number}){
- const anim=open&&!reducedMotion();
- return <svg width={size} height={size*1.25} viewBox="0 0 96 120" aria-hidden className="mx-auto">
-  <rect x="10" y="6" width="76" height="110" rx="6" fill="#140f33" stroke="#fff7e6" strokeWidth="3"/>
-  {open&&<rect x="14" y="10" width="68" height="102" rx="3" fill="var(--color-gold)" className={anim?"door-light":""} opacity=".9"/>}
-  <g className={open?"door-swing":""}><rect x="14" y="10" width="68" height="102" rx="3" fill="#4a3d86" stroke="#2a2450" strokeWidth="2"/>
-   <rect x="22" y="18" width="52" height="38" rx="3" fill="none" stroke="#2a2450" strokeWidth="2"/><rect x="22" y="64" width="52" height="40" rx="3" fill="none" stroke="#2a2450" strokeWidth="2"/>
-   <circle cx="72" cy="62" r="4" fill="var(--color-gold)"/></g>
- </svg>;
-}
+// The door (app/lock-art.tsx DoorScene): its padlock opens once the chamber is cleared, then the door swings open.
 // The inner door between the chambers. stop: the class stops here today (progress is saved).
 export function InnerDoor({room,stop,onNext,onMap,clockNote=null}:{room:Room;stop:boolean;onNext:()=>void;onMap:()=>void;clockNote?:string|null}){
  return <section aria-labelledby="ex-h" className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 pt-2 text-center">
   <DoNow text={stop?DO_NOW.stopped:DO_NOW.inner}/>
-  <DoorArt open size={110}/>
+  <DoorScene open behind="Chamber 2" label="The inner door: its padlock opens and the door swings open"/>
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Room {room.number} · {room.name}</p>
   <h1 id="ex-h" className="text-[32px] leading-tight outline-none">Chamber 1 escaped</h1>
   {clockNote&&<p className="text-[16px] font-bold text-muted">{clockNote}</p>}
@@ -129,13 +121,13 @@ export function ChamberRecap({room,items,onNext}:{room:Room;items:InventoryItem[
 }
 // The exit door, above Name the Liar.
 export function ExitBanner(){
- return <p className="inline-flex w-fit items-center gap-2 rounded-full bg-gold px-3 py-1.5 font-display text-[15px] font-bold text-on-gold"><DoorClosed size={18} aria-hidden/>The exit door: name the liar to open it</p>;
+ return <p className="inline-flex w-fit items-center gap-2 rounded-full bg-gold px-3 py-1.5 font-display text-[15px] font-bold text-on-gold"><DoorGlyph size={18}/>The exit door: name the liar to open it</p>;
 }
 // The escape: the door swings open and the way to the next room is open (the map lifts its fog when the student is back).
 export function EscapeMoment({room,next,solved,onNext,clockNote=null}:{room:Room;next:Room|null;solved:boolean;onNext:()=>void;clockNote?:string|null}){
  return <section aria-labelledby="ex-h" className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 pt-2 text-center">
   <DoNow text={DO_NOW.escape}/>
-  <DoorArt open size={140}/>
+  <DoorScene open behind={next?`Room ${next.number}`:"Out"} label="The exit door: its padlock opens and the door swings open"/>
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Room {room.number} · {room.name}</p>
   <h1 id="ex-h" className="text-[36px] leading-tight outline-none">You escaped!</h1>
   {clockNote&&<p className="text-[16px] font-bold text-muted">{clockNote}</p>}

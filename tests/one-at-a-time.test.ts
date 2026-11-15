@@ -13,7 +13,7 @@ test("the code lock shows one dial at a time and checks each before the next", (
   assert.match(c, /const d=p\.dials\[at\]/, "only the current dial is drawn");
   assert.doesNotMatch(c, /p\.dials\.map\(\(d,k\)=><fieldset/, "no list of every dial");
   assert.match(c, /Check this dial/); assert.match(c, /"Next dial":"Open the lock"/);
-  assert.match(c, /if\(n>=p\.dials\.length\)submit\?\.\(\{taps:taps\}\)/, "the first-try taps go to the server once, after the last dial");
+  assert.match(c, /if\(n>=p\.dials\.length\)\{submit\?\.\(\{taps:taps\}\)/, "the first-try taps go to the server once, after the last dial");
   assert.match(c, /right\*PUZZLE_POINTS\.dial/);
 });
 
@@ -22,7 +22,7 @@ test("Fix the Painting asks for one mistake and its proof at a time", () => {
   assert.match(c, /label="Mistake"/); assert.match(c, /Tap one thing the painter got wrong\./);
   assert.match(c, /Now tap the line that proves the painter wrong\./); assert.match(c, /Check this mistake/);
   assert.match(c, /const choosable=\(id:string\)=>!result&&!found\.includes\(id\)/, "a mistake already found can't be marked again");
-  assert.match(c, /if\(n>=p\.wrong\)submit\?\.\(\{marks,proofs\}\)/);
+  assert.match(c, /if\(n>=p\.wrong\)\{submit\?\.\(\{marks,proofs\}\)/);
   assert.match(c, /firstTry\.filter\(Boolean\)\.length\*PUZZLE_POINTS\.mistake/);
 });
 
@@ -30,7 +30,7 @@ test("Inspect the Scene asks about one object at a time, and lines already expla
   const c = part("SceneLock");
   assert.match(c, /const obj=p\.objects\[at\]/); assert.match(c, /why is this here\?/); assert.match(c, /Check this object/);
   assert.match(c, /tray\.filter\(r=>!settled\.includes\(refKey\(r\)\)\)/);
-  assert.match(c, /if\(n>=p\.objects\.length\)submit\?\.\(\{matches\}\)/);
+  assert.match(c, /if\(n>=p\.objects\.length\)\{submit\?\.\(\{matches\}\)/);
 });
 
 test("after a miss the right answer is outlined and tapped to go on; every part says where it is", () => {

@@ -3,7 +3,7 @@
 // and the door to the next room swings open. About five seconds, then it loops. Line icons only (the mature look). With
 // reduced motion it holds one still frame (the lock open on its proof). Decorative: one description for screen readers.
 import {useEffect,useState} from "react";
-import {Lock,LockOpen} from "lucide-react";
+import {LockBadge} from "./lock-art";
 
 const PHASE_MS=[1700,1500,2000];
 export function EscapePeek({className=""}:{className?:string}){
@@ -22,7 +22,7 @@ export function EscapePeek({className=""}:{className?:string}){
    </div>
    <div className="relative mt-auto grid h-[128px] place-items-center md:h-[150px]">
     {phase<2?<div className="flex flex-col items-center gap-1.5">
-      <span className={`grid h-14 w-14 place-items-center rounded-full border-2 transition-colors duration-300 motion-reduce:transition-none ${proved?"border-success text-success":"border-edge text-muted"}`}>{proved?<LockOpen size={28} strokeWidth={1.75}/>:<Lock size={28} strokeWidth={1.75}/>}</span>
+      <LockBadge state={proved?"proved":"closed"}/>
       <span className={`text-[10px] font-extrabold ${proved?"text-success":"text-muted"}`}>{proved?"Proved. The lock opens.":"Tap the line that proves it"}</span></div>
      :<div className="peek-door relative h-[112px] w-[78px] md:h-[130px] md:w-[88px]" style={{perspective:"420px"}}>
       <div className="absolute inset-0 grid place-items-center rounded-t-[6px] bg-gold pl-4 text-center font-display text-[13px] font-semibold leading-tight text-on-gold">Room 2</div>

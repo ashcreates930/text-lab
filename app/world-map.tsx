@@ -7,7 +7,8 @@
 // with the arrow keys when the map has focus), zoom with the buttons or a pinch. Reduced motion: no walking, drifting
 // or pulsing. Rules: lib/world-map.ts. MapList is the same map as a list, for screen readers and keyboards.
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
-import {Crown,DoorClosed,DoorOpen,Lock,LockOpen,Minus,Plus,Sparkles,Star,Zap,Maximize2,X} from "lucide-react";
+import {Crown,Minus,Plus,Sparkles,Star,Zap,Maximize2,X} from "lucide-react";
+import {DoorGlyph,Padlock} from "./lock-art";
 import type {MapRegionView,MapStopView,TokenAt,WorldMapData} from "@/lib/world-map";
 import {pointOf,raceRegions,raceTokenAt,regionFrame,trailOf} from "@/lib/world-map";
 import type {WorldPack} from "@/lib/world-schema";
@@ -144,8 +145,9 @@ export function WorldMap({map,regions,focus=null,onFocus,tokens=[],travel,onStop
      <circle cx={r.label.x} cy={r.label.y} r={Math.max(R,22*u)} fill="transparent"/>
      {cur&&!small&&<circle cx={r.label.x} cy={r.label.y} r={R*1.55} className="map-pulse" fill="none" stroke="var(--color-primary)" strokeWidth={3*u}/>}
      <circle cx={r.label.x} cy={r.label.y} r={R} fill={cur?"var(--color-primary)":locked?"#3b3463":"var(--color-success)"} stroke={locked?"#8d84bd":"#fff7e6"} strokeWidth={2.5*u} opacity={small?.85:1}/>
-     {locked?<Lock x={r.label.x-7*u*(small?.8:1)} y={r.label.y-7*u*(small?.8:1)} width={14*u*(small?.8:1)} height={14*u*(small?.8:1)} color="#cfc8f0" aria-hidden/>
+     {locked?<Padlock x={r.label.x-7*u*(small?.8:1)} y={r.label.y-7*u*(small?.8:1)} width={14*u*(small?.8:1)} height={14*u*(small?.8:1)} color="#cfc8f0"/>
       :<text x={r.label.x} y={r.label.y+(small?4.5:6.5)*u} textAnchor="middle" fontSize={(small?12:18)*u} fontWeight={800} fill={cur?"var(--color-on-primary)":"var(--color-on-success)"} className="font-display">{r.number}</text>}
+     {!small&&r.state==="proven"&&<g aria-hidden><circle cx={r.label.x+R*.8} cy={r.label.y-R*.8} r={8*u} fill="var(--color-success)" stroke="#fff7e6" strokeWidth={1.2*u}/><Padlock open quiet x={r.label.x+R*.8-5*u} y={r.label.y-R*.8-5*u} width={10*u} height={10*u} strokeWidth={2.25} color="var(--color-on-success)"/></g>}
      {!small&&!locked&&<text x={r.label.x} y={r.label.y+R+15*u} textAnchor="middle" fontSize={13*u} className="map-label map-label-strong">{r.title}</text>}
      {!small&&r.state==="proven"&&<g aria-hidden>{[0,1,2].map(i=><path key={i} d={starPath(r.label.x+(i-1)*12*u,r.label.y-R-8*u,5*u)} fill={i<r.stars?"var(--color-gold)":"#2a2450"} stroke="#fff7e6" strokeWidth={.8*u}/>)}</g>}
     </g>})}
@@ -168,7 +170,7 @@ export function WorldMap({map,regions,focus=null,onFocus,tokens=[],travel,onStop
      <button type="button" onClick={closePicker} aria-label="Close" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-panel"><X size={18} aria-hidden/></button></div>
     <ol className="mt-2 grid gap-1.5">{list.map((r,i)=><li key={r.expedition}><button ref={i===0?pickerFirst:undefined} type="button" onClick={()=>{setPicker(null);onFocus?.(r.expedition)}}
      className={`flex min-h-11 w-full items-center gap-2 rounded-row px-3 py-2 text-left text-[15px] ${r.state==="current"?"bg-primary text-on-primary":"bg-panel text-ink"}`}>
-     <span aria-hidden className={`grid h-8 w-8 shrink-0 place-items-center rounded-full font-display font-bold ${r.state==="current"?"bg-on-primary text-highlight":r.state==="locked"?"bg-deep text-muted":"bg-success text-on-success"}`}>{r.state==="locked"?<Lock size={14}/>:r.number}</span>
+     <span aria-hidden className={`grid h-8 w-8 shrink-0 place-items-center rounded-full font-display font-bold ${r.state==="current"?"bg-on-primary text-highlight":r.state==="locked"?"bg-deep text-muted":"bg-success text-on-success"}`}>{r.state==="locked"?<Padlock size={14}/>:r.number}</span>
      <span className="min-w-0 flex-1"><span className="block font-bold leading-tight">Room {r.number}: {r.title}</span><span className={`block text-[13px] ${r.state==="current"?"":"text-muted"}`}>{r.state==="locked"?"Locked":r.state==="current"?"Your next room":`Escaped, ${r.stars} of 3 stars`}</span></span>
      {r.state==="proven"&&<span aria-hidden className="flex shrink-0">{[0,1,2].map(k=><Star key={k} size={14} className={k<r.stars?"fill-gold text-gold":"text-muted"}/>)}</span>}</button></li>)}</ol>
    </div>})()}
@@ -196,8 +198,8 @@ function RegionLayer({r,u,tap,onStop}:{r:MapRegionView;u:number;tap:(fn:()=>void
      :s.landmark==="twist"?<Zap x={s.x-8*u} y={s.y-8*u} width={16*u} height={16*u} color={st==="proven"?"var(--color-on-success)":"#e6deff"} aria-hidden/>
      :<text x={s.x} y={s.y+5*u} textAnchor="middle" fontSize={14*u} fontWeight={800} fill={st==="proven"?"var(--color-on-success)":st==="next"?"var(--color-on-primary)":"#cfc8f0"} className="font-display">{s.chunk}</text>}
     {st==="proven"&&s.stars>=0&&<g aria-hidden>{[0,1,2].map(i=><path key={i} d={starPath(s.x+(i-1)*10*u,s.y+R+7*u,4.2*u)} fill={i<s.stars?"var(--color-gold)":"#2a2450"} stroke="#fff7e6" strokeWidth={.7*u}/>)}</g>}
-    {st!=="proven"?<g aria-hidden><circle cx={s.x+R*.85} cy={s.y-R*.85} r={7.5*u} fill="#140f33" stroke="#fff7e6" strokeWidth={1.2*u}/><Lock x={s.x+R*.85-4.5*u} y={s.y-R*.85-4.5*u} width={9*u} height={9*u} color={st==="next"?"#ffe6b0":"#cfc8f0"}/></g>
-     :<g aria-hidden><circle cx={s.x+R*.85} cy={s.y-R*.85} r={7.5*u} fill="var(--color-success)" stroke="#fff7e6" strokeWidth={1.2*u}/><LockOpen x={s.x+R*.85-4.5*u} y={s.y-R*.85-4.5*u} width={9*u} height={9*u} color="var(--color-on-success)"/></g>}
+    {st!=="proven"?<g aria-hidden><circle cx={s.x+R*.85} cy={s.y-R*.85} r={7.5*u} fill="#140f33" stroke="#fff7e6" strokeWidth={1.2*u}/><Padlock x={s.x+R*.85-4.5*u} y={s.y-R*.85-4.5*u} width={9*u} height={9*u} strokeWidth={2.25} color={st==="next"?"#ffe6b0":"#cfc8f0"}/></g>
+     :<g aria-hidden><circle cx={s.x+R*.85} cy={s.y-R*.85} r={7.5*u} fill="var(--color-success)" stroke="#fff7e6" strokeWidth={1.2*u}/><Padlock open quiet x={s.x+R*.85-4.5*u} y={s.y-R*.85-4.5*u} width={9*u} height={9*u} strokeWidth={2.25} color="var(--color-on-success)"/></g>}
     {s.secret==="hidden"&&<g className="map-twinkle" aria-hidden><Sparkles x={s.x+R*0.55} y={s.y-R*1.6} width={15*u} height={15*u} color="#ffe6b0"/></g>}
     {s.secret==="found"&&<path d={starPath(s.x+R,s.y-R,4*u)} fill="#9ee7ff" stroke="#fff" strokeWidth={.7*u} aria-hidden/>}
    </g>})}
@@ -205,7 +207,7 @@ function RegionLayer({r,u,tap,onStop}:{r:MapRegionView;u:number;tap:(fn:()=>void
    <circle cx={r.finale.x} cy={r.finale.y} r={24*u} fill="transparent"/>
    <rect x={r.finale.x-14*u} y={r.finale.y-14*u} width={28*u} height={28*u} rx={5*u} transform={`rotate(45 ${r.finale.x} ${r.finale.y})`} fill={r.finale.solved?"var(--color-gold)":r.finale.state==="proven"?"var(--color-success)":"#3b3463"} stroke="#fff7e6" strokeWidth={2.5*u}/>
    <text x={r.finale.x} y={r.finale.y+6*u} textAnchor="middle" fontSize={17*u} fontWeight={800} fill={r.finale.solved?"var(--color-on-gold)":"#fff7e6"} className="font-display" aria-hidden>?</text>
-   {r.finale.state==="proven"?<DoorOpen x={r.finale.x+10*u} y={r.finale.y-24*u} width={14*u} height={14*u} color="var(--color-gold)" aria-hidden/>:<DoorClosed x={r.finale.x+10*u} y={r.finale.y-24*u} width={14*u} height={14*u} color="#cfc8f0" aria-hidden/>}
+   <DoorGlyph open={r.finale.state==="proven"} x={r.finale.x+10*u} y={r.finale.y-24*u} width={14*u} height={14*u} color={r.finale.state==="proven"?"var(--color-gold)":"#cfc8f0"}/>
   </g>}
  </g>;
 }

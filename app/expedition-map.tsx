@@ -7,7 +7,8 @@
 // at the top. Ranks and skill badges sit below the map. Rules: lib/expedition-progress.ts and lib/world-map.ts.
 import {InvestigatorCard} from "./investigator";
 import {useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
-import {ArrowRight,Award,CalendarDays,Check,Crown,List,Lock,Map as MapIcon,Medal,Search,Sparkles,Star,TrendingUp,Users,X,Zap} from "lucide-react";
+import {Padlock} from "./lock-art";
+import {ArrowRight,Award,CalendarDays,Crown,List,Map as MapIcon,Medal,Search,Sparkles,Star,TrendingUp,Users,X,Zap} from "lucide-react";
 import {evidenceFrom,levelHistory,masteryOf} from "@/lib/mastery";
 import {SkillPage} from "./skill-feedback";
 import type {WorldPack} from "@/lib/world-schema";
@@ -92,7 +93,7 @@ function Legend(){
  return <ul className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] font-bold text-muted" aria-label="Map key">
   <li className="inline-flex items-center gap-1.5"><span aria-hidden className="h-3.5 w-3.5 rounded-full bg-primary"/>Next stop</li>
   <li className="inline-flex items-center gap-1.5"><span aria-hidden className="h-3.5 w-3.5 rounded-full bg-success"/>Proven</li>
-  <li className="inline-flex items-center gap-1.5"><Lock size={13} aria-hidden/>In the fog: locked</li>
+  <li className="inline-flex items-center gap-1.5"><Padlock size={13}/>In the fog: locked</li>
   <li className="inline-flex items-center gap-1.5"><Zap size={14} className="text-ink" aria-hidden/>Twist</li>
   <li className="inline-flex items-center gap-1.5"><Crown size={14} className="text-gold" aria-hidden/>Boss question</li>
   <li className="inline-flex items-center gap-1.5"><span aria-hidden className="font-display text-gold">?</span>Name the Liar</li>
@@ -127,7 +128,7 @@ function Trail({stops,onStart}:{stops:ReturnType<typeof expeditionMap>;onStart:(
    {stops.map(s=>{const locked=s.state==="locked",current=s.state==="current";return <li key={s.id} className="relative">
     <button type="button" disabled={locked} onClick={()=>onStart(s.id)} aria-label={`Room ${s.number}: ${s.title}. ${locked?"Locked":current?"Your next room":`Escaped, ${s.stars} of 3 stars`}${s.assigned?`. Assigned${s.assigned.due?`, due ${s.assigned.due}`:""}`:""}`}
      className={`flex w-full items-center gap-3 rounded-[20px] p-3 text-left ${current?"bg-primary text-on-primary shadow-[0_6px_0_var(--color-primary-shadow)]":locked?"bg-panel-2 text-muted":"bg-panel text-ink"}`}>
-     <span aria-hidden className={`relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full font-display text-[20px] font-bold ${current?"bg-on-primary text-highlight":locked?"bg-deep text-muted":"bg-success text-on-success"}`}>{locked?<Lock size={18}/>:s.state==="proven"?<Check size={22}/>:s.number}</span>
+     <span aria-hidden className={`relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full font-display text-[20px] font-bold ${current?"bg-on-primary text-highlight":locked?"bg-deep text-muted":"bg-success text-on-success"}`}>{locked?<Padlock size={18}/>:s.state==="proven"?<Padlock open quiet size={20}/>:s.number}</span>
      <span className="min-w-0 flex-1"><span className="block text-[12px] font-extrabold uppercase tracking-[.08em] opacity-80">Room {s.number}{current?" · next":""}</span><span className="block font-display text-[19px] font-bold leading-tight">{s.title}</span>
       {s.assigned&&<span className="mt-0.5 inline-flex items-center gap-1 text-[13px] font-bold"><CalendarDays size={13} aria-hidden/>Assigned{s.assigned.due?` · due ${s.assigned.due}`:""}</span>}</span>
      {s.state==="proven"&&<span aria-hidden className="flex gap-0.5">{[0,1,2].map(i=><Star key={i} size={18} className={i<s.stars?"fill-gold text-gold":"text-muted"}/>)}</span>}
