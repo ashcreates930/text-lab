@@ -2,6 +2,7 @@
 // for first-try proof), rank badges for expeditions finished, skill badges by question type, and the class Evidence
 // rollup (skill map by standard, first-try rates by type, Refresher fixes, Gist accuracy, unknown words, Case Notes,
 // Name the Liar). Pure functions: solo progress lives on the device, a class student's in expedition_results.
+import { roomDashRow, roomDashTotals, roomOf } from "./escape-room.ts";
 import type { WorldPack } from "./world-schema.ts";
 import { TYPE_INFO } from "./expedition.ts";
 import { benchmark, type BenchmarkFamily, type Grade } from "./best-standards.ts";
@@ -121,13 +122,17 @@ export function expeditionEvidence(world: WorldPack, students: StudentExpedition
     // Mastery levels (lib/mastery.ts): the same level names and rules the students see.
     levels: classLevels(students).map((l) => ({ ...l, code: codeOf(l.family, grade) })),
     expeditions: exps.map((e) => {
+      const room = roomOf(world, e.id);
       const rows = students.map((s) => {
         const mine = s.attempts.filter((a) => a.expeditionId === e.id), first = firstAttempts(mine)[0] ?? null, done = mine.find((a) => a.finishedAt);
         return { id: s.id, nickname: s.nickname, attemptId: first?.attemptId ?? null, finished: done?.finishedAt ?? null, attempts: mine.length, firstTry: first ? firstTryOf(first) : null, total: first?.notes.length ?? null, score: first?.score ?? null,
-          solved: first?.interview ? first.interview.solved : null, liar: first?.interview ?? null, notes: first?.notes ?? [] };
+          solved: first?.interview ? first.interview.solved : null, liar: first?.interview ?? null, notes: first?.notes ?? [],
+          // Escape rooms: the chamber reached, locks opened, puzzles solved on the first try, liar caught.
+          room: room ? roomDashRow(room, mine) : null };
       });
       const a = assignments.find((x) => x.expeditionId === e.id);
-      return { id: e.id, title: e.title, assigned: a ? { due: a.due } : null, finished: rows.filter((r) => r.finished).length, of: rows.length, rows };
+      const dash = rows.flatMap((r) => (r.room ? [r.room] : []));
+      return { id: e.id, title: e.title, number: room?.number ?? null, assigned: a ? { due: a.due } : null, finished: rows.filter((r) => r.finished).length, of: rows.length, rows, totals: room ? roomDashTotals(dash) : null, locks: room?.locks.length ?? null, puzzles: room?.puzzles.length ?? null };
     }),
     students: students.map((s) => ({ id: s.id, nickname: s.nickname, finished: new Set(s.attempts.filter((a) => a.finishedAt).map((a) => a.expeditionId)).size, rank: rankFor(new Set(s.attempts.filter((a) => a.finishedAt).map((a) => a.expeditionId)).size, exps.length), skills: skillMap(s.attempts, grade),
       levels: masteryOf(evidenceFrom(s.attempts)).map((l) => ({ family: l.family, code: codeOf(l.family, grade), name: l.name, level: l.level, right: l.right, total: l.total })),

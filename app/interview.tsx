@@ -155,7 +155,7 @@ export function NameTheLiar({world,said,passages,onLock,seconds,left,locked=fals
       cardExtra={<p className="basis-full font-serif text-[16px] leading-snug text-ink">"{s.text}"</p>}/>
     </div>})()
   :<div className="mt-2 flex flex-col gap-2"><Caption live={false} name={`${picked?.name} said`} text={picked?.text??""}/>
-    <p className="text-[15px] font-bold text-muted">Tap the sentence anywhere in the expedition that shows this is false, then lock in.</p></div>;
+    <p className="text-[15px] font-bold text-muted">Tap the sentence anywhere in the room that shows this is false, then lock in.</p></div>;
  // Naming sits in the footer with Next, so on a phone it is in view without scrolling the panel.
  const sp=order[spot]??order[0];
  const action=step===1

@@ -10,11 +10,11 @@ export function Landing({ brand, onStart, onPreset, onJoin, onWaitlist, onPricin
   const stories=[["The Legend of Sleepy Hollow","Washington Irving","Grades 6 to 8"],["The Tell-Tale Heart","Edgar Allan Poe","Grades 8 to 12"],["Trifles","Susan Glaspell","Grades 9 to 11"]];
   // The three moments of play: real phone screenshots from the game (public/home).
   const moments:[string,string,string][]=[
-    ["/home/moment-map.jpg","The map","The Story map, zoomed to the student's next stop."],
-    ["/home/moment-lineup.jpg","The witness lineup","Three witnesses step into the spotlight. One of them lies."],
-    ["/home/moment-race.jpg","A race question","Answer, then tap the sentence that proves it."],
+    ["/home/moment-map.jpg","The map of rooms","Each escape room is a place in the story; the map opens on the student's next room."],
+    ["/home/moment-lineup.jpg","The witnesses","Three witnesses step into the room and answer the same question. One of them lies."],
+    ["/home/moment-race.jpg","A lock","Answer, then tap the sentence that proves it. The proof is the key."],
   ];
-  const steps:[string,string][]=[["Explore the map","Each expedition is a place in the story. Start at your next stop."],["Question the witnesses","Ask each one a question. One of them is lying."],["Prove it with the text","Every answer needs the sentence that proves it. Then name the liar."]];
+  const steps:[string,string][]=[["Enter a room","Each escape room is a place in the story. Start at your next room."],["Question the witnesses","Each one answers the room's question. One of them is lying."],["Prove it with the text","Every answer needs the sentence that proves it. Then name the liar."]];
   const audiences:[string,string,string,()=>void][]=[
     ["Students","Close reading that feels like solving a case.","Try a case",onStart],
     ["Teachers","One class link, and every student's proof in one view.","Teacher sign in",onClassroom],
@@ -30,7 +30,7 @@ export function Landing({ brand, onStart, onPreset, onJoin, onWaitlist, onPricin
       <div>
         <p className={eyebrow}>For grades 6 to 12 English classrooms</p>
         <h1 className="mt-3 text-[42px] leading-[1.02] md:text-[60px]">Step into the story.<br/><span className="text-highlight">Decide what to believe.</span></h1>
-        <p className="mt-4 max-w-[520px] text-[18px] leading-7 text-muted">Students read classic stories chunk by chunk and race to the words that prove every answer.</p>
+        <p className="mt-4 max-w-[520px] text-[18px] leading-7 text-muted">Students escape rooms built from classic stories. Every lock opens only with the line from the text that proves the answer.</p>
         <div className="mt-6 grid gap-3 sm:max-w-[520px] sm:grid-cols-2">
           <div><p className="mb-1.5 text-[13px] font-extrabold uppercase tracking-[.08em] text-muted">Students</p><button onClick={onStart} className="case-primary w-full justify-center">Play the demo <ArrowRight size={18}/></button></div>
           <div><p className="mb-1.5 text-[13px] font-extrabold uppercase tracking-[.08em] text-muted">Teachers and adults</p><button onClick={onClassroom} className="case-primary w-full justify-center !bg-violet !text-on-violet !shadow-[0_6px_0_var(--color-violet-shadow)]">I'm a teacher <ArrowRight size={18}/></button></div>
@@ -41,7 +41,7 @@ export function Landing({ brand, onStart, onPreset, onJoin, onWaitlist, onPricin
     </section>
 
     <section aria-labelledby="play-h" className={sec}><div className="mx-auto max-w-7xl">
-      <p className={eyebrow}>Proof Race</p>
+      <p className={eyebrow}>Escape rooms</p>
       <h2 id="play-h" className="mt-2 text-[28px] leading-tight md:text-[34px]">Three moments of play</h2>
       <ul className="-mx-4 mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">{moments.map(([img,t,line])=><li key={t} className="w-[72%] shrink-0 snap-center md:w-auto">
         <figure className="flex flex-col gap-2"><img src={img} alt={`${t}: ${line}`} loading="lazy" width={780} height={1474} className="aspect-[390/600] w-full rounded-[22px] border-4 border-panel object-cover object-top shadow-[0_10px_30px_rgba(0,0,0,.35)]"/>

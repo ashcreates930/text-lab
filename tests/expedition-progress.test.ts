@@ -85,7 +85,7 @@ test("class students: attempts saved per attempt, assignments, and the teacher's
   assert.equal(ev.expeditions!.expeditions[0].finished, 1); assert.equal(ev.expeditions!.expeditions[0].assigned!.due, "2026-11-30");
   const { evidenceCsv } = await import("../lib/classroom/evidence.ts");
   const csv = evidenceCsv(ev);
-  assert.match(csv, /Expedition,Student,Finished,Chunk,Question type/); assert.match(csv, /Into the Hollow,Ana,2026-11-01,1,Whose Eyes\?/); assert.match(csv, /Statements heard,The liar/);
+  assert.match(csv, /Room,Student,Finished,Lock,Question type/); assert.match(csv, /Room,Student,Chamber reached,Locks opened,Puzzles solved first try,Liar caught/); assert.match(csv, /Into the Hollow,Ana,2026-11-01,1,Whose Eyes\?/); assert.match(csv, /Statements heard,The liar/);
   await store.deleteExpeditionAssignment(cls.id, a.expeditionId);
   assert.equal((await store.listExpeditionAssignments(cls.id)).length, 0);
   // The migration creates both tables, behind the service role only.

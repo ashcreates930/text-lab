@@ -1,5 +1,5 @@
 "use client";
-// Proof Race expeditions in the Teacher Evidence View (lib/expedition-progress.ts): assign an expedition and see who
+// Escape rooms in the Teacher Evidence View (lib/expedition-progress.ts): assign a room and see who
 // finished it; the class skill map by B.E.S.T. benchmark and first-try rates by question type; then each student's
 // rank, badges, skills, Refresher fixes, Gist accuracy, words they didn't know, Case Notes and Name the Liar.
 import {useState} from "react";
@@ -27,23 +27,27 @@ function SkillPanels({s}:{s:Skills}){
 export function ExpeditionEvidence({data,onAssign,onUnassign,onOverride}:{data:Exp;onAssign?:(id:string,due:string|null)=>Promise<void>;onUnassign?:(id:string)=>Promise<void>;onOverride?:(studentId:string,attemptId:string,chunk:number,verdict:string|null)=>Promise<void>}){
  const [due,setDue]=useState<Record<string,string>>({}),[busy,setBusy]=useState("");
  return <section aria-labelledby="exp-ev-h" className="space-y-3">
-  <h3 id="exp-ev-h" className="flex items-center gap-2 text-[22px] font-bold text-ink"><Compass size={20} className="text-highlight"/>Proof Race expeditions</h3>
-  <p className="max-w-2xl text-[15px] leading-6 text-muted">Solo expeditions your students played while signed in to the class. First-try results come from each student's first attempt; every result is tagged to B.E.S.T.</p>
+  <h3 id="exp-ev-h" className="flex items-center gap-2 text-[22px] font-bold text-ink"><Compass size={20} className="text-highlight"/>Escape rooms</h3>
+  <p className="max-w-2xl text-[15px] leading-6 text-muted">The rooms your students played solo while signed in to the class. First-try results come from each student's first attempt; every result is tagged to B.E.S.T.</p>
+  <ClassRoomNumbers rooms={data.expeditions}/>
   <div className="rounded-3xl bg-panel p-5"><SkillPanels s={data.class}/></div>
   {data.levels.length>0&&<div className="rounded-3xl bg-panel p-5"><p className="text-[13px] font-bold uppercase tracking-wide text-highlight">Mastery levels (the same levels students see; first tries only)</p>
    <div className="mt-2 overflow-x-auto"><table className="w-full text-left text-[14px] text-ink"><thead><tr className="text-muted"><th className="py-1 pr-3 font-semibold">Skill</th>{LEVELS.map(l=><th key={l} className="py-1 pr-3 font-semibold">{l}</th>)}</tr></thead>
     <tbody>{data.levels.map(r=><tr key={r.family} className="border-t border-edge"><td className="py-1 pr-3"><span className="font-semibold">{r.name}</span> <span className="text-muted">{r.code}</span></td>{LEVELS.map(l=><td key={l} className="py-1 pr-3 tabular-nums">{r.counts[l]}</td>)}</tr>)}</tbody></table></div></div>}
   <ul className="grid gap-3">{data.expeditions.map((x,k)=><li key={x.id} className="rounded-3xl bg-panel p-5">
-   <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-[17px] font-semibold text-ink">{k+1}. {x.title} <span className="text-[14px] font-normal text-muted">· {x.finished} of {x.of} finished</span></p>
+   <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-[17px] font-semibold text-ink">Room {x.number??k+1}: {x.title} <span className="text-[14px] font-normal text-muted">· {x.finished} of {x.of} escaped</span></p>
+    {x.totals&&<p className="mt-0.5 text-[14px] text-muted">Locks opened: <b className="text-ink">{x.totals.locksOpened}</b> · Puzzles solved on the first try: <b className="text-ink">{x.totals.puzzlesFirstTry}</b> · Liars caught: <b className="text-ink">{x.totals.liarsCaught} of {x.totals.liarTries}</b> · Reached: {(["Chamber 1","At the inner door","Chamber 2","Escaped"] as const).map(r=>`${r} ${x.totals!.reached[r]}`).join(", ")}</p>}</div>
     {onAssign&&<div className="flex flex-wrap items-center gap-2">{x.assigned?<><span className="inline-flex items-center gap-1 rounded-full bg-success px-3 py-1 text-[13px] font-bold text-on-success"><CalendarDays size={14}/>Assigned{x.assigned.due?` · due ${x.assigned.due}`:""}</span>
       <button type="button" disabled={busy===x.id} onClick={async()=>{setBusy(x.id);await onUnassign?.(x.id);setBusy("")}} className="case-secondary !min-h-10 !text-[14px]">Remove</button></>
      :<><label className="text-[13px] text-muted">Due<input type="date" value={due[x.id]??""} onChange={e=>setDue(d=>({...d,[x.id]:e.target.value}))} className="ml-1 rounded-row bg-panel-2 px-2 py-1 text-[14px] text-ink"/></label>
       <button type="button" disabled={busy===x.id} onClick={async()=>{setBusy(x.id);await onAssign(x.id,due[x.id]||null);setBusy("")}} className="case-primary !min-h-10 !text-[14px]">Assign</button></>}</div>}</div>
-   <details className="mt-2"><summary className="cursor-pointer text-[15px] font-semibold text-highlight">Who finished, and each student's notes</summary>
-    <div className="mt-2 overflow-x-auto"><table className="w-full text-left text-[14px] text-ink"><thead><tr className="text-muted"><th className="py-1 pr-3 font-semibold">Student</th><th className="py-1 pr-3 font-semibold">Finished</th><th className="py-1 pr-3 font-semibold">First try</th><th className="py-1 pr-3 font-semibold">Clues</th><th className="py-1 pr-3 font-semibold">Score</th><th className="py-1 font-semibold">Name the Liar</th></tr></thead>
-     <tbody>{x.rows.map(r=><tr key={r.id} className="border-t border-edge align-top"><td className="py-1 pr-3 font-semibold">{r.nickname}</td><td className="py-1 pr-3">{r.finished?<><Check size={14} className="mr-1 inline text-success"/>{r.finished.slice(0,10)}</>:<><X size={14} className="mr-1 inline text-muted"/>Not yet</>}</td>
-      <td className="py-1 pr-3 tabular-nums">{r.firstTry===null?"·":`${r.firstTry}/${r.total}`}</td><td className="py-1 pr-3">{cluesText(r.notes)}</td><td className="py-1 pr-3 tabular-nums">{r.score??"·"}</td>
-      <td className="py-1">{r.liar?`${r.liar.solved?"Solved":"Not solved"} · named ${r.liar.pick??"no one"}`:"·"}</td></tr>)}</tbody></table></div>
+   <details className="mt-2"><summary className="cursor-pointer text-[15px] font-semibold text-highlight">Each student: the chamber reached, locks, puzzles, the liar and their notes</summary>
+    <div className="mt-2 overflow-x-auto"><table className="w-full text-left text-[14px] text-ink"><thead><tr className="text-muted"><th className="py-1 pr-3 font-semibold">Student</th><th className="py-1 pr-3 font-semibold">Chamber reached</th><th className="py-1 pr-3 font-semibold">Locks opened</th><th className="py-1 pr-3 font-semibold">Proved first try</th><th className="py-1 pr-3 font-semibold">Puzzles first try</th><th className="py-1 pr-3 font-semibold">Clues</th><th className="py-1 pr-3 font-semibold">Score</th><th className="py-1 font-semibold">Liar</th></tr></thead>
+     <tbody>{x.rows.map(r=><tr key={r.id} className="border-t border-edge align-top"><td className="py-1 pr-3 font-semibold">{r.nickname}</td><td className="py-1 pr-3">{r.finished?<><Check size={14} className="mr-1 inline text-success"/>Escaped {r.finished.slice(0,10)}</>:r.room&&r.room.reached!=="Not started"?r.room.reached:<><X size={14} className="mr-1 inline text-muted"/>Not started</>}</td>
+      <td className="py-1 pr-3 tabular-nums">{r.room?`${r.room.locksOpened}/${r.room.locks}`:"·"}</td>
+      <td className="py-1 pr-3 tabular-nums">{r.firstTry===null?"·":`${r.firstTry}/${r.total}`}</td>
+      <td className="py-1 pr-3 tabular-nums">{r.room&&r.room.puzzles?`${r.room.puzzlesFirstTry}/${r.room.puzzles}`:"·"}</td><td className="py-1 pr-3">{cluesText(r.notes)}</td><td className="py-1 pr-3 tabular-nums">{r.score??"·"}</td>
+      <td className="py-1">{r.liar?`${r.liar.solved?"Caught, with the line":"Not caught"} · named ${r.liar.pick??"no one"}`:"·"}</td></tr>)}</tbody></table></div>
     {x.rows.some(r=>r.notes.some(n=>n.format==="written"))&&<div className="mt-2 rounded-2xl bg-panel-2 p-3"><p className="text-[14px] font-bold text-ink">Written answers (you can change the score)</p>
      <ul className="mt-1 space-y-2 text-[14px] text-ink">{x.rows.flatMap(r=>r.notes.filter(n=>n.format==="written").map(n=><li key={`${r.id}-${n.chunk}`} className="grid gap-1"><span><b>{r.nickname}</b>, chunk {n.chunk}: {n.answer}</span>
       <label className="text-[13px] text-muted">Score{n.teacherVerdict?" (set by you)":" (by the rubric)"}: <select disabled={!onOverride||!r.attemptId} value={n.teacherVerdict??""} onChange={async e=>{setBusy(`${r.id}-${n.chunk}`);await onOverride?.(r.id,r.attemptId!,n.chunk,e.target.value||null);setBusy("")}} className="ml-1 rounded-row bg-panel px-2 py-1 text-[14px] text-ink"><option value="">Rubric score ({/(Strong|Solid|Needs more evidence)/.exec(n.answer)?.[1]??"none"})</option><option>Strong</option><option>Solid</option><option>Needs more evidence</option></select></label></li>))}</ul></div>}
@@ -53,7 +57,7 @@ export function ExpeditionEvidence({data,onAssign,onUnassign,onOverride}:{data:E
   </li>)}</ul>
   <div className="rounded-3xl bg-panel p-5"><p className="text-[13px] font-bold uppercase tracking-wide text-highlight">Each student</p>
    <ul className="mt-2 grid gap-3 md:grid-cols-2">{data.students.map(s=><li key={s.id} className="rounded-2xl border border-edge p-3">
-    <p className="text-[15px] font-bold text-ink">{s.nickname} <span className="font-normal text-muted">· {s.finished} expedition{s.finished===1?"":"s"}{s.rank?` · ${s.rank}`:""}</span></p>
+    <p className="text-[15px] font-bold text-ink">{s.nickname} <span className="font-normal text-muted">· {s.finished} room{s.finished===1?"":"s"} escaped{s.rank?` · ${s.rank}`:""}</span></p>
     {s.badges.length>0&&<p className="mt-1 text-[13px] text-ink">Badges: {s.badges.join(", ")}</p>}
     {s.levels.length>0&&<ul aria-label={`${s.nickname}'s mastery levels`} className="mt-1 flex flex-wrap gap-1">{s.levels.map(l=><li key={l.family} className="rounded-full bg-panel-2 px-2 py-0.5 text-[12px] text-ink" title={l.code}>{l.name}: <b>{l.level}</b> ({l.right}/{l.total})</li>)}</ul>}
     {s.reflections.map((x,i)=><p key={i} className="mt-1 text-[13px] text-ink">Reflection after {x.expedition}: "{x.text}"</p>)}
@@ -64,3 +68,20 @@ export function ExpeditionEvidence({data,onAssign,onUnassign,onOverride}:{data:E
 }
 // Request a clue (lib/clues.ts): which locks used one, and how far (tier 2 or 3 means the lock doesn't count toward mastery).
 function cluesText(notes:{chunk:number;clue?:number}[]){const used=notes.filter(n=>(n.clue??0)>0);return used.length?used.map(n=>`Lock ${n.chunk}: tier ${n.clue}`).join(", "):"None"}
+// The class's numbers across every room: locks opened, puzzle locks solved on the first try, liars caught, rooms
+// escaped, and where each student is now (the furthest room they have reached, and the chamber in it).
+function ClassRoomNumbers({rooms}:{rooms:Exp["expeditions"]}){
+ const t=rooms.flatMap(x=>x.totals?[x.totals]:[]);if(!t.length)return null;
+ const sum=(f:(x:(typeof t)[number])=>number)=>t.reduce((a,x)=>a+f(x),0);
+ const where=new Map<string,string>();for(const x of rooms)for(const r of x.rows)if(r.room&&r.room.reached!=="Not started")where.set(r.nickname,`Room ${x.number??"?"}, ${r.room.reached==="Escaped"?"escaped":r.room.reached.toLowerCase()}`);
+ const cell="rounded-2xl bg-panel p-4",label="text-[13px] font-bold uppercase tracking-wide text-muted",big="font-display text-[30px] font-bold tabular-nums text-ink";
+ return <div className="grid gap-3">
+  <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
+   <div className={cell}><dt className={label}>Locks opened</dt><dd className={big}>{sum(x=>x.locksOpened)}</dd></div>
+   <div className={cell}><dt className={label}>Puzzles solved on the first try</dt><dd className={big}>{sum(x=>x.puzzlesFirstTry)}</dd></div>
+   <div className={cell}><dt className={label}>Liars caught</dt><dd className={big}>{sum(x=>x.liarsCaught)} <span className="text-[16px] font-normal text-muted">of {sum(x=>x.liarTries)}</span></dd></div>
+   <div className={cell}><dt className={label}>Rooms escaped</dt><dd className={big}>{sum(x=>x.reached.Escaped)}</dd></div>
+  </dl>
+  {where.size>0&&<div className={cell}><p className="text-[13px] font-bold uppercase tracking-wide text-highlight">Which chamber each student reached</p><ul className="mt-1 grid gap-x-6 gap-y-1 text-[14px] text-ink sm:grid-cols-2 md:grid-cols-3">{[...where].sort((a,b)=>a[0].localeCompare(b[0])).map(([n,w])=><li key={n}><b>{n}</b>: {w}</li>)}</ul></div>}
+ </div>;
+}

@@ -71,7 +71,7 @@ export function RacePick({state,act}:{state:HostView;act:(b:Record<string,unknow
  const set=(k:string,v:unknown)=>setO(x=>({...x,[k]:v}));
  const sel="mt-1 w-full rounded-row bg-panel-2 px-3 py-2 text-[16px] text-ink";
  const box=(k:"questions"|"highlighter"|"autoAdvance"|"squads",label:string)=><label className="inline-flex min-h-11 items-center gap-2"><input type="checkbox" checked={o[k]} onChange={e=>set(k,e.target.checked)} className="h-5 w-5"/>{label}</label>;
- return <div className="rounded-card bg-deep p-4 md:col-span-3"><p className="flex items-center gap-2 text-[22px] font-bold"><Zap size={22} aria-hidden/> Proof Race expedition</p>
+ return <div className="rounded-card bg-deep p-4 md:col-span-3"><p className="flex items-center gap-2 text-[22px] font-bold"><Zap size={22} aria-hidden/> Escape room</p>
   <p className="mt-1 text-[16px] text-muted">Everyone reads a chunk, checks the gist and answers one question with proof. The board moves on by itself; you can pause or skip ahead.</p>
   <div className="mt-3 grid gap-3 text-[15px] text-muted md:grid-cols-2">
    <label>Room<select value={o.expeditionId} onChange={e=>set("expeditionId",e.target.value)} className={sel}>{exps.map((e,i)=><option key={e.id} value={e.id}>Room {i+1}: {e.title} · {e.chunks} locks</option>)}</select></label>
@@ -82,7 +82,7 @@ export function RacePick({state,act}:{state:HostView;act:(b:Record<string,unknow
    <span className="flex flex-col">{box("questions","Your question (every third chunk)")}{box("highlighter","Highlighter: mark words students don't know")}</span>
    <span className="flex flex-col">{box("autoAdvance","Move on when 90% are ready")}{state.squads.some(q=>q.members.length)&&box("squads","Squads pool their points")}</span>
   </div>
-  <button type="button" disabled={!state.proofRace||!state.counters.players||!o.expeditionId} onClick={()=>act({action:"round.start",type:"race",squads:o.squads,settings:{...o,chamber:Number(o.chamber)}})} className="host-btn mt-3 w-full">Start<span className="sr-only"> the Proof Race expedition</span></button>
+  <button type="button" disabled={!state.proofRace||!state.counters.players||!o.expeditionId} onClick={()=>act({action:"round.start",type:"race",squads:o.squads,settings:{...o,chamber:Number(o.chamber)}})} className="host-btn mt-3 w-full">Start<span className="sr-only"> the escape room</span></button>
  </div>;
 }
 

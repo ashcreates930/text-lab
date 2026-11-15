@@ -44,7 +44,7 @@ export function ExpeditionMap({world,attempts,assigned=[],justEarned,onStart,onJ
    <button type="button" onClick={()=>setSkillsOpen(true)} className="case-secondary w-fit !min-h-11"><TrendingUp size={18} aria-hidden/>My skills</button></div>
   <section aria-labelledby="map-h">
    <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{world.title}</p>
-   <h1 id="map-h" className="text-[30px] leading-tight outline-none">{world.world_map?"Story map":"Expedition map"}</h1>
+   <h1 id="map-h" className="text-[30px] leading-tight outline-none">{world.world_map?"Escape rooms":"Room map"}</h1>
    {world.hook&&<p className="mt-1 flex items-start gap-2 text-[16px] leading-snug text-ink"><Search size={18} className="mt-0.5 shrink-0 text-highlight" aria-hidden/>{world.hook}</p>}
   </section>
   {justEarned&&<p role="status" className="moment-pop flex items-center gap-3 rounded-[24px] bg-gold p-4 text-on-gold shadow-[0_8px_0_var(--color-gold-shadow)]"><Medal size={32} aria-hidden/><span><span className="block text-[13px] font-extrabold uppercase tracking-[.08em]">New rank</span><span className="font-display text-[26px] font-bold leading-none">{justEarned}</span></span></p>}
@@ -73,7 +73,7 @@ function StoryMap({world,attempts,assigned,onStart,auth,lifting=null}:{lifting?:
  const cur=regions.find(r=>r.state==="current");
  return <section aria-labelledby="sm-h" className="flex flex-col gap-3">
   <h2 id="sm-h" className="sr-only">The map</h2>
-  <p className="text-[16px] font-bold">{cur?<>Your next stop is pulsing. Drag to look around, or tap any place you have been.</>:"Every expedition is proven. Tap any place to look back or play it again."}</p>
+  <p className="text-[16px] font-bold">{cur?<>Your next stop is pulsing. Drag to look around, or tap any place you have been.</>:"Every room is escaped. Tap any place to look back or play it again."}</p>
   <div className="flex flex-wrap items-center gap-2">
    <div role="group" aria-label="Show as" className="inline-flex rounded-full bg-panel p-1">
     <button type="button" aria-pressed={view==="map"} onClick={()=>setView("map")} className={`inline-flex min-h-11 items-center gap-1.5 rounded-full px-4 text-[15px] font-bold ${view==="map"?"bg-primary text-on-primary":"text-ink"}`}><MapIcon size={16} aria-hidden/>Map</button>
@@ -107,16 +107,16 @@ function RegionPanel({world,r,open,onClose,onStart}:{world:WorldPack;r:MapRegion
  return <section aria-labelledby="rp-h" className="rounded-card bg-panel p-4">
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Room {r.number} · {r.name}</p>
   <h2 id="rp-h" className="font-display text-[24px] font-bold leading-tight">{r.title}</h2>
-  <p className="mt-1 text-[15px] text-muted">{r.state==="locked"?"Still in the fog. Prove the expedition before it to open this one.":r.state==="current"?`${r.stops.length} stops, then Name the Liar.`:<span className="inline-flex items-center gap-1">Proven{[0,1,2].map(i=><Star key={i} size={15} className={i<r.stars?"fill-gold text-gold":"text-muted"} aria-hidden/>)}<span className="sr-only">{r.stars} of 3 stars</span>{r.finale?.solved?" · case solved":""}</span>}
+  <p className="mt-1 text-[15px] text-muted">{r.state==="locked"?"Still in the fog. Escape the room before it to open this one.":r.state==="current"?`${r.stops.length} stops, then Name the Liar.`:<span className="inline-flex items-center gap-1">Proven{[0,1,2].map(i=><Star key={i} size={15} className={i<r.stars?"fill-gold text-gold":"text-muted"} aria-hidden/>)}<span className="sr-only">{r.stars} of 3 stars</span>{r.finale?.solved?" · case solved":""}</span>}
    {r.assigned&&<span className="ml-2 inline-flex items-center gap-1 font-bold text-ink"><CalendarDays size={14} aria-hidden/>Assigned{r.assigned.due?` · due ${r.assigned.due}`:""}</span>}</p>
   {s&&<div role="status" className={`mt-3 rounded-row p-3 ${secret?"moment-pop bg-gold text-on-gold":"bg-panel-2"}`}>
    <div className="flex items-start justify-between gap-2">
     {secret?<p><span className="flex items-center gap-1.5 text-[13px] font-extrabold uppercase tracking-[.08em]"><Sparkles size={15} aria-hidden/>Secret found at stop {s!=="finale"&&s.chunk}</span>
       <span className="mt-1 block font-serif text-[18px]">"{secret.phrase}"</span><span className="mt-1 block text-[15px]">{secret.note}</span></p>
-     :s==="finale"?<p className="text-[15px]"><b>Name the Liar</b> at {r.finale?.placeName}. {r.finale?.solved?"You solved this case.":r.state==="proven"?"Not solved yet: play it again to try.":"The finale of this expedition."}</p>
-     :<p className="text-[15px]"><b>Stop {s.chunk}</b> · {s.placeName}. {s.state==="proven"?`${s.stars} of 3 stars.`:s.state==="next"?"This is where you start.":s.state==="ahead"?"Coming up on this expedition.":"Locked."}{s.landmark==="twist"?" A witness interrupts here.":s.landmark==="boss"?" The boss question.":""}</p>}
+     :s==="finale"?<p className="text-[15px]"><b>Name the Liar</b> at {r.finale?.placeName}. {r.finale?.solved?"You solved this case.":r.state==="proven"?"Not solved yet: play it again to try.":"The exit door of this room."}</p>
+     :<p className="text-[15px]"><b>Stop {s.chunk}</b> · {s.placeName}. {s.state==="proven"?`${s.stars} of 3 stars.`:s.state==="next"?"This is where you start.":s.state==="ahead"?"Coming up in this room.":"Locked."}{s.landmark==="twist"?" A witness interrupts here.":s.landmark==="boss"?" The boss question.":""}</p>}
     <button type="button" onClick={onClose} aria-label="Close" className="grid h-11 w-11 shrink-0 place-items-center rounded-full"><X size={18} aria-hidden/></button></div></div>}
-  {r.state!=="locked"&&<button type="button" onClick={()=>onStart(r.expedition)} className="case-primary mt-3 w-full justify-center">{r.state==="current"?"Start this expedition":"Play it again"} <ArrowRight size={18} aria-hidden/></button>}
+  {r.state!=="locked"&&<button type="button" onClick={()=>onStart(r.expedition)} className="case-primary mt-3 w-full justify-center">{r.state==="current"?"Enter this room":"Play it again"} <ArrowRight size={18} aria-hidden/></button>}
  </section>;
 }
 

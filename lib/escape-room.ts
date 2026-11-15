@@ -343,3 +343,27 @@ export function roomProblems(world: WorldPack, passages: SourcePassage[]): strin
   }
   return out;
 }
+
+// ---------- The teacher's dashboard ----------
+// One student's progress through one room, for the Evidence view: how far they got (the chamber they reached), how many
+// locks are open, how many puzzle locks they solved with every part right on the first try, and whether they caught
+// the liar (with the disproving line). First-try numbers come from their first attempt; the chamber from the latest.
+export type RoomReached = "Not started" | "Chamber 1" | "At the inner door" | "Chamber 2" | "Escaped";
+export type RoomDashRow = { reached: RoomReached; locksOpened: number; locks: number; puzzlesFirstTry: number; puzzles: number; liarCaught: boolean | null };
+type DashAttempt = { startedAt: string; finishedAt: string | null; notes: unknown[]; resume?: unknown; puzzles?: { firstTry: boolean[] }[]; interview: { solved: boolean } | null };
+export function roomDashRow(room: Room, attempts: DashAttempt[]): RoomDashRow {
+  const byStart = [...attempts].sort((a, b) => a.startedAt.localeCompare(b.startedAt)), first = byStart[0] ?? null, latest = byStart.at(-1) ?? null;
+  const base = { locks: room.locks.length, puzzles: room.puzzles.length };
+  if (!latest) return { reached: "Not started", locksOpened: 0, puzzlesFirstTry: 0, liarCaught: null, ...base };
+  const done = byStart.some((a) => a.finishedAt), saved = latest.finishedAt ? null : parseResume(latest.resume, room);
+  const c1 = room.chambers[0]?.to ?? room.locks.length - 1, opened = done ? room.locks.length : saved ? saved.progress.opened.length : latest.notes.length;
+  const reached: RoomReached = done ? "Escaped" : saved?.progress.innerDoor ? "Chamber 2" : saved && saved.progress.opened.includes(c1) ? "At the inner door" : "Chamber 1";
+  const puzzlesFirstTry = (first?.puzzles ?? []).filter((p) => p.firstTry.length && p.firstTry.every(Boolean)).length;
+  return { reached, locksOpened: opened, puzzlesFirstTry, liarCaught: first?.interview ? first.interview.solved : null, ...base };
+}
+// The class's totals for a room: locks opened, puzzle locks solved on the first try, liars caught, and how many students
+// reached each point.
+export function roomDashTotals(rows: RoomDashRow[]) {
+  const reached = Object.fromEntries((["Not started", "Chamber 1", "At the inner door", "Chamber 2", "Escaped"] as RoomReached[]).map((r) => [r, rows.filter((x) => x.reached === r).length])) as Record<RoomReached, number>;
+  return { locksOpened: rows.reduce((s, r) => s + r.locksOpened, 0), puzzlesFirstTry: rows.reduce((s, r) => s + r.puzzlesFirstTry, 0), liarsCaught: rows.filter((r) => r.liarCaught).length, liarTries: rows.filter((r) => r.liarCaught !== null).length, reached };
+}
