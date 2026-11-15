@@ -1,6 +1,8 @@
 // Live rounds in the Teacher Evidence View: for every round a class played, each squad's answer and result, and what each
 // student did in their role. Built from the response rows (each one records the player and the role they acted in).
 // Flagged writing is shown here, marked, because this view is the teacher's only; it never reaches the host screen.
+import { roomOf } from "../escape-room.ts";
+import { SQUAD_ROLE_INFO, rolesFor as escapeRoles } from "./squad-escape.ts";
 import type { WorldPack } from "../world-schema.ts";
 import { freezeLine } from "../freeze.ts";
 import { interviewOf, liarAnswers, liveCards, playerLiar, raceTotals, type LiveRaceRound } from "./race.ts";
@@ -21,7 +23,7 @@ export type LiveSessionInput = { session: LiveSession; world: WorldPack; squads:
 const TYPE_NAMES = { lie: "Live Spot the Lie", verdict: "Verdict Vote", objection: "Objection!", story: "Story Mode", race: "Proof Race", bonus: "Bonus Round" } as const;
 const text = (r: LiveResponse | undefined, key: string) => (r ? String(r.payload[key] ?? "") : "");
 
-function actionLine(r: LiveResponse, world: WorldPack) {
+function actionLine(r: LiveResponse, world: WorldPack, nameOf: (id: string) => string = () => "a squadmate") {
   const role = r.role && r.role in ROLE_INFO ? `${ROLE_INFO[r.role as Role].name}: ` : "";
   switch (r.kind) {
     case "pin": return `${role}pinned "${text(r, "quote")}"`;
@@ -44,6 +46,7 @@ function actionLine(r: LiveResponse, world: WorldPack) {
       return `Chunk ${Number(p.step) + 1}: ${p.correct ? `proved it (${Number(p.points ?? 0)} pts)` : p.late ? "time ran out" : p.answerRight && !p.proofRight ? "right answer, proof missed" : "missed"}`; }
     case "race_refresh": return Number(r.payload.index) < 0 ? `Refresher, Name the Liar: ${r.payload.fixed ? "found the line" : "not yet"}` : `Refresher, chunk ${Number(r.payload.index) + 1}: ${r.payload.fixed ? "fixed it" : "not yet"}`;
     case "race_puzzle": return `Puzzle lock ${text(r, "id")}: ${((r.payload.firstTry as boolean[] | undefined) ?? []).filter(Boolean).length} of ${((r.payload.firstTry as boolean[] | undefined) ?? []).length} right on the first try (${Number(r.payload.points ?? 0)} pts)`;
+    case "squad_lock": { const p = r.payload as { step: number; from: string; correct: boolean; points: number }; return `Recorder, lock ${Number(p.step) + 1}: locked in ${nameOf(p.from)}'s answer for the squad, ${p.correct ? `which proved it (+${p.points} squad pts)` : "which didn't prove it"}`; }
     case "race_recover": return `Lock ${Number(r.payload.step) + 1}: opened with the shown proof after a miss (0 pts)`;
     case "race_note": return `Case Notes, chunk ${Number(r.payload.index) + 1}: "${text(r, "text")}"`;
     case "bonus_pick": return `Bonus Round, ${Number(r.payload.index) < 0 ? "Name the Liar" : `chunk ${Number(r.payload.index) + 1}`}: defended "${text(r, "stem")} ${text(r, "reason")}"`;
@@ -108,7 +111,14 @@ export function liveRoundEvidence(input: LiveSessionInput): LiveRoundEvidence[] 
         name: sq.name, answer, explanation: text(words, "text"), flagged: !!words?.flagged, ...r,
         members: [...memberIds].map((pid) => {
           const p = players.find((x) => x.id === pid);
-          const acts = rows.filter((x) => x.playerId === pid).map((x) => actionLine(x, world)).filter(Boolean);
+          const nameOf = (id: string) => (id === pid ? "their own" : players.find((x) => x.id === id)?.nickname ?? "a squadmate");
+          const acts = rows.filter((x) => x.playerId === pid).map((x) => actionLine(x, world, nameOf)).filter(Boolean);
+          // Squad escapes: this student's roles in the room, and how often the squad locked in their commit.
+          if (round.type === "race" && round.squadsOn && sq.id !== "__all") {
+            const ids = [...memberIds], roomNo = roomOf(world, round.settings.expeditionId)?.number ?? 1, roles = escapeRoles(ids, roomNo)[pid] ?? [];
+            const used = rows.filter((x) => x.kind === "squad_lock" && ids.includes(x.playerId ?? "") && x.payload.from === pid).length;
+            if (roles.length) acts.unshift(`Roles: ${roles.map((x) => SQUAD_ROLE_INFO[x].name).join(", ")} · the squad locked in their answer ${used} time${used === 1 ? "" : "s"}`);
+          }
           return { nickname: p?.nickname ?? "Player", studentId: p?.studentId ?? null, actions: raceTotal ? [`${raceTotal.get(pid) ?? 0} pts`, ...acts] : acts };
         }),
       }];

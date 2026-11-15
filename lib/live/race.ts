@@ -12,6 +12,7 @@
 // seconds), then the witness answers on the board (testify; the host moves on). One witness lies, picked per game. The
 // finale is Name the Liar: every phone locks in the liar and the line privately (liar, 90 seconds), and nothing is
 // shown until the board reveals the liar with the class breakdown (verdict). Rows: interview_vote and liar_lock.
+import { SQUAD_LOCK_POINTS, recorderOf, sharedLockOpen, type SquadLock } from "./squad-escape.ts";
 import { chamberBudgetMs, clockRuns, isRoomClock, type RoomClock } from "../room-clock.ts";
 import { CLUE_COST, clueCost, type ClueTier } from "../clues.ts";
 import type { Interview, RoomPuzzle, WorldPack } from "../world-schema.ts";
@@ -187,7 +188,7 @@ export function burstFound(responses: LiveResponse[], roundIndex: number, ids: s
 // What a player sent this beat, checked and scored, or why it can't count. One shot: one answer per question.
 // squadIds: the player's squad (the burst counts a find once per squad), or just the player.
 // puzzle: the puzzle lock open now, with its lines as text (code dials are checked against them).
-export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses: LiveResponse[], roundIndex: number, playerId: string, kind: string, payload: Record<string, unknown>, now: number, timeSetting: string, iv: Interview | null = null, arc: Arc | null = null, squadIds: string[] = [playerId], puzzle: RoomPuzzle | null = null, puzzleLines: string[] = []): { payload: Record<string, unknown>; flagged: boolean } | string {
+export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses: LiveResponse[], roundIndex: number, playerId: string, kind: string, payload: Record<string, unknown>, now: number, timeSetting: string, iv: Interview | null = null, arc: Arc | null = null, squadIds: string[] = [playerId], puzzle: RoomPuzzle | null = null, puzzleLines: string[] = [], roomNumber = 1): { payload: Record<string, unknown>; flagged: boolean } | string {
   const chunk = chunks[round.step], me = playerChunk(responses, roundIndex, round.step, playerId);
   if (!chunk) return "The race is over.";
   const since = Math.max(0, now - Date.parse(round.beatStartedAt));
@@ -276,6 +277,20 @@ export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses:
     if (!recoveryOpens(asked.question, chunkTokens(chunk.lines), answer)) return "Not that one yet. Use the answer shown.";
     return { payload: { step: round.step, opened: true, points: 0 }, flagged: false };
   }
+  // Squad escapes (lib/live/squad-escape.ts): the Recorder locks in one member's committed answer as the squad's,
+  // once everyone in the squad has committed, once per lock.
+  if (kind === "squad_lock") {
+    if (!round.squadsOn || squadIds.length < 2) return "Shared lock-ins are for squads.";
+    if (round.beat !== "race") return "The question isn't open.";
+    if (recorderOf(squadIds, roomNumber) !== playerId) return "Your squad's Recorder locks in the answer.";
+    if (squadLockOf(responses, roundIndex, round.step, squadIds)) return "Your squad has already locked in this one.";
+    const committed = new Set(squadIds.filter((m) => playerChunk(responses, roundIndex, round.step, m).done));
+    if (!sharedLockOpen(squadIds, committed)) return "Wait until everyone in your squad has committed.";
+    const from = String(payload.from ?? ""); if (!committed.has(from)) return "Pick one of your squad's answers.";
+    const tap = playerChunk(responses, roundIndex, round.step, from).tap!;
+    const lock: SquadLock = { step: round.step, from, answer: tap.answer, correct: !!tap.correct, points: tap.correct ? SQUAD_LOCK_POINTS : 0, lines: tap.answer.lines ?? [] };
+    return { payload: lock as unknown as Record<string, unknown>, flagged: false };
+  }
   // Request a clue: the next tier, while the question is open and before the one shot. Points only, never time.
   if (kind === "race_clue") {
     if (round.beat !== "race") return "The question isn't open.";
@@ -329,7 +344,9 @@ export function liveRaceBoard(responses: LiveResponse[], roundIndex: number, pla
   if (squadsOn && squads.length) {
     const of = new Map(players.map((p) => [p.id, p.squadId]));
     const names = new Map(squads.map((s) => [s.id, s.name]));
-    return { kind: "squad" as const, rows: raceBoard(squadTotals(before, of), squadTotals(after, of), names) };
+    // Squad escapes: each shared lock-in that proved its lock adds to the squad's row.
+    const plus = (t: Map<string, number>, upto: number) => { for (const s of squads) { const ids = players.filter((p) => p.squadId === s.id).map((p) => p.id); let add = 0; for (let k = 0; k <= upto; k++) add += squadLockOf(responses, roundIndex, k, ids)?.points ?? 0; if (add) t.set(s.id, (t.get(s.id) ?? 0) + add); } return t; };
+    return { kind: "squad" as const, rows: raceBoard(plus(squadTotals(before, of), step - 1), plus(squadTotals(after, of), step), names) };
   }
   return { kind: "player" as const, rows: raceBoard(before, after, new Map(players.map((p) => [p.id, p.nickname]))) };
 }
@@ -356,9 +373,15 @@ export function raceDone(round: LiveRaceRound, responses: LiveResponse[], roundI
     if (round.beat === "vote") return playerVote(responses, roundIndex, round.step, p.id) !== null;
     if (round.beat === "liar" || round.beat === "verdict") return !!playerLiar(responses, roundIndex, p.id);
     if (round.beat === "puzzle") return rows(responses, roundIndex, "race_puzzle", round.step).some((r) => r.playerId === p.id && r.payload.id === round.puzzle);
-    const c = playerChunk(responses, roundIndex, round.step, p.id); return round.beat === "process" ? c.gist !== null : round.beat === "ask" ? c.asked : round.beat === "lightning" ? !!c.lightning : c.done;
+    const c = playerChunk(responses, roundIndex, round.step, p.id);
+    // Squad escapes: a member is done with a lock once their squad has made its shared lock-in.
+    if (round.beat === "race" && round.squadsOn && p.squadId) { const ids = players.filter((x) => x.squadId === p.squadId).map((x) => x.id); if (ids.length > 1) return c.done && !!squadLockOf(responses, roundIndex, round.step, ids); }
+    return round.beat === "process" ? c.gist !== null : round.beat === "ask" ? c.asked : round.beat === "lightning" ? !!c.lightning : c.done;
   }).map((p) => p.id);
 }
+// A squad's shared lock-in at a lock (any member's row: only the Recorder can make one).
+export const squadLockOf = (responses: LiveResponse[], roundIndex: number, step: number, ids: string[]) =>
+  (rows(responses, roundIndex, "squad_lock", step).find((r) => r.playerId && ids.includes(r.playerId))?.payload as SquadLock | undefined) ?? null;
 export const raceAnswered = (round: LiveRaceRound, responses: LiveResponse[], roundIndex: number, players: LivePlayer[]) => raceDone(round, responses, roundIndex, players).length;
 // "Your question": up to 3 questions for the board, never a flagged one and never a name; the teacher can pin one.
 export function raceQuestions(responses: LiveResponse[], roundIndex: number, step: number) {

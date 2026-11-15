@@ -4,11 +4,13 @@
 // countdown); the teacher can pause any screen or skip ahead. Every phone follows the board's timing with its own extra
 // time and the same screens as the solo race (app/expedition-race.tsx). The lobby shows names and character avatars
 // popping in, with a quiet music loop the host can mute; the game ends on a podium with class stats.
+import type {InventoryItem} from "@/lib/escape-room";
+import {SQUAD_ROLE_INFO,type SquadRole} from "@/lib/live/squad-escape";
 import {CLOCK_INFO,ROOM_CLOCKS,clockView} from "@/lib/room-clock";
 import {PuzzleLock} from "../puzzle-locks";
 import {refKey} from "@/lib/escape-room";
 import type {LineRef,RoomPuzzle} from "@/lib/world-schema";
-import {LockBanner,RecoveryPanel} from "../room-ui";
+import {LockBanner,RecoveryPanel,CaseFileButton} from "../room-ui";
 import {lockKind} from "@/lib/escape-room";
 import {useEffect,useLayoutEffect,useRef,useState} from "react";
 import {ArrowRight,Check,Download,Highlighter,Pin,Printer,Volume2,VolumeX,Zap} from "lucide-react";
@@ -114,6 +116,9 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
   <p className="text-[18px] text-muted">{round.expedition.title} · Grade {round.grade??7}</p>
   {timed&&left!==null&&<div className="mt-2"><TimerTrack left={left} seconds={(totalMs??1000)/1000}/></div>}
   {liveClockNow&&<div className="mt-2 flex"><RoomClockPill clock={liveClockNow}/></div>}
+  {round.squadRoles&&round.squadRoles.length>0&&round.beat==="read"&&<div className="mt-3 rounded-card bg-panel p-4"><p className="text-[20px] font-bold">Squad roles this room</p>
+   <ul className="mt-2 grid gap-2 md:grid-cols-2">{round.squadRoles.map(q=><li key={q.name} className="rounded-row bg-panel-2 px-4 py-2 text-[18px]"><span className="font-bold">{q.name}:</span> {q.members.map(m=>`${m.nickname} (${m.roles.map(r=>SQUAD_ROLE_INFO[r].name).join(", ")})`).join(" · ")}</li>)}</ul>
+   <p className="mt-2 text-[16px] text-muted">Everyone commits on their own phone first; then each squad's Recorder locks in the answer the squad agrees on.</p></div>}
   {nextNote&&<NoteHeadsUp note={nextNote} step={round.step} held={round.holdBefore===round.step+1} paused={!!state.session.paused} act={act}/>}
   {state.session.paused&&<p role="status" className="mt-2 rounded-card bg-gold px-4 py-2 text-[18px] font-bold text-on-gold">Paused. Everyone stays on this screen.</p>}
   {round.beat==="read"&&world&&<><p className="mt-2 text-[clamp(18px,1.6vw,26px)] text-muted" aria-live="polite">{race.ready.ready} of {race.ready.total} ready · no timer while reading</p>
@@ -206,7 +211,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  const tokens=chunkTokens(round.chunk.lines);
  // This student's own version of the question (easier or harder), else the standard one.
  const q=race.myQuestion??round.question;
- if(interviewBeat(round.beat)&&round.interview)return <>{(round.beat==="liar"||round.beat==="verdict")&&<RaceHud score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.total} total={round.total} left={null} title={round.expedition.title}/>}<InterviewPlayer state={state} world={world} act={act} left={round.beat==="vote"||round.beat==="liar"?left:null} myMs={myMs}/></>;
+ if(interviewBeat(round.beat)&&round.interview)return <>{race.myEscape&&<div className="mt-3"><SquadRoleBar esc={race.myEscape}/></div>}{(round.beat==="liar"||round.beat==="verdict")&&<RaceHud score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.total} total={round.total} left={null} title={round.expedition.title}/>}<InterviewPlayer state={state} world={world} act={act} left={round.beat==="vote"||round.beat==="liar"?left:null} myMs={myMs}/></>;
  // The one plain sentence for this screen (lib/onboarding.ts), and first-time hints marked done after a right answer.
  const phoneScreen:Screen=({read:"read",process:"gist",ask:"wait",race:testifying?"wait":q?.format==="dnd"?"dnd":q?.format==="multi"?"multi":q?.format==="written"&&step===1?"written":(step===2||q?.format==="tap")?(q?.clues?"clues":"proof"):"question",
   reveal:"result",lightning:"lightning",puzzle:"puzzle",board:"board",burst:"burst",countdown:"countdown",liar:"liar",verdict:"verdict",vote:"interview",testify:"interview"} as Record<string,Screen>)[round.beat]??"wait";
@@ -218,6 +223,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  const shownTokens=round.reveal?.words.length?round.reveal.words:proofTokensOf(tokens,round.chunk.lines,round.reveal?.lines??[]);
  return <section className="wide-host mt-3 flex flex-col gap-3" aria-labelledby="rp-h">
   {hud}
+  {race.myEscape&&<SquadRoleBar esc={race.myEscape}/>}
   {race.extraTime&&<p className="text-[13px] font-bold text-muted">Extra time is on for you.</p>}
   {round.paused&&<p role="status" className="rounded-card bg-gold px-4 py-2 text-[16px] font-bold text-on-gold">Paused by your teacher.</p>}
   {round.beat==="read"&&<><h1 id="rp-h" className="text-[28px] outline-none">Read the chunk</h1>
@@ -233,6 +239,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
   {round.beat==="ask"&&<><TimerTrack left={left} seconds={(myMs??60000)/1000}/><h1 id="rp-h" className="text-[28px] outline-none">Your question</h1><QuestionAsk sent={mine.asked} onSend={async t=>(await act("race_question",{text:t}))??null}/></>}
   {round.beat==="race"&&q&&<>{mine.done&&!testifying&&<TimerTrack left={left} seconds={(myMs??45000)/1000}/>}
    {mine.done?<><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{q.name}</p><h1 id="rp-h" className="text-[24px] leading-tight outline-none"><KeywordPrompt prompt={q.prompt} keywords={q.keywords}/></h1><p role="status" className="rounded-card bg-panel px-4 py-3 text-[17px] font-bold">Locked in. While the class finishes:</p>
+    {race.myEscape&&<SquadLockPanel esc={race.myEscape} onLock={from=>act("squad_lock",{from})}/>}
     {/* No dead time: a bonus on the same chunk while others answer. */}
     {found!==round.chunk.id?<><p className="text-[16px] font-bold">Bonus: find this chunk's hidden discovery (a figurative phrase or rich word) for {DISCOVERY_COINS} coins.</p>
       <ChunkText explore chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} onDiscover={()=>{if(found!==round.chunk.id){setFound(round.chunk.id);setCoins(c=>c+DISCOVERY_COINS);cue(sound,"chime",0.3)}}} found={false}/></>
@@ -392,4 +399,28 @@ function useLiveClock(c:{budgetMs:number;usedMs:number;runningSince:string|null}
  useEffect(()=>{if(!c?.runningSince)return;const t=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(t)},[c?.runningSince]);
  if(!c)return null;
  return clockView(c.budgetMs,c.usedMs+(c.runningSince?Math.max(0,now-Date.parse(c.runningSince)):0));
+}
+// ---------- Squad escapes (lib/live/squad-escape.ts) ----------
+type EscView={room:number;myRoles:SquadRole[];members:{id:string;nickname:string;me:boolean;roles:SquadRole[];committed:boolean;commit:{pick:string|null;line:string|null}|null}[];recorder:boolean;open:boolean;lock:{from:string;correct:boolean|null;points:number|null}|null;caseFile:InventoryItem[]};
+// This player's role this room (with its job) and the squad Case File, on every screen of the game.
+function SquadRoleBar({esc}:{esc:EscView}){
+ return <div className="flex flex-wrap items-start justify-between gap-2 rounded-card bg-panel px-3 py-2">
+  <p className="text-[14px] leading-snug"><span className="font-extrabold uppercase tracking-[.06em] text-highlight">Room {esc.room} · {esc.myRoles.map(r=>SQUAD_ROLE_INFO[r].name).join(" and ")}</span><br/>{esc.myRoles.map(r=>SQUAD_ROLE_INFO[r].job).join(" ")}</p>
+  <span className="shrink-0"><CaseFileButton items={esc.caseFile}/></span>
+ </div>;
+}
+// After committing privately: the squad's commits, then the shared lock-in by the Recorder.
+function SquadLockPanel({esc,onLock}:{esc:EscView;onLock:(from:string)=>void}){
+ const waiting=esc.members.filter(m=>!m.committed).map(m=>m.nickname);
+ return <div className="rounded-card border-2 border-edge bg-panel p-3">
+  <p className="font-display text-[18px] font-bold">Your squad's answers</p>
+  <ul className="mt-2 grid gap-2">{esc.members.map(m=><li key={m.id} className="rounded-row bg-panel-2 px-3 py-2 text-[15px]">
+   <span className="font-bold">{m.me?"You":m.nickname}</span> <span className="text-muted">· {m.roles.map(r=>SQUAD_ROLE_INFO[r].name).join(", ")}</span><br/>
+   {m.commit?<>{m.commit.pick&&<span className="font-bold">{m.commit.pick}</span>}{m.commit.line&&<span className="block text-muted">“{m.commit.line.slice(0,140)}{m.commit.line.length>140?"…":""}”</span>}</>:<span className="text-muted">{m.committed?"Committed":"Still deciding…"}</span>}
+   {esc.recorder&&esc.open&&m.commit&&<button type="button" onClick={()=>onLock(m.id)} className="case-primary mt-2 !min-h-11 w-full justify-center text-[15px]">Lock in {m.me?"my":`${m.nickname}'s`} answer for the squad</button>}
+  </li>)}</ul>
+  {esc.lock?<p role="status" className="mt-2 rounded-row bg-success px-3 py-2 text-[15px] font-bold text-on-success">Squad locked in {esc.lock.from}'s answer.{esc.lock.correct===null?" The reveal is next.":esc.lock.correct?` It proved the lock (+${esc.lock.points}).`:" It didn't prove the lock."}</p>
+   :waiting.length?<p className="mt-2 text-[14px] font-bold text-muted">Waiting for {waiting.join(", ")} to commit. Talk it over, then the Recorder locks one in.</p>
+   :<p className="mt-2 text-[14px] font-bold text-muted">{esc.recorder?"Talk it over, then lock in the answer your squad agrees on.":"Talk it over. Your Recorder locks in the squad's answer."}</p>}
+ </div>;
 }
