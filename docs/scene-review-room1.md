@@ -7,7 +7,7 @@ Previews are in `Claude outputs/scenes/`:
 - `*-play.jpg`: how a student sees it, with subtle markers. A brass ring with a soft lantern glow is on the next item, small brass checks are on opened items, and later or hidden items have no marker.
 - `*-key.jpg`: the placement key, for review only.
 
-## Chamber 1: the glen (¶3 to ¶5), golden hour. Finished.
+## Chamber 1: the glen (¶3 to ¶5), golden hour. Approved 2026-11-15.
 
 | Spot | What it is | Opens |
 |---|---|---|
@@ -20,21 +20,21 @@ Previews are in `Claude outputs/scenes/`:
 | The gate | The farm gate where the road leaves the valley | Inner door · the code lock |
 | Hans | The old farmer in a brown coat on the road by the inn | Steps forward at lock 1 |
 
-## Chamber 2: the hollow at night (¶5 to ¶9), moonlight. One fix pending.
+## Chamber 2: the hollow at night (¶5 to ¶9), moonlight. Finished, for approval.
 
 | Spot | What it is | Opens |
 |---|---|---|
 | 6 · The meteor | A meteor streaking across the starry sky | Lock 6 · ¶5 s5 to s6 |
-| 7 · The rider on the road | A cloaked rider far down the road, a silhouette in the mist | Lock 7 · ¶6 s1 to s2 |
+| 7 · The headless rider | A cloaked rider far down the road, clearly headless, a silhouette in the mist | Lock 7 · ¶6 s1 to s2 |
 | 8 · The churchyard | The old graves below the church | Lock 8 · ¶6 s3 to s4 |
-| 9 · The lit farmhouse windows | Farmhouses where families tell tales by the fire | Lock 9 · ¶7 to ¶8 |
-| 10 · The still nook | The calm water by the rapid stream, with a straw afloat | Lock 10 · ¶9 |
+| 9 · The country firesides | Farmhouse windows glowing where families tell tales by the fire (¶7: "known at all the country firesides") | Lock 9 · ¶7 to ¶8 |
+| 10 · The hollow's old trees | Huge old shade trees that have stood in the hollow for generations (¶9: "the same trees and the same families") | Lock 10 · ¶9 |
 | Inspect the Scene | The churchyard gate | After lock 10 |
 | The church door | The exit door: Name the Liar | After the scene |
-| Brom | The young man on the road | Steps forward at lock 7 |
+| Brom | The broad-shouldered young man in a fur cap on the road | Steps forward at lock 7 |
 | Katrina | The young woman with the lantern by the churchyard gate | Steps forward at lock 9 |
 
-**Pending fix:** the distant rider must be clearly headless (the text says so). In this draft his silhouette still shows a head and hat, and Brom should be broad-shouldered with his fur cap, as in his portrait. An edit for both is written. It needs OpenAI credits: the account returned "no credits remaining" partway through.
+**Changes from the draft:** the rider is now clearly headless; Brom is broad-shouldered in his fur cap; and the rushing stream with the still pool, straw and bubble is gone. That ¶9 sentence is a comparison describing the Dutch villages, not a real place, so lock 10's item is now the hollow's old shade trees, from ¶9's literal last sentence. A side road now forks off by the farmhouses for the new bonus item.
 
 ## Bonus items: a reading task before any coins
 
@@ -48,7 +48,7 @@ Each bonus opens only after the lock whose reading contains its line, so a bonus
 | Woodpecker (Chamber 1) | ¶3 s5 | Which bird makes a knocking noise? | woodpecker |
 | Quail (Chamber 1) | ¶3 s5 | Which bird is heard calling now and then? | quail |
 | Cannon-ball (Chamber 2) | ¶6 s2 | In which war did the rider lose his life? | Revolutionary |
-| Bubble (Chamber 2) | ¶9 s2 | What does the narrator call that calm pool, as if it were a port for boats? | harbor |
+| The side road (Chamber 2) | ¶6 s3 ("the adjacent roads") | Beyond the hollow, where else can the phantom be met? | roads |
 
 ## Next, after approval
 
