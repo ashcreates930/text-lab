@@ -90,7 +90,17 @@ const roomPuzzle=z.discriminatedUnion("type",[
   z.object({type:z.literal("scene"),...puzzleBase,...puzzleArt,
     objects:z.array(z.object({id:z.string().regex(/^[a-z0-9-]+$/),label:z.string().min(1),...spot,line:lineRef,subject:z.array(z.string().min(1)).min(1).max(4)})).min(3).max(5),near_misses:z.array(lineRef).min(1).max(3)}),
 ]);
-const room=z.object({expedition:z.string(),door:z.string().min(1).optional(),clock_reason:z.string().min(1).optional(),puzzles:z.array(roomPuzzle).optional()});
+// Explorable scenes (lib/room-scene.ts): one painted scene per chamber. Spots are percentages of the picture. Items: one
+// per lock, each a literal thing in its lock's reading (subject: the word(s) it stands for). Bonus items: a literal thing
+// in the chamber's reading with a small reading task (tap `word` in the line to answer `question`). Witnesses stand at
+// their meeting point; puzzles (not the inner door's code lock) and the door (the inner door in chamber 1, the exit in
+// chamber 2) are places in the scene.
+const spotXY={x:z.number().min(0).max(100),y:z.number().min(0).max(100)};
+const sceneItem=z.object({id:z.string(),lock:z.number().int().min(1),label:z.string().min(1),alt:z.string().min(1),...spotXY,line:lineRef,subject:z.array(z.string().min(1)).min(1)});
+const sceneBonus=z.object({id:z.string(),label:z.string().min(1),alt:z.string().min(1),...spotXY,line:lineRef,subject:z.array(z.string().min(1)).min(1),question:z.string().min(1),word:z.string().min(1)});
+const roomScene=z.object({chamber:z.union([z.literal(1),z.literal(2)]),art:z.string().min(1),alt:z.string().min(1),items:z.array(sceneItem).min(1),bonus:z.array(sceneBonus).default([]),
+ witnesses:z.array(z.object({character:z.string(),...spotXY})).default([]),puzzles:z.array(z.object({id:z.string(),...spotXY})).default([]),door:z.object({label:z.string().min(1),...spotXY})});
+const room=z.object({expedition:z.string(),door:z.string().min(1).optional(),clock_reason:z.string().min(1).optional(),puzzles:z.array(roomPuzzle).optional(),scenes:z.array(roomScene).optional()});
 export type LineRef=z.infer<typeof lineRef>;export type RoomPuzzle=z.infer<typeof roomPuzzle>;export type RoomData=z.infer<typeof room>;
 export type Expedition=z.infer<typeof expedition>;export type Interview=z.infer<typeof expedition>["interview"]&{};export type Witness=z.infer<typeof witness>;export type ExpChunk=z.infer<typeof expChunk>;export type ExpQuestion=z.infer<typeof expQuestion>;export type QuestionType=(typeof QUESTION_TYPES)[number];
 
@@ -171,7 +181,9 @@ export const WorldPackSchema = z.object({
   // Drafts awaiting the teacher's review: validated like expeditions, never shown to students until moved into
   // expeditions. expedition_rules: a story-level exception to the chunk rules, only with the teacher's approval.
   // puzzle_exclude: sentences no escape-room puzzle may use (beyond content-noted paragraphs, which none may use).
-  draft_expeditions:z.array(expedition).optional(),expedition_rules:z.object({max_sentences:z.number().int().min(5).max(20).optional(),arc_pending:z.array(z.string()).optional(),puzzle_exclude:z.array(lineRef).optional()}).optional(),
+  // figurative: metaphors and personification a pattern can't spot (no "like" or "as if"); no scene item or bonus item
+  // may stand for a word inside one (lib/room-scene.ts).
+  draft_expeditions:z.array(expedition).optional(),expedition_rules:z.object({max_sentences:z.number().int().min(5).max(20).optional(),arc_pending:z.array(z.string()).optional(),puzzle_exclude:z.array(lineRef).optional(),figurative:z.array(z.object({p:z.string().regex(/^p\d{3}$/),s:z.number().int().min(0),phrase:z.string().min(1)})).optional()}).optional(),
   // Escape rooms (see above): optional extras per expedition.
   rooms:z.array(room).optional(),
   // Demo rival and squad modes: the computer players' names (clearly labeled as computer players on screen).

@@ -23596,6 +23596,300 @@
             }
           ]
         }
+      ],
+      "scenes": [
+        {
+          "chamber": 1,
+          "art": "/worlds/sleepy-hollow/scenes/into-the-hollow-1.webp",
+          "alt": "A painted valley at golden hour: a tavern by a river cove with sloops at anchor, a dirt road climbing past an old farmer into a quiet glen, a brook under a stone bridge, tall walnut trees, a stone farmhouse with a porch, and a closed farm gate.",
+          "items": [
+            {
+              "id": "inn",
+              "lock": 1,
+              "label": "The inn at Tarry Town",
+              "alt": "The village tavern by the river cove",
+              "x": 6.5,
+              "y": 63,
+              "line": {
+                "p": "p003",
+                "s": 1
+              },
+              "subject": [
+                "tavern"
+              ]
+            },
+            {
+              "id": "brook",
+              "lock": 2,
+              "label": "The little brook",
+              "alt": "A small brook gliding under a stone bridge",
+              "x": 54,
+              "y": 77,
+              "line": {
+                "p": "p003",
+                "s": 4
+              },
+              "subject": [
+                "brook"
+              ]
+            },
+            {
+              "id": "walnut-grove",
+              "lock": 3,
+              "label": "The walnut grove",
+              "alt": "Tall walnut trees on the hillside",
+              "x": 39,
+              "y": 40,
+              "line": {
+                "p": "p004",
+                "s": 0
+              },
+              "subject": [
+                "walnut-trees",
+                "grove"
+              ]
+            },
+            {
+              "id": "glen",
+              "lock": 4,
+              "label": "The quiet glen",
+              "alt": "The sheltered valley floor, quiet and still",
+              "x": 60,
+              "y": 46,
+              "line": {
+                "p": "p005",
+                "s": 0
+              },
+              "subject": [
+                "glen"
+              ]
+            },
+            {
+              "id": "porch",
+              "lock": 5,
+              "label": "The farmhouse porch",
+              "alt": "Two country folk sitting idle on a farmhouse porch, lost in a daydream",
+              "x": 73,
+              "y": 54,
+              "line": {
+                "p": "p005",
+                "s": 3
+              },
+              "subject": [
+                "people"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "squirrel",
+              "label": "A squirrel",
+              "alt": "A squirrel high in a walnut tree",
+              "x": 15.5,
+              "y": 15,
+              "line": {
+                "p": "p004",
+                "s": 0
+              },
+              "subject": [
+                "squirrel"
+              ],
+              "question": "What did the narrator hunt as a boy?",
+              "word": "squirrel-shooting"
+            },
+            {
+              "id": "woodpecker",
+              "label": "A woodpecker",
+              "alt": "A woodpecker on a tree trunk",
+              "x": 30.3,
+              "y": 46,
+              "line": {
+                "p": "p003",
+                "s": 4
+              },
+              "subject": [
+                "woodpecker"
+              ],
+              "question": "Which bird makes a knocking noise?",
+              "word": "woodpecker"
+            },
+            {
+              "id": "quail",
+              "label": "A quail",
+              "alt": "A quail in the grass by the road",
+              "x": 35,
+              "y": 85,
+              "line": {
+                "p": "p003",
+                "s": 4
+              },
+              "subject": [
+                "quail"
+              ],
+              "question": "Which bird is heard calling now and then?",
+              "word": "quail"
+            }
+          ],
+          "witnesses": [
+            {
+              "character": "hans-van-ripper",
+              "x": 20.5,
+              "y": 72
+            }
+          ],
+          "puzzles": [
+            {
+              "id": "glen-at-noon",
+              "x": 44,
+              "y": 70
+            }
+          ],
+          "door": {
+            "label": "The gate out of the glen",
+            "x": 87,
+            "y": 68
+          }
+        },
+        {
+          "chamber": 2,
+          "art": "/worlds/sleepy-hollow/scenes/into-the-hollow-2.webp",
+          "alt": "The same valley by moonlight: a meteor across the stars, huge old shade trees, farmhouses with glowing windows, a headless cloaked rider far down the road, a white church above its churchyard, a young man in a fur cap on the road and a young woman with a lantern by the churchyard gate.",
+          "items": [
+            {
+              "id": "meteor",
+              "lock": 6,
+              "label": "The meteor over the valley",
+              "alt": "A meteor streaking across the starry sky",
+              "x": 30.6,
+              "y": 12.5,
+              "line": {
+                "p": "p005",
+                "s": 5
+              },
+              "subject": [
+                "meteors"
+              ]
+            },
+            {
+              "id": "rider",
+              "lock": 7,
+              "label": "The headless rider",
+              "alt": "A cloaked rider on a dark horse far down the road, with no head",
+              "x": 48.5,
+              "y": 57,
+              "line": {
+                "p": "p006",
+                "s": 0
+              },
+              "subject": [
+                "horseback"
+              ]
+            },
+            {
+              "id": "churchyard",
+              "lock": 8,
+              "label": "The churchyard",
+              "alt": "Old gravestones below the church",
+              "x": 86,
+              "y": 62,
+              "line": {
+                "p": "p006",
+                "s": 3
+              },
+              "subject": [
+                "churchyard"
+              ]
+            },
+            {
+              "id": "firesides",
+              "lock": 9,
+              "label": "The country firesides",
+              "alt": "Farmhouse windows glowing with firelight",
+              "x": 20,
+              "y": 52,
+              "line": {
+                "p": "p007",
+                "s": 0
+              },
+              "subject": [
+                "firesides"
+              ]
+            },
+            {
+              "id": "old-trees",
+              "lock": 10,
+              "label": "The hollow's old trees",
+              "alt": "Huge old shade trees that have stood in the hollow for generations",
+              "x": 6,
+              "y": 44,
+              "line": {
+                "p": "p009",
+                "s": 2
+              },
+              "subject": [
+                "trees"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "cannon-ball",
+              "label": "A cannon-ball",
+              "alt": "An old iron cannon-ball half sunk in the grass by the graves",
+              "x": 79.3,
+              "y": 75.5,
+              "line": {
+                "p": "p006",
+                "s": 1
+              },
+              "subject": [
+                "cannon-ball"
+              ],
+              "question": "In which war did the rider lose his life?",
+              "word": "Revolutionary"
+            },
+            {
+              "id": "side-road",
+              "label": "The side road",
+              "alt": "A narrow side road forking off into the dark trees",
+              "x": 14.5,
+              "y": 59,
+              "line": {
+                "p": "p006",
+                "s": 2
+              },
+              "subject": [
+                "roads"
+              ],
+              "question": "Beyond the hollow, where else can the phantom be met?",
+              "word": "roads"
+            }
+          ],
+          "witnesses": [
+            {
+              "character": "brom-bones",
+              "x": 36,
+              "y": 68
+            },
+            {
+              "character": "katrina-van-tassel",
+              "x": 72,
+              "y": 63
+            }
+          ],
+          "puzzles": [
+            {
+              "id": "churchyard-at-dusk",
+              "x": 61,
+              "y": 66
+            }
+          ],
+          "door": {
+            "label": "The church door",
+            "x": 75.5,
+            "y": 41
+          }
+        }
       ]
     },
     {
@@ -26088,6 +26382,38 @@
       {
         "p": "p005",
         "s": 2
+      }
+    ],
+    "figurative": [
+      {
+        "p": "p005",
+        "s": 1,
+        "phrase": "A drowsy, dreamy influence seems to hang over the land, and to pervade the very atmosphere"
+      },
+      {
+        "p": "p005",
+        "s": 3,
+        "phrase": "the place still continues under the sway of some witching power, that holds a spell over the minds"
+      },
+      {
+        "p": "p006",
+        "s": 0,
+        "phrase": "seems to be commander-in-chief of all the powers of the air"
+      },
+      {
+        "p": "p008",
+        "s": 1,
+        "phrase": "inhale the witching influence of the air"
+      },
+      {
+        "p": "p009",
+        "s": 0,
+        "phrase": "the great torrent of migration and improvement"
+      },
+      {
+        "p": "p009",
+        "s": 2,
+        "phrase": "vegetating in its sheltered bosom"
       }
     ]
   }

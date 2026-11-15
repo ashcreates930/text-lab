@@ -1,0 +1,21 @@
+// Fixes to a scene that keep its layout (and item spots) in place. Run: node scripts/scene-art-edits.mjs [id ...]
+import fs from "node:fs";
+import path from "node:path";
+import { createRequire } from "node:module";
+const root = "C:/Users/epiph/Documents/Codex/2026-09-30/files-pasted-by-the-user-project";
+const req = createRequire(root + "/package.json");
+const OpenAI = req("openai").default, { toFile } = req("openai"), sharp = req("sharp"); sharp.cache(false);
+const key = (fs.readFileSync(root + "/.env.local", "utf8").match(/^OPENAI_API_KEY=(.*)$/m) || [])[1]?.trim().replace(/^"|"$/g, "");
+const client = new OpenAI({ apiKey: key });
+const dir = path.join(root, "public/worlds/sleepy-hollow/scenes");
+const EDITS = {
+  "into-the-hollow-2": "Keep this painting as it is: the same moonlit valley, stars and meteor, white church on its rise, churchyard and old gravestones, the iron cannon-ball in the grass, the gate and stone wall, the farmhouses with glowing windows, the road, the young woman with the lantern, the light and the oil-painting style. Change only these four things. 1) The distant rider on the dark horse far down the road is the Headless Horseman: make him clearly headless. His long dark cloak has broad shoulders that end flat, with NO head, NO hat and NO face above them, only empty misty night sky where a head would be. Make the rider a little larger and the mist behind him a little lighter so the empty space above his shoulders is easy to see. Eerie, never gruesome: no neck, no blood. 2) The young man standing on the road: make him a broad-shouldered, powerfully built young man of about twenty, strong like an athlete, not heavyset, wearing a fur cap, thumbs hooked in his belt, a bold confident look. 3) Remove the rushing stream, the rocks and the still pool with the straw and bubble at the lower left completely. In their place paint a grassy, moonlit bank under a stand of huge, old, broad shade trees that have clearly stood in the hollow for generations, their dark boughs sheltering the valley floor. 4) Where the road meets the farmhouses, a narrow side road forks off to the left and disappears into the dark trees.",
+};
+for (const id of process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(EDITS)) {
+  try {
+    const src = await sharp(path.join(dir, id + ".webp")).png().toBuffer();
+    const r = await client.images.edit({ model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-2", image: await toFile(src, id + ".png", { type: "image/png" }), prompt: EDITS[id], size: "1536x1024", quality: "high" });
+    fs.writeFileSync(path.join(dir, id + ".webp"), await sharp(Buffer.from(r.data[0].b64_json, "base64")).webp({ quality: 84 }).toBuffer());
+    console.log("saved", id);
+  } catch (e) { console.log("FAILED", id, String(e.message).slice(0, 160)); }
+}
