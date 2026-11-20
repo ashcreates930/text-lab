@@ -290,7 +290,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
      answerText={race.revealKey.best?.join(" · ")??race.revealKey.answer} clueWords={race.revealKey.clues??undefined} choices={q.choices} dnd={q.dnd} callPassages={q.callPassages} onOpen={async a=>!(await act("race_recover",{answer:a}))}/>
    :<div className="mt-1">{q?.callPassages?<ReadingPanel passages={q.callPassages as SourcePassage[]} results={myLines.map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/>
     :<ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shown={shownTokens} shownStyle={mine.tap?.correct?"right":"missed"}/>}</div>}</div>}
-  {round.beat==="puzzle"&&round.puzzle&&<LivePuzzle key={round.puzzle.data.id} p={round.puzzle} seed={state.me.id} sound={sound} act={act}/>}
+  {round.beat==="puzzle"&&round.puzzle&&<LivePuzzle key={round.puzzle.data.id} p={round.puzzle} seed={state.me.id} sound={sound} world={world} act={act}/>}
   {round.beat==="lightning"&&round.lightning&&<LightningLive l={round.lightning} world={world} answered={mine.lightning} answer={race.lightningAnswer} left={left} seconds={(myMs??10000)/1000} onLock={line=>act("race_lightning",{line})}/>}
   {round.beat==="burst"&&round.burst&&<DiscoveryBurst key={round.step} chunks={round.burst.chunks.map(c=>({index:c.index,lines:c.lines,chunk:{discovery:c.discovery}}) as unknown as RaceChunk)} world={world} sound={sound} squad={round.squadsOn&&race.squadId?{name:"Your squad",found:race.burstFound.length}:null} onFind={i=>{act("race_burst",{chunk:i})}}/>}
   {/* A lock missed and not yet opened stays open to the proof until the next chunk starts (the reveal is short). */}
@@ -419,10 +419,10 @@ function NoteHeadsUp({note,step,held,paused,act}:{note:string;step:number;held:b
 // A puzzle lock on a phone: solved alone, one try scored on the server; then the phone waits for the class.
 // The board's paragraph highlight: every sentence of the paragraph holding the proof (lib/engagement.ts proofParagraph).
 function boardPara(lines:{pid:string;text:string}[],tokens:Token[],proof:string[]){const shown=[...new Set(proofTokensOf(tokens,lines,proof).map(i=>tokens[i]?.line).filter((x):x is number=>typeof x==="number"))];return proofParagraph(lines,shown).paraLines}
-function LivePuzzle({p,seed,act,sound}:{p:{data:RoomPuzzle;lines:Record<string,string>;readLines:LineRef[];readChunks?:LineRef[][]};seed:string;sound:boolean;act:(k:string,pl?:Record<string,unknown>)=>Promise<string|null>|void}){
+function LivePuzzle({p,seed,act,sound,world}:{p:{data:RoomPuzzle;lines:Record<string,string>;readLines:LineRef[];readChunks?:LineRef[][]};seed:string;sound:boolean;world:WorldPack|null;act:(k:string,pl?:Record<string,unknown>)=>Promise<string|null>|void}){
  const [done,setDone]=useState(false);
  if(done)return <p role="status" className="mt-6 rounded-card bg-success p-4 text-center font-display text-[22px] font-bold text-on-success">Lock open. Watch the board for the class.</p>;
- return <div className="mt-2"><PuzzleLock puzzle={p.data} lineOf={r=>p.lines[refKey(r)]??null} readLines={p.readLines} readChunks={p.readChunks} seed={seed} sound={sound} submit={a=>{act("race_puzzle",{answer:a})}} onDone={()=>setDone(true)}/></div>;
+ return <div className="mt-2"><PuzzleLock puzzle={p.data} lineOf={r=>p.lines[refKey(r)]??null} readLines={p.readLines} readChunks={p.readChunks} seed={seed} sound={sound} pointerFor={r=>world?pointerText(world,r.p,Number(r.p.slice(1))):`It's in paragraph ${Number(r.p.slice(1))}. Find the line.`} submit={a=>{act("race_puzzle",{answer:a})}} onDone={()=>setDone(true)}/></div>;
 }
 // The room clock on the board and phones (lib/room-clock.ts): the server's time used plus the running beat, ticking
 // once a second; null when the clock is off.

@@ -320,3 +320,8 @@ html[data-motion="reduced"] .chest-lid-open{transition:none}
 .map-arrow{animation:map-arrow 1.2s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){.map-arrow{animation:none}}
 html[data-motion="reduced"] .map-arrow{animation:none}
+/* Fix the Painting: each sentence slides in (app/puzzle-locks.tsx); under reduced motion it simply appears. */
+@keyframes sentence-in{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+.sentence-in{animation:sentence-in .32s ease-out both}
+@media (prefers-reduced-motion:reduce){.sentence-in{animation:none}}
+html[data-motion="reduced"] .sentence-in{animation:none}
