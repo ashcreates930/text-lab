@@ -137,7 +137,8 @@ export function TimeoutMoment({text,onGo}:{text:string;onGo:()=>void}){
 // The door (app/lock-art.tsx DoorScene): its padlock opens once the chamber is cleared, then the door swings open.
 // The inner door between the chambers. stop: the class stops here today (progress is saved).
 const InTimeBadge=({ok}:{ok:boolean|null|undefined})=>ok===true?<p className="inline-flex items-center gap-1.5 rounded-full bg-gold px-3 py-1 font-display text-[15px] font-bold text-on-gold"><Timer size={16} aria-hidden/>Escaped in time</p>:null;
-export function InnerDoor({room,stop,onNext,onMap,clockNote=null,inTimeBadge=null}:{room:Room;stop:boolean;onNext:()=>void;onMap:()=>void;clockNote?:string|null;inTimeBadge?:boolean|null}){
+// mission: chamber 2's mission line, for a student going straight on (one who stops here sees it on the recap next time).
+export function InnerDoor({room,stop,onNext,onMap,clockNote=null,inTimeBadge=null,mission=null}:{room:Room;stop:boolean;onNext:()=>void;onMap:()=>void;clockNote?:string|null;inTimeBadge?:boolean|null;mission?:string|null}){
  return <section aria-labelledby="ex-h" className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 pt-2 text-center">
   <DoNow text={stop?DO_NOW.stopped:DO_NOW.inner}/>
   <DoorScene open behind="Chamber 2" label="The inner door: its padlock opens and the door swings open"/>
@@ -146,6 +147,7 @@ export function InnerDoor({room,stop,onNext,onMap,clockNote=null,inTimeBadge=nul
   <h1 id="ex-h" className="text-[32px] leading-tight outline-none">{inTimeBadge===false?"Chamber 1 finished":"Chamber 1 escaped"}</h1>
   {clockNote&&<p className="text-[16px] font-bold text-muted">{clockNote}</p>}
   <p role="status" className="text-[17px] font-bold">{stop?"The inner door is open, and your room is saved. Next time, you start in Chamber 2 with everything in your Case File.":"The inner door is open. Chamber 2 is ahead."}</p>
+  {!stop&&mission&&<p className="text-[17px] font-bold leading-snug text-highlight">{mission}</p>}
   {stop?<button type="button" onClick={onMap} className="case-primary min-h-[56px] w-full justify-center text-[18px]"><MapIcon size={18} aria-hidden/>Back to the map</button>
    :<button type="button" onClick={onNext} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Into Chamber 2 <ArrowRight size={18} aria-hidden/></button>}
  </section>;
