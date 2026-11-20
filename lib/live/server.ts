@@ -1,5 +1,6 @@
 // Server side of live class mode: tokens, loading a session, the host's and players' views, and every action. All
 // writes come through here, so role gating, moderation and the judge cap are enforced in one place.
+import { chestCoinsOf, liveChest } from "./race.ts";
 import { questionFirst } from "../engagement.ts";
 import { recorderOf, rolesFor as escapeRoles, sharedLockOpen } from "./squad-escape.ts";
 import { cluesFor } from "../clues.ts";
@@ -442,8 +443,11 @@ export function playerView(st: LiveState, playerId: string) {
         return { tier, free, list: cluesFor(real.question, chunkTokens(c.lines), round.step).map((x) => (x.tier <= tier ? x : { ...x, text: "", lines: [], strike: [] })) }; })() : null;
       const myEscape = squadEscapeView(st, round, me.id, squadIds, i);
       // Question before the reading: for hook locks, this player's own question prompt while they read.
+      // The chest after a first-try proof (server-decided), and the coins from chests opened so far in this game.
+      const chest = ["reveal", "lightning", "board", "burst", "countdown"].includes(round.beat) && mine.correct ? liveChest(st.responses, i, me.id, round.step, true) : null;
+      const chestCoins = chestCoinsOf(st.responses, me.id);
       const hookPrompt = round.beat === "read" && mineAsked && questionFirst(mineAsked) ? mineAsked.prompt : null;
-      const extra = { hookPrompt, myEscape, myClues, skill, revealKey, version: asked.version, myQuestion: ["race", "reveal", "lightning", "board", "countdown"].includes(round.beat) ? asked.question : null, lightningAnswer: mine.lightning && light ? light.answer : null, burstFound: round.beat === "burst" ? burstFound(st.responses, i, squadIds) : [] };
+      const extra = { chest, chestCoins, hookPrompt, myEscape, myClues, skill, revealKey, version: asked.version, myQuestion: ["race", "reveal", "lightning", "board", "countdown"].includes(round.beat) ? asked.question : null, lightningAnswer: mine.lightning && light ? light.answer : null, burstFound: round.beat === "burst" ? burstFound(st.responses, i, squadIds) : [] };
       return { ...extra, mine, total: raceTotals(st.responses, i, st.players, counted).get(me.id) ?? 0, place: meRow ? { rank: meRow.rank, of: board.rows.length, move: meRow.move, gained: meRow.gained, row: meRow } : null, scale: timeScale(setting), extraTime: setting !== "1",
         // The map: this player's stops so far (stars: 3 proved with the Gist right or not asked, 2 proved, 0 not yet), once each is revealed.
         path: Array.from({ length: round.beat === "reveal" || round.beat === "lightning" || round.beat === "board" || round.beat === "burst" || round.beat === "countdown" ? round.step + 1 : round.step }, (_, k) => { const c = playerChunk(st.responses, i, k, me.id); return c.correct ? (c.gistRight !== false ? 3 : 2) : 0; }),
@@ -708,7 +712,7 @@ export async function playerAct(store: LiveStore, st: LiveState, playerId: strin
     return null;
   }
   if (s.status !== "round") return "Wait for the next round.";
-  if (act.kind === "race_ready" || act.kind === "race_clue" || act.kind === "squad_lock" || act.kind === "race_gist" || act.kind === "race_question" || act.kind === "race_tap" || act.kind === "race_lightning" || act.kind === "race_burst" || act.kind === "race_unknown" || act.kind === "interview_vote" || act.kind === "liar_lock" || act.kind === "race_recover" || act.kind === "race_puzzle") {
+  if (act.kind === "race_ready" || act.kind === "race_clue" || act.kind === "squad_lock" || act.kind === "race_gist" || act.kind === "race_question" || act.kind === "race_tap" || act.kind === "race_lightning" || act.kind === "race_burst" || act.kind === "race_unknown" || act.kind === "interview_vote" || act.kind === "liar_lock" || act.kind === "race_recover" || act.kind === "race_puzzle" || act.kind === "race_chest") {
     if (round?.type !== "race") return "This isn't a Proof Race.";
     if (s.paused) return "The round is paused.";
     // The burst counts a find once per squad (or per player without squads).

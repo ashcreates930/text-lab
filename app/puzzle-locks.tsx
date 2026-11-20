@@ -101,8 +101,9 @@ function PaintingLock({p,lineOf,readLines,readChunks,onDone,submit,sound,onOpene
  const [marks,setMarks]=useState<string[]>([]),[proofs,setProofs]=useState<Record<string,LineRef|null>>({}),[found,setFound]=useState<string[]>([]);
  const [at,setAt]=useState(0),[mark,setMark]=useState<string|null>(null),[line,setLine]=useState<LineRef|null>(null),[result,setResult]=useState<null|{ok:boolean;reveal:string|null}>(null),[fixed,setFixed]=useState(false);
  const done=at>=p.wrong,cur=p.details.find(x=>x.id===mark);
- // Only the sentences of the chunk(s) the picked detail draws on, not every sentence read so far.
- const groupOf=(refs:LineRef[])=>{if(!readChunks?.length)return null;const keys=new Set(refs.map(refKey));const g=readChunks.filter(ch=>ch.some(r=>keys.has(refKey(r)))).flat().map(refKey);return g.length?new Set(g):null};
+ // After a pick: every sentence read so far from the paragraph(s) the detail draws on (a chunk can be just two
+ // sentences, too few to read for; the teacher asked for more than two). Not every sentence read so far.
+ const groupOf=(refs:LineRef[])=>{const paras=new Set(refs.map(r=>r.p));const g=lines.filter(l=>paras.has(l.r.p)).map(l=>refKey(l.r));return g.length?new Set(g):null};
  const near=cur?groupOf(cur.lines):null,detailLines=near?lines.filter(l=>near.has(refKey(l.r))):lines;
  function check(){if(!mark||!line)return;const d=p.details.find(x=>x.id===mark)!,ok=!!d.wrong&&d.lines.some(l=>refKey(l)===refKey(line));
   setMarks(m=>[...m,mark]);setProofs(x=>({...x,[mark]:line}));

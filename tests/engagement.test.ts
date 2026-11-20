@@ -109,6 +109,7 @@ test("Fix the Painting: brass rings, no number bubbles; after a pick, only the l
   const pz = src("app/puzzle-locks.tsx");
   assert.match(pz, /\{!painting&&<span aria-hidden className=\{`absolute -right-2 -top-2/);
   assert.match(pz, /painting\?"border-gold bg-deep text-ink"/);
+  assert.match(pz, /const paras=new Set\(refs\.map\(r=>r\.p\)\)/, "the whole paragraph the detail comes from");
   assert.match(pz, /const near=cur\?groupOf\(cur\.lines\):null,detailLines=near\?lines\.filter\(l=>near\.has\(refKey\(l\.r\)\)\):lines;/);
   assert.match(src("lib/live/server.ts"), /readChunks: p\.readChunks/);
 });
@@ -118,4 +119,51 @@ test("navigation: the next stop is bigger with an arrow on a first visit (map an
   assert.match(src("app/room-scene-view.tsx"), /state==="next"\?"h-16 w-16":"h-12 w-12"/);
   assert.match(src("app/expedition-race.tsx"), /function toExit\(\)\{if\(!nextRoom&&world\.engagement&&!essential\)go\("essential"\)/);
   assert.match(src("app/story-opening.tsx"), /ok=words>=6&&lines\.length>=1/, "an answer and at least one Case File line");
+});
+
+test("plain words: tested words kept exactly as Irving wrote them, marked; no correct answer's key words; no ready-made written answer", async () => {
+  const { plainProblems } = await import("../lib/engagement.ts");
+  assert.deepEqual(plainProblems(world, ps), []);
+  const P = world.engagement!.plain_words;
+  assert.match(P.p004, /\[\[stripling\]\]/); assert.match(P.p004, /\[\[retreat\]\]/); assert.match(P.p005, /\[\[listless\]\]/); assert.match(P.p005, /\[\[drowsy\]\]/);
+  assert.doesNotMatch(P.p003, /promise|not sure|can't be sure/i, "p003 doesn't state the narrator's uncertainty (lock 1)");
+  assert.match(P.p003, /"Be that as it may, I do not vouch for the fact/, "Irving's own sentence, quoted");
+  // The rule catches each kind of giveaway.
+  const para = structuredClone(world); para.engagement!.plain_words.p004 = para.engagement!.plain_words.p004.replace("[[stripling]]", "young boy");
+  assert.match(plainProblems(para, ps).join(), /keep the tested word "stripling"/);
+  const give = structuredClone(world); give.engagement!.plain_words.p003 += " He can't promise it's true.";
+  assert.match(plainProblems(give, ps).join(), /gives away the answer "Not sure/);
+  const seal = structuredClone(world); seal.engagement!.plain_words.p008 = "Anyone who settles there starts to dream and imagine things.";
+  assert.match(plainProblems(seal, ps).join(), /ready-made answer to the written seal/);
+  // On screen the marked word is highlighted, as Irving wrote it.
+  assert.match(src("app/read-aloud.tsx"), /title="Irving's own word">\{m\[1\]\}<\/b>/);
+});
+
+test("Plain words open is recorded with the answer (solo and live) and shown in Evidence", () => {
+  const race = src("app/expedition-race.tsx");
+  assert.match(race, /next\[k\]=\{plain:plainAt===k,/); assert.match(race, /<PlainWordsState\.Provider value=\{\{open:plainAt===k,/);
+  assert.match(src("lib/case-notes.ts"), /plainWords: !!r\?\.plain/);
+  assert.match(src("app/api/student/expeditions/route.ts"), /plainWords: z\.boolean\(\)\.optional\(\)/);
+  assert.match(src("app/live/race-live.tsx"), /act\("race_tap",\{answer:a,plain:plainAt===round\.step\}\)/);
+  assert.match(src("lib/live/race.ts"), /plain: payload\.plain === true/);
+  assert.match(src("app/expedition-evidence.tsx"), /Plain words open when they answered/); assert.match(src("app/expedition-evidence.tsx"), /Answered with Plain words open/);
+});
+
+test("live chests: the server decides the reward, only after a first-try proof, opened once", async () => {
+  const { liveChest, chestCoinsOf } = await import("../lib/live/race.ts");
+  const none = liveChest([], 0, "p1", 2, false); assert.equal(none, null, "never after a miss");
+  let found = null as null | ReturnType<typeof liveChest>, pid = "";
+  for (let i = 0; i < 40 && !found; i++) { found = liveChest([], 0, `player-${i}`, 1, true); pid = `player-${i}`; }
+  assert.ok(found && !found.opened);
+  const opened = [{ id: "r", roundIndex: 0, squadId: null, playerId: pid, role: "player", kind: "race_chest", payload: { step: 1, coins: found!.chest.coins, piece: found!.chest.piece }, flagged: false, createdAt: "" }];
+  assert.equal(liveChest(opened as never, 0, pid, 1, true)!.opened, true);
+  assert.equal(chestCoinsOf(opened as never, pid), found!.chest.coins);
+  assert.match(src("lib/live/race.ts"), /if \(kind === "race_chest"\) \{[\s\S]{0,400}const c = liveChest\(responses, roundIndex, playerId, round\.step, !!me\.correct\);/, "the phone's claim is never trusted");
+  assert.match(src("app/api/live/sessions/[id]/act/route.ts"), /"race_chest"/);
+});
+
+test("the live board lights only the paragraph until every student has opened their lock", () => {
+  assert.match(src("lib/live/race.ts"), /const stillFinding = players\.filter\(\(p\) => !playerChunk\(responses, roundIndex, chunk\.index, p\.id\)\.opened\)\.length;/);
+  assert.match(src("app/live/race-live.tsx"), /\(round\.reveal\.stillFinding\?\?0\)>0\?<>/);
+  assert.match(src("app/live/race-live.tsx"), /outline=\{boardPara\(round\.chunk\.lines,tokens,round\.reveal\.lines\)\} large\/>/);
 });

@@ -80,6 +80,7 @@ export function engagementProblems(world: WorldPack, passages: SourcePassage[]):
     // Every paragraph that holds a proof has a topic, so the pointer after a miss names it.
     for (const exp of world.expeditions ?? []) for (const c of exp.chunks) for (const seg of c.segments) if (!skip.has(seg.p) && !e.passage_topics?.[seg.p]) { out.push(`${at}/${exp.id}: paragraph ${seg.p} has no topic`); break; }
   }
+  out.push(...plainProblems(world, passages));
   // Every question has a DOK level.
   for (const exp of world.expeditions ?? []) for (const c of exp.chunks) for (const q of [c.question, ...(c.bank ?? [])]) if (!dokOf(q)) out.push(`${at}/${exp.id}/${c.id}: no DOK level`);
   return [...new Set(out)];
@@ -90,4 +91,50 @@ export function proofParagraph(lines: { pid: string }[], shownLines: number[]) {
   const pid = shownLines.length ? lines[shownLines[0]]?.pid ?? null : null;
   const paraLines = pid ? lines.flatMap((l, i) => (l.pid === pid ? [i] : [])) : [];
   return { pid, paraLines, paraNumber: pid ? Number(pid.slice(1)) : null };
+}
+
+// ---------- Plain words must not answer the questions ----------
+// A plain version (a modern retelling of one paragraph) may help a student understand, never answer. For every
+// question on a chunk that covers the paragraph (its bank and versions too):
+//  - a tested word (the question's focus, e.g. "stripling", "listless") stays exactly as Irving wrote it, marked
+//    [[like this]] so the screen can highlight it, and is never paraphrased;
+//  - the plain version holds none of a correct answer's key words. Key words are the answer's content words (four
+//    letters or more, compared by their first five letters), leaving out any that already appear in Irving's own
+//    paragraph (the student sees those anyway). Any one is a giveaway. Irving's own words, quoted, are fine.
+//  - for a written seal, the plain version doesn't hold a word from every one of its key-idea groups (that would be
+//    a ready-made answer to copy), outside quoted Irving.
+const STOP = new Set("about after again also because been before being both does doesn didn don't each even from have having here into isn't just like make makes many more most much only other over same seem seems should some such than that their them then there these they this those very were what when where which while will with would your".split(" "));
+const stem = (w: string) => w.toLowerCase().replace(/[^a-z]/g, "").slice(0, 5);
+const contentStems = (t: string) => [...new Set(t.split(/[^A-Za-z']+/).filter((w) => w.length >= 4 && !STOP.has(w.toLowerCase())).map(stem).filter((s) => s.length >= 4))];
+export const PLAIN_MARK = /\[\[([^\]]+)\]\]/g;
+export function plainShown(text: string) { return text.replace(PLAIN_MARK, "$1"); }
+export function plainProblems(world: WorldPack, passages: SourcePassage[]): string[] {
+  const out: string[] = [], plain = world.engagement?.plain_words ?? {};
+  const paraText = (p: string) => (passages.find((x) => x.id === p)?.text ?? "").replace(/\s+/g, " ");
+  for (const exp of world.expeditions ?? []) for (const c of exp.chunks) {
+    const pids = [...new Set(c.segments.map((s) => s.p))].filter((p) => plain[p]);
+    if (!pids.length) continue;
+    const qs = [c.question, ...(c.bank ?? [])].flatMap((q) => [q, ...(q.versions ? [q.versions.easier, q.versions.harder].filter(Boolean) : [])]) as ExpQuestion[];
+    for (const q of qs) for (const p of pids) {
+      const original = paraText(p), text = plain[p], at = `${world.id}/${exp.id}/${c.id} plain ${p}`;
+      // The tested word, exactly as Irving wrote it, marked.
+      if (q.focus) {
+        const m = original.match(new RegExp(`\\b${q.focus.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i"));
+        if (m) { const marked = [...text.matchAll(PLAIN_MARK)].map((x) => x[1]); if (!marked.includes(m[0])) out.push(`${at}: keep the tested word "${m[0]}" exactly as Irving wrote it, marked [[${m[0]}]]`); }
+      }
+      // No correct answer's key words.
+      const own = new Set(contentStems(original)), mine = new Set(contentStems(plainShown(text).replace(/"[^"]*"/g, " ")));
+      for (const ch of [...(q.choices ?? []), ...(q.choices2?.options ?? [])].filter((o) => o.best)) {
+        const keys = contentStems(ch.text).filter((s) => !own.has(s) && (!q.focus || s !== stem(q.focus)));
+        const hit = keys.filter((s) => mine.has(s));
+        if (hit.length) out.push(`${at}: gives away the answer "${ch.text}" (${hit.join(", ")})`);
+      }
+      if (q.written) {
+        const words = plainShown(text).replace(/"[^"]*"/g, " ").toLowerCase().split(/[^a-z]+/);
+        const groups = q.written.key_ideas.map((g) => g.some((k) => words.some((w) => w.startsWith(k.toLowerCase()))));
+        if (groups.length && groups.every(Boolean)) out.push(`${at}: holds a ready-made answer to the written seal (${q.prompt.slice(0, 50)}...)`);
+      }
+    }
+  }
+  return [...new Set(out)];
 }

@@ -118,6 +118,8 @@ export function skillMap(attempts: ExpeditionAttempt[], grade: Grade, firsts = f
     gist: { right: gists.filter((n) => n.gistRight).length, total: gists.length, pct: pct(gists.filter((n) => n.gistRight).length, gists.length) },
     refresher: { fixed: notes.filter((n) => n.fixed === true).length, tried: notes.filter((n) => n.fixed !== null).length },
     unknownWords: [...new Set(notes.flatMap((n) => n.unknownWords.map((w) => w.toLowerCase())))].sort(),
+    // Answers given with Plain words open (lib/engagement.ts), and how many of those were proved on the first try.
+    plain: { answers: notes.filter((n) => n.plainWords).length, right: notes.filter((n) => n.plainWords && provedFirstTry(n)).length, of: notes.length },
   };
 }
 // The class view for one expedition: who finished it (assignments), and each student's first attempt in brief.

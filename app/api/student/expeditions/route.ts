@@ -10,7 +10,7 @@ const text = (n: number) => z.string().max(n);
 const Note = z.object({
   chunk: z.number().int().min(1).max(200), type: text(60), question: text(600), answer: text(1200), proof: text(4000), rightFirstTry: z.boolean(), fixed: z.boolean().nullable(),
   gistPick: text(600).nullable(), gistRight: z.boolean(), typedQuestion: text(300).nullable(), unknownWords: z.array(text(40)).max(40), correctProof: text(4000), standards: z.array(text(20)).max(6), note: text(2000),
-  version: z.enum(["easier", "standard", "harder"]).optional(), dok: z.number().int().min(1).max(4).optional(),
+  version: z.enum(["easier", "standard", "harder"]).optional(), dok: z.number().int().min(1).max(4).optional(), plainWords: z.boolean().optional(),
   // The question format (mastery's two-format rule), the bank pick, and the clue tier asked for (lib/clues.ts).
   format: text(30).optional(), bank: z.number().int().min(0).max(5).optional(), clue: z.number().int().min(0).max(3).optional(),
 });

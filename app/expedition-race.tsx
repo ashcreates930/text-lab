@@ -4,6 +4,7 @@
 // result moment, the leaderboard (with Pause) and a countdown ring to the next chunk, all automatic. The HUD (score,
 // streak, coins, sound, chunk count, seconds left) sits on every race screen. Extended time multiplies every timer and
 // every automatic screen. Screen readers hear the result and the new rank before anything moves.
+import {PlainWordsState,usePlainWords} from "./read-aloud";
 import {PassageTools,PlainWords} from "./read-aloud";
 import {EssentialAnswerScreen,ReadFor,type EssentialAnswer} from "./story-opening";
 import {Ambience,ChestCard,LanternFog,LanternPill,addKit,kitOwned} from "./atmosphere";
@@ -49,7 +50,7 @@ import {PuzzleLock,type PuzzleOutcome} from "./puzzle-locks";
 
 type Beat="practice"|"essential"|"scene"|"witness"|"puzzle"|"door"|"recover"|"inner"|"recap"|"escape"|"interview"|"read"|"gist"|"question"|"result"|"lightning"|"board"|"burst"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"skills"|"notes";
 // points include the boss or surprise double; bonus: the streak bonus; version: the question version this student saw.
-export type ChunkRecord={gist:number|null;answer:Answer;correct:boolean;points:number;late:boolean;coins:number;unknown:string[];discovered:boolean;bonus:number;mult:number;version:Version;bank:number;judged?:{strength:Strength;note:string;next:string}|null;recovered?:boolean;clue?:ClueTier};
+export type ChunkRecord={plain?:boolean;gist:number|null;answer:Answer;correct:boolean;points:number;late:boolean;coins:number;unknown:string[];discovered:boolean;bonus:number;mult:number;version:Version;bank:number;judged?:{strength:Strength;note:string;next:string}|null;recovered?:boolean;clue?:ClueTier};
 // A lock is open once proven on the first try, or after a miss once the student tapped the shown proof (lib/escape-room.ts).
 const isOpen=(r:ChunkRecord|undefined)=>!!r&&(r.correct||!!r.recovered);
 // The result after an answer waits for Next (student testing, 2026-11-15: the 3-second hold felt rushed); the board and
@@ -105,7 +106,7 @@ export type ChunkView={lines:{pid:string;index:number;text:string}[];discovery:{
 export function ChunkText({chunk,world,tokens,highlighter,marking,unknown,onUnknown,onDiscover,found,shown=[],shownStyle="right",focus=[],large=false,explore=false,pick,wordPick,outline=[]}:{outline?:number[];wordPick?:{selected:number[];onToggle:(i:number)=>void};chunk:ChunkView;world:WorldPack;tokens:Token[];highlighter?:boolean;marking?:boolean;unknown?:Set<number>;onUnknown?:(i:number)=>void;onDiscover?:()=>void;found?:boolean;shown?:number[];shownStyle?:"right"|"missed";focus?:number[];large?:boolean;explore?:boolean;pick?:{selected:string|null;onPick:(text:string|null)=>void}}){
  const [open,setOpen]=useState<string|null>(null),[closer,setCloser]=useState(false),[cursor,setCursor]=useState(0);
  // Read to me lights the sentence being read; Plain words opens a modern version below (app/read-aloud.tsx).
- const [speaking,setSpeaking]=useState<number|null>(null),[plainOpen,setPlainOpen]=useState(false);
+ const [speaking,setSpeaking]=useState<number|null>(null),plainState=usePlainWords(),plainOpen=plainState.open;
  // Outside sentence picking, outlined sentences (a hint after a miss) get a soft wash so they still stand out.
  const lit=(line:number)=>(!pick&&outline.includes(line)?" rounded bg-gold-soft":"")+(speaking===line?" rounded bg-highlight/25":"");
  const tapHint=pick?"Tap the sentence that proves it. Tap it again to clear it.":wordPick?"Tap the clue words that show the meaning. Tap a word again to clear it.":null;
@@ -127,7 +128,7 @@ export function ChunkText({chunk,world,tokens,highlighter,marking,unknown,onUnkn
   <div className="mb-2 flex items-center justify-between gap-2"><p className="text-[12px] font-extrabold text-muted">¶{Number(chunk.lines[0]?.pid.slice(1))}{chunk.lines.at(-1)?.pid!==chunk.lines[0]?.pid?` to ${Number(chunk.lines.at(-1)!.pid.slice(1))}`:""}</p>
    {shown.length>0&&<p className={`rounded-full px-2.5 py-0.5 text-[12px] font-extrabold ${shownStyle==="right"?"bg-line-right text-reading-ink":"border-2 border-line-wrong-edge text-reading-ink"}`}>{shownStyle==="right"?"The proof":"Here's the proof"}</p>}
    {canExplore&&<button type="button" aria-expanded={closer} onClick={()=>setCloser(c=>!c)} className="min-h-11 rounded-full bg-deep px-3 text-[14px] font-bold">{closer?"Done looking":"Look closer"}</button>}</div>
-  {!large&&<div className="mb-2"><PassageTools lines={chunk.lines} world={world} onSpeaking={setSpeaking} plainOpen={plainOpen} onPlain={()=>setPlainOpen(o=>!o)}/></div>}
+  {!large&&<div className="mb-2"><PassageTools lines={chunk.lines} world={world} onSpeaking={setSpeaking} plainOpen={plainOpen} onPlain={plainState.toggle}/></div>}
   <p className={`font-serif text-reading-ink ${large?"text-[clamp(22px,2.2vw,34px)] leading-[1.6]":"text-[19px] leading-[1.75]"}`}>{runs.map(run=>{const inProof=run.shown;const words=run.tokens.map(t=>{const v=pick||wordPick?undefined:vocab.get(t.i);const isUnknown=unknown?.has(t.i),isShown=showSet.has(t.i),isFocus=focusSet.has(t.i),isCursor=closer&&cursor===t.i,isPicked=picked.has(t.i);
    const cls=isShown?""
     :isPicked?"rounded bg-line-picked shadow-[0_0_0_2px_var(--color-primary)]"
@@ -352,6 +353,8 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const [beat,setBeat]=useState<Beat>(()=>resumeBeat?(resumeBeat.kind==="puzzle"||innerLock?"puzzle":resumeBeat.kind==="recap"?"recap":resumeBeat.kind==="inner_door"?"inner":resumeBeat.kind==="exit"?"liar":"door"):!practiceDone()?"practice":"door"),[startedAt,setStartedAt]=useState(Date.now());
  // The lock just opened quietly (after a miss, with the shown proof): which lock, while its moment holds.
  const [quietAt,setQuietAt]=useState<number|null>(null);
+ // Plain words open for this lock (null: closed). Reset as each lock starts.
+ const [plainAt,setPlainAt]=useState<number|null>(null);
  // The last room's exit door asks the story's essential question first (app/story-opening.tsx).
  const [essential,setEssential]=useState<EssentialAnswer|null>(null);
  // Chests opened after first-try proofs, by lock (lib/engagement.ts): saved with the room so a resume can't reopen one.
@@ -442,7 +445,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   // A first-time hint is done once the student has done it right.
   markHintDone("lock");if(res.correct){const ff=formatOf(q!);markHintDone(ff==="dnd"?"dnd":ff==="multi"?"multi":ff==="written"?"written":q!.clues?.length?"clues":"proof")}
   const g=ghostPlay(world.id+expeditionId,k,limitMs(TYPE_INFO[q!.type].seconds,qSetting)),mult=arc?multiplierAt(arc,k):1;
-  const next=[...records];next[k]={gist,answer:a,correct:res.correct,points:res.points>0?Math.max(0,res.points*mult-(clueCost(clueTier)-(freeHint&&clueTier>=1?CLUE_COST[1]:0))):0,clue:clueTier,late:res.late,coins:found?DISCOVERY_COINS:0,unknown:[...unknown].map(i=>tokens[i]?.text.replace(/[^\p{L}'-]/gu,"")).filter(Boolean),discovered:found,
+  const next=[...records];next[k]={plain:plainAt===k,gist,answer:a,correct:res.correct,points:res.points>0?Math.max(0,res.points*mult-(clueCost(clueTier)-(freeHint&&clueTier>=1?CLUE_COST[1]:0))):0,clue:clueTier,late:res.late,coins:found?DISCOVERY_COINS:0,unknown:[...unknown].map(i=>tokens[i]?.text.replace(/[^\p{L}'-]/gu,"")).filter(Boolean),discovered:found,
    bonus:streakBonus(streak,res.correct?streak+1:0),mult,version:asked!.version,bank:bankAt(k),judged};
   setRecords(next);setGhost(x=>{const n=[...x];n[k]=g.points*mult+g.gist;return n});if(!res.correct)cue(sound,"reveal");go(res.correct?"result":"recover");
  }
@@ -467,7 +470,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   return()=>clearInterval(t)},[beat,paused,k]);// eslint-disable-line react-hooks/exhaustive-deps
 
  // After the race: the results for Case Notes, and the Refresher (misses only, up to 4).
- const results:ChunkResult[]=records.map((r,i)=>({index:i,answer:r?.answer??null,correct:!!r?.correct,late:!!r?.late,gist:r?.gist??null,typed:null,unknown:r?.unknown??[],version:r?.version??"standard",bank:r?.bank??0,clue:r?.clue??0}));
+ const results:ChunkResult[]=records.map((r,i)=>({index:i,plain:!!r?.plain,answer:r?.answer??null,correct:!!r?.correct,late:!!r?.late,gist:r?.gist??null,typed:null,unknown:r?.unknown??[],version:r?.version??"standard",bank:r?.bank??0,clue:r?.clue??0}));
  const askedChunks=chunks.map((x,i)=>records[i]?withAsked(x,{bank:records[i].bank,version:records[i].version}):x);
  const refItems=refresherItems(askedChunks,results,!!liarResult&&!liarResult.solved);
  const callAll=joinedPassages(chunks);
@@ -520,7 +523,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  // The lines a proof step taps: this chunk's, or for Make the Call every chunk of the expedition so far.
  const callPassages=joinedPassages(chunks.slice(0,k+1));
 
- return <div className="race-root case-ui mx-auto flex max-w-6xl flex-col gap-3 px-4 pb-16 pt-3">
+ return <PlainWordsState.Provider value={{open:plainAt===k,set:o=>setPlainAt(o?k:null)}}><div className="race-root case-ui mx-auto flex max-w-6xl flex-col gap-3 px-4 pb-16 pt-3">
   {!["refresher","notes","interview","practice","skills","door","inner","recap","escape"].includes(beat)&&hud}
   {beat==="practice"&&<PracticeRound world={world} passages={passages} onDone={()=>{markPracticeDone();go("door")}}/>}
   {beat==="door"&&room&&<RoomDoor room={room} resumed={!!restored} vocab={world.rooms?.find(r=>r.expedition===expeditionId)?.vocab??[]} lineOf={r=>lineAt(passages,r)} onOpen={()=>{if(iv&&!inRoom(iv)&&!(restored&&cards.length))go("interview");else toLock(k)}}/>}
@@ -616,7 +619,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   {beat==="skills"&&<SkillReport skills={report} reflection={reflection} onReflect={setReflection} onDone={()=>go("notes")}/>}
   {beat==="notes"&&<CaseNotesView grade={grade} reflection={reflection.trim()||null} onDone={()=>{save(true);onExit?.()}} interview={iv?interviewNote(world,iv,liar,cards,liarAnswer,refItems.findIndex(x=>x.kind==="liar")>=0?!!fixed[refItems.findIndex(x=>x.kind==="liar")]:null):null} student="You" story={world.title} expedition={exp.title} notes={caseNotes(askedChunks,results,{items:refItems,fixed},notesText)} award={refresherAward(refItems,fixed)} onNote={(i,t)=>setNotesText(n=>({...n,[i]:t}))}
    bonus={<p className="no-print rounded-card bg-violet-soft p-4 text-[16px] font-bold">Bonus Round: in class, your squad compares Case Notes and agrees on the best proof for every question you answered differently.</p>} />}
- </div>;
+ </div></PlainWordsState.Provider>;
 }
 
 // Solo: a per-browser key, so a student meets the same liar every time; the cards they asked are saved with it.

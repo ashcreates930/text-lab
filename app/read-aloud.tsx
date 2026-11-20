@@ -4,7 +4,11 @@
 // recordings are approved and made (plain standard English, no accent), it uses the browser's own voice.
 // Plain words: a modern-language version of each paragraph, for understanding only; answers are still proved with
 // the story's own line.
-import {useEffect,useRef,useState} from "react";
+import {createContext,useContext,useEffect,useRef,useState} from "react";
+// Plain words, open or not, for the lock in hand: kept by the room (solo) or the phone (live) so the reading and the
+// question screens agree, and the answer records whether it was open (the teacher sees it in Evidence).
+export const PlainWordsState=createContext<{open:boolean;set:(o:boolean)=>void}|null>(null);
+export function usePlainWords(){const ctx=useContext(PlainWordsState),[local,setLocal]=useState(false);return ctx?{open:ctx.open,toggle:()=>ctx.set(!ctx.open)}:{open:local,toggle:()=>setLocal(o=>!o)}}
 import {BookOpenText,Square,Volume2} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 
@@ -44,13 +48,16 @@ export function PassageTools({lines,world,onSpeaking,plainOpen,onPlain}:{lines:{
  </div>;
 }
 
+// A tested word stays exactly as Irving wrote it, highlighted (marked [[word]] in the data; lib/engagement.ts).
+function withTested(text:string){return text.split(/(\[\[[^\]]+\]\])/).map((part,i)=>{const m=part.match(/^\[\[([^\]]+)\]\]$/);return m?<b key={i} className="rounded bg-highlight/20 px-0.5 font-serif font-bold underline decoration-[3px] underline-offset-4" title="Irving's own word">{m[1]}</b>:<span key={i}>{part}</span>})}
+
 // The plain-language version of the paragraphs in this passage.
 export function PlainWords({lines,world}:{lines:{pid:string}[];world:WorldPack}){
  const pids=[...new Set(lines.map(l=>l.pid))].filter(p=>world.engagement?.plain_words?.[p]);
  if(!pids.length)return null;
  return <div role="region" aria-label="Plain words" className="mt-3 rounded-row border-2 border-dashed border-edge bg-panel-2 p-3 text-ink">
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Plain words · to help you understand</p>
-  {pids.map(p=><p key={p} className="mt-1.5 text-[16px] leading-relaxed"><span className="mr-1 text-[12px] font-extrabold text-muted">¶{Number(p.slice(1))}</span>{world.engagement!.plain_words[p]}</p>)}
+  {pids.map(p=><p key={p} className="mt-1.5 text-[16px] leading-relaxed"><span className="mr-1 text-[12px] font-extrabold text-muted">¶{Number(p.slice(1))}</span>{withTested(world.engagement!.plain_words[p])}</p>)}
   <p className="mt-2 text-[13px] font-bold text-muted">Prove your answers with the story's own words above, not these.</p>
  </div>;
 }
