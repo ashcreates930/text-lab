@@ -58,6 +58,18 @@ test("the briefing at the door: a scenario, the room's concepts, the vocabulary,
   assert.match(src("app/expedition-race.tsx"), /<RoomDoor timer=\{budget>0\} briefing=/);
 });
 
+test("the mission line (approved 2026-11-20) ends the briefing and counts chamber 1's locks exactly", async () => {
+  const { engagementProblems } = await import("../lib/engagement.ts");
+  const { parseSourcePassages } = await import("../lib/source-passages.ts");
+  const ps = parseSourcePassages(readFileSync("public/worlds/sleepy-hollow/source.md", "utf8"));
+  assert.equal(world.rooms!.find((r) => r.expedition === e1.id)!.briefing!.mission, "Your mission: open 5 locks and the gate before the clock runs out.");
+  assert.deepEqual(engagementProblems(world, ps).filter((p) => /mission/.test(p)), []);
+  const bad = structuredClone(world); bad.rooms!.find((r) => r.expedition === e1.id)!.briefing!.mission = "Your mission: open 4 locks and the gate before the clock runs out.";
+  assert.match(engagementProblems(bad, ps).join(), /briefing mission: it must say "open 5 locks"/);
+  // Shown after the scenario at the start of the room; not when a student comes back mid-room.
+  assert.match(src("app/room-ui.tsx"), /\{briefing\.mission&&!resumed&&<p/);
+});
+
 test("resume keeps each chamber's time; the attempt saves each chamber's time and result for the teacher", () => {
   const blob = { v: 1, progress: { opened: [0, 1, 2, 3, 4], puzzles: [], innerDoor: true, exit: false }, records: [0, 1, 2, 3, 4].map(() => ({ correct: true })), ghost: [], cards: [], lightning: [], burst: 0, clock: [412_000, 0] };
   assert.deepEqual(parseResume(blob, room)!.clock, [412_000, 0]);

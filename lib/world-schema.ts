@@ -101,8 +101,9 @@ const sceneBonus=z.object({id:z.string(),label:z.string().min(1),alt:z.string().
 const roomScene=z.object({chamber:z.union([z.literal(1),z.literal(2)]),art:z.string().min(1),alt:z.string().min(1),items:z.array(sceneItem).min(1),bonus:z.array(sceneBonus).default([]),
  witnesses:z.array(z.object({character:z.string(),...spotXY})).default([]),puzzles:z.array(z.object({id:z.string(),...spotXY})).default([]),door:z.object({label:z.string().min(1),...spotXY})});
 // vocab: five or six hard words shown at the door, each with a plain meaning and the sentence it appears in.
-// briefing: the door's short scenario in the story's voice (no spoilers) and the one or two key concepts it explores.
-const room=z.object({expedition:z.string(),door:z.string().min(1).optional(),briefing:z.object({scenario:z.string().min(1).max(600),concepts:z.array(z.string().min(1)).min(1).max(2)}).optional(),vocab:z.array(z.object({word:z.string().min(1),meaning:z.string().min(1),line:lineRef})).max(8).optional(),clock_reason:z.string().min(1).optional(),puzzles:z.array(roomPuzzle).optional(),scenes:z.array(roomScene).optional()});
+// briefing: the door's short scenario in the story's voice (no spoilers), the one or two key concepts it explores, and
+// the mission line for chamber 1 ("Your mission: open 5 locks and the gate before the clock runs out.").
+const room=z.object({expedition:z.string(),door:z.string().min(1).optional(),briefing:z.object({scenario:z.string().min(1).max(600),concepts:z.array(z.string().min(1)).min(1).max(2),mission:z.string().min(1).max(160).optional()}).optional(),vocab:z.array(z.object({word:z.string().min(1),meaning:z.string().min(1),line:lineRef})).max(8).optional(),clock_reason:z.string().min(1).optional(),puzzles:z.array(roomPuzzle).optional(),scenes:z.array(roomScene).optional()});
 export type LineRef=z.infer<typeof lineRef>;export type RoomPuzzle=z.infer<typeof roomPuzzle>;export type RoomData=z.infer<typeof room>;
 export type Expedition=z.infer<typeof expedition>;export type Interview=z.infer<typeof expedition>["interview"]&{};export type Witness=z.infer<typeof witness>;export type ExpChunk=z.infer<typeof expChunk>;export type ExpQuestion=z.infer<typeof expQuestion>;export type QuestionType=(typeof QUESTION_TYPES)[number];
 
