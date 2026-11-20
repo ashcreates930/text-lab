@@ -23890,6 +23890,56 @@
             "y": 41
           }
         }
+      ],
+      "vocab": [
+        {
+          "word": "propensity",
+          "meaning": "a habit, or a strong pull toward doing something",
+          "line": {
+            "p": "p003",
+            "s": 1
+          }
+        },
+        {
+          "word": "tranquillity",
+          "meaning": "calm and quiet",
+          "line": {
+            "p": "p003",
+            "s": 4
+          }
+        },
+        {
+          "word": "sequestered",
+          "meaning": "hidden away, far from other places",
+          "line": {
+            "p": "p005",
+            "s": 0
+          }
+        },
+        {
+          "word": "reverie",
+          "meaning": "a daydream; being lost in your own thoughts",
+          "line": {
+            "p": "p005",
+            "s": 3
+          }
+        },
+        {
+          "word": "superstitions",
+          "meaning": "beliefs in magic, luck or ghosts that aren't based on reason or proof",
+          "line": {
+            "p": "p005",
+            "s": 5
+          }
+        },
+        {
+          "word": "apparition",
+          "meaning": "a ghost, or a ghostly figure that suddenly appears",
+          "line": {
+            "p": "p006",
+            "s": 0
+          }
+        }
       ]
     },
     {
@@ -26416,5 +26466,112 @@
         "phrase": "vegetating in its sheltered bosom"
       }
     ]
+  },
+  "engagement": {
+    "essential_question": "Why do people believe stories they can't prove?",
+    "key_concepts": [
+      {
+        "name": "Belief",
+        "teaser": "A whole valley swears by its ghost stories. What does it take to make people believe?"
+      },
+      {
+        "name": "Fear",
+        "teaser": "Some fears hide in the dark woods. Others start inside your own head."
+      },
+      {
+        "name": "Rivalry",
+        "teaser": "Two men want the same thing, and only one can have it. How far will each one go?"
+      },
+      {
+        "name": "Appearances",
+        "teaser": "A rich farm, a proud face, a shape on the road at night. Things here aren't always what they seem."
+      }
+    ],
+    "synopsis": "Ichabod Crane, a lanky Connecticut schoolmaster in the Dutch valley of Sleepy Hollow, feeds on local ghost stories, above all the tale of a headless Hessian horseman. He courts Katrina Van Tassel, an heiress, as much for her father's rich farm as for herself, which sets him against Brom Bones, a rough local hero who plays pranks on him. After a party at the Van Tassels', where he seems to be turned down, Ichabod rides home at midnight and is chased by a headless rider who hurls a head at him at the church bridge. Next morning only his horse, a trampled saddle, his hat and a shattered pumpkin are found. Years later he is said to be alive in New York; Brom, now married to Katrina, laughs knowingly whenever the pumpkin is mentioned, while the old wives insist the Horseman took him. A postscript questions whether the tale is true at all.",
+    "passage_topics": {
+      "p003": "Tarry Town and the quiet valley near it",
+      "p004": "the narrator's boyhood hunt in the walnut grove",
+      "p005": "the drowsy spell over Sleepy Hollow and its people",
+      "p006": "the rider on horseback without a head",
+      "p007": "the legend told at country firesides",
+      "p008": "how newcomers catch the valley's dreaminess",
+      "p009": "quiet Dutch valleys that never change",
+      "p010": "Ichabod Crane and how he looks",
+      "p011": "Ichabod's log schoolhouse",
+      "p012": "how Ichabod ran his school",
+      "p013": "Ichabod living with the farmers' families",
+      "p014": "the chores Ichabod did for the families",
+      "p015": "Ichabod as the singing-master",
+      "p016": "Ichabod's place among the country women",
+      "p017": "Ichabod as a carrier of gossip and his witchcraft book",
+      "p018": "Ichabod's taste for the marvellous",
+      "p019": "winter evenings of tales with the old Dutch wives",
+      "p020": "Ichabod's frightening walks home at night",
+      "p021": "the one thing that troubled Ichabod more than ghosts",
+      "p022": "Katrina Van Tassel",
+      "p023": "Ichabod's heart and the Van Tassel farm",
+      "p024": "Ichabod picturing the farm's animals as food",
+      "p025": "Ichabod imagining what he would do with the farm",
+      "p026": "the inside of the Van Tassel farmhouse",
+      "p027": "the trouble Ichabod faced in winning Katrina",
+      "p028": "Brom Van Brunt, known as Brom Bones",
+      "p029": "Brom's courtship of Katrina",
+      "p030": "how Ichabod stood up to his rival",
+      "p031": "Ichabod's quiet way of courting",
+      "p032": "the narrator on how hearts are won",
+      "p033": "Brom's tricks on Ichabod",
+      "p035": "the rush to let school out early",
+      "p036": "Ichabod dressing up and borrowing a horse",
+      "p037": "Ichabod riding Gunpowder",
+      "p038": "the autumn day of the ride",
+      "p039": "the birds of autumn",
+      "p040": "the harvest Ichabod sees on the road",
+      "p041": "the sunset over the Tappan Zee",
+      "p042": "the guests arriving at the Van Tassel home",
+      "p043": "Brom Bones and his horse Daredevil",
+      "p044": "the Dutch country tea-table",
+      "p045": "Ichabod's appetite and his daydream of owning it all",
+      "p046": "old Baltus Van Tassel greeting his guests",
+      "p049": "the old men gathered on the piazza",
+      "p050": "a neighborhood full of war stories",
+      "p051": "the war heroes' boasts",
+      "p052": "the local tales of ghosts",
+      "p053": "why ghost stories spread from Sleepy Hollow",
+      "p054": "the old church and its bridge",
+      "p055": "Brom's own tale of the Horseman",
+      "p056": "the tales that sank into Ichabod's mind",
+      "p057": "the party breaking up",
+      "p058": "Ichabod's lonely ride home",
+      "p059": "the stories crowding Ichabod's memory on the road",
+      "p060": "Ichabod at the great tree",
+      "p061": "the brook and the swamp",
+      "p062": "Gunpowder at the stream",
+      "p063": "the dark figure by the stream",
+      "p064": "the silent rider beside Ichabod",
+      "p065": "the road down toward the church",
+      "p066": "the saddle giving way",
+      "p067": "the race for the church bridge",
+      "p068": "the search the next morning",
+      "p069": "what Ichabod left behind",
+      "p070": "the talk at church that Sunday",
+      "p071": "news of Ichabod years later",
+      "p072": "what the old country wives believe",
+      "p075": "the storyteller at the city meeting",
+      "p076": "the storyteller's reply",
+      "p077": "the storyteller's first point",
+      "p078": "the storyteller's second point",
+      "p079": "the storyteller's third point",
+      "p080": "the puzzled old gentleman",
+      "p081": "the storyteller's last word"
+    },
+    "plain_words": {
+      "p003": "On the east bank of the Hudson River, the river spreads out into a wide stretch the early Dutch sailors called the Tappan Zee. They always took in some of their sails there and prayed to St. Nicholas to keep them safe as they crossed. In a cove on that shore is a small market town. Some people call it Greensburgh, but most call it Tarry Town. People say the town got its name from the good housewives of the country around it, because their husbands always lingered at the village tavern on market days. Then the narrator adds, in his own words: \"Be that as it may, I do not vouch for the fact, but merely advert to it, for the sake of being precise and authentic.\" About two miles from the town is a little valley among high hills, one of the quietest places in the world. A small stream runs through it, just loud enough to make you sleepy. Almost the only other sounds are a quail's whistle or a woodpecker's tapping.",
+      "p004": "The narrator remembers his first squirrel hunt, when he was a [[stripling]], in a grove of tall walnut trees on one side of the valley. He wandered in at noon, when everything was especially still, and the bang of his own gun startled him. It broke the deep, Sunday-like quiet and echoed again and again. He says that if he ever wanted a [[retreat]], to slip away from the busy world and its distractions and dream away what's left of a troubled life, this little valley is the one he would choose.",
+      "p005": "Because of the [[listless]] quiet of the place, and because its people, descendants of the first Dutch settlers, are so unusual, this hidden valley has long been called Sleepy Hollow. Its young men are known all around as the Sleepy Hollow Boys. A [[drowsy]], dreamy feeling seems to hang over the land and fill the air. Some say a German doctor put a spell on the place when it was first settled. Others say an old chief of a Native American tribe, its prophet, held gatherings there before Henry Hudson arrived. Either way, some kind of magic still seems to hold the people's minds, and they go through life as if half asleep. They believe in all kinds of wonders, fall into trances, see visions, and often say they see strange sights and hear music and voices in the air. The area is full of local tales, haunted spots and superstitions. People say shooting stars and meteors flash across this valley more often than over any other part of the country, and that nightmares love to visit it.",
+      "p006": "The most powerful spirit in this haunted place, the leader of them all, is a figure on horseback without a head. Some people say it is the ghost of a Hessian soldier whose head was shot off by a cannonball in an unnamed battle of the Revolutionary War. Country people say they see him rushing through the dark, as fast as the wind. He doesn't stay in the valley; sometimes he rides the nearby roads, especially near a church not far away. Some local historians who have carefully gathered the stories about this ghost claim that the soldier's body was buried in that churchyard. They say the ghost rides out each night to the old battlefield to look for his head, and that he races back through the Hollow because he is behind time and must reach the churchyard before daybreak.",
+      "p007": "That is the main idea of this old legend. It has given people many wild stories to tell in that shadowy place, and at every country fireside the ghost is known as the Headless Horseman of Sleepy Hollow.",
+      "p008": "Strangely, it isn't only the people born in the valley who become this way. In Irving's words, it \"is unconsciously imbibed by every one who resides there for a time.\" However wide awake they were when they came, in a little while they \"inhale the witching influence of the air, and begin to grow imaginative, to dream dreams, and see apparitions.\"",
+      "p009": "The narrator praises this peaceful spot because in quiet little Dutch valleys like it, tucked away here and there in New York State, the people, their manners and their customs remain fixed. Meanwhile, the great flood of new settlers and new ideas keeps changing other parts of this restless country, and it sweeps past these valleys without noticing them. He compares them to small pools of still water beside a fast stream, where a bit of straw or a bubble floats calmly or slowly turns in circles, untouched by the rushing current. Many years have gone by since he walked in Sleepy Hollow, but he wonders whether he would still find the same trees and the same families living their quiet lives there."
+    }
   }
 }

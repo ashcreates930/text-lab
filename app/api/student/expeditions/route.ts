@@ -10,7 +10,7 @@ const text = (n: number) => z.string().max(n);
 const Note = z.object({
   chunk: z.number().int().min(1).max(200), type: text(60), question: text(600), answer: text(1200), proof: text(4000), rightFirstTry: z.boolean(), fixed: z.boolean().nullable(),
   gistPick: text(600).nullable(), gistRight: z.boolean(), typedQuestion: text(300).nullable(), unknownWords: z.array(text(40)).max(40), correctProof: text(4000), standards: z.array(text(20)).max(6), note: text(2000),
-  version: z.enum(["easier", "standard", "harder"]).optional(),
+  version: z.enum(["easier", "standard", "harder"]).optional(), dok: z.number().int().min(1).max(4).optional(), plainWords: z.boolean().optional(),
   // The question format (mastery's two-format rule), the bank pick, and the clue tier asked for (lib/clues.ts).
   format: text(30).optional(), bank: z.number().int().min(0).max(5).optional(), clue: z.number().int().min(0).max(3).optional(),
 });
@@ -22,6 +22,7 @@ const Attempt = z.object({
   award: z.object({ stars: z.number().int().min(0).max(20), of: z.number().int().min(0).max(20), badge: text(60).nullable() }).nullable(),
   // An unfinished room's resume point (lib/escape-room.ts parseResume checks it again on load); null once finished.
   // Puzzle locks: each one's first-try result (lib/escape-room.ts).
+  essential: z.object({ text: text(400), lines: z.array(text(4000)).max(2) }).nullable().optional(),
   puzzles: z.array(z.object({ id: text(80), type: z.enum(["code", "painting", "scene"]), firstTry: z.array(z.boolean()).max(8), points: z.number().int().min(0).max(5000) })).max(12).optional(),
   resume: z.unknown().optional().nullable().refine((x) => x == null || JSON.stringify(x).length <= 200000, "Resume point too large"),
 });

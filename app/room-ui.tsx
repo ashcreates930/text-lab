@@ -3,7 +3,8 @@
 // start, the lock banner above each question, opening a lock after a miss with the answer shown, the Case File drawer,
 // the inner door between the chambers, the recap that opens chamber 2, a saved stop, and the escape moment. Every
 // moment is a still card under reduced motion.
-import {useEffect,useRef,useState} from "react";
+import {DoorVocab} from "./story-opening";
+import {useEffect,useRef,useState,type ReactNode} from "react";
 import {createPortal} from "react-dom";
 import {ArrowRight,BookOpen,KeyRound,Map as MapIcon,X} from "lucide-react";
 import {DoorGlyph,DoorScene,LockBadge,Padlock} from "./lock-art";
@@ -16,6 +17,7 @@ import {DragDrop,type DndView} from "./drag-drop";
 import {ReadingPanel} from "./reading-panel";
 import {DoNow} from "./practice-round";
 import {DO_NOW} from "@/lib/onboarding";
+import {HINT_STEPS,hintStep} from "@/lib/engagement";
 
 // ---------- Above every question: a large closed padlock, and which lock this is ----------
 export function LockBanner({lock,of,kind}:{lock:number;of:number;kind:LockKind}){
@@ -24,7 +26,7 @@ export function LockBanner({lock,of,kind}:{lock:number;of:number;kind:LockKind})
 }
 
 // ---------- The door: where the student is, and what opens the way out ----------
-export function RoomDoor({room,onOpen,resumed=false}:{room:Room;onOpen:()=>void;resumed?:boolean}){
+export function RoomDoor({room,onOpen,resumed=false,vocab=[],lineOf}:{room:Room;onOpen:()=>void;resumed?:boolean;vocab?:{word:string;meaning:string;line:{p:string;s:number}}[];lineOf?:(r:{p:string;s:number})=>string|null}){
  const [c1,c2]=room.chambers;
  return <section aria-labelledby="ex-h" className="mx-auto flex w-full max-w-xl flex-col gap-4 pt-2">
   <DoNow text={DO_NOW.door}/>
@@ -38,33 +40,51 @@ export function RoomDoor({room,onOpen,resumed=false}:{room:Room;onOpen:()=>void;
     {room.exit==="name_liar"&&<li className="flex items-center gap-2"><DoorGlyph size={16} className="shrink-0 text-gold"/>The exit door: name the witness who lied, and prove it.</li>}
    </ul>
   </div>
+  {/* The hard words before the reading (lib/engagement.ts): plain meaning and the sentence each comes from. */}
+  {lineOf&&<DoorVocab vocab={vocab} lineOf={lineOf}/>}
   <button type="button" onClick={onOpen} className="case-primary min-h-[56px] w-full justify-center text-[18px]">{resumed?"Back into the room":"Open the door"} <ArrowRight size={18} aria-hidden/></button>
  </section>;
 }
 
-// ---------- After a miss: the answer is shown; the student uses it to open the lock (0 points, recorded as a miss) ----------
-// task: what to do (lib/escape-room.ts recoveryTask). shownLines: the proof sentences (line indexes) to outline;
-// answerText: the right answer in words, for choices and choose two; dnd: the pieces (the right places are shown above).
-export function RecoveryPanel({task,chunk,world,tokens,shownLines,answerText,clueWords,choices,dnd,callPassages,onOpen,seed}:{task:Recovery;chunk:ChunkView;world:WorldPack;tokens:Token[];shownLines:number[];answerText?:string|null;clueWords?:string[];choices?:string[]|null;dnd?:DndView|null;callPassages?:{id:string;text:string}[]|null;onOpen:(a:Answer)=>boolean|Promise<boolean>;seed?:string}){
- const [draft,setDraft]=useState<Answer>({}),[wrong,setWrong]=useState(false),[busy,setBusy]=useState(false);
+// ---------- After a miss: back into the text, then a little more help each wrong tap (0 points, recorded as a miss) ----------
+// Reading is the way through (lib/engagement.ts): first a pointer to the paragraph by its topic ("It's in the paragraph
+// about ..."), then that paragraph lit after a wrong tap, and only after another the proof line outlined and the
+// answer shown, so a struggling reader is never stranded. task: what to do (lib/escape-room.ts recoveryTask);
+// shownLines: the proof sentences (line indexes); paraLines: every sentence of the paragraph that holds the proof;
+// answerText: the right answer in words, for choices and choose two; reveal: the full key (shown at the last step).
+export function RecoveryPanel({task,chunk,world,tokens,shownLines,paraLines=[],pointer,reveal,answerText,clueWords,choices,dnd,callPassages,onOpen,seed}:{task:Recovery;chunk:ChunkView;world:WorldPack;tokens:Token[];shownLines:number[];paraLines?:number[];pointer?:string;reveal?:ReactNode;answerText?:string|null;clueWords?:string[];choices?:string[]|null;dnd?:DndView|null;callPassages?:{id:string;text:string}[]|null;onOpen:(a:Answer)=>boolean|Promise<boolean>;seed?:string}){
+ const [draft,setDraft]=useState<Answer>({}),[level,setLevel]=useState(0),[wrong,setWrong]=useState(false),[busy,setBusy]=useState(false);
+ const step=hintStep(level),full=step==="line";
  const ready=task==="proof_line"?!!draft.lines?.length:task==="clue_words"?!!draft.words?.length:task==="pieces"?Object.values(draft.placed??{}).filter(Boolean).length>=(dnd?.items.length??1):task==="picks"?(draft.picks?.length??0)>0:task==="pinboard"?(draft.lines?.length??0)===2:draft.choice!=null;
- async function open(){setBusy(true);const ok=await onOpen(draft);setBusy(false);setWrong(!ok)}
- const how=task==="proof_line"?"Tap the outlined sentence: that's the proof. Then tap Open the lock."
+ async function open(){setBusy(true);const ok=await onOpen(draft);setBusy(false);setWrong(!ok);if(!ok)setLevel(l=>Math.min(HINT_STEPS-1,l+1))}
+ const how=!full?(task==="proof_line"?"Read it again and tap the sentence that proves it. Then tap Open the lock."
+   :task==="clue_words"?"Read it again and tap the clue words that show the meaning. Then tap Open the lock."
+   :task==="pieces"?"Read it again and put every piece where the text says it goes. Then tap Open the lock."
+   :task==="picks"?"Read it again and pick the answers the text proves. Then tap Open the lock."
+   :task==="pinboard"?"Read it again and pin the two lines that prove it. Then tap Open the lock.":"Read it again and pick the answer the text proves. Then tap Open the lock.")
+  :task==="proof_line"?"Tap the outlined sentence: that's the proof. Then tap Open the lock."
   :task==="clue_words"?`Tap the clue words in the passage${clueWords?.length?` (${clueWords.map(w=>`"${w}"`).join(", ")})`:""}, then tap Open the lock.`
-  :task==="pieces"?"Put every piece where the answer above shows it, then tap Open the lock."
-  :task==="picks"?"Pick the answers shown above, then tap Open the lock."
+  :task==="pieces"?"Put every piece where the answer below shows it, then tap Open the lock."
+  :task==="picks"?"Pick the answers shown, then tap Open the lock."
   :task==="pinboard"?"Pin the two lines shown as the proof, then tap Open the lock.":"Pick the answer shown, then tap Open the lock.";
+ // The passage's highlight: nothing at first (find it yourself), then the paragraph, then the proof line.
+ const lit=step==="pointer"?[]:step==="paragraph"?(paraLines.length?paraLines:[]):shownLines;
  return <div className="mt-4 flex flex-col gap-3 rounded-card border-2 border-dashed border-line-wrong-edge bg-panel p-4">
-  <p className="flex items-center gap-2 font-display text-[19px] font-bold"><KeyRound size={18} className="text-gold" aria-hidden/>Open the lock with the proof</p>
+  <p className="flex items-center gap-2 font-display text-[19px] font-bold"><KeyRound size={18} className="text-gold" aria-hidden/>Find the proof to open the lock</p>
+  {pointer&&<p className="rounded-row bg-gold-soft px-3 py-2 text-[16px] font-bold text-ink">{pointer}</p>}
+  {step==="paragraph"&&<p className="text-[15px] font-bold">The paragraph is lit up below. The proof is one of its sentences.</p>}
   <p className="text-[15px] font-bold text-muted">{how}</p>
-  {answerText&&<p className="rounded-row bg-violet-soft px-3 py-2 text-[15px]"><b>The answer:</b> {answerText}</p>}
-  {task==="proof_line"&&<ChunkText chunk={chunk} world={world} tokens={tokens} outline={shownLines} pick={{selected:draft.lines?.[0]??null,onPick:t=>setDraft({lines:t?[t]:[]})}}/>}
-  {task==="clue_words"&&<ChunkText chunk={chunk} world={world} tokens={tokens} wordPick={{selected:draft.words??[],onToggle:i=>setDraft(d=>{const w=d.words??[];return {words:w.includes(i)?w.filter(x=>x!==i):[...w,i].slice(0,30)}})}}/>}
+  {full&&answerText&&<p className="rounded-row bg-violet-soft px-3 py-2 text-[15px]"><b>The answer:</b> {answerText}</p>}
+  {full&&reveal}
+  {task==="proof_line"&&<ChunkText chunk={chunk} world={world} tokens={tokens} outline={lit} pick={{selected:draft.lines?.[0]??null,onPick:t=>setDraft({lines:t?[t]:[]})}}/>}
+  {task==="clue_words"&&<ChunkText chunk={chunk} world={world} tokens={tokens} outline={lit} wordPick={{selected:draft.words??[],onToggle:i=>setDraft(d=>{const w=d.words??[];return {words:w.includes(i)?w.filter(x=>x!==i):[...w,i].slice(0,30)}})}}/>}
+  {/* Choices and pieces: the passage stays here to reread, lit as the hints go on. */}
+  {(task==="choice"||task==="picks"||task==="pieces")&&<ChunkText chunk={chunk} world={world} tokens={tokens} outline={lit}/>}
   {task==="pieces"&&dnd&&<DragDrop view={dnd} placed={draft.placed??{}} onChange={p=>setDraft({placed:p})}/>}
   {task==="picks"&&choices&&<MultiBars seed={seed} label="Open the lock" need={Math.max(1,(answerText??"").split(" · ").length)} options={choices.map(t=>({text:t}))} picked={draft.picks??[]} onToggle={i=>setDraft(d=>{const p=d.picks??[];return {picks:p.includes(i)?p.filter(x=>x!==i):[...p,i]}})}/>}
   {task==="choice"&&choices&&<AnswerBars seed={seed} label="Open the lock" options={choices.map(t=>({text:t}))} picked={draft.choice??null} onPick={i=>setDraft({choice:i})}/>}
   {task==="pinboard"&&callPassages&&<ReadingPanel glossary={world.glossary} passages={callPassages as SourcePassage[]} kept={draft.lines??[]} onTap={l=>setDraft(d=>{const ls=d.lines??[];return {lines:ls.includes(l.text)?ls.filter(x=>x!==l.text):ls.length>=2?ls:[...ls,l.text]}})}/>}
-  {wrong&&<p role="status" className="rounded-row bg-notyet-soft px-3 py-2 text-[15px] font-bold text-ink">Not that one yet. Use the answer shown.</p>}
+  {wrong&&<p role="status" className="rounded-row bg-notyet-soft px-3 py-2 text-[15px] font-bold text-ink">{step==="paragraph"?"Not that one yet. The paragraph is lit up now.":"Not that one yet. Now the proof is outlined."}</p>}
   <button type="button" disabled={!ready||busy} onClick={open} className="case-primary min-h-[56px] w-full justify-center text-[18px]"><Padlock open quiet size={18}/>Open the lock</button>
  </div>;
 }

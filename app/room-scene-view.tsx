@@ -22,8 +22,10 @@ export type SceneViewProps={scene:Scene;title:string;next:SceneNext;opened:(lock
  onItem:(lock0:number)=>void;onWitness:(character:string)=>void;onPuzzle:(id:string)=>void;onDoor:()=>void;onBonus:(id:string)=>void};
 type Panel={kind:"opened";lock:number;label:string}|{kind:"later";label:string}|{kind:"bonus";b:SceneBonus}|{kind:"door"}|null;
 
-function Marker({x,y,state,label,onTap,dashed,lock}:{x:number;y:number;state:"next"|"open"|"none";label:string;onTap:()=>void;dashed?:boolean;lock?:"closed"|"open"}){
- return <button type="button" onClick={onTap} aria-label={label} className="scene-spot absolute grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full outline-none focus-visible:ring-4 focus-visible:ring-highlight" style={{left:`${x}%`,top:`${y}%`}} data-state={state}>
+// The next spot is bigger than the rest; on a first visit to the scene an arrow points at it.
+function Marker({x,y,state,label,onTap,dashed,lock,arrow=false}:{x:number;y:number;state:"next"|"open"|"none";label:string;onTap:()=>void;dashed?:boolean;lock?:"closed"|"open";arrow?:boolean}){
+ return <button type="button" onClick={onTap} aria-label={label} className={`scene-spot absolute grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full outline-none focus-visible:ring-4 focus-visible:ring-highlight ${state==="next"?"h-16 w-16":"h-12 w-12"}`} style={{left:`${x}%`,top:`${y}%`}} data-state={state}>
+  {state==="next"&&arrow&&<svg aria-hidden width="28" height="30" viewBox="0 0 28 30" className="map-arrow absolute -top-9 left-1/2 -ml-[14px] overflow-visible"><path d="M14 28 L2 13 h7 V2 h10 v11 h7 Z" fill="var(--color-gold)" stroke="var(--color-ink)" strokeWidth="1.5" strokeLinejoin="round"/></svg>}
   {state==="next"&&<span aria-hidden className="scene-glow absolute inset-[-14px] rounded-full"/>}
   {state==="next"&&<span aria-hidden className={`absolute inset-1 rounded-full border-[3px] ${dashed?"border-dashed":""} border-gold`}/>}
   {lock?<span aria-hidden className={`absolute right-0 top-0 grid h-6 w-6 place-items-center rounded-full border-2 bg-deep ${lock==="open"?"border-success text-success":"border-gold text-gold"}`}><Padlock open={lock==="open"} quiet size={13} strokeWidth={2.25}/></span>
@@ -34,10 +36,12 @@ function Marker({x,y,state,label,onTap,dashed,lock}:{x:number;y:number;state:"ne
 export function SceneView(p:SceneViewProps){
  const {scene}=p,scroller=useRef<HTMLDivElement|null>(null),panelRef=useRef<HTMLDivElement|null>(null);
  const [panel,setPanel]=useState<Panel>(null),[tapped,setTapped]=useState<number|null>(null),[miss,setMiss]=useState(false);
+ // A first visit to this scene: an arrow points at what glows next (remembered on this device).
+ const [firstVisit,setFirstVisit]=useState(false);
+ useEffect(()=>{try{const k="textlab:scene-visited:"+scene.art;if(!localStorage.getItem(k)){setFirstVisit(true);localStorage.setItem(k,"1")}}catch{}},[scene.art]);
  useLayoutEffect(()=>{focusScreenTop()},[]);
  // Open on what glows next: scroll the painting sideways (phones) so the next spot is in view.
  const nextSpot=(()=>{const n=p.next;if(!n)return null;if(n.kind==="item")return scene.items.find(i=>i.lock-1===n.lock)??null;if(n.kind==="witness")return scene.witnesses.find(w=>p.witnessState(w.character)==="due")??null;if(n.kind==="puzzle")return scene.puzzles.find(x=>x.id===n.id)??null;return scene.door})();
- useEffect(()=>{const el=scroller.current;if(!el||!nextSpot)return;el.scrollLeft=Math.max(0,(nextSpot.x/100)*el.scrollWidth-el.clientWidth/2)},[nextSpot?.x]);// eslint-disable-line react-hooks/exhaustive-deps
  useEffect(()=>{if(panel)panelRef.current?.focus({preventScroll:true})},[panel]);
  const itemState=(lock0:number):ItemState=>p.opened(lock0)?"open":p.next?.kind==="item"&&p.next.lock===lock0?"next":"later";
  function tapItem(lock0:number,label:string){const st=itemState(lock0);if(st==="next"){p.onItem(lock0);return}setTapped(null);setMiss(false);setPanel(st==="open"?{kind:"opened",lock:lock0,label}:{kind:"later",label})}
@@ -49,14 +53,15 @@ export function SceneView(p:SceneViewProps){
  return <section aria-labelledby="scene-h" className="flex flex-col gap-3">
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{opened} of {scene.items.length} opened in this chamber</p>
   <h1 id="scene-h" className="text-[26px] leading-tight outline-none md:text-[30px]">{p.title}</h1>
-  <div ref={scroller} className="overflow-x-auto rounded-card border border-edge">
-   <div className="relative w-[780px] max-w-none md:w-full">
+  {/* The painting fits the screen at every width: no sideways scroll inside the page (classroom testing). */}
+  <div ref={scroller} className="overflow-hidden rounded-card border border-edge">
+   <div className="relative w-full">
     <img src={scene.art} alt={scene.alt} className="block w-full select-none" draggable={false}/>
-    {scene.items.map(i=>{const st=itemState(i.lock-1);return <Marker key={i.id} x={i.x} y={i.y} state={st==="later"?"none":st} lock={st==="open"?"open":"closed"} label={`${i.label}${st==="open"?", opened":st==="next"?", tap to open its lock":", locked, opens later"}`} onTap={()=>tapItem(i.lock-1,i.label)}/>})}
-    {scene.witnesses.map(w=>{const st=p.witnessState(w.character);return st==="away"?null:<Marker key={w.character} x={w.x} y={w.y} state={st==="due"?"next":"none"} label={`${p.witnessName(w.character)}${st==="due"?", tap to ask your question":", already met"}`} onTap={()=>st==="due"?p.onWitness(w.character):setPanel({kind:"later",label:`${p.witnessName(w.character)} has answered; it's in your Case File.`})}/>})}
-    {scene.puzzles.map(z=>{const st=p.puzzleState(z.id);return <Marker key={z.id} x={z.x} y={z.y} state={st==="later"?"none":st} lock={st==="open"?"open":"closed"} label={`Puzzle lock${st==="open"?", solved":st==="next"?", tap to open it":", opens later"}`} onTap={()=>st==="next"?p.onPuzzle(z.id):setPanel({kind:"later",label:"This puzzle lock"})}/>})}
-    <Marker x={scene.door.x} y={scene.door.y} state={p.doorState==="next"?"next":"none"} lock={p.doorState==="next"?"open":"closed"} label={`${scene.door.label}${p.doorState==="next"?", unlocked, tap to open":", locked"}`} onTap={tapDoor}/>
-    {scene.bonus.map(b=><Marker key={b.id} x={b.x} y={b.y} state={p.bonusFound.includes(b.id)?"open":"none"} dashed label={p.bonusAvailable(b)?`Look closer: ${b.label}${p.bonusFound.includes(b.id)?", found":""}`:"Something to look at later"} onTap={()=>tapBonus(b)}/>)}
+    {scene.items.map(i=>{const st=itemState(i.lock-1);return <Marker arrow={firstVisit} key={i.id} x={i.x} y={i.y} state={st==="later"?"none":st} lock={st==="open"?"open":"closed"} label={`${i.label}${st==="open"?", opened":st==="next"?", tap to open its lock":", locked, opens later"}`} onTap={()=>tapItem(i.lock-1,i.label)}/>})}
+    {scene.witnesses.map(w=>{const st=p.witnessState(w.character);return st==="away"?null:<Marker arrow={firstVisit} key={w.character} x={w.x} y={w.y} state={st==="due"?"next":"none"} label={`${p.witnessName(w.character)}${st==="due"?", tap to ask your question":", already met"}`} onTap={()=>st==="due"?p.onWitness(w.character):setPanel({kind:"later",label:`${p.witnessName(w.character)} has answered; it's in your Case File.`})}/>})}
+    {scene.puzzles.map(z=>{const st=p.puzzleState(z.id);return <Marker arrow={firstVisit} key={z.id} x={z.x} y={z.y} state={st==="later"?"none":st} lock={st==="open"?"open":"closed"} label={`Puzzle lock${st==="open"?", solved":st==="next"?", tap to open it":", opens later"}`} onTap={()=>st==="next"?p.onPuzzle(z.id):setPanel({kind:"later",label:"This puzzle lock"})}/>})}
+    <Marker arrow={firstVisit} x={scene.door.x} y={scene.door.y} state={p.doorState==="next"?"next":"none"} lock={p.doorState==="next"?"open":"closed"} label={`${scene.door.label}${p.doorState==="next"?", unlocked, tap to open":", locked"}`} onTap={tapDoor}/>
+    {scene.bonus.map(b=><Marker arrow={firstVisit} key={b.id} x={b.x} y={b.y} state={p.bonusFound.includes(b.id)?"open":"none"} dashed label={p.bonusAvailable(b)?`Look closer: ${b.label}${p.bonusFound.includes(b.id)?", found":""}`:"Something to look at later"} onTap={()=>tapBonus(b)}/>)}
    </div>
   </div>
   {panel&&<div ref={panelRef} tabIndex={-1} role="region" aria-label="Details" className="relative rounded-card border border-edge bg-panel p-4 outline-none">

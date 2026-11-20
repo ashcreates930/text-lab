@@ -5,6 +5,8 @@
 // without one shows the vertical trail of expeditions. It is the first screen of a story: the hook above the map, the
 // map zoomed to the student's next stop (highlighted), one big "Start Expedition n: name", and "Join a live game" small
 // at the top. Ranks and skill badges sit below the map. Rules: lib/expedition-progress.ts and lib/world-map.ts.
+import {KitShelf} from "./atmosphere";
+import {BigQuestion} from "./story-opening";
 import {InvestigatorCard} from "./investigator";
 import {useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
 import {Padlock} from "./lock-art";
@@ -48,12 +50,15 @@ export function ExpeditionMap({world,attempts,assigned=[],justEarned,onStart,onJ
    <h1 id="map-h" className="text-[30px] leading-tight outline-none">{world.world_map?"Escape rooms":"Room map"}</h1>
    {world.hook&&<p className="mt-1 flex items-start gap-2 text-[16px] leading-snug text-ink"><Search size={18} className="mt-0.5 shrink-0 text-highlight" aria-hidden/>{world.hook}</p>}
   </section>
+  {/* The story opens with its essential question and four key concepts (app/story-opening.tsx). */}
+  <BigQuestion world={world}/>
   {justEarned&&<p role="status" className="moment-pop flex items-center gap-3 rounded-[24px] bg-gold p-4 text-on-gold shadow-[0_8px_0_var(--color-gold-shadow)]"><Medal size={32} aria-hidden/><span><span className="block text-[13px] font-extrabold uppercase tracking-[.08em]">New rank</span><span className="font-display text-[26px] font-bold leading-none">{justEarned}</span></span></p>}
   {next&&<button type="button" disabled={!ready} onClick={()=>onStart(next.id)} className="flex min-h-[64px] w-full items-center justify-center gap-2 rounded-[22px] bg-primary px-5 py-3 text-center font-display text-[21px] font-bold leading-tight text-on-primary shadow-[0_7px_0_var(--color-primary-shadow)] transition-transform active:translate-y-1 disabled:opacity-50 motion-reduce:transition-none">{leftAt?<>Continue Room {next.number}: {next.title} · {leftAt}</>:<>Enter Room {next.number}: {next.title}</>} <ArrowRight size={22} className="shrink-0" aria-hidden/></button>}
   {world.world_map?<StoryMap world={world} attempts={attempts} assigned={assigned} onStart={onStart} auth={auth} lifting={lifting}/>:<Trail stops={stops} onStart={onStart}/>}
   <p className="text-[15px] text-muted">{finished} of {stops.length} room{stops.length===1?"":"s"} escaped. Escape one to open the next.</p>
   <div className="flex flex-wrap gap-2" aria-label="Ranks">{RANKS.map(r=><span key={r} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[14px] font-extrabold ${r===rank?"bg-gold text-on-gold":RANKS.indexOf(r)<(rank?RANKS.indexOf(rank):-1)?"bg-panel text-ink":"bg-panel-2 text-muted"}`}><Medal size={15} aria-hidden/>{r}{r===rank?<span className="sr-only"> (your rank)</span>:null}</span>)}</div>
   <InvestigatorCard attempts={attempts} auth={auth}/>
+  {world.world_map&&<KitShelf worldId={world.id}/>}
   <section aria-labelledby="badges-h" className="rounded-card bg-panel p-4"><h2 id="badges-h" className="flex items-center gap-2 font-display text-[20px] font-bold"><Award size={20} aria-hidden/>Skill badges</h2>
    <ul className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4">{badges.map(b=><li key={b.skill} className={`rounded-row px-3 py-2 text-[14px] ${b.earned?"bg-gold text-on-gold":"bg-panel-2 text-ink"}`}><span className="block font-extrabold">{b.skill}</span><span className={b.earned?"":"text-muted"}>{BADGE_SKILL[b.type]??b.type} · {b.earned?"Earned":`${Math.min(b.count,b.target)} of ${b.target}`}</span></li>)}</ul></section>
  </div>;

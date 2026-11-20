@@ -33,6 +33,9 @@ function fit(b:Box,aspect:number,map:{width:number;height:number}):Box{
 }
 
 export function WorldMap({map,regions,focus=null,onFocus,tokens=[],travel,onStop,interactive=true,className="",label="Story map",lifting=null}:{lifting?:string|null;map:WorldMapData;regions:MapRegionView[];focus?:string|null;onFocus?:(id:string|null)=>void;tokens?:MapToken[];travel?:{id:string;from:TokenAt;to:TokenAt}|null;onStop?:(r:MapRegionView,s:MapStopView|"finale")=>void;interactive?:boolean;className?:string;label?:string}){
+ // A student's first visit to this map: an arrow points at where to go next (remembered on this device).
+ const [firstVisit,setFirstVisit]=useState(false);
+ useEffect(()=>{try{const k="textlab:map-visited:"+map.image;if(!localStorage.getItem(k)){setFirstVisit(true);localStorage.setItem(k,"1")}}catch{}},[map.image]);
  const wrap=useRef<HTMLDivElement>(null),[size,setSize]=useState({w:0,h:0});
  useLayoutEffect(()=>{const el=wrap.current;if(!el)return;const set=()=>setSize({w:el.clientWidth,h:el.clientHeight});set();const ro=new ResizeObserver(set);ro.observe(el);return()=>ro.disconnect()},[]);
  const aspect=size.w&&size.h?size.w/size.h:map.width/map.height;
@@ -144,6 +147,7 @@ export function WorldMap({map,regions,focus=null,onFocus,tokens=[],travel,onStop
     return <g key={r.expedition} role="button" tabIndex={0} aria-label={regionLabel(r)} className="map-hit cursor-pointer outline-none" onClick={tap(()=>onFocus?.(r.expedition))} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();onFocus?.(r.expedition)}}}>
      <circle cx={r.label.x} cy={r.label.y} r={Math.max(R,22*u)} fill="transparent"/>
      {cur&&!small&&<circle cx={r.label.x} cy={r.label.y} r={R*1.55} className="map-pulse" fill="none" stroke="var(--color-primary)" strokeWidth={3*u}/>}
+     {cur&&!small&&firstVisit&&<MapArrow x={r.label.x} y={r.label.y-R*1.6} u={u}/>}
      <circle cx={r.label.x} cy={r.label.y} r={R} fill={cur?"var(--color-primary)":locked?"#3b3463":"var(--color-success)"} stroke={locked?"#8d84bd":"#fff7e6"} strokeWidth={2.5*u} opacity={small?.85:1}/>
      {locked?<Padlock x={r.label.x-7*u*(small?.8:1)} y={r.label.y-7*u*(small?.8:1)} width={14*u*(small?.8:1)} height={14*u*(small?.8:1)} color="#cfc8f0"/>
       :<text x={r.label.x} y={r.label.y+(small?4.5:6.5)*u} textAnchor="middle" fontSize={(small?12:18)*u} fontWeight={800} fill={cur?"var(--color-on-primary)":"var(--color-on-success)"} className="font-display">{r.number}</text>}
@@ -152,7 +156,7 @@ export function WorldMap({map,regions,focus=null,onFocus,tokens=[],travel,onStop
      {!small&&r.state==="proven"&&<g aria-hidden>{[0,1,2].map(i=><path key={i} d={starPath(r.label.x+(i-1)*12*u,r.label.y-R-8*u,5*u)} fill={i<r.stars?"var(--color-gold)":"#2a2450"} stroke="#fff7e6" strokeWidth={.8*u}/>)}</g>}
     </g>})}
    {/* One region: the trail, the stops and the finale. */}
-   {region&&<RegionLayer r={region} u={u} tap={tap} onStop={onStop}/>}
+   {region&&<RegionLayer r={region} u={u} tap={tap} onStop={onStop} firstVisit={firstVisit}/>}
    {/* Tokens. */}
    {placed.map(({t,x,y,ox,oy})=>{// Tokens stand just above their stop, like a pin, so the stop stays readable.
     const w=walk&&walk.id===t.id?walk.p:null,R=(t.me?17:14)*u,cx=(w?.x??x)+(w?0:ox*u),cy=(w?.y??y)+(w?0:oy*u)-(R+12*u);
@@ -182,13 +186,17 @@ export function WorldMap({map,regions,focus=null,onFocus,tokens=[],travel,onStop
  </div>;
 }
 
-function RegionLayer({r,u,tap,onStop}:{r:MapRegionView;u:number;tap:(fn:()=>void)=>()=>void;onStop?:(r:MapRegionView,s:MapStopView|"finale")=>void}){
- const pts=trailOf(r),path=smooth(pts),proven=r.state==="proven",R=15*u;
+// The pointing arrow over the next stop on a student's first visit (gently bobbing; still under reduced motion).
+function MapArrow({x,y,u}:{x:number;y:number;u:number}){
+ return <g aria-hidden className="map-arrow" style={{transformOrigin:`${x}px ${y}px`}}><path d={`M${x} ${y} l${-9*u} ${-12*u} h${5*u} v${-12*u} h${8*u} v${12*u} h${5*u} Z`} fill="var(--color-gold)" stroke="var(--color-ink)" strokeWidth={1.5*u} strokeLinejoin="round"/></g>;
+}
+function RegionLayer({r,u,tap,onStop,firstVisit=false}:{r:MapRegionView;u:number;tap:(fn:()=>void)=>()=>void;onStop?:(r:MapRegionView,s:MapStopView|"finale")=>void;firstVisit?:boolean}){
+ const pts=trailOf(r),path=smooth(pts),proven=r.state==="proven",R0=15*u;
  const press=(s:MapStopView|"finale")=>(e:React.KeyboardEvent)=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();onStop?.(r,s)}};
  return <g>
   <path d={path} fill="none" stroke="rgba(10,8,30,.75)" strokeWidth={9*u} strokeLinecap="round" strokeLinejoin="round"/>
   <path d={path} fill="none" stroke={proven?"var(--color-gold)":"#d8cfa8"} strokeWidth={4*u} strokeDasharray={proven?undefined:`${2*u} ${9*u}`} strokeLinecap="round" strokeLinejoin="round" opacity={proven?.95:.85}/>
-  {r.stops.map(s=>{const st=s.state,fill=st==="proven"?"var(--color-success)":st==="next"?"var(--color-primary)":st==="locked"?"#3b3463":"#2a2450";
+  {r.stops.map(s=>{const st=s.state,R=st==="next"?R0*1.4:R0,fill=st==="proven"?"var(--color-success)":st==="next"?"var(--color-primary)":st==="locked"?"#3b3463":"#2a2450";
    return <g key={s.chunk} role="button" tabIndex={0} aria-label={stopLabel(r,s)} className="map-hit cursor-pointer outline-none" onClick={tap(()=>onStop?.(r,s))} onKeyDown={press(s)}>
     <circle cx={s.x} cy={s.y} r={22*u} fill="transparent"/>
     {st==="next"&&<circle cx={s.x} cy={s.y} r={R*1.6} className="map-pulse" fill="none" stroke="var(--color-primary)" strokeWidth={3*u}/>}
@@ -202,6 +210,7 @@ function RegionLayer({r,u,tap,onStop}:{r:MapRegionView;u:number;tap:(fn:()=>void
      :<g aria-hidden><circle cx={s.x+R*.85} cy={s.y-R*.85} r={7.5*u} fill="var(--color-success)" stroke="#fff7e6" strokeWidth={1.2*u}/><Padlock open quiet x={s.x+R*.85-4.5*u} y={s.y-R*.85-4.5*u} width={9*u} height={9*u} strokeWidth={2.25} color="var(--color-on-success)"/></g>}
     {s.secret==="hidden"&&<g className="map-twinkle" aria-hidden><Sparkles x={s.x+R*0.55} y={s.y-R*1.6} width={15*u} height={15*u} color="#ffe6b0"/></g>}
     {s.secret==="found"&&<path d={starPath(s.x+R,s.y-R,4*u)} fill="#9ee7ff" stroke="#fff" strokeWidth={.7*u} aria-hidden/>}
+    {st==="next"&&firstVisit&&<MapArrow x={s.x} y={s.y-R-8*u} u={u}/>}
    </g>})}
   {r.finale&&<g role="button" tabIndex={0} aria-label={`Exit door, Name the Liar, ${r.finale.placeName}. ${STATE_LABEL[r.finale.state]}${r.finale.solved===true?", case solved":r.finale.solved===false?", not solved yet":""}`} className="map-hit cursor-pointer outline-none" onClick={tap(()=>onStop?.(r,"finale"))} onKeyDown={press("finale")}>
    <circle cx={r.finale.x} cy={r.finale.y} r={24*u} fill="transparent"/>

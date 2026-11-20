@@ -25,7 +25,8 @@ export function SplitStage({passage,head,body,action,collapse=false,label="Quest
  const [open,setOpen]=useState(!collapse);
  useEffect(()=>{setOpen(!collapse)},[collapse]);
  return <div className="split-stage md:grid md:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] md:items-start md:gap-5">
-  <div className={`split-passage md:sticky md:top-[calc(var(--header-h,0px)+var(--hud-h,0px)+8px)] md:max-h-[calc(100dvh-var(--header-h,0px)-var(--hud-h,0px)-24px)] md:overflow-y-auto md:overscroll-contain md:pb-2 ${open?"pb-[62dvh]":"pb-44"} md:!pb-2`}>{passage}</div>
+  {/* The passage scrolls with the page (no scroll inside a scroll, classroom testing); the question panel stays pinned beside it. */}
+  <div className={`split-passage md:pb-2 ${open?"pb-[62dvh]":"pb-44"} md:!pb-2`}>{passage}</div>
   <section aria-label={label} className="split-panel fixed inset-x-0 bottom-0 z-30 max-md:flex max-md:max-h-[calc(100dvh-var(--header-h,64px)-8px)] max-md:flex-col rounded-t-[22px] border-t-2 border-edge bg-panel-2 shadow-[0_-10px_30px_rgba(0,0,0,.35)] md:sticky md:inset-auto md:top-[calc(var(--header-h,0px)+var(--hud-h,0px)+8px)] md:z-auto md:max-h-[calc(100dvh-var(--header-h,0px)-var(--hud-h,0px)-24px)] md:overflow-y-auto md:overscroll-contain md:rounded-card md:border-0 md:bg-transparent md:shadow-none">
    <div className="flex shrink-0 items-start gap-2 px-4 pt-3 md:px-0 md:pt-0">
     <div className="min-w-0 flex-1">{head}</div>

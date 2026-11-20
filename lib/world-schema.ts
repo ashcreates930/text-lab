@@ -29,7 +29,7 @@ const expChoice=z.object({text:z.string().min(1),best:z.boolean().optional()});
 // an item, shown when it slides to its right place. written: the ideas a good answer holds (for the rule check when the
 // judge can't run) and a model answer shown after. pick: how many to choose in a choose-two question.
 const dnd=z.object({kind:z.enum(DND_KINDS),slots:z.array(z.object({id:z.string().min(1),label:z.string().min(1)})).min(2).max(5),items:z.array(z.object({id:z.string().min(1),text:z.string().min(1),slot:z.string().nullable(),line:z.string().min(1).optional()})).min(3).max(5)});
-const expQuestionBase=z.object({type:z.enum(QUESTION_TYPES),format:z.enum(QUESTION_FORMATS).optional(),pick:z.number().int().min(2).max(4).optional(),dnd:dnd.optional(),written:z.object({key_ideas:z.array(z.array(z.string().min(1)).min(1)).min(1),model:z.string().min(1)}).optional(),prompt:z.string().min(1),keywords:z.array(z.string().min(1)).default([]),focus:z.string().min(1).optional(),
+const expQuestionBase=z.object({type:z.enum(QUESTION_TYPES),dok:z.number().int().min(1).max(4).optional(),format:z.enum(QUESTION_FORMATS).optional(),pick:z.number().int().min(2).max(4).optional(),dnd:dnd.optional(),written:z.object({key_ideas:z.array(z.array(z.string().min(1)).min(1)).min(1),model:z.string().min(1)}).optional(),prompt:z.string().min(1),keywords:z.array(z.string().min(1)).default([]),focus:z.string().min(1).optional(),
  choices:z.array(expChoice).min(3).max(5).optional(),choices2:z.object({prompt:z.string().min(1),options:z.array(expChoice).length(3)}).optional(),
  proof:z.object({lines:z.array(z.string().min(1)).optional(),words:z.array(z.string().min(1)).optional()}).optional(),
  testimony:z.object({speaker:z.string(),text:z.string().min(1)}).optional(),
@@ -100,7 +100,8 @@ const sceneItem=z.object({id:z.string(),lock:z.number().int().min(1),label:z.str
 const sceneBonus=z.object({id:z.string(),label:z.string().min(1),alt:z.string().min(1),...spotXY,line:lineRef,subject:z.array(z.string().min(1)).min(1),question:z.string().min(1),word:z.string().min(1)});
 const roomScene=z.object({chamber:z.union([z.literal(1),z.literal(2)]),art:z.string().min(1),alt:z.string().min(1),items:z.array(sceneItem).min(1),bonus:z.array(sceneBonus).default([]),
  witnesses:z.array(z.object({character:z.string(),...spotXY})).default([]),puzzles:z.array(z.object({id:z.string(),...spotXY})).default([]),door:z.object({label:z.string().min(1),...spotXY})});
-const room=z.object({expedition:z.string(),door:z.string().min(1).optional(),clock_reason:z.string().min(1).optional(),puzzles:z.array(roomPuzzle).optional(),scenes:z.array(roomScene).optional()});
+// vocab: five or six hard words shown at the door, each with a plain meaning and the sentence it appears in.
+const room=z.object({expedition:z.string(),door:z.string().min(1).optional(),vocab:z.array(z.object({word:z.string().min(1),meaning:z.string().min(1),line:lineRef})).max(8).optional(),clock_reason:z.string().min(1).optional(),puzzles:z.array(roomPuzzle).optional(),scenes:z.array(roomScene).optional()});
 export type LineRef=z.infer<typeof lineRef>;export type RoomPuzzle=z.infer<typeof roomPuzzle>;export type RoomData=z.infer<typeof room>;
 export type Expedition=z.infer<typeof expedition>;export type Interview=z.infer<typeof expedition>["interview"]&{};export type Witness=z.infer<typeof witness>;export type ExpChunk=z.infer<typeof expChunk>;export type ExpQuestion=z.infer<typeof expQuestion>;export type QuestionType=(typeof QUESTION_TYPES)[number];
 
@@ -186,6 +187,10 @@ export const WorldPackSchema = z.object({
   draft_expeditions:z.array(expedition).optional(),expedition_rules:z.object({max_sentences:z.number().int().min(5).max(20).optional(),arc_pending:z.array(z.string()).optional(),puzzle_exclude:z.array(lineRef).optional(),figurative:z.array(z.object({p:z.string().regex(/^p\d{3}$/),s:z.number().int().min(0),phrase:z.string().min(1)})).optional()}).optional(),
   // Escape rooms (see above): optional extras per expedition.
   rooms:z.array(room).optional(),
+  // Engagement (lib/engagement.ts): the story's essential question and four key concepts (teasers, never a synopsis);
+  // the full synopsis for the teacher view only; a short topic per paragraph for "It's in the paragraph about ...";
+  // a plain-language version per paragraph (students still prove answers with the original line).
+  engagement:z.object({essential_question:z.string().min(1),key_concepts:z.array(z.object({name:z.string().min(1),teaser:z.string().min(1)})).length(4),synopsis:z.string().min(1),passage_topics:z.record(z.string().regex(/^p\d{3}$/),z.string().min(1)).default({}),plain_words:z.record(z.string().regex(/^p\d{3}$/),z.string().min(1)).default({})}).optional(),
   // Demo rival and squad modes: the computer players' names (clearly labeled as computer players on screen).
   computer_players:z.object({rival:z.object({name:z.string().min(1),emblem:z.enum(["lantern","rider"])}),teammates:z.array(z.string().min(1)).min(2).max(3)}).optional(),
   // Students in the story: the part the student plays (see lib/student-role.ts). never: people the student must never be.

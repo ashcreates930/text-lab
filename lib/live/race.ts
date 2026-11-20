@@ -12,6 +12,7 @@
 // seconds), then the witness answers on the board (testify; the host moves on). One witness lies, picked per game. The
 // finale is Name the Liar: every phone locks in the liar and the line privately (liar, 90 seconds), and nothing is
 // shown until the board reveals the liar with the class breakdown (verdict). Rows: interview_vote and liar_lock.
+import { chestFor, type Chest, type KitId } from "../engagement.ts";
 import { questionSetting, type QuestionTime } from "../expedition.ts";
 import { SQUAD_LOCK_POINTS, recorderOf, sharedLockOpen, type SquadLock } from "./squad-escape.ts";
 import { chamberBudgetMs, clockRuns, isRoomClock, type RoomClock } from "../room-clock.ts";
@@ -153,7 +154,7 @@ export function beatMs(round: LiveRaceRound, chunk: RaceChunk | undefined, setti
 // points include the double (mult) and the streak bonus; version: the question version this player saw.
 // The tier a phone is on: the easier version opens with the hint (tier 1) for free.
 export const liveClueTier = (asked: number, free: boolean) => Math.max(asked, free ? 1 : 0) as ClueTier;
-export type LiveTap = { clue?: ClueTier; step: number; answer: Answer; correct: boolean; answerRight: boolean; proofRight: boolean; late: boolean; points: number; elapsedMs: number; version?: Version; bank?: number; mult?: number; bonus?: number; verdict?: { strength: string; note: string; next: string } };
+export type LiveTap = { plain?: boolean; clue?: ClueTier; step: number; answer: Answer; correct: boolean; answerRight: boolean; proofRight: boolean; late: boolean; points: number; elapsedMs: number; version?: Version; bank?: number; mult?: number; bonus?: number; verdict?: { strength: string; note: string; next: string } };
 export function playerChunk(responses: LiveResponse[], roundIndex: number, step: number, playerId: string) {
   const mine = (kind: string) => rows(responses, roundIndex, kind, step).filter((r) => r.playerId === playerId);
   const tap = mine("race_tap")[0]?.payload as LiveTap | undefined;
@@ -191,6 +192,19 @@ export function burstFound(responses: LiveResponse[], roundIndex: number, ids: s
 // What a player sent this beat, checked and scored, or why it can't count. One shot: one answer per question.
 // squadIds: the player's squad (the burst counts a find once per squad), or just the player.
 // puzzle: the puzzle lock open now, with its lines as text (code dials are checked against them).
+// ---------- The chest (lib/engagement.ts), decided by the server ----------
+// After a first-try proof only. The kit pieces this player has already found in this game are left out. opened: the
+// chest for this lock has been opened (its reward saved as a race_chest response).
+export function liveChest(responses: LiveResponse[], roundIndex: number, playerId: string, step: number, provedFirstTry: boolean) {
+  const mineAll = responses.filter((r) => r.kind === "race_chest" && r.playerId === playerId);
+  const opened = mineAll.find((r) => r.roundIndex === roundIndex && Number(r.payload.step) === step) ?? null;
+  if (opened) return { chest: { coins: Number(opened.payload.coins) || 0, piece: (opened.payload.piece as KitId | null) ?? null } as Chest, opened: true };
+  const owned = mineAll.map((r) => r.payload.piece).filter((p): p is string => typeof p === "string");
+  const chest = chestFor(`${playerId}|${roundIndex}|${step}`, provedFirstTry, owned);
+  return chest ? { chest, opened: false } : null;
+}
+export const chestCoinsOf = (responses: LiveResponse[], playerId: string) => responses.filter((r) => r.kind === "race_chest" && r.playerId === playerId).reduce((a, r) => a + (Number(r.payload.coins) || 0), 0);
+
 export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses: LiveResponse[], roundIndex: number, playerId: string, kind: string, payload: Record<string, unknown>, now: number, timeSetting: string, iv: Interview | null = null, arc: Arc | null = null, squadIds: string[] = [playerId], puzzle: RoomPuzzle | null = null, puzzleLines: string[] = [], roomNumber = 1): { payload: Record<string, unknown>; flagged: boolean } | string {
   const chunk = chunks[round.step], me = playerChunk(responses, roundIndex, round.step, playerId);
   if (!chunk) return "The race is over.";
@@ -270,6 +284,14 @@ export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses:
     return { payload: { step: round.step, id: p.id, type: p.type, firstTry, points }, flagged: false };
   }
   // After a miss: open the lock with the answer shown. Any time until the next chunk starts; it scores nothing.
+  // Opening the chest: the reward is the server's own (liveChest), never the phone's.
+  if (kind === "race_chest") {
+    if (!["reveal", "lightning", "board", "burst", "countdown"].includes(round.beat)) return "There's no chest to open now.";
+    const c = liveChest(responses, roundIndex, playerId, round.step, !!me.correct);
+    if (!c) return "There's no chest for this lock.";
+    if (c.opened) return "This chest is already open.";
+    return { payload: { step: round.step, coins: c.chest.coins, piece: c.chest.piece }, flagged: false };
+  }
   if (kind === "race_recover") {
     if (!["reveal", "lightning", "board", "burst", "countdown"].includes(round.beat)) return "This lock isn't waiting to be opened.";
     if (me.opened) return "This lock is already open.";
@@ -328,7 +350,7 @@ export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses:
     const bonus = streakBonus(before, correct ? before + 1 : 0);
     // Clues cost points off this lock (the easier version's hint is free).
     const free = !!(q as { showHint?: boolean }).showHint, tier = liveClueTier(me.clue, free), cost = clueCost(tier) - (free && tier >= 1 ? CLUE_COST[1] : 0);
-    const tap: LiveTap = { step: round.step, answer, correct, answerRight: r.answer, proofRight: r.proof, late, clue: tier, points: late ? 0 : (r.points > 0 ? Math.max(0, r.points * mult - cost) : 0) + bonus, elapsedMs: elapsed, version: asked.version, bank: asked.bank, mult, bonus, ...(payload.__verdict ? { verdict: payload.__verdict as { strength: string; note: string; next: string } } : {}) };
+    const tap: LiveTap = { plain: payload.plain === true, step: round.step, answer, correct, answerRight: r.answer, proofRight: r.proof, late, clue: tier, points: late ? 0 : (r.points > 0 ? Math.max(0, r.points * mult - cost) : 0) + bonus, elapsedMs: elapsed, version: asked.version, bank: asked.bank, mult, bonus, ...(payload.__verdict ? { verdict: payload.__verdict as { strength: string; note: string; next: string } } : {}) };
     return { payload: tap as unknown as Record<string, unknown>, flagged: false };
   }
   return "That isn't a Proof Race answer.";
@@ -356,7 +378,10 @@ export function liveRaceBoard(responses: LiveResponse[], roundIndex: number, pla
 // The reveal: the proof (lines, or words with their token positions) and the share of players who found it.
 export function raceReveal(chunk: RaceChunk, responses: LiveResponse[], roundIndex: number, players: LivePlayer[]) {
   const found = players.filter((p) => playerChunk(responses, roundIndex, chunk.index, p.id).correct).length;
-  return { ...proofShown(chunk.chunk.question, chunkTokens(chunk.lines)), why: chunk.chunk.question.why, found, players: players.length, pct: players.length ? Math.round((found / players.length) * 100) : 0 };
+  // stillFinding: students who missed and haven't yet opened their lock with the proof; until it's 0 the board lights
+  // only the paragraph, so the projector never hands over the line while they work through their hint steps.
+  const stillFinding = players.filter((p) => !playerChunk(responses, roundIndex, chunk.index, p.id).opened).length;
+  return { ...proofShown(chunk.chunk.question, chunkTokens(chunk.lines)), why: chunk.chunk.question.why, found, stillFinding, players: players.length, pct: players.length ? Math.round((found / players.length) * 100) : 0 };
 }
 // Class stats: the share who proved each chunk, and the 3 hardest.
 export function chunkStatsOf(chunks: RaceChunk[], responses: LiveResponse[], roundIndex: number, players: LivePlayer[]) {
