@@ -83,9 +83,11 @@ export function engagementProblems(world: WorldPack, passages: SourcePassage[]):
   out.push(...plainProblems(world, passages));
   // A room's briefing names only the story's own key concepts.
   for (const room of world.rooms ?? []) for (const c of room.briefing?.concepts ?? []) if (!e?.key_concepts.some((k) => k.name === c)) out.push(`${at}/${room.expedition} briefing: "${c}" isn't one of the story's key concepts`);
-  // The mission line counts chamber 1's locks exactly.
-  for (const room of world.rooms ?? []) { const m = room.briefing?.mission; if (!m) continue; const n = /open (\d+) locks?/.exec(m), c1 = roomOf(world, room.expedition)?.chambers[0];
-    if (!n || !c1 || +n[1] !== c1.to - c1.from + 1) out.push(`${at}/${room.expedition} briefing mission: it must say "open ${c1 ? c1.to - c1.from + 1 : "?"} locks"`); }
+  // Each mission line counts its chamber's locks exactly (mission: chamber 1, mission2: chamber 2).
+  for (const room of world.rooms ?? []) for (const [key, i] of [["mission", 0], ["mission2", 1]] as const) {
+    const m = room.briefing?.[key]; if (!m) continue; const n = /open (\d+) locks?/.exec(m), c = roomOf(world, room.expedition)?.chambers[i];
+    if (!n || !c || +n[1] !== c.to - c.from + 1) out.push(`${at}/${room.expedition} briefing ${key}: it must say "open ${c ? c.to - c.from + 1 : "?"} locks"`); }
+  out.push(...briefingProblems(world, passages));
   // Every question has a DOK level.
   for (const exp of world.expeditions ?? []) for (const c of exp.chunks) for (const q of [c.question, ...(c.bank ?? [])]) if (!dokOf(q)) out.push(`${at}/${exp.id}/${c.id}: no DOK level`);
   return [...new Set(out)];
@@ -139,6 +141,64 @@ export function plainProblems(world: WorldPack, passages: SourcePassage[]): stri
         const groups = q.written.key_ideas.map((g) => g.some((k) => words.some((w) => w.startsWith(k.toLowerCase()))));
         if (groups.length && groups.every(Boolean)) out.push(`${at}: holds a ready-made answer to the written seal (${q.prompt.slice(0, 50)}...)`);
       }
+    }
+  }
+  return [...new Set(out)];
+}
+
+// ---------- Briefings must not answer the room's questions ----------
+// The door's briefing (scenario and both mission lines) sets the scene, never answers, checked the way plain words are
+// (plainProblems) against everything in its room:
+//  - questions and answer choices (each chunk's question, bank and versions, the Gist check, choose two): the briefing
+//    holds none of a correct answer's key words, leaving out words already in Irving's paragraphs for that chunk, the
+//    tested word, and words the question or a wrong choice uses too (those can't point to the right one); a written
+//    seal's key ideas are never all there;
+//  - puzzles (words in a puzzle's own title and prompt are on screen anyway): no code-dial answer word; no key word of a painting's wrong detail (beyond Irving's lines and the right
+//    details' own words); no scene object's subject word (the word its label is kept from sharing with its line);
+//  - lines: no run of four words from any proof line, quick-recall answer or puzzle line (that would point at the key).
+// Words too common in a scene-setting line to point at any one answer.
+const FRAME = new Set(["every", "place", "story", "tale", "says", "stand", "knows", "towar", "happe", "becam", "door", "eyes"]);
+const words = (t: string) => t.toLowerCase().replace(/[’]/g, "'").split(/[^a-z']+/).filter(Boolean);
+const runs = (t: string, n = 4) => { const w = words(t); return new Set(w.slice(0, Math.max(0, w.length - n + 1)).map((_, i) => w.slice(i, i + n).join(" "))); };
+export function briefingProblems(world: WorldPack, passages: SourcePassage[]): string[] {
+  const out: string[] = [];
+  const paraText = (p: string) => (passages.find((x) => x.id === p)?.text ?? "").replace(/\s+/g, " ");
+  for (const room of world.rooms ?? []) {
+    const b = room.briefing; if (!b) continue;
+    const exp = world.expeditions?.find((e) => e.id === room.expedition); if (!exp) continue;
+    const text = [b.scenario, b.mission ?? "", b.mission2 ?? ""].join(" "), at = `${world.id}/${room.expedition} briefing`;
+    const mine = new Set(contentStems(text.replace(/"[^"]*"/g, " ")).filter((s) => !FRAME.has(s))), myWords = new Set(words(text)), myRuns = runs(text);
+    const quotes = (line: string, what: string) => { for (const r of runs(line)) if (myRuns.has(r)) { out.push(`${at}: quotes ${what} ("${r}")`); return; } };
+    for (const c of exp.chunks) {
+      const own = new Set(c.segments.flatMap((s) => contentStems(paraText(s.p))));
+      const qs = [c.question, ...(c.bank ?? [])].flatMap((q) => [q, ...(q.versions ? [q.versions.easier, q.versions.harder].filter(Boolean) : [])]) as ExpQuestion[];
+      type Opt = { text: string; best?: boolean };
+      const sets: { prompt: string; focus?: string; options: Opt[] }[] = [...qs.flatMap((q) => [{ prompt: q.prompt, focus: q.focus, options: (q.choices ?? []) as Opt[] }, { prompt: `${q.prompt} ${q.choices2?.prompt ?? ""}`, focus: q.focus, options: (q.choices2?.options ?? []) as Opt[] }]),
+        { prompt: "Which is the best summary?", options: (c.gist?.options ?? []) as Opt[] }];
+      for (const set of sets) for (const ch of set.options.filter((o) => o.best)) {
+        const shared = new Set([set.prompt, ...set.options.filter((o) => !o.best).map((o) => o.text)].flatMap(contentStems));
+        const hit = contentStems(ch.text).filter((s) => !own.has(s) && !shared.has(s) && (!set.focus || s !== stem(set.focus)) && mine.has(s));
+        if (hit.length) out.push(`${at}: gives away the answer "${ch.text}" (${hit.join(", ")})`);
+      }
+      for (const q of qs) {
+        if (q.written) { const w = [...myWords]; const groups = q.written.key_ideas.map((g) => g.some((k) => w.some((x) => x.startsWith(k.toLowerCase())))); if (groups.length && groups.every(Boolean)) out.push(`${at}: holds a ready-made answer to the written seal (${q.prompt.slice(0, 50)}...)`); }
+        for (const l of q.proof?.lines ?? []) quotes(l, `the proof for ${c.id}`);
+      }
+    }
+    for (const l of exp.lightning ?? []) for (const a of l.answer) quotes(a, `the quick-recall answer "${l.question.slice(0, 40)}..."`);
+    for (const pz of room.puzzles ?? []) {
+      const line = (r: { p: string; s: number }) => lineAt(passages, r) ?? "", shown = `${pz.title} ${pz.prompt}`, shownStems = new Set(contentStems(shown)), shownWords = new Set(words(shown));
+      if (pz.type === "code") for (const d of pz.dials) { if (myWords.has(d.word.toLowerCase()) && !shownWords.has(d.word.toLowerCase())) out.push(`${at}: holds the code-dial answer "${d.word}" (${pz.id})`); quotes(line(d.line), `a ${pz.id} dial line`); }
+      if (pz.type === "painting") {
+        const right = new Set(pz.details.filter((d) => !d.wrong).flatMap((d) => contentStems(d.label)));
+        for (const d of pz.details) { for (const r of d.lines) quotes(line(r), `a ${pz.id} line`); if (!d.wrong) continue;
+          const own = new Set(d.lines.flatMap((r) => contentStems(paraText(r.p))));
+          const hit = contentStems(d.label).filter((s) => !own.has(s) && !right.has(s) && !shownStems.has(s) && mine.has(s));
+          if (hit.length) out.push(`${at}: gives away the painting's mistake "${d.label}" (${hit.join(", ")})`); }
+      }
+      if (pz.type === "scene") for (const o of pz.objects) { quotes(line(o.line), `a ${pz.id} line`);
+        const hit = (o.subject ?? []).map(stem).filter((s) => mine.has(s) || [...myWords].some((w) => stem(w) === s));
+        if (hit.length) out.push(`${at}: names the scene object's subject (${o.label}: ${hit.join(", ")})`); }
     }
   }
   return [...new Set(out)];

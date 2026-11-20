@@ -23947,7 +23947,8 @@
           "Belief",
           "Fear"
         ],
-        "mission": "Your mission: open 5 locks and the gate before the clock runs out."
+        "mission": "Your mission: open 5 locks and the gate before the clock runs out.",
+        "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
       }
     },
     {
@@ -24142,7 +24143,15 @@
             }
           ]
         }
-      ]
+      ],
+      "briefing": {
+        "scenario": "A new schoolmaster has come to the Hollow, and the valley has taken a good long look at him. Step up to his one-room schoolhouse at the edge of the woods, where the children of the old Dutch farms do their lessons. Find out what kind of man keeps this school, and how he keeps it.",
+        "concepts": [
+          "Appearances"
+        ],
+        "mission": "Your mission: open 5 locks and the schoolhouse door before the clock runs out.",
+        "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
+      }
     },
     {
       "expedition": "tales-by-the-fire",
@@ -24336,7 +24345,16 @@
             }
           ]
         }
-      ]
+      ],
+      "briefing": {
+        "scenario": "The schoolmaster earns little, yet somehow he is welcome at nearly every farmhouse in the valley. Folk here love a strange tale, and he is a man who will listen to any of them. See how a stranger makes himself at home in the Hollow, and what the Hollow puts into his head.",
+        "concepts": [
+          "Belief",
+          "Fear"
+        ],
+        "mission": "Your mission: open 5 locks and the farmhouse latch before the clock runs out.",
+        "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
+      }
     },
     {
       "expedition": "the-van-tassel-farm",
@@ -24530,7 +24548,15 @@
             }
           ]
         }
-      ]
+      ],
+      "briefing": {
+        "scenario": "Among the young people who gather for the schoolmaster's singing lessons is one whose father owns the richest farm around. That farm is talked of from one end of the Hollow to the other. Look closely at the farm, the people who live there, and the man who is looking at them.",
+        "concepts": [
+          "Appearances"
+        ],
+        "mission": "Your mission: open 5 locks and the farm gate before the clock runs out.",
+        "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
+      }
     },
     {
       "expedition": "a-rival-appears",
@@ -24711,7 +24737,16 @@
             }
           ]
         }
-      ]
+      ],
+      "briefing": {
+        "scenario": "The schoolmaster has seen the Van Tassel farm, and his imagination has already run far ahead of him. Now the door of the old farmhouse stands open, and he steps inside. Read closely: what a man wants can tell you more about him than anything he says.",
+        "concepts": [
+          "Appearances",
+          "Rivalry"
+        ],
+        "mission": "Your mission: open 5 locks and the farmhouse door before the clock runs out.",
+        "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
+      }
     },
     {
       "expedition": "the-feud",
@@ -24905,7 +24940,15 @@
             }
           ]
         }
-      ]
+      ],
+      "briefing": {
+        "scenario": "A bold rider of the Hollow has his eye on Katrina, and so does the schoolmaster. The two men could hardly be more different. Learn the ways of both rivals, and judge how each one means to win.",
+        "concepts": [
+          "Rivalry"
+        ],
+        "mission": "Your mission: open 5 locks and the Van Tassel fence before the clock runs out.",
+        "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
+      }
     },
     {
       "expedition": "the-invitation",
@@ -25099,7 +25142,15 @@
             }
           ]
         }
-      ]
+      ],
+      "briefing": {
+        "scenario": "The rivalry over Katrina has not cooled, though neither man has won her yet. In the schoolroom, the master is at his lessons, as on any other day. It is an ordinary autumn afternoon, but not for long.",
+        "concepts": [
+          "Rivalry"
+        ],
+        "mission": "Your mission: open 5 locks and the schoolroom door before the clock runs out.",
+        "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
+      }
     },
     {
       "expedition": "the-ride-to-the-party",
@@ -25293,7 +25344,15 @@
             }
           ]
         }
-      ]
+      ],
+      "briefing": {
+        "scenario": "An invitation has reached the schoolhouse, and the schoolmaster means to arrive looking his best. He has a borrowed horse, his best outfit, and a long autumn road ahead of him. Ride along and see the Hollow through the schoolmaster's eyes.",
+        "concepts": [
+          "Appearances"
+        ],
+        "mission": "Your mission: open 5 locks and Hans Van Ripper's gate before the clock runs out.",
+        "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
+      }
     },
     {
       "expedition": "the-feast-and-the-dance",
@@ -25487,7 +25546,16 @@
             }
           ]
         }
-      ]
+      ],
+      "briefing": {
+        "scenario": "The Van Tassel farmhouse is crowded with guests from every farm in the countryside, all in their best. One more guest has yet to arrive, and inside, a table is waiting. Watch who comes in, what is served, and what it sets turning in Ichabod's mind.",
+        "concepts": [
+          "Appearances",
+          "Rivalry"
+        ],
+        "mission": "Your mission: open 5 locks and the parlor door before the clock runs out.",
+        "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
+      }
     },
     {
       "expedition": "ghost-stories",
@@ -25681,7 +25749,15 @@
             }
           ]
         }
-      ]
+      ],
+      "briefing": {
+        "scenario": "The dancing is done, and the older guests gather at one end of the piazza to talk. They have tales to tell, of the war fought near these farms and of stranger things besides. Weigh every story carefully, and decide for yourself what to believe.",
+        "concepts": [
+          "Belief"
+        ],
+        "mission": "Your mission: open 5 locks and the storytellers' circle before the clock runs out.",
+        "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
+      }
     },
     {
       "expedition": "the-lonely-road",
@@ -25875,7 +25951,16 @@
             }
           ]
         }
-      ]
+      ],
+      "briefing": {
+        "scenario": "It has been a night of music, feasting and ghost stories at the Van Tassels'. The schoolmaster has hopes of his own before the night is out. Whatever happens, the way home lies along the loneliest road in the Hollow.",
+        "concepts": [
+          "Fear",
+          "Appearances"
+        ],
+        "mission": "Your mission: open 5 locks and the stable door before the clock runs out.",
+        "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
+      }
     },
     {
       "expedition": "the-headless-horseman",
@@ -26069,7 +26154,15 @@
             }
           ]
         }
-      ]
+      ],
+      "briefing": {
+        "scenario": "Past the great tree, the road runs down toward a small brook and a small bridge in a thick, dark grove. The country folk have their reasons for hurrying past this spot after dark. The schoolmaster has only to cross it, and he would give a great deal to be safely home.",
+        "concepts": [
+          "Fear"
+        ],
+        "mission": "Your mission: open 5 locks and the crossing before the clock runs out.",
+        "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
+      }
     },
     {
       "expedition": "gone",
@@ -26250,7 +26343,16 @@
             }
           ]
         }
-      ]
+      ],
+      "briefing": {
+        "scenario": "The chase is on, and the dark rider will not fall behind. Somewhere ahead lies the church bridge, the place every tale in the Hollow seems to return to. Ride hard and read every line: what happens tonight will be argued over for years.",
+        "concepts": [
+          "Fear",
+          "Belief"
+        ],
+        "mission": "Your mission: open 5 locks and the church bridge before the clock runs out.",
+        "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
+      }
     },
     {
       "expedition": "the-postscript",
@@ -26431,7 +26533,16 @@
             }
           ]
         }
-      ]
+      ],
+      "briefing": {
+        "scenario": "Years have passed since that night, and the Hollow still tells the tale around the winter fire. Not everyone agrees on what became of the schoolmaster, and some suspect there's more to the story. Sort what people say from what the story actually proves.",
+        "concepts": [
+          "Belief",
+          "Appearances"
+        ],
+        "mission": "Your mission: open 4 locks and the last door before the clock runs out.",
+        "mission2": "Your mission: open 3 locks and the exit door before the clock runs out."
+      }
     }
   ],
   "expedition_rules": {
