@@ -4,6 +4,8 @@
 // countdown); the teacher can pause any screen or skip ahead. Every phone follows the board's timing with its own extra
 // time and the same screens as the solo race (app/expedition-race.tsx). The lobby shows names and character avatars
 // popping in, with a quiet music loop the host can mute; the game ends on a podium with class stats.
+import {ReadFor} from "../story-opening";
+import {lanternLevel,pointerText,proofParagraph} from "@/lib/engagement";
 import {Held,LockMoment} from "../lock-art";
 import type {InventoryItem} from "@/lib/escape-room";
 import {SQUAD_ROLE_INFO,type SquadRole} from "@/lib/live/squad-escape";
@@ -218,10 +220,13 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  const phoneScreen:Screen=({read:"read",process:"gist",ask:"wait",race:testifying?"wait":q?.format==="dnd"?"dnd":q?.format==="multi"?"multi":q?.format==="written"&&step===1?"written":(step===2||q?.format==="tap")?(q?.clues?"clues":"proof"):"question",
   reveal:"result",lightning:"lightning",puzzle:"puzzle",board:"board",burst:"burst",countdown:"countdown",liar:"liar",verdict:"verdict",vote:"interview",testify:"interview"} as Record<string,Screen>)[round.beat]??"wait";
  if(round.beat==="reveal"&&mine.tap?.correct&&q){markHintDone("lock");markHintDone(q.format==="dnd"?"dnd":q.format==="multi"?"multi":q.format==="written"?"written":q.clues?"clues":"proof")}
- const hud=<RaceHud clock={phoneClock} doNow={DO_NOW[phoneScreen]} onHelp={()=>setAgain(true)} score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.step+1} total={round.total} left={round.beat==="read"?null:left} title={round.expedition.title}/>;
+ const lantern=lanternLevel(((race as {path?:number[]}).path??[]).map(x=>x>0));
+ const hud=<RaceHud lantern={lantern} clock={phoneClock} doNow={DO_NOW[phoneScreen]} onHelp={()=>setAgain(true)} score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.step+1} total={round.total} left={round.beat==="read"?null:left} title={round.expedition.title}/>;
  // The proof as token positions: its words, or every word of its lines.
  // The lines to outline when opening a missed lock: this player's own proof (their question may be a bank variant).
  const flat=(t:string)=>t.replace(/\s+/g," ").trim(),ownProof=((race?.revealKey as {proof?:string[]}|null|undefined)?.proof??[]).map(l=>round?.chunk.lines.findIndex(x=>flat(x.text)===flat(l))??-1).filter(i=>i>=0);
+ // The paragraph holding this student's own proof: named first after a miss, lit after a wrong tap (lib/engagement.ts).
+ const ownPara=proofParagraph(round?.chunk.lines??[],ownProof);
  const shownTokens=round.reveal?.words.length?round.reveal.words:proofTokensOf(tokens,round.chunk.lines,round.reveal?.lines??[]);
  return <section className="wide-host mt-3 flex flex-col gap-3" aria-labelledby="rp-h">
   {hud}
@@ -229,6 +234,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
   {race.extraTime&&<p className="text-[13px] font-bold text-muted">Extra time is on for you.</p>}
   {round.paused&&<p role="status" className="rounded-card bg-gold px-4 py-2 text-[16px] font-bold text-on-gold">Paused by your teacher.</p>}
   {round.beat==="read"&&<><h1 id="rp-h" className="text-[28px] outline-none">Read the chunk</h1>
+   {race.hookPrompt&&<ReadFor prompt={race.hookPrompt}/>}
    {round.highlighter&&!mine.ready&&<button type="button" aria-pressed={marking} onClick={()=>setMarking(m=>!m)} className={`inline-flex min-h-11 w-fit items-center gap-2 rounded-full px-4 text-[15px] font-bold ${marking?"bg-gold text-on-gold":"bg-panel text-ink"}`}><Highlighter size={16} aria-hidden/>{marking?"Done marking":"Mark words I don't know"}</button>}
    <ChunkText explore chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} highlighter={round.highlighter} marking={marking} unknown={unknown} onUnknown={i=>setUnknown(s=>{const n=new Set(s);if(n.has(i))n.delete(i);else n.add(i);return n})} onDiscover={()=>{if(found!==round.chunk.id){setFound(round.chunk.id);setCoins(c=>c+DISCOVERY_COINS);cue(sound,"chime",0.3)}}} found={found===round.chunk.id}/>
    {mine.ready?<p role="status" className="rounded-card bg-success px-4 py-3 text-[17px] font-bold text-on-success"><Check size={18} className="mr-1 inline" aria-hidden/>Ready. Waiting for the class.</p>
@@ -258,13 +264,13 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
    {race.skill?.tag&&<p className="mt-3 flex justify-center"><SkillTag s={race.skill.tag}/></p>}
    {race.skill?.ups.map(s=><div key={s.family} className="mt-3"><LevelUp s={s}/></div>)}
    {/* The newer formats: drag and drop pieces, a written verdict, the choose-two answers. */}
-   {q?.format==="dnd"&&q.dnd&&race.revealKey?.dnd&&<div className="mt-3"><DragDrop view={q.dnd} placed={mine.tap?.answer.placed??{}} onChange={()=>{}} disabled reveal={race.revealKey.dnd}/></div>}
+   {(mine.tap?.correct||mine.opened)&&q?.format==="dnd"&&q.dnd&&race.revealKey?.dnd&&<div className="mt-3"><DragDrop view={q.dnd} placed={mine.tap?.answer.placed??{}} onChange={()=>{}} disabled reveal={race.revealKey.dnd}/></div>}
    {q?.format==="written"&&<div className="mt-3 flex flex-col gap-2 rounded-card bg-panel p-4">{mine.tap?.answer.text&&<p className="font-serif text-[17px]">"{mine.tap.answer.text}"</p>}
     {mine.tap?.verdict&&<><p className="font-display text-[20px] font-bold">{mine.tap.verdict.strength}</p><p className="text-[15px]"><b>What works:</b> {mine.tap.verdict.note}</p><p className="text-[15px]"><b>Next step:</b> {mine.tap.verdict.next}</p></>}
     {race.revealKey?.model&&<p className="rounded-row bg-violet-soft px-3 py-2 text-[15px]"><b>A strong answer:</b> {race.revealKey.model}</p>}</div>}
-   {q?.format==="multi"&&race.revealKey?.best&&<p className="mt-3 rounded-card bg-panel px-4 py-3 text-[16px]"><b>The answers:</b> {race.revealKey.best.join(" · ")}</p>}
+   {(mine.tap?.correct||mine.opened)&&q?.format==="multi"&&race.revealKey?.best&&<p className="mt-3 rounded-card bg-panel px-4 py-3 text-[16px]"><b>The answers:</b> {race.revealKey.best.join(" · ")}</p>}
    <p className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[13px] font-bold text-muted">{race.place&&<RankPill move={race.place.move} rank={race.place.rank} of={race.place.of} first={(race.place.row as {prevRank?:number|null}|undefined)?.prevRank==null}/>}{round.reveal?.pct??0}% of the class found it.</p>
-   {!mine.tap?.correct&&!mine.opened&&q&&race.revealKey?.task?<RecoveryPanel task={race.revealKey.task} seed={`${state.me.id}|${round.chunk.id}|open`} chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shownLines={ownProof}
+   {!mine.tap?.correct&&!mine.opened&&q&&race.revealKey?.task?<RecoveryPanel task={race.revealKey.task} seed={`${state.me.id}|${round.chunk.id}|open`} chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shownLines={ownProof} paraLines={ownPara.paraLines} pointer={pointerText(world,ownPara.pid,ownPara.paraNumber)}
      answerText={race.revealKey.best?.join(" · ")??race.revealKey.answer} clueWords={race.revealKey.clues??undefined} choices={q.choices} dnd={q.dnd} callPassages={q.callPassages} onOpen={async a=>!(await act("race_recover",{answer:a}))}/>
    :<div className="mt-1">{q?.callPassages?<ReadingPanel passages={q.callPassages as SourcePassage[]} results={(round.reveal?.lines??[]).map(l=>({line:l,ok:true}))} onTap={()=>{}} locked/>
     :<ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shown={shownTokens} shownStyle={mine.tap?.correct?"right":"missed"}/>}</div>}</div>}
@@ -272,7 +278,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
   {round.beat==="lightning"&&round.lightning&&<LightningLive l={round.lightning} world={world} answered={mine.lightning} answer={race.lightningAnswer} left={left} seconds={(myMs??10000)/1000} onLock={line=>act("race_lightning",{line})}/>}
   {round.beat==="burst"&&round.burst&&<DiscoveryBurst key={round.step} chunks={round.burst.chunks.map(c=>({index:c.index,lines:c.lines,chunk:{discovery:c.discovery}}) as unknown as RaceChunk)} world={world} sound={sound} squad={round.squadsOn&&race.squadId?{name:"Your squad",found:race.burstFound.length}:null} onFind={i=>{act("race_burst",{chunk:i})}}/>}
   {/* A lock missed and not yet opened stays open to the proof until the next chunk starts (the reveal is short). */}
-  {(round.beat==="board"||round.beat==="countdown")&&!mine.tap?.correct&&!mine.opened&&q&&race.revealKey?.task&&<RecoveryPanel task={race.revealKey.task} seed={`${state.me.id}|${round.chunk.id}|open`} chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shownLines={ownProof}
+  {(round.beat==="board"||round.beat==="countdown")&&!mine.tap?.correct&&!mine.opened&&q&&race.revealKey?.task&&<RecoveryPanel task={race.revealKey.task} seed={`${state.me.id}|${round.chunk.id}|open`} chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} shownLines={ownProof} paraLines={ownPara.paraLines} pointer={pointerText(world,ownPara.pid,ownPara.paraNumber)}
    answerText={race.revealKey.best?.join(" · ")??race.revealKey.answer} clueWords={race.revealKey.clues??undefined} choices={q.choices} dnd={q.dnd} callPassages={q.callPassages} onOpen={async a=>!(await act("race_recover",{answer:a}))}/>}
   {/* Opened with the proof after the reveal (on the leaderboard or countdown): the same quiet opening. */}
   {(round.beat==="board"||round.beat==="countdown")&&!mine.tap?.correct&&mine.opened&&q&&<LockMoment kind="quiet" size="md" className="mb-3"/>}
@@ -393,10 +399,10 @@ function NoteHeadsUp({note,step,held,paused,act}:{note:string;step:number;held:b
 }
 
 // A puzzle lock on a phone: solved alone, one try scored on the server; then the phone waits for the class.
-function LivePuzzle({p,seed,act,sound}:{p:{data:RoomPuzzle;lines:Record<string,string>;readLines:LineRef[]};seed:string;sound:boolean;act:(k:string,pl?:Record<string,unknown>)=>Promise<string|null>|void}){
+function LivePuzzle({p,seed,act,sound}:{p:{data:RoomPuzzle;lines:Record<string,string>;readLines:LineRef[];readChunks?:LineRef[][]};seed:string;sound:boolean;act:(k:string,pl?:Record<string,unknown>)=>Promise<string|null>|void}){
  const [done,setDone]=useState(false);
  if(done)return <p role="status" className="mt-6 rounded-card bg-success p-4 text-center font-display text-[22px] font-bold text-on-success">Lock open. Watch the board for the class.</p>;
- return <div className="mt-2"><PuzzleLock puzzle={p.data} lineOf={r=>p.lines[refKey(r)]??null} readLines={p.readLines} seed={seed} sound={sound} submit={a=>{act("race_puzzle",{answer:a})}} onDone={()=>setDone(true)}/></div>;
+ return <div className="mt-2"><PuzzleLock puzzle={p.data} lineOf={r=>p.lines[refKey(r)]??null} readLines={p.readLines} readChunks={p.readChunks} seed={seed} sound={sound} submit={a=>{act("race_puzzle",{answer:a})}} onDone={()=>setDone(true)}/></div>;
 }
 // The room clock on the board and phones (lib/room-clock.ts): the server's time used plus the running beat, ticking
 // once a second; null when the clock is off.

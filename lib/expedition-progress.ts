@@ -2,6 +2,7 @@
 // for first-try proof), rank badges for expeditions finished, skill badges by question type, and the class Evidence
 // rollup (skill map by standard, first-try rates by type, Refresher fixes, Gist accuracy, unknown words, Case Notes,
 // Name the Liar). Pure functions: solo progress lives on the device, a class student's in expedition_results.
+import { DOK_NAMES, dokFromNote } from "./dok.ts";
 import { roomDashRow, roomDashTotals, roomOf } from "./escape-room.ts";
 import type { WorldPack } from "./world-schema.ts";
 import { TYPE_INFO } from "./expedition.ts";
@@ -18,6 +19,8 @@ export type ExpeditionAttempt = {
   score: number; notes: CaseNote[]; interview: InterviewNote | null; award: { stars: number; of: number; badge: string | null } | null;
   // The one-sentence reflection after the skill report ("Which skill improved, and how do you know?").
   reflection?: string | null;
+  // The last room's exit door: the student's answer to the story's essential question, with Case File lines.
+  essential?: { text: string; lines: string[] } | null;
   // An unfinished room: where it picks up again (lib/escape-room.ts RoomResume); null once the room is finished.
   resume?: unknown;
   // Puzzle locks: each one's first-try result (lib/escape-room.ts).
@@ -105,9 +108,13 @@ export function skillMap(attempts: ExpeditionAttempt[], grade: Grade, firsts = f
   byStd.set(gistStd, { right: g.right + gists.filter((n) => n.gistRight).length, total: g.total + gists.length });
   const byType = new Map<string, { right: number; total: number }>();
   for (const n of notes) { const x = byType.get(n.type) ?? { right: 0, total: 0 }; x.total++; if (provedFirstTry(n)) x.right++; byType.set(n.type, x); }
+  // Depth of Knowledge (lib/dok.ts): first-try rate per level; older notes take their level from the question type.
+  const byDok = new Map<number, { right: number; total: number }>();
+  for (const n of notes) { const d = dokFromNote(n); if (!d) continue; const x = byDok.get(d) ?? { right: 0, total: 0 }; x.total++; if (provedFirstTry(n)) x.right++; byDok.set(d, x); }
   return {
     standards: [...byStd.entries()].map(([code, x]) => ({ code, ...x, pct: pct(x.right, x.total) })).sort((a, b) => a.code.localeCompare(b.code)),
     types: [...byType.entries()].map(([type, x]) => ({ type, ...x, pct: pct(x.right, x.total) })).sort((a, b) => a.type.localeCompare(b.type)),
+    dok: [...byDok.entries()].sort((a, b) => a[0] - b[0]).map(([level, x]) => ({ level, name: DOK_NAMES[level as 1 | 2 | 3 | 4], ...x, pct: pct(x.right, x.total) })),
     gist: { right: gists.filter((n) => n.gistRight).length, total: gists.length, pct: pct(gists.filter((n) => n.gistRight).length, gists.length) },
     refresher: { fixed: notes.filter((n) => n.fixed === true).length, tried: notes.filter((n) => n.fixed !== null).length },
     unknownWords: [...new Set(notes.flatMap((n) => n.unknownWords.map((w) => w.toLowerCase())))].sort(),
@@ -118,6 +125,8 @@ export function expeditionEvidence(world: WorldPack, students: StudentExpedition
   const exps = world.expeditions ?? [];
   const all = students.flatMap((s) => firstAttempts(s.attempts));
   return {
+    // The story frame for the teacher: the essential question, key concepts and the full synopsis (teacher view only).
+    story: world.engagement ? { question: world.engagement.essential_question, concepts: world.engagement.key_concepts.map((c) => c.name), synopsis: world.engagement.synopsis } : null,
     class: skillMap(all, grade, true),
     // Mastery levels (lib/mastery.ts): the same level names and rules the students see.
     levels: classLevels(students).map((l) => ({ ...l, code: codeOf(l.family, grade) })),

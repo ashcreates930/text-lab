@@ -18,7 +18,7 @@ const flat=(t:string)=>t.replace(/\s+/g," ").trim();
 const KIND:Record<RoomPuzzle["type"],string>={code:"Code lock",painting:"Fix the Painting",scene:"Inspect the Scene"};
 
 // lineOf: a story sentence by paragraph and sentence (solo: from the source; live: the lines the server sent).
-export function PuzzleLock({puzzle,lineOf,readLines,seed,onDone,submit,sound=false}:{puzzle:RoomPuzzle;lineOf:(r:LineRef)=>string|null;readLines:LineRef[];seed:string;onDone:(o:PuzzleOutcome)=>void;sound?:boolean;
+export function PuzzleLock({puzzle,lineOf,readLines,readChunks,seed,onDone,submit,sound=false}:{puzzle:RoomPuzzle;lineOf:(r:LineRef)=>string|null;readLines:LineRef[];readChunks?:LineRef[][];seed:string;onDone:(o:PuzzleOutcome)=>void;sound?:boolean;
  // Live: the phone sends its first try to the server (which scores it); solo scores here.
  submit?:(answer:Record<string,unknown>)=>void}){
  // The large padlock at the top stays closed until the last part is checked (open: every part right on the first try).
@@ -30,7 +30,7 @@ export function PuzzleLock({puzzle,lineOf,readLines,seed,onDone,submit,sound=fal
   <h1 id="pz-h" tabIndex={-1} className="text-[26px] leading-tight outline-none md:text-[30px]">{puzzle.title}</h1>
   {puzzle.prompt&&<p className="text-[17px] font-bold leading-snug">{puzzle.prompt}</p>}
   {puzzle.type==="code"&&<CodeLock p={puzzle} lineOf={lineOf} onDone={onDone} submit={submit} {...ends}/>}
-  {puzzle.type==="painting"&&<PaintingLock p={puzzle} lineOf={lineOf} readLines={readLines} onDone={onDone} submit={submit} {...ends}/>}
+  {puzzle.type==="painting"&&<PaintingLock p={puzzle} lineOf={lineOf} readLines={readLines} readChunks={readChunks} onDone={onDone} submit={submit} {...ends}/>}
   {puzzle.type==="scene"&&<SceneLock p={puzzle} lineOf={lineOf} seed={seed} onDone={onDone} submit={submit} {...ends}/>}
  </section>;
 }
@@ -41,10 +41,11 @@ function Picture({art,alt,spots,active,onSpot,tone}:{art?:string;alt:string;spot
   {art?<img src={art} alt={alt} className="absolute inset-0 h-full w-full object-cover"/>
    :<div role="img" aria-label={`${alt} (sketch until the painting is approved)`} className="absolute inset-0" style={{background:tone==="painting"?"linear-gradient(#cfe1ef 0 38%,#a9c38a 38% 100%)":"linear-gradient(#2b2a52 0 40%,#4b5a3c 40% 100%)"}}/>}
   {/* Each hotspot is a ring with a clear centre (it frames the object rather than hiding it) and a small number badge. */}
-  {spots.map((s,i)=>{const st=active(s.id),tone=st==="on"?"border-primary bg-primary text-on-primary":st==="right"?"border-success bg-success text-on-success":st==="missed"?"border-notyet bg-notyet text-on-notyet":"border-white bg-deep text-ink";
-   return <button key={s.id} type="button" onClick={()=>onSpot(s.id)} aria-pressed={st==="on"} aria-label={`${i+1}: ${s.label}`}
-   className={`absolute h-11 w-11 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] bg-transparent shadow-[0_0_0_2px_rgba(0,0,0,.55),inset_0_0_0_2px_rgba(0,0,0,.35)] ${tone.split(" ")[0]}`} style={{left:`${s.x}%`,top:`${s.y}%`}}>
-    <span aria-hidden className={`absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full border-2 font-display text-[13px] font-bold ${tone}`}>{i+1}</span></button>})}
+  {/* Paintings use subtle brass rings with no numbers; scenes keep a small number badge. */}
+  {spots.map((s,i)=>{const st=active(s.id),painting=tone==="painting",ring=st==="on"?"border-primary bg-primary text-on-primary":st==="right"?"border-success bg-success text-on-success":st==="missed"?"border-notyet bg-notyet text-on-notyet":painting?"border-gold bg-deep text-ink":"border-white bg-deep text-ink";
+   return <button key={s.id} type="button" onClick={()=>onSpot(s.id)} aria-pressed={st==="on"} aria-label={painting?s.label:`${i+1}: ${s.label}`}
+   className={`absolute h-11 w-11 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] bg-transparent shadow-[0_0_0_2px_rgba(0,0,0,.55),inset_0_0_0_2px_rgba(0,0,0,.35)] ${ring.split(" ")[0]}`} style={{left:`${s.x}%`,top:`${s.y}%`}}>
+    {!painting&&<span aria-hidden className={`absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full border-2 font-display text-[13px] font-bold ${ring}`}>{i+1}</span>}</button>})}
   {!art&&<p className="absolute bottom-1 right-2 rounded bg-black/40 px-1.5 text-[11px] font-bold text-white">Sketch: art awaiting approval</p>}
  </div>;
 }
@@ -94,12 +95,15 @@ function CodeLock({p,lineOf,onDone,submit,sound,onOpened}:{p:Code;lineOf:(r:Line
 // ---------- Fix the Painting ----------
 // One mistake at a time: tap one thing the painter got wrong, then the line that proves it, and check. After a miss, a
 // mistake still to be found is shown with its proof outlined; the student taps the line to go on.
-function PaintingLock({p,lineOf,readLines,onDone,submit,sound,onOpened}:{p:Painting;lineOf:(r:LineRef)=>string|null;readLines:LineRef[];onDone:(o:PuzzleOutcome)=>void;submit?:(a:Record<string,unknown>)=>void}&Ends){
+function PaintingLock({p,lineOf,readLines,readChunks,onDone,submit,sound,onOpened}:{p:Painting;lineOf:(r:LineRef)=>string|null;readLines:LineRef[];readChunks?:LineRef[][];onDone:(o:PuzzleOutcome)=>void;submit?:(a:Record<string,unknown>)=>void}&Ends){
  const lines=readLines.map(r=>({r,text:lineOf(r)??""})).filter(l=>l.text),wrongs=p.details.filter(d=>d.wrong);
  // marks/proofs: each mistake's first try (in order); found: wrong details caught or revealed; at: the mistake being worked.
  const [marks,setMarks]=useState<string[]>([]),[proofs,setProofs]=useState<Record<string,LineRef|null>>({}),[found,setFound]=useState<string[]>([]);
  const [at,setAt]=useState(0),[mark,setMark]=useState<string|null>(null),[line,setLine]=useState<LineRef|null>(null),[result,setResult]=useState<null|{ok:boolean;reveal:string|null}>(null),[fixed,setFixed]=useState(false);
  const done=at>=p.wrong,cur=p.details.find(x=>x.id===mark);
+ // Only the sentences of the chunk(s) the picked detail draws on, not every sentence read so far.
+ const groupOf=(refs:LineRef[])=>{if(!readChunks?.length)return null;const keys=new Set(refs.map(refKey));const g=readChunks.filter(ch=>ch.some(r=>keys.has(refKey(r)))).flat().map(refKey);return g.length?new Set(g):null};
+ const near=cur?groupOf(cur.lines):null,detailLines=near?lines.filter(l=>near.has(refKey(l.r))):lines;
  function check(){if(!mark||!line)return;const d=p.details.find(x=>x.id===mark)!,ok=!!d.wrong&&d.lines.some(l=>refKey(l)===refKey(line));
   setMarks(m=>[...m,mark]);setProofs(x=>({...x,[mark]:line}));
   // A miss shows a mistake still to find: the one they marked if it was wrong, otherwise the first one not found yet.
@@ -115,9 +119,9 @@ function PaintingLock({p,lineOf,readLines,onDone,submit,sound,onOpened}:{p:Paint
   <Picture art={p.art} alt={p.alt} tone="painting" spots={p.details} active={active} onSpot={id=>{if(choosable(id)){setMark(id);setLine(null)}}}/>
   {!done&&<div className="flex flex-col gap-2 rounded-card bg-panel p-3"><Progress at={at} of={p.wrong} label="Mistake"/>
    {!mark&&!result&&<><p className="font-display text-[18px] font-bold">Tap one thing the painter got wrong.</p>
-    <ol className="grid gap-2 sm:grid-cols-2">{p.details.map((x,i)=><li key={x.id}><button type="button" disabled={!choosable(x.id)} onClick={()=>{setMark(x.id);setLine(null)}} className={`flex min-h-11 w-full items-center gap-2 rounded-row px-3 py-2 text-left text-[15px] font-bold disabled:opacity-60 ${found.includes(x.id)?"bg-success text-on-success":"bg-panel-2 text-ink"}`}><span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-deep font-display text-ink">{i+1}</span>{x.label}{found.includes(x.id)?" (found)":""}</button></li>)}</ol></>}
+    <ol className="grid gap-2 sm:grid-cols-2">{p.details.map((x,i)=><li key={x.id}><button type="button" disabled={!choosable(x.id)} onClick={()=>{setMark(x.id);setLine(null)}} className={`flex min-h-11 w-full items-center gap-2 rounded-row px-3 py-2 text-left text-[15px] font-bold disabled:opacity-60 ${found.includes(x.id)?"bg-success text-on-success":"bg-panel-2 text-ink"}`}><span aria-hidden className="h-6 w-6 shrink-0 rounded-full border-[3px] border-gold bg-deep"/>{x.label}{found.includes(x.id)?" (found)":""}</button></li>)}</ol></>}
    {mark&&!result&&cur&&<><p className="font-display text-[18px] font-bold">“{cur.label}”. Now tap the line that proves the painter wrong.</p>
-    {lines.map(l=><LineButton key={refKey(l.r)} text={l.text} on={!!line&&refKey(line)===refKey(l.r)} onClick={()=>setLine(l.r)}/>)}
+    {detailLines.map(l=><LineButton key={refKey(l.r)} text={l.text} on={!!line&&refKey(line)===refKey(l.r)} onClick={()=>setLine(l.r)}/>)}
     <div className="flex gap-2"><button type="button" onClick={()=>{setMark(null);setLine(null)}} className="case-secondary">Pick another</button>
      <button type="button" disabled={!line} onClick={check} className="case-primary flex-1 justify-center">Check this mistake <ArrowRight size={18} aria-hidden/></button></div></>}
    {result&&(result.ok||fixed)&&<><p role="status" className="font-display text-[18px] font-bold">{result.ok?"Right: that's a mistake, and the line proves it.":"That one's set."}</p>

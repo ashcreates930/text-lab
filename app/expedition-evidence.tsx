@@ -2,6 +2,7 @@
 // Escape rooms in the Teacher Evidence View (lib/expedition-progress.ts): assign a room and see who
 // finished it; the class skill map by B.E.S.T. benchmark and first-try rates by question type; then each student's
 // rank, badges, skills, Refresher fixes, Gist accuracy, words they didn't know, Case Notes and Name the Liar.
+import {dokFromNote} from "@/lib/dok";
 import {useState} from "react";
 import {CalendarDays,Check,Compass,X} from "lucide-react";
 import type {ClassEvidence} from "@/lib/classroom/evidence";
@@ -21,6 +22,8 @@ function SkillPanels({s}:{s:Skills}){
   <div><p className="text-[13px] font-bold uppercase tracking-wide text-highlight">First-try rate by question type</p><div className="mt-2"><Bars label="By question type" rows={s.types.map(x=>({name:x.type,...x}))}/></div>
    <p className="mt-2 text-[14px] text-ink">Gist accuracy: {s.gist.right}/{s.gist.total} ({pctText(s.gist.pct)}) · Refresher: {s.refresher.fixed} of {s.refresher.tried} fixed</p>
    {s.unknownWords.length>0&&<p className="mt-1 text-[14px] text-muted">Words students marked: {s.unknownWords.join(", ")}</p>}</div>
+  {s.dok&&s.dok.length>0&&<div className="md:col-span-2"><p className="text-[13px] font-bold uppercase tracking-wide text-highlight">First-try rate by Depth of Knowledge</p><div className="mt-2"><Bars label="By Depth of Knowledge" rows={s.dok.map(x=>({name:x.name,right:x.right,total:x.total,pct:x.pct}))}/></div>
+   <p className="mt-1 text-[13px] text-muted">DOK 1: find it in the text. DOK 2: meaning, craft and structure. DOK 3: inference, evidence, theme and claims.</p></div>}
  </div>;
 }
 // onOverride: a teacher overrides the score on a written answer (or clears it with null).
@@ -28,6 +31,9 @@ export function ExpeditionEvidence({data,onAssign,onUnassign,onOverride}:{data:E
  const [due,setDue]=useState<Record<string,string>>({}),[busy,setBusy]=useState("");
  return <section aria-labelledby="exp-ev-h" className="space-y-3">
   <h3 id="exp-ev-h" className="flex items-center gap-2 text-[22px] font-bold text-ink"><Compass size={20} className="text-highlight"/>Escape rooms</h3>
+  {data.story&&<details className="rounded-card bg-panel p-3"><summary className="cursor-pointer text-[16px] font-bold text-ink">The story for teachers: essential question, key concepts and synopsis</summary>
+   <p className="mt-2 text-[15px] text-ink"><b>Essential question:</b> {data.story.question}</p><p className="mt-1 text-[15px] text-ink"><b>Key concepts:</b> {data.story.concepts.join(", ")}</p>
+   <p className="mt-1 text-[15px] text-ink"><b>Synopsis (teacher view only):</b> {data.story.synopsis}</p></details>}
   <p className="max-w-2xl text-[15px] leading-6 text-muted">The rooms your students played solo while signed in to the class. First-try results come from each student's first attempt; every result is tagged to B.E.S.T.</p>
   <ClassRoomNumbers rooms={data.expeditions}/>
   <div className="rounded-3xl bg-panel p-5"><SkillPanels s={data.class}/></div>
@@ -52,7 +58,7 @@ export function ExpeditionEvidence({data,onAssign,onUnassign,onOverride}:{data:E
      <ul className="mt-1 space-y-2 text-[14px] text-ink">{x.rows.flatMap(r=>r.notes.filter(n=>n.format==="written").map(n=><li key={`${r.id}-${n.chunk}`} className="grid gap-1"><span><b>{r.nickname}</b>, chunk {n.chunk}: {n.answer}</span>
       <label className="text-[13px] text-muted">Score{n.teacherVerdict?" (set by you)":" (by the rubric)"}: <select disabled={!onOverride||!r.attemptId} value={n.teacherVerdict??""} onChange={async e=>{setBusy(`${r.id}-${n.chunk}`);await onOverride?.(r.id,r.attemptId!,n.chunk,e.target.value||null);setBusy("")}} className="ml-1 rounded-row bg-panel px-2 py-1 text-[14px] text-ink"><option value="">Rubric score ({/(Strong|Solid|Needs more evidence)/.exec(n.answer)?.[1]??"none"})</option><option>Strong</option><option>Solid</option><option>Needs more evidence</option></select></label></li>))}</ul></div>}
     {x.rows.filter(r=>r.notes.some(n=>n.note)).map(r=><div key={r.id} className="mt-2 rounded-2xl bg-panel-2 p-3"><p className="text-[14px] font-bold text-ink">{r.nickname}'s Case Notes</p>
-     <ul className="mt-1 space-y-1 text-[14px] text-ink">{r.notes.filter(n=>n.note).map(n=><li key={n.chunk}>Chunk {n.chunk} ({n.type}): {n.note}</li>)}</ul></div>)}
+     <ul className="mt-1 space-y-1 text-[14px] text-ink">{r.notes.filter(n=>n.note).map(n=><li key={n.chunk}>Chunk {n.chunk} ({n.type}{dokFromNote(n)?` · DOK ${dokFromNote(n)}`:""}): {n.note}</li>)}</ul></div>)}
    </details>
   </li>)}</ul>
   <div className="rounded-3xl bg-panel p-5"><p className="text-[13px] font-bold uppercase tracking-wide text-highlight">Each student</p>
@@ -62,6 +68,7 @@ export function ExpeditionEvidence({data,onAssign,onUnassign,onOverride}:{data:E
     {s.levels.length>0&&<ul aria-label={`${s.nickname}'s mastery levels`} className="mt-1 flex flex-wrap gap-1">{s.levels.map(l=><li key={l.family} className="rounded-full bg-panel-2 px-2 py-0.5 text-[12px] text-ink" title={l.code}>{l.name}: <b>{l.level}</b> ({l.right}/{l.total})</li>)}</ul>}
     {s.reflections.map((x,i)=><p key={i} className="mt-1 text-[13px] text-ink">Reflection after {x.expedition}: "{x.text}"</p>)}
     {s.skills.types.length>0&&<p className="mt-1 text-[13px] text-muted">{s.skills.types.map(t=>`${t.type} ${pctText(t.pct)}`).join(" · ")}</p>}
+    {s.skills.dok?.length>0&&<p className="mt-1 text-[13px] text-muted">{s.skills.dok.map(d=>`DOK ${d.level} ${pctText(d.pct)}`).join(" · ")}</p>}
     {s.skills.unknownWords.length>0&&<p className="mt-1 text-[13px] text-muted">Words marked: {s.skills.unknownWords.join(", ")}</p>}
    </li>)}</ul></div>
  </section>;

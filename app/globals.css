@@ -304,3 +304,19 @@ html[data-look="mature"] .notyet-panel.notyet-shake{animation:none}
 .door-leaf.door-leaf-open{transform:rotateY(-78deg)}
 @media (prefers-reduced-motion:reduce){.padlock .padlock-shackle,.lock-badge,.door-leaf{transition:none}.lock-badge.lock-proved{animation:none}}
 html[data-motion="reduced"] :is(.padlock .padlock-shackle,.lock-badge,.door-leaf){transition:none}html[data-motion="reduced"] .lock-badge.lock-proved{animation:none}
+
+/* The lantern and fog (app/atmosphere.tsx): mood only, never in the way. The fog drifts gently; under reduced motion
+   it still thickens and thins, without movement. */
+.lantern-fog{background:radial-gradient(ellipse at 50% 35%,transparent 35%,color-mix(in srgb,var(--color-stage) 70%,transparent) 100%),linear-gradient(180deg,color-mix(in srgb,var(--color-muted) 18%,transparent),transparent 30%,color-mix(in srgb,var(--color-muted) 14%,transparent));transition:opacity 1.2s ease}
+.lantern-glow{transition:r .8s ease,opacity .8s ease}
+@media (prefers-reduced-motion:reduce){.lantern-fog,.lantern-glow{transition:none}}
+html[data-motion="reduced"] :is(.lantern-fog,.lantern-glow){transition:none}
+/* The chest (app/atmosphere.tsx): the lid swings up when opened; still under reduced motion. */
+.chest-lid-open{transform:rotate(-28deg);transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
+@media (prefers-reduced-motion:reduce){.chest-lid-open{transition:none}}
+html[data-motion="reduced"] .chest-lid-open{transition:none}
+/* The pointing arrow over the next stop on a first visit (app/world-map.tsx, app/room-scene-view.tsx). */
+@keyframes map-arrow{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.map-arrow{animation:map-arrow 1.2s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.map-arrow{animation:none}}
+html[data-motion="reduced"] .map-arrow{animation:none}

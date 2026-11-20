@@ -1,5 +1,6 @@
 // Server side of live class mode: tokens, loading a session, the host's and players' views, and every action. All
 // writes come through here, so role gating, moderation and the judge cap are enforced in one place.
+import { questionFirst } from "../engagement.ts";
 import { recorderOf, rolesFor as escapeRoles, sharedLockOpen } from "./squad-escape.ts";
 import { cluesFor } from "../clues.ts";
 import { chunkTokens as tokensOf, proofShown } from "../expedition.ts";
@@ -48,7 +49,8 @@ function puzzleOf(st: { world: import("../world-schema.ts").WorldPack; passages?
   const readLines: LineRef[] = chunks.slice(0, data.after).flatMap((c) => c.lines.map((l) => ({ p: l.pid, s: l.index })));
   const refs: LineRef[] = [...readLines, ...(data.type === "code" ? data.dials.map((d) => d.line) : data.type === "painting" ? data.details.flatMap((d) => d.lines) : [...data.objects.map((o) => o.line), ...data.near_misses])];
   const lines = Object.fromEntries(refs.map((r) => [refKey(r), lineAt(passages, r) ?? ""]));
-  return { data, lines, readLines, codeLines: data.type === "code" ? data.dials.map((d) => lineAt(passages, d.line) ?? "") : [] };
+  const readChunks: LineRef[][] = chunks.slice(0, data.after).map((c) => c.lines.map((l) => ({ p: l.pid, s: l.index })));
+  return { data, lines, readLines, readChunks, codeLines: data.type === "code" ? data.dials.map((d) => lineAt(passages, d.line) ?? "") : [] };
 }
 
 // ---------- Tokens ----------
@@ -189,7 +191,7 @@ function publicRace(st: LiveState, round: LiveRaceRound) {
     arc: arc ? beatKind(arc, round.step) : null, double: arc ? multiplierAt(arc, round.step) > 1 : false, checkpoint: isCheckpoint(round.step, chunks.length),
     // The lightning beat: the question and the chunk it recalls (the answer only reaches a phone once it has answered).
     // A puzzle lock: its data and every line it uses, as text (phones don't hold the whole story).
-    puzzle: round.beat === "puzzle" ? (() => { const p = puzzleOf(st, round); return p ? { data: p.data, lines: p.lines, readLines: p.readLines } : null; })() : null,
+    puzzle: round.beat === "puzzle" ? (() => { const p = puzzleOf(st, round); return p ? { data: p.data, lines: p.lines, readLines: p.readLines, readChunks: p.readChunks } : null; })() : null,
     lightning: round.beat === "lightning" && light ? { id: light.id, question: light.question, chunk: light.chunk, lines: chunks[light.chunk - 1]?.lines ?? [], discovery: chunks[light.chunk - 1]?.chunk.discovery ?? null } : null,
     // The burst: level 1's chunks, to find their discoveries.
     burst: round.beat === "burst" ? { chunks: chunks.slice(0, round.step + 1).map((x) => ({ index: x.index, lines: x.lines, discovery: x.chunk.discovery })) } : null,
@@ -437,7 +439,9 @@ export function playerView(st: LiveState, playerId: string) {
         const free = !!(real.question as { showHint?: boolean }).showHint, tier = liveClueTier(mine.clue, free), c = rc[round.step];
         return { tier, free, list: cluesFor(real.question, chunkTokens(c.lines), round.step).map((x) => (x.tier <= tier ? x : { ...x, text: "", lines: [], strike: [] })) }; })() : null;
       const myEscape = squadEscapeView(st, round, me.id, squadIds, i);
-      const extra = { myEscape, myClues, skill, revealKey, version: asked.version, myQuestion: ["race", "reveal", "lightning", "board", "countdown"].includes(round.beat) ? asked.question : null, lightningAnswer: mine.lightning && light ? light.answer : null, burstFound: round.beat === "burst" ? burstFound(st.responses, i, squadIds) : [] };
+      // Question before the reading: for hook locks, this player's own question prompt while they read.
+      const hookPrompt = round.beat === "read" && mineAsked && questionFirst(mineAsked) ? mineAsked.prompt : null;
+      const extra = { hookPrompt, myEscape, myClues, skill, revealKey, version: asked.version, myQuestion: ["race", "reveal", "lightning", "board", "countdown"].includes(round.beat) ? asked.question : null, lightningAnswer: mine.lightning && light ? light.answer : null, burstFound: round.beat === "burst" ? burstFound(st.responses, i, squadIds) : [] };
       return { ...extra, mine, total: raceTotals(st.responses, i, st.players, counted).get(me.id) ?? 0, place: meRow ? { rank: meRow.rank, of: board.rows.length, move: meRow.move, gained: meRow.gained, row: meRow } : null, scale: timeScale(setting), extraTime: setting !== "1",
         // The map: this player's stops so far (stars: 3 proved with the Gist right or not asked, 2 proved, 0 not yet), once each is revealed.
         path: Array.from({ length: round.beat === "reveal" || round.beat === "lightning" || round.beat === "board" || round.beat === "burst" || round.beat === "countdown" ? round.step + 1 : round.step }, (_, k) => { const c = playerChunk(st.responses, i, k, me.id); return c.correct ? (c.gistRight !== false ? 3 : 2) : 0; }),

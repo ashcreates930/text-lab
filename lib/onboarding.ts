@@ -6,7 +6,7 @@
 //   button that replays the hint for that screen (HINTS; done hints are remembered on the device).
 import type { WorldPack } from "./world-schema.ts";
 
-export type Screen = "home" | "scene" | "witness" | "interview" | "read" | "gist" | "question" | "proof" | "clues" | "dnd" | "multi" | "written" | "result" | "lightning" | "board" | "burst"
+export type Screen = "home" | "essential" | "scene" | "witness" | "interview" | "read" | "gist" | "question" | "proof" | "clues" | "dnd" | "multi" | "written" | "result" | "lightning" | "board" | "burst"
   | "countdown" | "liar" | "verdict" | "finish" | "refresher" | "skills" | "notes" | "map" | "myskills" | "practice" | "lobby" | "wait"
   | "door" | "recover" | "inner" | "recap" | "escape" | "stopped" | "puzzle";
 
@@ -42,7 +42,8 @@ export const DO_NOW: Record<Screen, string> = {
   wait: "Wait for the next part to start.",
   door: "Read where you are, then tap Open the door to begin.",
   puzzle: "Solve the puzzle one step at a time, with lines from the story.",
-  recover: "Use the answer shown to open the lock: do what it asks, then tap Open the lock.",
+  recover: "Find the proof in the text, then tap Open the lock (each try gives a little more help).",
+  essential: "Answer the big question in a sentence or two, then pick the lines that back it up.",
   inner: "You opened the inner door, so tap the button to go on.",
   recap: "Read what is in your Case File so far, then tap Into Chamber 2.",
   escape: "You escaped the room, so tap Final results.",
