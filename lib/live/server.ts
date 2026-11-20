@@ -14,7 +14,7 @@ import { liveMissionPieces, liveMissionSetting, missionPick, missionSetting } fr
 import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, livePicks, myStepRecord, playerPicks, playerState, publicStory, readingAction, squadReading, stepKind, tryState, type LiveStoryRound } from "./story.ts";
 import { screenMessage } from "../safety.ts";
 import { CLOCK_ADD_MS, escapeCheck, escapeWinners } from "./race.ts";
-import { ESCAPE_BONUS } from "../room-clock.ts";
+import { escapeBonusOf } from "../room-clock.ts";
 import { missionFor } from "../engagement.ts";
 import { liveClueTier, beatMs, burstFound, firstBeat, liveSpan, interviewOf, liveArc, roomMet, witnessOf, liveClock, clockAdd, squadLockOf, playerAsked, playerVersion, liarAnswers, liveCards, liveRaceBoard, liveRaceChunks, nextBeat, parseExpSettings, playerChunk, playerLiar, playerVote, raceAnswer, raceAnswered, raceDone, raceFinish, raceQuestions, raceReadiness, raceReveal, raceTotals, type LiveRaceRound } from "./race.ts";
 import { firstName, inRoom, interviewAudio, liarBreakdown } from "../interview.ts";
@@ -455,7 +455,7 @@ export function playerView(st: LiveState, playerId: string) {
       const chestCoins = chestCoinsOf(st.responses, me.id);
       const hookPrompt = round.beat === "read" && mineAsked && questionFirst(mineAsked) ? mineAsked.prompt : null;
       // The escape bonus this player (or their squad) got, by chamber.
-      const myBonus = st.responses.filter((r) => r.roundIndex === i && ((r.kind === "race_escape" && r.playerId === me.id) || (r.kind === "squad_escape" && r.playerId && squadIds.includes(r.playerId) && round.squadsOn))).map((r) => Number(r.payload.chamber));
+      const myBonus = st.responses.filter((r) => r.roundIndex === i && ((r.kind === "race_escape" && r.playerId === me.id) || (r.kind === "squad_escape" && r.playerId && squadIds.includes(r.playerId) && round.squadsOn))).map((r) => ({ chamber: Number(r.payload.chamber), firstTries: Number(r.payload.firstTries ?? 0), points: Number(r.payload.points ?? 0) }));
       const extra = { myBonus, chest, chestCoins, hookPrompt, myEscape, myClues, skill, revealKey, version: asked.version, myQuestion: ["race", "reveal", "lightning", "board", "countdown"].includes(round.beat) ? asked.question : null, lightningAnswer: mine.lightning && light ? light.answer : null, burstFound: round.beat === "burst" ? burstFound(st.responses, i, squadIds) : [] };
       return { ...extra, mine, total: raceTotals(st.responses, i, st.players, counted).get(me.id) ?? 0, place: meRow ? { rank: meRow.rank, of: board.rows.length, move: meRow.move, gained: meRow.gained, row: meRow } : null, scale: timeScale(setting), extraTime: setting !== "1",
         // The map: this player's stops so far (stars: 3 proved with the Gist right or not asked, 2 proved, 0 not yet), once each is revealed.
@@ -582,9 +582,12 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
         const chk = escapeCheck(round, rc.length, Date.now());
         if (chk) {
           const w = chk.inTime ? escapeWinners(round, rc.length, leaving, st.responses, s.roundIndex, st.players, st.squads) : null;
-          if (w?.kind === "squad") for (const q of w.ids) await store.addResponse(s.id, { roundIndex: s.roundIndex, squadId: q.squad, playerId: q.members[0], role: null, kind: "squad_escape", payload: { chamber: leaving, step: w.step, points: ESCAPE_BONUS }, flagged: false });
-          if (w?.kind === "player") for (const id of w.ids) await store.addResponse(s.id, { roundIndex: s.roundIndex, squadId: st.players.find((p) => p.id === id)?.squadId ?? null, playerId: id, role: null, kind: "race_escape", payload: { chamber: leaving, step: w.step, points: ESCAPE_BONUS }, flagged: false });
-          escaped = [...escaped, { chamber: leaving, step: chamberSpan(rc.length, leaving).to, inTime: chk.inTime, usedMs: chk.usedMs, winners: w?.ids.length ?? 0 }];
+          // One row per escaper (0 points when none of its locks was a first try, so the phone can say why).
+          if (w?.kind === "squad") for (const q of w.ids) await store.addResponse(s.id, { roundIndex: s.roundIndex, squadId: q.squad, playerId: q.members[0], role: null, kind: "squad_escape", payload: { chamber: leaving, step: w.step, firstTries: q.firstTries, points: escapeBonusOf(q.firstTries, true) }, flagged: false });
+          if (w?.kind === "player") for (const p of w.ids) await store.addResponse(s.id, { roundIndex: s.roundIndex, squadId: st.players.find((x) => x.id === p.id)?.squadId ?? null, playerId: p.id, role: null, kind: "race_escape", payload: { chamber: leaving, step: w.step, firstTries: p.firstTries, points: escapeBonusOf(p.firstTries, true) }, flagged: false });
+          const paid = (w?.ids ?? []) as { firstTries: number; name?: string }[];
+          escaped = [...escaped, { chamber: leaving, step: chamberSpan(rc.length, leaving).to, inTime: chk.inTime, usedMs: chk.usedMs, escapers: paid.length, winners: paid.filter((x) => x.firstTries > 0).length,
+            squads: w?.kind === "squad" ? w.ids.map((q) => ({ name: q.name, firstTries: q.firstTries })) : undefined }];
         }
       }
       if (n === "end") { if (escaped.length !== (round.escaped ?? []).length) await set(store, st, { ...round, escaped, clockUsedMs: (round.clockUsedMs ?? 0) + clockAdd(round, Date.now()), pausedAt: null }); await store.updateSession(s.id, { status: "ended", paused: false }); return null; }

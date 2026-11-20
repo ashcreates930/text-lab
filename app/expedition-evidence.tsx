@@ -29,15 +29,16 @@ function SkillPanels({s}:{s:Skills}){
  </div>;
 }
 // The escape timer per chamber (lib/room-clock.ts): time used, and in time or after time ran out; "in time on a replay"
-// when a later attempt made it.
-type TimerRow={budgetMs:number;chambers:{ms:number;inTime:boolean|null;everInTime:boolean}[]}|null;
+// when a later attempt made it; and for a chamber escaped in time, its escape bonus (+100 a first-try proof).
+type TimerRow={budgetMs:number;chambers:{ms:number;inTime:boolean|null;everInTime:boolean;firstTries?:number|null;bonus?:number|null}[]}|null;
 function timerCell(t:TimerRow){
  if(!t)return "·";
- return <ul className="flex flex-col gap-0.5">{t.chambers.map((c,i)=><li key={i} className="whitespace-nowrap">Ch {i+1}: <span className="tabular-nums">{mmss(c.ms)}</span> {c.inTime?<b className="text-success">in time</b>:c.inTime===false?<span className="font-semibold text-notyet">after time{c.everInTime?" (in time on a replay)":""}</span>:""}</li>)}</ul>;
+ return <ul className="flex flex-col gap-0.5">{t.chambers.map((c,i)=><li key={i} className="whitespace-nowrap">Ch {i+1}: <span className="tabular-nums">{mmss(c.ms)}</span> {c.inTime?<b className="text-success">in time</b>:c.inTime===false?<span className="font-semibold text-notyet">after time{c.everInTime?" (in time on a replay)":""}</span>:""}{c.inTime&&c.bonus!=null?<span className="block text-[13px] text-muted">{c.bonus?`+${c.bonus} escape bonus (${c.firstTries} first-try)`:"no escape bonus (no first-try proofs)"}</span>:null}</li>)}</ul>;
 }
 function timerSummary(rows:{timer:TimerRow}[]){
  const all=rows.flatMap(r=>r.timer?r.timer.chambers:[]);if(!all.length)return null;
- return `Chambers escaped in time: ${all.filter(c=>c.inTime).length} · finished after time ran out: ${all.filter(c=>c.inTime===false).length}`;
+ const bonus=all.reduce((n,c)=>n+(c.bonus??0),0);
+ return `Chambers escaped in time: ${all.filter(c=>c.inTime).length} · finished after time ran out: ${all.filter(c=>c.inTime===false).length}${bonus?` · escape bonus earned: +${bonus} (+100 a first-try proof)`:""}`;
 }
 // onOverride: a teacher overrides the score on a written answer (or clears it with null).
 export function ExpeditionEvidence({data,onAssign,onUnassign,onOverride}:{data:Exp;onAssign?:(id:string,due:string|null)=>Promise<void>;onUnassign?:(id:string)=>Promise<void>;onOverride?:(studentId:string,attemptId:string,chunk:number,verdict:string|null)=>Promise<void>}){

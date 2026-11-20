@@ -23,7 +23,7 @@ const Attempt = z.object({
   // An unfinished room's resume point (lib/escape-room.ts parseResume checks it again on load); null once finished.
   // Puzzle locks: each one's first-try result (lib/escape-room.ts).
   essential: z.object({ text: text(400), lines: z.array(text(4000)).max(2) }).nullable().optional(),
-  timer: z.object({ budgetMs: z.number().int().min(0).max(36e6), used: z.array(z.number().int().min(0).max(36e6)).max(2), inTime: z.array(z.boolean().nullable()).max(2) }).nullable().optional(),
+  timer: z.object({ budgetMs: z.number().int().min(0).max(36e6), used: z.array(z.number().int().min(0).max(36e6)).max(2), inTime: z.array(z.boolean().nullable()).max(2), firstTries: z.array(z.number().int().min(0).max(20)).max(2).optional(), bonus: z.array(z.number().int().min(0).max(2000)).max(2).optional() }).nullable().optional(),
   puzzles: z.array(z.object({ id: text(80), type: z.enum(["code", "painting", "scene"]), firstTry: z.array(z.boolean()).max(8), points: z.number().int().min(0).max(5000) })).max(12).optional(),
   resume: z.unknown().optional().nullable().refine((x) => x == null || JSON.stringify(x).length <= 200000, "Resume point too large"),
 });
