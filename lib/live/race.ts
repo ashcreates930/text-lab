@@ -36,7 +36,7 @@ export type ExpSettings = { expeditionId: string; grade?: Grade; gradeBand: Grad
   clock?: RoomClock;
   // The class's question time (set from the class when the game starts; standard otherwise).
   questionTime?: QuestionTime };
-export const LIVE_BEATS = ["vote", "testify", "read", "process", "ask", "race", "reveal", "lightning", "puzzle", "board", "burst", "countdown", "liar", "verdict"] as const;
+export const LIVE_BEATS = ["brief", "vote", "testify", "read", "process", "ask", "race", "reveal", "lightning", "puzzle", "board", "burst", "countdown", "liar", "verdict"] as const;
 // A puzzle lock gets generous time (times each player's extra time); the board moves on early once everyone is done.
 export const PUZZLE_SECONDS = 150;
 export type LiveBeat = (typeof LIVE_BEATS)[number];
@@ -50,7 +50,10 @@ export type LiveRaceRound = { type: "race"; settings: ExpSettings; step: number;
   puzzle?: string | null;
   // The escape timer's time used so far in this game (ms), added up as each beat inside the room ends; minutes the
   // teacher added (5 at a time); and whether the class saw it run out (the time-out moment shows once).
-  clockUsedMs?: number; clockExtraMs?: number };
+  clockUsedMs?: number; clockExtraMs?: number;
+  // Each chamber the class has escaped (the inner door, then the exit): whether the board clock still had time left,
+  // the time used then, and how many players or squads opened every lock and got the escape bonus.
+  escaped?: { chamber: 1 | 2; step: number; inTime: boolean; usedMs: number; winners: number }[] };
 export const interviewOf = (world: WorldPack, round: Pick<LiveRaceRound, "settings" | "interview">): Interview | null => (round.interview ? world.expeditions?.find((e) => e.id === round.settings.expeditionId)?.interview ?? null : null);
 // The escape timer for a live game (lib/room-clock.ts): 35 minutes for each chamber the game plays (both, for the whole
 // room), times 1.5 for More time, plus any minutes the teacher added; the time used; and since when it is running (null
@@ -121,6 +124,8 @@ export function nextBeat(round: LiveRaceRound, chunks: RaceChunk[], arc: Arc | n
   if (b === "puzzle") return puzzles.find((p) => p.id === round.puzzle)?.innerDoor ? { step: s, beat: "countdown" } : { step: s, beat: checkpointAt ? "board" : "countdown" };
   if (b === "vote") return { step: s, beat: "testify" };
   if (b === "testify") return s + 1 < (round.interview?.witnesses ?? 0) ? { step: s + 1, beat: recap ? "testify" : "vote" } : { step: span.from, beat: "read" };
+  // The briefing on the board comes before the room starts; Start the clock moves on to its first beat.
+  if (b === "brief") return firstBeat(round.settings, chunks.length, !!round.interview, at);
   if (b === "liar") return { step: s, beat: "verdict" };
   if (b === "verdict") return "end";
   // The Gist check about every third chunk (lib/formats.ts gistAt); otherwise straight on.
@@ -144,7 +149,7 @@ export function beatMs(round: LiveRaceRound, chunk: RaceChunk | undefined, setti
   const b = round.beat;
   if (b === "vote") return limitMs(VOTE_SECONDS, setting);
   if (b === "liar") return limitMs(LIAR_SECONDS, setting);
-  if (b === "testify" || b === "verdict") return null;
+  if (b === "testify" || b === "verdict" || b === "brief") return null;
   if (b === "read" || !chunk) return null;
   if (b === "process") return limitMs(GIST_SECONDS, setting);
   if (b === "ask") return limitMs(TYPED_SECONDS, setting);
@@ -365,7 +370,7 @@ export function raceAnswer(round: LiveRaceRound, chunks: RaceChunk[], responses:
 // Each player's points through a step (inclusive): Gist check and question points.
 export function raceTotals(responses: LiveResponse[], roundIndex: number, players: LivePlayer[], through: number) {
   const t = new Map(players.map((p) => [p.id, 0]));
-  for (const r of responses) if (r.roundIndex === roundIndex && (r.kind === "race_gist" || r.kind === "race_tap" || r.kind === "race_lightning" || r.kind === "race_burst" || r.kind === "liar_lock" || r.kind === "race_puzzle") && r.playerId && Number(r.payload.step) <= through) t.set(r.playerId, (t.get(r.playerId) ?? 0) + Number(r.payload.points ?? 0));
+  for (const r of responses) if (r.roundIndex === roundIndex && (r.kind === "race_gist" || r.kind === "race_tap" || r.kind === "race_lightning" || r.kind === "race_burst" || r.kind === "liar_lock" || r.kind === "race_puzzle" || r.kind === "race_escape") && r.playerId && Number(r.payload.step) <= through) t.set(r.playerId, (t.get(r.playerId) ?? 0) + Number(r.payload.points ?? 0));
   return t;
 }
 // The board after a step: players (or squads, by average, when squads are on) with their move since the step before.
@@ -375,7 +380,7 @@ export function liveRaceBoard(responses: LiveResponse[], roundIndex: number, pla
     const of = new Map(players.map((p) => [p.id, p.squadId]));
     const names = new Map(squads.map((s) => [s.id, s.name]));
     // Squad escapes: each shared lock-in that proved its lock adds to the squad's row.
-    const plus = (t: Map<string, number>, upto: number) => { for (const s of squads) { const ids = players.filter((p) => p.squadId === s.id).map((p) => p.id); let add = 0; for (let k = 0; k <= upto; k++) add += squadLockOf(responses, roundIndex, k, ids)?.points ?? 0; if (add) t.set(s.id, (t.get(s.id) ?? 0) + add); } return t; };
+    const plus = (t: Map<string, number>, upto: number) => { for (const s of squads) { const ids = players.filter((p) => p.squadId === s.id).map((p) => p.id); let add = 0; for (let k = 0; k <= upto; k++) add += squadLockOf(responses, roundIndex, k, ids)?.points ?? 0; add += squadEscapePoints(responses, roundIndex, ids, upto); if (add) t.set(s.id, (t.get(s.id) ?? 0) + add); } return t; };
     return { kind: "squad" as const, rows: raceBoard(plus(squadTotals(before, of), step - 1), plus(squadTotals(after, of), step), names) };
   }
   return { kind: "player" as const, rows: raceBoard(before, after, new Map(players.map((p) => [p.id, p.nickname]))) };
@@ -435,3 +440,24 @@ export function liveCards(responses: LiveResponse[], roundIndex: number, witness
 // Every player's answer at the reveal (no lock counts as naming no one).
 export const liarAnswers = (responses: LiveResponse[], roundIndex: number, players: LivePlayer[]): LiarAnswer[] =>
   players.map((p) => { const l = playerLiar(responses, roundIndex, p.id); return { liar: l?.liar ?? null, line: l?.line ?? null }; });
+
+// ---------- The escape bonus (lib/room-clock.ts ESCAPE_BONUS) ----------
+// A live chamber is escaped when the class leaves its door: the inner door's puzzle lock for chamber 1, the end of the
+// game after the exit (Name the Liar) for chamber 2. It is escaped in time when the board clock still has time left
+// then. The bonus goes, once per chamber, to every player who opened every lock in that chamber (proved it, or opened
+// it after a miss with the proof), or with squads on to every squad that made its shared lock-in on every lock. Never
+// for finishing alone, and never with the timer off.
+export function escapeCheck(round: LiveRaceRound, chunks: number, now: number) {
+  const c = liveClock(round, chunks, []); if (!c) return null;
+  const usedMs = (round.clockUsedMs ?? 0) + clockAdd(round, now);
+  return { usedMs, inTime: usedMs < c.budgetMs };
+}
+export function escapeWinners(round: LiveRaceRound, chunks: number, chamber: 1 | 2, responses: LiveResponse[], roundIndex: number, players: LivePlayer[], squads: LiveSquad[]) {
+  const span = chamberSpan(chunks, chamber), steps = Array.from({ length: span.to - span.from + 1 }, (_, i) => span.from + i);
+  if (round.squadsOn && squads.length) return { kind: "squad" as const, step: span.to, ids: squads.map((s) => ({ squad: s.id, members: players.filter((p) => p.squadId === s.id).map((p) => p.id) }))
+    .filter((s) => s.members.length && steps.every((k) => squadLockOf(responses, roundIndex, k, s.members))) };
+  return { kind: "player" as const, step: span.to, ids: players.filter((p) => steps.every((k) => playerChunk(responses, roundIndex, k, p.id).opened)).map((p) => p.id) };
+}
+// The squad escape bonus rows (squad_escape) a squad's members hold, through a step.
+export const squadEscapePoints = (responses: LiveResponse[], roundIndex: number, ids: string[], upto: number) =>
+  responses.filter((r) => r.roundIndex === roundIndex && r.kind === "squad_escape" && r.playerId && ids.includes(r.playerId) && Number(r.payload.step) <= upto).reduce((n, r) => n + Number(r.payload.points ?? 0), 0);

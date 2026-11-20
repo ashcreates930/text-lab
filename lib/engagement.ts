@@ -203,3 +203,7 @@ export function briefingProblems(world: WorldPack, passages: SourcePassage[]): s
   }
   return [...new Set(out)];
 }
+
+// The mission line for the chamber a student (or a live class) is starting: chamber 1's, or chamber 2's. It names the
+// clock, so screens show it only while the escape timer is on.
+export const missionFor = (b: { mission?: string; mission2?: string } | null | undefined, chamber: 1 | 2) => (chamber === 2 ? b?.mission2 : b?.mission) ?? null;

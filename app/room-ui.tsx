@@ -17,7 +17,7 @@ import {DragDrop,type DndView} from "./drag-drop";
 import {ReadingPanel} from "./reading-panel";
 import {DoNow} from "./practice-round";
 import {DO_NOW} from "@/lib/onboarding";
-import {HINT_STEPS,hintStep} from "@/lib/engagement";
+import {HINT_STEPS,hintStep,missionFor} from "@/lib/engagement";
 
 // ---------- Above every question: a large closed padlock, and which lock this is ----------
 export function LockBanner({lock,of,kind}:{lock:number;of:number;kind:LockKind}){
@@ -153,8 +153,8 @@ export function InnerDoor({room,stop,onNext,onMap,clockNote=null,inTimeBadge=nul
  </section>;
 }
 // Chamber 2 after a break: what the Case File holds, then on.
-// The mission line for the chamber the student is starting (it names the clock, so only while the escape timer is on).
-export const missionFor=(b:{mission?:string;mission2?:string}|null|undefined,chamber:1|2)=>(chamber===2?b?.mission2:b?.mission)??null;
+// The mission line for the chamber the student is starting (lib/engagement.ts; only while the escape timer is on).
+export {missionFor};
 export function ChamberRecap({room,items,onNext,mission=null}:{room:Room;items:InventoryItem[];onNext:()=>void;mission?:string|null}){
  return <section aria-labelledby="ex-h" className="mx-auto flex w-full max-w-xl flex-col gap-3 pt-2">
   <DoNow text={DO_NOW.recap}/>

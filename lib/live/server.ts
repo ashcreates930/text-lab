@@ -13,10 +13,12 @@ import type { SourcePassage } from "../source-passages.ts";
 import { liveMissionPieces, liveMissionSetting, missionPick, missionSetting } from "./missions.ts";
 import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, livePicks, myStepRecord, playerPicks, playerState, publicStory, readingAction, squadReading, stepKind, tryState, type LiveStoryRound } from "./story.ts";
 import { screenMessage } from "../safety.ts";
-import { CLOCK_ADD_MS } from "./race.ts";
+import { CLOCK_ADD_MS, escapeCheck, escapeWinners } from "./race.ts";
+import { ESCAPE_BONUS } from "../room-clock.ts";
+import { missionFor } from "../engagement.ts";
 import { liveClueTier, beatMs, burstFound, firstBeat, liveSpan, interviewOf, liveArc, roomMet, witnessOf, liveClock, clockAdd, squadLockOf, playerAsked, playerVersion, liarAnswers, liveCards, liveRaceBoard, liveRaceChunks, nextBeat, parseExpSettings, playerChunk, playerLiar, playerVote, raceAnswer, raceAnswered, raceDone, raceFinish, raceQuestions, raceReadiness, raceReveal, raceTotals, type LiveRaceRound } from "./race.ts";
 import { firstName, inRoom, interviewAudio, liarBreakdown } from "../interview.ts";
-import { lineAt, liveLiar, recoveryTask, refKey, roomOf } from "../escape-room.ts";
+import { chamberSpan, lineAt, liveLiar, recoveryTask, refKey, roomOf } from "../escape-room.ts";
 import type { LineRef, RoomPuzzle } from "../world-schema.ts";
 import { TYPE_INFO, hasExpeditions, joinedPassages, timeScale, type RaceChunk } from "../expedition.ts";
 import { beatKind, isCheckpoint, multiplierAt, questionAt, type Version } from "../pacing.ts";
@@ -188,6 +190,10 @@ function publicRace(st: LiveState, round: LiveRaceRound) {
   return {
     type: "race" as const, step: round.step, total: chunks.length, beat: round.beat, beatStartedAt: round.beatStartedAt, squadsOn: round.squadsOn, paused: !!round.pausedAt, holdBefore: round.holdBefore ?? null,
     beatMs: beatMs(round, c, "1"), expedition: { id: round.settings.expeditionId, title: exp?.title ?? "" }, chamber: round.settings.chamber ?? 0, squadRoles: round.squadsOn ? st.squads.map((q) => { const ids = st.players.filter((p) => p.squadId === q.id).map((p) => p.id), roles = escapeRoles(ids, roomOf(st.world, round.settings.expeditionId)?.number ?? 1); return { name: q.name, members: ids.map((id) => ({ nickname: st.players.find((p) => p.id === id)?.nickname ?? "", roles: roles[id] ?? [] })) }; }).filter((q) => q.members.length > 1) : null, clock: liveClock(round, chunks.length, roomOf(st.world, round.settings.expeditionId)?.puzzles ?? []), gradeBand: round.settings.gradeBand, grade: round.settings.grade ?? 7, highlighter: round.settings.highlighter,
+    // The room's briefing on the board before the clock starts; the mission for the chamber this game opens on.
+    briefing: round.beat === "brief" ? (() => { const rm = roomOf(st.world, round.settings.expeditionId), b = st.world.rooms?.find((r) => r.expedition === round.settings.expeditionId)?.briefing; if (!rm || !b) return null; const on = (round.settings.clock ?? "escape") !== "off";
+      return { room: rm.number, name: rm.name, scenario: b.scenario, concepts: b.concepts.map((n) => ({ name: n, teaser: st.world.engagement?.key_concepts.find((k) => k.name === n)?.teaser ?? "" })), mission: on ? missionFor(b, round.settings.chamber === 2 ? 2 : 1) : null, timer: on }; })() : null,
+    escaped: round.escaped ?? [],
     chunk: { id: c.id, index: c.index, passages: c.passages, lines: c.lines, gist: strip(c.chunk.gist.options), discovery: { phrase: c.chunk.discovery.phrase, note: c.chunk.discovery.note } },
     // The arc's moment at this chunk (the twist, the boss, a surprise double), for the banners; the checkpoint follows level 1.
     arc: arc ? beatKind(arc, round.step) : null, double: arc ? multiplierAt(arc, round.step) > 1 : false, checkpoint: isCheckpoint(round.step, chunks.length),
@@ -448,7 +454,9 @@ export function playerView(st: LiveState, playerId: string) {
       const chest = ["reveal", "lightning", "board", "burst", "countdown"].includes(round.beat) && mine.correct ? liveChest(st.responses, i, me.id, round.step, true) : null;
       const chestCoins = chestCoinsOf(st.responses, me.id);
       const hookPrompt = round.beat === "read" && mineAsked && questionFirst(mineAsked) ? mineAsked.prompt : null;
-      const extra = { chest, chestCoins, hookPrompt, myEscape, myClues, skill, revealKey, version: asked.version, myQuestion: ["race", "reveal", "lightning", "board", "countdown"].includes(round.beat) ? asked.question : null, lightningAnswer: mine.lightning && light ? light.answer : null, burstFound: round.beat === "burst" ? burstFound(st.responses, i, squadIds) : [] };
+      // The escape bonus this player (or their squad) got, by chamber.
+      const myBonus = st.responses.filter((r) => r.roundIndex === i && ((r.kind === "race_escape" && r.playerId === me.id) || (r.kind === "squad_escape" && r.playerId && squadIds.includes(r.playerId) && round.squadsOn))).map((r) => Number(r.payload.chamber));
+      const extra = { myBonus, chest, chestCoins, hookPrompt, myEscape, myClues, skill, revealKey, version: asked.version, myQuestion: ["race", "reveal", "lightning", "board", "countdown"].includes(round.beat) ? asked.question : null, lightningAnswer: mine.lightning && light ? light.answer : null, burstFound: round.beat === "burst" ? burstFound(st.responses, i, squadIds) : [] };
       return { ...extra, mine, total: raceTotals(st.responses, i, st.players, counted).get(me.id) ?? 0, place: meRow ? { rank: meRow.rank, of: board.rows.length, move: meRow.move, gained: meRow.gained, row: meRow } : null, scale: timeScale(setting), extraTime: setting !== "1",
         // The map: this player's stops so far (stars: 3 proved with the Gist right or not asked, 2 proved, 0 not yet), once each is revealed.
         path: Array.from({ length: round.beat === "reveal" || round.beat === "lightning" || round.beat === "board" || round.beat === "burst" || round.beat === "countdown" ? round.step + 1 : round.step }, (_, k) => { const c = playerChunk(st.responses, i, k, me.id); return c.correct ? (c.gistRight !== false ? 3 : 2) : 0; }),
@@ -519,7 +527,9 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
         const at = inRoom(iv) ? iv!.witnesses.map((w) => w.at!) : null;
         const interview = iv ? { liar: liveLiar(s.classId, s.id, settings.expeditionId, iv.witnesses.length), witnesses: iv.witnesses.length, at } : null;
         const n = st.world.expeditions?.find((e) => e.id === settings.expeditionId)?.chunks.length ?? 1, first = firstBeat(settings, n, !!interview, at);
-        const race: LiveRaceRound = { type: "race", settings, step: first.step, beat: first.beat, witness: first.witness ?? null, beatStartedAt: new Date().toISOString(), squadsOn: a.squads === true && st.squads.length > 0, pinned: null, interview };
+        // A room with a briefing opens on it (the board shows it; the teacher starts the clock).
+        const brief = !!st.world.rooms?.find((r) => r.expedition === settings.expeditionId)?.briefing;
+        const race: LiveRaceRound = { type: "race", settings, step: first.step, beat: brief ? "brief" : first.beat, witness: brief ? null : first.witness ?? null, beatStartedAt: new Date().toISOString(), squadsOn: a.squads === true && st.squads.length > 0, pinned: null, interview };
         await store.updateSession(s.id, { rounds: [...s.rounds, race], roundIndex: s.rounds.length, status: "round", paused: false, roundStartedAt: new Date().toISOString() });
         return null;
       }
@@ -562,15 +572,29 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
     // Proof Race: the next beat (read, summary or question, race, reveal, board), then the next chunk; the end is the podium.
     case "race.next": {
       if (round?.type !== "race" || s.status !== "round") return "No Proof Race is running.";
-      const n = nextBeat(round, liveRaceChunks(st.world, st.passages ?? [], round), liveArc(st.world, round), roomOf(st.world, round.settings.expeditionId)?.puzzles ?? []);
-      if (n === "end") { await store.updateSession(s.id, { status: "ended", paused: false }); return null; }
+      const rc = liveRaceChunks(st.world, st.passages ?? [], round), pz = roomOf(st.world, round.settings.expeditionId)?.puzzles ?? [];
+      const n = nextBeat(round, rc, liveArc(st.world, round), pz);
+      // Leaving a chamber's door: the inner door's puzzle lock (chamber 1), or the end of the game after the exit (chamber 2).
+      // In time, every player (or squad) who opened every lock in it gets the escape bonus, once (lib/live/race.ts).
+      const leaving: 1 | 2 | null = round.beat === "puzzle" && pz.find((p) => p.id === round.puzzle)?.innerDoor ? 1 : n === "end" && round.settings.chamber !== 1 && round.beat !== "brief" ? 2 : null;
+      let escaped = round.escaped ?? [];
+      if (leaving && !escaped.some((e) => e.chamber === leaving)) {
+        const chk = escapeCheck(round, rc.length, Date.now());
+        if (chk) {
+          const w = chk.inTime ? escapeWinners(round, rc.length, leaving, st.responses, s.roundIndex, st.players, st.squads) : null;
+          if (w?.kind === "squad") for (const q of w.ids) await store.addResponse(s.id, { roundIndex: s.roundIndex, squadId: q.squad, playerId: q.members[0], role: null, kind: "squad_escape", payload: { chamber: leaving, step: w.step, points: ESCAPE_BONUS }, flagged: false });
+          if (w?.kind === "player") for (const id of w.ids) await store.addResponse(s.id, { roundIndex: s.roundIndex, squadId: st.players.find((p) => p.id === id)?.squadId ?? null, playerId: id, role: null, kind: "race_escape", payload: { chamber: leaving, step: w.step, points: ESCAPE_BONUS }, flagged: false });
+          escaped = [...escaped, { chamber: leaving, step: chamberSpan(rc.length, leaving).to, inTime: chk.inTime, usedMs: chk.usedMs, winners: w?.ids.length ?? 0 }];
+        }
+      }
+      if (n === "end") { if (escaped.length !== (round.escaped ?? []).length) await set(store, st, { ...round, escaped, clockUsedMs: (round.clockUsedMs ?? 0) + clockAdd(round, Date.now()), pausedAt: null }); await store.updateSession(s.id, { status: "ended", paused: false }); return null; }
       // The teacher asked to pause before this chunk (a content note is coming): pause here instead of showing it.
       if (round.holdBefore != null && n.step === round.holdBefore && n.step !== round.step) {
         await set(store, st, { ...round, holdBefore: null, pausedAt: round.pausedAt ?? new Date().toISOString() }); await store.updateSession(s.id, { paused: true }); return null;
       }
       // Moving on ends a pause: the new beat's clock starts now, so phones must be able to answer it.
       if (s.paused) await store.updateSession(s.id, { paused: false });
-      return set(store, st, { ...round, step: n.step, beat: n.beat, puzzle: n.puzzle ?? null, witness: n.witness ?? null, clockUsedMs: (round.clockUsedMs ?? 0) + clockAdd(round, Date.now()), beatStartedAt: new Date().toISOString(), pausedAt: null, pinned: n.step === round.step ? round.pinned ?? null : null });
+      return set(store, st, { ...round, escaped, step: n.step, beat: n.beat, puzzle: n.puzzle ?? null, witness: n.witness ?? null, clockUsedMs: (round.clockUsedMs ?? 0) + clockAdd(round, Date.now()), beatStartedAt: new Date().toISOString(), pausedAt: null, pinned: n.step === round.step ? round.pinned ?? null : null });
     }
     // The Bonus Round: after a Proof Race; squads are built first if there are none.
     case "bonus.start": {
