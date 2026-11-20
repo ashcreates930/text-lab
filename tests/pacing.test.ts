@@ -103,6 +103,8 @@ test("live: answer, rank pill, no board until the checkpoint; a lightning beat; 
   const view = (pid: string) => server.playerView(st, pid).race!;
   // Two squads of two, so the burst counts a find once per squad.
   assert.equal(await host({ action: "round.start", type: "race", settings: { expeditionId: e1.id, gradeBand: "6-8", questions: false } }), null);
+  // The room opens on its briefing (tests/live-briefing.test.ts); the teacher starts the clock.
+  assert.equal(await host({ action: "race.next" }), null);
   for (let k = 0; k < 8 && pub().beat !== "read"; k++) await host({ action: "race.next" });
   // Play one chunk: everyone reads and picks the best summary; Ana and Ben answer right, Cy and Di miss.
   const best = (k: number) => e1.chunks[k].gist.options.findIndex((o) => o.best);
@@ -166,9 +168,9 @@ test("live: answer, rank pill, no board until the checkpoint; a lightning beat; 
   assert.ok(dbl >= 2 && dbl <= 4);
   const dTap = (st.responses.find((r) => r.kind === "race_tap" && r.playerId === ids[0] && r.payload.step === dbl)!.payload) as { mult: number };
   assert.equal(dTap.mult, DOUBLE, "double points on the surprise stop");
-  // Totals include the lightning beat and the burst.
+  // Totals include the lightning beat, the burst and the escape bonus (Ana opened every lock before the clock ran out).
   const { raceTotals } = await import("../lib/live/race.ts");
-  const t = raceTotals(st.responses, st.session.roundIndex, st.players, 4), parts = st.responses.filter((r) => r.playerId === ids[0] && r.roundIndex === st.session.roundIndex && ["race_gist", "race_tap", "race_lightning", "race_burst", "race_puzzle"].includes(r.kind)).reduce((a, r) => a + Number(r.payload.points ?? 0), 0);
+  const t = raceTotals(st.responses, st.session.roundIndex, st.players, 4), parts = st.responses.filter((r) => r.playerId === ids[0] && r.roundIndex === st.session.roundIndex && ["race_gist", "race_tap", "race_lightning", "race_burst", "race_puzzle", "race_escape"].includes(r.kind)).reduce((a, r) => a + Number(r.payload.points ?? 0), 0);
   assert.equal(t.get(ids[0]), parts);
   // Adaptive: Ana answered right twice in a row, so she is on the harder version.
   assert.equal(view(ids[0]).version, "harder");

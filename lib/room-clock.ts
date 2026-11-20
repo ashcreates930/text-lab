@@ -25,7 +25,7 @@ export function escapeBudgetMs(clock: RoomClock, questionTime: string | null | u
 }
 // The clock runs on every beat inside a chamber, reading included; it stops outside one (the briefing at the door,
 // the inner door and the recap between chambers, the escape and everything after it).
-const OUTSIDE = new Set(["practice", "door", "inner", "recap", "escape", "finish", "refresher", "skills", "notes", "essential", "verdict", "lobby"]);
+const OUTSIDE = new Set(["practice", "door", "inner", "recap", "escape", "finish", "refresher", "skills", "notes", "essential", "verdict", "lobby", "brief"]);
 export const clockRuns = (beat: string) => !OUTSIDE.has(beat);
 export type ClockView = { leftMs: number; overtime: boolean; label: string; warn: "five" | "one" | "zero" | null };
 export const mmss = (ms: number) => { const s = Math.ceil(Math.abs(ms) / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };

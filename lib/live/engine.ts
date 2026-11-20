@@ -44,7 +44,9 @@ export type LivePlayer = { id: string; nickname: string; squadId: string | null;
 export type ResponseKind = "pin" | "explain" | "approve" | "object" | "submit" | "vote" | "pins" | "argument" | "judged" | "counter_vote" | "override" | "witness" | "story" | "story_try" | "mission" | "mission_pick" | "story_pin" | "story_react" | "story_vote" | "story_freeze" | "your_turn_start" | "your_turn_angle" | "your_turn"
   // Proof Race (lib/live/race.ts) and the lobby: a player's avatar (a story character), the host's extra time for a
   // player, a pinned student question.
-  | "race_ready" | "race_clue" | "squad_lock" | "race_gist" | "race_question" | "race_tap" | "race_lightning" | "race_burst" | "race_unknown" | "race_refresh" | "race_note" | "bonus_pick" | "bonus_submit" | "race_pin" | "avatar" | "player_time" | "interview_vote" | "liar_lock" | "race_recover" | "race_puzzle" | "race_chest";
+  | "race_ready" | "race_clue" | "squad_lock" | "race_gist" | "race_question" | "race_tap" | "race_lightning" | "race_burst" | "race_unknown" | "race_refresh" | "race_note" | "bonus_pick" | "bonus_submit" | "race_pin" | "avatar" | "player_time" | "interview_vote" | "liar_lock" | "race_recover" | "race_puzzle" | "race_chest"
+  // The escape bonus in time (lib/live/race.ts escapeWinners): a player's, or a squad's (held by its first member).
+  | "race_escape" | "squad_escape";
 export type LiveResponse = {
   id: string; roundIndex: number; squadId: string | null; playerId: string | null; role: Role | "host" | "system" | null;
   kind: ResponseKind; payload: Record<string, unknown>; flagged: boolean; createdAt: string;

@@ -8,6 +8,7 @@ import {ChestCard,addKit} from "../atmosphere";
 import {PlainWordsState} from "../read-aloud";
 import {ReadFor} from "../story-opening";
 import {lanternLevel,pointerText,proofParagraph} from "@/lib/engagement";
+import {ESCAPE_BONUS,mmss} from "@/lib/room-clock";
 import {Held,LockMoment} from "../lock-art";
 import type {InventoryItem} from "@/lib/escape-room";
 import {SQUAD_ROLE_INFO,type SquadRole} from "@/lib/live/squad-escape";
@@ -18,7 +19,7 @@ import type {LineRef,RoomPuzzle} from "@/lib/world-schema";
 import {LockBanner,RecoveryPanel,CaseFileButton,TimeoutMoment} from "../room-ui";
 import {lockKind} from "@/lib/escape-room";
 import {useEffect,useLayoutEffect,useRef,useState} from "react";
-import {ArrowRight,Check,Download,Highlighter,Pin,Plus,Printer,Volume2,VolumeX,Zap} from "lucide-react";
+import {ArrowRight,Check,Download,Highlighter,Pin,Plus,Printer,Timer,Volume2,VolumeX,Zap} from "lucide-react";
 import type {hostView,playerView} from "@/lib/live/server";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
@@ -92,7 +93,7 @@ export function RacePick({state,act}:{state:HostView;act:(b:Record<string,unknow
 }
 
 // ---------- The host board ----------
-const BEAT_LABEL:Record<string,string>={read:"Read",process:"Gist check",ask:"Your question",race:"Question",reveal:"The proof",lightning:"Lightning",puzzle:"Puzzle lock",board:"Checkpoint",burst:"Squad burst",countdown:"Next chunk"};
+const BEAT_LABEL:Record<string,string>={brief:"Briefing",read:"Read",process:"Gist check",ask:"Your question",race:"Question",reveal:"The proof",lightning:"Lightning",puzzle:"Puzzle lock",board:"Checkpoint",burst:"Squad burst",countdown:"Next chunk"};
 const scaleOf=(setting:string|null|undefined)=>setting==="untimed"?3:Number(setting)>0?Number(setting):1;
 export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound;world:WorldPack|null;act:(b:Record<string,unknown>)=>void}){
  const race=state.race!;
@@ -108,6 +109,7 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
  const due=!state.session.paused&&((round.beat==="read"&&race.ready.advance)||(timed&&left===0)||(waiting&&everyone));
  useEffect(()=>{if(due&&moved.current!==key){moved.current=key;act({action:"race.next"})}},[due,key,act]);
  const liveClockNow=useLiveClock(round.clock);
+ if(round.beat==="brief"&&round.briefing)return <BriefingBoard b={round.briefing} chamber={round.chamber} players={state.counters.players} onStart={()=>act({action:"race.next"})}/>;
  if(interviewBeat(round.beat)&&round.interview)return <InterviewHost state={state} round={round} world={world} act={act} left={timed&&totalMs!==null?left:null} totalMs={totalMs}/>;
  const next=<button type="button" onClick={()=>act({action:"race.next"})} className="host-btn">{round.beat==="countdown"?(round.step+1>=round.total?(round.interview?"Name the Liar":"Final podium"):"Next lock"):"Next"} <ArrowRight size={22} aria-hidden/></button>;
  const tokens=chunkTokens(round.chunk.lines);
@@ -129,6 +131,7 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
    <p className="mt-2 text-[16px] text-muted">Everyone commits on their own phone first; then each squad's Recorder locks in the answer the squad agrees on.</p></div>}
   {nextNote&&<NoteHeadsUp note={nextNote} step={round.step} held={round.holdBefore===round.step+1} paused={!!state.session.paused} act={act}/>}
   {state.session.paused&&<p role="status" className="mt-2 rounded-card bg-gold px-4 py-2 text-[18px] font-bold text-on-gold">Paused. Everyone stays on this screen.</p>}
+  {round.beat==="countdown"&&round.escaped.filter(e=>e.step===round.step).map(e=><EscapeNote key={e.chamber} e={e} budgetMs={round.clock?.budgetMs??0} squads={round.squadsOn} timeout={world?.engagement?.timeout_moment??null}/>)}
   {round.beat==="read"&&world&&<><p className="mt-2 text-[clamp(18px,1.6vw,26px)] text-muted" aria-live="polite">{race.ready.ready} of {race.ready.total} ready · no question timer while reading</p>
    <div className="mt-3"><ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} large/></div></>}
   {round.beat==="process"&&<div className="mt-3"><p className="text-[20px] text-muted">{race.answered} of {state.counters.players} answered</p><p className="mt-2 font-display text-[clamp(26px,2.8vw,44px)] font-bold">Which is the best summary?</p>
@@ -170,7 +173,7 @@ export function RaceFinishHost({state,round,act}:{state:HostView;round:RaceRound
  const f=round.finish;if(!f)return null;
  const portrait=(id:string)=>state.lobby.find(p=>p.id===id)?.avatar?.portrait??null;
  const entries:PodiumEntry[]=f.podium.map(r=>({id:r.id,name:r.name,points:r.points,portrait:f.kind==="player"?portrait(r.id):null}));
- return <section className="mt-6"><Podium entries={entries} dark sound title={f.kind==="squad"?"Top squads":"Top detectives"}/>
+ return <section className="mt-6">{round.escaped.map(e=><EscapeNote key={e.chamber} e={e} budgetMs={round.clock?.budgetMs??0} squads={round.squadsOn} timeout={null}/>)}<Podium entries={entries} dark sound title={f.kind==="squad"?"Top squads":"Top detectives"}/>
   <div className="mt-8 rounded-3xl bg-panel p-5"><h2 className="text-[24px] font-bold">Class stats</h2>
    <p className="mt-1 text-[16px] text-muted">The share who proved each chunk. The 3 hardest: {f.stats.hardest.map(h=>`chunk ${h.index+1} (${h.pct}%)`).join(", ")}.</p>
    {act&&<button type="button" onClick={()=>act({action:"bonus.start"})} className="host-btn mt-2">Start the Bonus Round <ArrowRight size={22} aria-hidden/></button>}
@@ -226,6 +229,11 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  const tokens=chunkTokens(round.chunk.lines);
  // This student's own version of the question (easier or harder), else the standard one.
  const q=race.myQuestion??round.question;
+// The briefing: this phone shows the chamber's mission while the board shows the whole briefing.
+ if(round.beat==="brief")return <section className="mt-3 flex flex-col gap-3" aria-labelledby="rp-h">{round.briefing&&<p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Room {round.briefing.room} · {round.briefing.name}</p>}
+  <h1 id="rp-h" className="text-[28px] leading-tight outline-none">Your mission</h1>
+  {round.briefing?.mission?<p className="rounded-card bg-panel px-4 py-3 text-[19px] font-bold leading-snug text-highlight">{round.briefing.mission}</p>:null}
+  <p className="text-[17px]">{round.briefing?.timer===false?"Look at the board. Your teacher opens the door.":"Look at the board. The clock starts when your teacher starts it."}</p></section>;
  if(interviewBeat(round.beat)&&round.interview)return <>{race.myEscape&&<div className="mt-3"><SquadRoleBar esc={race.myEscape}/></div>}{(round.beat==="liar"||round.beat==="verdict")&&<RaceHud score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.total} total={round.total} left={null} title={round.expedition.title}/>}<InterviewPlayer state={state} world={world} act={act} left={round.beat==="vote"||round.beat==="liar"?left:null} myMs={myMs}/></>;
  // The one plain sentence for this screen (lib/onboarding.ts), and first-time hints marked done after a right answer.
  const phoneScreen:Screen=({read:"read",process:"gist",ask:"wait",race:testifying?"wait":q?.format==="dnd"?"dnd":q?.format==="multi"?"multi":q?.format==="written"&&step===1?"written":(step===2||q?.format==="tap")?(q?.clues?"clues":"proof"):"question",
@@ -246,6 +254,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
   {phoneClock?.overtime&&!timeoutSeen&&<TimeoutMoment text={world?.engagement?.timeout_moment??"Time ran out."} onGo={()=>setTimeoutSeen(true)}/>}
   {hud}
   {race.myEscape&&<SquadRoleBar esc={race.myEscape}/>}
+  {round.beat==="countdown"&&round.escaped.filter(e=>e.step===round.step).map(e=><MyEscapeNote key={e.chamber} e={e} mine={race.myBonus.includes(e.chamber)} squads={round.squadsOn}/>)}
   {race.extraTime&&<p className="text-[13px] font-bold text-muted">Extra time is on for you.</p>}
   {round.paused&&<p role="status" className="rounded-card bg-gold px-4 py-2 text-[16px] font-bold text-on-gold">Paused by your teacher.</p>}
   {round.beat==="read"&&<><h1 id="rp-h" className="text-[28px] outline-none">Read the chunk</h1>
@@ -333,6 +342,7 @@ export function RaceEndedPlayer({state,world,act}:{state:PlayerView;world:WorldP
  return <section className="mt-6 text-center"><h1 className="text-[30px] font-bold outline-none">Race over</h1>
   {state.race.place&&<p className="mt-2 text-[20px]">You finished <b>#{state.race.place.rank}</b> of {state.race.place.of} with {state.race.total.toLocaleString()} points.</p>}
   {mine!==null&&mine>=0&&<p className="mt-2 text-[20px] font-bold text-highlight">You're on the podium!</p>}
+  {round.escaped.length>0&&<div className="mx-auto mt-3 flex max-w-xl flex-col gap-2 text-left">{round.escaped.map(e=><MyEscapeNote key={e.chamber} e={e} mine={state.race!.myBonus.includes(e.chamber)} squads={round.squadsOn}/>)}</div>}
   <div className="mt-5"><Podium entries={f.podium.map(r=>({id:r.id,name:r.name,points:r.points,portrait:r.portrait}))}/></div>
   <p className="mt-4 text-[15px] text-muted">Every point came from a line proved in the story.</p>
   {after&&<button type="button" onClick={()=>setStage(after.refresher.length?"refresher":"refresher")} className="case-primary mt-5 w-full justify-center">{after.refresher.length?`Refresher: fix ${after.refresher.length}`:"Refresher"} <ArrowRight size={18} aria-hidden/></button>}</section>;
@@ -456,4 +466,31 @@ function SquadLockPanel({esc,onLock}:{esc:EscView;onLock:(from:string)=>void}){
    :waiting.length?<p className="mt-2 text-[14px] font-bold text-muted">Waiting for {waiting.join(", ")} to commit. Talk it over, then the Recorder locks one in.</p>
    :<p className="mt-2 text-[14px] font-bold text-muted">{esc.recorder?"Talk it over, then lock in the answer your squad agrees on.":"Talk it over. Your Recorder locks in the squad's answer."}</p>}
  </div>;
+}
+// The room's briefing on the board before the clock starts (lib/live/race.ts "brief"): the scenario, the key concepts,
+// the chamber's mission, and Start the clock for the teacher.
+function BriefingBoard({b,chamber,players,onStart}:{b:{room:number;name:string;scenario:string;concepts:{name:string;teaser:string}[];mission:string|null;timer:boolean};chamber:number;players:number;onStart:()=>void}){
+ return <section className="mt-4 max-w-5xl" aria-labelledby="race-h">
+  <div className="flex flex-wrap items-end justify-between gap-3"><div>
+   <p className="text-[clamp(14px,1.2vw,18px)] font-extrabold uppercase tracking-[.08em] text-highlight">Room {b.room} · {chamber===2?"Chamber 2":chamber===1?"Chamber 1":"The whole room"}</p>
+   <h2 id="race-h" className="text-[clamp(30px,3.2vw,52px)] font-bold leading-tight">{b.name}</h2></div>
+   <div className="flex flex-wrap items-center gap-3"><span className="text-[18px] text-muted">{players} {players===1?"player":"players"} in the room</span>
+    <button type="button" onClick={onStart} className="host-btn">{b.timer?<><Timer size={22} aria-hidden/>Start the clock</>:<>Open the door <ArrowRight size={22} aria-hidden/></>}</button></div></div>
+  <p className="mt-3 font-serif text-[clamp(22px,2.2vw,34px)] leading-relaxed">{b.scenario}</p>
+  {b.concepts.length>0&&<div className="mt-4"><p className="text-[clamp(14px,1.2vw,18px)] font-extrabold uppercase tracking-[.08em] text-highlight">This room explores</p>
+   <ul className="mt-2 grid gap-2 md:grid-cols-2">{b.concepts.map(c=><li key={c.name} className="rounded-card bg-panel px-5 py-3 text-[clamp(18px,1.6vw,24px)]"><b className="font-display text-gold">{c.name}.</b> {c.teaser}</li>)}</ul></div>}
+  {b.mission&&<p className="mt-4 rounded-card bg-panel px-5 py-4 text-[clamp(22px,2.2vw,34px)] font-bold leading-snug text-highlight">{b.mission}</p>}
+ </section>;
+}
+// A chamber's escape on the board (right after its door, and on the podium): in time with the bonus, or time ran out.
+function EscapeNote({e,budgetMs,squads,timeout}:{e:{chamber:number;inTime:boolean;usedMs:number;winners:number};budgetMs:number;squads:boolean;timeout:string|null}){
+ const who=squads?(e.winners===1?"squad":"squads"):(e.winners===1?"player":"players");
+ return <p role="status" className={`mt-3 rounded-card px-5 py-3 text-[clamp(18px,1.8vw,26px)] font-bold ${e.inTime?"bg-success text-on-success":"bg-notyet-soft text-ink"}`}>
+  {e.inTime?<>Chamber {e.chamber} escaped in time, with {mmss(Math.max(0,budgetMs-e.usedMs))} to spare. {e.winners?`+${ESCAPE_BONUS} escape bonus to ${e.winners} ${who} who opened every lock.`:"No one opened every lock, so no escape bonus this time."}</>
+   :<>{timeout?`${timeout} `:""}Chamber {e.chamber} wasn't escaped in time, so there's no escape bonus. Every proof still counts.</>}</p>;
+}
+// This phone's escape result for a chamber, beside the class's.
+export function MyEscapeNote({e,mine,squads}:{e:{chamber:number;inTime:boolean};mine:boolean;squads:boolean}){
+ return <p role="status" className={`rounded-card px-4 py-3 text-[16px] font-bold ${mine?"bg-success text-on-success":"bg-panel text-ink"}`}>
+  {mine?`+${ESCAPE_BONUS} escape bonus: ${squads?"your squad":"you"} escaped Chamber ${e.chamber} in time.`:e.inTime?`Chamber ${e.chamber} was escaped in time, but the bonus needs every lock opened.`:`Time ran out in Chamber ${e.chamber}, so there's no escape bonus. Every proof still counts.`}</p>;
 }
