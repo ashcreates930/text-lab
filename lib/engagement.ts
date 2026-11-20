@@ -8,7 +8,7 @@
 import type { ExpQuestion, WorldPack } from "./world-schema";
 import type { SourcePassage } from "./source-passages";
 import { lockKind } from "./escape-room.ts";
-import { lineAt } from "./escape-room.ts";
+import { lineAt, roomOf } from "./escape-room.ts";
 
 // Depth of Knowledge: lib/dok.ts (kept apart so case notes can use it without the room rules).
 export {DOK_BY_TYPE,DOK_NAMES,dokOf,dokFromNote} from "./dok.ts";
@@ -81,6 +81,11 @@ export function engagementProblems(world: WorldPack, passages: SourcePassage[]):
     for (const exp of world.expeditions ?? []) for (const c of exp.chunks) for (const seg of c.segments) if (!skip.has(seg.p) && !e.passage_topics?.[seg.p]) { out.push(`${at}/${exp.id}: paragraph ${seg.p} has no topic`); break; }
   }
   out.push(...plainProblems(world, passages));
+  // A room's briefing names only the story's own key concepts.
+  for (const room of world.rooms ?? []) for (const c of room.briefing?.concepts ?? []) if (!e?.key_concepts.some((k) => k.name === c)) out.push(`${at}/${room.expedition} briefing: "${c}" isn't one of the story's key concepts`);
+  // The mission line counts chamber 1's locks exactly.
+  for (const room of world.rooms ?? []) { const m = room.briefing?.mission; if (!m) continue; const n = /open (\d+) locks?/.exec(m), c1 = roomOf(world, room.expedition)?.chambers[0];
+    if (!n || !c1 || +n[1] !== c1.to - c1.from + 1) out.push(`${at}/${room.expedition} briefing mission: it must say "open ${c1 ? c1.to - c1.from + 1 : "?"} locks"`); }
   // Every question has a DOK level.
   for (const exp of world.expeditions ?? []) for (const c of exp.chunks) for (const q of [c.question, ...(c.bank ?? [])]) if (!dokOf(q)) out.push(`${at}/${exp.id}/${c.id}: no DOK level`);
   return [...new Set(out)];

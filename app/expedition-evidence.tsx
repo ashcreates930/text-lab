@@ -2,6 +2,7 @@
 // Escape rooms in the Teacher Evidence View (lib/expedition-progress.ts): assign a room and see who
 // finished it; the class skill map by B.E.S.T. benchmark and first-try rates by question type; then each student's
 // rank, badges, skills, Refresher fixes, Gist accuracy, words they didn't know, Case Notes and Name the Liar.
+import {mmss} from "@/lib/room-clock";
 import {dokFromNote} from "@/lib/dok";
 import {useState} from "react";
 import {CalendarDays,Check,Compass,X} from "lucide-react";
@@ -27,6 +28,17 @@ function SkillPanels({s}:{s:Skills}){
    <p className="mt-1 text-[13px] text-muted">DOK 1: find it in the text. DOK 2: meaning, craft and structure. DOK 3: inference, evidence, theme and claims.</p></div>}
  </div>;
 }
+// The escape timer per chamber (lib/room-clock.ts): time used, and in time or after time ran out; "in time on a replay"
+// when a later attempt made it.
+type TimerRow={budgetMs:number;chambers:{ms:number;inTime:boolean|null;everInTime:boolean}[]}|null;
+function timerCell(t:TimerRow){
+ if(!t)return "·";
+ return <ul className="flex flex-col gap-0.5">{t.chambers.map((c,i)=><li key={i} className="whitespace-nowrap">Ch {i+1}: <span className="tabular-nums">{mmss(c.ms)}</span> {c.inTime?<b className="text-success">in time</b>:c.inTime===false?<span className="font-semibold text-notyet">after time{c.everInTime?" (in time on a replay)":""}</span>:""}</li>)}</ul>;
+}
+function timerSummary(rows:{timer:TimerRow}[]){
+ const all=rows.flatMap(r=>r.timer?r.timer.chambers:[]);if(!all.length)return null;
+ return `Chambers escaped in time: ${all.filter(c=>c.inTime).length} · finished after time ran out: ${all.filter(c=>c.inTime===false).length}`;
+}
 // onOverride: a teacher overrides the score on a written answer (or clears it with null).
 export function ExpeditionEvidence({data,onAssign,onUnassign,onOverride}:{data:Exp;onAssign?:(id:string,due:string|null)=>Promise<void>;onUnassign?:(id:string)=>Promise<void>;onOverride?:(studentId:string,attemptId:string,chunk:number,verdict:string|null)=>Promise<void>}){
  const [due,setDue]=useState<Record<string,string>>({}),[busy,setBusy]=useState("");
@@ -43,14 +55,16 @@ export function ExpeditionEvidence({data,onAssign,onUnassign,onOverride}:{data:E
     <tbody>{data.levels.map(r=><tr key={r.family} className="border-t border-edge"><td className="py-1 pr-3"><span className="font-semibold">{r.name}</span> <span className="text-muted">{r.code}</span></td>{LEVELS.map(l=><td key={l} className="py-1 pr-3 tabular-nums">{r.counts[l]}</td>)}</tr>)}</tbody></table></div></div>}
   <ul className="grid gap-3">{data.expeditions.map((x,k)=><li key={x.id} className="min-w-0 rounded-3xl bg-panel p-5">
    <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-[17px] font-semibold text-ink">Room {x.number??k+1}: {x.title} <span className="text-[14px] font-normal text-muted">· {x.finished} of {x.of} escaped</span></p>
+    {timerSummary(x.rows)&&<p className="mt-0.5 text-[14px] text-ink">{timerSummary(x.rows)}</p>}
     {x.totals&&<p className="mt-0.5 text-[14px] text-muted">Locks opened: <b className="text-ink">{x.totals.locksOpened}</b> · Puzzles solved on the first try: <b className="text-ink">{x.totals.puzzlesFirstTry}</b> · Liars caught: <b className="text-ink">{x.totals.liarsCaught} of {x.totals.liarTries}</b> · Reached: {(["Chamber 1","At the inner door","Chamber 2","Escaped"] as const).map(r=>`${r} ${x.totals!.reached[r]}`).join(", ")}</p>}</div>
     {onAssign&&<div className="flex flex-wrap items-center gap-2">{x.assigned?<><span className="inline-flex items-center gap-1 rounded-full bg-success px-3 py-1 text-[13px] font-bold text-on-success"><CalendarDays size={14}/>Assigned{x.assigned.due?` · due ${x.assigned.due}`:""}</span>
       <button type="button" disabled={busy===x.id} onClick={async()=>{setBusy(x.id);await onUnassign?.(x.id);setBusy("")}} className="case-secondary !min-h-10 !text-[14px]">Remove</button></>
      :<><label className="text-[13px] text-muted">Due<input type="date" value={due[x.id]??""} onChange={e=>setDue(d=>({...d,[x.id]:e.target.value}))} className="ml-1 rounded-row bg-panel-2 px-2 py-1 text-[14px] text-ink"/></label>
       <button type="button" disabled={busy===x.id} onClick={async()=>{setBusy(x.id);await onAssign(x.id,due[x.id]||null);setBusy("")}} className="case-primary !min-h-10 !text-[14px]">Assign</button></>}</div>}</div>
    <details className="mt-2"><summary className="cursor-pointer text-[15px] font-semibold text-highlight">Each student: the chamber reached, locks, puzzles, the liar and their notes</summary>
-    <div className="mt-2 overflow-x-auto"><table className="w-full text-left text-[14px] text-ink"><thead><tr className="text-muted"><th className="py-1 pr-3 font-semibold">Student</th><th className="py-1 pr-3 font-semibold">Chamber reached</th><th className="py-1 pr-3 font-semibold">Locks opened</th><th className="py-1 pr-3 font-semibold">Proved first try</th><th className="py-1 pr-3 font-semibold">Puzzles first try</th><th className="py-1 pr-3 font-semibold">Clues</th><th className="py-1 pr-3 font-semibold">Score</th><th className="py-1 font-semibold">Liar</th></tr></thead>
+    <div className="mt-2 overflow-x-auto"><table className="w-full text-left text-[14px] text-ink"><thead><tr className="text-muted"><th className="py-1 pr-3 font-semibold">Student</th><th className="py-1 pr-3 font-semibold">Chamber reached</th><th className="py-1 pr-3 font-semibold">Escape timer</th><th className="py-1 pr-3 font-semibold">Locks opened</th><th className="py-1 pr-3 font-semibold">Proved first try</th><th className="py-1 pr-3 font-semibold">Puzzles first try</th><th className="py-1 pr-3 font-semibold">Clues</th><th className="py-1 pr-3 font-semibold">Score</th><th className="py-1 font-semibold">Liar</th></tr></thead>
      <tbody>{x.rows.map(r=><tr key={r.id} className="border-t border-edge align-top"><td className="py-1 pr-3 font-semibold">{r.nickname}</td><td className="py-1 pr-3">{r.finished?<><Check size={14} className="mr-1 inline text-success"/>Escaped {r.finished.slice(0,10)}</>:r.room&&r.room.reached!=="Not started"?r.room.reached:<><X size={14} className="mr-1 inline text-muted"/>Not started</>}</td>
+      <td className="py-1 pr-3">{timerCell(r.timer)}</td>
       <td className="py-1 pr-3 tabular-nums">{r.room?`${r.room.locksOpened}/${r.room.locks}`:"·"}</td>
       <td className="py-1 pr-3 tabular-nums">{r.firstTry===null?"·":`${r.firstTry}/${r.total}`}</td>
       <td className="py-1 pr-3 tabular-nums">{r.room&&r.room.puzzles?`${r.room.puzzlesFirstTry}/${r.room.puzzles}`:"·"}</td><td className="py-1 pr-3">{cluesText(r.notes)}</td><td className="py-1 pr-3 tabular-nums">{r.score??"·"}</td>

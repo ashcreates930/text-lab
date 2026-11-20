@@ -10,7 +10,9 @@ export type ClassRow = { id: string; teacher_id: string; name: string | null; cl
   // The class's look (escape-room phase 3, migration 202611140001): mature (the default) or classic. Absent before the migration.
   look?: "mature" | "classic";
   // The class's room clock (escape-room phase 5, migration 202611150001): off (the default), generous or extra. Absent before the migration.
-  room_clock?: "off" | "generous" | "extra";
+  room_clock?: "escape" | "off" | "generous" | "extra";
+  // The escape timer paused for the whole class by the teacher (null: running). Needs the 202611200001 migration.
+  clock_paused_at?: string | null;
   // The class's question time (migration 202611150003): standard (the default) or more. Absent before the migration.
   question_time?: "standard" | "more" };
 // Story Mode settings: the class leaderboard (individual unless the teacher picks squads or off) and whether scenes with
@@ -39,7 +41,8 @@ export interface ClassroomStore {
   setPreviewEnabled(classId: string, enabled: boolean): Promise<void>;
   setPersonalSettings(classId: string, settings: { rolesOn?: boolean; anglesOn?: boolean }): Promise<void>;
   setLook(classId: string, look: "mature" | "classic"): Promise<void>;
-  setRoomClock(classId: string, clock: "off" | "generous" | "extra"): Promise<void>;
+  setRoomClock(classId: string, clock: "escape" | "off"): Promise<void>;
+  setClockPaused(classId: string, paused: boolean): Promise<void>;
   setQuestionTime(classId: string, time: "standard" | "more"): Promise<void>;
   setStorySettings(classId: string, settings: { leaderboard?: "individual" | "squad" | "off"; storyModeOn?: boolean }): Promise<void>;
   // Extra time per student for Story Mode (1.5x, 2x or untimed). Students without a setting have normal time.
@@ -107,6 +110,7 @@ function supabaseStore(db: SupabaseClient): ClassroomStore {
     async setPreviewEnabled(classId, enabled) { must(await db.from("sessions").update({ preview_enabled: enabled }).eq("id", classId)); },
     async setLook(classId, look) { must(await db.from("sessions").update({ look }).eq("id", classId)); },
     async setRoomClock(classId, clock) { must(await db.from("sessions").update({ room_clock: clock }).eq("id", classId)); },
+    async setClockPaused(classId, paused) { must(await db.from("sessions").update({ clock_paused_at: paused ? new Date().toISOString() : null }).eq("id", classId)); },
     async setQuestionTime(classId, time) { must(await db.from("sessions").update({ question_time: time }).eq("id", classId)); },
     async setStorySettings(classId, s) { must(await db.from("sessions").update({ ...(s.leaderboard ? { leaderboard_mode: s.leaderboard } : {}), ...(s.storyModeOn !== undefined ? { story_mode_on: s.storyModeOn } : {}) }).eq("id", classId)); },
     async setStudentTime(studentId, setting) { must(await db.from("students").update({ time_setting: setting }).eq("id", studentId)); },
@@ -171,6 +175,7 @@ function memoryStore(): ClassroomStore {
     async createClass(teacherId, input) { const row: ClassRow = { id: id(), teacher_id: teacherId, name: input.name, class_code: newClassCode(), world_id: input.worldId, grade: input.grade, status: "active", preview_enabled: false, created_at: now(), look: "mature", room_clock: "off", question_time: "standard" }; m.classes.push(row); return row; },
     async setLook(classId, look) { const c = m.classes.find((x) => x.id === classId); if (c) c.look = look; },
     async setRoomClock(classId, clock) { const c = m.classes.find((x) => x.id === classId); if (c) c.room_clock = clock; },
+    async setClockPaused(classId, paused) { const c = m.classes.find((x) => x.id === classId); if (c) c.clock_paused_at = paused ? new Date().toISOString() : null; },
     async setQuestionTime(classId, time) { const c = m.classes.find((x) => x.id === classId); if (c) c.question_time = time; },
     async getClass(teacherId, classId) { return m.classes.find((c) => c.id === classId && c.teacher_id === teacherId) ?? null; },
     async setPreviewEnabled(classId, enabled) { const c = m.classes.find((x) => x.id === classId); if (c) c.preview_enabled = enabled; },

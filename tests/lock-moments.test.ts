@@ -48,7 +48,7 @@ test("live: the board opens the class's lock; each phone opens its own, proved o
   assert.match(live, /<LockMoment key=\{round\.step\} kind="proved" sound=\{sound\} headingId="rp-h"\/>/);
   assert.match(live, /:mine\.opened\?<div className="mt-6"><LockMoment kind="quiet" headingId="rp-h"\/><\/div>/);
   assert.match(live, /\(round\.beat==="board"\|\|round\.beat==="countdown"\)&&!mine\.tap\?\.correct&&mine\.opened&&q&&<LockMoment kind="quiet" size="md"/, "opened after the reveal: still quiet");
-  assert.match(live, /sound=\{sound\} submit=\{a=>\{act\("race_puzzle"/);
+  assert.match(live, /sound=\{sound\} pointerFor=\{r=>world\?pointerText\(world,r\.p/);
 });
 
 test("the map and the room scenes: closed padlocks on what's locked, open ones on what's opened; doors carry one too", () => {

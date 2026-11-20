@@ -109,8 +109,7 @@ test("Fix the Painting: brass rings, no number bubbles; after a pick, only the l
   const pz = src("app/puzzle-locks.tsx");
   assert.match(pz, /\{!painting&&<span aria-hidden className=\{`absolute -right-2 -top-2/);
   assert.match(pz, /painting\?"border-gold bg-deep text-ink"/);
-  assert.match(pz, /const paras=new Set\(refs\.map\(r=>r\.p\)\)/, "the whole paragraph the detail comes from");
-  assert.match(pz, /const near=cur\?groupOf\(cur\.lines\):null,detailLines=near\?lines\.filter\(l=>near\.has\(refKey\(l\.r\)\)\):lines;/);
+  assert.match(pz, /const sentencesFor=\(refs:LineRef\[\]\)=>\{const paras=new Set\(refs\.map\(r=>r\.p\)\)/, "the whole paragraph the detail comes from");
   assert.match(src("lib/live/server.ts"), /readChunks: p\.readChunks/);
 });
 

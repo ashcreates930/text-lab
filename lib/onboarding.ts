@@ -40,7 +40,7 @@ export const DO_NOW: Record<Screen, string> = {
   practice: "Follow the arrows to try one practice question, with no points and no timer.",
   lobby: "Wait here until your teacher starts the game.",
   wait: "Wait for the next part to start.",
-  door: "Read where you are, then tap Open the door to begin.",
+  door: "Read where you are, then tap the button at the bottom to begin.",
   puzzle: "Solve the puzzle one step at a time, with lines from the story.",
   recover: "Find the proof in the text, then tap Open the lock (each try gives a little more help).",
   essential: "Answer the big question in a sentence or two, then pick the lines that back it up.",
@@ -53,7 +53,7 @@ export const DO_NOW: Record<Screen, string> = {
 // First-time hints, shown right where the student taps until they've done it right once.
 export type HintId = "read" | "proof" | "lock" | "clues" | "dnd" | "multi" | "written" | "gist" | "witness";
 export const HINTS: Record<HintId, string> = {
-  read: "Read this first. Take your time: the timer starts when you tap Ready.",
+  read: "Read this first. The question timer starts when you tap Ready.",
   proof: "Tap the sentence that proves your answer. It lights up when you pick it.",
   lock: "Lock it in. You get one try, so check your sentence first.",
   clues: "Tap the words near the highlighted word that show what it means.",

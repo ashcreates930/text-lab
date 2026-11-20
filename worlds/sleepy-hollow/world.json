@@ -23940,7 +23940,15 @@
             "s": 0
           }
         }
-      ]
+      ],
+      "briefing": {
+        "scenario": "You have wandered into a quiet glen among the hills above the Hudson, where the old Dutch families say something has hold of the place. Folk here speak of strange sights after dark, and of a rider no one cares to meet. Prove what the story truly says, and find your way out before the night closes in.",
+        "concepts": [
+          "Belief",
+          "Fear"
+        ],
+        "mission": "Your mission: open 5 locks and the gate before the clock runs out."
+      }
     },
     {
       "expedition": "the-schoolmaster",
@@ -26572,6 +26580,7 @@
       "p007": "That is the main idea of this old legend. It has given people many wild stories to tell in that shadowy place, and at every country fireside the ghost is known as the Headless Horseman of Sleepy Hollow.",
       "p008": "Strangely, it isn't only the people born in the valley who become this way. In Irving's words, it \"is unconsciously imbibed by every one who resides there for a time.\" However wide awake they were when they came, in a little while they \"inhale the witching influence of the air, and begin to grow imaginative, to dream dreams, and see apparitions.\"",
       "p009": "The narrator praises this peaceful spot because in quiet little Dutch valleys like it, tucked away here and there in New York State, the people, their manners and their customs remain fixed. Meanwhile, the great flood of new settlers and new ideas keeps changing other parts of this restless country, and it sweeps past these valleys without noticing them. He compares them to small pools of still water beside a fast stream, where a bit of straw or a bubble floats calmly or slowly turns in circles, untouched by the rushing current. Many years have gone by since he walked in Sleepy Hollow, but he wonders whether he would still find the same trees and the same families living their quiet lives there."
-    }
+    },
+    "timeout_moment": "The Horseman reached the bridge before you."
   }
 }

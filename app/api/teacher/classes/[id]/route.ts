@@ -22,9 +22,10 @@ export async function GET(request: Request, { params }: Params) {
 // leaderboard / storyModeOn: Story Mode's class leaderboard and whether scenes use it; studentTime: one student's extra time.
 // absent: mark one student absent for today (left out of Story Mode squad averages).
 // look: the class's look, mature (the default) or classic (escape-room phase 3).
-// roomClock: the class's room clock, off (the default), generous or extra (escape-room phase 5).
+// roomClock: the class's escape timer, on (the default, 35 minutes per chamber) or off. clockPaused: the teacher pauses
+// the timer for the whole class (students' rooms stop counting within 15 seconds).
 // questionTime: standard (the default) or more (student testing, 2026-11-15).
-const Patch = z.object({ questionTime: z.enum(["standard", "more"]).optional(), roomClock: z.enum(["off", "generous", "extra"]).optional(), look: z.enum(["mature", "classic"]).optional(), previewEnabled: z.boolean().optional(), rolesOn: z.boolean().optional(), anglesOn: z.boolean().optional(), leaderboard: z.enum(["individual", "squad", "off"]).optional(), storyModeOn: z.boolean().optional(), studentTime: z.object({ studentId: z.string().uuid(), setting: z.enum(["1", "1.5", "2", "untimed"]) }).optional(), absent: z.object({ studentId: z.string().uuid(), absent: z.boolean() }).optional() }).refine((x) => Object.values(x).some((v) => v !== undefined));
+const Patch = z.object({ questionTime: z.enum(["standard", "more"]).optional(), roomClock: z.enum(["escape", "off"]).optional(), clockPaused: z.boolean().optional(), look: z.enum(["mature", "classic"]).optional(), previewEnabled: z.boolean().optional(), rolesOn: z.boolean().optional(), anglesOn: z.boolean().optional(), leaderboard: z.enum(["individual", "squad", "off"]).optional(), storyModeOn: z.boolean().optional(), studentTime: z.object({ studentId: z.string().uuid(), setting: z.enum(["1", "1.5", "2", "untimed"]) }).optional(), absent: z.object({ studentId: z.string().uuid(), absent: z.boolean() }).optional() }).refine((x) => Object.values(x).some((v) => v !== undefined));
 export async function PATCH(request: Request, { params }: Params) {
   const ctx = await teacherFromRequest(request);
   if (isFailure(ctx)) return NextResponse.json({ error: ctx.error }, { status: ctx.status });
@@ -42,7 +43,12 @@ export async function PATCH(request: Request, { params }: Params) {
   }
   if (input.data.roomClock !== undefined) {
     if (cls.room_clock === undefined) return NextResponse.json({ error: "Run the 202611150001 migration to set the room clock." }, { status: 503 });
-    await ctx.store.setRoomClock(cls.id, input.data.roomClock);
+    try { await ctx.store.setRoomClock(cls.id, input.data.roomClock); }
+    catch { return NextResponse.json({ error: "Run the 202611200001 migration to use the escape timer." }, { status: 503 }); }
+  }
+  if (input.data.clockPaused !== undefined) {
+    if (cls.clock_paused_at === undefined) return NextResponse.json({ error: "Run the 202611200001 migration to pause the class clock." }, { status: 503 });
+    await ctx.store.setClockPaused(cls.id, input.data.clockPaused);
   }
   if (input.data.previewEnabled !== undefined) await ctx.store.setPreviewEnabled(cls.id, input.data.previewEnabled);
   if (input.data.rolesOn !== undefined || input.data.anglesOn !== undefined) {
