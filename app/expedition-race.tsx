@@ -530,7 +530,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   {beat==="inner"&&room&&<InnerDoor clockNote={budget?clockEnding(budget,clockUsed[0]??0):null} room={room} stop={stopsAtInnerDoor({classSession:!!classToken,stopAtInnerDoor})&&!restoredInto2} onMap={onExit} onNext={()=>toLock(k+1)}/>}
   {beat==="recap"&&room&&<ChamberRecap room={room} items={inventory} onNext={()=>toLock(room.chambers[1]?.from??k+1)}/>}
   {beat==="puzzle"&&puzzleId&&(()=>{const pz=world.rooms?.find(r=>r.expedition===expeditionId)?.puzzles?.find(p=>p.id===puzzleId),at=room?.puzzles.find(p=>p.id===puzzleId)?.after??k;
-   return pz?<PuzzleLock key={puzzleId} puzzle={pz} lineOf={r=>lineAt(passages,r)} seed={seedKey} readLines={chunks.slice(0,at+1).flatMap(x=>x.lines.map(l=>({p:l.pid,s:l.index})))} readChunks={chunks.slice(0,at+1).map(x=>x.lines.map(l=>({p:l.pid,s:l.index})))} sound={sound} onDone={onPuzzleDone}/>:null})()}
+   return pz?<PuzzleLock key={puzzleId} puzzle={pz} lineOf={r=>lineAt(passages,r)} seed={seedKey} readLines={chunks.slice(0,at+1).flatMap(x=>x.lines.map(l=>({p:l.pid,s:l.index})))} readChunks={chunks.slice(0,at+1).map(x=>x.lines.map(l=>({p:l.pid,s:l.index})))} sound={sound} pointerFor={r=>pointerText(world,r.p,Number(r.p.slice(1)))} onDone={onPuzzleDone}/>:null})()}
   {beat==="escape"&&room&&<EscapeMoment clockNote={budget?clockEnding(budget,clockUsed[ch]??0):null} room={room} next={nextRoom} solved={!!liarResult?.solved} onNext={()=>{go("finish");onFinish?.(records)}}/>}
   {beat==="scene"&&room&&sceneFor(k)&&(()=>{const sc=sceneFor(k)!,chamber=chamberOfLock(room,k),opened=(i:number)=>isOpen(records[i]);
    // What glows next: a puzzle lock waiting after its lock; the door (the inner door's code lock, or the exit once the last
