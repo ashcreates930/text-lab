@@ -21,6 +21,8 @@ export type ExpeditionAttempt = {
   reflection?: string | null;
   // The last room's exit door: the student's answer to the story's essential question, with Case File lines.
   essential?: { text: string; lines: string[] } | null;
+  // The escape timer per chamber (lib/room-clock.ts): its budget, the time used, and whether each was escaped in time.
+  timer?: { budgetMs: number; used: number[]; inTime: (boolean | null)[] } | null;
   // An unfinished room: where it picks up again (lib/escape-room.ts RoomResume); null once the room is finished.
   resume?: unknown;
   // Puzzle locks: each one's first-try result (lib/escape-room.ts).
@@ -94,6 +96,14 @@ export function firstAttempts(attempts: ExpeditionAttempt[]) {
   return [...by.values()];
 }
 
+// The escape timer for one student in one room: the latest attempt that ran the timer, and any attempt in time per chamber.
+export function timerRow(attempts: Pick<ExpeditionAttempt, "startedAt" | "timer">[]) {
+  const timed = attempts.filter((a) => a.timer && a.timer.budgetMs > 0).sort((a, b) => b.startedAt.localeCompare(a.startedAt));
+  const latest = timed[0]?.timer ?? null; if (!latest) return null;
+  const chambers = latest.used.map((ms, c) => ({ ms, inTime: latest.inTime[c] ?? null, everInTime: timed.some((a) => a.timer!.inTime[c] === true) }));
+  return { budgetMs: latest.budgetMs, chambers };
+}
+
 // ---------- Class Evidence ----------
 export type StudentExpeditions = { id: string; nickname: string; attempts: ExpeditionAttempt[] };
 const pct = (a: number, b: number) => (b ? Math.round((a / b) * 100) : null);
@@ -139,7 +149,10 @@ export function expeditionEvidence(world: WorldPack, students: StudentExpedition
         return { id: s.id, nickname: s.nickname, attemptId: first?.attemptId ?? null, finished: done?.finishedAt ?? null, attempts: mine.length, firstTry: first ? firstTryOf(first) : null, total: first?.notes.length ?? null, score: first?.score ?? null,
           solved: first?.interview ? first.interview.solved : null, liar: first?.interview ?? null, notes: first?.notes ?? [],
           // Escape rooms: the chamber reached, locks opened, puzzles solved on the first try, liar caught.
-          room: room ? roomDashRow(room, mine) : null };
+          room: room ? roomDashRow(room, mine) : null,
+          // The escape timer (lib/room-clock.ts): the latest attempt's time per chamber and whether each was escaped in
+          // time, and whether any attempt (a replay included) escaped each chamber in time.
+          timer: timerRow(mine) };
       });
       const a = assignments.find((x) => x.expeditionId === e.id);
       const dash = rows.flatMap((r) => (r.room ? [r.room] : []));

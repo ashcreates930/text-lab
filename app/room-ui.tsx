@@ -6,7 +6,7 @@
 import {DoorVocab} from "./story-opening";
 import {useEffect,useRef,useState,type ReactNode} from "react";
 import {createPortal} from "react-dom";
-import {ArrowRight,BookOpen,KeyRound,Map as MapIcon,X} from "lucide-react";
+import {ArrowRight,BookOpen,KeyRound,Map as MapIcon,Timer,X} from "lucide-react";
 import {DoorGlyph,DoorScene,LockBadge,Padlock} from "./lock-art";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
@@ -26,14 +26,19 @@ export function LockBanner({lock,of,kind}:{lock:number;of:number;kind:LockKind})
 }
 
 // ---------- The door: where the student is, and what opens the way out ----------
-export function RoomDoor({room,onOpen,resumed=false,vocab=[],lineOf}:{room:Room;onOpen:()=>void;resumed?:boolean;vocab?:{word:string;meaning:string;line:{p:string;s:number}}[];lineOf?:(r:{p:string;s:number})=>string|null}){
+// The briefing at every room's door (teacher, 2026-11-20): a short scenario in the story's voice, the one or two key
+// concepts the room explores, the vocabulary, then "Start the clock" when the escape timer is on.
+export function RoomDoor({room,onOpen,resumed=false,vocab=[],lineOf,briefing=null,concepts=[],timer=false}:{room:Room;onOpen:()=>void;resumed?:boolean;vocab?:{word:string;meaning:string;line:{p:string;s:number}}[];lineOf?:(r:{p:string;s:number})=>string|null;briefing?:{scenario:string;concepts:string[]}|null;concepts?:{name:string;teaser:string}[];timer?:boolean}){
  const [c1,c2]=room.chambers;
  return <section aria-labelledby="ex-h" className="mx-auto flex w-full max-w-xl flex-col gap-4 pt-2">
   <DoNow text={DO_NOW.door}/>
   <div className="rounded-[24px] bg-panel p-5 shadow-[0_8px_0_#0B0920]">
    <div className="flex items-center gap-3"><span aria-hidden className="grid h-14 w-14 shrink-0 place-items-center rounded-[16px] bg-deep text-highlight"><DoorGlyph size={30}/></span>
     <div><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Room {room.number}</p><h1 id="ex-h" className="text-[28px] leading-tight outline-none">{room.name}</h1></div></div>
-   <p className="mt-3 text-[17px] font-bold leading-snug">{room.door??"Every lock in this room opens only with proof from the story. Read closely, prove each answer, and find the way out."}</p>
+   {briefing?<p className="mt-3 font-serif text-[18px] leading-relaxed">{briefing.scenario}</p>
+    :<p className="mt-3 text-[17px] font-bold leading-snug">{room.door??"Every lock in this room opens only with proof from the story. Read closely, prove each answer, and find the way out."}</p>}
+   {briefing&&briefing.concepts.length>0&&<div className="mt-3 flex flex-col gap-1.5"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">This room explores</p>
+    {briefing.concepts.map(n=>{const c=concepts.find(x=>x.name===n);return <p key={n} className="rounded-row bg-panel-2 px-3 py-2 text-[15px]"><b className="font-display text-gold">{n}.</b> {c?.teaser}</p>})}</div>}
    <ul className="mt-3 flex flex-col gap-1.5 text-[15px]">
     {c1&&<li className="flex items-center gap-2"><KeyRound size={16} className="shrink-0 text-gold" aria-hidden/>Chamber 1: locks {c1.from+1} to {c1.to+1}, then the inner door.</li>}
     {c2&&<li className="flex items-center gap-2"><KeyRound size={16} className="shrink-0 text-gold" aria-hidden/>Chamber 2: locks {c2.from+1} to {c2.to+1}.</li>}
@@ -42,7 +47,8 @@ export function RoomDoor({room,onOpen,resumed=false,vocab=[],lineOf}:{room:Room;
   </div>
   {/* The hard words before the reading (lib/engagement.ts): plain meaning and the sentence each comes from. */}
   {lineOf&&<DoorVocab vocab={vocab} lineOf={lineOf}/>}
-  <button type="button" onClick={onOpen} className="case-primary min-h-[56px] w-full justify-center text-[18px]">{resumed?"Back into the room":"Open the door"} <ArrowRight size={18} aria-hidden/></button>
+  {timer&&!resumed&&<p className="flex items-center gap-2 text-[15px] font-bold"><Timer size={18} className="shrink-0 text-gold" aria-hidden/>Each chamber has an escape timer. It runs while you read, too. If it runs out, keep going: your work still counts.</p>}
+  <button type="button" onClick={onOpen} className="case-primary min-h-[56px] w-full justify-center text-[18px]">{timer?<Timer size={18} aria-hidden/>:null}{resumed?(timer?"Back into the room: the clock runs again":"Back into the room"):timer?"Start the clock":"Open the door"}{timer?null:<ArrowRight size={18} aria-hidden/>}</button>
  </section>;
 }
 
@@ -113,15 +119,31 @@ export function CaseFileList({items}:{items:InventoryItem[]}){
   <p className={`mt-0.5 text-[16px] leading-snug ${it.kind==="proof"?"font-serif":""}`}>{it.kind==="statement"||it.kind==="proof"?`“${it.text}”`:it.text}</p></li>)}</ul>;
 }
 
+// ---------- The escape timer runs out ----------
+// A short story moment over the room, once per chamber. The chamber won't count as escaped in time, but nothing stops:
+// the student finishes the locks and keeps every result. Focus goes to its button; it's a dialog until dismissed.
+export function TimeoutMoment({text,onGo}:{text:string;onGo:()=>void}){
+ const btn=useRef<HTMLButtonElement>(null);
+ useEffect(()=>{btn.current?.focus()},[]);
+ return <div className="fixed inset-0 z-[80] grid place-items-center bg-black/60 p-4"><div role="alertdialog" aria-modal="true" aria-labelledby="to-h" aria-describedby="to-d" className="flex w-full max-w-md flex-col gap-3 rounded-[24px] bg-panel p-5 text-center shadow-2xl">
+  <Timer size={36} className="mx-auto text-notyet" aria-hidden/>
+  <h2 id="to-h" className="font-display text-[26px] font-bold leading-tight">{text}</h2>
+  <p id="to-d" className="text-[16px]">Time ran out, so this chamber won't count as escaped in time. Keep going: finish the locks, and every first-try proof still counts. You can replay the chamber later to escape in time.</p>
+  <button ref={btn} type="button" onClick={onGo} className="case-primary min-h-[52px] w-full justify-center">Keep going <ArrowRight size={18} aria-hidden/></button>
+ </div></div>;
+}
+
 // ---------- The doors ----------
 // The door (app/lock-art.tsx DoorScene): its padlock opens once the chamber is cleared, then the door swings open.
 // The inner door between the chambers. stop: the class stops here today (progress is saved).
-export function InnerDoor({room,stop,onNext,onMap,clockNote=null}:{room:Room;stop:boolean;onNext:()=>void;onMap:()=>void;clockNote?:string|null}){
+const InTimeBadge=({ok}:{ok:boolean|null|undefined})=>ok===true?<p className="inline-flex items-center gap-1.5 rounded-full bg-gold px-3 py-1 font-display text-[15px] font-bold text-on-gold"><Timer size={16} aria-hidden/>Escaped in time</p>:null;
+export function InnerDoor({room,stop,onNext,onMap,clockNote=null,inTimeBadge=null}:{room:Room;stop:boolean;onNext:()=>void;onMap:()=>void;clockNote?:string|null;inTimeBadge?:boolean|null}){
  return <section aria-labelledby="ex-h" className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 pt-2 text-center">
   <DoNow text={stop?DO_NOW.stopped:DO_NOW.inner}/>
   <DoorScene open behind="Chamber 2" label="The inner door: its padlock opens and the door swings open"/>
+  <InTimeBadge ok={inTimeBadge}/>
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Room {room.number} · {room.name}</p>
-  <h1 id="ex-h" className="text-[32px] leading-tight outline-none">Chamber 1 escaped</h1>
+  <h1 id="ex-h" className="text-[32px] leading-tight outline-none">{inTimeBadge===false?"Chamber 1 finished":"Chamber 1 escaped"}</h1>
   {clockNote&&<p className="text-[16px] font-bold text-muted">{clockNote}</p>}
   <p role="status" className="text-[17px] font-bold">{stop?"The inner door is open, and your room is saved. Next time, you start in Chamber 2 with everything in your Case File.":"The inner door is open. Chamber 2 is ahead."}</p>
   {stop?<button type="button" onClick={onMap} className="case-primary min-h-[56px] w-full justify-center text-[18px]"><MapIcon size={18} aria-hidden/>Back to the map</button>
@@ -144,12 +166,13 @@ export function ExitBanner(){
  return <p className="inline-flex w-fit items-center gap-2 rounded-full bg-gold px-3 py-1.5 font-display text-[15px] font-bold text-on-gold"><DoorGlyph size={18}/>The exit door: name the liar to open it</p>;
 }
 // The escape: the door swings open and the way to the next room is open (the map lifts its fog when the student is back).
-export function EscapeMoment({room,next,solved,onNext,clockNote=null}:{room:Room;next:Room|null;solved:boolean;onNext:()=>void;clockNote?:string|null}){
+export function EscapeMoment({room,next,solved,onNext,clockNote=null,inTimeBadge=null}:{room:Room;next:Room|null;solved:boolean;onNext:()=>void;clockNote?:string|null;inTimeBadge?:boolean|null}){
  return <section aria-labelledby="ex-h" className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 pt-2 text-center">
   <DoNow text={DO_NOW.escape}/>
   <DoorScene open behind={next?`Room ${next.number}`:"Out"} label="The exit door: its padlock opens and the door swings open"/>
+  <InTimeBadge ok={inTimeBadge}/>
   <p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Room {room.number} · {room.name}</p>
-  <h1 id="ex-h" className="text-[36px] leading-tight outline-none">You escaped!</h1>
+  <h1 id="ex-h" className="text-[36px] leading-tight outline-none">{inTimeBadge===false?"You made it out":"You escaped!"}</h1>
   {clockNote&&<p className="text-[16px] font-bold text-muted">{clockNote}</p>}
   <p role="status" className="text-[18px] font-bold">{solved?"Case solved, and the door is open. ":"The door is open. "}{next?`The way to Room ${next.number}, ${next.name}, is open on the map.`:"That was the last room in this story."}</p>
   <button type="button" onClick={onNext} className="case-primary min-h-[56px] w-full justify-center text-[18px]">Final results <ArrowRight size={18} aria-hidden/></button>

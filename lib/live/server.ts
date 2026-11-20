@@ -13,6 +13,7 @@ import type { SourcePassage } from "../source-passages.ts";
 import { liveMissionPieces, liveMissionSetting, missionPick, missionSetting } from "./missions.ts";
 import { answerStep, answeredStep, freezeAction, freezeView, liveStoryBoard, livePicks, myStepRecord, playerPicks, playerState, publicStory, readingAction, squadReading, stepKind, tryState, type LiveStoryRound } from "./story.ts";
 import { screenMessage } from "../safety.ts";
+import { CLOCK_ADD_MS } from "./race.ts";
 import { liveClueTier, beatMs, burstFound, firstBeat, liveSpan, interviewOf, liveArc, roomMet, witnessOf, liveClock, clockAdd, squadLockOf, playerAsked, playerVersion, liarAnswers, liveCards, liveRaceBoard, liveRaceChunks, nextBeat, parseExpSettings, playerChunk, playerLiar, playerVote, raceAnswer, raceAnswered, raceDone, raceFinish, raceQuestions, raceReadiness, raceReveal, raceTotals, type LiveRaceRound } from "./race.ts";
 import { firstName, inRoom, interviewAudio, liarBreakdown } from "../interview.ts";
 import { lineAt, liveLiar, recoveryTask, refKey, roomOf } from "../escape-room.ts";
@@ -484,7 +485,7 @@ function hasVerdictPins(st: LiveState) {
 export type HostAction =
   | { action: "squads.auto" } | { action: "squads.move"; playerId: string; squadId: string | null }
   | { action: "round.start"; type: RoundType; sceneId?: string; plantedId?: string; squads?: boolean; freezes?: boolean } | { action: "round.stage" } | { action: "round.reveal" }
-  | { action: "pause" } | { action: "resume" } | { action: "end" } | { action: "witness.play" } | { action: "player.absent"; playerId: string; absent: boolean } | { action: "yourturn.start" }
+  | { action: "pause" } | { action: "resume" } | { action: "clock.add" } | { action: "end" } | { action: "witness.play" } | { action: "player.absent"; playerId: string; absent: boolean } | { action: "yourturn.start" }
   | { action: "override"; key: "sound"; squadId: string; value: boolean } | { action: "override"; key: "objection"; value: boolean }
   | { action: "mission.set"; missionId?: string | null; squadsChoose?: boolean }
   | { action: "race.next" } | { action: "race.holdBefore"; step: number | null } | { action: "bonus.start" } | { action: "bonus.end" } | { action: "race.pin"; questionId: string | null } | { action: "player.time"; playerId: string; setting: TimeSetting };
@@ -607,6 +608,8 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
     }
     case "round.reveal": if (s.status !== "round") return "No round to reveal."; await store.updateSession(s.id, { status: "reveal" }); return null;
     // A Proof Race holds its beat clock while paused: resuming moves the beat's start by the time spent paused.
+    // The escape timer: the teacher adds 5 minutes for the class.
+    case "clock.add": { if (round?.type !== "race") return "There's no room clock running."; await set(store, st, { ...round, clockExtraMs: (round.clockExtraMs ?? 0) + CLOCK_ADD_MS }); return null; }
     case "pause": if (round?.type === "race" && !round.pausedAt) await set(store, st, { ...round, pausedAt: new Date().toISOString() }); await store.updateSession(s.id, { paused: true }); return null;
     case "resume": if (round?.type === "race" && round.pausedAt) await set(store, st, { ...round, beatStartedAt: new Date(Date.parse(round.beatStartedAt) + (Date.now() - Date.parse(round.pausedAt))).toISOString(), pausedAt: null }); await store.updateSession(s.id, { paused: false }); return null;
     case "end": await store.updateSession(s.id, { status: "ended", paused: false }); return null;

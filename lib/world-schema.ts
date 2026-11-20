@@ -101,7 +101,8 @@ const sceneBonus=z.object({id:z.string(),label:z.string().min(1),alt:z.string().
 const roomScene=z.object({chamber:z.union([z.literal(1),z.literal(2)]),art:z.string().min(1),alt:z.string().min(1),items:z.array(sceneItem).min(1),bonus:z.array(sceneBonus).default([]),
  witnesses:z.array(z.object({character:z.string(),...spotXY})).default([]),puzzles:z.array(z.object({id:z.string(),...spotXY})).default([]),door:z.object({label:z.string().min(1),...spotXY})});
 // vocab: five or six hard words shown at the door, each with a plain meaning and the sentence it appears in.
-const room=z.object({expedition:z.string(),door:z.string().min(1).optional(),vocab:z.array(z.object({word:z.string().min(1),meaning:z.string().min(1),line:lineRef})).max(8).optional(),clock_reason:z.string().min(1).optional(),puzzles:z.array(roomPuzzle).optional(),scenes:z.array(roomScene).optional()});
+// briefing: the door's short scenario in the story's voice (no spoilers) and the one or two key concepts it explores.
+const room=z.object({expedition:z.string(),door:z.string().min(1).optional(),briefing:z.object({scenario:z.string().min(1).max(600),concepts:z.array(z.string().min(1)).min(1).max(2)}).optional(),vocab:z.array(z.object({word:z.string().min(1),meaning:z.string().min(1),line:lineRef})).max(8).optional(),clock_reason:z.string().min(1).optional(),puzzles:z.array(roomPuzzle).optional(),scenes:z.array(roomScene).optional()});
 export type LineRef=z.infer<typeof lineRef>;export type RoomPuzzle=z.infer<typeof roomPuzzle>;export type RoomData=z.infer<typeof room>;
 export type Expedition=z.infer<typeof expedition>;export type Interview=z.infer<typeof expedition>["interview"]&{};export type Witness=z.infer<typeof witness>;export type ExpChunk=z.infer<typeof expChunk>;export type ExpQuestion=z.infer<typeof expQuestion>;export type QuestionType=(typeof QUESTION_TYPES)[number];
 
@@ -190,7 +191,7 @@ export const WorldPackSchema = z.object({
   // Engagement (lib/engagement.ts): the story's essential question and four key concepts (teasers, never a synopsis);
   // the full synopsis for the teacher view only; a short topic per paragraph for "It's in the paragraph about ...";
   // a plain-language version per paragraph (students still prove answers with the original line).
-  engagement:z.object({essential_question:z.string().min(1),key_concepts:z.array(z.object({name:z.string().min(1),teaser:z.string().min(1)})).length(4),synopsis:z.string().min(1),passage_topics:z.record(z.string().regex(/^p\d{3}$/),z.string().min(1)).default({}),plain_words:z.record(z.string().regex(/^p\d{3}$/),z.string().min(1)).default({})}).optional(),
+  engagement:z.object({essential_question:z.string().min(1),key_concepts:z.array(z.object({name:z.string().min(1),teaser:z.string().min(1)})).length(4),synopsis:z.string().min(1),passage_topics:z.record(z.string().regex(/^p\d{3}$/),z.string().min(1)).default({}),plain_words:z.record(z.string().regex(/^p\d{3}$/),z.string().min(1)).default({}),timeout_moment:z.string().min(1).optional()}).optional(),
   // Demo rival and squad modes: the computer players' names (clearly labeled as computer players on screen).
   computer_players:z.object({rival:z.object({name:z.string().min(1),emblem:z.enum(["lantern","rider"])}),teammates:z.array(z.string().min(1)).min(2).max(3)}).optional(),
   // Students in the story: the part the student plays (see lib/student-role.ts). never: people the student must never be.

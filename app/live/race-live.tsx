@@ -15,10 +15,10 @@ import {CLOCK_INFO,ROOM_CLOCKS,clockView} from "@/lib/room-clock";
 import {PuzzleLock} from "../puzzle-locks";
 import {refKey} from "@/lib/escape-room";
 import type {LineRef,RoomPuzzle} from "@/lib/world-schema";
-import {LockBanner,RecoveryPanel,CaseFileButton} from "../room-ui";
+import {LockBanner,RecoveryPanel,CaseFileButton,TimeoutMoment} from "../room-ui";
 import {lockKind} from "@/lib/escape-room";
 import {useEffect,useLayoutEffect,useRef,useState} from "react";
-import {ArrowRight,Check,Download,Highlighter,Pin,Printer,Volume2,VolumeX,Zap} from "lucide-react";
+import {ArrowRight,Check,Download,Highlighter,Pin,Plus,Printer,Volume2,VolumeX,Zap} from "lucide-react";
 import type {hostView,playerView} from "@/lib/live/server";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
@@ -72,7 +72,7 @@ export function LobbyBoard({state,act}:{state:HostView;act:(b:Record<string,unkn
 // ---------- Starting a Proof Race expedition (host) ----------
 export function RacePick({state,act}:{state:HostView;act:(b:Record<string,unknown>)=>void}){
  const exps=state.expeditions;
- const [o,setO]=useState({expeditionId:exps[0]?.id??"",grade:"7",questions:true,highlighter:false,autoAdvance:true,squads:false,chamber:"0",clock:"off"});
+ const [o,setO]=useState({expeditionId:exps[0]?.id??"",grade:"7",questions:true,highlighter:false,autoAdvance:true,squads:false,chamber:"0",clock:"escape"});
  const set=(k:string,v:unknown)=>setO(x=>({...x,[k]:v}));
  const sel="mt-1 w-full rounded-row bg-panel-2 px-3 py-2 text-[16px] text-ink";
  const box=(k:"questions"|"highlighter"|"autoAdvance"|"squads",label:string)=><label className="inline-flex min-h-11 items-center gap-2"><input type="checkbox" checked={o[k]} onChange={e=>set(k,e.target.checked)} className="h-5 w-5"/>{label}</label>;
@@ -82,7 +82,7 @@ export function RacePick({state,act}:{state:HostView;act:(b:Record<string,unknow
    <label>Room<select value={o.expeditionId} onChange={e=>set("expeditionId",e.target.value)} className={sel}>{exps.map((e,i)=><option key={e.id} value={e.id}>Room {i+1}: {e.title} · {e.chunks} locks</option>)}</select></label>
    {(()=>{const n=exps.find(e=>e.id===o.expeditionId)?.chunks??10,h=Math.ceil(n/2);return <label>Chamber (one per class period)<select value={o.chamber} onChange={e=>set("chamber",e.target.value)} className={sel}>
     <option value="0">The whole room: locks 1 to {n}</option><option value="1">Chamber 1: locks 1 to {h} and the witnesses met there, to the inner door</option><option value="2">Chamber 2: the witnesses again, locks {h+1} to {n}, the exit door</option></select></label>})()}
-   <label>Room clock (pauses while everyone reads; zero ends nothing)<select value={o.clock} onChange={e=>set("clock",e.target.value)} className={sel}>{ROOM_CLOCKS.map(c=><option key={c} value={c}>{CLOCK_INFO[c].name}</option>)}</select></label>
+   <label>Escape timer (35 minutes a chamber, running while students read; pause it or add 5 minutes from the board)<select value={o.clock} onChange={e=>set("clock",e.target.value)} className={sel}>{ROOM_CLOCKS.map(c=><option key={c} value={c}>{CLOCK_INFO[c].name}</option>)}</select></label>
    <label>Grade (picks each standard's code)<select value={o.grade} onChange={e=>set("grade",e.target.value)} className={sel}>{[6,7,8,9,10].map(g=><option key={g} value={String(g)}>Grade {g}</option>)}</select></label>
    <span className="flex flex-col">{box("questions","Your question (every third chunk)")}{box("highlighter","Highlighter: mark words students don't know")}</span>
    <span className="flex flex-col">{box("autoAdvance","Move on when 90% are ready")}{state.squads.some(q=>q.members.length)&&box("squads","Squads pool their points")}</span>
@@ -120,7 +120,10 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
   <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="race-h" className="text-[clamp(24px,2.4vw,38px)] font-bold">Lock {round.step+1} of {round.total} · {BEAT_LABEL[round.beat]}</h2>{next}</div>
   <p className="text-[18px] text-muted">{round.expedition.title} · Grade {round.grade??7}</p>
   {timed&&left!==null&&<div className="mt-2"><TimerTrack left={left} seconds={(totalMs??1000)/1000}/></div>}
-  {liveClockNow&&<div className="mt-2 flex"><RoomClockPill clock={liveClockNow}/></div>}
+  {/* The class's escape timer (lib/room-clock.ts): pause it with Pause above; add 5 minutes here. */}
+  {liveClockNow&&<div className="mt-2 flex flex-wrap items-center gap-3"><RoomClockPill clock={liveClockNow}/>
+   <button type="button" onClick={()=>act({action:"clock.add"})} className="host-btn-secondary !min-h-11"><Plus size={18} aria-hidden/>Add 5 minutes</button>
+   {liveClockNow.overtime&&<p role="status" className="rounded-card bg-notyet-soft px-4 py-2 text-[clamp(18px,1.6vw,24px)] font-bold text-ink">{world?.engagement?.timeout_moment??"Time ran out."} The class keeps going; this room won't count as escaped in time.</p>}</div>}
   {round.squadRoles&&round.squadRoles.length>0&&round.beat==="read"&&<div className="mt-3 rounded-card bg-panel p-4"><p className="text-[20px] font-bold">Squad roles this room</p>
    <ul className="mt-2 grid gap-2 md:grid-cols-2">{round.squadRoles.map(q=><li key={q.name} className="rounded-row bg-panel-2 px-4 py-2 text-[18px]"><span className="font-bold">{q.name}:</span> {q.members.map(m=>`${m.nickname} (${m.roles.map(r=>SQUAD_ROLE_INFO[r].name).join(", ")})`).join(" · ")}</li>)}</ul>
    <p className="mt-2 text-[16px] text-muted">Everyone commits on their own phone first; then each squad's Recorder locks in the answer the squad agrees on.</p></div>}
@@ -217,6 +220,8 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  const mine=race?.mine;
  useEffect(()=>{if(round?.beat==="reveal"&&mine?.tap&&!mine.tap.correct)cue(sound,"reveal",0.3)},[round?.beat,round?.step]);// eslint-disable-line react-hooks/exhaustive-deps
  const phoneClock=useLiveClock(round?.type==="race"?round.clock:null);
+ // The time-out moment on each phone, once, when the class's escape timer runs out.
+ const [timeoutSeen,setTimeoutSeen]=useState(false);
  if(!round||!race||!world||!mine)return null;
  const tokens=chunkTokens(round.chunk.lines);
  // This student's own version of the question (easier or harder), else the standard one.
@@ -238,6 +243,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  const myLines=race.revealKey?.proof?.length?race.revealKey.proof:round.reveal?.lines??[],myWhy=race.revealKey?.why??round.reveal?.why??null;
  const shownTokens=race.revealKey?.proof?.length?proofTokensOf(tokens,round.chunk.lines,myLines):round.reveal?.words.length?round.reveal.words:proofTokensOf(tokens,round.chunk.lines,round.reveal?.lines??[]);
  return <PlainWordsState.Provider value={{open:plainAt===round.step,set:o=>setPlainAt(o?round.step:null)}}><section className="wide-host mt-3 flex flex-col gap-3" aria-labelledby="rp-h">
+  {phoneClock?.overtime&&!timeoutSeen&&<TimeoutMoment text={world?.engagement?.timeout_moment??"Time ran out."} onGo={()=>setTimeoutSeen(true)}/>}
   {hud}
   {race.myEscape&&<SquadRoleBar esc={race.myEscape}/>}
   {race.extraTime&&<p className="text-[13px] font-bold text-muted">Extra time is on for you.</p>}

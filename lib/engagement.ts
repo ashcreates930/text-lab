@@ -81,6 +81,8 @@ export function engagementProblems(world: WorldPack, passages: SourcePassage[]):
     for (const exp of world.expeditions ?? []) for (const c of exp.chunks) for (const seg of c.segments) if (!skip.has(seg.p) && !e.passage_topics?.[seg.p]) { out.push(`${at}/${exp.id}: paragraph ${seg.p} has no topic`); break; }
   }
   out.push(...plainProblems(world, passages));
+  // A room's briefing names only the story's own key concepts.
+  for (const room of world.rooms ?? []) for (const c of room.briefing?.concepts ?? []) if (!e?.key_concepts.some((k) => k.name === c)) out.push(`${at}/${room.expedition} briefing: "${c}" isn't one of the story's key concepts`);
   // Every question has a DOK level.
   for (const exp of world.expeditions ?? []) for (const c of exp.chunks) for (const q of [c.question, ...(c.bank ?? [])]) if (!dokOf(q)) out.push(`${at}/${exp.id}/${c.id}: no DOK level`);
   return [...new Set(out)];
