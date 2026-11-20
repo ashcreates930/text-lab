@@ -6,7 +6,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { WorldPackSchema, type WorldPack } from "../lib/world-schema.ts";
-import { ADD_MS, ESCAPE_BONUS, ESCAPE_MS, clockEnding, clockRuns, clockView, escapeBudgetMs, inTime, isRoomClock, roomClockOf, timeUp } from "../lib/room-clock.ts";
+import { ADD_MS, ESCAPE_BONUS_PER_LOCK, ESCAPE_MS, escapeBonusOf, escapeBonusText, clockEnding, clockRuns, clockView, escapeBudgetMs, inTime, isRoomClock, roomClockOf, timeUp } from "../lib/room-clock.ts";
 import { clockAdd, liveClock, parseExpSettings, type LiveRaceRound } from "../lib/live/race.ts";
 import { parseResume, roomOf } from "../lib/escape-room.ts";
 import { timerRow } from "../lib/expedition-progress.ts";
@@ -38,10 +38,24 @@ test("running out: the chamber isn't escaped in time, no badge and no escape bon
   assert.equal(timeUp(budget, budget), true); assert.equal(timeUp(0, 999_999), false);
   assert.deepEqual(clockView(budget, budget + 5000), { leftMs: 0, overtime: true, label: "Time's up", warn: "zero" });
   assert.equal(clockView(budget, budget - 30_000).warn, "one");
-  assert.match(clockEnding(budget, budget - 90_000)!, new RegExp(`Escaped in time, with 1:30 to spare\\. \\+${ESCAPE_BONUS} escape bonus\\.`));
+  // The escape bonus (2026-11-20): +100 for each lock proved on the first try, only when escaped in time; perfect = +500.
+  assert.equal(ESCAPE_BONUS_PER_LOCK, 100);
+  assert.equal(escapeBonusOf(5, true), 500); assert.equal(escapeBonusOf(3, true), 300); assert.equal(escapeBonusOf(0, true), 0);
+  assert.equal(escapeBonusOf(5, false), 0, "time ran out: nothing"); assert.equal(escapeBonusOf(5, null), 0, "no timer: nothing");
+  assert.equal(escapeBonusText(3), "+300 escape bonus: 3 first-try proofs, escaped in time"); assert.equal(escapeBonusText(1), "+100 escape bonus: 1 first-try proof, escaped in time");
+  assert.equal(clockEnding(budget, budget - 90_000, 3), "+300 escape bonus: 3 first-try proofs, escaped in time, with 1:30 to spare.");
+  assert.equal(clockEnding(budget, budget - 90_000, 5), "+500 escape bonus: 5 first-try proofs, escaped in time, with 1:30 to spare.");
+  assert.equal(clockEnding(budget, budget - 90_000), "Escaped in time, with 1:30 to spare. No first-try proofs in this chamber, so no escape bonus.");
   assert.match(clockEnding(budget, budget + 1)!, /isn't escaped in time\. Every lock you opened and every first-try proof still counts\. Replay it to escape in time\./);
   const race = src("app/expedition-race.tsx");
-  assert.match(race, /const escapeBonus=\(innerOpen&&lastCh>0&&chamberInTime\(0\)\?ESCAPE_BONUS:0\)\+\(exitOpen&&chamberInTime\(lastCh\)\?ESCAPE_BONUS:0\);/);
+  // Solo: first tries (records[i].correct, never a lock opened after a miss) in each chamber, paid once its door opens in time.
+  assert.match(race, /const firstTriesIn=\(c:number\)=>\{const s=room\?\.chambers\[c\];let n=0;if\(s\)for\(let i=s\.from;i<=s\.to;i\+\+\)if\(records\[i\]\?\.correct\)n\+\+;return n\};/);
+  assert.match(race, /const chamberBonus=\(c:number\)=>chamberDone\(c\)\?escapeBonusOf\(firstTriesIn\(c\),chamberInTime\(c\)\):0;/);
+  assert.match(race, /const escapeBonus=\(lastCh>0\?chamberBonus\(0\):0\)\+chamberBonus\(lastCh\);/);
+  assert.match(race, /clockEnding\(budget,clockUsed\[0\]\?\?0,firstTriesIn\(0\)\)/);
+  // Saved for the teacher: first tries and the bonus per chamber, shown in the Escape timer column.
+  assert.match(race, /firstTries:clockUsed\.slice\(0,lastCh\+1\)\.map\(\(_,c\)=>firstTriesIn\(c\)\),bonus:clockUsed\.slice\(0,lastCh\+1\)\.map\(\(_,c\)=>chamberBonus\(c\)\)/);
+  assert.match(src("app/expedition-evidence.tsx"), /escape bonus \(\$\{c\.firstTries\} first-try\)/);
   assert.match(race, /\+escapeBonus;/, "the bonus is part of the score only when earned");
   assert.match(race, /\{clock\?\.overtime&&!timeoutSeen\[ch\]&&clockRuns\(beat\)&&<TimeoutMoment text=\{world\.engagement\?\.timeout_moment/);
   assert.equal(world.engagement!.timeout_moment, "The Horseman reached the bridge before you.");
@@ -110,7 +124,11 @@ test("resume keeps each chamber's time; the attempt saves each chamber's time an
   const t = (start: string, used: number[], ok: (boolean | null)[]) => ({ startedAt: start, timer: { budgetMs: ESCAPE_MS, used, inTime: ok } });
   // The latest attempt's times; "in time on a replay" when any attempt made it.
   const row = timerRow([t("2026-11-20T09:00:00Z", [2_000_000, 2_200_000], [true, false]), t("2026-11-21T09:00:00Z", [2_300_000, 1_900_000], [false, true])])!;
-  assert.deepEqual(row.chambers, [{ ms: 2_300_000, inTime: false, everInTime: true }, { ms: 1_900_000, inTime: true, everInTime: true }]);
+  // Older attempts saved no first tries or bonus (null); newer ones carry both per chamber.
+  assert.deepEqual(row.chambers, [{ ms: 2_300_000, inTime: false, everInTime: true, firstTries: null, bonus: null }, { ms: 1_900_000, inTime: true, everInTime: true, firstTries: null, bonus: null }]);
+  const withBonus = timerRow([{ startedAt: "2026-11-22T09:00:00Z", timer: { budgetMs: ESCAPE_MS, used: [1_000_000, 2_200_000], inTime: [true, false], firstTries: [3, 5], bonus: [300, 0] } }])!;
+  assert.deepEqual(withBonus.chambers.map((c) => [c.firstTries, c.bonus]), [[3, 300], [5, 0]], "chamber 2 ran out of time: 5 first tries, no bonus");
+  assert.match(src("app/api/student/expeditions/route.ts"), /firstTries: z\.array\(z\.number\(\)\.int\(\)\.min\(0\)\.max\(20\)\)\.max\(2\)\.optional\(\), bonus: z\.array/);
   assert.equal(timerRow([{ startedAt: "x", timer: null }]), null);
   assert.match(src("app/api/student/expeditions/route.ts"), /timer: z\.object\(\{ budgetMs:/);
   assert.match(src("app/expedition-evidence.tsx"), /Chambers escaped in time: /); assert.match(src("app/expedition-evidence.tsx"), /after time\{c\.everInTime\?" \(in time on a replay\)":""\}/);

@@ -8,7 +8,7 @@ import {ChestCard,addKit} from "../atmosphere";
 import {PlainWordsState} from "../read-aloud";
 import {ReadFor} from "../story-opening";
 import {lanternLevel,pointerText,proofParagraph} from "@/lib/engagement";
-import {ESCAPE_BONUS,mmss} from "@/lib/room-clock";
+import {ESCAPE_BONUS_PER_LOCK,escapeBonusText,mmss} from "@/lib/room-clock";
 import {Held,LockMoment} from "../lock-art";
 import type {InventoryItem} from "@/lib/escape-room";
 import {SQUAD_ROLE_INFO,type SquadRole} from "@/lib/live/squad-escape";
@@ -254,7 +254,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
   {phoneClock?.overtime&&!timeoutSeen&&<TimeoutMoment text={world?.engagement?.timeout_moment??"Time ran out."} onGo={()=>setTimeoutSeen(true)}/>}
   {hud}
   {race.myEscape&&<SquadRoleBar esc={race.myEscape}/>}
-  {round.beat==="countdown"&&round.escaped.filter(e=>e.step===round.step).map(e=><MyEscapeNote key={e.chamber} e={e} mine={race.myBonus.includes(e.chamber)} squads={round.squadsOn}/>)}
+  {round.beat==="countdown"&&round.escaped.filter(e=>e.step===round.step).map(e=><MyEscapeNote key={e.chamber} e={e} mine={race.myBonus.find(b=>b.chamber===e.chamber)} squads={round.squadsOn}/>)}
   {race.extraTime&&<p className="text-[13px] font-bold text-muted">Extra time is on for you.</p>}
   {round.paused&&<p role="status" className="rounded-card bg-gold px-4 py-2 text-[16px] font-bold text-on-gold">Paused by your teacher.</p>}
   {round.beat==="read"&&<><h1 id="rp-h" className="text-[28px] outline-none">Read the chunk</h1>
@@ -342,7 +342,7 @@ export function RaceEndedPlayer({state,world,act}:{state:PlayerView;world:WorldP
  return <section className="mt-6 text-center"><h1 className="text-[30px] font-bold outline-none">Race over</h1>
   {state.race.place&&<p className="mt-2 text-[20px]">You finished <b>#{state.race.place.rank}</b> of {state.race.place.of} with {state.race.total.toLocaleString()} points.</p>}
   {mine!==null&&mine>=0&&<p className="mt-2 text-[20px] font-bold text-highlight">You're on the podium!</p>}
-  {round.escaped.length>0&&<div className="mx-auto mt-3 flex max-w-xl flex-col gap-2 text-left">{round.escaped.map(e=><MyEscapeNote key={e.chamber} e={e} mine={state.race!.myBonus.includes(e.chamber)} squads={round.squadsOn}/>)}</div>}
+  {round.escaped.length>0&&<div className="mx-auto mt-3 flex max-w-xl flex-col gap-2 text-left">{round.escaped.map(e=><MyEscapeNote key={e.chamber} e={e} mine={state.race!.myBonus.find(b=>b.chamber===e.chamber)} squads={round.squadsOn}/>)}</div>}
   <div className="mt-5"><Podium entries={f.podium.map(r=>({id:r.id,name:r.name,points:r.points,portrait:r.portrait}))}/></div>
   <p className="mt-4 text-[15px] text-muted">Every point came from a line proved in the story.</p>
   {after&&<button type="button" onClick={()=>setStage(after.refresher.length?"refresher":"refresher")} className="case-primary mt-5 w-full justify-center">{after.refresher.length?`Refresher: fix ${after.refresher.length}`:"Refresher"} <ArrowRight size={18} aria-hidden/></button>}</section>;
@@ -483,14 +483,18 @@ function BriefingBoard({b,chamber,players,onStart}:{b:{room:number;name:string;s
  </section>;
 }
 // A chamber's escape on the board (right after its door, and on the podium): in time with the bonus, or time ran out.
-function EscapeNote({e,budgetMs,squads,timeout}:{e:{chamber:number;inTime:boolean;usedMs:number;winners:number};budgetMs:number;squads:boolean;timeout:string|null}){
- const who=squads?(e.winners===1?"squad":"squads"):(e.winners===1?"player":"players");
- return <p role="status" className={`mt-3 rounded-card px-5 py-3 text-[clamp(18px,1.8vw,26px)] font-bold ${e.inTime?"bg-success text-on-success":"bg-notyet-soft text-ink"}`}>
-  {e.inTime?<>Chamber {e.chamber} escaped in time, with {mmss(Math.max(0,budgetMs-e.usedMs))} to spare. {e.winners?`+${ESCAPE_BONUS} escape bonus to ${e.winners} ${who} who opened every lock.`:"No one opened every lock, so no escape bonus this time."}</>
-   :<>{timeout?`${timeout} `:""}Chamber {e.chamber} wasn't escaped in time, so there's no escape bonus. Every proof still counts.</>}</p>;
+function EscapeNote({e,budgetMs,squads,timeout}:{e:{chamber:number;inTime:boolean;usedMs:number;winners:number;escapers?:number;squads?:{name:string;firstTries:number}[]};budgetMs:number;squads:boolean;timeout:string|null}){
+ const who=(n:number)=>squads?(n===1?"squad":"squads"):(n===1?"player":"players");
+ if(!e.inTime)return <p role="status" className="mt-3 rounded-card bg-notyet-soft px-5 py-3 text-[clamp(18px,1.8vw,26px)] font-bold text-ink">{timeout?`${timeout} `:""}Chamber {e.chamber} wasn't escaped in time, so there's no escape bonus. Every proof still counts.</p>;
+ return <div role="status" className="mt-3 rounded-card bg-success px-5 py-3 text-[clamp(18px,1.8vw,26px)] font-bold text-on-success">
+  <p>Chamber {e.chamber} escaped in time, with {mmss(Math.max(0,budgetMs-e.usedMs))} to spare. {e.winners?`Escape bonus: +${ESCAPE_BONUS_PER_LOCK} for each first-try proof, to ${e.winners} ${who(e.winners)} who opened every lock.`:(e.escapers??0)>0?"No first-try proofs among those who opened every lock, so no escape bonus.":"No one opened every lock, so no escape bonus this time."}</p>
+  {/* Squads: each escaping squad's bonus, the way the phones say it. */}
+  {e.squads&&e.squads.length>0&&<ul className="mt-1 text-[clamp(16px,1.5vw,22px)]">{e.squads.map(q=><li key={q.name}>{q.name}: {q.firstTries?escapeBonusText(q.firstTries):"escaped in time, no first-try proofs"}</li>)}</ul>}</div>;
 }
-// This phone's escape result for a chamber, beside the class's.
-export function MyEscapeNote({e,mine,squads}:{e:{chamber:number;inTime:boolean};mine:boolean;squads:boolean}){
- return <p role="status" className={`rounded-card px-4 py-3 text-[16px] font-bold ${mine?"bg-success text-on-success":"bg-panel text-ink"}`}>
-  {mine?`+${ESCAPE_BONUS} escape bonus: ${squads?"your squad":"you"} escaped Chamber ${e.chamber} in time.`:e.inTime?`Chamber ${e.chamber} was escaped in time, but the bonus needs every lock opened.`:`Time ran out in Chamber ${e.chamber}, so there's no escape bonus. Every proof still counts.`}</p>;
+// This phone's escape result for a chamber: "+300 escape bonus: 3 first-try proofs, escaped in time".
+export function MyEscapeNote({e,mine,squads}:{e:{chamber:number;inTime:boolean};mine:{firstTries:number;points:number}|null|undefined;squads:boolean}){
+ const paid=!!mine&&mine.points>0;
+ return <p role="status" className={`rounded-card px-4 py-3 text-[16px] font-bold ${paid?"bg-success text-on-success":"bg-panel text-ink"}`}>
+  {mine?(paid?`${escapeBonusText(mine.firstTries)}${squads?" (your squad)":""}.`:`Chamber ${e.chamber} escaped in time, but with no first-try proofs, so no escape bonus.`)
+   :e.inTime?`Chamber ${e.chamber} was escaped in time, but the escape bonus needs every lock opened.`:`Time ran out in Chamber ${e.chamber}, so there's no escape bonus. Every proof still counts.`}</p>;
 }

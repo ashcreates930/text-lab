@@ -13,7 +13,7 @@ import {Held,LockMoment,QUIET_HOLD_MS} from "./lock-art";
 import {BONUS_COINS,bonusOpen,chamberOfLock,sceneOf,type SceneNext} from "@/lib/room-scene";
 import {SceneView} from "./room-scene-view";
 import {questionSetting,type QuestionTime} from "@/lib/expedition";
-import {ESCAPE_BONUS,clockEnding,clockRuns,clockView,escapeBudgetMs,inTime,type ClockView,type RoomClock} from "@/lib/room-clock";
+import {escapeBonusOf,clockEnding,clockRuns,clockView,escapeBudgetMs,inTime,type ClockView,type RoomClock} from "@/lib/room-clock";
 import {CLUE_COST,clueCost,cluesFor,opened,type Clue,type ClueTier} from "@/lib/clues";
 import {useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
 import {ArrowRight,Check,Crown,Flame,Highlighter,Lightbulb,Pause,Play,Sparkles,Star,Timer,Volume2,VolumeX,X,Zap,HelpCircle,Hourglass} from "lucide-react";
@@ -405,8 +405,13 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const [timeoutSeen,setTimeoutSeen]=useState<boolean[]>(()=>(restored?.clock??[0,0]).map(u=>budget>0&&u>=budget));
  // Each chamber escaped in time earns the escape bonus (and the "Escaped in time" badge); none after time ran out.
  const chamberInTime=(c:number)=>inTime(budget,clockUsed[c]??0);
- const escapeBonus=(innerOpen&&lastCh>0&&chamberInTime(0)?ESCAPE_BONUS:0)+(exitOpen&&chamberInTime(lastCh)?ESCAPE_BONUS:0);
- const timerRecord=budget?{budgetMs:budget,used:clockUsed.slice(0,lastCh+1),inTime:clockUsed.slice(0,lastCh+1).map(u=>inTime(budget,u))}:null;
+ // The escape bonus (lib/room-clock.ts): +100 for each lock proved on the first try in a chamber, once its door opens in
+ // time; locks opened after a miss count toward escaping but earn nothing.
+ const firstTriesIn=(c:number)=>{const s=room?.chambers[c];let n=0;if(s)for(let i=s.from;i<=s.to;i++)if(records[i]?.correct)n++;return n};
+ const chamberDone=(c:number)=>c<lastCh?innerOpen:exitOpen;
+ const chamberBonus=(c:number)=>chamberDone(c)?escapeBonusOf(firstTriesIn(c),chamberInTime(c)):0;
+ const escapeBonus=(lastCh>0?chamberBonus(0):0)+chamberBonus(lastCh);
+ const timerRecord=budget?{budgetMs:budget,used:clockUsed.slice(0,lastCh+1),inTime:clockUsed.slice(0,lastCh+1).map(u=>inTime(budget,u)),firstTries:clockUsed.slice(0,lastCh+1).map((_,c)=>firstTriesIn(c)),bonus:clockUsed.slice(0,lastCh+1).map((_,c)=>chamberBonus(c))}:null;
  useStickyOffsets();
  // A new beat or chunk is a new screen: the top, focus on its heading. The proof step of the same question is not: the
  // heading takes focus and the page stays where the student is (no jump during a question).
@@ -536,11 +541,11 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   {beat==="practice"&&<PracticeRound world={world} passages={passages} onDone={()=>{markPracticeDone();go("door")}}/>}
   {clock?.overtime&&!timeoutSeen[ch]&&clockRuns(beat)&&<TimeoutMoment text={world.engagement?.timeout_moment??"Time ran out."} onGo={()=>setTimeoutSeen(t=>{const n=[...t];n[ch]=true;return n})}/>}
   {beat==="door"&&room&&<RoomDoor timer={budget>0} chamber={room.chambers[1]&&k>=room.chambers[1].from?2:1} briefing={world.rooms?.find(r=>r.expedition===expeditionId)?.briefing??null} concepts={world.engagement?.key_concepts??[]} room={room} resumed={!!restored} vocab={world.rooms?.find(r=>r.expedition===expeditionId)?.vocab??[]} lineOf={r=>lineAt(passages,r)} onOpen={()=>{if(iv&&!inRoom(iv)&&!(restored&&cards.length))go("interview");else toLock(k)}}/>}
-  {beat==="inner"&&room&&<InnerDoor mission={budget>0?missionFor(world.rooms?.find(r=>r.expedition===expeditionId)?.briefing,2):null} inTimeBadge={chamberInTime(0)} clockNote={budget?clockEnding(budget,clockUsed[0]??0):null} room={room} stop={stopsAtInnerDoor({classSession:!!classToken,stopAtInnerDoor})&&!restoredInto2} onMap={onExit} onNext={()=>toLock(k+1)}/>}
+  {beat==="inner"&&room&&<InnerDoor mission={budget>0?missionFor(world.rooms?.find(r=>r.expedition===expeditionId)?.briefing,2):null} inTimeBadge={chamberInTime(0)} clockNote={budget?clockEnding(budget,clockUsed[0]??0,firstTriesIn(0)):null} room={room} stop={stopsAtInnerDoor({classSession:!!classToken,stopAtInnerDoor})&&!restoredInto2} onMap={onExit} onNext={()=>toLock(k+1)}/>}
   {beat==="recap"&&room&&<ChamberRecap room={room} items={inventory} mission={budget>0?missionFor(world.rooms?.find(r=>r.expedition===expeditionId)?.briefing,2):null} onNext={()=>toLock(room.chambers[1]?.from??k+1)}/>}
   {beat==="puzzle"&&puzzleId&&(()=>{const pz=world.rooms?.find(r=>r.expedition===expeditionId)?.puzzles?.find(p=>p.id===puzzleId),at=room?.puzzles.find(p=>p.id===puzzleId)?.after??k;
    return pz?<PuzzleLock key={puzzleId} puzzle={pz} lineOf={r=>lineAt(passages,r)} seed={seedKey} readLines={chunks.slice(0,at+1).flatMap(x=>x.lines.map(l=>({p:l.pid,s:l.index})))} readChunks={chunks.slice(0,at+1).map(x=>x.lines.map(l=>({p:l.pid,s:l.index})))} sound={sound} pointerFor={r=>pointerText(world,r.p,Number(r.p.slice(1)))} onDone={onPuzzleDone}/>:null})()}
-  {beat==="escape"&&room&&<EscapeMoment inTimeBadge={chamberInTime(lastCh)} clockNote={budget?clockEnding(budget,clockUsed[lastCh]??0):null} room={room} next={nextRoom} solved={!!liarResult?.solved} onNext={()=>{go("finish");onFinish?.(records)}}/>}
+  {beat==="escape"&&room&&<EscapeMoment inTimeBadge={chamberInTime(lastCh)} clockNote={budget?clockEnding(budget,clockUsed[lastCh]??0,firstTriesIn(lastCh)):null} room={room} next={nextRoom} solved={!!liarResult?.solved} onNext={()=>{go("finish");onFinish?.(records)}}/>}
   {beat==="scene"&&room&&sceneFor(k)&&(()=>{const sc=sceneFor(k)!,chamber=chamberOfLock(room,k),opened=(i:number)=>isOpen(records[i]);
    // What glows next: a puzzle lock waiting after its lock; the door (the inner door's code lock, or the exit once the last
    // lock is answered); a witness due at the next lock; otherwise the next lock's item.

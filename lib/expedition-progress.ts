@@ -22,7 +22,9 @@ export type ExpeditionAttempt = {
   // The last room's exit door: the student's answer to the story's essential question, with Case File lines.
   essential?: { text: string; lines: string[] } | null;
   // The escape timer per chamber (lib/room-clock.ts): its budget, the time used, and whether each was escaped in time.
-  timer?: { budgetMs: number; used: number[]; inTime: (boolean | null)[] } | null;
+  // firstTries: locks proved on the first try per chamber; bonus: the escape bonus each chamber paid (+100 a first try,
+  // only when escaped in time). Older attempts have neither.
+  timer?: { budgetMs: number; used: number[]; inTime: (boolean | null)[]; firstTries?: number[]; bonus?: number[] } | null;
   // An unfinished room: where it picks up again (lib/escape-room.ts RoomResume); null once the room is finished.
   resume?: unknown;
   // Puzzle locks: each one's first-try result (lib/escape-room.ts).
@@ -100,7 +102,7 @@ export function firstAttempts(attempts: ExpeditionAttempt[]) {
 export function timerRow(attempts: Pick<ExpeditionAttempt, "startedAt" | "timer">[]) {
   const timed = attempts.filter((a) => a.timer && a.timer.budgetMs > 0).sort((a, b) => b.startedAt.localeCompare(a.startedAt));
   const latest = timed[0]?.timer ?? null; if (!latest) return null;
-  const chambers = latest.used.map((ms, c) => ({ ms, inTime: latest.inTime[c] ?? null, everInTime: timed.some((a) => a.timer!.inTime[c] === true) }));
+  const chambers = latest.used.map((ms, c) => ({ ms, inTime: latest.inTime[c] ?? null, everInTime: timed.some((a) => a.timer!.inTime[c] === true), firstTries: latest.firstTries?.[c] ?? null, bonus: latest.bonus?.[c] ?? null }));
   return { budgetMs: latest.budgetMs, chambers };
 }
 

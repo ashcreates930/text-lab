@@ -53,7 +53,9 @@ export type LiveRaceRound = { type: "race"; settings: ExpSettings; step: number;
   clockUsedMs?: number; clockExtraMs?: number;
   // Each chamber the class has escaped (the inner door, then the exit): whether the board clock still had time left,
   // the time used then, and how many players or squads opened every lock and got the escape bonus.
-  escaped?: { chamber: 1 | 2; step: number; inTime: boolean; usedMs: number; winners: number }[] };
+  // escapers: players (or squads) who opened every lock; winners: those paid a bonus (one first try or more); squads:
+  // each escaping squad's first tries, for the board.
+  escaped?: { chamber: 1 | 2; step: number; inTime: boolean; usedMs: number; escapers?: number; winners: number; squads?: { name: string; firstTries: number }[] }[] };
 export const interviewOf = (world: WorldPack, round: Pick<LiveRaceRound, "settings" | "interview">): Interview | null => (round.interview ? world.expeditions?.find((e) => e.id === round.settings.expeditionId)?.interview ?? null : null);
 // The escape timer for a live game (lib/room-clock.ts): 35 minutes for each chamber the game plays (both, for the whole
 // room), times 1.5 for More time, plus any minutes the teacher added; the time used; and since when it is running (null
@@ -441,12 +443,12 @@ export function liveCards(responses: LiveResponse[], roundIndex: number, witness
 export const liarAnswers = (responses: LiveResponse[], roundIndex: number, players: LivePlayer[]): LiarAnswer[] =>
   players.map((p) => { const l = playerLiar(responses, roundIndex, p.id); return { liar: l?.liar ?? null, line: l?.line ?? null }; });
 
-// ---------- The escape bonus (lib/room-clock.ts ESCAPE_BONUS) ----------
+// ---------- The escape bonus (lib/room-clock.ts escapeBonusOf) ----------
 // A live chamber is escaped when the class leaves its door: the inner door's puzzle lock for chamber 1, the end of the
 // game after the exit (Name the Liar) for chamber 2. It is escaped in time when the board clock still has time left
-// then. The bonus goes, once per chamber, to every player who opened every lock in that chamber (proved it, or opened
-// it after a miss with the proof), or with squads on to every squad that made its shared lock-in on every lock. Never
-// for finishing alone, and never with the timer off.
+// then. A player escapes it by opening every lock in it (proved, or opened after a miss with the proof); with squads on,
+// a squad escapes by making its shared lock-in on every lock. Each escaper in time gets +100 for each of those locks
+// proved on the first try (a squad: each shared lock-in that proved its lock), once per chamber. Never with the timer off.
 export function escapeCheck(round: LiveRaceRound, chunks: number, now: number) {
   const c = liveClock(round, chunks, []); if (!c) return null;
   const usedMs = (round.clockUsedMs ?? 0) + clockAdd(round, now);
@@ -454,9 +456,11 @@ export function escapeCheck(round: LiveRaceRound, chunks: number, now: number) {
 }
 export function escapeWinners(round: LiveRaceRound, chunks: number, chamber: 1 | 2, responses: LiveResponse[], roundIndex: number, players: LivePlayer[], squads: LiveSquad[]) {
   const span = chamberSpan(chunks, chamber), steps = Array.from({ length: span.to - span.from + 1 }, (_, i) => span.from + i);
-  if (round.squadsOn && squads.length) return { kind: "squad" as const, step: span.to, ids: squads.map((s) => ({ squad: s.id, members: players.filter((p) => p.squadId === s.id).map((p) => p.id) }))
-    .filter((s) => s.members.length && steps.every((k) => squadLockOf(responses, roundIndex, k, s.members))) };
-  return { kind: "player" as const, step: span.to, ids: players.filter((p) => steps.every((k) => playerChunk(responses, roundIndex, k, p.id).opened)).map((p) => p.id) };
+  if (round.squadsOn && squads.length) return { kind: "squad" as const, step: span.to, ids: squads.map((s) => ({ squad: s.id, name: s.name, members: players.filter((p) => p.squadId === s.id).map((p) => p.id) }))
+    .filter((s) => s.members.length && steps.every((k) => squadLockOf(responses, roundIndex, k, s.members)))
+    .map((s) => ({ ...s, firstTries: steps.filter((k) => squadLockOf(responses, roundIndex, k, s.members)?.correct).length })) };
+  return { kind: "player" as const, step: span.to, ids: players.filter((p) => steps.every((k) => playerChunk(responses, roundIndex, k, p.id).opened))
+    .map((p) => ({ id: p.id, firstTries: steps.filter((k) => playerChunk(responses, roundIndex, k, p.id).correct).length })) };
 }
 // The squad escape bonus rows (squad_escape) a squad's members hold, through a step.
 export const squadEscapePoints = (responses: LiveResponse[], roundIndex: number, ids: string[], upto: number) =>

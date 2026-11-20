@@ -17,7 +17,15 @@ export const CLOCK_INFO: Record<RoomClock, { name: string; note: string }> = {
   escape: { name: "Escape timer", note: "35 minutes per chamber (more with More time or a student's own extra time). If it runs out, the chamber isn't escaped in time, but students finish and keep all their work." },
   off: { name: "Off", note: "No timer. Students work at their own pace and every chamber counts as escaped." },
 };
-export const ESCAPE_MS = 35 * 60_000, ADD_MS = 5 * 60_000, ESCAPE_BONUS = 500;
+export const ESCAPE_MS = 35 * 60_000, ADD_MS = 5 * 60_000;
+// The escape bonus (teacher decision, 2026-11-20): +100 for each lock in the chamber proved on the first try, paid only
+// when the chamber is escaped in time (a perfect 5-lock chamber: +500). Locks opened after a miss count toward escaping
+// but earn nothing. Puzzle locks have their own points and aren't counted here.
+export const ESCAPE_BONUS_PER_LOCK = 100;
+export const escapeBonusOf = (firstTries: number, escapedInTime: boolean | null | undefined) => (escapedInTime === true ? Math.max(0, firstTries) * ESCAPE_BONUS_PER_LOCK : 0);
+const proofs = (n: number) => `${n} first-try proof${n === 1 ? "" : "s"}`;
+// "+300 escape bonus: 3 first-try proofs, escaped in time" (the board, phones and doors all say it this way).
+export const escapeBonusText = (firstTries: number) => `+${escapeBonusOf(firstTries, true)} escape bonus: ${proofs(firstTries)}, escaped in time`;
 // The chamber's time: 35 minutes, times 1.5 for the class's More time, times the student's own time setting.
 export function escapeBudgetMs(clock: RoomClock, questionTime: string | null | undefined = "standard", timeSetting: string | null | undefined = "1") {
   if (clock === "off") return 0;
@@ -37,8 +45,9 @@ export const timeUp = (budgetMs: number, usedMs: number) => budgetMs > 0 && used
 // A chamber's result: escaped in time (true), after time ran out (false), or no timer (null).
 export const inTime = (budgetMs: number, usedMs: number): boolean | null => (budgetMs <= 0 ? null : usedMs < budgetMs);
 // What the inner door and the escape say about the timer.
-export function clockEnding(budgetMs: number, usedMs: number) {
+export function clockEnding(budgetMs: number, usedMs: number, firstTries = 0) {
   if (budgetMs <= 0) return null;
-  return usedMs < budgetMs ? `Escaped in time, with ${mmss(budgetMs - usedMs)} to spare. +${ESCAPE_BONUS} escape bonus.`
+  const spare = mmss(budgetMs - usedMs);
+  return usedMs < budgetMs ? (firstTries > 0 ? `${escapeBonusText(firstTries)}, with ${spare} to spare.` : `Escaped in time, with ${spare} to spare. No first-try proofs in this chamber, so no escape bonus.`)
     : "Time ran out, so this chamber isn't escaped in time. Every lock you opened and every first-try proof still counts. Replay it to escape in time.";
 }
