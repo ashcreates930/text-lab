@@ -421,7 +421,9 @@ export function playerView(st: LiveState, playerId: string) {
       const mineAsked = playerAsked(liveRaceChunks(st.world, st.passages ?? [], round), st.responses, i, me.id, round.step)?.question;
       const revealKey = mineAsked && (round.beat === "reveal" || round.beat === "lightning" || round.beat === "board" || round.beat === "countdown") ? { dnd: mineAsked.dnd ? { slotOf: Object.fromEntries(mineAsked.dnd.items.map((it) => [it.id, it.slot])), lines: Object.fromEntries(mineAsked.dnd.items.map((it) => [it.id, it.line])) } : null, best: mineAsked.format === "multi" ? (mineAsked.choices ?? []).filter((c) => c.best).map((c) => c.text) : null, model: mineAsked.written?.model ?? null,
         // Opening the lock after a miss: what to do, the answer for a plain choice, and the clue words.
-        task: recoveryTask(mineAsked), proof: proofShown(mineAsked, tokensOf(liveRaceChunks(st.world, st.passages ?? [], round)[round.step]?.lines ?? [])).lines, answer: recoveryTask(mineAsked) === "choice" ? mineAsked.choices?.find((c) => c.best)?.text ?? null : null, clues: mineAsked.clues ?? null } : null;
+        task: recoveryTask(mineAsked), proof: proofShown(mineAsked, tokensOf(liveRaceChunks(st.world, st.passages ?? [], round)[round.step]?.lines ?? [])).lines, answer: recoveryTask(mineAsked) === "choice" ? mineAsked.choices?.find((c) => c.best)?.text ?? null : null, clues: mineAsked.clues ?? null,
+        // The explanation for this player's own version (the board shows the class's main question's).
+        why: mineAsked.why ?? null } : null;
       // Mastery on this phone (lib/mastery.ts), from this player's first tries in this game: the skill tag after each reveal,
       // and any level-up it brought. Private to this phone.
       const revealed = round.beat === "reveal" || round.beat === "lightning" || round.beat === "board" || round.beat === "countdown";
