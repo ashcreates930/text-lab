@@ -292,6 +292,8 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
    answerText={race.revealKey.best?.join(" · ")??race.revealKey.answer} clueWords={race.revealKey.clues??undefined} choices={q.choices} dnd={q.dnd} callPassages={q.callPassages} onOpen={async a=>!(await act("race_recover",{answer:a}))}/>}
   {/* Opened with the proof after the reveal (on the leaderboard or countdown): the same quiet opening. */}
   {(round.beat==="board"||round.beat==="countdown")&&!mine.tap?.correct&&mine.opened&&q&&<LockMoment kind="quiet" size="md" className="mb-3"/>}
+  {/* The chest stays to open after the short reveal, through the leaderboard and countdown. */}
+  {(round.beat==="board"||round.beat==="countdown")&&race.chest&&<div className="mb-3"><ChestCard chest={race.chest.chest} opened={race.chest.opened} onOpen={()=>{void act("race_chest");if(race.chest?.chest.piece&&world)addKit(world.id,race.chest.chest.piece);cue(sound,"chime",0.3)}}/></div>}
   {(round.beat==="board"||round.beat==="countdown")&&race.place&&<><p role="status" className="sr-only">{mine.correct?`Plus ${mine.points} points.`:"No points this time."} You're number {race.place.rank} of {race.place.of}.</p>
    <h1 id="rp-h" className="text-center text-[30px] outline-none">{round.beat==="board"?"Checkpoint: Level 1 complete":"Next lock"}</h1>
    {round.beat==="board"&&<div className="grid grid-cols-3 gap-2.5 text-center">

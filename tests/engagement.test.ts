@@ -160,6 +160,7 @@ test("live chests: the server decides the reward, only after a first-try proof, 
   assert.equal(chestCoinsOf(opened as never, pid), found!.chest.coins);
   assert.match(src("lib/live/race.ts"), /if \(kind === "race_chest"\) \{[\s\S]{0,400}const c = liveChest\(responses, roundIndex, playerId, round\.step, !!me\.correct\);/, "the phone's claim is never trusted");
   assert.match(src("app/api/live/sessions/[id]/act/route.ts"), /"race_chest"/);
+  assert.match(src("app/live/race-live.tsx"), /(round.beat==="board"||round.beat==="countdown")&&race.chest&&<div className="mb-3"><ChestCard/, "still there after the short reveal");
 });
 
 test("the live board lights only the paragraph until every student has opened their lock", () => {
