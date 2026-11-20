@@ -45,7 +45,7 @@ import {InterviewScreen,LiarVerdict,NameTheLiar,WitnessVisit} from "./interview"
 import type {ExpeditionAttempt} from "@/lib/expedition-progress";
 import {evidenceSentences} from "@/lib/lies";
 import {lineAt,emptyProgress,inventoryOf,lockKind,parseResume,recoveryOpens,recoveryTask,resumeAt,roomOf,roomsOf,stopsAtInnerDoor,type RoomProgress} from "@/lib/escape-room";
-import {CaseFileButton,ChamberRecap,EscapeMoment,ExitBanner,InnerDoor,LockBanner,RecoveryPanel,RoomDoor,TimeoutMoment} from "./room-ui";
+import {CaseFileButton,ChamberRecap,EscapeMoment,ExitBanner,InnerDoor,LockBanner,RecoveryPanel,RoomDoor,TimeoutMoment,missionFor} from "./room-ui";
 import {PuzzleLock,type PuzzleOutcome} from "./puzzle-locks";
 
 type Beat="practice"|"essential"|"scene"|"witness"|"puzzle"|"door"|"recover"|"inner"|"recap"|"escape"|"interview"|"read"|"gist"|"question"|"result"|"lightning"|"board"|"burst"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"skills"|"notes";
@@ -535,9 +535,9 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   {!["refresher","notes","interview","practice","skills","door","inner","recap","escape"].includes(beat)&&hud}
   {beat==="practice"&&<PracticeRound world={world} passages={passages} onDone={()=>{markPracticeDone();go("door")}}/>}
   {clock?.overtime&&!timeoutSeen[ch]&&clockRuns(beat)&&<TimeoutMoment text={world.engagement?.timeout_moment??"Time ran out."} onGo={()=>setTimeoutSeen(t=>{const n=[...t];n[ch]=true;return n})}/>}
-  {beat==="door"&&room&&<RoomDoor timer={budget>0} briefing={world.rooms?.find(r=>r.expedition===expeditionId)?.briefing??null} concepts={world.engagement?.key_concepts??[]} room={room} resumed={!!restored} vocab={world.rooms?.find(r=>r.expedition===expeditionId)?.vocab??[]} lineOf={r=>lineAt(passages,r)} onOpen={()=>{if(iv&&!inRoom(iv)&&!(restored&&cards.length))go("interview");else toLock(k)}}/>}
+  {beat==="door"&&room&&<RoomDoor timer={budget>0} chamber={room.chambers[1]&&k>=room.chambers[1].from?2:1} briefing={world.rooms?.find(r=>r.expedition===expeditionId)?.briefing??null} concepts={world.engagement?.key_concepts??[]} room={room} resumed={!!restored} vocab={world.rooms?.find(r=>r.expedition===expeditionId)?.vocab??[]} lineOf={r=>lineAt(passages,r)} onOpen={()=>{if(iv&&!inRoom(iv)&&!(restored&&cards.length))go("interview");else toLock(k)}}/>}
   {beat==="inner"&&room&&<InnerDoor inTimeBadge={chamberInTime(0)} clockNote={budget?clockEnding(budget,clockUsed[0]??0):null} room={room} stop={stopsAtInnerDoor({classSession:!!classToken,stopAtInnerDoor})&&!restoredInto2} onMap={onExit} onNext={()=>toLock(k+1)}/>}
-  {beat==="recap"&&room&&<ChamberRecap room={room} items={inventory} onNext={()=>toLock(room.chambers[1]?.from??k+1)}/>}
+  {beat==="recap"&&room&&<ChamberRecap room={room} items={inventory} mission={budget>0?missionFor(world.rooms?.find(r=>r.expedition===expeditionId)?.briefing,2):null} onNext={()=>toLock(room.chambers[1]?.from??k+1)}/>}
   {beat==="puzzle"&&puzzleId&&(()=>{const pz=world.rooms?.find(r=>r.expedition===expeditionId)?.puzzles?.find(p=>p.id===puzzleId),at=room?.puzzles.find(p=>p.id===puzzleId)?.after??k;
    return pz?<PuzzleLock key={puzzleId} puzzle={pz} lineOf={r=>lineAt(passages,r)} seed={seedKey} readLines={chunks.slice(0,at+1).flatMap(x=>x.lines.map(l=>({p:l.pid,s:l.index})))} readChunks={chunks.slice(0,at+1).map(x=>x.lines.map(l=>({p:l.pid,s:l.index})))} sound={sound} pointerFor={r=>pointerText(world,r.p,Number(r.p.slice(1)))} onDone={onPuzzleDone}/>:null})()}
   {beat==="escape"&&room&&<EscapeMoment inTimeBadge={chamberInTime(lastCh)} clockNote={budget?clockEnding(budget,clockUsed[lastCh]??0):null} room={room} next={nextRoom} solved={!!liarResult?.solved} onNext={()=>{go("finish");onFinish?.(records)}}/>}

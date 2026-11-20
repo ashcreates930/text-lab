@@ -55,7 +55,7 @@ test("the briefing at the door: a scenario, the room's concepts, the vocabulary,
   for (const c of b.concepts) assert.ok(world.engagement!.key_concepts.some((k) => k.name === c), c);
   const ui = src("app/room-ui.tsx");
   assert.match(ui, /timer\?"Start the clock":"Open the door"/); assert.match(ui, /This room explores/);
-  assert.match(src("app/expedition-race.tsx"), /<RoomDoor timer=\{budget>0\} briefing=/);
+  assert.match(src("app/expedition-race.tsx"), /<RoomDoor timer=\{budget>0\} chamber=\{[^}]*\} briefing=/);
 });
 
 test("the mission line (approved 2026-11-20) ends the briefing and counts chamber 1's locks exactly", async () => {
@@ -66,8 +66,38 @@ test("the mission line (approved 2026-11-20) ends the briefing and counts chambe
   assert.deepEqual(engagementProblems(world, ps).filter((p) => /mission/.test(p)), []);
   const bad = structuredClone(world); bad.rooms!.find((r) => r.expedition === e1.id)!.briefing!.mission = "Your mission: open 4 locks and the gate before the clock runs out.";
   assert.match(engagementProblems(bad, ps).join(), /briefing mission: it must say "open 5 locks"/);
-  // Shown after the scenario at the start of the room; not when a student comes back mid-room.
-  assert.match(src("app/room-ui.tsx"), /\{briefing\.mission&&!resumed&&<p/);
+  const b2 = structuredClone(world); b2.rooms!.find((r) => r.expedition === e1.id)!.briefing!.mission2 = "Your mission: open 4 locks and the exit door before the clock runs out.";
+  assert.match(engagementProblems(b2, ps).join(), /briefing mission2: it must say "open 5 locks"/);
+  // Every room (approved 2026-11-20): a briefing of two or three sentences, the story's concepts, and a mission line for
+  // each chamber with its own lock count (Room 14: 4 and 3).
+  assert.equal(world.rooms!.length, 14);
+  for (const r of world.rooms!) {
+    const b = r.briefing!; assert.ok(b, r.expedition);
+    const n = b.scenario.split(/[.!?](\s|$)/).filter((x) => x && x.trim().length > 3).length; assert.ok(n >= 2 && n <= 3, r.expedition);
+    assert.match(b.mission!, /^Your mission: open \d locks and .+ before the clock runs out\.$/); assert.match(b.mission2!, /^Your mission: open \d locks and the exit door before the clock runs out\.$/);
+  }
+  assert.match(world.rooms!.at(-1)!.briefing!.mission!, /open 4 locks/); assert.match(world.rooms!.at(-1)!.briefing!.mission2!, /open 3 locks/);
+  // The mission for the chamber being started, only while the escape timer is on: chamber 1 at the door, chamber 2 at
+  // the door (coming back mid-chamber) and on the Case File recap that opens chamber 2.
+  const ui = src("app/room-ui.tsx"), race = src("app/expedition-race.tsx");
+  assert.match(ui, /\{timer&&missionFor\(briefing,chamber\)&&<p/); assert.match(ui, /export const missionFor=\(b:\{mission\?:string;mission2\?:string\}\|null\|undefined,chamber:1\|2\)=>\(chamber===2\?b\?\.mission2:b\?\.mission\)\?\?null;/);
+  assert.match(race, /chamber=\{room\.chambers\[1\]&&k>=room\.chambers\[1\]\.from\?2:1\}/); assert.match(race, /<ChamberRecap room=\{room\} items=\{inventory\} mission=\{budget>0\?missionFor\(/);
+});
+
+test("briefings never answer the room: answer key words, code words, painting mistakes, scene subjects, quoted keys", async () => {
+  const { briefingProblems } = await import("../lib/engagement.ts");
+  const { parseSourcePassages } = await import("../lib/source-passages.ts");
+  const ps = parseSourcePassages(readFileSync("public/worlds/sleepy-hollow/source.md", "utf8"));
+  assert.deepEqual(briefingProblems(world, ps), []);
+  const withText = (id: string, extra: string) => { const w = structuredClone(world); const b = w.rooms!.find((r) => r.expedition === id)!.briefing!; b.scenario += " " + extra; return briefingProblems(w, ps).join("\n"); };
+  assert.match(withText("the-van-tassel-farm", "She is his daughter."), /code-dial answer "daughter"/);
+  assert.match(withText(e1.id, "A roaring waterfall pours down."), /painting's mistake "A roaring waterfall"/);
+  assert.match(withText(e1.id, "A cannon stands by."), /scene object's subject/);
+  assert.match(withText(e1.id, "I do not vouch for the fact, they say."), /quotes the proof/);
+  assert.match(withText("the-lonely-road", "The party ends at midnight."), /gives away the answer "The party ends/);
+  assert.match(withText("ghost-stories", "Out in the valley, people believe whatever they hear."), /ready-made answer to the written seal/);
+  // A word a wrong choice or the question uses too can't point at the right answer.
+  assert.equal(withText("the-schoolmaster", "Every house has a story."), "");
 });
 
 test("resume keeps each chamber's time; the attempt saves each chamber's time and result for the teacher", () => {
