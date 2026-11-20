@@ -133,7 +133,7 @@ test("timers: no reading timer, Gist 30, one-step 45, two-step 70, Theme Thread 
   assert.deepEqual([SCREEN_MS.result, SCREEN_MS.board], [3000, 5000]); assert.equal(screenMs("board", "2"), 10000);
   // Reading has no timer; Catch the Lie's clock starts after the testimony; the leaderboard has Pause, which holds the clock.
   const ui = src("app/expedition-race.tsx");
-  assert.ok(ui.includes("Read · no timer")); assert.ok(ui.includes("The timer starts when it ends")); assert.ok(ui.includes("aria-pressed={paused}"));
+  assert.ok(ui.includes(`{budget?"Read · no question timer":"Read · no timer"}`));assert.ok(ui.includes("The timer starts when it ends")); assert.ok(ui.includes("aria-pressed={paused}"));
   assert.ok(ui.includes("if(!kind||paused)return"));
 });
 

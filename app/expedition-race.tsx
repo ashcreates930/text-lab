@@ -561,7 +561,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   {beat==="liar"&&iv&&<NameTheLiar seed={`${seedKey}|${expeditionId}`} world={world} said={interviewStatements(world,iv,liar,cards)} passages={callAll} onLock={a=>{setLiarAnswer(a);const r=liarCheck(iv,liar,a);cue(sound,r.solved?"streak":"reveal");go("verdict")}}/>}
   {beat==="verdict"&&iv&&liarResult&&<LiarVerdict world={world} expeditionId={expeditionId} interview={iv} liar={liar} solved={liarResult.solved} named={liarResult.named} passages={callAll} onNext={toExit}/>}
   {beat==="essential"&&<EssentialAnswerScreen world={world} items={inventory} onDone={a=>{setEssential(a);setExitOpen(true);go("escape")}}/>}
-  {beat==="read"&&<section aria-labelledby="ex-h"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Read · no timer</p><h1 id="ex-h" className="text-[28px] outline-none">Read the chunk</h1>
+  {beat==="read"&&<section aria-labelledby="ex-h"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">{budget?"Read · no question timer":"Read · no timer"}</p><h1 id="ex-h" className="text-[28px] outline-none">Read the chunk</h1>
    {q&&questionFirst(q)&&<ReadFor prompt={q.prompt}/>}
    {highlighter&&<button type="button" aria-pressed={marking} onClick={()=>setMarking(m=>!m)} className={`mt-2 inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-[15px] font-bold ${marking?"bg-gold text-on-gold":"bg-panel text-ink"}`}><Highlighter size={16} aria-hidden/>{marking?"Done marking":"Mark words I don't know"}</button>}
    {(again||!hintsDone().has("read"))&&<div className="mt-3"><Coach text={HINTS.read}/></div>}
@@ -617,7 +617,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
     <div className="rounded-[18px] bg-panel p-3 text-ink shadow-[0_5px_0_#0B0920]"><p className="font-display text-[24px] font-bold">{record?.correct?<Check className="mx-auto" size={28} aria-hidden/>:<X className="mx-auto" size={28} aria-hidden/>}</p><p className="text-[13px] font-extrabold text-muted">{record?.correct?"found it":"missed"}</p></div>
    </div>}
    {beat==="board"?<><Leaderboard rows={board} meId="me" title="Top 5"/><p className="mt-3 text-center text-[16px] font-bold text-muted">Level 2 is next{arc?.boss!=null?", with the boss question":""}. First: a 60-second bonus challenge.</p></>:<>{world.world_map&&<div className="mt-4"><RaceMap world={world} expeditionId={expeditionId} stars={records.slice(0,k+1).map((r,i)=>r?.correct?(r.gist===null||gistPoints(chunks[i].chunk,r.gist)>0?3:2):0)} tokens={[{id:"me",name:"You",me:true}]} label={`Map: walking to ${k+1>=chunks.length?"the finale":`stop ${k+2}`}`}/></div>}<div className="mt-6"><CountdownRing ms={autoLeft} total={screenMs("countdown",timeSetting)} label={k+1>=chunks.length?"Final results":`Lock ${k+2} of ${chunks.length}`}/></div></>}
-   {paused&&<p className="mt-3 text-center text-[15px] text-muted">Paused. Take your time.</p>}
+   {paused&&<p className="mt-3 text-center text-[15px] text-muted">{budget?"Paused. The escape clock keeps running.":"Paused. Take your time."}</p>}
    {!paused&&<p aria-hidden className="mt-3 flex items-center justify-center gap-1.5 text-[13px] text-muted"><Timer size={14}/>Moving on in {Math.ceil(autoLeft/1000)}s</p>}
   </section>}
 
