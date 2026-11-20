@@ -81,6 +81,10 @@ test("the mission line (approved 2026-11-20) ends the briefing and counts chambe
   // the door (coming back mid-chamber) and on the Case File recap that opens chamber 2.
   const ui = src("app/room-ui.tsx"), race = src("app/expedition-race.tsx");
   assert.match(ui, /\{timer&&missionFor\(briefing,chamber\)&&<p/); assert.match(ui, /export const missionFor=\(b:\{mission\?:string;mission2\?:string\}\|null\|undefined,chamber:1\|2\)=>\(chamber===2\?b\?\.mission2:b\?\.mission\)\?\?null;/);
+  // Going straight through in one sitting: chamber 2's mission on the screen right after the inner door opens.
+  assert.match(ui, /\{!stop&&mission&&<p className="text-\[17px\] font-bold leading-snug text-highlight">\{mission\}<\/p>\}/);
+  assert.match(race, /<InnerDoor mission=\{budget>0\?missionFor\(world\.rooms\?\.find\(r=>r\.expedition===expeditionId\)\?\.briefing,2\):null\}/);
+  assert.match(world.rooms!.find((r) => r.expedition === "the-headless-horseman")!.briefing!.scenario, /a small brook and a narrow bridge/);
   assert.match(race, /chamber=\{room\.chambers\[1\]&&k>=room\.chambers\[1\]\.from\?2:1\}/); assert.match(race, /<ChamberRecap room=\{room\} items=\{inventory\} mission=\{budget>0\?missionFor\(/);
 });
 
@@ -132,6 +136,8 @@ test("live: on by default; 35 minutes per chamber played; runs while reading; pa
   const live = src("app/live/race-live.tsx");
   assert.match(live, /onClick=\{\(\)=>act\(\{action:"clock\.add"\}\)\}[\s\S]{0,140}Add 5 minutes/);
   assert.match(live, /\{phoneClock\?\.overtime&&!timeoutSeen&&<TimeoutMoment/);
+  // The board and phones read the time fresh each render, so resuming never shows a stale, higher clock for a tick.
+  assert.match(live, /c\.usedMs\+\(c\.runningSince\?Math\.max\(0,Date\.now\(\)-Date\.parse\(c\.runningSince\)\):0\)/);
 });
 
 test("class play: the migration, the teacher's timer and pause, the student's 15-second check", () => {

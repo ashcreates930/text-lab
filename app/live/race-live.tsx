@@ -425,12 +425,13 @@ function LivePuzzle({p,seed,act,sound,world}:{p:{data:RoomPuzzle;lines:Record<st
  return <div className="mt-2"><PuzzleLock puzzle={p.data} lineOf={r=>p.lines[refKey(r)]??null} readLines={p.readLines} readChunks={p.readChunks} seed={seed} sound={sound} pointerFor={r=>world?pointerText(world,r.p,Number(r.p.slice(1))):`It's in paragraph ${Number(r.p.slice(1))}. Find the line.`} submit={a=>{act("race_puzzle",{answer:a})}} onDone={()=>setDone(true)}/></div>;
 }
 // The room clock on the board and phones (lib/room-clock.ts): the server's time used plus the running beat, ticking
-// once a second; null when the clock is off.
+// once a second; null when the clock is off. The tick only re-renders: the time is read fresh each render, so a stale
+// tick from before a pause never makes the clock jump up when the teacher resumes.
 function useLiveClock(c:{budgetMs:number;usedMs:number;runningSince:string|null}|null|undefined){
- const [now,setNow]=useState(()=>Date.now());
- useEffect(()=>{if(!c?.runningSince)return;const t=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(t)},[c?.runningSince]);
+ const [,setTick]=useState(0);
+ useEffect(()=>{if(!c?.runningSince)return;const t=setInterval(()=>setTick(x=>x+1),1000);return()=>clearInterval(t)},[c?.runningSince]);
  if(!c)return null;
- return clockView(c.budgetMs,c.usedMs+(c.runningSince?Math.max(0,now-Date.parse(c.runningSince)):0));
+ return clockView(c.budgetMs,c.usedMs+(c.runningSince?Math.max(0,Date.now()-Date.parse(c.runningSince)):0));
 }
 // ---------- Squad escapes (lib/live/squad-escape.ts) ----------
 type EscView={room:number;myRoles:SquadRole[];members:{id:string;nickname:string;me:boolean;roles:SquadRole[];committed:boolean;commit:{pick:string|null;line:string|null}|null}[];recorder:boolean;open:boolean;lock:{from:string;correct:boolean|null;points:number|null}|null;caseFile:InventoryItem[]};
