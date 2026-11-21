@@ -29228,7 +29228,7 @@
         {
           "chamber": 2,
           "art": "/worlds/sleepy-hollow/scenes/gone-2.webp",
-          "alt": "A painted grey morning: a bare-backed old grey horse grazing at a farm gate beside a frowning old farmer, an open bundle of shirts and a razor on the ground, a few books burning in a small fire, a muddy road with deep hoof tracks to a wooden bridge, an old hat and a smashed pumpkin on the bank, villagers gossiping by the white church, and an empty schoolhouse far off.",
+          "alt": "A painted grey morning: a bare-backed old grey horse grazing at a farm gate, an open bundle of shirts and a razor on the ground, a few books burning in a small fire, a muddy road with deep hoof tracks to a wooden bridge, an old hat and a smashed pumpkin on the bank, villagers gossiping by the white church, and an empty schoolhouse far off.",
           "items": [
             {
               "id": "gate",
