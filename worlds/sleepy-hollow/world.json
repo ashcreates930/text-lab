@@ -23601,7 +23601,7 @@
         {
           "chamber": 1,
           "art": "/worlds/sleepy-hollow/scenes/into-the-hollow-1.webp",
-          "alt": "A painted valley at golden hour: a tavern by a river cove with sloops at anchor, a dirt road climbing past an old farmer into a quiet glen, a brook under a stone bridge, tall walnut trees, a stone farmhouse with a porch, and a closed farm gate.",
+          "alt": "A painted valley at golden hour: a tavern by a river cove with sloops at anchor, a dirt road climbing into a quiet glen, a brook under a stone bridge, tall walnut trees, a stone farmhouse with a porch, and a closed farm gate.",
           "items": [
             {
               "id": "inn",
@@ -23730,13 +23730,7 @@
               "word": "quail"
             }
           ],
-          "witnesses": [
-            {
-              "character": "hans-van-ripper",
-              "x": 20.5,
-              "y": 72
-            }
-          ],
+          "witnesses": [],
           "puzzles": [
             {
               "id": "glen-at-noon",
@@ -23753,7 +23747,7 @@
         {
           "chamber": 2,
           "art": "/worlds/sleepy-hollow/scenes/into-the-hollow-2.webp",
-          "alt": "The same valley by moonlight: a meteor across the stars, huge old shade trees, farmhouses with glowing windows, a headless cloaked rider far down the road, a white church above its churchyard, a young man in a fur cap on the road and a young woman with a lantern by the churchyard gate.",
+          "alt": "The same valley by moonlight: a meteor across the stars, huge old shade trees, farmhouses with glowing windows, a headless cloaked rider far down the road, and a white church above its churchyard and gate.",
           "items": [
             {
               "id": "meteor",
@@ -23865,18 +23859,7 @@
               "word": "roads"
             }
           ],
-          "witnesses": [
-            {
-              "character": "brom-bones",
-              "x": 36,
-              "y": 68
-            },
-            {
-              "character": "katrina-van-tassel",
-              "x": 72,
-              "y": 63
-            }
-          ],
+          "witnesses": [],
           "puzzles": [
             {
               "id": "churchyard-at-dusk",

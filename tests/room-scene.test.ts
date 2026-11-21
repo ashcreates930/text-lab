@@ -74,7 +74,7 @@ test("the solo room: a chamber with a scene returns to it after each lock, and t
 });
 
 test("Rooms 2 to 6 have their two painted scenes (approved 2026-11-21: Rooms 2 and 3); a code-dial answer never appears in a scene's words", () => {
-  for (const id of ["the-schoolmaster", "tales-by-the-fire", "the-van-tassel-farm", "a-rival-appears", "the-feud", "the-invitation", "the-ride-to-the-party", "the-feast-and-the-dance", "ghost-stories", "the-lonely-road", "the-headless-horseman", "gone", "the-postscript"]) for (const c of [1, 2]) {
+  for (const id of ["into-the-hollow", "the-schoolmaster", "tales-by-the-fire", "the-van-tassel-farm", "a-rival-appears", "the-feud", "the-invitation", "the-ride-to-the-party", "the-feast-and-the-dance", "ghost-stories", "the-lonely-road", "the-headless-horseman", "gone", "the-postscript"]) for (const c of [1, 2]) {
     const sc = sceneOf(world, id, c)!; assert.ok(sc, `${id} chamber ${c}`); assert.ok(existsSync("public" + sc.art), sc.art); assert.deepEqual(sc.witnesses, [], "no witness painted in");
   }
   // Punishment is never a spot (Room 2 lock 5 is the school itself).
