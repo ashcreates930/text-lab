@@ -14,6 +14,7 @@ import type {InventoryItem} from "@/lib/escape-room";
 import {SQUAD_ROLE_INFO,type SquadRole} from "@/lib/live/squad-escape";
 import {CLOCK_INFO,ROOM_CLOCKS,clockView} from "@/lib/room-clock";
 import {PuzzleLock} from "../puzzle-locks";
+import {SceneView} from "../room-scene-view";
 import {refKey} from "@/lib/escape-room";
 import type {LineRef,RoomPuzzle} from "@/lib/world-schema";
 import {LockBanner,RecoveryPanel,CaseFileButton,TimeoutMoment} from "../room-ui";
@@ -93,7 +94,7 @@ export function RacePick({state,act}:{state:HostView;act:(b:Record<string,unknow
 }
 
 // ---------- The host board ----------
-const BEAT_LABEL:Record<string,string>={brief:"Briefing",read:"Read",process:"Gist check",ask:"Your question",race:"Question",reveal:"The proof",lightning:"Lightning",puzzle:"Puzzle lock",board:"Checkpoint",burst:"Squad burst",countdown:"Next chunk"};
+const BEAT_LABEL:Record<string,string>={brief:"Briefing",scene:"The room",read:"Read",process:"Gist check",ask:"Your question",race:"Question",reveal:"The proof",lightning:"Lightning",puzzle:"Puzzle lock",board:"Checkpoint",burst:"Squad burst",countdown:"Next chunk"};
 const scaleOf=(setting:string|null|undefined)=>setting==="untimed"?3:Number(setting)>0?Number(setting):1;
 export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound;world:WorldPack|null;act:(b:Record<string,unknown>)=>void}){
  const race=state.race!;
@@ -132,6 +133,11 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
   {nextNote&&<NoteHeadsUp note={nextNote} step={round.step} held={round.holdBefore===round.step+1} paused={!!state.session.paused} act={act}/>}
   {state.session.paused&&<p role="status" className="mt-2 rounded-card bg-gold px-4 py-2 text-[18px] font-bold text-on-gold">Paused. Everyone stays on this screen.</p>}
   {round.beat==="countdown"&&round.escaped.filter(e=>e.step===round.step).map(e=><EscapeNote key={e.chamber} e={e} budgetMs={round.clock?.budgetMs??0} squads={round.squadsOn} timeout={world?.engagement?.timeout_moment??null}/>)}
+  {/* The room's scene before the first witness (lib/live/race.ts "scene"): the arrow on the first spot; tapping it, or
+      Next, opens lock 1 (a witness met there steps in first). */}
+  {round.beat==="scene"&&round.scene&&<div className="mt-3 max-w-3xl"><SceneView heading="h2" scene={round.scene.data as never} title={round.scene.title} next={{kind:"item",lock:round.scene.first}} opened={()=>false}
+   witnessName={c=>c} witnessState={()=>"away"} puzzleState={()=>"later"} doorState="later" bonusAvailable={()=>false} bonusFound={[]} lineOf={()=>null} proofOf={()=>null}
+   onItem={()=>act({action:"race.next"})} onWitness={()=>{}} onPuzzle={()=>{}} onDoor={()=>{}} onBonus={()=>{}}/></div>}
   {round.beat==="read"&&world&&<><p className="mt-2 text-[clamp(18px,1.6vw,26px)] text-muted" aria-live="polite">{race.ready.ready} of {race.ready.total} ready · no question timer while reading</p>
    <div className="mt-3"><ChunkText chunk={{lines:round.chunk.lines,discovery:round.chunk.discovery}} world={world} tokens={tokens} large/></div></>}
   {round.beat==="process"&&<div className="mt-3"><p className="text-[20px] text-muted">{race.answered} of {state.counters.players} answered</p><p className="mt-2 font-display text-[clamp(26px,2.8vw,44px)] font-bold">Which is the best summary?</p>
@@ -257,6 +263,8 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
   {round.beat==="countdown"&&round.escaped.filter(e=>e.step===round.step).map(e=><MyEscapeNote key={e.chamber} e={e} mine={race.myBonus.find(b=>b.chamber===e.chamber)} squads={round.squadsOn}/>)}
   {race.extraTime&&<p className="text-[13px] font-bold text-muted">Extra time is on for you.</p>}
   {round.paused&&<p role="status" className="rounded-card bg-gold px-4 py-2 text-[16px] font-bold text-on-gold">Paused by your teacher.</p>}
+  {round.beat==="scene"&&<><h1 id="rp-h" className="text-[28px] outline-none">Look around the room</h1>
+   <p className="text-[17px]">Your teacher is showing the room on the board. Lock {round.step+1} opens next.</p></>}
   {round.beat==="read"&&<><h1 id="rp-h" className="text-[28px] outline-none">Read the chunk</h1>
    {race.hookPrompt&&<ReadFor prompt={race.hookPrompt}/>}
    {round.highlighter&&!mine.ready&&<button type="button" aria-pressed={marking} onClick={()=>setMarking(m=>!m)} className={`inline-flex min-h-11 w-fit items-center gap-2 rounded-full px-4 text-[15px] font-bold ${marking?"bg-gold text-on-gold":"bg-panel text-ink"}`}><Highlighter size={16} aria-hidden/>{marking?"Done marking":"Mark words I don't know"}</button>}

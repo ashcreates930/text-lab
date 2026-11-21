@@ -99,7 +99,9 @@ test("live: the class votes on each card, witnesses answer on the board, every p
   type Iv = { witness: number | null; votes: number[][]; cards: number[]; said: { character: string; text: string; card: string }[]; callPassages: unknown[] | null; verdict: { liar: string; breakdown: { named: { count: number }[]; solved: number; total: number } } | null };
   const pub = () => server.hostView(st).round as unknown as { beat: string; step: number; beatMs: number | null; interview: Iv };
   assert.equal(await host({ action: "round.start", type: "race", settings: { expeditionId: exp.id } }), null);
-  // The room opens on its briefing (tests/live-briefing.test.ts); the teacher starts the clock.
+  // The room opens on its briefing (tests/live-briefing.test.ts); the teacher starts the clock, and the room's scene comes first.
+  assert.equal(await host({ action: "race.next" }), null);
+  // Then the room's scene, before any witness (the teacher, or the first spot, moves on).
   assert.equal(await host({ action: "race.next" }), null);
   const race = () => st.session.rounds[st.session.roundIndex] as { interview: { liar: number; witnesses: number } };
   const liar = race().interview.liar, w = iv.witnesses[liar];

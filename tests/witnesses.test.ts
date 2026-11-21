@@ -120,7 +120,9 @@ test("live server: a room game opens on the first witness, not a card vote; cham
   const pub = () => server.hostView(st).round as unknown as Pub;
   const iv = room1.interview!, hans = iv.witnesses.findIndex((w) => w.character === "hans-van-ripper");
   assert.equal(await host({ action: "round.start", type: "race", settings: { expeditionId: room1.id, chamber: 1 } }), null);
-  // The room opens on its briefing (tests/live-briefing.test.ts); the teacher starts the clock.
+  // The room opens on its briefing (tests/live-briefing.test.ts); the teacher starts the clock, and the room's scene comes first.
+  assert.equal(await host({ action: "race.next" }), null);
+  // Then the room's scene, before any witness (the teacher, or the first spot, moves on).
   assert.equal(await host({ action: "race.next" }), null);
   assert.equal(pub().beat, "testify"); assert.equal(pub().interview.witness, hans); assert.equal(pub().interview.inRoom, true);
   assert.equal(pub().interview.said.filter(Boolean).length, 1); assert.equal(pub().interview.said[hans]!.card, iv.question);
@@ -130,6 +132,7 @@ test("live server: a room game opens on the first witness, not a card vote; cham
   // Chamber 2, a new game: the witnesses met in chamber 1 again first.
   const s2 = await store.createSession({ code: "ROOM07", teacherId: null, classId: null, demo: true, worldId: "sleepy-hollow", status: "lobby", paused: false, roundIndex: -1, rounds: [], roundStartedAt: null, hostHash: "x", expiresAt: new Date(Date.now() + 36e5).toISOString() }); await server.join(store, s2, { nickname: "Ana Ruiz", studentId: null });
   st = (await server.loadState(store, s2.id))!; assert.equal(await server.hostAct(store, st, { action: "round.start", type: "race", settings: { expeditionId: room1.id, chamber: 2 } } as never), null); st = (await server.loadState(store, s2.id))!;
+  assert.equal(await server.hostAct(store, st, { action: "race.next" } as never), null); st = (await server.loadState(store, s2.id))!;
   assert.equal(await server.hostAct(store, st, { action: "race.next" } as never), null); st = (await server.loadState(store, s2.id))!;
   assert.equal(pub().beat, "testify"); assert.equal(pub().step, 5); assert.equal(pub().interview.witness, hans);
 });

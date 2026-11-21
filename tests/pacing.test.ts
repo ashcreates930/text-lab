@@ -103,7 +103,9 @@ test("live: answer, rank pill, no board until the checkpoint; a lightning beat; 
   const view = (pid: string) => server.playerView(st, pid).race!;
   // Two squads of two, so the burst counts a find once per squad.
   assert.equal(await host({ action: "round.start", type: "race", settings: { expeditionId: e1.id, gradeBand: "6-8", questions: false } }), null);
-  // The room opens on its briefing (tests/live-briefing.test.ts); the teacher starts the clock.
+  // The room opens on its briefing (tests/live-briefing.test.ts); the teacher starts the clock, and the room's scene comes first.
+  assert.equal(await host({ action: "race.next" }), null);
+  // Then the room's scene, before any witness (the teacher, or the first spot, moves on).
   assert.equal(await host({ action: "race.next" }), null);
   for (let k = 0; k < 8 && pub().beat !== "read"; k++) await host({ action: "race.next" });
   // Play one chunk: everyone reads and picks the best summary; Ana and Ben answer right, Cy and Di miss.

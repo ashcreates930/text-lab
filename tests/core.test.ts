@@ -2730,8 +2730,10 @@ test("proof race live: expedition beats, readiness, gist and question saving, on
   assert.equal(server.hostView(st).lobby.find(p=>p.id===ids[0])!.avatar!.name,"Brom Bones");
   // Start expedition 1 without squads; extra time for Cy from the host.
   assert.equal(await host({action:"round.start",type:"race",settings:{expeditionId:"into-the-hollow",gradeBand:"6-8",questions:true}}),null);
-  // The room opens on its briefing (tests/live-briefing.test.ts); the teacher starts the clock.
+  // The room opens on its briefing (tests/live-briefing.test.ts); the teacher starts the clock, and the room's scene comes first.
   assert.equal(pub().beat,"brief"); assert.equal(await host({action:"race.next"}),null);
+  // Then the room's scene, before any witness (the teacher, or the first spot, moves on).
+  assert.equal(pub().beat,"scene"); assert.equal(await host({action:"race.next"}),null);
   assert.equal(await host({action:"player.time",playerId:ids[2],setting:"2"}),null);
   // The Interview comes first (tests/interview.test.ts covers it); the host moves through it.
   assert.equal(pub().beat,"vote");

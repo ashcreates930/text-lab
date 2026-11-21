@@ -121,3 +121,25 @@ export function sceneProblems(world: WorldPack, passages: SourcePassage[]): stri
   }
   return out;
 }
+
+// ---------- Every room opens on a scene ----------
+// A chamber without a painted scene still opens on its room (teacher decision, 2026-11-21): a plain scene with no
+// picture, listing the chamber's spots in story order (named by each lock's paragraph topic), its puzzle locks and its
+// door, so the student always sees the room first and taps the first spot. Witnesses never stand in a scene before
+// they are met: one met at a lock steps in after the student taps that lock's spot, before its reading.
+export function plainSceneOf(world: WorldPack, room: Room, chamber: 1 | 2): Scene {
+  const exp = world.expeditions?.find((e) => e.id === room.expedition), topics = world.engagement?.passage_topics ?? {};
+  const span = room.chambers[chamber - 1] ?? room.chambers[0];
+  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+  const items = [];
+  for (let k = span.from; k <= span.to; k++) {
+    const c = exp?.chunks[k], p = c?.segments[0]?.p ?? "", topic = topics[p];
+    items.push({ id: `lock-${k + 1}`, lock: k + 1, label: topic ? cap(topic) : `Lock ${k + 1}`, alt: topic ? cap(topic) : `Lock ${k + 1}`, x: 0, y: 0, line: { p, s: c?.segments[0]?.from ?? 0 }, subject: ["lock"] });
+  }
+  const inner = room.puzzles.find((z) => z.innerDoor);
+  const puzzles = room.puzzles.filter((z) => !z.innerDoor && z.chamber === chamber).map((z) => ({ id: z.id, x: 0, y: 0 }));
+  const door = { label: chamber === 1 && room.chambers.length > 1 && inner ? (world.rooms?.find((r) => r.expedition === room.expedition)?.puzzles?.find((z) => z.id === inner.id)?.title ?? "The inner door") : "The exit door", x: 0, y: 0 };
+  return { chamber, art: "", alt: "", items, bonus: [], witnesses: [], puzzles, door } as Scene;
+}
+// The chamber's scene: its painting where there is one, otherwise the plain scene.
+export const roomSceneOf = (world: WorldPack, room: Room, chamber: 1 | 2): Scene => sceneOf(world, room.expedition, chamber) ?? plainSceneOf(world, room, chamber);
