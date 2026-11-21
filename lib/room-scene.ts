@@ -117,6 +117,11 @@ export function sceneProblems(world: WorldPack, passages: SourcePassage[]): stri
       else if (rp.innerDoor) out.push(`${at}: puzzle ${p.id} is the inner door's code lock; it opens at the door`);
     }
     spot("the door", sc.door.x, sc.door.y);
+    // A code-dial answer never appears in the scene's words (labels, alt text, bonus questions and answers), so the
+    // scene can't hand over the code lock before the student finds the word in the text.
+    const dialWords = (r.puzzles ?? []).flatMap((p) => (p.type === "code" ? p.dials.map((d) => d.word.toLowerCase()) : []));
+    const shownText = [sc.alt, sc.door.label, ...sc.items.flatMap((i) => [i.label, i.alt]), ...sc.bonus.flatMap((b) => [b.label, b.alt, b.question, b.word])];
+    for (const t of shownText) for (const w of dialWords) if (t.toLowerCase().split(/[^a-z-]+/).includes(w)) out.push(`${at}: "${w}" is a code-dial answer; keep it out of the scene's labels, alt text and bonus items`);
     if ([sc.alt].some((t) => /—/.test(t))) out.push(`${at}: no em dashes`);
   }
   return out;

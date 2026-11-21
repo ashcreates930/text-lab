@@ -23668,7 +23668,7 @@
               "id": "porch",
               "lock": 5,
               "label": "The farmhouse porch",
-              "alt": "Two country folk sitting idle on a farmhouse porch, lost in a daydream",
+              "alt": "A pair of country folk sitting idle on a farmhouse porch, lost in a daydream",
               "x": 73,
               "y": 54,
               "line": {
@@ -24635,7 +24635,7 @@
         {
           "chamber": 1,
           "art": "/worlds/sleepy-hollow/scenes/tales-by-the-fire-1.webp",
-          "alt": "A painted Sunday afternoon near dusk: a white church above its churchyard, a tall thin schoolmaster picking wild grapes for smiling young women while two shy farmhands hang back, a millpond with a mill, farmhouses along the road, a tea table with a silver teapot on a porch, and a brook with a clover bank by a log schoolhouse.",
+          "alt": "A painted Sunday afternoon near dusk: a white church above its churchyard, a tall thin schoolmaster picking wild grapes for smiling young women while two shy farmhands hang back, a millpond with a mill, farmhouses along the road, a tea table with a silver teapot on a porch, and a little brook winding past a log schoolhouse.",
           "items": [
             {
               "id": "church",
@@ -24698,18 +24698,18 @@
               ]
             },
             {
-              "id": "clover",
+              "id": "brook",
               "lock": 5,
-              "label": "The clover by the brook",
-              "alt": "A bright green bed of clover along the brook",
-              "x": 57,
-              "y": 87,
+              "label": "The little brook",
+              "alt": "A little brook winding past the schoolhouse",
+              "x": 70,
+              "y": 88,
               "line": {
                 "p": "p018",
                 "s": 3
               },
               "subject": [
-                "clover"
+                "brook"
               ]
             }
           ],
@@ -25108,7 +25108,283 @@
         ],
         "mission": "Your mission: open 5 locks and the farm gate before the clock runs out.",
         "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
-      }
+      },
+      "scenes": [
+        {
+          "chamber": 1,
+          "art": "/worlds/sleepy-hollow/scenes/the-van-tassel-farm-1.webp",
+          "alt": "A painted late afternoon by a wide river: sunbeams over the water and a sloop, a stone farmhouse under a great elm, a contented old farmer on the porch, young people singing at a glowing window, a small gold casket in a dormer window, a spring running from a little well to a brook, and a farm gate.",
+          "items": [
+            {
+              "id": "daylight",
+              "lock": 1,
+              "label": "The daylight",
+              "alt": "Sunbeams breaking through the clouds over the river",
+              "x": 15,
+              "y": 29,
+              "line": {
+                "p": "p021",
+                "s": 0
+              },
+              "subject": [
+                "daylight"
+              ]
+            },
+            {
+              "id": "singers",
+              "lock": 2,
+              "label": "The singing class",
+              "alt": "Young people holding song books at a glowing window",
+              "x": 74.9,
+              "y": 47,
+              "line": {
+                "p": "p022",
+                "s": 0
+              },
+              "subject": [
+                "disciples"
+              ]
+            },
+            {
+              "id": "gold",
+              "lock": 3,
+              "label": "The old gold ornaments",
+              "alt": "A small open casket of old gold ornaments in an upstairs window",
+              "x": 70,
+              "y": 28,
+              "line": {
+                "p": "p022",
+                "s": 3
+              },
+              "subject": [
+                "gold"
+              ]
+            },
+            {
+              "id": "baltus",
+              "lock": 4,
+              "label": "Old Baltus on the porch",
+              "alt": "A stout, contented old farmer in a broad hat in his rocking chair",
+              "x": 57,
+              "y": 57.6,
+              "line": {
+                "p": "p023",
+                "s": 1
+              },
+              "subject": [
+                "Baltus"
+              ]
+            },
+            {
+              "id": "elm",
+              "lock": 5,
+              "label": "The great elm",
+              "alt": "A great elm spreading its broad branches over the house",
+              "x": 38,
+              "y": 13,
+              "line": {
+                "p": "p023",
+                "s": 5
+              },
+              "subject": [
+                "elm"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "willows",
+              "label": "The willows by the brook",
+              "alt": "Low willows and alders along the brook",
+              "x": 77,
+              "y": 86,
+              "line": {
+                "p": "p023",
+                "s": 5
+              },
+              "subject": [
+                "willows"
+              ],
+              "question": "Which low bushes lined the stream?",
+              "word": "willows"
+            },
+            {
+              "id": "spring",
+              "label": "The spring",
+              "alt": "Clear water bubbling up and running away through the grass",
+              "x": 62,
+              "y": 74,
+              "line": {
+                "p": "p023",
+                "s": 5
+              },
+              "subject": [
+                "spring"
+              ],
+              "question": "Where did the clear drink come from?",
+              "word": "spring"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "farm-by-river",
+              "x": 24.7,
+              "y": 80
+            }
+          ],
+          "door": {
+            "label": "The farm gate",
+            "x": 91,
+            "y": 60.5
+          }
+        },
+        {
+          "chamber": 2,
+          "art": "/worlds/sleepy-hollow/scenes/the-van-tassel-farm-2.webp",
+          "alt": "A painted farmyard in morning sun: a vast old barn with pigeons on its roof and swallows at the eaves, a rooster crowing before the barn door, pigs and piglets in a pen, turkeys and guinea fowl in the yard, geese and ducks on a pond, and a lanky man in black gazing hungrily over the fence by the farmhouse.",
+          "items": [
+            {
+              "id": "barn",
+              "lock": 6,
+              "label": "The vast barn",
+              "alt": "A huge old timber barn with its doors open and its loft full of hay",
+              "x": 25,
+              "y": 30,
+              "line": {
+                "p": "p023",
+                "s": 6
+              },
+              "subject": [
+                "barn"
+              ]
+            },
+            {
+              "id": "pigs",
+              "lock": 7,
+              "label": "The pigs in their pen",
+              "alt": "Fat pigs and piglets lying in the straw of a wooden pen",
+              "x": 26.7,
+              "y": 81,
+              "line": {
+                "p": "p023",
+                "s": 7
+              },
+              "subject": [
+                "porkers"
+              ]
+            },
+            {
+              "id": "rooster",
+              "lock": 8,
+              "label": "The rooster at the barn door",
+              "alt": "A proud rooster crowing before the barn door",
+              "x": 26,
+              "y": 62.5,
+              "line": {
+                "p": "p023",
+                "s": 9
+              },
+              "subject": [
+                "cock"
+              ]
+            },
+            {
+              "id": "ichabod",
+              "lock": 9,
+              "label": "The hungry schoolmaster",
+              "alt": "A lanky man in a black coat leaning on the fence, gazing at the animals",
+              "x": 73.9,
+              "y": 57.6,
+              "line": {
+                "p": "p024",
+                "s": 0
+              },
+              "subject": [
+                "pedagogue"
+              ]
+            },
+            {
+              "id": "turkeys",
+              "lock": 10,
+              "label": "The turkeys",
+              "alt": "A flock of turkeys strutting across the farmyard",
+              "x": 50,
+              "y": 64.5,
+              "line": {
+                "p": "p024",
+                "s": 2
+              },
+              "subject": [
+                "turkey"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "pigeons",
+              "label": "The pigeons on the roof",
+              "alt": "A row of grey pigeons along the barn roof",
+              "x": 19.5,
+              "y": 9,
+              "line": {
+                "p": "p023",
+                "s": 6
+              },
+              "subject": [
+                "pigeons"
+              ],
+              "question": "Which birds sat sunning up high?",
+              "word": "pigeons"
+            },
+            {
+              "id": "swallows",
+              "label": "The swallows",
+              "alt": "Swallows darting around the barn",
+              "x": 45,
+              "y": 29,
+              "line": {
+                "p": "p023",
+                "s": 6
+              },
+              "subject": [
+                "swallows"
+              ],
+              "question": "Which quick birds darted about the overhang?",
+              "word": "swallows"
+            },
+            {
+              "id": "geese",
+              "label": "The geese on the pond",
+              "alt": "White geese floating on the pond",
+              "x": 70.3,
+              "y": 80,
+              "line": {
+                "p": "p023",
+                "s": 8
+              },
+              "subject": [
+                "geese"
+              ],
+              "question": "Which white birds floated there?",
+              "word": "geese"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "barnyard",
+              "x": 55.3,
+              "y": 84
+            }
+          ],
+          "door": {
+            "label": "The farmhouse door",
+            "x": 95.4,
+            "y": 51
+          }
+        }
+      ]
     },
     {
       "expedition": "a-rival-appears",
@@ -25298,7 +25574,251 @@
         ],
         "mission": "Your mission: open 5 locks and the farmhouse door before the clock runs out.",
         "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
-      }
+      },
+      "scenes": [
+        {
+          "chamber": 1,
+          "art": "/worlds/sleepy-hollow/scenes/a-rival-appears-1.webp",
+          "alt": "A painted golden afternoon: an old Dutch farmhouse whose deep eaves form a long porch hung with harness, flails and tools, a spinning wheel at one end and a butter churn at the other, a window showing shelves of shining pewter and garlands of corn and dried apples, and fields of corn and an orchard beyond, with an empty wagon in the yard.",
+          "items": [
+            {
+              "id": "orchards",
+              "lock": 1,
+              "label": "The orchards",
+              "alt": "Fruit trees heavy with ruddy fruit beside the fields",
+              "x": 12,
+              "y": 42,
+              "line": {
+                "p": "p025",
+                "s": 0
+              },
+              "subject": [
+                "orchards"
+              ]
+            },
+            {
+              "id": "wagon",
+              "lock": 2,
+              "label": "The farm wagon",
+              "alt": "An empty farm wagon in the yard",
+              "x": 15,
+              "y": 76,
+              "line": {
+                "p": "p025",
+                "s": 1
+              },
+              "subject": [
+                "wagon"
+              ]
+            },
+            {
+              "id": "harness",
+              "lock": 3,
+              "label": "The harness under the eaves",
+              "alt": "A leather harness hanging under the porch roof",
+              "x": 43,
+              "y": 52.7,
+              "line": {
+                "p": "p026",
+                "s": 2
+              },
+              "subject": [
+                "harness"
+              ]
+            },
+            {
+              "id": "churn",
+              "lock": 4,
+              "label": "The churn",
+              "alt": "A tall wooden butter churn at the end of the porch",
+              "x": 90.5,
+              "y": 68.4,
+              "line": {
+                "p": "p026",
+                "s": 3
+              },
+              "subject": [
+                "churn"
+              ]
+            },
+            {
+              "id": "corn",
+              "lock": 5,
+              "label": "The corn and dried apples",
+              "alt": "Garlands of corn ears, dried apples and red peppers along the wall inside",
+              "x": 80.7,
+              "y": 47,
+              "line": {
+                "p": "p026",
+                "s": 6
+              },
+              "subject": [
+                "Indian corn"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "pewter",
+              "label": "The pewter",
+              "alt": "Rows of shining plates on shelves inside",
+              "x": 80,
+              "y": 58,
+              "line": {
+                "p": "p026",
+                "s": 5
+              },
+              "subject": [
+                "pewter"
+              ],
+              "question": "What shining metal plates were lined up?",
+              "word": "pewter"
+            },
+            {
+              "id": "wheel",
+              "label": "The spinning wheel",
+              "alt": "A great spinning wheel at the end of the porch",
+              "x": 39.7,
+              "y": 62.5,
+              "line": {
+                "p": "p026",
+                "s": 3
+              },
+              "subject": [
+                "spinning-wheel"
+              ],
+              "question": "What tool for making yarn was there?",
+              "word": "spinning-wheel"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "van-tassel-hall",
+              "x": 39,
+              "y": 88
+            }
+          ],
+          "door": {
+            "label": "The farmhouse door",
+            "x": 57,
+            "y": 59.6
+          }
+        },
+        {
+          "chamber": 2,
+          "art": "/worlds/sleepy-hollow/scenes/a-rival-appears-2.webp",
+          "alt": "A painted evening at the Van Tassel gate: three young men in Sunday coats eye one another by the picket fence, four young riders come laughing up the road to the gate, a horse race runs in the meadow, farmers argue by a stone wall, and rolling farm country stretches away under a gold and rose sky.",
+          "items": [
+            {
+              "id": "house",
+              "lock": 6,
+              "label": "The Van Tassel house",
+              "alt": "The Van Tassel farmhouse with glowing windows",
+              "x": 15,
+              "y": 32,
+              "line": {
+                "p": "p027",
+                "s": 0
+              },
+              "subject": [
+                "Van Tassel"
+              ]
+            },
+            {
+              "id": "admirers",
+              "lock": 7,
+              "label": "The rival admirers",
+              "alt": "Three young men in Sunday coats eyeing one another by the fence",
+              "x": 14.3,
+              "y": 62.5,
+              "line": {
+                "p": "p027",
+                "s": 2
+              },
+              "subject": [
+                "admirers"
+              ]
+            },
+            {
+              "id": "country",
+              "lock": 8,
+              "label": "The country round",
+              "alt": "The farms and hills of the country round",
+              "x": 88,
+              "y": 44,
+              "line": {
+                "p": "p028",
+                "s": 0
+              },
+              "subject": [
+                "country"
+              ]
+            },
+            {
+              "id": "dispute",
+              "lock": 9,
+              "label": "Farmers in a dispute",
+              "alt": "A cluster of farmers arguing by the stone wall",
+              "x": 84.6,
+              "y": 70,
+              "line": {
+                "p": "p028",
+                "s": 4
+              },
+              "subject": [
+                "disputes"
+              ]
+            },
+            {
+              "id": "companions",
+              "lock": 10,
+              "label": "The band of riders",
+              "alt": "Four young men riding together up the road",
+              "x": 45.6,
+              "y": 54.7,
+              "line": {
+                "p": "p028",
+                "s": 6
+              },
+              "subject": [
+                "companions"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "races",
+              "label": "The horse race",
+              "alt": "Three riders galloping in a line across the meadow",
+              "x": 76,
+              "y": 53.7,
+              "line": {
+                "p": "p028",
+                "s": 4
+              },
+              "subject": [
+                "races"
+              ],
+              "question": "At what contests did he lead?",
+              "word": "races"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "brom-arrives",
+              "x": 42.3,
+              "y": 74
+            }
+          ],
+          "door": {
+            "label": "The farmhouse door",
+            "x": 21.5,
+            "y": 44
+          }
+        }
+      ]
     },
     {
       "expedition": "the-feud",
@@ -25500,7 +26020,267 @@
         ],
         "mission": "Your mission: open 5 locks and the Van Tassel fence before the clock runs out.",
         "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
-      }
+      },
+      "scenes": [
+        {
+          "chamber": 1,
+          "art": "/worlds/sleepy-hollow/scenes/the-feud-1.webp",
+          "alt": "A painted moonlit Sunday night: the Van Tassel farmhouse behind a white paling with a saddled mount tied to it, a tall schoolmaster with a book walking up the road, a row of dark farmhouses, two neighbors with a lantern at a door, an old woman with a candle at her window, and riders vanishing far down the road.",
+          "items": [
+            {
+              "id": "farmhouses",
+              "lock": 1,
+              "label": "The farmhouses along the road",
+              "alt": "A row of dark farmhouses along the road at midnight",
+              "x": 66.4,
+              "y": 50.8,
+              "line": {
+                "p": "p028",
+                "s": 8
+              },
+              "subject": [
+                "farmhouses"
+              ]
+            },
+            {
+              "id": "neighbors",
+              "lock": 2,
+              "label": "The neighbors at the door",
+              "alt": "Two neighbors with a lantern standing in a doorway",
+              "x": 76,
+              "y": 62.5,
+              "line": {
+                "p": "p028",
+                "s": 9
+              },
+              "subject": [
+                "neighbors"
+              ]
+            },
+            {
+              "id": "mount",
+              "lock": 3,
+              "label": "The saddled mount at the fence",
+              "alt": "A saddled mount tied at the white fence",
+              "x": 20.8,
+              "y": 71.3,
+              "line": {
+                "p": "p029",
+                "s": 1
+              },
+              "subject": [
+                "horse"
+              ]
+            },
+            {
+              "id": "ichabod",
+              "lock": 4,
+              "label": "The schoolmaster on the road",
+              "alt": "A tall thin man with a small book walking up the road",
+              "x": 50,
+              "y": 63.5,
+              "line": {
+                "p": "p030",
+                "s": 0
+              },
+              "subject": [
+                "Ichabod"
+              ]
+            },
+            {
+              "id": "farmhouse",
+              "lock": 5,
+              "label": "The Van Tassel farmhouse",
+              "alt": "The Van Tassel farmhouse with softly glowing windows",
+              "x": 28,
+              "y": 45,
+              "line": {
+                "p": "p031",
+                "s": 2
+              },
+              "subject": [
+                "farmhouse"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "dame",
+              "label": "The woman at the window",
+              "alt": "An old woman in a nightcap holding a candle at her window",
+              "x": 91,
+              "y": 66.4,
+              "line": {
+                "p": "p028",
+                "s": 8
+              },
+              "subject": [
+                "dames"
+              ],
+              "question": "Who stirred in bed and peered out?",
+              "word": "dames"
+            },
+            {
+              "id": "riders",
+              "label": "The riders far off",
+              "alt": "Dark riders vanishing down the road",
+              "x": 58,
+              "y": 58,
+              "line": {
+                "p": "p028",
+                "s": 8
+              },
+              "subject": [
+                "crew"
+              ],
+              "question": "What band of horsemen thundered on?",
+              "word": "crew"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "midnight-riders",
+              "x": 55.3,
+              "y": 86
+            }
+          ],
+          "door": {
+            "label": "The Van Tassel paling",
+            "x": 41,
+            "y": 63.5
+          }
+        },
+        {
+          "chamber": 2,
+          "art": "/worlds/sleepy-hollow/scenes/the-feud-2.webp",
+          "alt": "A painted twilight at the Van Tassel farm: an old woman at her spinning wheel and an old farmer smoking a long pipe on the porch, a great elm with a spring in a barrel well, a barn topped by a carved two-sword soldier, ducks and geese in the yard, an empty hitching rail, two young women walking a lane, and a schoolhouse on a far hill.",
+          "items": [
+            {
+              "id": "pipe",
+              "lock": 6,
+              "label": "Balt's pipe",
+              "alt": "An easygoing old farmer smoking a long clay pipe on the porch",
+              "x": 23,
+              "y": 54,
+              "line": {
+                "p": "p031",
+                "s": 3
+              },
+              "subject": [
+                "pipe"
+              ]
+            },
+            {
+              "id": "spring",
+              "lock": 7,
+              "label": "The spring under the elm",
+              "alt": "A spring bubbling into a barrel well at the foot of a great elm",
+              "x": 57,
+              "y": 69.3,
+              "line": {
+                "p": "p031",
+                "s": 6
+              },
+              "subject": [
+                "spring"
+              ]
+            },
+            {
+              "id": "women",
+              "lock": 8,
+              "label": "Two women on the lane",
+              "alt": "Two young women in shawls walking along the lane in the twilight",
+              "x": 85.3,
+              "y": 65.4,
+              "line": {
+                "p": "p032",
+                "s": 0
+              },
+              "subject": [
+                "women"
+              ]
+            },
+            {
+              "id": "palings",
+              "lock": 9,
+              "label": "The empty rail by the palings",
+              "alt": "An empty hitching rail with no mount tied to it",
+              "x": 32.5,
+              "y": 80,
+              "line": {
+                "p": "p032",
+                "s": 5
+              },
+              "subject": [
+                "palings"
+              ]
+            },
+            {
+              "id": "schoolhouse",
+              "lock": 10,
+              "label": "The schoolhouse on the hill",
+              "alt": "A small log schoolhouse on a distant hill",
+              "x": 92.4,
+              "y": 41.5,
+              "line": {
+                "p": "p033",
+                "s": 0
+              },
+              "subject": [
+                "schoolhouse"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "ducks",
+              "label": "The ducks and geese",
+              "alt": "Ducks and geese waddling about the yard",
+              "x": 36.5,
+              "y": 62.5,
+              "line": {
+                "p": "p031",
+                "s": 4
+              },
+              "subject": [
+                "ducks"
+              ],
+              "question": "Which water birds needed minding?",
+              "word": "ducks"
+            },
+            {
+              "id": "wheel",
+              "label": "The spinning wheel",
+              "alt": "A spinning wheel at one end of the porch",
+              "x": 11.4,
+              "y": 58.6,
+              "line": {
+                "p": "p031",
+                "s": 5
+              },
+              "subject": [
+                "spinning-wheel"
+              ],
+              "question": "What tool for making yarn did she work at?",
+              "word": "spinning-wheel"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "piazza-evening",
+              "x": 36.5,
+              "y": 41
+            }
+          ],
+          "door": {
+            "label": "The farmhouse door",
+            "x": 13.3,
+            "y": 48.8
+          }
+        }
+      ]
     },
     {
       "expedition": "the-invitation",
