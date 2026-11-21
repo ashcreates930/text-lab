@@ -7,6 +7,9 @@
 import {createContext,useContext,useEffect,useRef,useState} from "react";
 // Plain words, open or not, for the lock in hand: kept by the room (solo) or the phone (live) so the reading and the
 // question screens agree, and the answer records whether it was open (the teacher sees it in Evidence).
+// Read passages aloud automatically: a per-student teacher setting (2026-11-21) for students who need it. Read to me
+// starts by itself on each new passage; the student can still stop it. Everyone else keeps the Read to me button.
+export const AutoRead=createContext(false);
 export const PlainWordsState=createContext<{open:boolean;set:(o:boolean)=>void}|null>(null);
 export function usePlainWords(){const ctx=useContext(PlainWordsState),[local,setLocal]=useState(false);return ctx?{open:ctx.open,toggle:()=>ctx.set(!ctx.open)}:{open:local,toggle:()=>setLocal(o=>!o)}}
 import {BookOpenText,Square,Volume2} from "lucide-react";
@@ -40,6 +43,8 @@ export function PassageTools({lines,world,onSpeaking,plainOpen,onPlain}:{lines:{
  const noted=new Set(world.storybook?.ai_exclude??[]),skip=new Set(lines.flatMap((l,i)=>noted.has(l.pid)?[i]:[]));
  const read=useReadAloud(lines.map(l=>l.text),onSpeaking,skip);
  const [speechOk,setSpeechOk]=useState(false);useEffect(()=>setSpeechOk(canSpeak()),[]);
+ const auto=useContext(AutoRead),passage=lines.map(l=>l.text).join("|");
+ useEffect(()=>{if(auto&&speechOk)read.start()},[auto,speechOk,passage]);// eslint-disable-line react-hooks/exhaustive-deps
  const hasPlain=[...new Set(lines.map(l=>l.pid))].some(p=>world.engagement?.plain_words?.[p]);
  return <div className="flex flex-wrap items-center gap-2">
   {speechOk&&skip.size>0&&<p className="w-full text-[13px] font-bold text-reading-muted">Read to me skips the part with the content note.</p>}

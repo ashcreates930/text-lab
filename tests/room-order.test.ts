@@ -84,11 +84,12 @@ test("the first screen is the escape room: a new student goes straight to Room 1
   const cas = src("app/case.tsx"), ui = src("app/room-ui.tsx"), race = src("app/expedition-race.tsx"), bq = src("app/story-opening.tsx");
   assert.match(cas, /const first=world\.expeditions\?\.\[0\]\?\.id;if\(first&&attempts\.length===0\)\{setExpedition\(first\);setRacing\(true\)\}/);
   assert.match(cas, /if\(autoStarted\.current\|\|!world\|\|attemptsFor!==world\.id\|\|LEGACY_MODES\)return;autoStarted\.current=true;/, "once per visit, after the saved rooms have loaded");
-  // The briefing, in order: case line and big question, scenario, the room's concepts, vocabulary, mission, Start the clock.
-  const at = (s: string) => { const i = ui.lastIndexOf(s); assert.ok(i >= 0, s); return i; };
-  const order = ["{caseLine&&<p", "{bigQuestion&&<p", "{briefing.scenario}", "This room explores", "<DoorVocab", "{briefing&&timer&&missionFor(briefing,chamber)&&<p", "\"Start the clock\""].map(at);
-  assert.deepEqual([...order].sort((a, b) => a - b), order);
-  assert.match(race, /caseLine=\{room\.number===1&&!restored\?world\.hook:null\} bigQuestion=\{room\.number===1&&!restored\?world\.engagement\?\.essential_question\?\?null:null\}/);
+  // The briefing (2026-11-21, the digital mission briefing): every room with a briefing opens on it, with the case line
+  // and the big question in its dossier; rooms without one keep the plain door.
+  void ui;
+  assert.match(race, /return <MissionBriefing world=\{world\} room=\{room\} scenario=\{rb\.scenario\}/);
+  const mb = src("app/mission-briefing.tsx");
+  assert.match(mb, /Tap to open the case file/); assert.match(mb, /Accept the mission/);
   assert.equal(world.hook, "A schoolteacher vanished on the road home. Was it a ghost, or someone who wanted him gone?");
   // On the map the big question starts collapsed; all four concepts show only when it's opened there.
   // A class student who joins goes straight into the class's story (no shelf), so the same first screen applies.

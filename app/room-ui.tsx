@@ -105,7 +105,8 @@ export function RecoveryPanel({task,chunk,world,tokens,shownLines,paraLines=[],p
 // ---------- The Case File: what the student carries through the room ----------
 // The button sits in the race HUD; the drawer opens over the screen in a portal, so the pinned HUD can't hold it under
 // the site header (same screen: scroll stays, focus returns).
-export function CaseFileButton({items}:{items:InventoryItem[]}){
+// words: the room's hard words ("Words to know", 2026-11-21: moved here from the briefing), with their sentences.
+export function CaseFileButton({items,words=[],lineOf}:{items:InventoryItem[];words?:{word:string;meaning:string;line:{p:string;s:number}}[];lineOf?:(r:{p:string;s:number})=>string|null}){
  const [open,setOpen]=useState(false),btn=useRef<HTMLButtonElement>(null),head=useRef<HTMLHeadingElement>(null);
  useEffect(()=>{if(open)head.current?.focus();else if(btn.current&&document.activeElement===document.body)btn.current.focus()},[open]);
  useEffect(()=>{if(!open)return;const k=(e:KeyboardEvent)=>{if(e.key==="Escape")setOpen(false)};window.addEventListener("keydown",k);return()=>window.removeEventListener("keydown",k)},[open]);
@@ -116,6 +117,7 @@ export function CaseFileButton({items}:{items:InventoryItem[]}){
     <div className="flex items-center justify-between gap-2"><h2 id="cf-h" ref={head} tabIndex={-1} className="text-[24px] outline-none">Case File</h2>
      <button type="button" onClick={()=>{setOpen(false);setTimeout(()=>btn.current?.focus(),0)}} aria-label="Close the Case File" className="grid h-11 w-11 place-items-center rounded-full bg-panel"><X size={18} aria-hidden/></button></div>
     <CaseFileList items={items}/>
+    {lineOf&&words.length>0&&<DoorVocab vocab={words} lineOf={lineOf} title="Words to know"/>}
    </div></div>,document.body)}
  </>;
 }

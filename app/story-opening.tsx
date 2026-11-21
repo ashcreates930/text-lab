@@ -27,10 +27,10 @@ export function BigQuestion({world}:{world:WorldPack}){
 }
 
 // The hard words at the door: each with a plain meaning and the sentence it comes from (the word marked in it).
-export function DoorVocab({vocab,lineOf}:{vocab:{word:string;meaning:string;line:{p:string;s:number}}[];lineOf:(r:{p:string;s:number})=>string|null}){
+export function DoorVocab({vocab,lineOf,title="Words you'll meet in this room"}:{vocab:{word:string;meaning:string;line:{p:string;s:number}}[];lineOf:(r:{p:string;s:number})=>string|null;title?:string}){
  if(!vocab.length)return null;
  return <section aria-labelledby="vocab-h" className="rounded-card bg-panel p-4">
-  <h2 id="vocab-h" className="flex items-center gap-2 font-display text-[19px] font-bold"><BookMarked size={18} className="text-gold" aria-hidden/>Words you'll meet in this room</h2>
+  <h2 id="vocab-h" className="flex items-center gap-2 font-display text-[19px] font-bold"><BookMarked size={18} className="text-gold" aria-hidden/>{title}</h2>
   <ul className="mt-2 flex flex-col gap-2">{vocab.map(v=>{const line=(lineOf(v.line)??"").replace(/\s+/g," ").trim(),i=line.toLowerCase().indexOf(v.word.toLowerCase());
    return <li key={v.word} className="rounded-row bg-panel-2 px-3 py-2">
     <p><b className="font-display text-[18px]">{v.word}</b><span className="text-[15px]">: {v.meaning}</span></p>

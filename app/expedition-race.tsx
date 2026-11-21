@@ -47,6 +47,8 @@ import {evidenceSentences} from "@/lib/lies";
 import {lineAt,emptyProgress,inventoryOf,lockKind,parseResume,recoveryOpens,recoveryTask,resumeAt,roomOf,roomsOf,stopsAtInnerDoor,type RoomProgress} from "@/lib/escape-room";
 import {CaseFileButton,ChamberRecap,EscapeMoment,ExitBanner,InnerDoor,LockBanner,RecoveryPanel,RoomDoor,TimeoutMoment,missionFor} from "./room-ui";
 import {PuzzleLock,type PuzzleOutcome} from "./puzzle-locks";
+import {MissionBriefing,type Narration} from "./mission-briefing";
+import {AutoRead} from "./read-aloud";
 
 type Beat="practice"|"essential"|"scene"|"witness"|"puzzle"|"door"|"recover"|"inner"|"recap"|"escape"|"interview"|"read"|"gist"|"question"|"result"|"lightning"|"board"|"burst"|"countdown"|"liar"|"verdict"|"finish"|"refresher"|"skills"|"notes";
 // points include the boss or surprise double; bonus: the streak bonus; version: the question version this student saw.
@@ -331,7 +333,7 @@ export function DiscoveryBurst({chunks,world,timeSetting,sound,onDone,onFind,squ
 }
 
 // ---------- The solo expedition ----------
-export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,history=[],timeSetting="1",highlighter=false,studentKey,onSave,onFinish,onExit,replay=0,classToken=null,resume=null,stopAtInnerDoor=null,roomClock="escape",questionTime="standard",clockPaused=false}:{clockPaused?:boolean;questionTime?:QuestionTime;roomClock?:RoomClock;world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;grade?:number;history?:ExpeditionAttempt[];timeSetting?:string;highlighter?:boolean;studentKey?:string;onSave?:(a:ExpeditionAttempt)=>void;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void;replay?:number;classToken?:string|null;resume?:ExpeditionAttempt|null;stopAtInnerDoor?:boolean|null}){
+export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,history=[],timeSetting="1",highlighter=false,studentKey,onSave,onFinish,onExit,replay=0,classToken=null,resume=null,stopAtInnerDoor=null,roomClock="escape",questionTime="standard",clockPaused=false,briefingNarration="on",autoRead=false}:{briefingNarration?:Narration;autoRead?:boolean;clockPaused?:boolean;questionTime?:QuestionTime;roomClock?:RoomClock;world:WorldPack;passages:SourcePassage[];expeditionId:string;preset:string;grade?:number;history?:ExpeditionAttempt[];timeSetting?:string;highlighter?:boolean;studentKey?:string;onSave?:(a:ExpeditionAttempt)=>void;onFinish?:(records:ChunkRecord[])=>void;onExit:()=>void;replay?:number;classToken?:string|null;resume?:ExpeditionAttempt|null;stopAtInnerDoor?:boolean|null}){
  const [sound,toggleSound]=useSoundPref("effects",preset);
  const chunks=useMemo(()=>expeditionChunks(world,passages,expeditionId),[world,passages,expeditionId]);
  const exp=world.expeditions?.find(e=>e.id===expeditionId);
@@ -534,18 +536,22 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const inventory=inventoryOf({said,locks:records.map((r,i)=>({lock:i,question:askedChunks[i].chunk.question,tokens:chunkTokens(chunks[i].lines),opened:isOpen(r),discovery:r?.discovered?chunks[i].chunk.discovery:null}))});
  const nextRoom=room?roomsOf(world)[room.number]??null:null;
  const lantern=lanternLevel(records.map(r=>r?r.correct:null));
- const hud=<RaceHud lantern={lantern} doNowOverride={beat==="witness"&&iv&&meeting!=null?witnessDoNow(firstName(witnessName(world,iv.witnesses[meeting].character))):null} clock={clock} caseFile={<CaseFileButton items={inventory}/>} doNow={DO_NOW[screenNow]} onHelp={()=>setAgain(true)} score={score} streak={streak} coins={coins} sound={sound} onSound={toggleSound} chunk={k+1} total={chunks.length} left={beat==="gist"?gistLeft:beat==="question"&&!testifying?qLeft:null} title={exp.title}/>;
+ const hud=<RaceHud lantern={lantern} doNowOverride={beat==="witness"&&iv&&meeting!=null?witnessDoNow(firstName(witnessName(world,iv.witnesses[meeting].character))):null} clock={clock} caseFile={<CaseFileButton items={inventory} words={world.rooms?.find(r=>r.expedition===expeditionId)?.vocab??[]} lineOf={r=>lineAt(passages,r)}/>} doNow={DO_NOW[screenNow]} onHelp={()=>setAgain(true)} score={score} streak={streak} coins={coins} sound={sound} onSound={toggleSound} chunk={k+1} total={chunks.length} left={beat==="gist"?gistLeft:beat==="question"&&!testifying?qLeft:null} title={exp.title}/>;
  const shown=proofShown(q,tokens);
  // The lines a proof step taps: this chunk's, or for Make the Call every chunk of the expedition so far.
  const callPassages=joinedPassages(chunks.slice(0,k+1));
 
- return <PlainWordsState.Provider value={{open:plainAt===k,set:o=>setPlainAt(o?k:null)}}><div className="race-root case-ui mx-auto flex max-w-6xl flex-col gap-3 px-4 pb-16 pt-3">
+ return <AutoRead.Provider value={autoRead}><PlainWordsState.Provider value={{open:plainAt===k,set:o=>setPlainAt(o?k:null)}}><div className={`race-root case-ui mx-auto flex flex-col gap-3 pb-16 ${beat==="door"?"max-w-none px-0 pt-0":"max-w-6xl px-4 pt-3"}`}>
   {!["refresher","notes","interview","practice","skills","door","inner","recap","escape"].includes(beat)&&hud}
   {/* First-time students (2026-11-21): the room's briefing comes first; the 30-second practice lock follows Start the
       clock, before the room (it sits outside the escape clock), then the room opens. */}
   {beat==="practice"&&<PracticeRound world={world} passages={passages} onDone={()=>{markPracticeDone();enterRoom()}}/>}
   {clock?.overtime&&!timeoutSeen[ch]&&clockRuns(beat)&&<TimeoutMoment text={world.engagement?.timeout_moment??"Time ran out."} onGo={()=>setTimeoutSeen(t=>{const n=[...t];n[ch]=true;return n})}/>}
-  {beat==="door"&&room&&<RoomDoor caseLine={room.number===1&&!restored?world.hook:null} bigQuestion={room.number===1&&!restored?world.engagement?.essential_question??null:null} timer={budget>0} chamber={room.chambers[1]&&k>=room.chambers[1].from?2:1} briefing={world.rooms?.find(r=>r.expedition===expeditionId)?.briefing??null} concepts={world.engagement?.key_concepts??[]} room={room} resumed={!!restored} vocab={world.rooms?.find(r=>r.expedition===expeditionId)?.vocab??[]} lineOf={r=>lineAt(passages,r)} onOpen={()=>{if(!practiceDone())go("practice");else enterRoom()}}/>}
+  {/* The mission briefing at the door (app/mission-briefing.tsx): every room with a briefing; the plain door otherwise. */}
+  {beat==="door"&&room&&(()=>{const rb=world.rooms?.find(r=>r.expedition===expeditionId)?.briefing,ch:1|2=room.chambers[1]&&k>=room.chambers[1].from?2:1;
+   const open=()=>{if(!practiceDone())go("practice");else enterRoom()};
+   if(!rb)return <RoomDoor caseLine={room.number===1&&!restored?world.hook:null} bigQuestion={room.number===1&&!restored?world.engagement?.essential_question??null:null} timer={budget>0} chamber={room.chambers[1]&&k>=room.chambers[1].from?2:1} briefing={world.rooms?.find(r=>r.expedition===expeditionId)?.briefing??null} concepts={world.engagement?.key_concepts??[]} room={room} resumed={!!restored} vocab={world.rooms?.find(r=>r.expedition===expeditionId)?.vocab??[]} lineOf={r=>lineAt(passages,r)} onOpen={()=>{if(!practiceDone())go("practice");else enterRoom()}}/>;
+   return <MissionBriefing world={world} room={room} scenario={rb.scenario} concepts={rb.concepts.map(n=>world.engagement?.key_concepts.find(c=>c.name===n)??{name:n,teaser:""})} mission={budget>0?missionFor(rb,ch):null} budgetMs={budget} chamber={ch} art={roomSceneOf(world,room,ch).art||null} narration={briefingNarration} resumed={!!restored} audio={rb.audio} onAccept={open}/>})()}
   {beat==="inner"&&room&&<InnerDoor mission={budget>0?missionFor(world.rooms?.find(r=>r.expedition===expeditionId)?.briefing,2):null} inTimeBadge={chamberInTime(0)} clockNote={budget?clockEnding(budget,clockUsed[0]??0,firstTriesIn(0)):null} room={room} stop={stopsAtInnerDoor({classSession:!!classToken,stopAtInnerDoor})&&!restoredInto2} onMap={onExit} onNext={()=>toLock(k+1)}/>}
   {beat==="recap"&&room&&<ChamberRecap room={room} items={inventory} mission={budget>0?missionFor(world.rooms?.find(r=>r.expedition===expeditionId)?.briefing,2):null} onNext={()=>toLock(room.chambers[1]?.from??k+1)}/>}
   {beat==="puzzle"&&puzzleId&&(()=>{const pz=world.rooms?.find(r=>r.expedition===expeditionId)?.puzzles?.find(p=>p.id===puzzleId),at=room?.puzzles.find(p=>p.id===puzzleId)?.after??k;
@@ -638,7 +644,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   {beat==="skills"&&<SkillReport skills={report} reflection={reflection} onReflect={setReflection} onDone={()=>go("notes")}/>}
   {beat==="notes"&&<CaseNotesView grade={grade} reflection={reflection.trim()||null} onDone={()=>{save(true);onExit?.()}} interview={iv?interviewNote(world,iv,liar,cards,liarAnswer,refItems.findIndex(x=>x.kind==="liar")>=0?!!fixed[refItems.findIndex(x=>x.kind==="liar")]:null):null} student="You" story={world.title} expedition={exp.title} notes={caseNotes(askedChunks,results,{items:refItems,fixed},notesText)} award={refresherAward(refItems,fixed)} onNote={(i,t)=>setNotesText(n=>({...n,[i]:t}))}
    bonus={<p className="no-print rounded-card bg-violet-soft p-4 text-[16px] font-bold">Bonus Round: in class, your squad compares Case Notes and agrees on the best proof for every question you answered differently.</p>} />}
- </div></PlainWordsState.Provider>;
+ </div></PlainWordsState.Provider></AutoRead.Provider>;
 }
 
 // Solo: a per-browser key, so a student meets the same liar every time; the cards they asked are saved with it.
