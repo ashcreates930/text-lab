@@ -27789,7 +27789,251 @@
         ],
         "mission": "Your mission: open 5 locks and the storytellers' circle before the clock runs out.",
         "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
-      }
+      },
+      "scenes": [
+        {
+          "chamber": 1,
+          "art": "/worlds/sleepy-hollow/scenes/ghost-stories-1.webp",
+          "alt": "A painted night on a lantern-lit porch: a circle of old men telling war tales, a burly blue-bearded Dutchman gesturing, an old gentleman holding up a small sword, country folk leaning in by a candle at the far end, and beyond the rail scattered farmhouses and the faint lights of a village under the moon.",
+          "items": [
+            {
+              "id": "storyteller",
+              "lock": 1,
+              "label": "The old storyteller",
+              "alt": "An old man in a three-cornered hat telling his tale, pipe in hand",
+              "x": 29.3,
+              "y": 48.8,
+              "line": {
+                "p": "p050",
+                "s": 2
+              },
+              "subject": [
+                "storyteller"
+              ]
+            },
+            {
+              "id": "sword",
+              "lock": 2,
+              "label": "The bent sword",
+              "alt": "An old gentleman holding up a small sword",
+              "x": 35.5,
+              "y": 41,
+              "line": {
+                "p": "p051",
+                "s": 1
+              },
+              "subject": [
+                "sword"
+              ]
+            },
+            {
+              "id": "neighborhood",
+              "lock": 3,
+              "label": "The neighborhood",
+              "alt": "Farmhouses scattered across the dark countryside",
+              "x": 91,
+              "y": 55.7,
+              "line": {
+                "p": "p052",
+                "s": 1
+              },
+              "subject": [
+                "neighborhood"
+              ]
+            },
+            {
+              "id": "villages",
+              "lock": 4,
+              "label": "The far-off village",
+              "alt": "The faint lights of a village far down the valley",
+              "x": 81.4,
+              "y": 45,
+              "line": {
+                "p": "p052",
+                "s": 3
+              },
+              "subject": [
+                "villages"
+              ]
+            },
+            {
+              "id": "hollowfolk",
+              "lock": 5,
+              "label": "The Sleepy Hollow folk",
+              "alt": "Country folk from the hollow leaning in by a candle, telling their own tales",
+              "x": 52,
+              "y": 54.7,
+              "line": {
+                "p": "p053",
+                "s": 2
+              },
+              "subject": [
+                "Sleepy Hollow"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "dutchman",
+              "label": "The bearded Dutchman",
+              "alt": "A burly old Dutchman with a big dark beard, gesturing as he talks",
+              "x": 13.7,
+              "y": 46,
+              "line": {
+                "p": "p051",
+                "s": 0
+              },
+              "subject": [
+                "Dutchman"
+              ],
+              "question": "What color was his chin's hair?",
+              "word": "blue-bearded"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "doffue-battle",
+              "x": 45.6,
+              "y": 88
+            }
+          ],
+          "door": {
+            "label": "The storytellers' circle",
+            "x": 26,
+            "y": 60.5
+          }
+        },
+        {
+          "chamber": 2,
+          "art": "/worlds/sleepy-hollow/scenes/ghost-stories-2.webp",
+          "alt": "A painted moonlit night: a small white church on a green knoll among tall trees, its churchyard of old gravestones sloping down to a still, silvery pond; a brook rushing among rocks and fallen trunks under a dark wooden bridge in the trees; and a road winding off toward faint village lights.",
+          "items": [
+            {
+              "id": "graves",
+              "lock": 6,
+              "label": "The graves in the churchyard",
+              "alt": "Old gravestones on the slope below the church",
+              "x": 56,
+              "y": 45,
+              "line": {
+                "p": "p053",
+                "s": 5
+              },
+              "subject": [
+                "graves"
+              ]
+            },
+            {
+              "id": "church",
+              "lock": 7,
+              "label": "The church on the knoll",
+              "alt": "A small white church among tall trees on a knoll",
+              "x": 48.2,
+              "y": 25.4,
+              "line": {
+                "p": "p054",
+                "s": 0
+              },
+              "subject": [
+                "church"
+              ]
+            },
+            {
+              "id": "bridge",
+              "lock": 8,
+              "label": "The wooden bridge",
+              "alt": "A dark wooden bridge over the stream, deep in the trees",
+              "x": 74.9,
+              "y": 48.8,
+              "line": {
+                "p": "p054",
+                "s": 5
+              },
+              "subject": [
+                "bridge"
+              ]
+            },
+            {
+              "id": "brook",
+              "lock": 9,
+              "label": "The brook",
+              "alt": "A brook rushing over dark rocks below the bridge",
+              "x": 68.4,
+              "y": 76.2,
+              "line": {
+                "p": "p054",
+                "s": 7
+              },
+              "subject": [
+                "brook"
+              ]
+            },
+            {
+              "id": "singsing",
+              "lock": 10,
+              "label": "The road toward Sing Sing",
+              "alt": "A country road winding off toward faint village lights",
+              "x": 12.4,
+              "y": 54.7,
+              "line": {
+                "p": "p055",
+                "s": 1
+              },
+              "subject": [
+                "Sing Sing"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "locusts",
+              "label": "The thorny trees",
+              "alt": "Tall trees standing round the little church",
+              "x": 33.9,
+              "y": 37,
+              "line": {
+                "p": "p054",
+                "s": 1
+              },
+              "subject": [
+                "locust-trees"
+              ],
+              "question": "Which thorny kind stood all around?",
+              "word": "locust-trees"
+            },
+            {
+              "id": "trunks",
+              "label": "The fallen trunks",
+              "alt": "Fallen tree trunks lying across the rushing water",
+              "x": 84.6,
+              "y": 76,
+              "line": {
+                "p": "p054",
+                "s": 4
+              },
+              "subject": [
+                "trunks"
+              ],
+              "question": "What logs lay in the rushing water?",
+              "word": "trunks"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "church-and-bridge",
+              "x": 35.8,
+              "y": 58.6
+            }
+          ],
+          "door": {
+            "label": "The church door",
+            "x": 47.9,
+            "y": 39
+          }
+        }
+      ]
     },
     {
       "expedition": "the-lonely-road",
@@ -27992,7 +28236,245 @@
         ],
         "mission": "Your mission: open 5 locks and the stable door before the clock runs out.",
         "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
-      }
+      },
+      "scenes": [
+        {
+          "chamber": 1,
+          "art": "/worlds/sleepy-hollow/scenes/the-lonely-road-1.webp",
+          "alt": "A painted late night as a party breaks up: old men smoking on a dark porch, a tall thin man lingering in the lit doorway, wagons with lanterns rolling away down the road, two couples riding off with the young women seated behind the young men, and an old grey horse asleep in the straw of a barn.",
+          "items": [
+            {
+              "id": "pipe",
+              "lock": 1,
+              "label": "The glow of a pipe",
+              "alt": "Old men smoking on the dark porch, a pipe glowing",
+              "x": 12.7,
+              "y": 61,
+              "line": {
+                "p": "p056",
+                "s": 0
+              },
+              "subject": [
+                "pipe"
+              ]
+            },
+            {
+              "id": "wagons",
+              "lock": 2,
+              "label": "The wagons leaving",
+              "alt": "Farm wagons with lanterns rolling away down the road",
+              "x": 42.3,
+              "y": 61.5,
+              "line": {
+                "p": "p057",
+                "s": 1
+              },
+              "subject": [
+                "wagons"
+              ]
+            },
+            {
+              "id": "ichabod",
+              "lock": 3,
+              "label": "The schoolmaster at the door",
+              "alt": "A tall thin man lingering alone in the lit doorway",
+              "x": 18.2,
+              "y": 54.7,
+              "line": {
+                "p": "p057",
+                "s": 3
+              },
+              "subject": [
+                "Ichabod"
+              ]
+            },
+            {
+              "id": "aside",
+              "lock": 4,
+              "label": "The narrator wonders",
+              "alt": "A marker on the road: here the narrator wonders aloud about what happened, so nothing is painted for it",
+              "x": 50,
+              "y": 85,
+              "marker": true
+            },
+            {
+              "id": "steed",
+              "lock": 5,
+              "label": "The sleeping horse",
+              "alt": "An old grey horse asleep in the straw of the barn",
+              "x": 84,
+              "y": 58.6,
+              "line": {
+                "p": "p057",
+                "s": 11
+              },
+              "subject": [
+                "steed"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "pillions",
+              "label": "The riders leaving",
+              "alt": "A young woman riding behind a young man, laughing",
+              "x": 71.6,
+              "y": 67.4,
+              "line": {
+                "p": "p057",
+                "s": 2
+              },
+              "subject": [
+                "pillions"
+              ],
+              "question": "What riding seats did the young women use?",
+              "word": "pillions"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "party-ends",
+              "x": 19.5,
+              "y": 86
+            }
+          ],
+          "door": {
+            "label": "The barn door",
+            "x": 90.5,
+            "y": 48.8
+          }
+        },
+        {
+          "chamber": 2,
+          "art": "/worlds/sleepy-hollow/scenes/the-lonely-road-2.webp",
+          "alt": "A painted midnight above a wide dark river: a sloop's bare mast at anchor near the shore, a reedy marsh, one faint lit window across the water, driving clouds half hiding the stars, and an enormous gnarled tulip tree by the road with a long pale lightning scar, as a lone rider on a grey horse approaches.",
+          "items": [
+            {
+              "id": "sloop",
+              "lock": 6,
+              "label": "The sloop at anchor",
+              "alt": "A sloop with a tall bare mast riding at anchor near the shore",
+              "x": 20.5,
+              "y": 70.3,
+              "line": {
+                "p": "p058",
+                "s": 2
+              },
+              "subject": [
+                "sloop"
+              ]
+            },
+            {
+              "id": "marsh",
+              "lock": 7,
+              "label": "The marsh",
+              "alt": "Reeds and dark water at the river's edge",
+              "x": 7.8,
+              "y": 83,
+              "line": {
+                "p": "p058",
+                "s": 5
+              },
+              "subject": [
+                "marsh"
+              ]
+            },
+            {
+              "id": "clouds",
+              "lock": 8,
+              "label": "The driving clouds",
+              "alt": "Dark clouds blowing across the sky, hiding the stars",
+              "x": 19.5,
+              "y": 24.4,
+              "line": {
+                "p": "p059",
+                "s": 1
+              },
+              "subject": [
+                "clouds"
+              ]
+            },
+            {
+              "id": "tree",
+              "lock": 9,
+              "label": "Major André's tree",
+              "alt": "An enormous old tree towering over the road, its limbs twisting down to the ground",
+              "x": 74.9,
+              "y": 19.5,
+              "line": {
+                "p": "p059",
+                "s": 4
+              },
+              "subject": [
+                "tulip-tree"
+              ]
+            },
+            {
+              "id": "scar",
+              "lock": 10,
+              "label": "The white scar",
+              "alt": "A long pale scar on the trunk where the bark was stripped away",
+              "x": 71.6,
+              "y": 44,
+              "line": {
+                "p": "p060",
+                "s": 1
+              },
+              "subject": [
+                "wood"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "farmhouse",
+              "label": "The far light",
+              "alt": "One small lit window in a house across the water",
+              "x": 10.4,
+              "y": 63.5,
+              "line": {
+                "p": "p058",
+                "s": 4
+              },
+              "subject": [
+                "farmhouse"
+              ],
+              "question": "Where did the rooster's call come from?",
+              "word": "farmhouse"
+            },
+            {
+              "id": "stars",
+              "label": "The faint stars",
+              "alt": "A few stars showing between the clouds",
+              "x": 45.6,
+              "y": 6,
+              "line": {
+                "p": "p059",
+                "s": 1
+              },
+              "subject": [
+                "stars"
+              ],
+              "question": "What points of light were growing faint overhead?",
+              "word": "stars"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "andre-tree",
+              "x": 84.6,
+              "y": 37
+            }
+          ],
+          "door": {
+            "label": "The road ahead",
+            "x": 81.4,
+            "y": 70.3
+          }
+        }
+      ]
     },
     {
       "expedition": "the-headless-horseman",
@@ -28194,7 +28676,251 @@
         ],
         "mission": "Your mission: open 5 locks and the crossing before the clock runs out.",
         "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
-      }
+      },
+      "scenes": [
+        {
+          "chamber": 1,
+          "art": "/worlds/sleepy-hollow/scenes/the-headless-horseman-1.webp",
+          "alt": "A painted dark night where a small brook crosses a country road into a thick, vine-hung wood: a crude bridge over the water, a fence along the road, bushes on the far side, and a tall thin rider on a grey horse that has stopped short at the crossing, before the deep gloom of the grove.",
+          "items": [
+            {
+              "id": "swamp",
+              "lock": 1,
+              "label": "Wiley's Swamp",
+              "alt": "The brook running off into a marshy, thickly wooded glen",
+              "x": 83.3,
+              "y": 62.5,
+              "line": {
+                "p": "p061",
+                "s": 0
+              },
+              "subject": [
+                "Swamp"
+              ]
+            },
+            {
+              "id": "chestnuts",
+              "lock": 2,
+              "label": "The chestnuts and vines",
+              "alt": "Big trees thickly matted with wild grapevines over the road",
+              "x": 58.6,
+              "y": 29.3,
+              "line": {
+                "p": "p061",
+                "s": 4
+              },
+              "subject": [
+                "chestnuts"
+              ]
+            },
+            {
+              "id": "fence",
+              "lock": 3,
+              "label": "The fence by the road",
+              "alt": "A rough wooden fence along the road",
+              "x": 13,
+              "y": 68.4,
+              "line": {
+                "p": "p062",
+                "s": 0
+              },
+              "subject": [
+                "fence"
+              ]
+            },
+            {
+              "id": "grove",
+              "lock": 4,
+              "label": "The dark grove",
+              "alt": "The deepest shadow of the grove at the edge of the brook",
+              "x": 80.7,
+              "y": 41,
+              "line": {
+                "p": "p062",
+                "s": 4
+              },
+              "subject": [
+                "grove"
+              ]
+            },
+            {
+              "id": "ichabod",
+              "lock": 5,
+              "label": "The frightened schoolmaster",
+              "alt": "A tall thin rider sitting stiffly on his stopped horse",
+              "x": 35.2,
+              "y": 54.7,
+              "line": {
+                "p": "p063",
+                "s": 0
+              },
+              "subject": [
+                "pedagogue"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "brambles",
+              "label": "The thorny bushes",
+              "alt": "A tangle of thorny bushes beside the road",
+              "x": 9.8,
+              "y": 47,
+              "line": {
+                "p": "p062",
+                "s": 1
+              },
+              "subject": [
+                "brambles"
+              ],
+              "question": "What thorny growth was there?",
+              "word": "brambles"
+            },
+            {
+              "id": "oaks",
+              "label": "The great trees",
+              "alt": "Tall dark trees over the wood",
+              "x": 45.6,
+              "y": 14.6,
+              "line": {
+                "p": "p061",
+                "s": 2
+              },
+              "subject": [
+                "oaks"
+              ],
+              "question": "Which acorn trees stood there?",
+              "word": "oaks"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "wiley-swamp",
+              "x": 19.5,
+              "y": 88
+            }
+          ],
+          "door": {
+            "label": "The crossing",
+            "x": 58.6,
+            "y": 78
+          }
+        },
+        {
+          "chamber": 2,
+          "art": "/worlds/sleepy-hollow/scenes/the-headless-horseman-2.webp",
+          "alt": "A painted night chase: on a rise against the cloudy sky, a huge cloaked rider with no head on a powerful black horse, a round dark shape on his saddle; below, a thin man in a flying black coat gallops a grey horse down the road with sparks flashing from the hooves, toward a wooden bridge and a small white church on a knoll.",
+          "items": [
+            {
+              "id": "road",
+              "lock": 6,
+              "label": "The middle of the road",
+              "alt": "The rocky road climbing over the rise",
+              "x": 17,
+              "y": 47,
+              "line": {
+                "p": "p063",
+                "s": 8
+              },
+              "subject": [
+                "road"
+              ]
+            },
+            {
+              "id": "blackhorse",
+              "lock": 7,
+              "label": "The black horse",
+              "alt": "A powerful black horse rearing on the rise",
+              "x": 21,
+              "y": 26,
+              "line": {
+                "p": "p063",
+                "s": 10
+              },
+              "subject": [
+                "horse"
+              ]
+            },
+            {
+              "id": "cloak",
+              "lock": 8,
+              "label": "The cloaked rider on the rise",
+              "alt": "A gigantic rider muffled in a long cloak against the sky",
+              "x": 11,
+              "y": 16,
+              "line": {
+                "p": "p064",
+                "s": 6
+              },
+              "subject": [
+                "cloak"
+              ]
+            },
+            {
+              "id": "sparks",
+              "lock": 9,
+              "label": "The sparks from the hooves",
+              "alt": "Bright sparks flashing from the galloping hooves on the stones",
+              "x": 27.3,
+              "y": 78,
+              "line": {
+                "p": "p064",
+                "s": 8
+              },
+              "subject": [
+                "sparks"
+              ]
+            },
+            {
+              "id": "church",
+              "lock": 10,
+              "label": "The whitewashed church",
+              "alt": "A small white church on a green knoll beyond the stream",
+              "x": 85.3,
+              "y": 41,
+              "line": {
+                "p": "p065",
+                "s": 1
+              },
+              "subject": [
+                "church"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "sandy",
+              "label": "The hollow road",
+              "alt": "The road dipping down into a shaded hollow",
+              "x": 65,
+              "y": 60.5,
+              "line": {
+                "p": "p065",
+                "s": 1
+              },
+              "subject": [
+                "sandy"
+              ],
+              "question": "What kind of soil lay down there?",
+              "word": "sandy"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "the-chase",
+              "x": 35.8,
+              "y": 58.6
+            }
+          ],
+          "door": {
+            "label": "The church bridge",
+            "x": 78,
+            "y": 74
+          }
+        }
+      ]
     },
     {
       "expedition": "gone",
