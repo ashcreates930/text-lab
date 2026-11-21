@@ -13,7 +13,10 @@ test("the practice round: shown once, the first time a student plays, on an easy
   const s = fakeStore();
   assert.equal(practiceDone(s), false); markPracticeDone(s); assert.equal(practiceDone(s), true, "never shown again");
   const race = src("app/expedition-race.tsx");
-  assert.match(race, /useState<Beat>\(\(\)=>resumeBeat\?.*:!practiceDone\(\)\?"practice"/, "a first-time solo race opens with the practice round");
+  // First-time students see the room's briefing first (2026-11-21); the practice lock follows Start the clock.
+  assert.match(race, /useState<Beat>\(\(\)=>resumeBeat\?.*:"door"\)/, "a first-time solo race opens on the room's briefing");
+  assert.match(race, /onOpen=\{\(\)=>\{if\(!practiceDone\(\)\)go\("practice"\);else enterRoom\(\)\}\}/, "then the practice round");
+  assert.match(race, /onDone=\{\(\)=>\{markPracticeDone\(\);enterRoom\(\)\}\}/, "then into the room");
   assert.match(race, /markPracticeDone\(\)/);
   assert.match(src("app/live/player-screen.tsx"), /First time\? Try a 30-second practice while you wait/, "live: offered in the lobby");
   const p = src("app/practice-round.tsx");

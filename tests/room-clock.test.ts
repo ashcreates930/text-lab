@@ -69,7 +69,7 @@ test("the briefing at the door: a scenario, the room's concepts, the vocabulary,
   for (const c of b.concepts) assert.ok(world.engagement!.key_concepts.some((k) => k.name === c), c);
   const ui = src("app/room-ui.tsx");
   assert.match(ui, /timer\?"Start the clock":"Open the door"/); assert.match(ui, /This room explores/);
-  assert.match(src("app/expedition-race.tsx"), /<RoomDoor timer=\{budget>0\} chamber=\{[^}]*\} briefing=/);
+  assert.match(src("app/expedition-race.tsx"), /<RoomDoor caseLine=\{[^}]*\} bigQuestion=\{[^}]*\} timer=\{budget>0\} chamber=\{[^}]*\} briefing=/);
 });
 
 test("the mission line (approved 2026-11-20) ends the briefing and counts chamber 1's locks exactly", async () => {
@@ -94,7 +94,7 @@ test("the mission line (approved 2026-11-20) ends the briefing and counts chambe
   // The mission for the chamber being started, only while the escape timer is on: chamber 1 at the door, chamber 2 at
   // the door (coming back mid-chamber) and on the Case File recap that opens chamber 2.
   const ui = src("app/room-ui.tsx"), race = src("app/expedition-race.tsx");
-  assert.match(ui, /\{timer&&missionFor\(briefing,chamber\)&&<p/); assert.match(src("lib/engagement.ts"), /export const missionFor = \(b: \{ mission\?: string; mission2\?: string \} \| null \| undefined, chamber: 1 \| 2\) => \(chamber === 2 \? b\?\.mission2 : b\?\.mission\) \?\? null;/); assert.match(ui, /export \{missionFor\};/);
+  assert.match(ui, /\{briefing&&timer&&missionFor\(briefing,chamber\)&&<p/); assert.match(src("lib/engagement.ts"), /export const missionFor = \(b: \{ mission\?: string; mission2\?: string \} \| null \| undefined, chamber: 1 \| 2\) => \(chamber === 2 \? b\?\.mission2 : b\?\.mission\) \?\? null;/); assert.match(ui, /export \{missionFor\};/);
   // Going straight through in one sitting: chamber 2's mission on the screen right after the inner door opens.
   assert.match(ui, /\{!stop&&mission&&<p className="text-\[17px\] font-bold leading-snug text-highlight">\{mission\}<\/p>\}/);
   assert.match(race, /<InnerDoor mission=\{budget>0\?missionFor\(world\.rooms\?\.find\(r=>r\.expedition===expeditionId\)\?\.briefing,2\):null\}/);

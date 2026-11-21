@@ -350,7 +350,7 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const innerLock=resumeBeat?.kind==="inner_door"&&resumeBeat.puzzle&&!(restored?.puzzles??{})[resumeBeat.puzzle]?resumeBeat.puzzle:null;
  const [puzzleId,setPuzzleId]=useState<string|null>(()=>resumeBeat?.kind==="puzzle"?resumeBeat.id:innerLock);
  const [puzzleRes,setPuzzleRes]=useState<Record<string,PuzzleOutcome>>(()=>(restored?.puzzles as Record<string,PuzzleOutcome>|undefined)??{});
- const [beat,setBeat]=useState<Beat>(()=>resumeBeat?(resumeBeat.kind==="puzzle"||innerLock?"puzzle":resumeBeat.kind==="recap"?"recap":resumeBeat.kind==="inner_door"?"inner":resumeBeat.kind==="exit"?"liar":"door"):!practiceDone()?"practice":"door"),[startedAt,setStartedAt]=useState(Date.now());
+ const [beat,setBeat]=useState<Beat>(()=>resumeBeat?(resumeBeat.kind==="puzzle"||innerLock?"puzzle":resumeBeat.kind==="recap"?"recap":resumeBeat.kind==="inner_door"?"inner":resumeBeat.kind==="exit"?"liar":"door"):"door"),[startedAt,setStartedAt]=useState(Date.now());
  // The lock just opened quietly (after a miss, with the shown proof): which lock, while its moment holds.
  const [quietAt,setQuietAt]=useState<number|null>(null);
  // Plain words open for this lock (null: closed). Reset as each lock starts.
@@ -436,6 +436,8 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  // The room's scene (lib/room-scene.ts): every chamber opens on it (its painting, or the plain scene where there is none),
  // and the student goes back to it after each lock and taps what glows next (the next spot, a puzzle lock, the door).
  const sceneFor=(i:number)=>room?roomSceneOf(world,room,chamberOfLock(room,Math.min(i,chunks.length-1))):null;
+ // Into the room from its door (or from the practice lock that follows it the first time).
+ function enterRoom(){if(iv&&!inRoom(iv)&&!(restored&&cards.length))go("interview");else toLock(k)}
  function toLock(n:number){if(sceneFor(n)){setK(n);setMeeting(null);go("scene")}else startChunk(n)}
  function startChunk(n:number){setK(n);setGist(null);setStep(1);setDraft({});setMarking(false);setUnknown(new Set());setFound(false);setPaused(false);
   // Witnesses in the room: anyone met at this lock steps in before its reading.
@@ -539,9 +541,11 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
 
  return <PlainWordsState.Provider value={{open:plainAt===k,set:o=>setPlainAt(o?k:null)}}><div className="race-root case-ui mx-auto flex max-w-6xl flex-col gap-3 px-4 pb-16 pt-3">
   {!["refresher","notes","interview","practice","skills","door","inner","recap","escape"].includes(beat)&&hud}
-  {beat==="practice"&&<PracticeRound world={world} passages={passages} onDone={()=>{markPracticeDone();go("door")}}/>}
+  {/* First-time students (2026-11-21): the room's briefing comes first; the 30-second practice lock follows Start the
+      clock, before the room (it sits outside the escape clock), then the room opens. */}
+  {beat==="practice"&&<PracticeRound world={world} passages={passages} onDone={()=>{markPracticeDone();enterRoom()}}/>}
   {clock?.overtime&&!timeoutSeen[ch]&&clockRuns(beat)&&<TimeoutMoment text={world.engagement?.timeout_moment??"Time ran out."} onGo={()=>setTimeoutSeen(t=>{const n=[...t];n[ch]=true;return n})}/>}
-  {beat==="door"&&room&&<RoomDoor timer={budget>0} chamber={room.chambers[1]&&k>=room.chambers[1].from?2:1} briefing={world.rooms?.find(r=>r.expedition===expeditionId)?.briefing??null} concepts={world.engagement?.key_concepts??[]} room={room} resumed={!!restored} vocab={world.rooms?.find(r=>r.expedition===expeditionId)?.vocab??[]} lineOf={r=>lineAt(passages,r)} onOpen={()=>{if(iv&&!inRoom(iv)&&!(restored&&cards.length))go("interview");else toLock(k)}}/>}
+  {beat==="door"&&room&&<RoomDoor caseLine={room.number===1&&!restored?world.hook:null} bigQuestion={room.number===1&&!restored?world.engagement?.essential_question??null:null} timer={budget>0} chamber={room.chambers[1]&&k>=room.chambers[1].from?2:1} briefing={world.rooms?.find(r=>r.expedition===expeditionId)?.briefing??null} concepts={world.engagement?.key_concepts??[]} room={room} resumed={!!restored} vocab={world.rooms?.find(r=>r.expedition===expeditionId)?.vocab??[]} lineOf={r=>lineAt(passages,r)} onOpen={()=>{if(!practiceDone())go("practice");else enterRoom()}}/>}
   {beat==="inner"&&room&&<InnerDoor mission={budget>0?missionFor(world.rooms?.find(r=>r.expedition===expeditionId)?.briefing,2):null} inTimeBadge={chamberInTime(0)} clockNote={budget?clockEnding(budget,clockUsed[0]??0,firstTriesIn(0)):null} room={room} stop={stopsAtInnerDoor({classSession:!!classToken,stopAtInnerDoor})&&!restoredInto2} onMap={onExit} onNext={()=>toLock(k+1)}/>}
   {beat==="recap"&&room&&<ChamberRecap room={room} items={inventory} mission={budget>0?missionFor(world.rooms?.find(r=>r.expedition===expeditionId)?.briefing,2):null} onNext={()=>toLock(room.chambers[1]?.from??k+1)}/>}
   {beat==="puzzle"&&puzzleId&&(()=>{const pz=world.rooms?.find(r=>r.expedition===expeditionId)?.puzzles?.find(p=>p.id===puzzleId),at=room?.puzzles.find(p=>p.id===puzzleId)?.after??k;
