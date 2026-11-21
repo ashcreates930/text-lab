@@ -26470,7 +26470,239 @@
         ],
         "mission": "Your mission: open 5 locks and the schoolroom door before the clock runs out.",
         "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
-      }
+      },
+      "scenes": [
+        {
+          "chamber": 1,
+          "art": "/worlds/sleepy-hollow/scenes/the-invitation-1.webp",
+          "alt": "A painted grey afternoon: a log schoolhouse on a hillside with smoke pouring from its stuffed-up stone stack and its open door, things tumbled inside, a shutter hanging broken, wooden stakes knocked down by the wall, and a band of riders vanishing on a far ridge.",
+          "items": [
+            {
+              "id": "riders",
+              "lock": 1,
+              "label": "The riders on the ridge",
+              "alt": "A band of riders on a far ridge, dark shapes against the sky",
+              "x": 80.4,
+              "y": 47.4,
+              "line": {
+                "p": "p033",
+                "s": 2
+              },
+              "subject": [
+                "riders"
+              ]
+            },
+            {
+              "id": "smoke",
+              "lock": 2,
+              "label": "The smoke",
+              "alt": "Grey smoke pouring from the stuffed-up stack and the schoolhouse door",
+              "x": 30.6,
+              "y": 28.3,
+              "line": {
+                "p": "p033",
+                "s": 3
+              },
+              "subject": [
+                "smoked"
+              ]
+            },
+            {
+              "id": "noted-3",
+              "lock": 3,
+              "label": "In the schoolroom",
+              "alt": "A marker on the path: this reading has a content note, so nothing from it is painted",
+              "x": 58.6,
+              "y": 86,
+              "marker": true
+            },
+            {
+              "id": "noted-4",
+              "lock": 4,
+              "label": "In the schoolroom, later",
+              "alt": "A marker on the hillside: this reading has a content note, so nothing from it is painted",
+              "x": 19.5,
+              "y": 80,
+              "marker": true
+            },
+            {
+              "id": "schoolroom",
+              "lock": 5,
+              "label": "The bustling schoolroom",
+              "alt": "The schoolroom seen through its broken window",
+              "x": 63,
+              "y": 59.6,
+              "line": {
+                "p": "p035",
+                "s": 0
+              },
+              "subject": [
+                "schoolroom"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "stakes",
+              "label": "The stakes",
+              "alt": "Wooden stakes knocked down beside the wall",
+              "x": 67.7,
+              "y": 75,
+              "line": {
+                "p": "p033",
+                "s": 3
+              },
+              "subject": [
+                "stakes"
+              ],
+              "question": "What lay knocked down below the shutters?",
+              "word": "stakes"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "pranked-school",
+              "x": 75,
+              "y": 88
+            }
+          ],
+          "door": {
+            "label": "The schoolroom door",
+            "x": 54.7,
+            "y": 64.5
+          }
+        },
+        {
+          "chamber": 2,
+          "art": "/worlds/sleepy-hollow/scenes/the-invitation-2.webp",
+          "alt": "A painted late afternoon: through a schoolhouse doorway, benches lie knocked over, books are flung on the floor and an inkstand has spilled, while a tall lanky man in a rusty black suit tidies himself at a cracked looking-glass; outside, a gaunt, shaggy old grey plough horse with a tangled mane stands saddled at a post.",
+          "items": [
+            {
+              "id": "benches",
+              "lock": 6,
+              "label": "The overturned benches",
+              "alt": "Wooden benches knocked over on the schoolroom floor",
+              "x": 22.8,
+              "y": 62.5,
+              "line": {
+                "p": "p035",
+                "s": 2
+              },
+              "subject": [
+                "benches"
+              ]
+            },
+            {
+              "id": "glass",
+              "lock": 7,
+              "label": "The broken looking-glass",
+              "alt": "A small cracked looking-glass hanging on the wall",
+              "x": 12.4,
+              "y": 32,
+              "line": {
+                "p": "p036",
+                "s": 0
+              },
+              "subject": [
+                "looking-glass"
+              ]
+            },
+            {
+              "id": "mane",
+              "lock": 8,
+              "label": "The tangled mane",
+              "alt": "The old horse's rusty, tangled mane",
+              "x": 65,
+              "y": 49,
+              "line": {
+                "p": "p036",
+                "s": 4
+              },
+              "subject": [
+                "mane"
+              ]
+            },
+            {
+              "id": "gunpowder",
+              "lock": 9,
+              "label": "Gunpowder",
+              "alt": "A gaunt old grey plough horse tied at a post",
+              "x": 89.8,
+              "y": 54.7,
+              "line": {
+                "p": "p036",
+                "s": 5
+              },
+              "subject": [
+                "Gunpowder"
+              ]
+            },
+            {
+              "id": "stirrups",
+              "lock": 10,
+              "label": "The short stirrups",
+              "alt": "The old saddle's stirrups",
+              "x": 81.7,
+              "y": 66.4,
+              "line": {
+                "p": "p037",
+                "s": 1
+              },
+              "subject": [
+                "stirrups"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "inkstand",
+              "label": "The spilled inkstand",
+              "alt": "An inkstand lying on its side in a black spill",
+              "x": 24,
+              "y": 84,
+              "line": {
+                "p": "p035",
+                "s": 2
+              },
+              "subject": [
+                "inkstands"
+              ],
+              "question": "What tipped over and spilled?",
+              "word": "inkstands"
+            },
+            {
+              "id": "books",
+              "label": "The flung books",
+              "alt": "Books lying open on the floor",
+              "x": 31,
+              "y": 76,
+              "line": {
+                "p": "p035",
+                "s": 2
+              },
+              "subject": [
+                "Books"
+              ],
+              "question": "What reading matter was tossed down?",
+              "word": "Books"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "getting-ready",
+              "x": 45,
+              "y": 90
+            }
+          ],
+          "door": {
+            "label": "The schoolhouse door",
+            "x": 42.3,
+            "y": 49
+          }
+        }
+      ]
     },
     {
       "expedition": "the-ride-to-the-party",
@@ -26672,7 +26904,267 @@
         ],
         "mission": "Your mission: open 5 locks and Hans Van Ripper's gate before the clock runs out.",
         "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
-      }
+      },
+      "scenes": [
+        {
+          "chamber": 1,
+          "art": "/worlds/sleepy-hollow/scenes/the-ride-to-the-party-1.webp",
+          "alt": "A painted clear autumn day: a tall thin man in a black coat rides a gaunt grey horse out through a farm gate onto a winding road, past forests of brown, yellow, orange and purple; wild ducks stream across the sky, a blue jay perches on a bush, a woodpecker clings to a tree, a quail stands in a stubble field, and baskets and barrels of fruit wait by a cider press.",
+          "items": [
+            {
+              "id": "ichabod",
+              "lock": 1,
+              "label": "The schoolmaster setting out",
+              "alt": "A tall thin man in a black coat riding a gaunt grey horse through a gate",
+              "x": 19.5,
+              "y": 68.4,
+              "line": {
+                "p": "p037",
+                "s": 3
+              },
+              "subject": [
+                "Ichabod"
+              ]
+            },
+            {
+              "id": "forests",
+              "lock": 2,
+              "label": "The autumn forests",
+              "alt": "Forests in brown and yellow, with trees of orange and purple",
+              "x": 42.3,
+              "y": 50.8,
+              "line": {
+                "p": "p038",
+                "s": 1
+              },
+              "subject": [
+                "forests"
+              ]
+            },
+            {
+              "id": "ducks",
+              "lock": 3,
+              "label": "The wild ducks",
+              "alt": "Long lines of wild ducks high in the sky",
+              "x": 42.3,
+              "y": 14.6,
+              "line": {
+                "p": "p038",
+                "s": 2
+              },
+              "subject": [
+                "ducks"
+              ]
+            },
+            {
+              "id": "jay",
+              "lock": 4,
+              "label": "The blue jay",
+              "alt": "A bright blue and white bird perched on a bush",
+              "x": 54,
+              "y": 74.2,
+              "line": {
+                "p": "p039",
+                "s": 2
+              },
+              "subject": [
+                "blue jay"
+              ]
+            },
+            {
+              "id": "baskets",
+              "lock": 5,
+              "label": "The baskets and barrels for market",
+              "alt": "Baskets and barrels of fruit set out for market",
+              "x": 74.9,
+              "y": 74.2,
+              "line": {
+                "p": "p040",
+                "s": 1
+              },
+              "subject": [
+                "baskets"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "quail",
+              "label": "The bird in the stubble",
+              "alt": "A small brown bird in a pale stubble field",
+              "x": 66.4,
+              "y": 59.6,
+              "line": {
+                "p": "p038",
+                "s": 2
+              },
+              "subject": [
+                "quail"
+              ],
+              "question": "Which creature called from the mown grain?",
+              "word": "quail"
+            },
+            {
+              "id": "woodpecker",
+              "label": "The bird on the tree",
+              "alt": "A bird with golden wings and a red topknot clinging to a trunk",
+              "x": 93,
+              "y": 67.4,
+              "line": {
+                "p": "p039",
+                "s": 2
+              },
+              "subject": [
+                "woodpecker"
+              ],
+              "question": "Which one wore a red topknot?",
+              "word": "woodpecker"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "autumn-road",
+              "x": 50.8,
+              "y": 62.5
+            }
+          ],
+          "door": {
+            "label": "Hans Van Ripper's gate",
+            "x": 30,
+            "y": 74
+          }
+        },
+        {
+          "chamber": 2,
+          "art": "/worlds/sleepy-hollow/scenes/the-ride-to-the-party-2.webp",
+          "alt": "A painted autumn sunset above the Hudson: corn with golden ears and pumpkins in the foreground, a flowering buckwheat field, the wide still Tappan Zee with a sloop whose sail hangs slack, a few amber clouds, and country guests in old-fashioned dress arriving at a big farmhouse with glowing windows.",
+          "items": [
+            {
+              "id": "pumpkins",
+              "lock": 6,
+              "label": "The pumpkins in the corn",
+              "alt": "Round yellow pumpkins under the cornstalks",
+              "x": 27.3,
+              "y": 93,
+              "line": {
+                "p": "p040",
+                "s": 2
+              },
+              "subject": [
+                "pumpkins"
+              ]
+            },
+            {
+              "id": "tappan",
+              "lock": 7,
+              "label": "The Tappan Zee",
+              "alt": "The wide river lying still and glassy below the hills",
+              "x": 40.4,
+              "y": 48.8,
+              "line": {
+                "p": "p041",
+                "s": 2
+              },
+              "subject": [
+                "Tappan Zee"
+              ]
+            },
+            {
+              "id": "sloop",
+              "lock": 8,
+              "label": "The sloop",
+              "alt": "A sloop far out on the water, its sail hanging slack",
+              "x": 24.7,
+              "y": 56,
+              "line": {
+                "p": "p041",
+                "s": 6
+              },
+              "subject": [
+                "sloop"
+              ]
+            },
+            {
+              "id": "farmers",
+              "lock": 9,
+              "label": "The old farmers",
+              "alt": "Old farmers in homespun coats and breeches with big shoe buckles",
+              "x": 62.5,
+              "y": 62.5,
+              "line": {
+                "p": "p042",
+                "s": 1
+              },
+              "subject": [
+                "farmers"
+              ]
+            },
+            {
+              "id": "sons",
+              "lock": 10,
+              "label": "The young men in brass buttons",
+              "alt": "A young man in a square-skirted coat with rows of brass buttons",
+              "x": 87.9,
+              "y": 64.5,
+              "line": {
+                "p": "p042",
+                "s": 4
+              },
+              "subject": [
+                "sons"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "buckwheat",
+              "label": "The buckwheat field",
+              "alt": "A field of buckwheat in white flower",
+              "x": 45.6,
+              "y": 74.2,
+              "line": {
+                "p": "p040",
+                "s": 2
+              },
+              "subject": [
+                "buckwheat"
+              ],
+              "question": "Which crop smelled sweet?",
+              "word": "buckwheat"
+            },
+            {
+              "id": "clouds",
+              "label": "The little clouds",
+              "alt": "A few small glowing clouds in the still sky",
+              "x": 32.6,
+              "y": 24.4,
+              "line": {
+                "p": "p041",
+                "s": 3
+              },
+              "subject": [
+                "clouds"
+              ],
+              "question": "What shade were those little puffs up high?",
+              "word": "amber"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "arriving-party",
+              "x": 78,
+              "y": 54.7
+            }
+          ],
+          "door": {
+            "label": "The Van Tassel door",
+            "x": 72.3,
+            "y": 45.9
+          }
+        }
+      ]
     },
     {
       "expedition": "the-feast-and-the-dance",
@@ -26875,7 +27367,227 @@
         ],
         "mission": "Your mission: open 5 locks and the parlor door before the clock runs out.",
         "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
-      }
+      },
+      "scenes": [
+        {
+          "chamber": 1,
+          "art": "/worlds/sleepy-hollow/scenes/the-feast-and-the-dance-1.webp",
+          "alt": "A painted parlor by candle and firelight: a long tea table heaped with cakes, doughnuts, pies, ham, smoked beef, preserves, a broiled fish, roast chickens and bowls of cream around a steaming teapot; a delighted tall man eats with his plate piled high, three young women chat by the fire, a paneled door stands closed, and through the window a wild-eyed black horse tosses its head.",
+          "items": [
+            {
+              "id": "daredevil",
+              "lock": 1,
+              "label": "Daredevil at the window",
+              "alt": "A wild-eyed black horse tossing its head outside the window",
+              "x": 91.8,
+              "y": 29.3,
+              "line": {
+                "p": "p043",
+                "s": 0
+              },
+              "subject": [
+                "Daredevil"
+              ]
+            },
+            {
+              "id": "teatable",
+              "lock": 2,
+              "label": "The tea-table",
+              "alt": "A long country tea table heaped with platters of cakes",
+              "x": 16.3,
+              "y": 68.4,
+              "line": {
+                "p": "p044",
+                "s": 1
+              },
+              "subject": [
+                "tea-table"
+              ]
+            },
+            {
+              "id": "pies",
+              "lock": 3,
+              "label": "The pies",
+              "alt": "Apple, peach and pumpkin pies on the table",
+              "x": 53.4,
+              "y": 70.8,
+              "line": {
+                "p": "p044",
+                "s": 4
+              },
+              "subject": [
+                "pies"
+              ]
+            },
+            {
+              "id": "ichabod",
+              "lock": 4,
+              "label": "The schoolmaster at the feast",
+              "alt": "A tall man eating happily, his plate piled high",
+              "x": 70.3,
+              "y": 37,
+              "line": {
+                "p": "p044",
+                "s": 6
+              },
+              "subject": [
+                "Ichabod"
+              ]
+            },
+            {
+              "id": "dream",
+              "lock": 5,
+              "label": "Ichabod's dream of riches",
+              "alt": "A marker above the feast: this lock is Ichabod's daydream of owning it all, so nothing is painted for it",
+              "x": 76.8,
+              "y": 12.7,
+              "marker": true
+            }
+          ],
+          "bonus": [
+            {
+              "id": "ham",
+              "label": "The ham",
+              "alt": "Slices of cured pork on a platter",
+              "x": 65,
+              "y": 90,
+              "line": {
+                "p": "p044",
+                "s": 4
+              },
+              "subject": [
+                "ham"
+              ],
+              "question": "What cured pork lay on the platter?",
+              "word": "ham"
+            },
+            {
+              "id": "shad",
+              "label": "The fish",
+              "alt": "A broiled fish on a long platter",
+              "x": 45.6,
+              "y": 90,
+              "line": {
+                "p": "p044",
+                "s": 4
+              },
+              "subject": [
+                "shad"
+              ],
+              "question": "What fish was on the table?",
+              "word": "shad"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "tea-table",
+              "x": 30,
+              "y": 94
+            }
+          ],
+          "door": {
+            "label": "The parlor door",
+            "x": 44.3,
+            "y": 29.3
+          }
+        },
+        {
+          "chamber": 2,
+          "art": "/worlds/sleepy-hollow/scenes/the-feast-and-the-dance-2.webp",
+          "alt": "A painted autumn night outside the Van Tassel farmhouse: old men smoking pipes at the end of the porch, a jolly round-faced old farmer shaking hands and slapping a guest on the shoulder, a table of leftover tarts and meat, glowing windows, a big moon over the river, and a wild-eyed black horse stamping at its post.",
+          "items": [
+            {
+              "id": "baltus",
+              "lock": 6,
+              "label": "Old Baltus among his guests",
+              "alt": "A jolly round-faced old farmer greeting his guests",
+              "x": 35.8,
+              "y": 48.8,
+              "line": {
+                "p": "p046",
+                "s": 0
+              },
+              "subject": [
+                "Baltus"
+              ]
+            },
+            {
+              "id": "noted-7",
+              "lock": 7,
+              "label": "Inside the hall",
+              "alt": "A marker at a lit window: this reading has a content note, so nothing from it is painted",
+              "x": 8,
+              "y": 30,
+              "marker": true
+            },
+            {
+              "id": "noted-8",
+              "lock": 8,
+              "label": "Inside the hall, later",
+              "alt": "A marker on the porch roof: this reading has a content note, so nothing from it is painted",
+              "x": 44,
+              "y": 24,
+              "marker": true
+            },
+            {
+              "id": "noted-9",
+              "lock": 9,
+              "label": "Inside the hall, late in the evening",
+              "alt": "A marker at an upstairs window: this reading has a content note, so nothing from it is painted",
+              "x": 22,
+              "y": 5,
+              "marker": true
+            },
+            {
+              "id": "piazza",
+              "lock": 10,
+              "label": "The storytellers on the piazza",
+              "alt": "Old men smoking long pipes at the end of the porch, telling stories",
+              "x": 9.8,
+              "y": 62.5,
+              "line": {
+                "p": "p049",
+                "s": 0
+              },
+              "subject": [
+                "piazza"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "handshake",
+              "label": "The handshake",
+              "alt": "The old farmer shaking a guest's hand",
+              "x": 36.5,
+              "y": 57,
+              "line": {
+                "p": "p046",
+                "s": 1
+              },
+              "subject": [
+                "shake"
+              ],
+              "question": "How did he greet each guest at first?",
+              "word": "shake"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "porch-after-dance",
+              "x": 84.6,
+              "y": 63.5
+            }
+          ],
+          "door": {
+            "label": "The farmhouse door",
+            "x": 21.5,
+            "y": 36
+          }
+        }
+      ]
     },
     {
       "expedition": "ghost-stories",
