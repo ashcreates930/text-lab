@@ -24219,18 +24219,18 @@
               ]
             },
             {
-              "id": "rod",
+              "id": "school",
               "lock": 5,
-              "label": "The rod by the door",
-              "alt": "A long thin rod leaning by the schoolhouse door",
-              "x": 52.8,
-              "y": 72,
+              "label": "The one-room school",
+              "alt": "The low log school itself, under its mossy roof",
+              "x": 60,
+              "y": 46,
               "line": {
                 "p": "p012",
-                "s": 1
+                "s": 0
               },
               "subject": [
-                "rod"
+                "school"
               ]
             }
           ],
