@@ -40,7 +40,7 @@ export function WorldMap({map,regions,focus=null,onFocus,tokens=[],travel,onStop
  useLayoutEffect(()=>{const el=wrap.current;if(!el)return;const set=()=>setSize({w:el.clientWidth,h:el.clientHeight});set();const ro=new ResizeObserver(set);ro.observe(el);return()=>ro.disconnect()},[]);
  const aspect=size.w&&size.h?size.w/size.h:map.width/map.height;
  const region=focus?regions.find(r=>r.expedition===focus)??null:null;
- // Where the map looks: one region, or the whole map centred on the student's token (or the current region).
+ // Where the map looks: one region, or the whole map centered on the student's token (or the current region).
  const target=useMemo<Box>(()=>{
   if(region){
    // The whole region if its stops stay apart at that size; otherwise (a phone) zoom in on the token, the next stop or

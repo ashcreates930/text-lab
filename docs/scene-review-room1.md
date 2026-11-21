@@ -1,6 +1,6 @@
 # Room 1 scenes, for review
 
-The art is made with `scripts/scene-art.mjs` (fixes with `scripts/scene-art-edits.mjs`). It uses the poster and André's tree only as style references: painterly, moody oil, muted colours, golden hour or moonlight. Each scene is accurate to its chamber's text, with no deliberate mistakes, no lettering, and adults or teens only. Nothing is drawn from a content-noted paragraph.
+The art is made with `scripts/scene-art.mjs` (fixes with `scripts/scene-art-edits.mjs`). It uses the poster and André's tree only as style references: painterly, moody oil, muted colors, golden hour or moonlight. Each scene is accurate to its chamber's text, with no deliberate mistakes, no lettering, and adults or teens only. Nothing is drawn from a content-noted paragraph.
 
 Previews are in `Claude outputs/scenes/`:
 - `*.jpg`: the clean painting.

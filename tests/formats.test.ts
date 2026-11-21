@@ -64,7 +64,7 @@ test("drag and drop: all 8 kinds, 3 to 5 pieces, one piece per slot where the ki
   assert.match(dndProblems("x", base("order_events", [{ id: "1", slot: "a" }, { id: "2", slot: "a" }, { id: "3", slot: "c" }]), lines).join(" "), /slot a holds one piece/);
   assert.match(dndProblems("x", base("sort_evidence", [{ id: "1", slot: "a" }, { id: "2", slot: "a" }]), lines).join(" "), /3 to 5 pieces/);
   assert.match(dndProblems("x", base("story_map", [{ id: "1", slot: "a", line: "Not here." }, { id: "2", slot: "b" }, { id: "3", slot: "c" }]), lines).join(" "), /not copied exactly/);
-  assert.match(dndProblems("x", { ...base("word_feeling", [{ id: "1", slot: "a" }, { id: "2", slot: "b" }, { id: "3", slot: "c" }]), type: "find_it" }, lines).join(" "), /word_feeling practises shades/);
+  assert.match(dndProblems("x", { ...base("word_feeling", [{ id: "1", slot: "a" }, { id: "2", slot: "b" }, { id: "3", slot: "c" }]), type: "find_it" }, lines).join(" "), /word_feeling practices shades/);
 });
 
 test("drag and drop on every device: tap to place, drag, the keyboard, every move announced, 44 px targets, the reveal", () => {
@@ -81,11 +81,11 @@ test("drag and drop on every device: tap to place, drag, the keyboard, every mov
   assert.match(src("app/globals.css"), /@media \(prefers-reduced-motion:reduce\)\{\.dnd-slide\{animation:none\}\}/);
 });
 
-test("the question bank: each student gets one question per chunk, the same on reload, another on a replay, and neighbours differ", () => {
+test("the question bank: each student gets one question per chunk, the same on reload, another on a replay, and neighbors differ", () => {
   const c = e1.chunks[0];
   assert.equal(bankOf(c).length, 2);
   assert.equal(bankPick(c, "ana"), bankPick(c, "ana"), "stable");
-  const picks = new Set(Array.from({ length: 30 }, (_, i) => bankPick(c, `student-${i}`))); assert.equal(picks.size, 2, "neighbours see different questions");
+  const picks = new Set(Array.from({ length: 30 }, (_, i) => bankPick(c, `student-${i}`))); assert.equal(picks.size, 2, "neighbors see different questions");
   assert.notEqual(bankPick(c, "ana", 0), bankPick(c, "ana", 1), "a replay gets the other question");
   // The question asked is recorded with its bank pick and version (Case Notes, live taps).
   assert.equal(askedQuestion(c, { bank: 1, version: "standard" }).prompt, c.bank![0].prompt);

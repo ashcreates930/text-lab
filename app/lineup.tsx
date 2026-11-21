@@ -1,7 +1,7 @@
 "use client";
 // The character-select lineup (rules: lib/lineup.ts). One character in the spotlight in the middle, on the dark stage
-// (3D when the story has a model for them, otherwise their portrait with a slow idle), with a dimmed neighbour on each
-// side. Tap a neighbour, swipe, or use the arrow keys (Home and End too) to move the spotlight; it wraps around. A
+// (3D when the story has a model for them, otherwise their portrait with a slow idle), with a dimmed neighbor on each
+// side. Tap a neighbor, swipe, or use the arrow keys (Home and End too) to move the spotlight; it wraps around. A
 // character with a model reacts as they step into the spotlight. The name card underneath shows the name, a check
 // (for example "Asked") and dots for where you are. Each move is announced. Under reduced motion nothing slides,
 // bobs or reacts. The host board uses it without controls (interactive={false}).
@@ -35,7 +35,7 @@ export function Lineup({items,index,onIndex,label,height=300,speaking=false,leve
  const onKey=(e:React.KeyboardEvent)=>{if(!interactive)return;const k=lineupKey(e.key,i,n);if(k===null)return;e.preventDefault();go(k)};
  const onDown=(e:React.PointerEvent)=>{start.current={x:e.clientX,y:e.clientY}};
  const onUp=(e:React.PointerEvent)=>{const s=start.current;start.current=null;if(!s||!interactive)return;const step=swipeStep(e.clientX-s.x,e.clientY-s.y);if(step){swiped.current=Date.now();go(i+step)}};
- // The neighbours stay smaller than the spotlight: at most about 40 percent of the stage height (and 120 px).
+ // The neighbors stay smaller than the spotlight: at most about 40 percent of the stage height (and 120 px).
  const sideMax=Math.round(Math.min(120,height*0.42));
  const side=(k:number,slot:"left"|"right")=>{const it=items[k],img=<span className="relative block">
    {it.portrait?<img src={it.portrait} alt="" draggable={false} className="portrait-idle aspect-square w-full rounded-full border-2 border-edge object-cover"/>:<span className="grid aspect-square w-full place-items-center rounded-full bg-reading font-display text-[28px] font-bold text-reading-ink">{it.name.slice(0,1)}</span>}

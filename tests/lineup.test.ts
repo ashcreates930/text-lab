@@ -10,7 +10,7 @@ import { WorldPackSchema } from "../lib/world-schema.ts";
 const src = (f: string) => readFileSync(f, "utf8");
 const sh = WorldPackSchema.parse(JSON.parse(src("worlds/sleepy-hollow/world.json")));
 
-test("the lineup: the spotlight in the middle, a dimmed neighbour on each side, wrapping round so any order works", () => {
+test("the lineup: the spotlight in the middle, a dimmed neighbor on each side, wrapping round so any order works", () => {
   assert.deepEqual(lineupWindow(3, 0), [{ index: 2, slot: "left" }, { index: 0, slot: "center" }, { index: 1, slot: "right" }]);
   assert.deepEqual(lineupWindow(3, 2).map((w) => w.index), [1, 2, 0]);
   assert.deepEqual(lineupWindow(5, 4).map((w) => w.index), [3, 4, 0], "more characters (an investigator pick): a window of three");
@@ -34,7 +34,7 @@ test("keyboard and swipe move the spotlight; every move is announced", () => {
   const ui = src("app/lineup.tsx");
   assert.match(ui, /onKeyDown=\{onKey\}/); assert.match(ui, /onPointerUp=\{onUp\}/, "swipe");
   assert.match(ui, /role="status" aria-live="polite">\{said\}/, "moves are announced");
-  assert.match(ui, /aria-label=\{`Spotlight \$\{spotlightLabel/, "each dimmed neighbour is a labelled button");
+  assert.match(ui, /aria-label=\{`Spotlight \$\{spotlightLabel/, "each dimmed neighbor is a labeled button");
   assert.match(ui, /tabIndex=\{interactive\?0:undefined\}/, "the lineup takes focus for the arrow keys");
 });
 

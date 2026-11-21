@@ -104,7 +104,7 @@ export function MissionBriefing({world,room,scenario,concepts,mission,budgetMs,c
  </section>;
 }
 
-// The box is labelled "Your mission", so the line drops its own opening words.
+// The box is labeled "Your mission", so the line drops its own opening words.
 const missionText=(m:string)=>{const t=m.replace(/^Your mission:s*/i,"");return t.charAt(0).toUpperCase()+t.slice(1)};
 function Dossier({world,items,anim}:{world:WorldPack;items:{l:BriefingLine;i:number}[];anim:string}){
  if(!items.length)return null;

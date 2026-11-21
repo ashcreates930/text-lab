@@ -3,7 +3,7 @@ import {useEffect,useState} from "react";
 import {Type,X} from "lucide-react";
 
 // Per-device display preferences for the whole page (zoom), contrast, and motion. Saved in this browser only.
-// Labelled "Page size" so it is not confused with the reader's reading settings.
+// Labeled "Page size" so it is not confused with the reader's reading settings.
 // look: the mature look (default) or the classic one; a class's own setting overrides it (data-look-locked).
 type Settings={size:"standard"|"large"|"xl";contrast:"standard"|"high";motion:"standard"|"reduced";look:"mature"|"classic"};
 const KEY="itt-display-settings";

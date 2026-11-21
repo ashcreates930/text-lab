@@ -1,5 +1,5 @@
 // Escape rooms, phase 4: Request a clue. Three tiers per lock, each one asked for on purpose and each costing points
-// only (never time). Tier 1 is the question's hint; tier 2 narrows the proof to two neighbouring sentences; tier 3 names
+// only (never time). Tier 1 is the question's hint; tier 2 narrows the proof to two neighboring sentences; tier 3 names
 // the proof sentence and crosses out wrong choices. The student still answers and proves it themselves.
 // Mastery: a lock proved with no clue or tier 1 counts as proved; tier 2 or 3 counts as not yet (never worse than a miss).
 // Pure rules shared by the solo room, the live phones, the Evidence view and mastery.

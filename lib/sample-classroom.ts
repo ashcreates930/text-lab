@@ -36,7 +36,7 @@ export const sampleCaseFile = {
 export const sampleFrames = [
   { student: "Eli", page: 4, kind: "Added detail", description: "A thin yellow line of lantern light landing right on the old man's cloudy eye while he sleeps.", quote: "a single thin ray fell upon the vulture eye" },
   { student: "Imani", page: 10, kind: "Illustrated page", description: "Only the narrator's hand and the lantern in the dark, held perfectly still, with the old man sitting up in bed in the shadows.", quote: "I held the lantern motionless." },
-  { student: "Priya", page: 13, kind: "Mood and setting (writing only)", description: "Grey light before morning. The floorboards are back in place and look perfectly normal, which is the creepiest part.", quote: "I then replaced the boards so cleverly, so cunningly" },
+  { student: "Priya", page: 13, kind: "Mood and setting (writing only)", description: "Gray light before morning. The floorboards are back in place and look perfectly normal, which is the creepiest part.", quote: "I then replaced the boards so cleverly, so cunningly" },
 ];
 
 // Live lesson preview: one Stop-and-Talk card the teacher can put up for the whole class.

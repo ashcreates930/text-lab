@@ -43,7 +43,7 @@ const expQuestionBase=z.object({type:z.enum(QUESTION_TYPES),dok:z.number().int()
 // Adaptive challenge (lib/pacing.ts): an easier and a harder version of the question, on the same chunk.
 const expQuestion=expQuestionBase.extend({versions:z.object({easier:expQuestionBase.optional(),harder:expQuestionBase.optional()}).optional()});
 // bank: other questions for the chunk (same skill, different wording and target); each student gets one of them
-// (lib/formats.ts), so replays and neighbours see different questions.
+// (lib/formats.ts), so replays and neighbors see different questions.
 const expChunk=z.object({id:z.string(),bank:z.array(expQuestion).max(2).optional(),segments:z.array(z.object({p:z.string().regex(/^p\d{3}$/),from:z.number().int().min(0),to:z.number().int().min(0)})).min(1),
  gist:z.object({options:z.array(expChoice).length(3)}),discovery:z.object({phrase:z.string().min(1),kind:z.enum(["figurative","vocabulary"]),note:z.string().min(1)}),question:expQuestion});
 // The Interview (before the race): three witnesses, each with two question cards, one true and one false statement in

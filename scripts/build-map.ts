@@ -57,7 +57,7 @@ export function layoutMap(spec: MapSpec, image: string) {
     const main = [...counts.entries()].sort((x, y) => y[1] - x[1])[0][0];
     return { expedition, name: e.name, area: main, label: { x: 0, y: 0 }, stops, finale };
   });
-  // Badges: alone at their area, or evenly round a circle wide enough that neighbours stay a tap target apart on a
+  // Badges: alone at their area, or evenly round a circle wide enough that neighbors stay a tap target apart on a
   // laptop or a projector (a phone merges them into one marker).
   const byArea = new Map<string, typeof regions>(); for (const r of regions) byArea.set(r.area, [...(byArea.get(r.area) ?? []), r]);
   for (const [area, list] of byArea) {
