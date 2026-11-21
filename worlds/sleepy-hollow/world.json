@@ -29110,7 +29110,251 @@
         ],
         "mission": "Your mission: open 5 locks and the church bridge before the clock runs out.",
         "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
-      }
+      },
+      "scenes": [
+        {
+          "chamber": 1,
+          "art": "/worlds/sleepy-hollow/scenes/gone-1.webp",
+          "alt": "A painted dark night in a hollow: a fallen saddle trampled on the road, a huge black horse whose cloaked rider has nothing above his shoulders, and ahead a thin man clinging to a bare-backed grey horse as it leaps onto a plank bridge over a brook, toward a small white church glimmering under the trees.",
+          "items": [
+            {
+              "id": "saddle",
+              "lock": 1,
+              "label": "The fallen saddle",
+              "alt": "A leather saddle lying trampled in the road",
+              "x": 18,
+              "y": 82,
+              "line": {
+                "p": "p066",
+                "s": 1
+              },
+              "subject": [
+                "saddle"
+              ]
+            },
+            {
+              "id": "bareback",
+              "lock": 2,
+              "label": "The bare-backed ride",
+              "alt": "A thin man clinging to a grey horse with no saddle",
+              "x": 63.5,
+              "y": 36,
+              "line": {
+                "p": "p066",
+                "s": 2
+              },
+              "subject": [
+                "horse"
+              ]
+            },
+            {
+              "id": "church",
+              "lock": 3,
+              "label": "The church walls",
+              "alt": "The walls of a small white church glimmering under the trees",
+              "x": 79,
+              "y": 26,
+              "line": {
+                "p": "p067",
+                "s": 2
+              },
+              "subject": [
+                "church"
+              ]
+            },
+            {
+              "id": "steed",
+              "lock": 4,
+              "label": "The black steed",
+              "alt": "A huge black horse close behind",
+              "x": 31,
+              "y": 38,
+              "line": {
+                "p": "p067",
+                "s": 5
+              },
+              "subject": [
+                "steed"
+              ]
+            },
+            {
+              "id": "dust",
+              "lock": 5,
+              "label": "The dust",
+              "alt": "Dust kicked up on the road at the end of the bridge",
+              "x": 54,
+              "y": 50,
+              "line": {
+                "p": "p067",
+                "s": 9
+              },
+              "subject": [
+                "dust"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "trees",
+              "label": "The opening in the trees",
+              "alt": "Dark trees arching over the road",
+              "x": 47,
+              "y": 10,
+              "line": {
+                "p": "p067",
+                "s": 0
+              },
+              "subject": [
+                "trees"
+              ],
+              "question": "What did the gap appear among?",
+              "word": "trees"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "church-bridge-night",
+              "x": 36,
+              "y": 72
+            }
+          ],
+          "door": {
+            "label": "The church bridge",
+            "x": 70,
+            "y": 58
+          }
+        },
+        {
+          "chamber": 2,
+          "art": "/worlds/sleepy-hollow/scenes/gone-2.webp",
+          "alt": "A painted grey morning: a bare-backed old grey horse grazing at a farm gate beside a frowning old farmer, an open bundle of shirts and a razor on the ground, a few books burning in a small fire, a muddy road with deep hoof tracks to a wooden bridge, an old hat and a smashed pumpkin on the bank, villagers gossiping by the white church, and an empty schoolhouse far off.",
+          "items": [
+            {
+              "id": "gate",
+              "lock": 6,
+              "label": "The horse at the gate",
+              "alt": "An old grey horse with no saddle grazing at a farm gate",
+              "x": 12,
+              "y": 56,
+              "line": {
+                "p": "p068",
+                "s": 0
+              },
+              "subject": [
+                "gate"
+              ]
+            },
+            {
+              "id": "pumpkin",
+              "lock": 7,
+              "label": "The hat and the pumpkin",
+              "alt": "An old hat in the grass with a smashed pumpkin beside it",
+              "x": 76,
+              "y": 88,
+              "line": {
+                "p": "p068",
+                "s": 5
+              },
+              "subject": [
+                "pumpkin"
+              ]
+            },
+            {
+              "id": "bundle",
+              "lock": 8,
+              "label": "The bundle",
+              "alt": "An open cloth bundle of shirts and odds and ends on the ground",
+              "x": 10,
+              "y": 82,
+              "line": {
+                "p": "p069",
+                "s": 1
+              },
+              "subject": [
+                "bundle"
+              ]
+            },
+            {
+              "id": "books",
+              "lock": 9,
+              "label": "The burning books",
+              "alt": "A few books burning in a small fire",
+              "x": 36,
+              "y": 84,
+              "line": {
+                "p": "p069",
+                "s": 3
+              },
+              "subject": [
+                "books"
+              ]
+            },
+            {
+              "id": "gossips",
+              "lock": 10,
+              "label": "The gossips by the church",
+              "alt": "Little groups of villagers talking and shaking their heads",
+              "x": 85,
+              "y": 52,
+              "line": {
+                "p": "p070",
+                "s": 1
+              },
+              "subject": [
+                "gossips"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "tracks",
+              "label": "The hoof marks",
+              "alt": "Deep marks dented in the muddy road",
+              "x": 52,
+              "y": 78,
+              "line": {
+                "p": "p068",
+                "s": 5
+              },
+              "subject": [
+                "tracks"
+              ],
+              "question": "What marks were pressed into the mud?",
+              "word": "tracks"
+            },
+            {
+              "id": "schoolhouse",
+              "label": "The empty schoolhouse",
+              "alt": "A small log schoolhouse standing empty far off",
+              "x": 38,
+              "y": 40,
+              "line": {
+                "p": "p068",
+                "s": 2
+              },
+              "subject": [
+                "schoolhouse"
+              ],
+              "question": "Where did the pupils gather?",
+              "word": "schoolhouse"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "the-search",
+              "x": 58,
+              "y": 66
+            }
+          ],
+          "door": {
+            "label": "The church door",
+            "x": 78,
+            "y": 31
+          }
+        }
+      ]
     },
     {
       "expedition": "the-postscript",
@@ -29300,7 +29544,216 @@
         ],
         "mission": "Your mission: open 4 locks and the last door before the clock runs out.",
         "mission2": "Your mission: open 3 locks and the exit door before the clock runs out."
-      }
+      },
+      "scenes": [
+        {
+          "chamber": 1,
+          "art": "/worlds/sleepy-hollow/scenes/the-postscript-1.webp",
+          "alt": "A painted still summer evening years later: old country wives telling a tale by the hearth in a lit window, a calm golden millpond with the road curving beside it to a white church, an old bridge left unused in the weeds, a schoolhouse fallen to ruin on the hillside, a young plowboy walking home with a hoe, and a lone traveler on the far road toward a distant city.",
+          "items": [
+            {
+              "id": "traveler",
+              "lock": 1,
+              "label": "The traveler on the far road",
+              "alt": "A lone figure walking the far road beside the water",
+              "x": 30,
+              "y": 46,
+              "line": {
+                "p": "p071",
+                "s": 0
+              },
+              "subject": [
+                "farmer"
+              ]
+            },
+            {
+              "id": "brom",
+              "lock": 2,
+              "label": "What Brom knew",
+              "alt": "A marker on the path: this lock is about Brom and what some people suspect, so nothing is painted for it",
+              "x": 52,
+              "y": 92,
+              "marker": true
+            },
+            {
+              "id": "wives",
+              "lock": 3,
+              "label": "The old country wives",
+              "alt": "Old women in caps telling a tale by the hearth",
+              "x": 8,
+              "y": 64,
+              "line": {
+                "p": "p072",
+                "s": 0
+              },
+              "subject": [
+                "wives"
+              ]
+            },
+            {
+              "id": "city",
+              "lock": 4,
+              "label": "The far-off city",
+              "alt": "The spires of a distant city along the river",
+              "x": 37,
+              "y": 36,
+              "line": {
+                "p": "p075",
+                "s": 0
+              },
+              "subject": [
+                "city"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "millpond",
+              "label": "The millpond",
+              "alt": "A calm golden pond with the road curving beside it",
+              "x": 45,
+              "y": 58,
+              "line": {
+                "p": "p072",
+                "s": 1
+              },
+              "subject": [
+                "millpond"
+              ],
+              "question": "What still water does the new way run beside?",
+              "word": "millpond"
+            },
+            {
+              "id": "bridge",
+              "label": "The unused bridge",
+              "alt": "An old wooden bridge left in the weeds",
+              "x": 66,
+              "y": 62,
+              "line": {
+                "p": "p072",
+                "s": 1
+              },
+              "subject": [
+                "bridge"
+              ],
+              "question": "What crossing grew more feared?",
+              "word": "bridge"
+            },
+            {
+              "id": "plowboy",
+              "label": "The young farmhand",
+              "alt": "A young man with a hoe over his shoulder on the path",
+              "x": 78,
+              "y": 80,
+              "line": {
+                "p": "p072",
+                "s": 2
+              },
+              "subject": [
+                "plowboy"
+              ],
+              "question": "Who heads back from the fields at dusk?",
+              "word": "plowboy"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "hollow-years-later",
+              "x": 22,
+              "y": 88
+            }
+          ],
+          "door": {
+            "label": "The ruined schoolhouse",
+            "x": 86,
+            "y": 38
+          }
+        },
+        {
+          "chamber": 2,
+          "art": "/worlds/sleepy-hollow/scenes/the-postscript-2.webp",
+          "alt": "A painted candlelit meeting room in the old city: city gentlemen smiling and applauding around a long table of papers and candles, two portly men asleep in their chairs, a pleasant old storyteller in grey setting down a glass of red wine, and a stern old gentleman with heavy eyebrows frowning in doubt.",
+          "items": [
+            {
+              "id": "stern",
+              "lock": 5,
+              "label": "The stern gentleman",
+              "alt": "A tall old gentleman with heavy eyebrows, frowning in his chair",
+              "x": 85,
+              "y": 52,
+              "line": {
+                "p": "p075",
+                "s": 3
+              },
+              "subject": [
+                "gentleman"
+              ]
+            },
+            {
+              "id": "glass",
+              "lock": 6,
+              "label": "The glass of wine",
+              "alt": "A glass of red wine being set down on the table",
+              "x": 18,
+              "y": 80,
+              "line": {
+                "p": "p076",
+                "s": 0
+              },
+              "subject": [
+                "glass"
+              ]
+            },
+            {
+              "id": "storyteller",
+              "lock": 7,
+              "label": "The storyteller in grey",
+              "alt": "A pleasant old gentleman in speckled grey clothes",
+              "x": 15,
+              "y": 42,
+              "line": {
+                "p": "p080",
+                "s": 0
+              },
+              "subject": [
+                "pepper-and-salt"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "chair",
+              "label": "The armchair",
+              "alt": "A heavy wooden armchair by the table",
+              "x": 92,
+              "y": 88,
+              "line": {
+                "p": "p075",
+                "s": 5
+              },
+              "subject": [
+                "chair"
+              ],
+              "question": "Where was the frowner seated?",
+              "word": "chair"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "city-meeting",
+              "x": 55,
+              "y": 70
+            }
+          ],
+          "door": {
+            "label": "The meeting-room door",
+            "x": 91,
+            "y": 22
+          }
+        }
+      ]
     }
   ],
   "expedition_rules": {
