@@ -24151,7 +24151,283 @@
         ],
         "mission": "Your mission: open 5 locks and the schoolhouse door before the clock runs out.",
         "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
-      }
+      },
+      "scenes": [
+        {
+          "chamber": 1,
+          "art": "/worlds/sleepy-hollow/scenes/the-schoolmaster-1.webp",
+          "alt": "A painted summer afternoon: a low log schoolhouse at the foot of a wooded hill, its windows patched with old paper, a birch tree at one end and a brook running by; far off, a tall thin man strides along a hilltop above the hollow.",
+          "items": [
+            {
+              "id": "hollow",
+              "lock": 1,
+              "label": "Sleepy Hollow below",
+              "alt": "The green hollow and its farms, far below the schoolhouse",
+              "x": 12,
+              "y": 67,
+              "line": {
+                "p": "p010",
+                "s": 0
+              },
+              "subject": [
+                "Sleepy Hollow"
+              ]
+            },
+            {
+              "id": "hilltop",
+              "lock": 2,
+              "label": "The figure on the hill",
+              "alt": "A tall, lanky man striding along the top of a hill, his coat flapping in the wind",
+              "x": 14.6,
+              "y": 47,
+              "line": {
+                "p": "p010",
+                "s": 5
+              },
+              "subject": [
+                "hill"
+              ]
+            },
+            {
+              "id": "windows",
+              "lock": 3,
+              "label": "The patched windows",
+              "alt": "Schoolhouse windows partly glazed and partly patched with old paper pages",
+              "x": 63.5,
+              "y": 59.5,
+              "line": {
+                "p": "p011",
+                "s": 0
+              },
+              "subject": [
+                "windows"
+              ]
+            },
+            {
+              "id": "birch",
+              "lock": 4,
+              "label": "The birch tree",
+              "alt": "A tall white birch tree growing at one end of the schoolhouse",
+              "x": 81.5,
+              "y": 30,
+              "line": {
+                "p": "p011",
+                "s": 2
+              },
+              "subject": [
+                "birch-tree"
+              ]
+            },
+            {
+              "id": "school",
+              "lock": 5,
+              "label": "The one-room school",
+              "alt": "The low log school itself, under its mossy roof",
+              "x": 60,
+              "y": 46,
+              "line": {
+                "p": "p012",
+                "s": 0
+              },
+              "subject": [
+                "school"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "brook",
+              "label": "The brook",
+              "alt": "A small brook running over stones near the schoolhouse",
+              "x": 71.5,
+              "y": 87,
+              "line": {
+                "p": "p011",
+                "s": 2
+              },
+              "subject": [
+                "brook"
+              ],
+              "question": "What small stream is near?",
+              "word": "brook"
+            },
+            {
+              "id": "stakes",
+              "label": "The stakes",
+              "alt": "Wooden stakes leaning against the closed side shutters",
+              "x": 74.5,
+              "y": 63,
+              "line": {
+                "p": "p011",
+                "s": 1
+              },
+              "subject": [
+                "stakes"
+              ],
+              "question": "What is propped up by the closed panels on the side wall?",
+              "word": "stakes"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "schoolhouse-at-midday",
+              "x": 27,
+              "y": 85
+            }
+          ],
+          "door": {
+            "label": "The schoolhouse door",
+            "x": 56.5,
+            "y": 63
+          }
+        },
+        {
+          "chamber": 2,
+          "art": "/worlds/sleepy-hollow/scenes/the-schoolmaster-2.webp",
+          "alt": "A painted farm at golden hour: a Dutch farmhouse with an empty cradle on its porch and a bundle on a bench, horses drinking at a trough, haycocks, a mended rail fence, cows coming in, two teenage boys tossing a ball by a woodpile, and a white church on a far hill.",
+          "items": [
+            {
+              "id": "boys",
+              "lock": 6,
+              "label": "The larger boys",
+              "alt": "Two teenage boys tossing a ball on the lane",
+              "x": 76,
+              "y": 72,
+              "line": {
+                "p": "p013",
+                "s": 0
+              },
+              "subject": [
+                "boys"
+              ]
+            },
+            {
+              "id": "bundle",
+              "lock": 7,
+              "label": "The bundle on the bench",
+              "alt": "A small bundle knotted up in a cotton handkerchief on a porch bench",
+              "x": 29.6,
+              "y": 56,
+              "line": {
+                "p": "p013",
+                "s": 3
+              },
+              "subject": [
+                "handkerchief"
+              ]
+            },
+            {
+              "id": "horses",
+              "lock": 8,
+              "label": "The horses at the trough",
+              "alt": "Two horses drinking at a wooden water trough",
+              "x": 19.5,
+              "y": 79,
+              "line": {
+                "p": "p014",
+                "s": 1
+              },
+              "subject": [
+                "horses"
+              ]
+            },
+            {
+              "id": "cradle",
+              "lock": 9,
+              "label": "The cradle on the porch",
+              "alt": "An empty wooden cradle on rockers on the farmhouse porch",
+              "x": 11.4,
+              "y": 58,
+              "line": {
+                "p": "p014",
+                "s": 3
+              },
+              "subject": [
+                "cradle"
+              ]
+            },
+            {
+              "id": "church",
+              "lock": 10,
+              "label": "The church on the hill",
+              "alt": "A small white church with a steeple on a far hill",
+              "x": 85.8,
+              "y": 26,
+              "line": {
+                "p": "p015",
+                "s": 1
+              },
+              "subject": [
+                "church"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "cows",
+              "label": "The cows",
+              "alt": "Three cows coming in along the lane",
+              "x": 84.6,
+              "y": 55,
+              "line": {
+                "p": "p014",
+                "s": 1
+              },
+              "subject": [
+                "cows"
+              ],
+              "question": "Which animals came in from grazing?",
+              "word": "cows"
+            },
+            {
+              "id": "fence",
+              "label": "The rail fence",
+              "alt": "A split-rail fence with one newly mended section",
+              "x": 55,
+              "y": 61,
+              "line": {
+                "p": "p014",
+                "s": 1
+              },
+              "subject": [
+                "fences"
+              ],
+              "question": "What did he repair?",
+              "word": "mended"
+            },
+            {
+              "id": "hay",
+              "label": "The haycocks",
+              "alt": "Fresh haycocks standing in the field",
+              "x": 62,
+              "y": 50,
+              "line": {
+                "p": "p014",
+                "s": 1
+              },
+              "subject": [
+                "hay"
+              ],
+              "question": "What dried grass did he gather?",
+              "word": "hay"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "farmhouse-room",
+              "x": 25.7,
+              "y": 48
+            }
+          ],
+          "door": {
+            "label": "The farmhouse door",
+            "x": 18.5,
+            "y": 51
+          }
+        }
+      ]
     },
     {
       "expedition": "tales-by-the-fire",
@@ -24354,7 +24630,283 @@
         ],
         "mission": "Your mission: open 5 locks and the farmhouse latch before the clock runs out.",
         "mission2": "Your mission: open 5 locks and the exit door before the clock runs out."
-      }
+      },
+      "scenes": [
+        {
+          "chamber": 1,
+          "art": "/worlds/sleepy-hollow/scenes/tales-by-the-fire-1.webp",
+          "alt": "A painted Sunday afternoon near dusk: a white church above its churchyard, a tall thin schoolmaster picking wild grapes for smiling young women while two shy farmhands hang back, a millpond with a mill, farmhouses along the road, a tea table with a silver teapot on a porch, and a brook with a clover bank by a log schoolhouse.",
+          "items": [
+            {
+              "id": "church",
+              "lock": 1,
+              "label": "The church",
+              "alt": "An old white country church with a small steeple",
+              "x": 19.5,
+              "y": 18,
+              "line": {
+                "p": "p015",
+                "s": 2
+              },
+              "subject": [
+                "church"
+              ]
+            },
+            {
+              "id": "teapot",
+              "lock": 2,
+              "label": "The silver teapot",
+              "alt": "A tea table on a farmhouse porch with a shining silver teapot",
+              "x": 86.3,
+              "y": 52.5,
+              "line": {
+                "p": "p016",
+                "s": 1
+              },
+              "subject": [
+                "teapot"
+              ]
+            },
+            {
+              "id": "vines",
+              "lock": 3,
+              "label": "The wild grapevines",
+              "alt": "Trees overrun by wild grapevines heavy with dark grapes",
+              "x": 9,
+              "y": 50,
+              "line": {
+                "p": "p016",
+                "s": 3
+              },
+              "subject": [
+                "vines"
+              ]
+            },
+            {
+              "id": "houses",
+              "lock": 4,
+              "label": "The farmhouses along the road",
+              "alt": "A row of farmhouses along the road beyond the millpond",
+              "x": 65,
+              "y": 45.5,
+              "line": {
+                "p": "p017",
+                "s": 0
+              },
+              "subject": [
+                "house"
+              ]
+            },
+            {
+              "id": "clover",
+              "lock": 5,
+              "label": "The clover by the brook",
+              "alt": "A bright green bed of clover along the brook",
+              "x": 57,
+              "y": 87,
+              "line": {
+                "p": "p018",
+                "s": 3
+              },
+              "subject": [
+                "clover"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "tombstones",
+              "label": "The tombstones",
+              "alt": "Old leaning gravestones in the churchyard",
+              "x": 32,
+              "y": 43,
+              "line": {
+                "p": "p016",
+                "s": 3
+              },
+              "subject": [
+                "tombstones"
+              ],
+              "question": "What carved writing did he read out?",
+              "word": "epitaphs"
+            },
+            {
+              "id": "millpond",
+              "label": "The millpond",
+              "alt": "A wide still millpond with a mill at its far end",
+              "x": 56.6,
+              "y": 58.5,
+              "line": {
+                "p": "p016",
+                "s": 3
+              },
+              "subject": [
+                "millpond"
+              ],
+              "question": "Beside what water did they stroll?",
+              "word": "millpond"
+            },
+            {
+              "id": "schoolhouse",
+              "label": "The schoolhouse",
+              "alt": "A small log schoolhouse beside the brook",
+              "x": 90.5,
+              "y": 71,
+              "line": {
+                "p": "p018",
+                "s": 3
+              },
+              "subject": [
+                "schoolhouse"
+              ],
+              "question": "What building stood next to the stream?",
+              "word": "schoolhouse"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "churchyard-sunday",
+              "x": 42,
+              "y": 80
+            }
+          ],
+          "door": {
+            "label": "The latch on the farmhouse door",
+            "x": 94.5,
+            "y": 47.5
+          }
+        },
+        {
+          "chamber": 2,
+          "art": "/worlds/sleepy-hollow/scenes/tales-by-the-fire-2.webp",
+          "alt": "A painted winter night: through a farmhouse's glowing window, two old Dutch women sit by a crackling fire with a spinning wheel and apples roasting on the hearth; outside, a snowy road runs across moonlit fields past a snow-covered shrub, a screech owl sits in a bare wind-bent tree, a shooting star crosses the sky, and a distant window glows.",
+          "items": [
+            {
+              "id": "owl",
+              "lock": 6,
+              "label": "The screech owl",
+              "alt": "A small owl on a bare branch",
+              "x": 84.8,
+              "y": 16,
+              "line": {
+                "p": "p018",
+                "s": 4
+              },
+              "subject": [
+                "screech owl"
+              ]
+            },
+            {
+              "id": "road",
+              "lock": 7,
+              "label": "The dusky road",
+              "alt": "A dark road running across the snowy fields",
+              "x": 74.2,
+              "y": 85,
+              "line": {
+                "p": "p018",
+                "s": 6
+              },
+              "subject": [
+                "road"
+              ]
+            },
+            {
+              "id": "apples",
+              "lock": 8,
+              "label": "The apples on the hearth",
+              "alt": "A row of apples roasting along the hearth by the fire",
+              "x": 12.4,
+              "y": 70,
+              "line": {
+                "p": "p019",
+                "s": 0
+              },
+              "subject": [
+                "apples"
+              ]
+            },
+            {
+              "id": "corner",
+              "lock": 9,
+              "label": "The chimney corner",
+              "alt": "A cozy corner by the fire with a wooden settle",
+              "x": 26,
+              "y": 68,
+              "line": {
+                "p": "p020",
+                "s": 0
+              },
+              "subject": [
+                "chimney"
+              ]
+            },
+            {
+              "id": "shrub",
+              "lock": 10,
+              "label": "The snow-covered shrub",
+              "alt": "A low shrub heavily covered with snow beside the house",
+              "x": 40.5,
+              "y": 73,
+              "line": {
+                "p": "p020",
+                "s": 3
+              },
+              "subject": [
+                "shrub"
+              ]
+            }
+          ],
+          "bonus": [
+            {
+              "id": "star",
+              "label": "The shooting star",
+              "alt": "A shooting star crossing the night sky",
+              "x": 55.3,
+              "y": 20.5,
+              "line": {
+                "p": "p019",
+                "s": 1
+              },
+              "subject": [
+                "shooting stars"
+              ],
+              "question": "Which heavenly wanderers with tails did he describe?",
+              "word": "comets"
+            },
+            {
+              "id": "window",
+              "label": "The distant window",
+              "alt": "A faint light in a far-off house window",
+              "x": 92,
+              "y": 60.5,
+              "line": {
+                "p": "p020",
+                "s": 2
+              },
+              "subject": [
+                "window"
+              ],
+              "question": "From where did the faint gleam shine?",
+              "word": "window"
+            }
+          ],
+          "witnesses": [],
+          "puzzles": [
+            {
+              "id": "winter-walk",
+              "x": 58.6,
+              "y": 74
+            }
+          ],
+          "door": {
+            "label": "The road across the fields",
+            "x": 70.3,
+            "y": 62.5
+          }
+        }
+      ]
     },
     {
       "expedition": "the-van-tassel-farm",
