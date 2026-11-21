@@ -67,8 +67,14 @@ function CaseInner({demo,setDemo,onExit,onAnotherStory,onTutorial,onFeedback,sta
  const [mapOpen,setMapOpen]=useState(false),[expedition,setExpedition]=useState<string|null>(null),[earned,setEarned]=useState<string|null>(null);
  const [attempts,setAttempts]=useState<ExpeditionAttempt[]>([]),[assigned,setAssigned]=useState<{expeditionId:string;due:string|null}[]>([]);
  const worldId=demo.worldId;
- useEffect(()=>{if(!worldId)return;let live=true;loadAttempts(worldId,demo.classAuth).then(r=>{if(live){setAttempts(r.attempts);setAssigned(r.assigned)}});return()=>{live=false}},[worldId,demo.classAuth]);
+ // attemptsFor: the world whose saved attempts have loaded (a first-time student goes straight into Room 1 once they have).
+ const [attemptsFor,setAttemptsFor]=useState<string|null>(null);
+ useEffect(()=>{if(!worldId)return;let live=true;loadAttempts(worldId,demo.classAuth).then(r=>{if(live){setAttempts(r.attempts);setAssigned(r.assigned);setAttemptsFor(worldId)}});return()=>{live=false}},[worldId,demo.classAuth]);
  const [world,setWorld]=useState<WorldPack|null>(null),[passages,setPassages]=useState<SourcePassage[]>([]),[error,setError]=useState("");
+ // The first screen is the escape room (2026-11-21): a student who hasn't started any room goes straight to Room 1's
+ // briefing, once per visit; leaving the room lands on the map. Returning students land on the map with Continue.
+ const autoStarted=useRef(false);
+ useEffect(()=>{if(autoStarted.current||!world||attemptsFor!==world.id||LEGACY_MODES)return;autoStarted.current=true;const first=world.expeditions?.[0]?.id;if(first&&attempts.length===0){setExpedition(first);setRacing(true)}},[world,attemptsFor,attempts.length]);
  const [openClue,setOpenClue]=useState<string>(""),[openFrame,setOpenFrame]=useState(""),[openWriting,setOpenWriting]=useState(false),[openLeadsFor,setOpenLeadsFor]=useState(""),[verdictOpen,setVerdictOpen]=useState(false),[toast,setToast]=useState(""),[celebrate,setCelebrate]=useState<{sceneId:string;rankUp:string|null}|null>(null),[justProven,setJustProven]=useState(""),[plantClue,setPlantClue]=useState("");
  // Opening a clue or a storyboard frame, or going back to the scene, is a new screen: start at the top with focus on its heading.
  // Students in the story: a class follows its teacher's settings for roles and angles; everyone else has both on.

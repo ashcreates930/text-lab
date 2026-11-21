@@ -64,7 +64,8 @@ test("the solo room: a chamber with a scene returns to it after each lock, and t
   const race = readFileSync("app/expedition-race.tsx", "utf8"), view = readFileSync("app/room-scene-view.tsx", "utf8");
   assert.match(race, /function toLock\(n:number\)\{if\(sceneFor\(n\)\)\{setK\(n\);setMeeting\(null\);go\("scene"\)\}else startChunk\(n\)\}/);
   assert.match(race, /\}else toLock\(k\+1\)\}\}\},100\);/, "after the countdown: back to the scene");
-  assert.match(race, /onOpen=\{\(\)=>\{if\(iv&&!inRoom\(iv\)&&!\(restored&&cards\.length\)\)go\("interview"\);else toLock\(k\)\}\}/);
+  assert.match(race, /function enterRoom\(\)\{if\(iv&&!inRoom\(iv\)&&!\(restored&&cards\.length\)\)go\("interview"\);else toLock\(k\)\}/);
+  assert.match(race, /onOpen=\{\(\)=>\{if\(!practiceDone\(\)\)go\("practice"\);else enterRoom\(\)\}\}/);
   assert.match(race, /exitAtDoor\.current=true;go\("scene"\)/, "the exit door is a place in the scene");
   assert.match(race, /resume:\{v:1,bonus:bonusFound,/); assert.match(race, /bonusFound\.length\*BONUS_COINS/);
   // Markers stay subtle: a brass (gold) ring with a soft glow on the next spot, a small check on opened ones.

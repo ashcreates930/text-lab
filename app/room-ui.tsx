@@ -6,7 +6,7 @@
 import {DoorVocab} from "./story-opening";
 import {useEffect,useRef,useState,type ReactNode} from "react";
 import {createPortal} from "react-dom";
-import {ArrowRight,BookOpen,KeyRound,Map as MapIcon,Timer,X} from "lucide-react";
+import {ArrowRight,BookOpen,Compass,KeyRound,Map as MapIcon,Timer,X} from "lucide-react";
 import {DoorGlyph,DoorScene,LockBadge,Padlock} from "./lock-art";
 import type {WorldPack} from "@/lib/world-schema";
 import type {SourcePassage} from "@/lib/source-passages";
@@ -28,14 +28,19 @@ export function LockBanner({lock,of,kind}:{lock:number;of:number;kind:LockKind})
 // ---------- The door: where the student is, and what opens the way out ----------
 // The briefing at every room's door (teacher, 2026-11-20): a short scenario in the story's voice, the one or two key
 // concepts the room explores, the vocabulary, then "Start the clock" when the escape timer is on.
-export function RoomDoor({room,onOpen,resumed=false,vocab=[],lineOf,briefing=null,concepts=[],timer=false,chamber=1}:{room:Room;onOpen:()=>void;resumed?:boolean;chamber?:1|2;vocab?:{word:string;meaning:string;line:{p:string;s:number}}[];lineOf?:(r:{p:string;s:number})=>string|null;briefing?:{scenario:string;concepts:string[];mission?:string;mission2?:string}|null;concepts?:{name:string;teaser:string}[];timer?:boolean}){
+export function RoomDoor({room,onOpen,resumed=false,vocab=[],lineOf,briefing=null,concepts=[],timer=false,chamber=1,caseLine=null,bigQuestion=null}:{room:Room;onOpen:()=>void;resumed?:boolean;chamber?:1|2;caseLine?:string|null;bigQuestion?:string|null;vocab?:{word:string;meaning:string;line:{p:string;s:number}}[];lineOf?:(r:{p:string;s:number})=>string|null;briefing?:{scenario:string;concepts:string[];mission?:string;mission2?:string}|null;concepts?:{name:string;teaser:string}[];timer?:boolean}){
  const [c1,c2]=room.chambers;
  return <section aria-labelledby="ex-h" className="mx-auto flex w-full max-w-xl flex-col gap-4 pt-2">
   <DoNow text={DO_NOW.door}/>
+  {/* The story's opening (2026-11-21): on the first room's briefing, the case line and the big question come first. */}
+  {(caseLine||bigQuestion)&&<div className="rounded-card border-2 border-gold bg-panel p-4">
+   {caseLine&&<p className="font-serif text-[19px] font-semibold leading-snug">{caseLine}</p>}
+   {bigQuestion&&<p className={`${caseLine?"mt-3":""} flex items-start gap-2`}><Compass size={20} className="mt-1 shrink-0 text-gold" aria-hidden/><span><span className="block text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">The big question</span><span className="block font-display text-[20px] font-bold leading-tight">{bigQuestion}</span></span></p>}
+  </div>}
   <div className="rounded-[24px] bg-panel p-5 shadow-[0_8px_0_#0B0920]">
    <div className="flex items-center gap-3"><span aria-hidden className="grid h-14 w-14 shrink-0 place-items-center rounded-[16px] bg-deep text-highlight"><DoorGlyph size={30}/></span>
     <div><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Room {room.number}</p><h1 id="ex-h" className="text-[28px] leading-tight outline-none">{room.name}</h1></div></div>
-   {briefing?<><p className="mt-3 font-serif text-[18px] leading-relaxed">{briefing.scenario}</p>{timer&&missionFor(briefing,chamber)&&<p className="mt-2 text-[17px] font-bold leading-snug text-highlight">{missionFor(briefing,chamber)}</p>}</>
+   {briefing?<p className="mt-3 font-serif text-[18px] leading-relaxed">{briefing.scenario}</p>
     :<p className="mt-3 text-[17px] font-bold leading-snug">{room.door??"Every lock in this room opens only with proof from the story. Read closely, prove each answer, and find the way out."}</p>}
    {briefing&&briefing.concepts.length>0&&<div className="mt-3 flex flex-col gap-1.5"><p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">This room explores</p>
     {briefing.concepts.map(n=>{const c=concepts.find(x=>x.name===n);return <p key={n} className="rounded-row bg-panel-2 px-3 py-2 text-[15px]"><b className="font-display text-gold">{n}.</b> {c?.teaser}</p>})}</div>}
@@ -47,6 +52,8 @@ export function RoomDoor({room,onOpen,resumed=false,vocab=[],lineOf,briefing=nul
   </div>
   {/* The hard words before the reading (lib/engagement.ts): plain meaning and the sentence each comes from. */}
   {lineOf&&<DoorVocab vocab={vocab} lineOf={lineOf}/>}
+  {/* The mission for the chamber being started, just above Start the clock. */}
+  {briefing&&timer&&missionFor(briefing,chamber)&&<p className="rounded-card bg-panel px-4 py-3 text-[17px] font-bold leading-snug text-highlight">{missionFor(briefing,chamber)}</p>}
   {timer&&!resumed&&<p className="flex items-center gap-2 text-[15px] font-bold"><Timer size={18} className="shrink-0 text-gold" aria-hidden/>Each chamber has an escape timer. It runs while you read, too. If it runs out, keep going: your work still counts.</p>}
   <button type="button" onClick={onOpen} className="case-primary min-h-[56px] w-full justify-center text-[18px]">{timer?<Timer size={18} aria-hidden/>:null}{resumed?(timer?"Back into the room: the clock runs again":"Back into the room"):timer?"Start the clock":"Open the door"}{timer?null:<ArrowRight size={18} aria-hidden/>}</button>
  </section>;

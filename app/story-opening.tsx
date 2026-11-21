@@ -7,17 +7,19 @@ import {ArrowRight,BookMarked,Compass} from "lucide-react";
 import type {WorldPack} from "@/lib/world-schema";
 import type {InventoryItem} from "@/lib/escape-room";
 
-const SEEN="textlab:big-question-seen:";
+// On the map (2026-11-21) the panel starts collapsed, so the map and its Continue button show without scrolling; opening
+// it shows the question's note and all four key concepts (the only place all four appear; a room's briefing shows its own).
 export function BigQuestion({world}:{world:WorldPack}){
  const e=world.engagement;
- const [open,setOpen]=useState(()=>{try{return !localStorage.getItem(SEEN+world.id)}catch{return true}});
+ const [open,setOpen]=useState(false);
  if(!e)return null;
- const toggle=()=>{setOpen(o=>!o);try{localStorage.setItem(SEEN+world.id,"1")}catch{}};
- return <section aria-labelledby="bq-h" className="rounded-card border-2 border-gold bg-panel p-4">
-  <button type="button" onClick={toggle} aria-expanded={open} className="flex w-full items-start gap-2 text-left">
-   <Compass size={20} className="mt-1 shrink-0 text-gold" aria-hidden/>
-   <span className="min-w-0 flex-1"><span className="block text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">The big question</span>
-    <span id="bq-h" className="block font-display text-[22px] font-bold leading-tight">{e.essential_question}</span></span>
+ const toggle=()=>setOpen(o=>!o);
+ return <section aria-labelledby="bq-h" className="rounded-card border-2 border-gold bg-panel px-3 py-2">
+  {/* Collapsed, it is one compact line: the label and question on the left, Show on the right. */}
+  <button type="button" onClick={toggle} aria-expanded={open} className="flex min-h-11 w-full items-center gap-2 text-left">
+   <Compass size={18} className="shrink-0 text-gold" aria-hidden/>
+   <span className="min-w-0 flex-1 leading-tight"><span className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">The big question: </span>
+    <span id="bq-h" className={`font-display font-bold ${open?"text-[19px]":"text-[16px]"}`}>{e.essential_question}</span></span>
    <span className="shrink-0 text-[14px] font-bold text-muted">{open?"Hide":"Show"}</span></button>
   {open&&<><p className="mt-2 text-[15px]">Keep it in mind in every room. At the last exit door, you'll answer it with lines from your Case File.</p>
    <ul className="mt-3 grid gap-2 sm:grid-cols-2">{e.key_concepts.map(c=><li key={c.name} className="rounded-row bg-panel-2 px-3 py-2"><p className="font-display text-[17px] font-bold text-gold">{c.name}</p><p className="text-[15px] leading-snug">{c.teaser}</p></li>)}</ul></>}

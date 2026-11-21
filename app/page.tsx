@@ -258,7 +258,8 @@ export default function Home() {
   function startRole(roleId:string){const base=demo.preset==="student_first_visit"&&!demo.classAuth?demo:newDemo("student_first_visit");const prog=base.readerProgress?.["tell-tale-heart"]??{};setDemo({...base,worldId:"tell-tale-heart",role:roleId,think:true,briefingComplete:true,previewComplete:false,submitted:false,scene:0,readerProgress:{...(base.readerProgress??{}),"tell-tale-heart":{...prog,briefed:false}}});setView("play")}
   function tryAnotherStory(){setDemo(d=>({...d,role:"",briefingComplete:false,think:false,previewComplete:false,scene:0}));setView("shelf")}
   // Joining or rejoining a class loads the student's saved reading progress from their class record.
-  function joinClass(session:{world_id:string;grade:number},auth:ClassAuth){const next=newDemo("class_student",session.world_id);next.grade=session.grade;next.scene=0;next.classAuth=auth;setDemo(next);setView("shelf");// Saving starts only after the load finishes, so an empty record can never overwrite saved work.
+  function joinClass(session:{world_id:string;grade:number},auth:ClassAuth){const next=newDemo("class_student",session.world_id);next.grade=session.grade;next.scene=0;next.classAuth=auth;setDemo(next);// A class has one story, so a joining student goes straight into it: Room 1's briefing the first time, the map after (2026-11-21).
+    setView("play");// Saving starts only after the load finishes, so an empty record can never overwrite saved work.
     const load=(tries:number)=>loadClassProgress(auth,session.world_id).then(({ok,progress})=>{if(ok)setDemo(d=>d.id===next.id?{...(progress?applyProgress(d,progress):d),classProgressLoaded:true}:d);else if(tries>0)window.setTimeout(()=>load(tries-1),3000)});load(3)}
   function backToPreviousScreen(fallback:()=>void) {
     const current = window.history.state as ScreenSnapshot | null;
