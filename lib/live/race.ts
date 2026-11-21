@@ -36,7 +36,7 @@ export type ExpSettings = { expeditionId: string; grade?: Grade; gradeBand: Grad
   clock?: RoomClock;
   // The class's question time (set from the class when the game starts; standard otherwise).
   questionTime?: QuestionTime };
-export const LIVE_BEATS = ["brief", "vote", "testify", "read", "process", "ask", "race", "reveal", "lightning", "puzzle", "board", "burst", "countdown", "liar", "verdict"] as const;
+export const LIVE_BEATS = ["brief", "scene", "vote", "testify", "read", "process", "ask", "race", "reveal", "lightning", "puzzle", "board", "burst", "countdown", "liar", "verdict"] as const;
 // A puzzle lock gets generous time (times each player's extra time); the board moves on early once everyone is done.
 export const PUZZLE_SECONDS = 150;
 export type LiveBeat = (typeof LIVE_BEATS)[number];
@@ -126,8 +126,10 @@ export function nextBeat(round: LiveRaceRound, chunks: RaceChunk[], arc: Arc | n
   if (b === "puzzle") return puzzles.find((p) => p.id === round.puzzle)?.innerDoor ? { step: s, beat: "countdown" } : { step: s, beat: checkpointAt ? "board" : "countdown" };
   if (b === "vote") return { step: s, beat: "testify" };
   if (b === "testify") return s + 1 < (round.interview?.witnesses ?? 0) ? { step: s + 1, beat: recap ? "testify" : "vote" } : { step: span.from, beat: "read" };
-  // The briefing on the board comes before the room starts; Start the clock moves on to its first beat.
-  if (b === "brief") return firstBeat(round.settings, chunks.length, !!round.interview, at);
+  // The briefing on the board comes before the room starts; Start the clock opens the room's scene, and the scene moves on
+  // to the room's first beat (a witness met at the first lock, or its reading), so no witness comes before the room.
+  if (b === "brief") return { step: span.from, beat: "scene" };
+  if (b === "scene") return firstBeat(round.settings, chunks.length, !!round.interview, at);
   if (b === "liar") return { step: s, beat: "verdict" };
   if (b === "verdict") return "end";
   // The Gist check about every third chunk (lib/formats.ts gistAt); otherwise straight on.
@@ -151,7 +153,7 @@ export function beatMs(round: LiveRaceRound, chunk: RaceChunk | undefined, setti
   const b = round.beat;
   if (b === "vote") return limitMs(VOTE_SECONDS, setting);
   if (b === "liar") return limitMs(LIAR_SECONDS, setting);
-  if (b === "testify" || b === "verdict" || b === "brief") return null;
+  if (b === "testify" || b === "verdict" || b === "brief" || b === "scene") return null;
   if (b === "read" || !chunk) return null;
   if (b === "process") return limitMs(GIST_SECONDS, setting);
   if (b === "ask") return limitMs(TYPED_SECONDS, setting);

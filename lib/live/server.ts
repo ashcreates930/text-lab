@@ -19,6 +19,7 @@ import { missionFor } from "../engagement.ts";
 import { liveClueTier, beatMs, burstFound, firstBeat, liveSpan, interviewOf, liveArc, roomMet, witnessOf, liveClock, clockAdd, squadLockOf, playerAsked, playerVersion, liarAnswers, liveCards, liveRaceBoard, liveRaceChunks, nextBeat, parseExpSettings, playerChunk, playerLiar, playerVote, raceAnswer, raceAnswered, raceDone, raceFinish, raceQuestions, raceReadiness, raceReveal, raceTotals, type LiveRaceRound } from "./race.ts";
 import { firstName, inRoom, interviewAudio, liarBreakdown } from "../interview.ts";
 import { chamberSpan, lineAt, liveLiar, recoveryTask, refKey, roomOf } from "../escape-room.ts";
+import { roomSceneOf } from "../room-scene.ts";
 import type { LineRef, RoomPuzzle } from "../world-schema.ts";
 import { TYPE_INFO, hasExpeditions, joinedPassages, timeScale, type RaceChunk } from "../expedition.ts";
 import { beatKind, isCheckpoint, multiplierAt, questionAt, type Version } from "../pacing.ts";
@@ -194,6 +195,9 @@ function publicRace(st: LiveState, round: LiveRaceRound) {
     briefing: round.beat === "brief" ? (() => { const rm = roomOf(st.world, round.settings.expeditionId), b = st.world.rooms?.find((r) => r.expedition === round.settings.expeditionId)?.briefing; if (!rm || !b) return null; const on = (round.settings.clock ?? "escape") !== "off";
       return { room: rm.number, name: rm.name, scenario: b.scenario, concepts: b.concepts.map((n) => ({ name: n, teaser: st.world.engagement?.key_concepts.find((k) => k.name === n)?.teaser ?? "" })), mission: on ? missionFor(b, round.settings.chamber === 2 ? 2 : 1) : null, timer: on }; })() : null,
     escaped: round.escaped ?? [],
+    // The room's scene on the board before the first witness (its painting, or the plain scene), with the first spot next.
+    scene: round.beat === "scene" ? (() => { const rm = roomOf(st.world, round.settings.expeditionId); if (!rm) return null; const ch = round.settings.chamber === 2 ? 2 : 1;
+      return { title: `Room ${rm.number} · Chamber ${ch}: ${rm.name}`, first: chamberSpan(chunks.length, round.settings.chamber ?? 0).from, data: { ...roomSceneOf(st.world, rm, ch), bonus: [] } }; })() : null,
     chunk: { id: c.id, index: c.index, passages: c.passages, lines: c.lines, gist: strip(c.chunk.gist.options), discovery: { phrase: c.chunk.discovery.phrase, note: c.chunk.discovery.note } },
     // The arc's moment at this chunk (the twist, the boss, a surprise double), for the banners; the checkpoint follows level 1.
     arc: arc ? beatKind(arc, round.step) : null, double: arc ? multiplierAt(arc, round.step) > 1 : false, checkpoint: isCheckpoint(round.step, chunks.length),
@@ -529,7 +533,9 @@ export async function hostAct(store: LiveStore, st: LiveState, a: HostAction): P
         const n = st.world.expeditions?.find((e) => e.id === settings.expeditionId)?.chunks.length ?? 1, first = firstBeat(settings, n, !!interview, at);
         // A room with a briefing opens on it (the board shows it; the teacher starts the clock).
         const brief = !!st.world.rooms?.find((r) => r.expedition === settings.expeditionId)?.briefing;
-        const race: LiveRaceRound = { type: "race", settings, step: first.step, beat: brief ? "brief" : first.beat, witness: brief ? null : first.witness ?? null, beatStartedAt: new Date().toISOString(), squadsOn: a.squads === true && st.squads.length > 0, pinned: null, interview };
+        // A room without a briefing still opens on its scene, before any witness.
+        const opening = brief ? "brief" : roomOf(st.world, settings.expeditionId) ? "scene" : null;
+        const race: LiveRaceRound = { type: "race", settings, step: opening ? chamberSpan(n, settings.chamber ?? 0).from : first.step, beat: opening ?? first.beat, witness: opening ? null : first.witness ?? null, beatStartedAt: new Date().toISOString(), squadsOn: a.squads === true && st.squads.length > 0, pinned: null, interview };
         await store.updateSession(s.id, { rounds: [...s.rounds, race], roundIndex: s.rounds.length, status: "round", paused: false, roundStartedAt: new Date().toISOString() });
         return null;
       }

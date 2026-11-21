@@ -10,7 +10,7 @@ import {EssentialAnswerScreen,ReadFor,type EssentialAnswer} from "./story-openin
 import {Ambience,ChestCard,LanternFog,LanternPill,addKit,kitOwned} from "./atmosphere";
 import {chestFor,lanternLevel,pointerText,proofParagraph,questionFirst,type Chest} from "@/lib/engagement";
 import {Held,LockMoment,QUIET_HOLD_MS} from "./lock-art";
-import {BONUS_COINS,bonusOpen,chamberOfLock,sceneOf,type SceneNext} from "@/lib/room-scene";
+import {BONUS_COINS,bonusOpen,chamberOfLock,roomSceneOf,type SceneNext} from "@/lib/room-scene";
 import {SceneView} from "./room-scene-view";
 import {questionSetting,type QuestionTime} from "@/lib/expedition";
 import {escapeBonusOf,clockEnding,clockRuns,clockView,escapeBudgetMs,inTime,type ClockView,type RoomClock} from "@/lib/room-clock";
@@ -433,15 +433,16 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
  const coins=records.reduce((a,r)=>a+(r?.coins??0),0)+(found&&!record?DISCOVERY_COINS:0)+bonusFound.length*BONUS_COINS+Object.values(chests).reduce((a,c)=>a+(c?.coins??0),0);
  const streak=(()=>{let s=0;for(let i=records.length-1;i>=0;i--){if(records[i]?.correct)s++;else break}return s})();
 
- // Explorable scenes (lib/room-scene.ts): where a chamber has a painted scene, the student goes back to it after each
- // lock and taps what glows next (a witness, the next item, a puzzle lock, the door), instead of moving on by itself.
- const sceneFor=(i:number)=>room?sceneOf(world,expeditionId,chamberOfLock(room,Math.min(i,chunks.length-1))):null;
+ // The room's scene (lib/room-scene.ts): every chamber opens on it (its painting, or the plain scene where there is none),
+ // and the student goes back to it after each lock and taps what glows next (the next spot, a puzzle lock, the door).
+ const sceneFor=(i:number)=>room?roomSceneOf(world,room,chamberOfLock(room,Math.min(i,chunks.length-1))):null;
  function toLock(n:number){if(sceneFor(n)){setK(n);setMeeting(null);go("scene")}else startChunk(n)}
  function startChunk(n:number){setK(n);setGist(null);setStep(1);setDraft({});setMarking(false);setUnknown(new Set());setFound(false);setPaused(false);
   // Witnesses in the room: anyone met at this lock steps in before its reading.
   const due=dueAt(iv,n+1).filter(i=>!isMet(cards,i));if(due.length){setMeeting(due[0]);go("witness")}else go("read")}
+ // After a witness: the next one due at this lock, then the lock's reading (they step in once its spot is tapped).
  function metWitness(){if(meeting==null||!iv)return;const cs=meet(cards,meeting,iv.witnesses.length);setCards(cs);
-  const due=dueAt(iv,k+1).filter(i=>!isMet(cs,i));if(due.length&&!sceneFor(k)){setMeeting(due[0]);go("witness")}else{setMeeting(null);go(sceneFor(k)?"scene":"read")}}
+  const due=dueAt(iv,k+1).filter(i=>!isMet(cs,i));if(due.length){setMeeting(due[0]);go("witness")}else{setMeeting(null);go("read")}}
  function toQuestion(){setStep(1);setDraft({});const isLie=c?.chunk.question.type==="catch_lie";setTestifying(isLie);go("question")}
  // Catch the Lie: the testimony plays first (about 3 seconds, or at once with reduced motion), then its 45 seconds start.
  useEffect(()=>{if(!testifying)return;const t=setTimeout(()=>{setTestifying(false);setStartedAt(Date.now())},reducedMotion()?0:TESTIMONY_MS);return()=>clearTimeout(t)},[testifying]);
@@ -548,11 +549,11 @@ export function ExpeditionRace({world,passages,expeditionId,preset,grade=7,histo
   {beat==="escape"&&room&&<EscapeMoment inTimeBadge={chamberInTime(lastCh)} clockNote={budget?clockEnding(budget,clockUsed[lastCh]??0,firstTriesIn(lastCh)):null} room={room} next={nextRoom} solved={!!liarResult?.solved} onNext={()=>{go("finish");onFinish?.(records)}}/>}
   {beat==="scene"&&room&&sceneFor(k)&&(()=>{const sc=sceneFor(k)!,chamber=chamberOfLock(room,k),opened=(i:number)=>isOpen(records[i]);
    // What glows next: a puzzle lock waiting after its lock; the door (the inner door's code lock, or the exit once the last
-   // lock is answered); a witness due at the next lock; otherwise the next lock's item.
+   // lock is answered); otherwise the next lock's spot. A witness met at that lock steps in after its spot is tapped, so
+   // no witness stands in the room before being met.
    const pend=puzzleId&&!puzzleRes[puzzleId]?room.puzzles.find(x=>x.id===puzzleId)??null:null,lastDone=k>=chunks.length-1&&!!records[k];
-   const due=iv?dueAt(iv,k+1).filter(i=>!isMet(cards,i)):[];
-   const next:SceneNext=pend?(pend.innerDoor?{kind:"door"}:{kind:"puzzle",id:pend.id}):lastDone?{kind:"door"}:due.length?{kind:"witness",index:due[0],lock:k}:{kind:"item",lock:k};
-   const wState=(c:string)=>{const i=iv?.witnesses.findIndex(w=>w.character===c)??-1;if(i<0)return "away" as const;if(isMet(cards,i))return "met" as const;return next?.kind==="witness"&&next.index===i?"due" as const:"away" as const};
+   const next:SceneNext=pend?(pend.innerDoor?{kind:"door"}:{kind:"puzzle",id:pend.id}):lastDone?{kind:"door"}:{kind:"item",lock:k};
+   const wState=(c:string)=>{const i=iv?.witnesses.findIndex(w=>w.character===c)??-1;return i>=0&&isMet(cards,i)?"met" as const:"away" as const};
    const proofOf=(i:number)=>inventory.find(x=>x.lock===i)?.text??null;
    return <SceneView scene={sc} title={`Room ${room.number} · Chamber ${chamber}: ${room.name}`} next={next} opened={opened}
     witnessName={c=>witnessName(world,c)} witnessState={wState} puzzleState={id=>puzzleRes[id]?"open":next?.kind==="puzzle"&&next.id===id?"next":"later"} doorState={next?.kind==="door"?"next":"later"}
