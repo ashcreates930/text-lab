@@ -89,8 +89,10 @@ export function sceneProblems(world: WorldPack, passages: SourcePassage[]): stri
     for (const it of sc.items) {
       const k = it.lock - 1; spot(`item ${it.id}`, it.x, it.y);
       if (k < span.from || k > span.to) { out.push(`${at}: item ${it.id} is for lock ${it.lock}, outside chamber ${sc.chamber}`); continue; }
-      if (!inChunk(k, it.line)) out.push(`${at}: item ${it.id}'s line ${refKey(it.line)} isn't in lock ${it.lock}'s reading`);
-      literal(`item ${it.id}`, it.line, it.subject, k);
+      // A plain marker paints nothing and rests on no line; every other item is a literal thing in its lock's reading.
+      if (it.marker) { if (it.line || it.subject) out.push(`${at}: item ${it.id} is a plain marker, so it rests on no line or subject`); }
+      else if (!it.line || !it.subject) out.push(`${at}: item ${it.id} needs its line and subject (or is a plain marker)`);
+      else { if (!inChunk(k, it.line)) out.push(`${at}: item ${it.id}'s line ${refKey(it.line)} isn't in lock ${it.lock}'s reading`); literal(`item ${it.id}`, it.line, it.subject, k); }
       if ([it.label, it.alt].some((t) => /—/.test(t))) out.push(`${at}: item ${it.id}: no em dashes`);
     }
     for (const b of sc.bonus) {

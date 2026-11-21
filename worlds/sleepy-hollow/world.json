@@ -25597,19 +25597,13 @@
               ]
             },
             {
-              "id": "wagon",
+              "id": "daydream",
               "lock": 2,
-              "label": "The farm wagon",
-              "alt": "An empty farm wagon in the yard",
-              "x": 15,
-              "y": 76,
-              "line": {
-                "p": "p025",
-                "s": 1
-              },
-              "subject": [
-                "wagon"
-              ]
+              "label": "Ichabod's daydream",
+              "alt": "A marker on the path before the porch: this lock is Ichabod's daydream of moving west, so nothing is painted for it",
+              "x": 56,
+              "y": 88,
+              "marker": true
             },
             {
               "id": "harness",
@@ -26154,7 +26148,7 @@
         {
           "chamber": 2,
           "art": "/worlds/sleepy-hollow/scenes/the-feud-2.webp",
-          "alt": "A painted twilight at the Van Tassel farm: an old woman at her spinning wheel and an old farmer smoking a long pipe on the porch, a great elm with a spring in a barrel well, a barn topped by a carved two-sword soldier, ducks and geese in the yard, an empty hitching rail, two young women walking a lane, and a schoolhouse on a far hill.",
+          "alt": "A painted twilight at the Van Tassel farm: an old woman at her spinning wheel and an old farmer smoking a long pipe on the porch, a great elm with a spring in a barrel well, a barn topped by a carved two-sword soldier, ducks and geese in the yard, an empty hitching rail, and a schoolhouse on a far hill.",
           "items": [
             {
               "id": "pipe",
@@ -26187,19 +26181,13 @@
               ]
             },
             {
-              "id": "women",
+              "id": "aside",
               "lock": 8,
-              "label": "Two women on the lane",
-              "alt": "Two young women in shawls walking along the lane in the twilight",
-              "x": 85.3,
-              "y": 65.4,
-              "line": {
-                "p": "p032",
-                "s": 0
-              },
-              "subject": [
-                "women"
-              ]
+              "label": "The narrator's aside",
+              "alt": "A marker on the lane: here the narrator stops to talk about winning hearts, so nothing is painted for it",
+              "x": 85,
+              "y": 66,
+              "marker": true
             },
             {
               "id": "palings",

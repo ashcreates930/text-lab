@@ -86,3 +86,13 @@ test("Rooms 2 to 6 have their two painted scenes (approved 2026-11-21: Rooms 2 a
   assert.match(edit((w) => { r3(w).items[4].label = "The clover by the brook"; }), /"clover" is a code-dial answer/);
   assert.match(edit((w) => { r3(w).bonus[0].alt = "Old tombstones and a patch of clover"; }), /"clover" is a code-dial answer/);
 });
+
+test("a plain marker paints nothing and rests on no line: Room 5's daydream and Room 6's narrator's aside (2026-11-21)", () => {
+  const item = (id: string, c: number, lock: number) => sceneOf(world, id, c)!.items.find((i) => i.lock === lock)!;
+  assert.deepEqual([item("a-rival-appears", 1, 2).marker, item("a-rival-appears", 1, 2).line, item("a-rival-appears", 1, 2).label], [true, undefined, "Ichabod's daydream"]);
+  assert.deepEqual([item("the-feud", 2, 8).marker, item("the-feud", 2, 8).line, item("the-feud", 2, 8).label], [true, undefined, "The narrator's aside"]);
+  const f2 = (w: WorldPack) => w.rooms!.find((r) => r.expedition === "the-feud")!.scenes![1].items.find((i) => i.lock === 8)!;
+  assert.match(edit((w) => { f2(w).line = { p: "p032", s: 0 }; f2(w).subject = ["women"]; }), /plain marker, so it rests on no line or subject/);
+  assert.match(edit((w) => { delete f2(w).marker; }), /needs its line and subject \(or is a plain marker\)/);
+  assert.doesNotMatch(sceneOf(world, "the-feud", 2)!.alt, /young women/);
+});

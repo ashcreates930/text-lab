@@ -96,7 +96,9 @@ const roomPuzzle=z.discriminatedUnion("type",[
 // their meeting point; puzzles (not the inner door's code lock) and the door (the inner door in chamber 1, the exit in
 // chamber 2) are places in the scene.
 const spotXY={x:z.number().min(0).max(100),y:z.number().min(0).max(100)};
-const sceneItem=z.object({id:z.string(),lock:z.number().int().min(1),label:z.string().min(1),alt:z.string().min(1),...spotXY,line:lineRef,subject:z.array(z.string().min(1)).min(1)});
+// marker: a plain spot with no painted object (teacher decision, 2026-11-21), for a lock whose reading has nothing
+// real to paint: a narrator's aside, a daydream, or a content-noted paragraph. It has no line or subject.
+const sceneItem=z.object({id:z.string(),lock:z.number().int().min(1),label:z.string().min(1),alt:z.string().min(1),...spotXY,line:lineRef.optional(),subject:z.array(z.string().min(1)).min(1).optional(),marker:z.boolean().optional()});
 const sceneBonus=z.object({id:z.string(),label:z.string().min(1),alt:z.string().min(1),...spotXY,line:lineRef,subject:z.array(z.string().min(1)).min(1),question:z.string().min(1),word:z.string().min(1)});
 const roomScene=z.object({chamber:z.union([z.literal(1),z.literal(2)]),art:z.string().min(1),alt:z.string().min(1),items:z.array(sceneItem).min(1),bonus:z.array(sceneBonus).default([]),
  witnesses:z.array(z.object({character:z.string(),...spotXY})).default([]),puzzles:z.array(z.object({id:z.string(),...spotXY})).default([]),door:z.object({label:z.string().min(1),...spotXY})});
