@@ -74,7 +74,7 @@ test("the solo room: a chamber with a scene returns to it after each lock, and t
 });
 
 test("Rooms 2 to 6 have their two painted scenes (approved 2026-11-21: Rooms 2 and 3); a code-dial answer never appears in a scene's words", () => {
-  for (const id of ["the-schoolmaster", "tales-by-the-fire", "the-van-tassel-farm", "a-rival-appears", "the-feud"]) for (const c of [1, 2]) {
+  for (const id of ["the-schoolmaster", "tales-by-the-fire", "the-van-tassel-farm", "a-rival-appears", "the-feud", "the-invitation", "the-ride-to-the-party", "the-feast-and-the-dance"]) for (const c of [1, 2]) {
     const sc = sceneOf(world, id, c)!; assert.ok(sc, `${id} chamber ${c}`); assert.ok(existsSync("public" + sc.art), sc.art); assert.deepEqual(sc.witnesses, [], "no witness painted in");
   }
   // Punishment is never a spot (Room 2 lock 5 is the school itself).
@@ -95,4 +95,17 @@ test("a plain marker paints nothing and rests on no line: Room 5's daydream and 
   assert.match(edit((w) => { f2(w).line = { p: "p032", s: 0 }; f2(w).subject = ["women"]; }), /plain marker, so it rests on no line or subject/);
   assert.match(edit((w) => { delete f2(w).marker; }), /needs its line and subject \(or is a plain marker\)/);
   assert.doesNotMatch(sceneOf(world, "the-feud", 2)!.alt, /young women/);
+});
+
+test("a lock whose reading is all content-noted is a plain marker: Room 7 locks 3 and 4 (¶34), Room 9 locks 7 to 9 (¶47 and ¶48)", () => {
+  const noted = new Set(world.storybook?.ai_exclude ?? []);
+  for (const [id, locks] of [["the-invitation", [3, 4]], ["the-feast-and-the-dance", [7, 8, 9]]] as const) {
+    const items = world.rooms!.find((r) => r.expedition === id)!.scenes!.flatMap((s) => s.items);
+    for (const k of locks) { const it = items.find((i) => i.lock === k)!; assert.equal(it.marker, true, `${id} lock ${k}`); assert.equal(it.line, undefined); }
+  }
+  // No item or bonus anywhere rests on a content-noted paragraph.
+  for (const r of world.rooms!) for (const s of r.scenes ?? []) for (const x of [...s.items, ...s.bonus]) assert.ok(!x.line || !noted.has(x.line.p), `${r.expedition}: ${x.id}`);
+  // Room 7 lock 5 rests on its one sentence outside ¶34.
+  const l5 = world.rooms!.find((r) => r.expedition === "the-invitation")!.scenes![0].items.find((i) => i.lock === 5)!;
+  assert.deepEqual(l5.line, { p: "p035", s: 0 });
 });
