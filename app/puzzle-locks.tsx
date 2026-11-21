@@ -58,7 +58,7 @@ function Picture({art,alt,spots,active,onSpot,tone}:{art?:string;alt:string;spot
  return <div className="relative w-full overflow-hidden rounded-card border-4 border-gold-shadow bg-reading" style={{aspectRatio:"3 / 2"}}>
   {art?<img src={art} alt={alt} className="absolute inset-0 h-full w-full object-cover"/>
    :<div role="img" aria-label={`${alt} (sketch until the painting is approved)`} className="absolute inset-0" style={{background:tone==="painting"?"linear-gradient(#cfe1ef 0 38%,#a9c38a 38% 100%)":"linear-gradient(#2b2a52 0 40%,#4b5a3c 40% 100%)"}}/>}
-  {/* Each hotspot is a ring with a clear centre (it frames the object rather than hiding it). Paintings use subtle
+  {/* Each hotspot is a ring with a clear center (it frames the object rather than hiding it). Paintings use subtle
       brass rings with no numbers; scenes keep a small number badge. */}
   {spots.map((s,i)=>{const st=active(s.id),painting=tone==="painting",ring=st==="on"?"border-primary bg-primary text-on-primary":st==="right"?"border-success bg-success text-on-success":st==="missed"?"border-notyet bg-notyet text-on-notyet":painting?"border-gold bg-deep text-ink":"border-white bg-deep text-ink";
    return <button key={s.id} type="button" onClick={()=>onSpot(s.id)} aria-pressed={st==="on"} aria-label={painting?s.label:`${i+1}: ${s.label}`}

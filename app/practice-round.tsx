@@ -24,7 +24,7 @@ export function DoNow({text,className=""}:{text:string;className?:string}){
 export function PracticeRound({world,passages,onDone}:{world:WorldPack;passages:SourcePassage[];onDone:()=>void}){
  const at=practiceChunk(world);
  const chunk=useMemo(()=>at?expeditionChunks(world,passages,at.expeditionId)[at.index]:null,[world,passages,at?.expeditionId,at?.index]);// eslint-disable-line react-hooks/exhaustive-deps
- // Student testing (2026-11-15): practise asking a witness once first, when the story's rooms have witnesses. The first
+ // Student testing (2026-11-15): practice asking a witness once first, when the story's rooms have witnesses. The first
  // witness the student will meet, the room's real question, and a plain note on how answers work. No line is spoken or
  // shown in the witness's voice here, so nothing about the real room is given away.
  const iv=world.expeditions?.[0]?.interview,first=iv?.question?[...iv.witnesses].sort((a,b)=>(a.at??99)-(b.at??99))[0]:null,who=first?world.characters.find(c=>c.id===first.character):null;
@@ -40,12 +40,12 @@ export function PracticeRound({world,passages,onDone}:{world:WorldPack;passages:
   <p className="flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight"><GraduationCap size={16} aria-hidden/>Practice round · no points</p>
   {step==="witness"&&who&&iv?.question&&<>
    <h1 id="practice-h" tabIndex={-1} className="text-[28px] leading-tight outline-none">First, ask a witness</h1>
-   <p className="text-[16px] text-muted">In each room, witnesses step in before some locks. Practise asking one.</p>
+   <p className="text-[16px] text-muted">In each room, witnesses step in before some locks. Practice asking one.</p>
    {who.portrait&&<img src={who.portrait} alt={who.name} className="mx-auto h-32 w-32 rounded-full object-cover"/>}
    {!askedPractice?<div><Coach text={HINTS.witness}/><AskButton question={iv.question} onAsk={()=>{markHintDone("witness");setAskedPractice(true)}}/></div>
     :<div role="status" className="rounded-card bg-panel p-4"><p className="text-[17px] font-bold">That's how you ask. In the room, {who.name.split(" ")[0]} answers right here, out loud and in writing.</p>
      <p className="mt-1 text-[15px] text-muted">Every answer is saved to your Case File, and you'll check it against the story. One of the three witnesses is lying.</p>
-     <button type="button" onClick={()=>setStep("read")} className="case-primary mt-3 min-h-[56px] w-full justify-center text-[18px]">Next: practise a lock <ArrowRight size={18} aria-hidden/></button></div>}
+     <button type="button" onClick={()=>setStep("read")} className="case-primary mt-3 min-h-[56px] w-full justify-center text-[18px]">Next: practice a lock <ArrowRight size={18} aria-hidden/></button></div>}
   </>}
   {step!=="witness"&&<h1 id="practice-h" tabIndex={-1} className="text-[28px] leading-tight outline-none">{step==="read"?"First, read this chunk":step==="tap"?<KeywordPrompt prompt={q.prompt} keywords={q.keywords}/>:right?"That's it!":"That's the idea"}</h1>}
   {step==="read"&&<Coach text="Read this"/>}

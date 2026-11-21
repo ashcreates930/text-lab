@@ -6,7 +6,7 @@
 export type Slot = "left" | "center" | "right";
 export const wrap = (i: number, n: number) => (n > 0 ? ((i % n) + n) % n : 0);
 
-// Who shows where: the spotlight in the middle, its neighbours on each side (wrapping round). Two characters: the
+// Who shows where: the spotlight in the middle, its neighbors on each side (wrapping round). Two characters: the
 // other one stands on the right; one character: the spotlight alone.
 export function lineupWindow(n: number, i: number): { index: number; slot: Slot }[] {
   if (n <= 0) return [];

@@ -6,7 +6,7 @@
 //   match the character, cause and effect, fact or witness claim, build the case, story map). Points for each piece
 //   in its right place; only a fully right answer counts as proved (for streaks, stars and mastery).
 // - The bank: each chunk has 2 or 3 questions on the same skill; each student gets one, seeded by who they are and
-//   which attempt this is, so replays and neighbours see different questions.
+//   which attempt this is, so replays and neighbors see different questions.
 // - Versions: easier and harder versions are written out, or derived: easier drops one wrong choice (or one
 //   drag-and-drop piece) and shows the hint from the start; harder hides the highlighted key words and adds the proof
 //   step to a multiple-choice question that has one.
@@ -118,7 +118,7 @@ export function ruleVerdict(q: Pick<ExpQuestion, "written">, text: string, evide
 // Proved means a Solid or Strong answer; points scale with it.
 export const writtenProved = (s: Strength | null | undefined) => s === "Strong" || s === "Solid";
 export const writtenShare = (s: Strength | null | undefined) => (s === "Strong" ? 1 : s === "Solid" ? 0.75 : 0);
-// Skills a drag-and-drop kind practises, for the type it should carry.
+// Skills a drag-and-drop kind practices, for the type it should carry.
 export const DND_TYPE: Record<DndKind, QuestionType> = {
   order_events: "story_structure", cause_effect: "story_structure", story_map: "story_structure",
   sort_evidence: "weigh_evidence", fact_or_claim: "weigh_evidence", build_case: "weigh_evidence",

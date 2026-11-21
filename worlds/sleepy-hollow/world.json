@@ -12917,7 +12917,7 @@
           "id": "ostrich-egg",
           "chunk": 5,
           "after": 8,
-          "question": "What hangs from the centre of the best parlor?",
+          "question": "What hangs from the center of the best parlor?",
           "answer": [
             "In one corner\nstood a huge bag of wool, ready to be spun; in another, a quantity of\nlinsey-woolsey just from the loom; ears of Indian corn, and strings of\ndried apples and peaches, hung in gay festoons along the walls, mingled\nwith the gaud of red peppers; and a door left ajar gave him a peep into\nthe best parlor, where the claw-footed chairs and dark mahogany tables\nshone like mirrors; andirons, with their accompanying shovel and\ntongs, glistened from their covert of asparagus tops; mock-oranges and\nconch-shells decorated the mantelpiece; strings of various-colored birds\neggs were suspended above it; a great ostrich egg was hung from\nthe centre of the room, and a corner cupboard, knowingly left open,\ndisplayed immense treasures of old silver and well-mended china."
           ]
@@ -25307,7 +25307,7 @@
             {
               "id": "pigeons",
               "label": "The pigeons on the roof",
-              "alt": "A row of grey pigeons along the barn roof",
+              "alt": "A row of gray pigeons along the barn roof",
               "x": 19.5,
               "y": 9,
               "line": {
@@ -26458,7 +26458,7 @@
         {
           "chamber": 1,
           "art": "/worlds/sleepy-hollow/scenes/the-invitation-1.webp",
-          "alt": "A painted grey afternoon: a log schoolhouse on a hillside with smoke pouring from its stuffed-up stone stack and its open door, things tumbled inside, a shutter hanging broken, wooden stakes knocked down by the wall, and a band of riders vanishing on a far ridge.",
+          "alt": "A painted gray afternoon: a log schoolhouse on a hillside with smoke pouring from its stuffed-up stone stack and its open door, things tumbled inside, a shutter hanging broken, wooden stakes knocked down by the wall, and a band of riders vanishing on a far ridge.",
           "items": [
             {
               "id": "riders",
@@ -26479,7 +26479,7 @@
               "id": "smoke",
               "lock": 2,
               "label": "The smoke",
-              "alt": "Grey smoke pouring from the stuffed-up stack and the schoolhouse door",
+              "alt": "Gray smoke pouring from the stuffed-up stack and the schoolhouse door",
               "x": 30.6,
               "y": 28.3,
               "line": {
@@ -26559,7 +26559,7 @@
         {
           "chamber": 2,
           "art": "/worlds/sleepy-hollow/scenes/the-invitation-2.webp",
-          "alt": "A painted late afternoon: through a schoolhouse doorway, benches lie knocked over, books are flung on the floor and an inkstand has spilled, while a tall lanky man in a rusty black suit tidies himself at a cracked looking-glass; outside, a gaunt, shaggy old grey plough horse with a tangled mane stands saddled at a post.",
+          "alt": "A painted late afternoon: through a schoolhouse doorway, benches lie knocked over, books are flung on the floor and an inkstand has spilled, while a tall lanky man in a rusty black suit tidies himself at a cracked looking-glass; outside, a gaunt, shaggy old gray plow horse with a tangled mane stands saddled at a post.",
           "items": [
             {
               "id": "benches",
@@ -26610,7 +26610,7 @@
               "id": "gunpowder",
               "lock": 9,
               "label": "Gunpowder",
-              "alt": "A gaunt old grey plough horse tied at a post",
+              "alt": "A gaunt old gray plow horse tied at a post",
               "x": 89.8,
               "y": 54.7,
               "line": {
@@ -26892,13 +26892,13 @@
         {
           "chamber": 1,
           "art": "/worlds/sleepy-hollow/scenes/the-ride-to-the-party-1.webp",
-          "alt": "A painted clear autumn day: a tall thin man in a black coat rides a gaunt grey horse out through a farm gate onto a winding road, past forests of brown, yellow, orange and purple; wild ducks stream across the sky, a blue jay perches on a bush, a woodpecker clings to a tree, a quail stands in a stubble field, and baskets and barrels of fruit wait by a cider press.",
+          "alt": "A painted clear autumn day: a tall thin man in a black coat rides a gaunt gray horse out through a farm gate onto a winding road, past forests of brown, yellow, orange and purple; wild ducks stream across the sky, a blue jay perches on a bush, a woodpecker clings to a tree, a quail stands in a stubble field, and baskets and barrels of fruit wait by a cider press.",
           "items": [
             {
               "id": "ichabod",
               "lock": 1,
               "label": "The schoolmaster setting out",
-              "alt": "A tall thin man in a black coat riding a gaunt grey horse through a gate",
+              "alt": "A tall thin man in a black coat riding a gaunt gray horse through a gate",
               "x": 19.5,
               "y": 68.4,
               "line": {
@@ -28224,7 +28224,7 @@
         {
           "chamber": 1,
           "art": "/worlds/sleepy-hollow/scenes/the-lonely-road-1.webp",
-          "alt": "A painted late night as a party breaks up: old men smoking on a dark porch, a tall thin man lingering in the lit doorway, wagons with lanterns rolling away down the road, two couples riding off with the young women seated behind the young men, and an old grey horse asleep in the straw of a barn.",
+          "alt": "A painted late night as a party breaks up: old men smoking on a dark porch, a tall thin man lingering in the lit doorway, wagons with lanterns rolling away down the road, two couples riding off with the young women seated behind the young men, and an old gray horse asleep in the straw of a barn.",
           "items": [
             {
               "id": "pipe",
@@ -28284,7 +28284,7 @@
               "id": "steed",
               "lock": 5,
               "label": "The sleeping horse",
-              "alt": "An old grey horse asleep in the straw of the barn",
+              "alt": "An old gray horse asleep in the straw of the barn",
               "x": 84,
               "y": 58.6,
               "line": {
@@ -28331,7 +28331,7 @@
         {
           "chamber": 2,
           "art": "/worlds/sleepy-hollow/scenes/the-lonely-road-2.webp",
-          "alt": "A painted midnight above a wide dark river: a sloop's bare mast at anchor near the shore, a reedy marsh, one faint lit window across the water, driving clouds half hiding the stars, and an enormous gnarled tulip tree by the road with a long pale lightning scar, as a lone rider on a grey horse approaches.",
+          "alt": "A painted midnight above a wide dark river: a sloop's bare mast at anchor near the shore, a reedy marsh, one faint lit window across the water, driving clouds half hiding the stars, and an enormous gnarled tulip tree by the road with a long pale lightning scar, as a lone rider on a gray horse approaches.",
           "items": [
             {
               "id": "sloop",
@@ -28664,7 +28664,7 @@
         {
           "chamber": 1,
           "art": "/worlds/sleepy-hollow/scenes/the-headless-horseman-1.webp",
-          "alt": "A painted dark night where a small brook crosses a country road into a thick, vine-hung wood: a crude bridge over the water, a fence along the road, bushes on the far side, and a tall thin rider on a grey horse that has stopped short at the crossing, before the deep gloom of the grove.",
+          "alt": "A painted dark night where a small brook crosses a country road into a thick, vine-hung wood: a crude bridge over the water, a fence along the road, bushes on the far side, and a tall thin rider on a gray horse that has stopped short at the crossing, before the deep gloom of the grove.",
           "items": [
             {
               "id": "swamp",
@@ -28793,7 +28793,7 @@
         {
           "chamber": 2,
           "art": "/worlds/sleepy-hollow/scenes/the-headless-horseman-2.webp",
-          "alt": "A painted night chase: on a rise against the cloudy sky, a huge cloaked rider with no head on a powerful black horse, a round dark shape on his saddle; below, a thin man in a flying black coat gallops a grey horse down the road with sparks flashing from the hooves, toward a wooden bridge and a small white church on a knoll.",
+          "alt": "A painted night chase: on a rise against the cloudy sky, a huge cloaked rider with no head on a powerful black horse, a round dark shape on his saddle; below, a thin man in a flying black coat gallops a gray horse down the road with sparks flashing from the hooves, toward a wooden bridge and a small white church on a knoll.",
           "items": [
             {
               "id": "road",
@@ -29098,7 +29098,7 @@
         {
           "chamber": 1,
           "art": "/worlds/sleepy-hollow/scenes/gone-1.webp",
-          "alt": "A painted dark night in a hollow: a fallen saddle trampled on the road, a huge black horse whose cloaked rider has nothing above his shoulders, and ahead a thin man clinging to a bare-backed grey horse as it leaps onto a plank bridge over a brook, toward a small white church glimmering under the trees.",
+          "alt": "A painted dark night in a hollow: a fallen saddle trampled on the road, a huge black horse whose cloaked rider has nothing above his shoulders, and ahead a thin man clinging to a bare-backed gray horse as it leaps onto a plank bridge over a brook, toward a small white church glimmering under the trees.",
           "items": [
             {
               "id": "saddle",
@@ -29119,7 +29119,7 @@
               "id": "bareback",
               "lock": 2,
               "label": "The bare-backed ride",
-              "alt": "A thin man clinging to a grey horse with no saddle",
+              "alt": "A thin man clinging to a gray horse with no saddle",
               "x": 63.5,
               "y": 36,
               "line": {
@@ -29211,13 +29211,13 @@
         {
           "chamber": 2,
           "art": "/worlds/sleepy-hollow/scenes/gone-2.webp",
-          "alt": "A painted grey morning: a bare-backed old grey horse grazing at a farm gate, an open bundle of shirts and a razor on the ground, a few books burning in a small fire, a muddy road with deep hoof tracks to a wooden bridge, an old hat and a smashed pumpkin on the bank, villagers gossiping by the white church, and an empty schoolhouse far off.",
+          "alt": "A painted gray morning: a bare-backed old gray horse grazing at a farm gate, an open bundle of shirts and a razor on the ground, a few books burning in a small fire, a muddy road with deep hoof tracks to a wooden bridge, an old hat and a smashed pumpkin on the bank, villagers gossiping by the white church, and an empty schoolhouse far off.",
           "items": [
             {
               "id": "gate",
               "lock": 6,
               "label": "The horse at the gate",
-              "alt": "An old grey horse with no saddle grazing at a farm gate",
+              "alt": "An old gray horse with no saddle grazing at a farm gate",
               "x": 12,
               "y": 56,
               "line": {
@@ -29656,7 +29656,7 @@
         {
           "chamber": 2,
           "art": "/worlds/sleepy-hollow/scenes/the-postscript-2.webp",
-          "alt": "A painted candlelit meeting room in the old city: city gentlemen smiling and applauding around a long table of papers and candles, two portly men asleep in their chairs, a pleasant old storyteller in grey setting down a glass of red wine, and a stern old gentleman with heavy eyebrows frowning in doubt.",
+          "alt": "A painted candlelit meeting room in the old city: city gentlemen smiling and applauding around a long table of papers and candles, two portly men asleep in their chairs, a pleasant old storyteller in gray setting down a glass of red wine, and a stern old gentleman with heavy eyebrows frowning in doubt.",
           "items": [
             {
               "id": "stern",
@@ -29691,8 +29691,8 @@
             {
               "id": "storyteller",
               "lock": 7,
-              "label": "The storyteller in grey",
-              "alt": "A pleasant old gentleman in speckled grey clothes",
+              "label": "The storyteller in gray",
+              "alt": "A pleasant old gentleman in speckled gray clothes",
               "x": 15,
               "y": 42,
               "line": {

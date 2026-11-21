@@ -41,7 +41,7 @@ export function dndProblems(at: string, q: ExpQuestion, lines: string[]) {
   for (const it of d.items) { if (it.slot !== null && !slots.has(it.slot)) out.push(`${at}: piece ${it.id} goes to an unknown slot ${it.slot}`); if (it.line && !lines.some((l) => l === it.line)) out.push(`${at}: piece ${it.id}'s sentence is not copied exactly from this chunk`); }
   for (const x of d.slots) if (!d.items.some((it) => it.slot === x.id)) out.push(`${at}: slot ${x.id} has no piece`);
   if (["order_events", "build_case", "story_map", "cause_effect"].includes(d.kind)) for (const x of d.slots) if (d.items.filter((it) => it.slot === x.id).length > 1) out.push(`${at}: slot ${x.id} holds one piece`);
-  if (DND_TYPE[d.kind] !== q.type) out.push(`${at}: ${d.kind} practises ${DND_TYPE[d.kind]}, not ${q.type}`);
+  if (DND_TYPE[d.kind] !== q.type) out.push(`${at}: ${d.kind} practices ${DND_TYPE[d.kind]}, not ${q.type}`);
   if (new Set(d.items.map((it) => it.id)).size !== d.items.length) out.push(`${at}: piece ids repeat`);
   // Build the case: the proof piece is the story's own words, in quotation marks, from its backing sentence, and the
   // claim never just repeats the proof.

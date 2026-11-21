@@ -171,7 +171,7 @@ export const REBUILT_MORE: Record<string, Rebuilt> = {
   // theme in writing (boss), find it, between the lines, match the character (drag and drop).
   "a-rival-appears": {
     lightning: [{ id: "kentucky", chunk: 2, after: 3, question: "Where does Ichabod picture himself riding off to?", answer: [R("p025", 1)] },
-      { id: "ostrich-egg", chunk: 5, after: 8, question: "What hangs from the centre of the best parlor?", answer: [R("p026", 6)] }],
+      { id: "ostrich-egg", chunk: 5, after: 8, question: "What hangs from the center of the best parlor?", answer: [R("p026", 6)] }],
     chunks: [
       // 1 · Word Detective (warm-up): enraptured (clue words); the original inference as its bank.
       { q: { type: "word_detective", focus: "enraptured", prompt: "Which meaning of enraptured fits Ichabod here?", keywords: ["enraptured"],

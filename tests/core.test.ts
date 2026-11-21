@@ -577,7 +577,7 @@ test("game layer: ambient loops have no seam and every track is brought to the s
   const sr=1000,ramp=new Float32Array(4000).map((_,i)=>i/4000);
   const [looped]=crossfadeLoop([ramp],sr,0.5);
   assert.equal(looped.length,3500);
-  // Playing past the end runs straight on into the blended start: the samples either side of the loop point are neighbours.
+  // Playing past the end runs straight on into the blended start: the samples either side of the loop point are neighbors.
   assert.ok(Math.abs(looped[0]-looped[looped.length-1])<=2/4000);
   const tone=(amp:number)=>new Float32Array(sr*5).map((_,i)=>amp*Math.sin(i/3));
   const level=(a:Float32Array,g:number)=>10*Math.log10(a.reduce((s,x)=>s+(x*g)**2,0)/a.length);
@@ -1414,7 +1414,7 @@ test("hologram layout: four copies around a central square, each turned to face 
   assert.equal(top.size,160);assert.equal(top.x,200);assert.equal(top.y,400-40-80);
   assert.equal(bottom.y,400+40+80);assert.equal(left.x,200-40-80);assert.equal(right.x,200+40+80);
   assert.equal(left.x-left.size/2,0,"the left copy reaches the screen edge");
-  // Symmetric: every copy sits the same distance from the centre, and none overlaps the central square.
+  // Symmetric: every copy sits the same distance from the center, and none overlaps the central square.
   const dist=copies.map(c=>Math.hypot(c.x-200,c.y-400));assert.ok(dist.every(d=>d===dist[0]));
   assert.ok(copies.every(c=>Math.max(Math.abs(c.x-200),Math.abs(c.y-400))-c.size/2>=40));
 });
@@ -1423,7 +1423,7 @@ test("hologram layout: the gap and size sliders, and the mirror toggle", async()
   const h=await import("../lib/hologram.ts");
   const at=(gap:number,size=1)=>h.hologramLayout({width:600,height:600,size,gap,mirror:false})[0];
   assert.ok(at(0.4).size<at(0.1).size,"a wider gap leaves less room");
-  assert.equal(at(0).y+at(0).size/2,300,"no gap: the top copy touches the centre");
+  assert.equal(at(0).y+at(0).size/2,300,"no gap: the top copy touches the center");
   assert.equal(at(0.9).size,at(0.5).size,"the gap is capped at half the screen");
   assert.equal(at(0.2,0.5).size,at(0.2,1).size/2);
   assert.equal(at(0.2,0.01).size,at(0.2,1).size*0.2,"size is at least 20%");
@@ -1492,9 +1492,9 @@ test("witness stand: a signed read-only link that plays the testimony on the hos
   assert.ok(!JSON.stringify(server.witnessView(st)).includes(st.world.scenes[0].lie!.truth_line.slice(0,40)),"the stand never sees the answer");
 });
 
-test("hologram faces: each copy is cut to its wedge of the pyramid, so neighbours never overlap", async()=>{
+test("hologram faces: each copy is cut to its wedge of the pyramid, so neighbors never overlap", async()=>{
   const h=await import("../lib/hologram.ts");
-  assert.equal(h.faceClip(100,0),"polygon(0% 0%, 100% 0%, 100% 50%, 50% 100%, 50% 100%, 0% 50%)","no gap: a triangle meeting at the centre");
+  assert.equal(h.faceClip(100,0),"polygon(0% 0%, 100% 0%, 100% 50%, 50% 100%, 50% 100%, 0% 50%)","no gap: a triangle meeting at the center");
   assert.equal(h.faceClip(100,40),"polygon(0% 0%, 100% 0%, 100% 70%, 70% 100%, 30% 100%, 0% 70%)","with a gap: a trapezoid as wide as the central square");
   assert.equal(h.faceClip(0,40),"none");
   assert.ok(h.hologramLayout({width:375,height:812,size:0.9,gap:0.16,mirror:false}).every(c=>c.clip.startsWith("polygon(")));
@@ -2076,7 +2076,7 @@ test("reading panel text: display cleanup only, paragraph numbers, and proof che
   assert.deepEqual(cg.checkProof(world,passages,clue,line("p069",4)),{ok:true});
   const wrong=cg.checkProof(world,passages,clue,line("p068",1));
   assert.ok(!wrong.ok&&/¶69/.test(wrong.hint)&&!wrong.hint.includes("flames"),"names the paragraph, never the line");
-  // The panel shows the clue's paragraphs plus neighbours from the scene's reading, so not every line answers it.
+  // The panel shows the clue's paragraphs plus neighbors from the scene's reading, so not every line answers it.
   const panel=cg.cluePanel(world,passages,world.scenes[0],clue).map(p=>p.id);
   assert.ok(panel.includes("p069")&&panel.length>1);
   // Character cards are spoiler-safe: in scene 1 Brom shows only the trait from the reading so far.

@@ -36,7 +36,7 @@ test("map data: Irving's places, one region per expedition, one stop per chunk a
   assert.match(map.art_description, /No text, no letters/);
 });
 
-test("layout: rebuilding from the spec gives the same map, every stop on the map and apart from its neighbours", () => {
+test("layout: rebuilding from the spec gives the same map, every stop on the map and apart from its neighbors", () => {
   const again = layoutMap(SPEC, map.image);
   assert.deepEqual(JSON.parse(JSON.stringify(again.regions)), JSON.parse(JSON.stringify(map.regions)), "world.json matches scripts/maps/sleepy-hollow.ts");
   for (const r of again.regions) { const pts = trailOf(r); for (let i = 0; i < pts.length; i++) { assert.ok(pts[i].x >= 0 && pts[i].x <= map.width && pts[i].y >= 0 && pts[i].y <= map.height); for (let j = i + 1; j < pts.length; j++) assert.ok(Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y) >= 20, `${r.expedition} ${i + 1}/${j + 1}`); } }

@@ -44,13 +44,13 @@ test("the witness screen: one top line, an orange Tap to ask, the Case File note
   assert.match(live, /<AskButton question=/); assert.match(live, /witnessDoNow\(firstName\(w\.name\)\)/); assert.match(live, /\{WITNESS_SAVED\}/); assert.match(live, /markHintDone\("witness"\)/);
 });
 
-test("the practice round practises asking a witness first, with no line in the witness's voice", () => {
+test("the practice round practices asking a witness first, with no line in the witness's voice", () => {
   const p = src("app/practice-round.tsx");
-  assert.match(p, /First, ask a witness/); assert.match(p, /<AskButton question=\{iv\.question\}/); assert.match(p, /Next: practise a lock/);
+  assert.match(p, /First, ask a witness/); assert.match(p, /<AskButton question=\{iv\.question\}/); assert.match(p, /Next: practice a lock/);
   assert.doesNotMatch(p, /\.truth\.text|\.lie\.text|interviewAudio/, "nothing about the real answers");
 });
 
-test("Not yet: a calm panel in the mature look, the words always there (never colour alone)", () => {
+test("Not yet: a calm panel in the mature look, the words always there (never color alone)", () => {
   const css = src("app/globals.css");
   assert.match(css, /html\[data-look="mature"\] \.notyet-panel\{[^}]*background:var\(--color-panel\)[^}]*border:2px solid var\(--color-notyet\)/);
   assert.match(css, /html\[data-look="mature"\] \.notyet-panel\.notyet-shake\{animation:none\}/);

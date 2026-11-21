@@ -16,8 +16,8 @@ export const AVATARS = [
   { id: "investigator-1", alt: "An investigator with short curly hair and a mustard-yellow scarf" },
   { id: "investigator-2", alt: "An investigator with freckles, red hair and a green scarf" },
   { id: "investigator-3", alt: "An investigator with a long black braid and a red scarf" },
-  { id: "investigator-4", alt: "An investigator with rectangular glasses, a camel coat and a grey scarf" },
-  { id: "investigator-5", alt: "An investigator in a grey cap with a rust-orange scarf" },
+  { id: "investigator-4", alt: "An investigator with rectangular glasses, a camel coat and a gray scarf" },
+  { id: "investigator-5", alt: "An investigator in a gray cap with a rust-orange scarf" },
   { id: "investigator-6", alt: "An investigator in a knitted hat with a plum scarf" },
 ] as const;
 export type AvatarId = (typeof AVATARS)[number]["id"];

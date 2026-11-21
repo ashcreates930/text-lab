@@ -7,7 +7,7 @@ export type HologramCopy = { side: "top" | "right" | "bottom" | "left"; x: numbe
 export type HologramOptions = { width: number; height: number; size: number; gap: number; mirror: boolean };
 
 // size: each copy's side as a share (0.2 to 1) of the largest that fits; gap: the central square's side as a share
-// (0 to 0.5) of the shorter screen edge. x and y are each copy's centre in pixels.
+// (0 to 0.5) of the shorter screen edge. x and y are each copy's center in pixels.
 export const HOLOGRAM_DEFAULTS = { size: 0.9, gap: 0.16, mirror: false };
 export function hologramLayout({ width, height, size, gap, mirror }: HologramOptions): HologramCopy[] {
   const short = Math.max(0, Math.min(width, height));
@@ -23,8 +23,8 @@ export function hologramLayout({ width, height, size, gap, mirror }: HologramOpt
     { side: "left", x: cx - d, y: cy, size: side, rotate: 270, mirror, clip },
   ];
 }
-// Each copy is cut to its own face of the pyramid (the wedge between the two diagonals), so neighbouring copies never
-// overlap at the corners. In the copy's own frame its inner edge is at the bottom, g/2 from the centre.
+// Each copy is cut to its own face of the pyramid (the wedge between the two diagonals), so neighboring copies never
+// overlap at the corners. In the copy's own frame its inner edge is at the bottom, g/2 from the center.
 export function faceClip(side: number, g: number) {
   if (side <= 0) return "none";
   const pct = (n: number) => `${+(Math.min(1, Math.max(0, n)) * 100).toFixed(2)}%`;
