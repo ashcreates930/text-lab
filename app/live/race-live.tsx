@@ -36,6 +36,9 @@ import {focusScreenTop} from "../screen-focus";
 import {AnswerBars,ArcBanner,ChunkText,CountdownRing,DiscoveryBurst,KeywordPrompt,QuestionPanel,RaceHud,RankPill,RoomClockPill,TimerTrack} from "../expedition-race";
 import {SplitStage,useStickyOffsets} from "../split-stage";
 import {Lineup} from "../lineup";
+import {MissionBriefing} from "../mission-briefing";
+import {roomOf} from "@/lib/escape-room";
+import {roomSceneOf} from "@/lib/room-scene";
 import {DragDrop} from "../drag-drop";
 import {QuestionNote} from "../content-note";
 import {DO_NOW,markHintDone,type Screen} from "@/lib/onboarding";
@@ -110,7 +113,7 @@ export function RaceHost({state,round,world,act}:{state:HostView;round:RaceRound
  const due=!state.session.paused&&((round.beat==="read"&&race.ready.advance)||(timed&&left===0)||(waiting&&everyone));
  useEffect(()=>{if(due&&moved.current!==key){moved.current=key;act({action:"race.next"})}},[due,key,act]);
  const liveClockNow=useLiveClock(round.clock);
- if(round.beat==="brief"&&round.briefing)return <BriefingBoard b={round.briefing} chamber={round.chamber} players={state.counters.players} onStart={()=>act({action:"race.next"})}/>;
+ if(round.beat==="brief"&&round.briefing)return <LiveBriefing mode="board" world={world} b={round.briefing} expeditionId={round.expedition.id} chamber={round.chamber} budgetMs={round.clock?.budgetMs??0} players={state.counters.players} onStart={()=>act({action:"race.next"})}/>;
  if(interviewBeat(round.beat)&&round.interview)return <InterviewHost state={state} round={round} world={world} act={act} left={timed&&totalMs!==null?left:null} totalMs={totalMs}/>;
  const next=<button type="button" onClick={()=>act({action:"race.next"})} className="host-btn">{round.beat==="countdown"?(round.step+1>=round.total?(round.interview?"Name the Liar":"Final podium"):"Next lock"):"Next"} <ArrowRight size={22} aria-hidden/></button>;
  const tokens=chunkTokens(round.chunk.lines);
@@ -236,10 +239,7 @@ export function RacePlayer({state,world,act}:{state:PlayerView;world:WorldPack|n
  // This student's own version of the question (easier or harder), else the standard one.
  const q=race.myQuestion??round.question;
 // The briefing: this phone shows the chamber's mission while the board shows the whole briefing.
- if(round.beat==="brief")return <section className="mt-3 flex flex-col gap-3" aria-labelledby="rp-h">{round.briefing&&<p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Room {round.briefing.room} · {round.briefing.name}</p>}
-  <h1 id="rp-h" className="text-[28px] leading-tight outline-none">Your mission</h1>
-  {round.briefing?.mission?<p className="rounded-card bg-panel px-4 py-3 text-[19px] font-bold leading-snug text-highlight">{round.briefing.mission}</p>:null}
-  <p className="text-[17px]">{round.briefing?.timer===false?"Look at the board. Your teacher opens the door.":"Look at the board. The clock starts when your teacher starts it."}</p></section>;
+ if(round.beat==="brief")return <LiveBriefing mode="phone" world={world} b={round.briefing} expeditionId={round.expedition.id} chamber={round.chamber} budgetMs={round.clock?.budgetMs??0}/>;
  if(interviewBeat(round.beat)&&round.interview)return <>{race.myEscape&&<div className="mt-3"><SquadRoleBar esc={race.myEscape}/></div>}{(round.beat==="liar"||round.beat==="verdict")&&<RaceHud score={race.total} streak={race.streak} coins={coins} sound={sound} onSound={()=>setSound(s=>!s)} chunk={round.total} total={round.total} left={null} title={round.expedition.title}/>}<InterviewPlayer state={state} world={world} act={act} left={round.beat==="vote"||round.beat==="liar"?left:null} myMs={myMs}/></>;
  // The one plain sentence for this screen (lib/onboarding.ts), and first-time hints marked done after a right answer.
  const phoneScreen:Screen=({read:"read",process:"gist",ask:"wait",race:testifying?"wait":q?.format==="dnd"?"dnd":q?.format==="multi"?"multi":q?.format==="written"&&step===1?"written":(step===2||q?.format==="tap")?(q?.clues?"clues":"proof"):"question",
@@ -475,20 +475,20 @@ function SquadLockPanel({esc,onLock}:{esc:EscView;onLock:(from:string)=>void}){
    :<p className="mt-2 text-[14px] font-bold text-muted">{esc.recorder?"Talk it over, then lock in the answer your squad agrees on.":"Talk it over. Your Recorder locks in the squad's answer."}</p>}
  </div>;
 }
-// The room's briefing on the board before the clock starts (lib/live/race.ts "brief"): the scenario, the key concepts,
-// the chamber's mission, and Start the clock for the teacher.
-function BriefingBoard({b,chamber,players,onStart}:{b:{room:number;name:string;scenario:string;concepts:{name:string;teaser:string}[];mission:string|null;timer:boolean};chamber:number;players:number;onStart:()=>void}){
- return <section className="mt-4 max-w-5xl" aria-labelledby="race-h">
-  <div className="flex flex-wrap items-end justify-between gap-3"><div>
-   <p className="text-[clamp(14px,1.2vw,18px)] font-extrabold uppercase tracking-[.08em] text-highlight">Room {b.room} · {chamber===2?"Chamber 2":chamber===1?"Chamber 1":"The whole room"}</p>
-   <h2 id="race-h" className="text-[clamp(30px,3.2vw,52px)] font-bold leading-tight">{b.name}</h2></div>
-   <div className="flex flex-wrap items-center gap-3"><span className="text-[18px] text-muted">{players} {players===1?"player":"players"} in the room</span>
-    <button type="button" onClick={onStart} className="host-btn">{b.timer?<><Timer size={22} aria-hidden/>Start the clock</>:<>Open the door <ArrowRight size={22} aria-hidden/></>}</button></div></div>
-  <p className="mt-3 font-serif text-[clamp(22px,2.2vw,34px)] leading-relaxed">{b.scenario}</p>
-  {b.concepts.length>0&&<div className="mt-4"><p className="text-[clamp(14px,1.2vw,18px)] font-extrabold uppercase tracking-[.08em] text-highlight">This room explores</p>
-   <ul className="mt-2 grid gap-2 md:grid-cols-2">{b.concepts.map(c=><li key={c.name} className="rounded-card bg-panel px-5 py-3 text-[clamp(18px,1.6vw,24px)]"><b className="font-display text-gold">{c.name}.</b> {c.teaser}</li>)}</ul></div>}
-  {b.mission&&<p className="mt-4 rounded-card bg-panel px-5 py-4 text-[clamp(22px,2.2vw,34px)] font-bold leading-snug text-highlight">{b.mission}</p>}
- </section>;
+// The room's briefing in a live game (lib/live/race.ts "brief"): the board plays the same mission briefing as solo play
+// and is the only screen that narrates; the teacher accepts the mission to start the clock. Phones show the whole
+// briefing as text, silently, and point to the board. Before the world loads, or for a room with no data, a plain card.
+type LiveBrief={room:number;name:string;scenario:string;concepts:{name:string;teaser:string}[];mission:string|null;timer:boolean};
+function LiveBriefing({mode,world,b,expeditionId,chamber,budgetMs,players,onStart}:{mode:"board"|"phone";world:WorldPack|null;b:LiveBrief|null|undefined;expeditionId:string;chamber:number;budgetMs:number;players?:number;onStart?:()=>void}){
+ const room=world?roomOf(world,expeditionId):null,ch=(chamber===1||chamber===2?chamber:0) as 0|1|2,H=mode==="board"?"h2":"h1",hid=mode==="board"?"race-h":"rp-h";
+ const wait=b?.timer===false?"Look at the board. Your teacher opens the door.":"Look at the board. The clock starts when your teacher accepts the mission.";
+ if(!world||!room||!b)return <section className="mt-3 flex flex-col gap-3" aria-labelledby={hid}>{b&&<p className="text-[12px] font-extrabold uppercase tracking-[.08em] text-highlight">Room {b.room} · {b.name}</p>}
+  <H id={hid} tabIndex={-1} className="text-[28px] leading-tight outline-none">Your mission</H>{b?.mission&&<p className="rounded-card bg-panel px-4 py-3 text-[19px] font-bold leading-snug text-highlight">{b.mission}</p>}
+  {mode==="board"?<button type="button" onClick={onStart} className="host-btn w-fit">{b?.timer?<><Timer size={22} aria-hidden/>Accept the mission</>:<>Open the door <ArrowRight size={22} aria-hidden/></>}</button>:<p className="text-[17px]">{wait}</p>}</section>;
+ return <div className="-mx-4 mt-2">{mode==="board"&&players!==undefined&&<p className="px-4 pb-1 text-right text-[18px] text-muted">{players} {players===1?"player":"players"} in the room</p>}
+  <MissionBriefing mode={mode} headingId={hid} world={world} room={room} scenario={b.scenario} concepts={b.concepts} mission={b.mission} budgetMs={b.timer?budgetMs:0} chamber={ch}
+   art={roomSceneOf(world,room,ch===2?2:1).art||null} narration="on" audio={world.rooms?.find(r=>r.expedition===expeditionId)?.briefing?.audio}
+   acceptLabel={b.timer?"Accept the mission":"Open the door"} onAccept={onStart} waitText={wait}/></div>;
 }
 // A chamber's escape on the board (right after its door, and on the podium): in time with the bonus, or time ran out.
 function EscapeNote({e,budgetMs,squads,timeout}:{e:{chamber:number;inTime:boolean;usedMs:number;winners:number;escapers?:number;squads?:{name:string;firstTries:number}[]};budgetMs:number;squads:boolean;timeout:string|null}){

@@ -13,6 +13,9 @@ export type ClassRow = { id: string; teacher_id: string; name: string | null; cl
   room_clock?: "escape" | "off" | "generous" | "extra";
   // The escape timer paused for the whole class by the teacher (null: running). Needs the 202611200001 migration.
   clock_paused_at?: string | null;
+  // Briefing narration in solo play (2026-11-21): on (the sound bed, and recorded narration once it exists) or captions
+  // only (the typed lines, silent). Needs the 202611210001 migration.
+  briefing_narration?: "on" | "captions";
   // The class's question time (migration 202611150003): standard (the default) or more. Absent before the migration.
   question_time?: "standard" | "more" };
 // Story Mode settings: the class leaderboard (individual unless the teacher picks squads or off) and whether scenes with
@@ -43,6 +46,10 @@ export interface ClassroomStore {
   setLook(classId: string, look: "mature" | "classic"): Promise<void>;
   setRoomClock(classId: string, clock: "escape" | "off"): Promise<void>;
   setClockPaused(classId: string, paused: boolean): Promise<void>;
+  setBriefingNarration(classId: string, narration: "on" | "captions"): Promise<void>;
+  // Read passages aloud automatically, per student (2026-11-21). null when the 202611210001 migration hasn't run.
+  setStudentReadAloud(studentId: string, on: boolean): Promise<void>;
+  getStudentReadAloud(classId: string): Promise<Record<string, boolean> | null>;
   setQuestionTime(classId: string, time: "standard" | "more"): Promise<void>;
   setStorySettings(classId: string, settings: { leaderboard?: "individual" | "squad" | "off"; storyModeOn?: boolean }): Promise<void>;
   // Extra time per student for Story Mode (1.5x, 2x or untimed). Students without a setting have normal time.
@@ -111,6 +118,9 @@ function supabaseStore(db: SupabaseClient): ClassroomStore {
     async setLook(classId, look) { must(await db.from("sessions").update({ look }).eq("id", classId)); },
     async setRoomClock(classId, clock) { must(await db.from("sessions").update({ room_clock: clock }).eq("id", classId)); },
     async setClockPaused(classId, paused) { must(await db.from("sessions").update({ clock_paused_at: paused ? new Date().toISOString() : null }).eq("id", classId)); },
+    async setBriefingNarration(classId, narration) { must(await db.from("sessions").update({ briefing_narration: narration }).eq("id", classId)); },
+    async setStudentReadAloud(studentId, on) { must(await db.from("students").update({ read_aloud: on }).eq("id", studentId)); },
+    async getStudentReadAloud(classId) { const res = await db.from("students").select("id,read_aloud").eq("session_id", classId); if (res.error) return null; return Object.fromEntries((res.data as { id: string; read_aloud: boolean }[]).map((r) => [r.id, !!r.read_aloud])); },
     async setQuestionTime(classId, time) { must(await db.from("sessions").update({ question_time: time }).eq("id", classId)); },
     async setStorySettings(classId, s) { must(await db.from("sessions").update({ ...(s.leaderboard ? { leaderboard_mode: s.leaderboard } : {}), ...(s.storyModeOn !== undefined ? { story_mode_on: s.storyModeOn } : {}) }).eq("id", classId)); },
     async setStudentTime(studentId, setting) { must(await db.from("students").update({ time_setting: setting }).eq("id", studentId)); },
@@ -172,10 +182,13 @@ function memoryStore(): ClassroomStore {
   return {
     async ensureTeacher(auth) { let t = m.teachers.find((x) => x.auth === auth); if (!t) { t = { id: id(), auth }; m.teachers.push(t); } return { id: t.id }; },
     async listClasses(teacherId) { return m.classes.filter((c) => c.teacher_id === teacherId).reverse(); },
-    async createClass(teacherId, input) { const row: ClassRow = { id: id(), teacher_id: teacherId, name: input.name, class_code: newClassCode(), world_id: input.worldId, grade: input.grade, status: "active", preview_enabled: false, created_at: now(), look: "mature", room_clock: "off", question_time: "standard" }; m.classes.push(row); return row; },
+    async createClass(teacherId, input) { const row: ClassRow = { id: id(), teacher_id: teacherId, name: input.name, class_code: newClassCode(), world_id: input.worldId, grade: input.grade, status: "active", preview_enabled: false, created_at: now(), look: "mature", room_clock: "off", question_time: "standard", briefing_narration: "on" }; m.classes.push(row); return row; },
     async setLook(classId, look) { const c = m.classes.find((x) => x.id === classId); if (c) c.look = look; },
     async setRoomClock(classId, clock) { const c = m.classes.find((x) => x.id === classId); if (c) c.room_clock = clock; },
     async setClockPaused(classId, paused) { const c = m.classes.find((x) => x.id === classId); if (c) c.clock_paused_at = paused ? new Date().toISOString() : null; },
+    async setBriefingNarration(classId, narration) { const c = m.classes.find((x) => x.id === classId); if (c) c.briefing_narration = narration; },
+    async setStudentReadAloud(studentId, on) { const s = m.students.find((x) => x.id === studentId) as (typeof m.students)[number] & { read_aloud?: boolean } | undefined; if (s) s.read_aloud = on; },
+    async getStudentReadAloud(classId) { return Object.fromEntries((m.students as ((typeof m.students)[number] & { read_aloud?: boolean })[]).filter((s) => s.session_id === classId).map((s) => [s.id, !!s.read_aloud])); },
     async setQuestionTime(classId, time) { const c = m.classes.find((x) => x.id === classId); if (c) c.question_time = time; },
     async getClass(teacherId, classId) { return m.classes.find((c) => c.id === classId && c.teacher_id === teacherId) ?? null; },
     async setPreviewEnabled(classId, enabled) { const c = m.classes.find((x) => x.id === classId); if (c) c.preview_enabled = enabled; },

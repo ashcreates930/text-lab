@@ -11,9 +11,9 @@ export async function GET(request: Request, { params }: Params) {
   const cls = await ctx.store.getClass(ctx.teacherId, (await params).id);
   if (!cls) return NextResponse.json({ error: "Class not found." }, { status: 404 });
   const [students, assignments, analysis, world] = await Promise.all([ctx.store.listStudents(cls.id), ctx.store.listAssignments(cls.id), ctx.store.getActiveAnalysis(cls.id), readWorld(cls.world_id)]);
-  const [completions, studentTimes, absent] = await Promise.all([ctx.store.listCompletions(students.map((s) => s.id)), ctx.store.getStudentTimes(cls.id).catch(() => ({})), ctx.store.getAbsentOn(cls.id, absentDay()).catch(() => [] as string[])]);
+  const [completions, studentTimes, absent, readAloud] = await Promise.all([ctx.store.listCompletions(students.map((s) => s.id)), ctx.store.getStudentTimes(cls.id).catch(() => ({})), ctx.store.getAbsentOn(cls.id, absentDay()).catch(() => [] as string[]), ctx.store.getStudentReadAloud(cls.id).catch(() => null)]);
   return NextResponse.json({
-    class: cls, students, studentTimes, absent, assignments, completions, activeAnalysisId: analysis?.id ?? null,
+    class: cls, students, studentTimes, readAloud, absent, assignments, completions, activeAnalysisId: analysis?.id ?? null,
     world: world ? { id: world.id, title: world.title, teacherPreviewRequired: world.teacher_preview_required === true, scenes: world.scenes.map((s) => ({ id: s.id, clues: s.artifacts.length })), roles: world.roles.map((r) => ({ id: r.id, name: r.name })) } : null,
   });
 }
@@ -25,7 +25,9 @@ export async function GET(request: Request, { params }: Params) {
 // roomClock: the class's escape timer, on (the default, 35 minutes per chamber) or off. clockPaused: the teacher pauses
 // the timer for the whole class (students' rooms stop counting within 15 seconds).
 // questionTime: standard (the default) or more (student testing, 2026-11-15).
-const Patch = z.object({ questionTime: z.enum(["standard", "more"]).optional(), roomClock: z.enum(["escape", "off"]).optional(), clockPaused: z.boolean().optional(), look: z.enum(["mature", "classic"]).optional(), previewEnabled: z.boolean().optional(), rolesOn: z.boolean().optional(), anglesOn: z.boolean().optional(), leaderboard: z.enum(["individual", "squad", "off"]).optional(), storyModeOn: z.boolean().optional(), studentTime: z.object({ studentId: z.string().uuid(), setting: z.enum(["1", "1.5", "2", "untimed"]) }).optional(), absent: z.object({ studentId: z.string().uuid(), absent: z.boolean() }).optional() }).refine((x) => Object.values(x).some((v) => v !== undefined));
+// briefingNarration: solo briefings narrated (on) or captions only; studentReadAloud: read passages aloud automatically
+// for one student (both 2026-11-21, the 202611210001 migration).
+const Patch = z.object({ briefingNarration: z.enum(["on", "captions"]).optional(), studentReadAloud: z.object({ studentId: z.string(), on: z.boolean() }).optional(), questionTime: z.enum(["standard", "more"]).optional(), roomClock: z.enum(["escape", "off"]).optional(), clockPaused: z.boolean().optional(), look: z.enum(["mature", "classic"]).optional(), previewEnabled: z.boolean().optional(), rolesOn: z.boolean().optional(), anglesOn: z.boolean().optional(), leaderboard: z.enum(["individual", "squad", "off"]).optional(), storyModeOn: z.boolean().optional(), studentTime: z.object({ studentId: z.string().uuid(), setting: z.enum(["1", "1.5", "2", "untimed"]) }).optional(), absent: z.object({ studentId: z.string().uuid(), absent: z.boolean() }).optional() }).refine((x) => Object.values(x).some((v) => v !== undefined));
 export async function PATCH(request: Request, { params }: Params) {
   const ctx = await teacherFromRequest(request);
   if (isFailure(ctx)) return NextResponse.json({ error: ctx.error }, { status: ctx.status });
@@ -49,6 +51,16 @@ export async function PATCH(request: Request, { params }: Params) {
   if (input.data.clockPaused !== undefined) {
     if (cls.clock_paused_at === undefined) return NextResponse.json({ error: "Run the 202611200001 migration to pause the class clock." }, { status: 503 });
     await ctx.store.setClockPaused(cls.id, input.data.clockPaused);
+  }
+  if (input.data.briefingNarration !== undefined) {
+    if (cls.briefing_narration === undefined) return NextResponse.json({ error: "Run the 202611210001 migration to set briefing narration." }, { status: 503 });
+    await ctx.store.setBriefingNarration(cls.id, input.data.briefingNarration);
+  }
+  if (input.data.studentReadAloud) {
+    const students = await ctx.store.listStudents(cls.id);
+    if (!students.some((s) => s.id === input.data.studentReadAloud!.studentId)) return NextResponse.json({ error: "Student not found." }, { status: 404 });
+    try { await ctx.store.setStudentReadAloud(input.data.studentReadAloud.studentId, input.data.studentReadAloud.on); }
+    catch { return NextResponse.json({ error: "Run the 202611210001 migration to read passages aloud automatically." }, { status: 503 }); }
   }
   if (input.data.previewEnabled !== undefined) await ctx.store.setPreviewEnabled(cls.id, input.data.previewEnabled);
   if (input.data.rolesOn !== undefined || input.data.anglesOn !== undefined) {

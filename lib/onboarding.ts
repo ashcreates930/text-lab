@@ -40,7 +40,7 @@ export const DO_NOW: Record<Screen, string> = {
   practice: "Follow the arrows to try one practice question, with no points and no timer.",
   lobby: "Wait here until your teacher starts the game.",
   wait: "Wait for the next part to start.",
-  door: "Read where you are, then tap the button at the bottom to begin.",
+  door: "Open the case file, then accept the mission.",
   puzzle: "Solve the puzzle one step at a time, with lines from the story.",
   recover: "Find the proof in the text, then tap Open the lock (each try gives a little more help).",
   essential: "Answer the big question in a sentence or two, then pick the lines that back it up.",

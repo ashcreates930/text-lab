@@ -50,8 +50,12 @@ test("the briefing comes first on the board, outside the clock; Start the clock 
   const g2 = await game("BRIEF2", { chamber: 2 }); assert.equal(g2.pub().briefing!.mission, briefing.mission2);
   const g3 = await game("BRIEF3", { chamber: 1, clock: "off" }); assert.equal(g3.pub().briefing!.mission, null); assert.equal(g3.pub().briefing!.timer, false);
   const live = src("app/live/race-live.tsx");
-  assert.match(live, /if\(round\.beat==="brief"&&round\.briefing\)return <BriefingBoard/); assert.match(live, /<Timer size=\{22\} aria-hidden\/>Start the clock/);
-  assert.match(live, /if\(round\.beat==="brief"\)return <section[\s\S]{0,400}Your mission/);
+  // The board plays the mission briefing (the only screen that narrates); the teacher accepts the mission to start the
+  // clock. Phones show the same briefing as silent text and point to the board (2026-11-21).
+  assert.match(live, /if\(round\.beat==="brief"&&round\.briefing\)return <LiveBriefing mode="board"[^\n]*onStart=\{\(\)=>act\(\{action:"race\.next"\}\)\}/);
+  assert.match(live, /if\(round\.beat==="brief"\)return <LiveBriefing mode="phone"/);
+  assert.match(live, /acceptLabel=\{b\.timer\?"Accept the mission":"Open the door"\}/);
+  assert.match(src("app/mission-briefing.tsx"), /const phone=mode==="phone";if\(phone\)narration="captions";/);
 });
 
 // Opening a missed lock with the shown proof, the way a phone does (0 points, recorded as a miss).
