@@ -72,3 +72,27 @@ test("the solo room: a chamber with a scene returns to it after each lock, and t
   assert.match(view, /aria-label="Everything in this chamber"/, "every spot is also a button in a list");
   assert.match(view, /Not that word\. Read the line again\./); assert.match(view, /Found it\. The coins are yours\./);
 });
+
+test("Rooms 2 to 6 have their two painted scenes (approved 2026-11-21: Rooms 2 and 3); a code-dial answer never appears in a scene's words", () => {
+  for (const id of ["the-schoolmaster", "tales-by-the-fire", "the-van-tassel-farm", "a-rival-appears", "the-feud"]) for (const c of [1, 2]) {
+    const sc = sceneOf(world, id, c)!; assert.ok(sc, `${id} chamber ${c}`); assert.ok(existsSync("public" + sc.art), sc.art); assert.deepEqual(sc.witnesses, [], "no witness painted in");
+  }
+  // Punishment is never a spot (Room 2 lock 5 is the school itself).
+  const r2 = sceneOf(world, "the-schoolmaster", 1)!; assert.equal(r2.items.find((i) => i.lock === 5)!.label, "The one-room school");
+  assert.ok(!r2.items.some((i) => /rod|birch rod/i.test(i.label)));
+  // "clover" is a dial on Room 3's code lock, so lock 5's spot is the little brook; naming it would be caught.
+  const r3 = (w: WorldPack) => w.rooms!.find((r) => r.expedition === "tales-by-the-fire")!.scenes![0];
+  assert.equal(r3(world).items.find((i) => i.lock === 5)!.label, "The little brook");
+  assert.match(edit((w) => { r3(w).items[4].label = "The clover by the brook"; }), /"clover" is a code-dial answer/);
+  assert.match(edit((w) => { r3(w).bonus[0].alt = "Old tombstones and a patch of clover"; }), /"clover" is a code-dial answer/);
+});
+
+test("a plain marker paints nothing and rests on no line: Room 5's daydream and Room 6's narrator's aside (2026-11-21)", () => {
+  const item = (id: string, c: number, lock: number) => sceneOf(world, id, c)!.items.find((i) => i.lock === lock)!;
+  assert.deepEqual([item("a-rival-appears", 1, 2).marker, item("a-rival-appears", 1, 2).line, item("a-rival-appears", 1, 2).label], [true, undefined, "Ichabod's daydream"]);
+  assert.deepEqual([item("the-feud", 2, 8).marker, item("the-feud", 2, 8).line, item("the-feud", 2, 8).label], [true, undefined, "The narrator's aside"]);
+  const f2 = (w: WorldPack) => w.rooms!.find((r) => r.expedition === "the-feud")!.scenes![1].items.find((i) => i.lock === 8)!;
+  assert.match(edit((w) => { f2(w).line = { p: "p032", s: 0 }; f2(w).subject = ["women"]; }), /plain marker, so it rests on no line or subject/);
+  assert.match(edit((w) => { delete f2(w).marker; }), /needs its line and subject \(or is a plain marker\)/);
+  assert.doesNotMatch(sceneOf(world, "the-feud", 2)!.alt, /young women/);
+});

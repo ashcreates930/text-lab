@@ -27,7 +27,7 @@ test("every chamber of every room has a scene: its painting, or a plain scene of
   assert.deepEqual(s1.puzzles.map((p) => p.id), ["schoolhouse-at-midday"]); assert.deepEqual(s2.puzzles.map((p) => p.id), ["farmhouse-room"]);
   assert.equal(s1.items[0].label[0], s1.items[0].label[0].toUpperCase(), "named by its paragraph topic, capitalized");
   // A spot on a content-noted paragraph has no topic, so it is just "Lock N" (Room 7 reaches ¶34).
-  const r7 = roomOf(world, "the-invitation")!, noted = plainSceneOf(world, r7, 1).items.filter((i) => i.line.p === "p034");
+  const r7 = roomOf(world, "the-invitation")!, noted = plainSceneOf(world, r7, 1).items.filter((i) => i.line?.p === "p034");
   assert.ok(noted.length > 0); for (const i of noted) assert.equal(i.label, `Lock ${i.lock}`);
 });
 
